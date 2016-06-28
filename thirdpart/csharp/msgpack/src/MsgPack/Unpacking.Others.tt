@@ -1,0 +1,326 @@
+﻿<#
+//
+// MessagePack for CLI
+//
+// Copyright (C) 2010-2015 FUJIWARA, Yusuke
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+//
+#>
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly Name="System.Core" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Runtime.InteropServices" #>
+<#@ import namespace="System.Text" #>
+<#
+// This file defines direct integer conversion API portion of Unpackaging
+var __typeName = "Unpacking";
+var __methods = new []
+{
+	// Label, Type, Description for doc, May throw too long (not supported) exception
+	Tuple.Create( "Array", "IList<MessagePackObject>", "the array", true ),
+	Tuple.Create( "ArrayLength", "Int64?", "length of the array", false ),
+	Tuple.Create( "Dictionary", "MessagePackObjectDictionary", "the dictionary", true ),
+	Tuple.Create( "DictionaryCount", "Int64?", "count of the dictionary entries", false ),
+	Tuple.Create( "Binary", "byte[]", "the raw binary", true ),
+	Tuple.Create( "Boolean", "bool", "the boolean", false ),
+	Tuple.Create( "Null", "object", "the nil", false ),
+	Tuple.Create( "Object", "MessagePackObject", "the <see cref=\"MessagePackObject\" /> which represents the value which has MessagePack type semantics.", false ),
+	Tuple.Create( "ExtendedTypeObject", "MessagePackExtendedTypeObject", "the <see cref=\"MessagePackExtendedTypeObject\" /> which represents the extended type value.", true ),
+};
+#>
+#region -- License Terms --
+//
+// MessagePack for CLI
+//
+// Copyright (C) 2010-2015 FUJIWARA, Yusuke
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+//
+#endregion -- License Terms --
+
+#if UNITY_5 || UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_WII || UNITY_IPHONE || UNITY_ANDROID || UNITY_PS3 || UNITY_XBOX360 || UNITY_FLASH || UNITY_BKACKBERRY || UNITY_WINRT
+#define UNITY
+#endif
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+#if !UNITY
+#if XAMIOS || XAMDROID
+using Contract = MsgPack.MPContract;
+#else
+using System.Diagnostics.Contracts;
+#endif // XAMIOS || XAMDROID
+#endif // !UNITY
+using System.IO;
+
+namespace MsgPack
+{
+	// This file generated from <#= __typeName #>.Intgers.tt T4Template.
+	// Do not modify this file. Edit <#= __typeName #>.Intgers.tt instead.
+
+	static partial class <#= __typeName #>
+	{
+<#
+foreach( var __method in __methods )
+{
+	var __mayThrowMessageNotSupportedException = __method.Item4;
+#>
+		///	<summary>
+		///		Unpacks <#= __method.Item3 #> from the head of specified byte array.
+		///	</summary>
+		///	<param name="source">The byte array which contains Message Pack binary stream.</param>
+		///	<returns>
+		///		The <see cref="UnpackingResult{T}"/> of <#= ToSeeElement( __method.Item2 ) #> which contains unpacked <#= __method.Item3 #> and processed bytes count.
+		///	</returns>
+		/// <exception cref="ArgumentNullException">
+		///		<paramref name="source"/> is <c>null</c>.
+		///	</exception>
+		/// <exception cref="ArgumentException">
+		///		<paramref name="source"/> is empty.
+		///	</exception>
+		/// <exception cref="UnpackException">
+		///		<paramref name="source"/> is not valid MessagePack stream.
+		///	</exception>
+		/// <exception cref="MessageTypeException">
+		///		The unpacked result in the <paramref name="source"/> is not compatible to <#= ToSeeElement( __method.Item2 ) #>.
+		///	</exception>
+<#
+	if( __mayThrowMessageNotSupportedException )
+	{
+#>
+		/// <exception cref="MessageNotSupportedException">
+		///		The items count of the underlying collection body is over <see cref="Int32.MaxValue"/>.
+		///	</exception>
+<#
+	}
+#>
+		/// <remarks>
+		///		<para>
+		/// 		Invocation of this method is equivalant to call <see cref="Unpack<#= __method.Item1 #>(byte[], int)"/> with <c>offset</c> is <c>0</c>.
+		///		</para>
+		///		<para>
+		///			When the type of packed value is not known, use <see cref="UnpackObject(byte[])"/> instead.
+		///		</para>
+		///	</remarks>
+<#
+	if ( __method.Item2.EndsWith( "?", StringComparison.Ordinal ) )
+	{
+#>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Nullable<T> as type argument is acceptable." )]
+<#
+	} 
+	else if( __method.Item2.EndsWith( ">", StringComparison.Ordinal ) )
+	{
+#>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Generic collection as type argument is acceptable." )]
+<#
+	}
+#>
+		public static UnpackingResult<#= "<" + __method.Item2 + ">" #> Unpack<#= __method.Item1 #>( byte[] source )
+		{
+			return Unpack<#= __method.Item1 #>( source, 0 );
+		}
+
+		///	<summary>
+		///		Unpacks <#= __method.Item3 #> from the specified byte array.
+		///	</summary>
+		///	<param name="source">The byte array which contains Message Pack binary stream.</param>
+		///	<param name="offset">The offset to be unpacking start with.</param>
+		///	<returns>
+		///		The <see cref="UnpackingResult{T}"/> of <#= ToSeeElement( __method.Item2 ) #> which contains unpacked <#= __method.Item3 #> and processed bytes count.
+		///	</returns>
+		/// <exception cref="ArgumentNullException">
+		///		<paramref name="source"/> is <c>null</c>.
+		///	</exception>
+		/// <exception cref="ArgumentException">
+		///		<paramref name="source"/> is empty.
+		///		Or, the length of <paramref name="source"/> is not grator than <paramref name="offset"/>.
+		///	</exception>
+		/// <exception cref="ArgumentOutOfRangeException">
+		///		<paramref name="offset"/> is negative value.
+		///	</exception>
+		/// <exception cref="UnpackException">
+		///		<paramref name="source"/> is not valid MessagePack stream.
+		///	</exception>
+		/// <exception cref="MessageTypeException">
+		///		The unpacked result in the <paramref name="source"/> is not compatible to <#= ToSeeElement( __method.Item2 ) #>.
+		///	</exception>
+<#
+	if( __mayThrowMessageNotSupportedException )
+	{
+#>
+		/// <exception cref="MessageNotSupportedException">
+		///		The items count of the underlying collection body is over <see cref="Int32.MaxValue"/>.
+		///	</exception>
+<#
+	}
+#>
+		/// <remarks>
+		///		When the type of packed value is not known, use <see cref="UnpackObject(byte[], int)"/> instead.
+		///	</remarks>
+<#
+	if ( __method.Item2.EndsWith( "?", StringComparison.Ordinal ) )
+	{
+#>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Nullable<T> as type argument is acceptable." )]
+<#
+	} 
+	else if( __method.Item2.EndsWith( ">", StringComparison.Ordinal ) )
+	{
+#>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "Generic collection as type argument is acceptable." )]
+<#
+	}
+#>
+		public static UnpackingResult<#= "<" + __method.Item2 + ">" #> Unpack<#= __method.Item1 #>( byte[] source, int offset )
+		{
+			ValidateByteArray( source, offset );
+#if !UNITY
+			Contract.EndContractBlock();
+#endif // !UNITY
+
+			using( var stream = new MemoryStream( source ) )
+			{
+				stream.Position = offset;
+				var value = Unpack<#= __method.Item1 #>Core( stream );
+				return new UnpackingResult<#= "<" + __method.Item2 + ">" #>( value, unchecked( ( int )( stream.Position - offset ) ) );
+			}
+		}
+		
+		///	<summary>
+		///		Unpacks <#= __method.Item3 #> value from the specified <see cref="Stream"/>.
+		///	</summary>
+		///	<param name="source">The <see cref="Stream"/> which contains Message Pack binary stream.</param>
+		///	<returns>
+		///		The unpacked <#= __method.Item3 #> value.
+		///	</returns>
+		/// <exception cref="ArgumentNullException">
+		///		<paramref name="source"/> is <c>null</c>.
+		///	</exception>
+		/// <exception cref="ArgumentException">
+		///		The <see cref="P:Stream.CanRead"/> of <paramref name="source"/> is <c>false</c>.
+		///	</exception>
+		/// <exception cref="UnpackException">
+		///		<paramref name="source"/> is not valid MessagePack stream.
+		///		Note that the state of <paramref name="source"/> will be unpredictable espicially it is not seekable.
+		///	</exception>
+		/// <exception cref="MessageTypeException">
+		///		The unpacked result in the <paramref name="source"/> is not compatible to <#= ToSeeElement( __method.Item2 ) #>.
+		///		Note that the state of <paramref name="source"/> will be unpredictable espicially it is not seekable.
+		///	</exception>
+<#
+	if( __mayThrowMessageNotSupportedException )
+	{
+#>
+		/// <exception cref="MessageNotSupportedException">
+		///		The items count of the underlying collection body is over <see cref="Int32.MaxValue"/>.
+		///	</exception>
+<#
+	}
+#>
+		/// <remarks>
+		///		<para>
+		/// 		The processed bytes count can be calculated via <see cref="P:Stream.Position"/> of <paramref name="source"/> when the <see cref="P:Stream.CanSeek" /> is <c>true</c>.
+		///		</para>
+		///		<para>
+		///			When the type of packed value is not known, use <see cref="UnpackObject(Stream)"/> instead.
+		///		</para>
+		///	</remarks>
+		public static <#= __method.Item2 #> Unpack<#= __method.Item1 #>( Stream source )
+		{
+			ValidateStream( source );
+#if !UNITY
+			Contract.EndContractBlock();
+#endif // !UNITY
+
+			return Unpack<#= __method.Item1 #>Core( source );
+		}
+
+<#
+}
+#>
+	}
+}
+<#+
+
+private static string ToSeeElement( string typeName )
+{
+	var buffer = new StringBuilder();
+
+	var lt = typeName.IndexOf( '<' );
+	var isNullable = typeName.EndsWith( "?", StringComparison.Ordinal );
+	var arraySuffix = typeName.IndexOf( '[' );
+	
+	if( isNullable )
+	{
+		buffer.Append( "nullable " );
+	}
+	
+	if( lt < 0 )
+	{
+		buffer.Append( "<see cref=\"" );
+		
+		if( arraySuffix < 0 )
+		{
+			buffer.Append( isNullable ? typeName.Remove( typeName.Length - 1 ) : typeName ).Append( "\" />" );
+		}
+		else
+		{
+			buffer.Append( typeName.Remove( arraySuffix - ( isNullable ? 1 : 0 ) ) ).Append( "\" />[]" );
+		}
+		
+		return buffer.ToString();
+	}
+	
+	buffer.Append( "<see cref=\"" ).Append( typeName, 0, lt );
+	int typeArgumentCount = typeName.Skip( lt ).Count( c => c == ',' ) + 1;
+	buffer.Append( '{' );
+	
+	if( typeArgumentCount == 1 )
+	{
+		buffer.Append( 'T' );
+	}
+	else
+	{
+		for( int i = 0; i < typeArgumentCount; i++ )
+		{
+			if( i > 0 )
+			{
+				buffer.Append( ',' );
+			}
+			
+			buffer.Append( 'T' ).Append( i );
+		}
+	}
+	
+	buffer.Append( "}\" />" );
+	
+	return buffer.ToString();
+}
+#>

@@ -1,0 +1,14 @@
+﻿<Properties StartupItem="test_csharp_network\test_csharp_network_server.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.test__csharp__network__server PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench ActiveDocument="test_csharp_network_client\network_client.cs">
+    <Files>
+      <File FileName="test_csharp_network\netservice.cs" Line="2" Column="1" />
+      <File FileName="test_csharp_network_client\network_client.cs" Line="15" Column="2" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+</Properties>
