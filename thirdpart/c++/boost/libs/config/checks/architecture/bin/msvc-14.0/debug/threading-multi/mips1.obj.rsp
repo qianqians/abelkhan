@@ -1,0 +1,1 @@
+"libs\config\checks\architecture\mips1.cpp" -Fo"libs\config\checks\architecture\bin\msvc-14.0\debug\threading-multi\mips1.obj"    -TP /Z7 /Od /Ob0 /W3 /GR /MDd /Zc:forScope /Zc:wchar_t /wd4675 /EHs -c

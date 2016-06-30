@@ -1,0 +1,129 @@
+###
+### Using 'vc14' toolset.
+###
+
+C:\Users\qianqians\Documents\workspace\lock-free\thirdparty\boost_1_61_0\tools\build\src\engine>if exist bootstrap rd /S /Q bootstrap 
+
+C:\Users\qianqians\Documents\workspace\lock-free\thirdparty\boost_1_61_0\tools\build\src\engine>md bootstrap 
+
+C:\Users\qianqians\Documents\workspace\lock-free\thirdparty\boost_1_61_0\tools\build\src\engine>cl /nologo /RTC1 /Zi /MTd /Fobootstrap/ /Fdbootstrap/ -DNT -DYYDEBUG -wd4996 kernel32.lib advapi32.lib user32.lib /Febootstrap\jam0  command.c compile.c constants.c debug.c execcmd.c execnt.c filent.c frames.c function.c glob.c hash.c hdrmacro.c headers.c jam.c jambase.c jamgram.c lists.c make.c make1.c object.c option.c output.c parse.c pathnt.c pathsys.c regexp.c rules.c scan.c search.c subst.c timestamp.c variable.c modules.c strings.c filesys.c builtins.c md5.c class.c cwd.c w32_getreg.c native.c modules/set.c modules/path.c modules/regex.c modules/property-set.c modules/sequence.c modules/order.c 
+command.c
+compile.c
+constants.c
+debug.c
+execcmd.c
+execnt.c
+filent.c
+frames.c
+function.c
+glob.c
+hash.c
+hdrmacro.c
+headers.c
+jam.c
+jambase.c
+jamgram.c
+lists.c
+make.c
+make1.c
+object.c
+正在生成代码...
+正在编译...
+option.c
+output.c
+parse.c
+pathnt.c
+pathsys.c
+regexp.c
+rules.c
+scan.c
+search.c
+subst.c
+timestamp.c
+variable.c
+modules.c
+strings.c
+filesys.c
+builtins.c
+md5.c
+class.c
+cwd.c
+w32_getreg.c
+正在生成代码...
+正在编译...
+native.c
+set.c
+path.c
+regex.c
+property-set.c
+sequence.c
+order.c
+正在生成代码...
+
+C:\Users\qianqians\Documents\workspace\lock-free\thirdparty\boost_1_61_0\tools\build\src\engine>.\bootstrap\jam0 -f build.jam --toolset=vc14 "--toolset-root=C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\..\..\VC\ "  clean 
+...found 1 target...
+...updating 1 target...
+...updated 1 target...
+
+C:\Users\qianqians\Documents\workspace\lock-free\thirdparty\boost_1_61_0\tools\build\src\engine>.\bootstrap\jam0 -f build.jam --toolset=vc14 "--toolset-root=C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\..\..\VC\ "  
+...found 159 targets...
+...updating 3 targets...
+[MKDIR] bin.ntx86
+[COMPILE] bin.ntx86\b2.exe
+command.c
+compile.c
+constants.c
+debug.c
+execcmd.c
+frames.c
+function.c
+glob.c
+hash.c
+hcache.c
+headers.c
+hdrmacro.c
+jam.c
+jambase.c
+jamgram.c
+lists.c
+make.c
+make1.c
+mem.c
+object.c
+正在编译...
+option.c
+output.c
+parse.c
+pathsys.c
+regexp.c
+rules.c
+scan.c
+search.c
+subst.c
+w32_getreg.c
+timestamp.c
+variable.c
+modules.c
+strings.c
+filesys.c
+builtins.c
+class.c
+cwd.c
+native.c
+md5.c
+正在编译...
+set.c
+path.c
+regex.c
+property-set.c
+sequence.c
+order.c
+execnt.c
+filent.c
+pathnt.c
+正在生成代码
+已完成代码的生成
+[COPY] bin.ntx86\bjam.exe
+...updated 3 targets...
+
+C:\Users\qianqians\Documents\workspace\lock-free\thirdparty\boost_1_61_0\tools\build\src\engine>exit /b 0 
