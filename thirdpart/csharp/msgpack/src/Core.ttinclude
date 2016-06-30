@@ -1,6 +1,0 @@
-﻿<#+
-private void PushIndent( int level )
-{
-	this.PushIndent( new String( '\t', level ) );
-}
-#>

@@ -1,0 +1,13 @@
+﻿<Properties StartupItem="test_csharp_msgpack\test_csharp_msgpack.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench ActiveDocument="test_csharp_msgpack\test_msgpack.cs">
+    <Files>
+      <File FileName="test_csharp_msgpack\test_msgpack.cs" Line="30" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.test__csharp__msgpack PreferredExecutionTarget="MonoDevelop.Default" />
+</Properties>
