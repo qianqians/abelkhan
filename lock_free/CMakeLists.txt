@@ -4,10 +4,10 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS)
 ADD_DEFINITIONS(-D___mempool___)
 
-set(BOOST_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//thirdparty//boost CACHE PATH "boost include path")
+set(BOOST_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//thirdparty//c++//boost CACHE PATH "boost include path")
 INCLUDE_DIRECTORIES(${BOOST_INCLUDE_PATH})
 
-set(BOOST_LIBS_PATH ${PROJECT_SOURCE_DIR}//thirdparty//boost//lib CACHE PATH "boost include path")
+set(BOOST_LIBS_PATH ${PROJECT_SOURCE_DIR}//..//thirdparty//c++//boost//lib CACHE PATH "boost include path")
 link_directories(${BOOST_LIBS_PATH})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)

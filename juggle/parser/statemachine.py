@@ -29,12 +29,13 @@ class func(object):
                 if self.argvtuple is None:
                     self.func.append(deleteNoneSpacelstrip(self.keyworld))
                 else:
-                    self.argvtuple.append(deleteNoneSpacelstrip(self.keyworld))
+                    if self.keyworld in ['table', 'array', 'int', 'string', 'float', 'bool']:
+                        self.argvtuple.append(deleteNoneSpacelstrip(self.keyworld))
                 self.keyworld = ''
             return False
 
         if ch == ',':
-            if self.keyworld != '':
+            if self.keyworld != '' and self.keyworld in ['table', 'array', 'int', 'string', 'float', 'bool']:
                 self.argvtuple.append(deleteNoneSpacelstrip(self.keyworld))
                 self.keyworld = ''
 
@@ -49,7 +50,7 @@ class func(object):
             return False
 
         if ch == ')':
-            if self.keyworld != '':
+            if self.keyworld != '' and self.keyworld in ['table', 'array', 'int', 'string', 'float', 'bool']:
                 self.argvtuple.append(deleteNoneSpacelstrip(self.keyworld))
 
             if self.argvtuple is None:

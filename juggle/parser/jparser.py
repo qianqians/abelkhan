@@ -21,5 +21,5 @@ def parser(str):
 
     return machine.getmodule()
 
-print parser(text)
+#print(parser(text))
 

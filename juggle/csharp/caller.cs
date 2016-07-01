@@ -5,9 +5,8 @@ namespace service
 {
     class Icaller
     {
-        public Icaller(Ichannel _ch, String _module_name)
+        public Icaller(Ichannel _ch)
         {
-            module_name = _module_name;
             ch = _ch;
         }
 

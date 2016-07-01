@@ -7,7 +7,7 @@ def deletenote(filestr):
     count = 0
     errornote = ""
 
-    for i in xrange(len(filestr)):
+    for i in range(len(filestr)):
         str = filestr[i]
 
         while(1):
