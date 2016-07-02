@@ -14,7 +14,7 @@ def genmodule(module_name, funcs):
 
 	code += "        public " + module_name + "()\n        {\n"
 	code += "			module_name = \"" + module_name + "\";\n"
-	code += "		}\n\n"
+	code += "        }\n\n"
 
 	for i in funcs:
 		code += "		public abstract void " + i[1] + "("
@@ -22,6 +22,8 @@ def genmodule(module_name, funcs):
 		for item in i[2]:
 			code += tools.gentypetocsharp(item) + " argv" + str(count)
 			count = count + 1
+			if count < len(i[2]):
+                                code += ", "
 		code += ");\n\n"
 
 	code += "	}\n"

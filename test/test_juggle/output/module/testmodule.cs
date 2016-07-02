@@ -9,9 +9,9 @@ namespace module
         public test()
         {
 			module_name = "test";
-		}
+        }
 
-		public abstract void test_func(String argv0Int64 argv1);
+		public abstract void test_func(String argv0, Int64 argv1);
 
 	}
 }

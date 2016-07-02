@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{38184B87-DF8C-424C-9A14-C085D0963E90}</ProjectGuid>
+    <ProjectGuid>{CD69D316-7002-416F-B2F0-7C0853869384}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>service</RootNamespace>
     <AssemblyName>service</AssemblyName>
@@ -21,7 +21,6 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -29,11 +28,32 @@
     <ConsolePause>false</ConsolePause>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="MsgPack">
+      <HintPath>..\packages\MsgPack.Cli.0.6.8\lib\net45\MsgPack.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="network_service.cs" />
+    <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="service.cs" />
+    <Compile Include="juggleservice.cs" />
+    <Compile Include="..\..\..\..\juggle\csharp\caller.cs">
+      <Link>caller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\juggle\csharp\channel.cs">
+      <Link>channel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\juggle\csharp\module.cs">
+      <Link>module.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\juggle\csharp\process.cs">
+      <Link>process.cs</Link>
+    </Compile>
+    <Compile Include="timerservice.cs" />
+    <Compile Include="networkservice.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -21,7 +21,7 @@ namespace service
 			module_set.Add(module.module_name, module);
         }
 
-		public void unreg_channel(Imodule module)
+		public void unreg_module(Imodule module)
         {
 			module_set.Remove(module.module_name);
         }
