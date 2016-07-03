@@ -15,4 +15,18 @@ def gentypetocsharp(typestr):
         return 'Boolean'
     elif typestr == 'table':
         return 'Hashtable'
+
+def gentypetomsgpack(typestr):
+    if typestr == 'int':
+        return 'AsInt64()'
+    elif typestr == 'string':
+        return 'AsString()'
+    elif typestr == 'array':
+        return 'AsList()'
+    elif typestr == 'float':
+        return 'AsDouble()'
+    elif typestr == 'bool':
+        return 'AsBoolean()'
+    elif typestr == 'table':
+        return 'AsDictionary()'
 	

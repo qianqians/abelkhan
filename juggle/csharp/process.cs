@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace service
+namespace juggle
 {
     public class process
     {
@@ -45,7 +45,7 @@ namespace service
                         break;
                     }
 
-                    String module_name = (String)_event[0];
+					String module_name = ((MsgPack.MessagePackObject)_event[0]).AsString();
 
                     Imodule module = (Imodule)module_set[module_name];
                     module.process_event(ch, _event);

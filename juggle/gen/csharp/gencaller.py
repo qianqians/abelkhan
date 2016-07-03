@@ -14,9 +14,9 @@ def gencaller(module_name, funcs):
 
         code += "namespace caller\n"
         code += "{\n"
-        code += "    public class " + module_name + " : Icaller \n"
+        code += "    public class " + module_name + " : juggle.Icaller \n"
         code += "    {\n"
-        code += "        public " + module_name + "(Ichannel _ch) : base(_ch)\n"
+        code += "        public " + module_name + "(juggle.Ichannel _ch) : base(_ch)\n"
         code += "        {\n"
         code += "            module_name = \"" + module_name + "\";\n"
         code += "        }\n\n"

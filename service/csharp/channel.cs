@@ -9,7 +9,7 @@ using MsgPack.Serialization;
 
 namespace service
 {
-	public class channel : Ichannel
+	public class channel : juggle.Ichannel
 	{
 		public delegate void DisconnectHandle(channel ch);
 		public event DisconnectHandle onDisconnect;
@@ -31,9 +31,12 @@ namespace service
 
 		private void onRead(IAsyncResult ar)
 		{
+			Console.WriteLine("onRead");
+			
 			channel ch = ar.AsyncState as channel;
 
 			int read = ch.s.EndReceive(ar);
+			Console.WriteLine("read {0:D}", read);
 
 			if (read > 0)
 			{
@@ -43,8 +46,9 @@ namespace service
 					do
 					{
 						Int32 len = BitConverter.ToInt32(recvbuf, offset);
+						Console.WriteLine("len {0:D}", len);
 
-						if (len < (read - 4))
+						if (len <= (read - 4))
 						{
 							read -= len + 4;
 							offset += 4;
@@ -61,6 +65,7 @@ namespace service
 
 							lock (que)
 							{
+								Console.WriteLine("Enqueue {0:D}", read);
 								que.Enqueue(unpackedObject);
 							}
 						}
@@ -110,7 +115,7 @@ namespace service
 					{
 						Int32 len = BitConverter.ToInt32(tmpbuf, offset);
 
-						if (len < (tmpbufoffset - 4))
+						if (len <= (tmpbufoffset - 4))
 						{
 							tmpbufoffset -= len + 4;
 							offset += 4;
@@ -174,7 +179,11 @@ namespace service
 			MemoryStream _tmp = new MemoryStream();
 			serializer.Pack(_tmp, _data);
 
-			s.Send(_tmp.ToArray());
+			byte[] buf = new byte[4 + _tmp.Length];
+			BitConverter.GetBytes(_tmp.Length).CopyTo(buf, 0);
+			_tmp.ToArray().CopyTo(buf, 4);
+
+			s.Send(buf);
 		}
 
 		private Socket s;

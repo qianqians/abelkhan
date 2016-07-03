@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace service
 {
 	public class acceptnetworkservice : service
 	{
-		public acceptnetworkservice(String ip, short port, process _process)
+		public acceptnetworkservice(String ip, short port, juggle.process _process)
 		{
 			process_ = _process;
 
@@ -27,6 +28,8 @@ namespace service
 				channel ch = new channel(clientSocket);
 				onChannelConn(ch);
 				ch.onDisconnect += this.onChannelDisconn;
+
+				process_.reg_channel(ch);
 			}
 
 			listener.BeginAcceptSocket(new AsyncCallback(this.onAccept), listener);
@@ -37,7 +40,12 @@ namespace service
 
 		public void onChannelConn(channel ch)
 		{
-			onChannelConnect(ch);
+			if (onChannelConnect != null)
+			{
+				onChannelConnect(ch);
+			}
+
+			process_.unreg_channel(ch);
 		}
 
 		public delegate void ChannelDisconnectHandle(channel ch);
@@ -45,7 +53,10 @@ namespace service
 
 		public void onChannelDisconn(channel ch)
 		{
-			onChannelDisconnect(ch);
+			if (onChannelDisconnect != null)
+			{
+				onChannelDisconnect(ch);
+			}
 		}
 
 		public void poll(Int64 tick)
@@ -53,7 +64,7 @@ namespace service
 		}
 
 		private TcpListener listen;
-		private process process_;
+		private juggle.process process_;
 	}
 }
 

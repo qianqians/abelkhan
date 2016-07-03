@@ -7,9 +7,9 @@ using MsgPack.Serialization;
 
 namespace caller
 {
-    public class test : Icaller 
+    public class test : juggle.Icaller 
     {
-        public test(Ichannel _ch) : base(_ch)
+        public test(juggle.Ichannel _ch) : base(_ch)
         {
             module_name = "test";
         }

@@ -6,12 +6,12 @@ namespace service
 {
 	public class connectnetworkservice : service
 	{
-		public connectnetworkservice(process _process)
+		public connectnetworkservice(juggle.process _process)
 		{
 			process_ = _process;
 		}
 
-		private channel connect(String ip, short port)
+		public channel connect(String ip, short port)
 		{
             Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -19,8 +19,9 @@ namespace service
             s.Connect(new IPEndPoint(IPAddress.Parse(ip), port));
 
             channel ch = new channel(s);
-            onChannelConn(ch);
             ch.onDisconnect += this.onChannelDisconn;
+
+			process_.reg_channel(ch);
 
             return ch;
         }
@@ -30,14 +31,17 @@ namespace service
 
 		public void onChannelDisconn(channel ch)
 		{
-			onChannelDisconnect(ch);
+			if (onChannelDisconnect != null)
+			{
+				onChannelDisconnect(ch);
+			}
 		}
 
 		public void poll(Int64 tick)
 		{
 		}
 
-		private process process_;
+		private juggle.process process_;
 	}
 }
 
