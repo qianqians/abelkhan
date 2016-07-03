@@ -20,12 +20,13 @@ namespace service
 
 			que = new Queue();
 
-			recvbuf = new byte[1024 * 1024];
+            recvbuflenght = 1024 * 1024;
+            recvbuf = new byte[recvbuflenght];
 			tmpbuf = null;
 			tmpbuflenght = 0;
 			tmpbufoffset = 0;
 
-			s.BeginReceive(recvbuf, 0, 1024*1024, 0, new AsyncCallback(this.onRead), this);
+			s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
 		}
 
 		private void onRead(IAsyncResult ar)
@@ -67,7 +68,7 @@ namespace service
 						{
 							if (tmpbuflenght == 0)
 							{
-								tmpbuflenght = 1024 * 1024 * 2;
+								tmpbuflenght = recvbuflenght * 2;
 								tmpbuf = new byte[tmpbuflenght];
 							}
 
@@ -141,10 +142,13 @@ namespace service
 
 					} while (true);
 				}
-			}
+
+                ch.s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
+            }
 			else
 			{
-				onDisconnect(this);
+                ch.s.Close();
+				onDisconnect(ch);
 			}
 		}
 
@@ -175,6 +179,7 @@ namespace service
 
 		private Socket s;
 		private byte[] recvbuf;
+        private Int32 recvbuflenght;
 		private byte[] tmpbuf;
 		private Int32 tmpbuflenght;
 		private Int32 tmpbufoffset;

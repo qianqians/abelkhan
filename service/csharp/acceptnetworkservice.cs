@@ -4,9 +4,9 @@ using System.Net.Sockets;
 
 namespace service
 {
-	public class networkservice : service
+	public class acceptnetworkservice : service
 	{
-		public networkservice(String ip, short port, process _process)
+		public acceptnetworkservice(String ip, short port, process _process)
 		{
 			process_ = _process;
 
