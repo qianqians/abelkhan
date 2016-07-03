@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\37d9668e166e9f3827ed06e253acd62f\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{9B91B8D5-C789-3B0D-830B-F858126E313C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

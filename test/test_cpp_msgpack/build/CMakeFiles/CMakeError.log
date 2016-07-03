@@ -1,0 +1,86 @@
+Determining if the include file pthread.h exists failed with the following output:
+Change Dir: C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_msgpack/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"C:/Program Files (x86)/MSBuild/14.0/bin/MSBuild.exe" "cmTC_f397b.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=14.0"
+Microsoft (R) 生成引擎版本 14.0.25123.0
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2016/7/3 22:41:48。
+节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\cmTC_f397b.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_f397b.dir\Debug\”。
+  正在创建目录“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_f397b.dir\Debug\cmTC_f397b.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_f397b.dir\Debug\cmTC_f397b.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_f397b.dir\Debug\\" /Fd"cmTC_f397b.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\CheckIncludeFile.c
+  用于 x86 的 Microsoft (R) C/C++ 优化编译器 19.00.23918 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_f397b.dir\Debug\\" /Fd"cmTC_f397b.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\CheckIncludeFile.c
+  
+  CheckIncludeFile.c
+C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1): fatal error C1083: 无法打开包括文件: “pthread.h”: No such file or directory [C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\cmTC_f397b.vcxproj]
+已完成生成项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\cmTC_f397b.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\cmTC_f397b.vcxproj”(默认目标) (1) ->
+(ClCompile 目标) -> 
+  C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\CheckIncludeFile.c(1): fatal error C1083: 无法打开包括文件: “pthread.h”: No such file or directory [C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\cmTC_f397b.vcxproj]
+
+    0 个警告
+    1 个错误
+
+已用时间 00:00:00.70
+
+
+Performing C++ SOURCE FILE Test MSGPACK_ENABLE_GCC_CXX_ATOMIC failed with the following output:
+Change Dir: C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_msgpack/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"C:/Program Files (x86)/MSBuild/14.0/bin/MSBuild.exe" "cmTC_89df6.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=14.0"
+Microsoft (R) 生成引擎版本 14.0.25123.0
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2016/7/3 22:41:49。
+节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\cmTC_89df6.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_89df6.dir\Debug\”。
+  正在创建目录“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_89df6.dir\Debug\cmTC_89df6.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_89df6.dir\Debug\cmTC_89df6.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D MSGPACK_DEFAULT_API_VERSION=2 /D MSGPACK_USE_CPP03 /D WIN32 /D _WINDOWS /D MSGPACK_ENABLE_GCC_CXX_ATOMIC /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_89df6.dir\Debug\\" /Fd"cmTC_89df6.dir\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\src.cxx
+  用于 x86 的 Microsoft (R) C/C++ 优化编译器 19.00.23918 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D MSGPACK_DEFAULT_API_VERSION=2 /D MSGPACK_USE_CPP03 /D WIN32 /D _WINDOWS /D MSGPACK_ENABLE_GCC_CXX_ATOMIC /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_89df6.dir\Debug\\" /Fd"cmTC_89df6.dir\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\src.cxx
+  
+  src.cxx
+C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\src.cxx(2): fatal error C1083: 无法打开包括文件: “bits/atomicity.h”: No such file or directory [C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\cmTC_89df6.vcxproj]
+已完成生成项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\cmTC_89df6.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\cmTC_89df6.vcxproj”(默认目标) (1) ->
+(ClCompile 目标) -> 
+  C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\src.cxx(2): fatal error C1083: 无法打开包括文件: “bits/atomicity.h”: No such file or directory [C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_msgpack\build\CMakeFiles\CMakeTmp\cmTC_89df6.vcxproj]
+
+    0 个警告
+    1 个错误
+
+已用时间 00:00:00.70
+
+Source file was:
+
+#include <bits/atomicity.h>
+int atomic_sub(int i) { return __gnu_cxx::__exchange_and_add(&i, -1) - 1; }
+int atomic_add(int i) { return __gnu_cxx::__exchange_and_add(&i, 1) + 1; }
+int main(int argc, char * argv[])
+{
+    atomic_sub(1);
+    atomic_add(1);
+}
+

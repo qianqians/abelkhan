@@ -1,0 +1,468 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\src\objectc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\src\unpack.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\src\version.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\src\vrefbuffer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\src\zone.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\fbuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\gcc_atomic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\pack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\pack_define.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\pack_template.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\alpha.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\arm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\blackfin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\convex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\ia64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\m68k.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\mips.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\parisc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\ppc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\pyramid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\rs6k.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\sparc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\superh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\sys370.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\sys390.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\x86.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\x86\32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\x86\64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\architecture\z.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\borland.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\clang.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\comeau.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\compaq.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\diab.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\digitalmars.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\dignus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\edg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\ekopath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\gcc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\gcc_xml.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\greenhills.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\hp_acc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\iar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\ibm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\intel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\kai.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\llvm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\metaware.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\metrowerks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\microtec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\mpw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\palm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\pgi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\sgi_mipspro.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\sunpro.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\tendra.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\visualc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\compiler\watcom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\detail\_cassert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\detail\_exception.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\detail\comp_detected.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\detail\endian_compat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\detail\os_detected.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\detail\platform_detected.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\detail\test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\detail\test_def.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\hardware.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\hardware\simd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\hardware\simd\arm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\hardware\simd\arm\versions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\hardware\simd\ppc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\hardware\simd\ppc\versions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\hardware\simd\x86.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\hardware\simd\x86\versions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\hardware\simd\x86_amd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\hardware\simd\x86_amd\versions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\language.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\language\objc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\language\stdc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\language\stdcpp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\c.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\c\_prefix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\c\gnu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\c\uc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\c\vms.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\c\zos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\std.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\std\_prefix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\std\cxx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\std\dinkumware.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\std\libcomo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\std\modena.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\std\msl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\std\roguewave.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\std\sgi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\std\stdcpp3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\std\stlport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\library\std\vacpp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\make.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\aix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\amigaos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\android.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\beos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\bsd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\bsd\bsdi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\bsd\dragonfly.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\bsd\free.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\bsd\net.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\bsd\open.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\cygwin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\haiku.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\hpux.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\ios.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\irix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\linux.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\macos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\os400.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\qnxnto.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\solaris.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\unix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\vms.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\os\windows.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\other.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\other\endian.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\platform\mingw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\platform\windows_desktop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\platform\windows_phone.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\platform\windows_runtime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\platform\windows_store.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\predef\version_number.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\sbuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\sysdep.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\unpack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\unpack_define.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\unpack_template.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\version_master.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\vrefbuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\zbuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\include\msgpack\zone.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\msgpack-c\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{A8BBCE22-5403-38A9-968F-6ABEE4C30DA8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{BEE08EE1-272D-3CD5-AA65-6A49018DC6DD}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
