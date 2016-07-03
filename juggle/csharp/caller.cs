@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace service
@@ -12,12 +13,12 @@ namespace service
 
         public void call_module_method(String methodname, ArrayList argvs)
         {
-            ArrayList _event;
+			ArrayList _event = new ArrayList();
             _event.Add(module_name);
             _event.Add(methodname);
             _event.Add(argvs);
 
-            ch->push(_event);
+			ch.push(_event);
         }
 
         private String module_name;

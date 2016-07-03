@@ -6,6 +6,12 @@ namespace service
 {
     public class process
     {
+		public process()
+		{
+			event_set = new List<Ichannel>();
+			module_set = new Hashtable();
+		}
+
         public void reg_channel(Ichannel ch)
         {
             event_set.Add(ch);
@@ -42,7 +48,7 @@ namespace service
                     String module_name = (String)_event[0];
 
                     Imodule module = (Imodule)module_set[module_name];
-                    module.process_event(_event);
+                    module.process_event(ch, _event);
                 }
             }
         }

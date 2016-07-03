@@ -6,8 +6,10 @@ namespace service
 {
     public class Imodule
     {
-        public void process_event(ArrayList _event)
+        public void process_event(Ichannel _ch, ArrayList _event)
         {
+			current_ch = _ch;
+
             String func_name = (String)_event[1];
 
             Type type = GetType();
@@ -21,8 +23,11 @@ namespace service
             {
                 method.Invoke(this, null);
             }
+
+			current_ch = null;
         }
 
+		public Ichannel current_ch;
 		public String module_name;
     }
 }

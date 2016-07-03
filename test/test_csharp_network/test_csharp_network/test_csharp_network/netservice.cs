@@ -13,10 +13,10 @@ namespace test_csharp_network
 
 			listen.Start();
 
-			listen.BeginAcceptSocket(new AsyncCallback(onAccept), listen);
+			listen.BeginAcceptSocket(new AsyncCallback(this.onAccept), listen);
 		}
 
-		private static void onAccept(IAsyncResult ar)
+		private void onAccept(IAsyncResult ar)
 		{
 			TcpListener listener = ar.AsyncState as TcpListener;
 
@@ -26,7 +26,7 @@ namespace test_csharp_network
 			// server table, read data, etc.)
 			Console.WriteLine("Client connected completed");
 
-			listener.BeginAcceptSocket(new AsyncCallback(netservice.onAccept), listener);
+			listener.BeginAcceptSocket(new AsyncCallback(this.onAccept), listener);
 		}
 
 		static void Main()
