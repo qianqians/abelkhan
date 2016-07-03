@@ -8,7 +8,7 @@
   <MonoDevelop.Ide.Workbench ActiveDocument="test_csharp_network_client\network_client.cs">
     <Files>
       <File FileName="test_csharp_network\netservice.cs" Line="31" Column="1" />
-      <File FileName="test_csharp_network_client\network_client.cs" Line="26" Column="3" />
+      <File FileName="test_csharp_network_client\network_client.cs" Line="23" Column="4" />
     </Files>
   </MonoDevelop.Ide.Workbench>
 </Properties>
