@@ -5,39 +5,52 @@
 import tools
 
 def gencaller(module_name, funcs):
-        code = "/*this caller file is codegen by juggle*/\n"
-        code += "using System;\n"
-        code += "using System.Collections;\n"
-        code += "using System.IO;\n"
-        code += "using MsgPack;\n"
-        code += "using MsgPack.Serialization;\n\n"
+        code = "/*this caller file is codegen by juggle for c++*/\n"
+        code += "#include <string>\n"
+        code += "#include <Icaller.h>\n"
+        code += "#include <Ichannel.h>\n"
+        code += "#include <MsgPack.hpp>\n"
+        code += "#include <boost/any.hpp>\n"
+        code += "#include <boost/make_shared.hpp>\n\n"
 
         code += "namespace caller\n"
         code += "{\n"
-        code += "    public class " + module_name + " : juggle.Icaller \n"
-        code += "    {\n"
-        code += "        public " + module_name + "(juggle.Ichannel _ch) : base(_ch)\n"
-        code += "        {\n"
-        code += "            module_name = \"" + module_name + "\";\n"
-        code += "        }\n\n"
+        code += "class " + module_name + " : public juggle::Icaller {\n"
+        code += "public:\n"
+        code += "    " + module_name + "(boost::shared_ptr<juggle::Ichannel> _ch) : Icaller(_ch) {\n"
+        code += "        module_name = \"" + module_name + "\";\n"
+        code += "    }\n\n"
+
+        code += "    ~" + module_name + "(){\n"
+        code += "    }\n\n"
 
         for i in funcs:
-                code += "        public void " + i[1] + "("
+                code += "    void " + i[1] + "("
                 count = 0
                 for item in i[2]:
-                        code += tools.gentypetocsharp(item) + " argv" + str(count)
+                        code += tools.gentypetocpp(item) + " argv" + str(count)
                         count = count + 1
                         if count < len(i[2]):
                                 code += ","
-                code += ")\n"
-                code += "        {\n"
-                code += "            ArrayList _argv = new ArrayList();\n"
+                code += "){\n"
+                code += "        std::tuple<std::string, std::string, std::tuple<"
+                for item in i[2]:
+                        code += tools.gentypetocpp(item)
+                        count = count + 1
+                        if count < len(i[2]):
+                                code += ","
+                code += "> _argv(module_name, \"" + i[1] + "\", std::make_tuple("
                 for n in range(len(i[2])):
-                        code += "            _argv.Add(argv" + str(n) + ");\n"
-                code += "            call_module_method(\"" + i[1] + "\", _argv);\n"
-                code += "        }\n\n"
+                        code += "argv" + str(n)
+                        if count < len(i[2]):
+                                code += ","
+                code += "));\n"
+                code += "        std::stringstream ss;\n"
+                code += "        msgpack::pack(ss, v);\n"
+                code += "        ch->senddata(ss.str().data(), ss.str().size());\n"
+                code += "    }\n\n"
 
-        code += "    }\n"
+        code += "};\n\n"
         code += "}\n"
 
         return code

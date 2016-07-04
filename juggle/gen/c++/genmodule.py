@@ -5,48 +5,50 @@
 import tools
 
 def genmodule(module_name, funcs):
-        code = "/*this module file is codegen by juggle*/\n"
-        code += "using System;\n"
-        code += "using System.Collections;\n"
-        code += "using System.Collections.Generic;\n"
-        code += "using MsgPack;\n"
-        code += "using MsgPack.Serialization;\n\n"
+        code = "/*this module file is codegen by juggle for c++*/\n"
+        code += "#include <Imodule.h>\n"
+        code += "#include <boost/make_shared.hpp>\n"
+        code += "#include <boost/signal2.hpp>\n"
+        code += "#include <string>\n"
+        code += "#include <Msgpack.hpp>\n\n"
 
         code += "namespace module\n{\n"
-        code += "    public class " + module_name + " : juggle.Imodule \n    {\n"
+        code += "class " + module_name + " : public juggle::Imodule {\n"
+        code += "public:\n"
+        code += "    " + module_name + "(){\n"
+        code += "        module_name = \"" + module_name + "\";\n"
+        code += "    }\n\n"
 
-        code += "        public " + module_name + "()\n        {\n"
-        code += "			module_name = \"" + module_name + "\";\n"
-        code += "        }\n\n"
+        code += "    ~" + module_name + "(){\n"
+        code += "    }\n\n"
 
         for i in funcs:
-                code += "        public delegate void " + i[1] + "handle("
+                code += "    boost::signals2::signal<void("
                 count = 0
                 for item in i[2]:
-                        code += tools.gentypetocsharp(item) + " argv" + str(count)
+                        code += tools.gentypetocpp(item)
                         count = count + 1
                         if count < len(i[2]):
                                 code += ", "
+                ") > sig" + i[1] + "handle;"
                 code += ");\n"
-                code += "        public event " + i[1] + "handle on" + i[1] + ";\n"
-                code += "        public void " + i[1] + "(IList<MsgPack.MessagePackObject> _event)\n        {\n"
-                code += "            if(on" + i[1] + " != null)\n            {\n"
-                count = 0
-                for item in i[2]:
-                        code += "                var argv" + str(count) + " = ((MsgPack.MessagePackObject)_event[" + str(count) + "])." + tools.gentypetomsgpack(item) + ";\n"
-                        count = count + 1
-                code += "                on" + i[1] + "("
-                count = 0
-                for item in i[2]:
-                        code += " argv" + str(count)
-                        count = count + 1
-                        if count < len(i[2]):
-                                code += ", "
+                code += "    void " + i[1] + "(MsgPack::object _event){\n"
+                code += "        sig" + i[1] + "handle(\n"
+                for n in range(len(i[2])):
+                        code += "            std::get<" + str(n) + ">(_event.as<std::tuple<"
+                        count = 0
+                        for item in i[2]:
+                                code += tools.gentypetocpp(item)
+                                count = count + 1
+                                if count < len(i[2]):
+                                        code += ", "
+                        code += "> >())"
+                        if n < len(i[2]) - 1:
+                                code += ",\n"
                 code += ");\n"
-                code += "            }\n"
-                code += "        }\n\n"
+                code += "    }\n\n"
 
-        code += "	}\n"
+        code += "}\n"
         code += "}\n"
 
         return code

@@ -2,31 +2,18 @@
 # build by qianqians
 # tools
 
-def gentypetocsharp(typestr):
+def gentypetocpp(typestr):
     if typestr == 'int':
-        return 'Int64'
+        return 'int64_t'
     elif typestr == 'string':
-        return 'String'
+        return 'std::string'
     elif typestr == 'array':
-        return 'ArrayList'
+        return 'std::vector<boost::any>'
     elif typestr == 'float':
-        return 'Double'
+        return 'double'
     elif typestr == 'bool':
-        return 'Boolean'
+        return 'bool'
     elif typestr == 'table':
-        return 'Hashtable'
+        return 'std::unordered_map<std::string, boost::any>'
 
-def gentypetomsgpack(typestr):
-    if typestr == 'int':
-        return 'AsInt64()'
-    elif typestr == 'string':
-        return 'AsString()'
-    elif typestr == 'array':
-        return 'AsList()'
-    elif typestr == 'float':
-        return 'AsDouble()'
-    elif typestr == 'bool':
-        return 'AsBoolean()'
-    elif typestr == 'table':
-        return 'AsDictionary()'
 	

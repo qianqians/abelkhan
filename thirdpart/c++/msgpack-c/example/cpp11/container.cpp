@@ -23,7 +23,10 @@
 
 #include <msgpack.hpp>
 
+#include <boost/signals2.hpp>
+
 void vector() {
+
 	std::tuple<std::string, std::string, std::tuple<int, std::string> > v("123", "234", std::make_tuple<int>(3, "23456"));
 	
 	std::stringstream ss;

@@ -5,7 +5,7 @@
 import tools
 
 def gencaller(module_name, funcs):
-        code = "/*this caller file is codegen by juggle*/\n"
+        code = "/*this caller file is codegen by juggle for c#*/\n"
         code += "using System;\n"
         code += "using System.Collections;\n"
         code += "using System.IO;\n"

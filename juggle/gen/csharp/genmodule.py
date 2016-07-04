@@ -5,7 +5,7 @@
 import tools
 
 def genmodule(module_name, funcs):
-        code = "/*this module file is codegen by juggle*/\n"
+        code = "/*this module file is codegen by juggle for c#*/\n"
         code += "using System;\n"
         code += "using System.Collections;\n"
         code += "using System.Collections.Generic;\n"
