@@ -5,6 +5,7 @@ namespace juggle
 	public interface Ichannel
     {
 		ArrayList pop();
-        void push(ArrayList _data);
+        void senddata(byte[] data);
+
     }
 }

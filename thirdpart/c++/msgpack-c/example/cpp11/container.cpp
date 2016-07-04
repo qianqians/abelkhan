@@ -17,8 +17,29 @@
 #include <unordered_set>
 #include <forward_list>
 #include <string>
+#include <list>
+
+#include <boost/any.hpp>
 
 #include <msgpack.hpp>
+
+void vector() {
+	std::tuple<std::string, std::string, std::tuple<int, std::string> > v("123", "234", std::make_tuple<int>(3, "23456"));
+	
+	std::stringstream ss;
+	msgpack::pack(ss, v);
+
+	msgpack::object_handle oh = msgpack::unpack(ss.str().data(), ss.str().size());
+	msgpack::object obj = oh.get();
+
+	std::cout << obj << std::endl;
+	msgpack::object  o1 = std::get<2>(obj.as<std::tuple<std::string, std::string, msgpack::object> >());
+	std::cout << o1 << std::endl;
+	o1.as<std::tuple<int, std::string> >();
+	std::cout << std::get<0>(o1.as<std::tuple<int, std::string> >()) << std::get<1>(o1.as<std::tuple<int, std::string> >()) << std::endl;
+
+	assert((obj.as<std::tuple<std::string, std::string, std::tuple<int, std::string>>>()) == v);
+}
 
 void array() {
     std::array<int, 5> a { { 1, 2, 3, 4, 5 } };
@@ -140,6 +161,7 @@ void combi() {
 }
 
 int main() {
+	vector();
     array();
     tuple();
     unordered_map();

@@ -36,20 +36,27 @@ namespace juggle
         {
             foreach (Ichannel ch in event_set)
             {
-                while (true)
-                {
-                    ArrayList _event = ch.pop();
+				while (true)
+				{
+					ArrayList _event = ch.pop();
 
-                    if (_event == null)
-                    {
-                        break;
-                    }
+					if (_event == null)
+					{
+						break;
+					}
 
 					String module_name = ((MsgPack.MessagePackObject)_event[0]).AsString();
 
-                    Imodule module = (Imodule)module_set[module_name];
-                    module.process_event(ch, _event);
-                }
+					if (module_set.ContainsKey(module_name))
+					{
+						Imodule module = (Imodule)module_set[module_name];
+						module.process_event(ch, _event);
+					}
+					else
+					{
+						Console.WriteLine("do not have a module named:" + module_name);
+					}
+				}
             }
         }
 

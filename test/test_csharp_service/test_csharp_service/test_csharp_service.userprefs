@@ -4,16 +4,10 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="test_csharp_service\testmoduleachieve.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="..\..\..\juggle\csharp\Icaller.cs">
     <Files>
-      <File FileName="..\..\..\service\csharp\channel.cs" Line="7" Column="1" />
-      <File FileName="..\..\..\juggle\csharp\process.cs" Line="42" Column="6" />
-      <File FileName="..\..\..\service\csharp\acceptnetworkservice.cs" Line="39" Column="16" />
-      <File FileName="..\..\test_juggle\output\module\testmodule.cs" Line="1" Column="1" />
-      <File FileName="..\..\..\juggle\csharp\Imodule.cs" Line="21" Column="60" />
-      <File FileName="test_csharp_service\testmoduleachieve.cs" Line="13" Column="31" />
-      <File FileName="test_csharp_service\testserver.cs" Line="52" Column="24" />
-      <File FileName="test_csharp_service_client\test_client.cs" Line="22" Column="33" />
+      <File FileName="..\..\..\juggle\csharp\Imodule.cs" Line="36" Column="66" />
+      <File FileName="..\..\..\juggle\csharp\Icaller.cs" Line="33" Column="19" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.ItemProperties.test__csharp__service PreferredExecutionTarget="MonoDevelop.Default" />
