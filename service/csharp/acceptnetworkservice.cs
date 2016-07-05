@@ -26,10 +26,9 @@ namespace service
 
 			{
 				channel ch = new channel(clientSocket);
-				onChannelConn(ch);
 				ch.onDisconnect += this.onChannelDisconn;
 
-				process_.reg_channel(ch);
+				onChannelConn(ch);
 			}
 
 			listener.BeginAcceptSocket(new AsyncCallback(this.onAccept), listener);
@@ -40,12 +39,12 @@ namespace service
 
 		public void onChannelConn(channel ch)
 		{
+			process_.reg_channel(ch);
+
 			if (onChannelConnect != null)
 			{
 				onChannelConnect(ch);
 			}
-
-			process_.unreg_channel(ch);
 		}
 
 		public delegate void ChannelDisconnectHandle(channel ch);
@@ -57,6 +56,8 @@ namespace service
 			{
 				onChannelDisconnect(ch);
 			}
+
+			process_.unreg_channel(ch);
 		}
 
 		public void poll(Int64 tick)

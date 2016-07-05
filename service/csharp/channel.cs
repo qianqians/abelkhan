@@ -20,7 +20,7 @@ namespace service
 
 			que = new Queue();
 
-            recvbuflenght = 1024 * 1024;
+            recvbuflenght = 16 * 1024;
             recvbuf = new byte[recvbuflenght];
 			tmpbuf = null;
 			tmpbuflenght = 0;
@@ -31,128 +31,142 @@ namespace service
 
 		private void onRead(IAsyncResult ar)
 		{
-			Console.WriteLine("onRead");
-			
 			channel ch = ar.AsyncState as channel;
 
-			int read = ch.s.EndReceive(ar);
-			Console.WriteLine("read {0:D}", read);
-
-			if (read > 0)
+			try
 			{
-				if (tmpbufoffset == 0)
+				int read = ch.s.EndReceive(ar);
+				//Console.WriteLine("read {0:D}", read);
+
+				if (read > 0)
 				{
-					int offset = 0;
-					do
+					if (tmpbufoffset == 0)
 					{
-						Int32 len = BitConverter.ToInt32(recvbuf, offset);
-						Console.WriteLine("len {0:D}", len);
-
-						if (len <= (read - 4))
+						int offset = 0;
+						do
 						{
-							read -= len + 4;
-							offset += 4;
+							Int32 len = ((Int32)recvbuf[0]) | ((Int32)recvbuf[1]) << 8 | ((Int32)recvbuf[2]) << 16 | ((Int32)recvbuf[3]) << 24;//BitConverter.ToInt32(recvbuf, offset);
+							//Console.WriteLine("len {0:D}", len);
 
-							MemoryStream _tmp = new MemoryStream();
-
-							_tmp.Write(recvbuf, offset, len);
-							offset += len;
-
-							_tmp.Position = 0;
-
-							var serializer = SerializationContext.Default.GetSerializer<ArrayList>();
-							ArrayList unpackedObject = serializer.Unpack(_tmp);
-
-							lock (que)
+							if (len <= (read - 4))
 							{
-								Console.WriteLine("Enqueue {0:D}", read);
-								que.Enqueue(unpackedObject);
+								read -= len + 4;
+								offset += 4;
+
+								MemoryStream _tmp = new MemoryStream();
+
+								_tmp.Write(recvbuf, offset, len);
+								offset += len;
+
+								_tmp.Position = 0;
+
+								var serializer = SerializationContext.Default.GetSerializer<ArrayList>();
+								ArrayList unpackedObject = serializer.Unpack(_tmp);
+
+								lock (que)
+								{
+									//Console.WriteLine("Enqueue {0:D}", read);
+									que.Enqueue(unpackedObject);
+								}
 							}
-						}
-						else
-						{
-							if (tmpbuflenght == 0)
+							else
 							{
-								tmpbuflenght = recvbuflenght * 2;
-								tmpbuf = new byte[tmpbuflenght];
+								if (tmpbuflenght == 0)
+								{
+									tmpbuflenght = recvbuflenght * 2;
+									tmpbuf = new byte[tmpbuflenght];
+								}
+
+								while ((tmpbuflenght - tmpbufoffset) < read)
+								{
+									byte[] newtmpbuf = new byte[2 * tmpbuflenght];
+									tmpbuf.CopyTo(newtmpbuf, 0);
+									tmpbuf = newtmpbuf;
+								}
+
+								MemoryStream _tmp = new MemoryStream();
+								_tmp.Write(recvbuf, offset, read);
+
+								_tmp.ToArray().CopyTo(tmpbuf, tmpbufoffset);
+								tmpbufoffset = read;
+
+								break;
 							}
 
-							while ((tmpbuflenght - tmpbufoffset) < read)
-							{
-								byte[] newtmpbuf = new byte[2 * tmpbuflenght];
-								tmpbuf.CopyTo(newtmpbuf, 0);
-								tmpbuf = newtmpbuf;
-							}
-
-							MemoryStream _tmp = new MemoryStream();
-							_tmp.Write(recvbuf, offset, read);
-
-							_tmp.ToArray().CopyTo(tmpbuf, tmpbufoffset);
-							tmpbufoffset = read;
-
-							break;
-						}
-
-					} while (true);
-				}
-				else if (tmpbufoffset > 0)
-				{
-					while ((tmpbuflenght - tmpbufoffset) < read)
+						} while (true);
+					}
+					else if (tmpbufoffset > 0)
 					{
-						byte[] newtmpbuf = new byte[2 * tmpbuflenght];
-						tmpbuf.CopyTo(newtmpbuf, 0);
-						tmpbuf = newtmpbuf;
+						while ((tmpbuflenght - tmpbufoffset) < read)
+						{
+							byte[] newtmpbuf = new byte[2 * tmpbuflenght];
+							tmpbuf.CopyTo(newtmpbuf, 0);
+							tmpbuf = newtmpbuf;
+						}
+
+						MemoryStream _tmp_ = new MemoryStream();
+						_tmp_.Write(recvbuf, 0, read);
+
+						_tmp_.ToArray().CopyTo(tmpbuf, tmpbufoffset);
+						tmpbufoffset += (Int32)_tmp_.Length;
+
+						int offset = 0;
+						do
+						{
+							Int32 len = ((Int32)tmpbuf[0]) | ((Int32)tmpbuf[1]) << 8 | ((Int32)tmpbuf[2]) << 16 | ((Int32)tmpbuf[3]) << 24;
+							//Int32 len = BitConverter.ToInt32(tmpbuf, offset);
+
+							if (len <= (tmpbufoffset - 4))
+							{
+								tmpbufoffset -= len + 4;
+								offset += 4;
+
+								MemoryStream _tmp = new MemoryStream();
+
+								_tmp.Write(tmpbuf, offset, len);
+								offset += len;
+
+								_tmp.Position = 0;
+
+								var serializer = SerializationContext.Default.GetSerializer<ArrayList>();
+								ArrayList unpackedObject = serializer.Unpack(_tmp);
+
+								lock (que)
+								{
+									que.Enqueue(unpackedObject);
+								}
+							}
+							else
+							{
+								MemoryStream _tmp = new MemoryStream();
+								_tmp.Write(tmpbuf, offset, tmpbufoffset);
+
+								_tmp.ToArray().CopyTo(tmpbuf, 0);
+
+								break;
+							}
+
+						} while (true);
 					}
 
-					MemoryStream _tmp_ = new MemoryStream();
-					_tmp_.Write(recvbuf, 0, read);
-
-					_tmp_.ToArray().CopyTo(tmpbuf, tmpbufoffset);
-					tmpbufoffset += (Int32)_tmp_.Length;
-
-					int offset = 0;
-					do
-					{
-						Int32 len = BitConverter.ToInt32(tmpbuf, offset);
-
-						if (len <= (tmpbufoffset - 4))
-						{
-							tmpbufoffset -= len + 4;
-							offset += 4;
-
-							MemoryStream _tmp = new MemoryStream();
-
-							_tmp.Write(tmpbuf, offset, len);
-							offset += len;
-
-							_tmp.Position = 0;
-
-							var serializer = SerializationContext.Default.GetSerializer<ArrayList>();
-							ArrayList unpackedObject = serializer.Unpack(_tmp);
-
-							lock (que)
-							{
-								que.Enqueue(unpackedObject);
-							}
-						}
-						else
-						{
-							MemoryStream _tmp = new MemoryStream();
-							_tmp.Write(tmpbuf, offset, tmpbufoffset);
-
-							_tmp.ToArray().CopyTo(tmpbuf, 0);
-
-							break;
-						}
-
-					} while (true);
+					ch.s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
 				}
-
-                ch.s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
-            }
-			else
+				else
+				{
+					ch.s.Close();
+					onDisconnect(ch);
+				}
+			}
+			catch(System.Net.Sockets.SocketException )
 			{
-                ch.s.Close();
+				ch.s.Close();
+				onDisconnect(ch);
+			}
+			catch (System.Exception e)
+			{
+				System.Console.WriteLine("System.Exceptio{0}", e);
+
+				ch.s.Close();
 				onDisconnect(ch);
 			}
 		}
@@ -174,7 +188,29 @@ namespace service
 
 		public void senddata(byte[] data)
 		{
-			s.Send(data);
+			try
+			{
+				int offset = s.Send(data);
+				while (offset < data.Length)
+				{
+					MemoryStream st = new MemoryStream();
+					st.Write(data, offset, data.Length - offset);
+					data = st.ToArray();
+					offset = s.Send(data);
+				}
+			}
+			catch (System.Net.Sockets.SocketException)
+			{
+				s.Close();
+				onDisconnect(this);
+			}
+			catch (System.Exception e)
+			{
+				System.Console.WriteLine("System.Exceptio{0}", e);
+
+				s.Close();
+				onDisconnect(this);
+			}
 		}
 
 		private Socket s;

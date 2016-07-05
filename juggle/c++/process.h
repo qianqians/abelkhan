@@ -6,6 +6,7 @@
 #ifndef _process_h
 #define _process_h
 
+#include <tuple>
 #include <unordered_map>
 #include <list>
 
@@ -39,7 +40,7 @@ public:
 	}
 
 
-	void poll(uint64_t tick){
+	void poll(){
 		for (auto ch : event_set) {
 			while (true) {
 				auto _event = ch->pop();

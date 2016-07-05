@@ -16,14 +16,29 @@ namespace service
             Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
             s.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0));
-            s.Connect(new IPEndPoint(IPAddress.Parse(ip), port));
+			try
+			{
+				s.Connect(new IPEndPoint(IPAddress.Parse(ip), port));
 
-            channel ch = new channel(s);
-            ch.onDisconnect += this.onChannelDisconn;
+				channel ch = new channel(s);
+				ch.onDisconnect += this.onChannelDisconn;
 
-			process_.reg_channel(ch);
+				process_.reg_channel(ch);
 
-            return ch;
+				return ch;
+			}
+			catch (System.Net.Sockets.SocketException e)
+			{
+				System.Console.WriteLine("System.Net.Sockets.SocketException{0}", e);
+
+				return null;
+			}
+			catch (System.Exception e)
+			{
+				System.Console.WriteLine("System.Exceptio{0}", e);
+
+				return null;
+			}
         }
 
 		public delegate void ChannelDisconnectHandle(channel ch);

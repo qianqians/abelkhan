@@ -8,11 +8,13 @@
 
 #include <msgpack.hpp>
 
+#include <boost/shared_ptr.hpp>
+
 namespace juggle {
 
 class Ichannel {
 public:
-	virtual msgpack::object pop() = 0;
+	virtual boost::shared_ptr<msgpack::object> pop() = 0;
 	virtual void senddata(char * data, int datasize) = 0;
 	
 };

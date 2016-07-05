@@ -4,10 +4,13 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="..\..\..\juggle\csharp\Icaller.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="..\..\..\service\csharp\acceptnetworkservice.cs">
     <Files>
       <File FileName="..\..\..\juggle\csharp\Imodule.cs" Line="36" Column="66" />
-      <File FileName="..\..\..\juggle\csharp\Icaller.cs" Line="33" Column="19" />
+      <File FileName="..\..\..\juggle\csharp\Icaller.cs" Line="33" Column="38" />
+      <File FileName="..\..\..\service\csharp\channel.cs" Line="138" Column="5" />
+      <File FileName="..\..\..\service\csharp\connectnetworkservice.cs" Line="13" Column="3" />
+      <File FileName="..\..\..\service\csharp\acceptnetworkservice.cs" Line="53" Column="31" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.ItemProperties.test__csharp__service PreferredExecutionTarget="MonoDevelop.Default" />
