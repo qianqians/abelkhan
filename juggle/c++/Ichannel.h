@@ -14,7 +14,7 @@ namespace juggle {
 
 class Ichannel {
 public:
-	virtual boost::shared_ptr<msgpack::object> pop() = 0;
+	virtual bool pop(std::string &) = 0;
 	virtual void senddata(char * data, int datasize) = 0;
 	
 };

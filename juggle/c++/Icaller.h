@@ -18,8 +18,9 @@ public:
 		ch = _ch;
 	}
 
-private:
+protected:
 	boost::shared_ptr<Ichannel> ch;
+	std::string module_name;
 
 };
 

@@ -9,7 +9,7 @@
 #include <list>
 #include <boost/shared_ptr.hpp>
 
-#include <process.h>
+#include <process_.h>
 
 #include "service.h"
 

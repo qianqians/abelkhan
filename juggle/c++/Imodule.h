@@ -38,9 +38,11 @@ public:
 public:
 	std::string module_name;
 
+protected:
+	std::unordered_map<std::string, std::function<void(msgpack::object)> > protcolcall_set;
+
 private:
 	boost::shared_ptr<Ichannel> current_ch;
-	std::unordered_map<std::string, std::function<void(msgpack::object)> > protcolcall_set;
 
 };
 

@@ -23,7 +23,7 @@
 
 #include <msgpack.hpp>
 
-#include <boost/signals2.hpp>
+//#include <boost/signals2.hpp>
 
 void vector() {
 
@@ -36,7 +36,8 @@ void vector() {
 	msgpack::object obj = oh.get();
 
 	std::cout << obj << std::endl;
-	msgpack::object  o1 = std::get<2>(obj.as<std::tuple<std::string, std::string, msgpack::object> >());
+	msgpack::object  o2 = std::get<2>(obj.as<std::tuple<std::string, std::string, msgpack::object> >());
+	msgpack::object  o1 = o2;
 	std::cout << o1 << std::endl;
 	o1.as<std::tuple<int, std::string> >();
 	std::cout << std::get<0>(o1.as<std::tuple<int, std::string> >()) << std::get<1>(o1.as<std::tuple<int, std::string> >()) << std::endl;

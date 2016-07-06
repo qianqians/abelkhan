@@ -22,7 +22,7 @@
 
 namespace service {
 
-class channel : public juggle::Ichannel, public boost::enable_shared_from_this<service::channel> {
+class channel : public juggle::Ichannel, public boost::enable_shared_from_this<channel> {
 public:
 	channel(boost::shared_ptr<boost::asio::ip::tcp::socket> _s) {
 		s = _s;
@@ -56,20 +56,19 @@ public:
 				tmpbuff = tmp;
 			}
 			memcpy_s(&tmpbuff[tmpbufoffset], tmpbufflen - tmpbufoffset, buff, bytes_transferred);
+			tmpbufoffset += bytes_transferred;
 
 			int offset = 0;
 			do
 			{
-				int len = ((int)tmpbuff[0]) | ((int)tmpbuff[1]) << 8 | ((int)tmpbuff[2]) << 16 | ((int)tmpbuff[3]) << 24;
+				size_t len = ((int)tmpbuff[offset + 0]) | ((int)tmpbuff[offset + 1]) << 8 | ((int)tmpbuff[offset + 2]) << 16 | ((int)tmpbuff[offset + 3]) << 24;
 
 				if (len <= (tmpbufoffset - 4))
 				{
 					tmpbufoffset -= len + 4;
 					offset += 4;
-
-					msgpack::object_handle oh = msgpack::unpack(&tmpbuff[offset], len);
-
-					que.push(boost::make_shared<msgpack::object>(oh.get()));
+						
+					que.push(std::string(&tmpbuff[offset], len));
 
 					offset += len;
 				}
@@ -77,6 +76,10 @@ public:
 				{
 					memcpy_s(tmpbuff, tmpbufflen, &tmpbuff[offset], tmpbufoffset);
 
+					break;
+				}
+
+				if (tmpbufoffset == 0) {
 					break;
 				}
 
@@ -93,13 +96,8 @@ public:
 		}
 	}
 	
-	boost::shared_ptr<msgpack::object> pop() {
-		boost::shared_ptr<msgpack::object> ret = nullptr;
-		if (que.pop(ret)) {
-			return ret;
-		}
-
-		return nullptr;
+	bool pop(std::string & data) {
+		return que.pop(data);
 	}
 	
 	void senddata(char * data, int datasize) {
@@ -117,7 +115,7 @@ private:
 	size_t tmpbufflen;
 	size_t tmpbufoffset;
 
-	Fossilizid::container::optimisticque<boost::shared_ptr<msgpack::object> > que;
+	Fossilizid::container::optimisticque<std::string> que;
 
 };
 

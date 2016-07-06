@@ -10,7 +10,7 @@
 #include <boost/signals2.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <process.h>
+#include <process_.h>
 
 #include "service.h"
 #include "channel.h"
@@ -22,7 +22,7 @@ public:
 	acceptnetworkservice(std::string ip, short port, boost::shared_ptr<juggle::process> process_) : _acceptor(_service){
 		_process = process_;
 
-		_acceptor.open();
+		_acceptor.open(boost::asio::ip::tcp::v4());
 		_acceptor.bind(boost::asio::ip::tcp::endpoint(boost::asio::ip::address_v4::from_string(ip), port));
 		_acceptor.listen();
 

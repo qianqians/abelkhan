@@ -43,20 +43,23 @@ public:
 	void poll(){
 		for (auto ch : event_set) {
 			while (true) {
-				auto _event = ch->pop();
+				std::string buff;
+				if (ch->pop(buff)) {
+					msgpack::object_handle oh = msgpack::unpack(buff.c_str(), buff.size());
+					msgpack::object o = oh.get();
 
-				if (_event == nullptr) {
-					break;
-				}
+					auto module_name = std::get<0>(o.as<std::tuple<std::string, std::string, msgpack::object> >());
 
-				auto module_name = std::get<0>(_event.as<std::tuple<std::string, std::string, msgpack::object> >());
-
-				auto module = module_set.find(module_name);
-				if (module != module_set.end()){
-					module->second->process_event(ch, _event);
+					auto module = module_set.find(module_name);
+					if (module != module_set.end()) {
+						module->second->process_event(ch, o);
+					}
+					else {
+						std::cout << "do not have a module named:" << module_name << std::endl;
+					}
 				}
 				else {
-					std::cout << "do not have a module named:" << module_name << std::endl;
+					break;
 				}
 			}
 		}

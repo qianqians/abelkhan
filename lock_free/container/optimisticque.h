@@ -20,7 +20,9 @@ class optimisticque{
 private:
 	struct node{
 		node() : next(0), prev(0){}
-		node(const T & _data) : data(_data), next(0), prev(0){}
+		node(const T & _data) : next(0), prev(0){
+			data = _data;
+		}
 		~node(){}
 
 		T data;
