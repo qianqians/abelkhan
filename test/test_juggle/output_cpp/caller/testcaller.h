@@ -4,7 +4,6 @@
 #include <string>
 #include <Icaller.h>
 #include <Ichannel.h>
-#include <MsgPack.hpp>
 #include <boost/any.hpp>
 #include <boost/make_shared.hpp>
 
@@ -20,29 +19,13 @@ public:
     }
 
     void test_func(std::string argv0,int64_t argv1){
-        std::tuple<std::string, std::string, std::tuple<std::string,int64_t> > _argv(module_name, "test_func", std::make_tuple(argv0,argv1));
-        std::stringstream ss;
-        msgpack::pack(ss, _argv);
-        if (ss.str().size() <= 8192 - 4){
-            char tmp[8192];
-            size_t len = ss.str().size();
-            tmp[0] = len & 0xff;
-            tmp[1] = len >> 8 & 0xff;
-            tmp[2] = len >> 16 & 0xff;
-            tmp[3] = len >> 24 & 0xff;
-            memcpy_s(&tmp[4], 8192, (char*)ss.str().data(), len);
-            ch->senddata(tmp, len + 4);
-        }
-        else{
-            size_t len = ss.str().size();
-            char * tmp = new char[len + 4];
-            tmp[0] = len & 0xff;
-            tmp[1] = len >> 8 & 0xff;
-            tmp[2] = len >> 16 & 0xff;
-            tmp[3] = len >> 24 & 0xff;
-            memcpy_s(&tmp[4], 8192, (char*)ss.str().data(), len);
-            ch->senddata(tmp, len + 4);
-        }
+        auto v = boost::make_shared<std::vector<boost::any> >();
+        v->push_back("test");
+        v->push_back("test_func");
+        v->push_back(boost::make_shared<std::vector<boost::any> >());
+        (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
+        (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv1);
+        ch->push(v);
     }
 
 };

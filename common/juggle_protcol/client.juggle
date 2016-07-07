@@ -1,0 +1,4 @@
+module gate_call_client{
+	void call_client(string module, string func, string argv);
+
+}

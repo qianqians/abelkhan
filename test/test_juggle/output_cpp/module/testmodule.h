@@ -1,10 +1,8 @@
 /*this module file is codegen by juggle for c++*/
 #include <Imodule.h>
-#include <boost/make_shared.hpp>
+#include <boost/shared_ptr.hpp>
 #include <boost/signals2.hpp>
 #include <string>
-#include <Msgpack.hpp>
-
 namespace module
 {
 class test : public juggle::Imodule {
@@ -18,10 +16,10 @@ public:
     }
 
     boost::signals2::signal<void(std::string, int64_t) > sigtest_funchandle;
-    void test_func(msgpack::object _event){
+    void test_func(boost::shared_ptr<std::vector<boost::any> > _event){
         sigtest_funchandle(
-            std::get<0>(_event.as<std::tuple<std::string, int64_t> >()),
-            std::get<1>(_event.as<std::tuple<std::string, int64_t> >()));
+            boost::any_cast<std::string>((*_event)[0]), 
+            boost::any_cast<int64_t>((*_event)[1]));
     }
 
 };

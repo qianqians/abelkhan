@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/abelk/Documents/workspace/abelkhan/lock_free/pool
+# Install script for directory: C:/Users/abelk/Documents/workspace/abelkhan/common/lock_free/pool
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

@@ -7,16 +7,16 @@ ADD_DEFINITIONS(-D___mempool___)
 set(module_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//..//test//test_juggle//output_cpp CACHE PATH "module include path")
 INCLUDE_DIRECTORIES(${module_INCLUDE_PATH})
 
-set(lock_free_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//..//lock_free CACHE PATH "lock_free include path")
+set(lock_free_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//..//common//lock_free CACHE PATH "lock_free include path")
 INCLUDE_DIRECTORIES(${lock_free_INCLUDE_PATH})
 
 set(lock_free_LIBS_PATH ${PROJECT_SOURCE_DIR}//..//..//test//test_lock-free//build//bin//Debug CACHE PATH "lock-free lib path")
 link_directories(${lock_free_LIBS_PATH})
 
-set(msgpack_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//..//thirdpart//c++//msgpack-c//include CACHE PATH "msgpack include path")
-INCLUDE_DIRECTORIES(${msgpack_INCLUDE_PATH})
+set(jsonparse_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//..//common//jsonparse//cpp CACHE PATH "jsonparse include path")
+INCLUDE_DIRECTORIES(${jsonparse_INCLUDE_PATH})
 
-set(juggle_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//..//juggle//c++ CACHE PATH "juggle include path")
+set(juggle_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//..//common//juggle//c++ CACHE PATH "juggle include path")
 INCLUDE_DIRECTORIES(${juggle_INCLUDE_PATH})
 
 set(service_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//..//service//c++ CACHE PATH "service include path")

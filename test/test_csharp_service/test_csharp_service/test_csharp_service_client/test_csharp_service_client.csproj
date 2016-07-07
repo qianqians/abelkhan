@@ -41,18 +41,6 @@
     <Compile Include="..\..\..\test_juggle\output\caller\testcaller.cs">
       <Link>testcaller.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\..\juggle\csharp\Icaller.cs">
-      <Link>Icaller.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\juggle\csharp\Ichannel.cs">
-      <Link>Ichannel.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\juggle\csharp\Imodule.cs">
-      <Link>Imodule.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\juggle\csharp\process.cs">
-      <Link>process.cs</Link>
-    </Compile>
     <Compile Include="..\..\..\..\service\csharp\channel.cs">
       <Link>channel.cs</Link>
     </Compile>
@@ -69,6 +57,21 @@
       <Link>timerservice.cs</Link>
     </Compile>
     <Compile Include="test_client.cs" />
+    <Compile Include="..\..\..\..\common\juggle\csharp\Icaller.cs">
+      <Link>Icaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\common\juggle\csharp\Ichannel.cs">
+      <Link>Ichannel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\common\juggle\csharp\Imodule.cs">
+      <Link>Imodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\common\juggle\csharp\process.cs">
+      <Link>process.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\common\jsonparse\csharp\JsonParser.cs">
+      <Link>JsonParser.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

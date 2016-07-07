@@ -1,0 +1,13 @@
+module dbproxy{
+	void save_object(table query, table info, int callbackid);
+
+	void find_object(table query, table field, int callbackid);
+
+}
+
+module dbproxy_call_logic{
+	void save_ovject_sucess(int callbackid);
+
+	void ack_find_object(int callbackid, table info);
+
+}

@@ -1,0 +1,28 @@
+module center{
+	void reg_server(string type, string ip, int port, string uuid);
+
+}
+
+module gm_center{
+	void close_clutter();
+
+}
+
+module center_call_server{
+	void reg_server_sucess();
+
+	void close_server();
+
+}
+
+module logic_call_center{
+	void req_get_server_address(string uuid);
+
+}
+
+module center_call_logic{
+	void dispatch_gate_server(string ip, int port, string uuid);
+
+	void ack_get_server_address(string type, string ip, int port, string uuid);
+
+}

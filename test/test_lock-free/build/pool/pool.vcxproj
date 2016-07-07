@@ -78,7 +78,7 @@
     </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -95,10 +95,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CRT_SECURE_NO_WARNINGS;___mempool___;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -111,7 +111,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -127,10 +127,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;___mempool___;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -143,7 +143,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -159,10 +159,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;___mempool___;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -175,7 +175,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -191,10 +191,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;___mempool___;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\..\thirdpart\c++\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -206,10 +206,10 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Users\abelk\Documents\workspace\abelkhan\lock_free\pool\CMakeLists.txt">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/Users/abelk/Documents/workspace/abelkhan/lock_free/pool/CMakeLists.txt</Message>
+    <CustomBuild Include="C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\pool\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/Users/abelk/Documents/workspace/abelkhan/common/lock_free/pool/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/abelk/Documents/workspace/abelkhan/lock_free -BC:/Users/abelk/Documents/workspace/abelkhan/test/test_lock-free/build --check-stamp-file C:\Users\abelk\Documents\workspace\abelkhan\test\test_lock-free\build\pool\CMakeFiles\generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/abelk/Documents/workspace/abelkhan/common/lock_free -BC:/Users/abelk/Documents/workspace/abelkhan/test/test_lock-free/build --check-stamp-file C:\Users\abelk\Documents\workspace\abelkhan\test\test_lock-free\build\pool\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -217,12 +217,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/Users/abelk/Documents/workspace/abelkhan/lock_free/pool/CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\lock_free\pool\CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\lock_free\pool\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/Users/abelk/Documents/workspace/abelkhan/common/lock_free/pool/CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\pool\CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\pool\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\abelk\Documents\workspace\abelkhan\test\test_lock-free\build\pool\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/Users/abelk/Documents/workspace/abelkhan/lock_free/pool/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/Users/abelk/Documents/workspace/abelkhan/common/lock_free/pool/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/abelk/Documents/workspace/abelkhan/lock_free -BC:/Users/abelk/Documents/workspace/abelkhan/test/test_lock-free/build --check-stamp-file C:\Users\abelk\Documents\workspace\abelkhan\test\test_lock-free\build\pool\CMakeFiles\generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/abelk/Documents/workspace/abelkhan/common/lock_free -BC:/Users/abelk/Documents/workspace/abelkhan/test/test_lock-free/build --check-stamp-file C:\Users\abelk\Documents\workspace\abelkhan\test\test_lock-free\build\pool\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -230,12 +230,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/Users/abelk/Documents/workspace/abelkhan/lock_free/pool/CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\lock_free\pool\CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\lock_free\pool\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/Users/abelk/Documents/workspace/abelkhan/common/lock_free/pool/CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\pool\CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\pool\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\abelk\Documents\workspace\abelkhan\test\test_lock-free\build\pool\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule C:/Users/abelk/Documents/workspace/abelkhan/lock_free/pool/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule C:/Users/abelk/Documents/workspace/abelkhan/common/lock_free/pool/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/abelk/Documents/workspace/abelkhan/lock_free -BC:/Users/abelk/Documents/workspace/abelkhan/test/test_lock-free/build --check-stamp-file C:\Users\abelk\Documents\workspace\abelkhan\test\test_lock-free\build\pool\CMakeFiles\generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/abelk/Documents/workspace/abelkhan/common/lock_free -BC:/Users/abelk/Documents/workspace/abelkhan/test/test_lock-free/build --check-stamp-file C:\Users\abelk\Documents\workspace\abelkhan\test\test_lock-free\build\pool\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -243,12 +243,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/Users/abelk/Documents/workspace/abelkhan/lock_free/pool/CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\lock_free\pool\CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\lock_free\pool\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/Users/abelk/Documents/workspace/abelkhan/common/lock_free/pool/CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\pool\CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\pool\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Users\abelk\Documents\workspace\abelkhan\test\test_lock-free\build\pool\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/Users/abelk/Documents/workspace/abelkhan/lock_free/pool/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/Users/abelk/Documents/workspace/abelkhan/common/lock_free/pool/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/abelk/Documents/workspace/abelkhan/lock_free -BC:/Users/abelk/Documents/workspace/abelkhan/test/test_lock-free/build --check-stamp-file C:\Users\abelk\Documents\workspace\abelkhan\test\test_lock-free\build\pool\CMakeFiles\generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/abelk/Documents/workspace/abelkhan/common/lock_free -BC:/Users/abelk/Documents/workspace/abelkhan/test/test_lock-free/build --check-stamp-file C:\Users\abelk\Documents\workspace\abelkhan\test\test_lock-free\build\pool\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -256,18 +256,18 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/Users/abelk/Documents/workspace/abelkhan/lock_free/pool/CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\lock_free\pool\CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\lock_free\pool\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/Users/abelk/Documents/workspace/abelkhan/common/lock_free/pool/CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\pool\CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\pool\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Users\abelk\Documents\workspace\abelkhan\test\test_lock-free\build\pool\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\lock_free\pool\mempool.h" />
-    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\lock_free\pool\objpool.h" />
-    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\lock_free\pool\factory.h" />
-    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\lock_free\pool\factory.cpp"  />
-    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\lock_free\pool\mempool.cpp"  />
-    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\lock_free\pool\objpool.cpp"  />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\pool\mempool.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\pool\objpool.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\pool\factory.h" />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\pool\factory.cpp"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\pool\mempool.cpp"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\common\lock_free\pool\objpool.cpp"  />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:/Users/abelk/Documents/workspace/abelkhan/test/test_lock-free/build/ZERO_CHECK.vcxproj">

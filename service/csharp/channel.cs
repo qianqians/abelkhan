@@ -4,8 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
-using MsgPack;
-using MsgPack.Serialization;
 
 namespace service
 {
@@ -60,8 +58,9 @@ namespace service
 
 								_tmp.Position = 0;
 
-								var serializer = SerializationContext.Default.GetSerializer<ArrayList>();
-								ArrayList unpackedObject = serializer.Unpack(_tmp);
+								//var serializer = SerializationContext.Default.GetSerializer<ArrayList>();
+								//serializer.Unpack(_tmp);
+								ArrayList unpackedObject = (ArrayList)System.Text.Json.Jsonparser.unpack(System.Text.Encoding.Default.GetString(_tmp.ToArray()));
 
 								lock (que)
 								{
@@ -114,7 +113,6 @@ namespace service
 						do
 						{
 							Int32 len = ((Int32)tmpbuf[0]) | ((Int32)tmpbuf[1]) << 8 | ((Int32)tmpbuf[2]) << 16 | ((Int32)tmpbuf[3]) << 24;
-							//Int32 len = BitConverter.ToInt32(tmpbuf, offset);
 
 							if (len <= (tmpbufoffset - 4))
 							{
@@ -128,8 +126,10 @@ namespace service
 
 								_tmp.Position = 0;
 
-								var serializer = SerializationContext.Default.GetSerializer<ArrayList>();
-								ArrayList unpackedObject = serializer.Unpack(_tmp);
+								//var serializer = SerializationContext.Default.GetSerializer<ArrayList>();
+								//ArrayList unpackedObject = serializer.Unpack(_tmp);
+
+								ArrayList unpackedObject = (ArrayList)System.Text.Json.Jsonparser.unpack(_tmp.ToString());//serializer.Unpack(_tmp);
 
 								lock (que)
 								{

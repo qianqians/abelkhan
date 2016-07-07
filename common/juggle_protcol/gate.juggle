@@ -1,0 +1,17 @@
+module client_call_gate{
+	void connect_server(string uuid);
+	
+	void cancle_server();
+
+	void forward_client_call_logic(string module, string func, string argv);
+	
+	void heartbeats();
+
+}
+
+module logic_call_gate{
+	void reg_logic(string uuid);
+
+	void forward_logic_call_client(string uuid, string module, string func, string argv);
+
+}

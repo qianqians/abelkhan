@@ -10,13 +10,14 @@
 
 #include <boost/asio.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/shared_array.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <boost/signals2.hpp>
 
 #include <container/optimisticque.h>
 
-#include <msgpack.hpp>
+#include <JsonParser.h>
 
 #include <Ichannel.h>
 
@@ -67,8 +68,12 @@ public:
 				{
 					tmpbufoffset -= len + 4;
 					offset += 4;
-						
-					que.push(std::string(&tmpbuff[offset], len));
+							
+					boost::any object;
+					Fossilizid::JsonParse::unpacker(object, std::string(&tmpbuff[offset], &tmpbuff[offset + len]));
+					boost::shared_ptr<std::vector<boost::any> > o = boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >(object);
+							
+					que.push(o);
 
 					offset += len;
 				}
@@ -96,15 +101,28 @@ public:
 		}
 	}
 	
-	bool pop(std::string & data) {
+	bool pop(boost::shared_ptr<std::vector<boost::any> >  & data) {
 		return que.pop(data);
 	}
 	
-	void senddata(char * data, int datasize) {
-		int offset = s->send(boost::asio::buffer(data, datasize));
-		while (offset < datasize) {
-			offset += s->send(boost::asio::buffer(&data[offset], datasize - offset));
+	void push(boost::shared_ptr<std::vector<boost::any> > data) {
+		auto buf = Fossilizid::JsonParse::pack(data);
+
+		size_t len = buf.size();
+		char * _data = new char[len + 4];
+		_data[0] = len & 0xff;
+		_data[1] = len >> 8 & 0xff;
+		_data[2] = len >> 16 & 0xff;
+		_data[3] = len >> 24 & 0xff;
+		memcpy_s(&_data[4], len, buf.c_str(), buf.size());
+		size_t datasize = len + 4;
+
+		int offset = s->send(boost::asio::buffer(_data, datasize));
+		while (offset < buf.size()) {
+			offset += s->send(boost::asio::buffer(&_data[offset], datasize - offset));
 		}
+
+		delete[] _data;
 	}
 
 private:
@@ -115,7 +133,7 @@ private:
 	size_t tmpbufflen;
 	size_t tmpbufoffset;
 
-	Fossilizid::container::optimisticque<std::string> que;
+	Fossilizid::container::optimisticque<boost::shared_ptr<std::vector<boost::any> > > que;
 
 };
 

@@ -14,7 +14,7 @@
 #include <module/testmodule.h>
 
 void handle_test(std::string argv0, int64_t argv1) {
-	printf((argv0 + "%d \n").c_str(), argv1);
+	printf((argv0 + " %d \n").c_str(), argv1);
 }
 
 void main() {

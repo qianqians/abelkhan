@@ -2,16 +2,18 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint file="C:\Users\abelk\Documents\workspace\abelkhan\service\csharp\channel.cs" line="32" column="1" />
+      <Breakpoint file="C:\Users\abelk\Documents\workspace\abelkhan\service\csharp\channel.cs" line="63" column="1" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="test_csharp_service\testserver.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="..\..\..\common\jsonparse\csharp\JsonParser.cs">
     <Files>
-      <File FileName="..\..\..\juggle\csharp\Imodule.cs" Line="36" Column="66" />
-      <File FileName="..\..\..\juggle\csharp\Icaller.cs" Line="33" Column="38" />
-      <File FileName="..\..\..\service\csharp\channel.cs" Line="138" Column="5" />
+      <File FileName="..\..\..\service\csharp\channel.cs" Line="63" Column="1" />
       <File FileName="..\..\..\service\csharp\connectnetworkservice.cs" Line="13" Column="3" />
       <File FileName="..\..\..\service\csharp\acceptnetworkservice.cs" Line="53" Column="31" />
-      <File FileName="test_csharp_service\testserver.cs" Line="57" Column="39" />
+      <File FileName="test_csharp_service\testserver.cs" Line="62" Column="1" />
+      <File FileName="..\..\..\common\jsonparse\csharp\JsonParser.cs" Line="93" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.ItemProperties.test__csharp__service PreferredExecutionTarget="MonoDevelop.Default" />

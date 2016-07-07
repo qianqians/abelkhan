@@ -29,7 +29,6 @@ public:
 	boost::shared_ptr<channel> connect(std::string ip, short port){
 		try {
 			boost::shared_ptr<boost::asio::ip::tcp::socket> s = boost::make_shared<boost::asio::ip::tcp::socket>(_service);
-			//s->bind(boost::asio::ip::tcp::endpoint(boost::asio::ip::address_v4::from_string("127.0.0.1"), 0));
 			s->connect(boost::asio::ip::tcp::endpoint(boost::asio::ip::address_v4::from_string(ip), port));
 
 			auto ch = boost::make_shared<channel>(s);

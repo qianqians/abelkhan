@@ -151,8 +151,11 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=OFF
 
+//jsonparse include path
+jsonparse_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../common/jsonparse/cpp
+
 //juggle include path
-juggle_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../juggle/c++
+juggle_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../common/juggle/c++
 
 //Value Computed by CMake
 lock-free_BINARY_DIR:STATIC=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build
@@ -161,16 +164,13 @@ lock-free_BINARY_DIR:STATIC=C:/Users/abelk/Documents/workspace/abelkhan/test/tes
 lock-free_SOURCE_DIR:STATIC=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service
 
 //lock_free include path
-lock_free_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../lock_free
+lock_free_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../common/lock_free
 
 //lock-free lib path
 lock_free_LIBS_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../test/test_lock-free/build/bin/Debug
 
 //module include path
 module_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../test/test_juggle/output_cpp
-
-//msgpack include path
-msgpack_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../thirdpart/c++/msgpack-c/include
 
 //service include path
 service_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../service/c++
