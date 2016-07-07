@@ -1,0 +1,9 @@
+module hub{
+	void logic_call_hub(string module, string func, string argv);
+
+}
+
+module hub_call_logic{
+	void hub_call_logic(string module, string func, string argv);
+
+}
