@@ -1,0 +1,12 @@
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_fossilizid/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_fossilizid/build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_fossilizid/build/container/CMakeFiles/container.dir
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_fossilizid/build/container/CMakeFiles/ALL_BUILD.dir
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_fossilizid/build/pool/CMakeFiles/pool.dir
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_fossilizid/build/pool/CMakeFiles/ALL_BUILD.dir
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_fossilizid/build/test/CMakeFiles/test_msque.dir
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_fossilizid/build/test/CMakeFiles/test_optimisticque.dir
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_fossilizid/build/test/CMakeFiles/test_ringque.dir
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_fossilizid/build/test/CMakeFiles/test_swapque.dir
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_fossilizid/build/test/CMakeFiles/test_small_hash_map.dir
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_fossilizid/build/test/CMakeFiles/ALL_BUILD.dir

@@ -14,22 +14,15 @@ namespace caller
             module_name = "center_call_logic";
         }
 
-        public void dispatch_gate_server(String argv0,Int64 argv1,String argv2)
-        {
-            ArrayList _argv = new ArrayList();
-            _argv.Add(argv0);
-            _argv.Add(argv1);
-            _argv.Add(argv2);
-            call_module_method("dispatch_gate_server", _argv);
-        }
-
-        public void ack_get_server_address(String argv0,String argv1,Int64 argv2,String argv3)
+        public void ack_get_server_address(Boolean argv0,String argv1,String argv2,Int64 argv3,String argv4,Int64 argv5)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             _argv.Add(argv1);
             _argv.Add(argv2);
             _argv.Add(argv3);
+            _argv.Add(argv4);
+            _argv.Add(argv5);
             call_module_method("ack_get_server_address", _argv);
         }
 

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\juggle\c++\detail.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\juggle\c++\Icaller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\juggle\c++\Ichannel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\juggle\c++\Imodule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\juggle\c++\process_.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\abelk\Documents\workspace\abelkhan\juggle\c++\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{72BA2538-F62C-3F51-BB53-6B1116BE6CE4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{222A6ADD-D8A5-3F0C-A0DF-CF918185C6D2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -9,7 +9,7 @@ The output was:
 Microsoft (R) 生成引擎版本 14.0.25123.0
 版权所有(C) Microsoft Corporation。保留所有权利。
 
-生成启动时间为 2016/7/7 11:31:55。
+生成启动时间为 2016/7/10 11:49:09。
 节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\3.6.0-rc2\CompilerIdC\CompilerIdC.vcxproj”(默认目标)。
 PrepareForBuild:
   正在创建目录“Debug\”。
@@ -35,7 +35,7 @@ FinalizeBuildStatus:
     0 个警告
     0 个错误
 
-已用时间 00:00:00.91
+已用时间 00:00:00.86
 
 
 Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
@@ -54,7 +54,7 @@ The output was:
 Microsoft (R) 生成引擎版本 14.0.25123.0
 版权所有(C) Microsoft Corporation。保留所有权利。
 
-生成启动时间为 2016/7/7 11:31:56。
+生成启动时间为 2016/7/10 11:49:10。
 节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\3.6.0-rc2\CompilerIdCXX\CompilerIdCXX.vcxproj”(默认目标)。
 PrepareForBuild:
   正在创建目录“Debug\”。
@@ -80,7 +80,7 @@ FinalizeBuildStatus:
     0 个警告
     0 个错误
 
-已用时间 00:00:00.89
+已用时间 00:00:00.87
 
 
 Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
@@ -92,73 +92,73 @@ The CXX compiler identification is MSVC, found in "C:/Users/abelk/Documents/work
 Determining if the C compiler works passed with the following output:
 Change Dir: C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/Program Files (x86)/MSBuild/14.0/bin/MSBuild.exe" "cmTC_87a4b.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=14.0"
+Run Build Command:"C:/Program Files (x86)/MSBuild/14.0/bin/MSBuild.exe" "cmTC_3abe3.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=14.0"
 Microsoft (R) 生成引擎版本 14.0.25123.0
 版权所有(C) Microsoft Corporation。保留所有权利。
 
-生成启动时间为 2016/7/7 11:31:57。
-节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_87a4b.vcxproj”(默认目标)。
+生成启动时间为 2016/7/10 11:49:11。
+节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_3abe3.vcxproj”(默认目标)。
 PrepareForBuild:
-  正在创建目录“cmTC_87a4b.dir\Debug\”。
+  正在创建目录“cmTC_3abe3.dir\Debug\”。
   正在创建目录“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\”。
-  正在创建目录“cmTC_87a4b.dir\Debug\cmTC_87a4b.tlog\”。
+  正在创建目录“cmTC_3abe3.dir\Debug\cmTC_3abe3.tlog\”。
 InitializeBuildStatus:
-  正在创建“cmTC_87a4b.dir\Debug\cmTC_87a4b.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+  正在创建“cmTC_3abe3.dir\Debug\cmTC_3abe3.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
 ClCompile:
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_87a4b.dir\Debug\\" /Fd"cmTC_87a4b.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\testCCompiler.c
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_3abe3.dir\Debug\\" /Fd"cmTC_3abe3.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\testCCompiler.c
   用于 x86 的 Microsoft (R) C/C++ 优化编译器 19.00.23918 版
   版权所有(C) Microsoft Corporation。保留所有权利。
   
-  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_87a4b.dir\Debug\\" /Fd"cmTC_87a4b.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\testCCompiler.c
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_3abe3.dir\Debug\\" /Fd"cmTC_3abe3.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\testCCompiler.c
   
   testCCompiler.c
 Link:
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_87a4b.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_87a4b.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_87a4b.lib" /MACHINE:X86 /SAFESEH  /machine:X86 cmTC_87a4b.dir\Debug\testCCompiler.obj
-  cmTC_87a4b.vcxproj -> C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_87a4b.exe
-  cmTC_87a4b.vcxproj -> C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_87a4b.pdb (Full PDB)
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_3abe3.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_3abe3.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_3abe3.lib" /MACHINE:X86 /SAFESEH  /machine:X86 cmTC_3abe3.dir\Debug\testCCompiler.obj
+  cmTC_3abe3.vcxproj -> C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_3abe3.exe
+  cmTC_3abe3.vcxproj -> C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_3abe3.pdb (Full PDB)
 FinalizeBuildStatus:
-  正在删除文件“cmTC_87a4b.dir\Debug\cmTC_87a4b.tlog\unsuccessfulbuild”。
-  正在对“cmTC_87a4b.dir\Debug\cmTC_87a4b.tlog\cmTC_87a4b.lastbuildstate”执行 Touch 任务。
-已完成生成项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_87a4b.vcxproj”(默认目标)的操作。
+  正在删除文件“cmTC_3abe3.dir\Debug\cmTC_3abe3.tlog\unsuccessfulbuild”。
+  正在对“cmTC_3abe3.dir\Debug\cmTC_3abe3.tlog\cmTC_3abe3.lastbuildstate”执行 Touch 任务。
+已完成生成项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_3abe3.vcxproj”(默认目标)的操作。
 
 已成功生成。
     0 个警告
     0 个错误
 
-已用时间 00:00:01.04
+已用时间 00:00:01.00
 
 
 Detecting C compiler ABI info compiled with the following output:
 Change Dir: C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/Program Files (x86)/MSBuild/14.0/bin/MSBuild.exe" "cmTC_c05a8.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=14.0"
+Run Build Command:"C:/Program Files (x86)/MSBuild/14.0/bin/MSBuild.exe" "cmTC_6057f.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=14.0"
 Microsoft (R) 生成引擎版本 14.0.25123.0
 版权所有(C) Microsoft Corporation。保留所有权利。
 
-生成启动时间为 2016/7/7 11:31:59。
-节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_c05a8.vcxproj”(默认目标)。
+生成启动时间为 2016/7/10 11:49:12。
+节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_6057f.vcxproj”(默认目标)。
 PrepareForBuild:
-  正在创建目录“cmTC_c05a8.dir\Debug\”。
+  正在创建目录“cmTC_6057f.dir\Debug\”。
   正在创建目录“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\”。
-  正在创建目录“cmTC_c05a8.dir\Debug\cmTC_c05a8.tlog\”。
+  正在创建目录“cmTC_6057f.dir\Debug\cmTC_6057f.tlog\”。
 InitializeBuildStatus:
-  正在创建“cmTC_c05a8.dir\Debug\cmTC_c05a8.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+  正在创建“cmTC_6057f.dir\Debug\cmTC_6057f.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
 ClCompile:
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c05a8.dir\Debug\\" /Fd"cmTC_c05a8.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue "C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCCompilerABI.c"
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_6057f.dir\Debug\\" /Fd"cmTC_6057f.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue "C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCCompilerABI.c"
   用于 x86 的 Microsoft (R) C/C++ 优化编译器 19.00.23918 版
   版权所有(C) Microsoft Corporation。保留所有权利。
   
-  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c05a8.dir\Debug\\" /Fd"cmTC_c05a8.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue "C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCCompilerABI.c"
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_6057f.dir\Debug\\" /Fd"cmTC_6057f.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue "C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCCompilerABI.c"
   
   CMakeCCompilerABI.c
 Link:
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_c05a8.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_c05a8.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_c05a8.lib" /MACHINE:X86 /SAFESEH  /machine:X86 cmTC_c05a8.dir\Debug\CMakeCCompilerABI.obj
-  cmTC_c05a8.vcxproj -> C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_c05a8.exe
-  cmTC_c05a8.vcxproj -> C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_c05a8.pdb (Full PDB)
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_6057f.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_6057f.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_6057f.lib" /MACHINE:X86 /SAFESEH  /machine:X86 cmTC_6057f.dir\Debug\CMakeCCompilerABI.obj
+  cmTC_6057f.vcxproj -> C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_6057f.exe
+  cmTC_6057f.vcxproj -> C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_6057f.pdb (Full PDB)
 FinalizeBuildStatus:
-  正在删除文件“cmTC_c05a8.dir\Debug\cmTC_c05a8.tlog\unsuccessfulbuild”。
-  正在对“cmTC_c05a8.dir\Debug\cmTC_c05a8.tlog\cmTC_c05a8.lastbuildstate”执行 Touch 任务。
-已完成生成项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_c05a8.vcxproj”(默认目标)的操作。
+  正在删除文件“cmTC_6057f.dir\Debug\cmTC_6057f.tlog\unsuccessfulbuild”。
+  正在对“cmTC_6057f.dir\Debug\cmTC_6057f.tlog\cmTC_6057f.lastbuildstate”执行 Touch 任务。
+已完成生成项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_6057f.vcxproj”(默认目标)的操作。
 
 已成功生成。
     0 个警告
@@ -170,79 +170,79 @@ FinalizeBuildStatus:
 Determining if the CXX compiler works passed with the following output:
 Change Dir: C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/Program Files (x86)/MSBuild/14.0/bin/MSBuild.exe" "cmTC_97a35.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=14.0"
+Run Build Command:"C:/Program Files (x86)/MSBuild/14.0/bin/MSBuild.exe" "cmTC_3385b.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=14.0"
 Microsoft (R) 生成引擎版本 14.0.25123.0
 版权所有(C) Microsoft Corporation。保留所有权利。
 
-生成启动时间为 2016/7/7 11:32:00。
-节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_97a35.vcxproj”(默认目标)。
+生成启动时间为 2016/7/10 11:49:14。
+节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_3385b.vcxproj”(默认目标)。
 PrepareForBuild:
-  正在创建目录“cmTC_97a35.dir\Debug\”。
+  正在创建目录“cmTC_3385b.dir\Debug\”。
   正在创建目录“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\”。
-  正在创建目录“cmTC_97a35.dir\Debug\cmTC_97a35.tlog\”。
+  正在创建目录“cmTC_3385b.dir\Debug\cmTC_3385b.tlog\”。
 InitializeBuildStatus:
-  正在创建“cmTC_97a35.dir\Debug\cmTC_97a35.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+  正在创建“cmTC_3385b.dir\Debug\cmTC_3385b.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
 ClCompile:
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_97a35.dir\Debug\\" /Fd"cmTC_97a35.dir\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_3385b.dir\Debug\\" /Fd"cmTC_3385b.dir\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
   用于 x86 的 Microsoft (R) C/C++ 优化编译器 19.00.23918 版
   版权所有(C) Microsoft Corporation。保留所有权利。
   
-  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_97a35.dir\Debug\\" /Fd"cmTC_97a35.dir\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_3385b.dir\Debug\\" /Fd"cmTC_3385b.dir\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
   
   testCXXCompiler.cxx
 Link:
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_97a35.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_97a35.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_97a35.lib" /MACHINE:X86 /SAFESEH  /machine:X86 cmTC_97a35.dir\Debug\testCXXCompiler.obj
-  cmTC_97a35.vcxproj -> C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_97a35.exe
-  cmTC_97a35.vcxproj -> C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_97a35.pdb (Full PDB)
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_3385b.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_3385b.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_3385b.lib" /MACHINE:X86 /SAFESEH  /machine:X86 cmTC_3385b.dir\Debug\testCXXCompiler.obj
+  cmTC_3385b.vcxproj -> C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_3385b.exe
+  cmTC_3385b.vcxproj -> C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_3385b.pdb (Full PDB)
 FinalizeBuildStatus:
-  正在删除文件“cmTC_97a35.dir\Debug\cmTC_97a35.tlog\unsuccessfulbuild”。
-  正在对“cmTC_97a35.dir\Debug\cmTC_97a35.tlog\cmTC_97a35.lastbuildstate”执行 Touch 任务。
-已完成生成项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_97a35.vcxproj”(默认目标)的操作。
+  正在删除文件“cmTC_3385b.dir\Debug\cmTC_3385b.tlog\unsuccessfulbuild”。
+  正在对“cmTC_3385b.dir\Debug\cmTC_3385b.tlog\cmTC_3385b.lastbuildstate”执行 Touch 任务。
+已完成生成项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_3385b.vcxproj”(默认目标)的操作。
 
 已成功生成。
     0 个警告
     0 个错误
 
-已用时间 00:00:01.05
+已用时间 00:00:01.04
 
 
 Detecting CXX compiler ABI info compiled with the following output:
 Change Dir: C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/Program Files (x86)/MSBuild/14.0/bin/MSBuild.exe" "cmTC_8e526.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=14.0"
+Run Build Command:"C:/Program Files (x86)/MSBuild/14.0/bin/MSBuild.exe" "cmTC_66323.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=14.0"
 Microsoft (R) 生成引擎版本 14.0.25123.0
 版权所有(C) Microsoft Corporation。保留所有权利。
 
-生成启动时间为 2016/7/7 11:32:01。
-节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_8e526.vcxproj”(默认目标)。
+生成启动时间为 2016/7/10 11:49:15。
+节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_66323.vcxproj”(默认目标)。
 PrepareForBuild:
-  正在创建目录“cmTC_8e526.dir\Debug\”。
+  正在创建目录“cmTC_66323.dir\Debug\”。
   正在创建目录“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\”。
-  正在创建目录“cmTC_8e526.dir\Debug\cmTC_8e526.tlog\”。
+  正在创建目录“cmTC_66323.dir\Debug\cmTC_66323.tlog\”。
 InitializeBuildStatus:
-  正在创建“cmTC_8e526.dir\Debug\cmTC_8e526.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+  正在创建“cmTC_66323.dir\Debug\cmTC_66323.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
 ClCompile:
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_8e526.dir\Debug\\" /Fd"cmTC_8e526.dir\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:queue "C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCXXCompilerABI.cpp"
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_66323.dir\Debug\\" /Fd"cmTC_66323.dir\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:queue "C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCXXCompilerABI.cpp"
   用于 x86 的 Microsoft (R) C/C++ 优化编译器 19.00.23918 版
   版权所有(C) Microsoft Corporation。保留所有权利。
   
-  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_8e526.dir\Debug\\" /Fd"cmTC_8e526.dir\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:queue "C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCXXCompilerABI.cpp"
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_66323.dir\Debug\\" /Fd"cmTC_66323.dir\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:queue "C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCXXCompilerABI.cpp"
   
   CMakeCXXCompilerABI.cpp
 Link:
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_8e526.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_8e526.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_8e526.lib" /MACHINE:X86 /SAFESEH  /machine:X86 cmTC_8e526.dir\Debug\CMakeCXXCompilerABI.obj
-  cmTC_8e526.vcxproj -> C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_8e526.exe
-  cmTC_8e526.vcxproj -> C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_8e526.pdb (Full PDB)
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_66323.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_66323.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_66323.lib" /MACHINE:X86 /SAFESEH  /machine:X86 cmTC_66323.dir\Debug\CMakeCXXCompilerABI.obj
+  cmTC_66323.vcxproj -> C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_66323.exe
+  cmTC_66323.vcxproj -> C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_66323.pdb (Full PDB)
 FinalizeBuildStatus:
-  正在删除文件“cmTC_8e526.dir\Debug\cmTC_8e526.tlog\unsuccessfulbuild”。
-  正在对“cmTC_8e526.dir\Debug\cmTC_8e526.tlog\cmTC_8e526.lastbuildstate”执行 Touch 任务。
-已完成生成项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_8e526.vcxproj”(默认目标)的操作。
+  正在删除文件“cmTC_66323.dir\Debug\cmTC_66323.tlog\unsuccessfulbuild”。
+  正在对“cmTC_66323.dir\Debug\cmTC_66323.tlog\cmTC_66323.lastbuildstate”执行 Touch 任务。
+已完成生成项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_66323.vcxproj”(默认目标)的操作。
 
 已成功生成。
     0 个警告
     0 个错误
 
-已用时间 00:00:01.02
+已用时间 00:00:01.01
 
 
 
@@ -250,40 +250,40 @@ FinalizeBuildStatus:
 Detecting CXX [] compiler features compiled with the following output:
 Change Dir: C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"C:/Program Files (x86)/MSBuild/14.0/bin/MSBuild.exe" "cmTC_ec9d7.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=14.0"
+Run Build Command:"C:/Program Files (x86)/MSBuild/14.0/bin/MSBuild.exe" "cmTC_e65ff.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=14.0"
 Microsoft (R) 生成引擎版本 14.0.25123.0
 版权所有(C) Microsoft Corporation。保留所有权利。
 
-生成启动时间为 2016/7/7 11:32:03。
-节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_ec9d7.vcxproj”(默认目标)。
+生成启动时间为 2016/7/10 11:49:17。
+节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_e65ff.vcxproj”(默认目标)。
 PrepareForBuild:
-  正在创建目录“cmTC_ec9d7.dir\Debug\”。
+  正在创建目录“cmTC_e65ff.dir\Debug\”。
   正在创建目录“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\”。
-  正在创建目录“cmTC_ec9d7.dir\Debug\cmTC_ec9d7.tlog\”。
+  正在创建目录“cmTC_e65ff.dir\Debug\cmTC_e65ff.tlog\”。
 InitializeBuildStatus:
-  正在创建“cmTC_ec9d7.dir\Debug\cmTC_ec9d7.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+  正在创建“cmTC_e65ff.dir\Debug\cmTC_e65ff.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
 ClCompile:
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_ec9d7.dir\Debug\\" /Fd"cmTC_ec9d7.dir\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\feature_tests.cxx
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_e65ff.dir\Debug\\" /Fd"cmTC_e65ff.dir\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\feature_tests.cxx
   用于 x86 的 Microsoft (R) C/C++ 优化编译器 19.00.23918 版
   版权所有(C) Microsoft Corporation。保留所有权利。
   
-  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_ec9d7.dir\Debug\\" /Fd"cmTC_ec9d7.dir\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\feature_tests.cxx
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_e65ff.dir\Debug\\" /Fd"cmTC_e65ff.dir\Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\feature_tests.cxx
   
   feature_tests.cxx
 Link:
-  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_ec9d7.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_ec9d7.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_ec9d7.lib" /MACHINE:X86 /SAFESEH  /machine:X86 cmTC_ec9d7.dir\Debug\feature_tests.obj
-  cmTC_ec9d7.vcxproj -> C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_ec9d7.exe
-  cmTC_ec9d7.vcxproj -> C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_ec9d7.pdb (Full PDB)
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_e65ff.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_e65ff.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_e65ff.lib" /MACHINE:X86 /SAFESEH  /machine:X86 cmTC_e65ff.dir\Debug\feature_tests.obj
+  cmTC_e65ff.vcxproj -> C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\Debug\cmTC_e65ff.exe
+  cmTC_e65ff.vcxproj -> C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/CMakeTmp/Debug/cmTC_e65ff.pdb (Full PDB)
 FinalizeBuildStatus:
-  正在删除文件“cmTC_ec9d7.dir\Debug\cmTC_ec9d7.tlog\unsuccessfulbuild”。
-  正在对“cmTC_ec9d7.dir\Debug\cmTC_ec9d7.tlog\cmTC_ec9d7.lastbuildstate”执行 Touch 任务。
-已完成生成项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_ec9d7.vcxproj”(默认目标)的操作。
+  正在删除文件“cmTC_e65ff.dir\Debug\cmTC_e65ff.tlog\unsuccessfulbuild”。
+  正在对“cmTC_e65ff.dir\Debug\cmTC_e65ff.tlog\cmTC_e65ff.lastbuildstate”执行 Touch 任务。
+已完成生成项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_cpp_service\build\CMakeFiles\CMakeTmp\cmTC_e65ff.vcxproj”(默认目标)的操作。
 
 已成功生成。
     0 个警告
     0 个错误
 
-已用时间 00:00:01.00
+已用时间 00:00:01.01
 
 
     Feature record: CXX_FEATURE:1cxx_alias_templates

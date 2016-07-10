@@ -1,0 +1,23 @@
+# CMake generation dependency list for this directory.
+C:/Users/abelk/Documents/workspace/abelkhan/juggle/c++/CMakeLists.txt
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_juggle/build/CMakeFiles/3.6.0-rc2/CMakeSystem.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/CMakeSystemSpecificInitialize.cmake
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_juggle/build/CMakeFiles/3.6.0-rc2/CMakeCCompiler.cmake
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_juggle/build/CMakeFiles/3.6.0-rc2/CMakeCXXCompiler.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/CMakeSystemSpecificInformation.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/CMakeGenericSystem.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/Platform/Windows.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/Platform/WindowsPaths.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/CMakeCInformation.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/CMakeLanguageInformation.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/Platform/Windows-MSVC-C.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/Platform/Windows-MSVC.cmake
+C:/Users/abelk/Documents/workspace/abelkhan/test/test_juggle/build/CMakeFiles/3.6.0-rc2/CMakeRCCompiler.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/CMakeRCInformation.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/CMakeCommonLanguageInclude.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/CMakeCXXInformation.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/CMakeLanguageInformation.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/Compiler/MSVC-CXX.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/Platform/Windows-MSVC-CXX.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/Platform/Windows-MSVC.cmake
+C:/Program Files/CMake/share/cmake-3.6/Modules/CMakeCommonLanguageInclude.cmake

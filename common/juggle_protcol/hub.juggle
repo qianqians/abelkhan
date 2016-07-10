@@ -1,4 +1,6 @@
 module hub{
+	void reg_logic(string uuid);
+
 	void logic_call_hub(string module, string func, string argv);
 
 }

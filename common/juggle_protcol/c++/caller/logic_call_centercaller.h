@@ -18,12 +18,13 @@ public:
     ~logic_call_center(){
     }
 
-    void req_get_server_address(std::string argv0){
+    void req_get_server_address(std::string argv0,int64_t argv1){
         auto v = boost::make_shared<std::vector<boost::any> >();
         v->push_back("logic_call_center");
         v->push_back("req_get_server_address");
         v->push_back(boost::make_shared<std::vector<boost::any> >());
         (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
+        (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv1);
         ch->push(v);
     }
 

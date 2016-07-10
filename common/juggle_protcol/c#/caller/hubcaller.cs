@@ -14,6 +14,13 @@ namespace caller
             module_name = "hub";
         }
 
+        public void reg_logic(String argv0)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            call_module_method("reg_logic", _argv);
+        }
+
         public void logic_call_hub(String argv0,String argv1,String argv2)
         {
             ArrayList _argv = new ArrayList();

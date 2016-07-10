@@ -14,6 +14,13 @@ namespace caller
             module_name = "routing";
         }
 
+        public void reg_logic(String argv0)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            call_module_method("reg_logic", _argv);
+        }
+
         public void req_get_object_server(String argv0,Int64 argv1)
         {
             ArrayList _argv = new ArrayList();

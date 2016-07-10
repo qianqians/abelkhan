@@ -1,7 +1,7 @@
 /*
  * qianqians
- * 2016-7-5
- * test_cpp_service_server.cpp
+ * 2016-7-9
+ * center.cpp
  */
 #include <acceptnetworkservice.h>
 #include <process_.h>
@@ -11,21 +11,62 @@
 #include <juggleservice.h>
 #include <timerservice.h>
 
-#include <module/testmodule.h>
+#include <config.h>
 
-void handle_test(std::string argv0, int64_t argv1) {
-	printf((argv0 + " %d \n").c_str(), argv1);
-}
+#include <module/centermodule.h>
+#include <module/gm_centermodule.h>
+#include <module/logic_call_centermodule.h>
 
-void main() {
-	boost::shared_ptr<juggle::process> _process = boost::make_shared<juggle::process>();
-	boost::shared_ptr<module::test> _test = boost::make_shared<module::test>();
-	_test->sigtest_funchandle.connect(boost::bind(&handle_test, _1, _2));
-	_process->reg_module(_test);
+#include "svrmanager.h"
+#include "logicsvrmanager.h"
+#include "logic_svr_msg_handle.h"
+#include "svr_msg_handle.h"
+#include "gm_msg_handle.h"
 
-	boost::shared_ptr<service::acceptnetworkservice> _service = boost::make_shared<service::acceptnetworkservice>("127.0.0.1", 1234, _process);
+void main(int argc, char * argv[]) {
+	if (argc <= 1) {
+		std::cout << "non input start argv" << std::endl;
+		return;
+	}
+
+	std::string config_file_path = argv[1];
+	auto _config = boost::make_shared<config::config>(config_file_path);
+	if (argc >= 3) {
+		_config = _config->get_value_dict(argv[2]);
+	}
+
+	boost::shared_ptr<juggle::process> _svr_process = boost::make_shared<juggle::process>();
+	
+	boost::shared_ptr<server::svrmanager> _svrmanager = boost::make_shared<server::svrmanager>();
+	boost::shared_ptr<server::logicsvrmanager> _logicsvrmanager = boost::make_shared<server::logicsvrmanager>();
+	boost::shared_ptr<module::center> _center = boost::make_shared<module::center>();
+	_center->sigreg_serverhandle.connect(boost::bind(&reg_server, _svrmanager, _logicsvrmanager, _1, _2, _3, _4));
+	_svr_process->reg_module(_center);
+	
+	boost::shared_ptr<module::logic_call_center> _logic_call_center = boost::make_shared<module::logic_call_center>();
+	_logic_call_center->sigreq_get_server_addresshandle.connect(boost::bind(&req_get_server_address, _logicsvrmanager, _svrmanager, _1, _2));
+	_svr_process->reg_module(_logic_call_center);
+
+	auto host_ip = _config->get_value_string("host_ip");
+	auto host_port = (short)_config->get_value_int("host_port");
+	auto _host_service = boost::make_shared<service::acceptnetworkservice>(host_ip, host_port, _svr_process);
+
+	boost::shared_ptr<server::gmmanager> _gmmanager = boost::make_shared<server::gmmanager>();
+	boost::shared_ptr<juggle::process> _gm_process = boost::make_shared<juggle::process>();
+	boost::shared_ptr<module::gm_center> _gm_center = boost::make_shared<module::gm_center>();
+	_gm_center->sigconfirm_gmhandle.connect(boost::bind(&confirm_gm, _gmmanager, _1));
+	_gm_center->sigclose_clutterhandle.connect(boost::bind(&close_clutter, _gmmanager, _svrmanager, _1));
+	_gm_process->reg_module(_gm_center);
+
+	auto gm_ip = _config->get_value_string("gm_ip");
+	auto gm_port = (short)_config->get_value_int("gm_port");
+	auto _gm_service = boost::make_shared<service::acceptnetworkservice>(gm_ip, gm_port, _gm_process);
+
 	boost::shared_ptr<service::juggleservice> _juggleservice = boost::make_shared<service::juggleservice>();
-	_juggleservice->add_process(_process);
+	_juggleservice->add_process(_svr_process);
+	_juggleservice->add_process(_gm_process);
+
+	boost::shared_ptr<service::timerservice> _timerservice = boost::make_shared<service::timerservice>();
 
 	int64_t tick = clock();
 	int64_t tickcount = 0;
@@ -40,8 +81,16 @@ void main() {
 		}
 		tick = tmptick;
 
-		_service->poll(tick);
-		_juggleservice->poll(tick);
+		try {
+			_host_service->poll(tick);
+			_gm_service->poll(tick);
+			_juggleservice->poll(tick);
+			_timerservice->poll(tick);
+		}
+		catch (std::exception e) {
+			std::cout << "system exception:" << e.what() << std::endl;
+			break;
+		}
 
 		tmptick = (clock() & 0xffffffff);
 		if (tmptick < tick)

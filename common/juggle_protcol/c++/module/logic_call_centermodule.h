@@ -15,10 +15,11 @@ public:
     ~logic_call_center(){
     }
 
-    boost::signals2::signal<void(std::string) > sigreq_get_server_addresshandle;
+    boost::signals2::signal<void(std::string, int64_t) > sigreq_get_server_addresshandle;
     void req_get_server_address(boost::shared_ptr<std::vector<boost::any> > _event){
         sigreq_get_server_addresshandle(
-            boost::any_cast<std::string>((*_event)[0]));
+            boost::any_cast<std::string>((*_event)[0]), 
+            boost::any_cast<int64_t>((*_event)[1]));
     }
 
 };

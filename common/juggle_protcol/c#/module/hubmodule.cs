@@ -12,6 +12,17 @@ namespace module
 			module_name = "hub";
         }
 
+        public delegate void reg_logichandle(String argv0);
+        public event reg_logichandle onreg_logic;
+        public void reg_logic(ArrayList _event)
+        {
+            if(onreg_logic != null)
+            {
+                var argv0 = ((String)_event[0]);
+                onreg_logic( argv0);
+            }
+        }
+
         public delegate void logic_call_hubhandle(String argv0, String argv1, String argv2);
         public event logic_call_hubhandle onlogic_call_hub;
         public void logic_call_hub(ArrayList _event)

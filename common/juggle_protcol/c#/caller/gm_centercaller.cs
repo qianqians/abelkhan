@@ -14,9 +14,17 @@ namespace caller
             module_name = "gm_center";
         }
 
-        public void close_clutter()
+        public void confirm_gm(String argv0)
         {
             ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            call_module_method("confirm_gm", _argv);
+        }
+
+        public void close_clutter(String argv0)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
             call_module_method("close_clutter", _argv);
         }
 

@@ -117,7 +117,7 @@ public:
 		memcpy_s(&_data[4], len, buf.c_str(), buf.size());
 		size_t datasize = len + 4;
 
-		int offset = s->send(boost::asio::buffer(_data, datasize));
+		size_t offset = s->send(boost::asio::buffer(_data, datasize));
 		while (offset < buf.size()) {
 			offset += s->send(boost::asio::buffer(&_data[offset], datasize - offset));
 		}

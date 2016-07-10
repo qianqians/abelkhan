@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\abelk\Documents\workspace\abelkhan\test\test_juggle\build\CMakeFiles\fda6f6a304081811b101cd53f16eb487\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{9477411C-FC64-31DC-AFA7-DE944BEF429D}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

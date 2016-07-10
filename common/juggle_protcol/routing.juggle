@@ -1,4 +1,6 @@
 module routing{  
+	void reg_logic(string uuid);
+
 	void req_get_object_server(string object_uuid, int callbackid);  
 
 }  

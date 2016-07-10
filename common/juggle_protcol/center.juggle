@@ -4,7 +4,9 @@ module center{
 }
 
 module gm_center{
-	void close_clutter();
+	void confirm_gm(string gm_name);
+
+	void close_clutter(string gmname);
 
 }
 
@@ -16,13 +18,11 @@ module center_call_server{
 }
 
 module logic_call_center{
-	void req_get_server_address(string uuid);
+	void req_get_server_address(string uuid, int callbaclid);
 
 }
 
 module center_call_logic{
-	void dispatch_gate_server(string ip, int port, string uuid);
-
-	void ack_get_server_address(string type, string ip, int port, string uuid);
+	void ack_get_server_address(bool have_svr, string type, string ip, int port, string uuid, int callbaclid);
 
 }
