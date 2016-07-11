@@ -14,7 +14,7 @@
 
 #include <Ichannel.h>
 
-namespace server {
+namespace center {
 
 class svrmanager {
 public:

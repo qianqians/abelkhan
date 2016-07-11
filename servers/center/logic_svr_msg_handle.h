@@ -16,7 +16,7 @@
 
 #include "logicsvrmanager.h"
 
-void req_get_server_address(boost::shared_ptr<server::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<server::svrmanager> _svrmanager, std::string uuid, int64_t callbackid) {
+void req_get_server_address(boost::shared_ptr<center::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<center::svrmanager> _svrmanager, std::string uuid, int64_t callbackid) {
 	if (!_logicsvrmanager->is_logic(juggle::current_ch)) {
 		std::cout << "not a logic channel call this function" << std::endl;
 		return;

@@ -14,7 +14,7 @@
 
 #include "svrmanager.h"
 
-void reg_server(boost::shared_ptr<server::svrmanager> _svrmanager, boost::shared_ptr<server::logicsvrmanager> _logicsvrmanager, std::string type, std::string ip, int64_t port, std::string uuid) {
+void reg_server(boost::shared_ptr<center::svrmanager> _svrmanager, boost::shared_ptr<center::logicsvrmanager> _logicsvrmanager, std::string type, std::string ip, int64_t port, std::string uuid) {
 	_svrmanager->reg_channel(juggle::current_ch, type, ip, port, uuid);
 
 	if (type == "") {

@@ -1,13 +1,15 @@
 module dbproxy{
-	void save_object(table query, table info, int callbackid);
+	void reg_logic(string uuid);
 
-	void find_object(table query, table field, int callbackid);
+	void save_object(string json_query, string json_info, int callbackid);
+
+	void find_object(string json_query, int callbackid);
 
 }
 
 module dbproxy_call_logic{
-	void save_ovject_sucess(int callbackid);
+	void save_object_sucess(int callbackid);
 
-	void ack_find_object(int callbackid, table info);
+	void ack_find_object(int callbackid, string json_info);
 
 }

@@ -9,7 +9,7 @@
 
 #include <list>
 
-namespace server {
+namespace center {
 
 class logicsvrmanager {
 public:

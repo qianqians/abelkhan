@@ -13,7 +13,7 @@
 
 #include <Ichannel.h>
 
-namespace server {
+namespace center {
 
 class gmmanager {
 public:

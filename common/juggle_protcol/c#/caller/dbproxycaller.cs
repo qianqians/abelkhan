@@ -14,7 +14,14 @@ namespace caller
             module_name = "dbproxy";
         }
 
-        public void save_object(Hashtable argv0,Hashtable argv1,Int64 argv2)
+        public void reg_logic(String argv0)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            call_module_method("reg_logic", _argv);
+        }
+
+        public void save_object(String argv0,String argv1,Int64 argv2)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
@@ -23,12 +30,11 @@ namespace caller
             call_module_method("save_object", _argv);
         }
 
-        public void find_object(Hashtable argv0,Hashtable argv1,Int64 argv2)
+        public void find_object(String argv0,Int64 argv1)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             _argv.Add(argv1);
-            _argv.Add(argv2);
             call_module_method("find_object", _argv);
         }
 

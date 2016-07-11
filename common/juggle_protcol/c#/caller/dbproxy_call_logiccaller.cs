@@ -14,14 +14,14 @@ namespace caller
             module_name = "dbproxy_call_logic";
         }
 
-        public void save_ovject_sucess(Int64 argv0)
+        public void save_object_sucess(Int64 argv0)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
-            call_module_method("save_ovject_sucess", _argv);
+            call_module_method("save_object_sucess", _argv);
         }
 
-        public void ack_find_object(Int64 argv0,Hashtable argv1)
+        public void ack_find_object(Int64 argv0,String argv1)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);

@@ -1,0 +1,10 @@
+prefix=C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\libbson
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${exec_prefix}/include
+
+Name: libbson
+Description: The libbson BSON serialization library.
+Version: 1.4.0-dev
+Libs: -L${libdir} -lbson-1.0
+Cflags: -I${includedir}/libbson-1.0

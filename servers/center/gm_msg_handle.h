@@ -18,11 +18,11 @@
 #include "gmmanager.h"
 #include "svrmanager.h"
 
-void confirm_gm(boost::shared_ptr<server::gmmanager> _gmmanager, std::string gmname) {
+void confirm_gm(boost::shared_ptr<center::gmmanager> _gmmanager, std::string gmname) {
 	_gmmanager->reg_channel(gmname, juggle::current_ch);
 }
 
-void close_clutter(boost::shared_ptr<server::gmmanager> _gmmanager, boost::shared_ptr<server::svrmanager> _svrmanager, std::string gmname) {
+void close_clutter(boost::shared_ptr<center::gmmanager> _gmmanager, boost::shared_ptr<center::svrmanager> _svrmanager, std::string gmname) {
 	auto ch = _gmmanager->get_channel(gmname);
 	if (ch != juggle::current_ch) {
 		std::cout << "connection error gm:" << gmname << std::endl;

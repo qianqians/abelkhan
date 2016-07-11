@@ -37,8 +37,8 @@ void main(int argc, char * argv[]) {
 
 	boost::shared_ptr<juggle::process> _svr_process = boost::make_shared<juggle::process>();
 	
-	boost::shared_ptr<server::svrmanager> _svrmanager = boost::make_shared<server::svrmanager>();
-	boost::shared_ptr<server::logicsvrmanager> _logicsvrmanager = boost::make_shared<server::logicsvrmanager>();
+	boost::shared_ptr<center::svrmanager> _svrmanager = boost::make_shared<center::svrmanager>();
+	boost::shared_ptr<center::logicsvrmanager> _logicsvrmanager = boost::make_shared<center::logicsvrmanager>();
 	boost::shared_ptr<module::center> _center = boost::make_shared<module::center>();
 	_center->sigreg_serverhandle.connect(boost::bind(&reg_server, _svrmanager, _logicsvrmanager, _1, _2, _3, _4));
 	_svr_process->reg_module(_center);
@@ -51,7 +51,7 @@ void main(int argc, char * argv[]) {
 	auto host_port = (short)_config->get_value_int("host_port");
 	auto _host_service = boost::make_shared<service::acceptnetworkservice>(host_ip, host_port, _svr_process);
 
-	boost::shared_ptr<server::gmmanager> _gmmanager = boost::make_shared<server::gmmanager>();
+	boost::shared_ptr<center::gmmanager> _gmmanager = boost::make_shared<center::gmmanager>();
 	boost::shared_ptr<juggle::process> _gm_process = boost::make_shared<juggle::process>();
 	boost::shared_ptr<module::gm_center> _gm_center = boost::make_shared<module::gm_center>();
 	_gm_center->sigconfirm_gmhandle.connect(boost::bind(&confirm_gm, _gmmanager, _1));
