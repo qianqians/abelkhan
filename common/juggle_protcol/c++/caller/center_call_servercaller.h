@@ -1,4 +1,6 @@
 /*this caller file is codegen by juggle for c++*/
+#ifndef _center_call_server_caller_h
+#define _center_call_server_caller_h
 #include <sstream>
 #include <tuple>
 #include <string>
@@ -37,3 +39,5 @@ public:
 };
 
 }
+
+#endif

@@ -1,4 +1,6 @@
 /*this module file is codegen by juggle for c++*/
+#ifndef _logic_call_gate_module_h
+#define _logic_call_gate_module_h
 #include <Imodule.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/signals2.hpp>
@@ -10,6 +12,7 @@ public:
     logic_call_gate(){
         module_name = "logic_call_gate";
         protcolcall_set.insert(std::make_pair("reg_logic", boost::bind(&logic_call_gate::reg_logic, this, _1)));
+        protcolcall_set.insert(std::make_pair("ack_client_connect_server", boost::bind(&logic_call_gate::ack_client_connect_server, this, _1)));
         protcolcall_set.insert(std::make_pair("forward_logic_call_client", boost::bind(&logic_call_gate::forward_logic_call_client, this, _1)));
     }
 
@@ -20,6 +23,13 @@ public:
     void reg_logic(boost::shared_ptr<std::vector<boost::any> > _event){
         sigreg_logichandle(
             boost::any_cast<std::string>((*_event)[0]));
+    }
+
+    boost::signals2::signal<void(std::string, std::string) > sigack_client_connect_serverhandle;
+    void ack_client_connect_server(boost::shared_ptr<std::vector<boost::any> > _event){
+        sigack_client_connect_serverhandle(
+            boost::any_cast<std::string>((*_event)[0]), 
+            boost::any_cast<std::string>((*_event)[1]));
     }
 
     boost::signals2::signal<void(std::string, std::string, std::string, std::string) > sigforward_logic_call_clienthandle;
@@ -34,3 +44,5 @@ public:
 };
 
 }
+
+#endif

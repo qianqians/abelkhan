@@ -125,10 +125,10 @@ CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO:STRING=/debug /INCREMENTAL
 
 //If set, runtime paths are not added when installing shared libraries,
 // but are added when building.
-CMAKE_SKIP_INSTALL_RPATH:BOOL=NO
+CMAKE_SKIP_INSTALL_RPATH:BOOL=OFF
 
 //If set, runtime paths are not added when using shared libraries.
-CMAKE_SKIP_RPATH:BOOL=NO
+CMAKE_SKIP_RPATH:BOOL=OFF
 
 //Flags used by the linker during the creation of static libraries.
 CMAKE_STATIC_LINKER_FLAGS:STRING= /machine:X86
@@ -149,7 +149,7 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 // .SILENT directive, and all commands will be echoed to the console
 // during the make.  This is useful for debugging only. With Visual
 // Studio IDE projects all commands are done without /nologo.
-CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
+CMAKE_VERBOSE_MAKEFILE:BOOL=OFF
 
 //jsonparse include path
 jsonparse_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../jsonparse/cpp
@@ -157,17 +157,20 @@ jsonparse_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/tes
 //juggle include path
 juggle_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../juggle/c++
 
+//juggle lib path
+juggle_LIBS_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../test/test_juggle/build/Debug
+
 //lock_free include path
 lock_free_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../fossilizid
 
 //lock-free lib path
-lock_free_LIBS_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../test/test_lock-free/build/bin/Debug
+lock_free_LIBS_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../test/test_fossilizid/build/bin/Debug
 
 //module include path
 module_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../test/test_juggle/output_cpp
 
 //service include path
-service_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../service/c++
+service_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../common/service/c++
 
 //Value Computed by CMake
 test_cpp_service_BINARY_DIR:STATIC=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build

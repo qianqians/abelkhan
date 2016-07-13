@@ -1,4 +1,6 @@
 /*this caller file is codegen by juggle for c++*/
+#ifndef _hub_call_logic_caller_h
+#define _hub_call_logic_caller_h
 #include <sstream>
 #include <tuple>
 #include <string>
@@ -18,6 +20,14 @@ public:
     ~hub_call_logic(){
     }
 
+    void reg_logic_sucess(){
+        auto v = boost::make_shared<std::vector<boost::any> >();
+        v->push_back("hub_call_logic");
+        v->push_back("reg_logic_sucess");
+        v->push_back(boost::make_shared<std::vector<boost::any> >());
+        ch->push(v);
+    }
+
     void hub_call_logic(std::string argv0,std::string argv1,std::string argv2){
         auto v = boost::make_shared<std::vector<boost::any> >();
         v->push_back("hub_call_logic");
@@ -32,3 +42,5 @@ public:
 };
 
 }
+
+#endif

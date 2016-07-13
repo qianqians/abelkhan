@@ -14,6 +14,12 @@ namespace caller
             module_name = "gate_call_logic";
         }
 
+        public void reg_logic_sucess()
+        {
+            ArrayList _argv = new ArrayList();
+            call_module_method("reg_logic_sucess", _argv);
+        }
+
         public void client_connect(String argv0)
         {
             ArrayList _argv = new ArrayList();

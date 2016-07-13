@@ -5,9 +5,13 @@ module dbproxy{
 
 	void find_object(string json_query, int callbackid);
 
+	void logic_closed();
+
 }
 
 module dbproxy_call_logic{
+	void reg_logic_sucess();
+
 	void save_object_sucess(int callbackid);
 
 	void ack_find_object(int callbackid, string json_info);

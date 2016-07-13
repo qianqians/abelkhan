@@ -38,5 +38,11 @@ namespace caller
             call_module_method("find_object", _argv);
         }
 
+        public void logic_closed()
+        {
+            ArrayList _argv = new ArrayList();
+            call_module_method("logic_closed", _argv);
+        }
+
     }
 }

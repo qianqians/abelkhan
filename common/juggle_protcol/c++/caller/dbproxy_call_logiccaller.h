@@ -1,4 +1,6 @@
 /*this caller file is codegen by juggle for c++*/
+#ifndef _dbproxy_call_logic_caller_h
+#define _dbproxy_call_logic_caller_h
 #include <sstream>
 #include <tuple>
 #include <string>
@@ -16,6 +18,14 @@ public:
     }
 
     ~dbproxy_call_logic(){
+    }
+
+    void reg_logic_sucess(){
+        auto v = boost::make_shared<std::vector<boost::any> >();
+        v->push_back("dbproxy_call_logic");
+        v->push_back("reg_logic_sucess");
+        v->push_back(boost::make_shared<std::vector<boost::any> >());
+        ch->push(v);
     }
 
     void save_object_sucess(int64_t argv0){
@@ -40,3 +50,5 @@ public:
 };
 
 }
+
+#endif

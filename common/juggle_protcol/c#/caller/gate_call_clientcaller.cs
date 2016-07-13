@@ -14,6 +14,13 @@ namespace caller
             module_name = "gate_call_client";
         }
 
+        public void ack_connect_server(String argv0)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            call_module_method("ack_connect_server", _argv);
+        }
+
         public void call_client(String argv0,String argv1,String argv2)
         {
             ArrayList _argv = new ArrayList();

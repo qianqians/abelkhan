@@ -6,6 +6,8 @@ module hub{
 }
 
 module hub_call_logic{
+	void reg_logic_sucess();
+
 	void hub_call_logic(string module, string func, string argv);
 
 }

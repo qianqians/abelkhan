@@ -3,6 +3,11 @@
  * 2016-7-9
  * center.cpp
  */
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/lexical_cast.hpp>
+
 #include <acceptnetworkservice.h>
 #include <process_.h>
 #include <Ichannel.h>
@@ -24,6 +29,8 @@
 #include "gm_msg_handle.h"
 
 void main(int argc, char * argv[]) {
+	auto svr_uuid = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
+
 	if (argc <= 1) {
 		std::cout << "non input start argv" << std::endl;
 		return;
@@ -66,10 +73,10 @@ void main(int argc, char * argv[]) {
 	_juggleservice->add_process(_svr_process);
 	_juggleservice->add_process(_gm_process);
 
-	boost::shared_ptr<service::timerservice> _timerservice = boost::make_shared<service::timerservice>();
-
 	int64_t tick = clock();
 	int64_t tickcount = 0;
+
+	boost::shared_ptr<service::timerservice> _timerservice = boost::make_shared<service::timerservice>(tick);
 
 	while (true)
 	{

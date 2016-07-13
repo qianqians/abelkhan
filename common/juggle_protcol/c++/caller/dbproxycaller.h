@@ -1,4 +1,6 @@
 /*this caller file is codegen by juggle for c++*/
+#ifndef _dbproxy_caller_h
+#define _dbproxy_caller_h
 #include <sstream>
 #include <tuple>
 #include <string>
@@ -48,6 +50,16 @@ public:
         ch->push(v);
     }
 
+    void logic_closed(){
+        auto v = boost::make_shared<std::vector<boost::any> >();
+        v->push_back("dbproxy");
+        v->push_back("logic_closed");
+        v->push_back(boost::make_shared<std::vector<boost::any> >());
+        ch->push(v);
+    }
+
 };
 
 }
+
+#endif

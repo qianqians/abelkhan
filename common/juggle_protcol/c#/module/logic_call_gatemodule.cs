@@ -23,6 +23,18 @@ namespace module
             }
         }
 
+        public delegate void ack_client_connect_serverhandle(String argv0, String argv1);
+        public event ack_client_connect_serverhandle onack_client_connect_server;
+        public void ack_client_connect_server(ArrayList _event)
+        {
+            if(onack_client_connect_server != null)
+            {
+                var argv0 = ((String)_event[0]);
+                var argv1 = ((String)_event[1]);
+                onack_client_connect_server( argv0,  argv1);
+            }
+        }
+
         public delegate void forward_logic_call_clienthandle(String argv0, String argv1, String argv2, String argv3);
         public event forward_logic_call_clienthandle onforward_logic_call_client;
         public void forward_logic_call_client(ArrayList _event)

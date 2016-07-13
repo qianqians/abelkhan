@@ -48,5 +48,15 @@ namespace module
             }
         }
 
+        public delegate void logic_closedhandle();
+        public event logic_closedhandle onlogic_closed;
+        public void logic_closed(ArrayList _event)
+        {
+            if(onlogic_closed != null)
+            {
+                onlogic_closed();
+            }
+        }
+
 	}
 }

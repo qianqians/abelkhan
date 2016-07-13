@@ -12,6 +12,16 @@ namespace module
 			module_name = "hub_call_logic";
         }
 
+        public delegate void reg_logic_sucesshandle();
+        public event reg_logic_sucesshandle onreg_logic_sucess;
+        public void reg_logic_sucess(ArrayList _event)
+        {
+            if(onreg_logic_sucess != null)
+            {
+                onreg_logic_sucess();
+            }
+        }
+
         public delegate void hub_call_logichandle(String argv0, String argv1, String argv2);
         public event hub_call_logichandle onhub_call_logic;
         public void hub_call_logic(ArrayList _event)

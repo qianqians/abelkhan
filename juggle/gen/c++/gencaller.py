@@ -6,6 +6,8 @@ import tools
 
 def gencaller(module_name, funcs):
         code = "/*this caller file is codegen by juggle for c++*/\n"
+        code += "#ifndef _" + module_name + "_caller_h\n"
+        code += "#define _" + module_name + "_caller_h\n"
         code += "#include <sstream>\n"
         code += "#include <tuple>\n"
         code += "#include <string>\n"
@@ -44,6 +46,7 @@ def gencaller(module_name, funcs):
                 code += "    }\n\n"
 
         code += "};\n\n"
-        code += "}\n"
+        code += "}\n\n"
+        code += "#endif\n"
 
         return code

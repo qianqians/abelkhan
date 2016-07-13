@@ -18,7 +18,8 @@ namespace service {
 
 class timerservice : public service{
 public:
-	timerservice() {
+	timerservice(int64_t tick) {
+		ticktime = tick;
 	}
 
 	~timerservice(){
@@ -34,6 +35,8 @@ public:
 
 
 	void poll(int64_t tick) {
+		ticktime = tick;
+
 		{
 			std::vector<int64_t> v;
 
@@ -66,6 +69,9 @@ public:
 			}
 		}
 	}
+
+public:
+	int64_t ticktime;
 
 private:
 	std::map<int64_t, std::function<void(int64_t)> > tickHandledict;

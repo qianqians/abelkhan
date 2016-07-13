@@ -26,7 +26,7 @@ INCLUDE_DIRECTORIES(${juggle_INCLUDE_PATH})
 set(juggle_LIBS_PATH ${PROJECT_SOURCE_DIR}//..//test//test_juggle//build//Debug CACHE PATH "juggle lib path")
 link_directories(${juggle_LIBS_PATH})
 
-set(service_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//service//c++ CACHE PATH "service include path")
+set(service_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//common//service//c++ CACHE PATH "service include path")
 INCLUDE_DIRECTORIES(${service_INCLUDE_PATH})
 
 set(BOOST_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//thirdpart//c++//boost CACHE PATH "boost include path")

@@ -6,14 +6,18 @@ set(server_header_list
     client_msg_handle.h
     clientmanager.h
     logicsvrmanager.h
-    logic_svr_msg_handle.h)
+    logic_svr_msg_handle.h
+    center_msg_handle.h
+    closehandle.h)
 
 SET(server_src_list 
     gate.cpp
     centerproxy.cpp
     clientmanager.cpp
-    logicsvrmanager.cpp)
+    logicsvrmanager.cpp
+    closehandle.cpp)
 
 add_executable(gate ${server_src_list} ${server_header_list})
 target_link_libraries(gate pool)
 target_link_libraries(gate container)
+target_link_libraries(gate juggle)

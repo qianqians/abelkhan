@@ -1,4 +1,6 @@
 /*this caller file is codegen by juggle for c++*/
+#ifndef _hub_caller_h
+#define _hub_caller_h
 #include <sstream>
 #include <tuple>
 #include <string>
@@ -41,3 +43,5 @@ public:
 };
 
 }
+
+#endif

@@ -14,6 +14,12 @@ namespace caller
             module_name = "dbproxy_call_logic";
         }
 
+        public void reg_logic_sucess()
+        {
+            ArrayList _argv = new ArrayList();
+            call_module_method("reg_logic_sucess", _argv);
+        }
+
         public void save_object_sucess(Int64 argv0)
         {
             ArrayList _argv = new ArrayList();

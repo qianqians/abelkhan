@@ -6,6 +6,8 @@ import tools
 
 def genmodule(module_name, funcs):
         code = "/*this module file is codegen by juggle for c++*/\n"
+        code += "#ifndef _" + module_name + "_module_h\n"
+        code += "#define _" + module_name + "_module_h\n"
         code += "#include <Imodule.h>\n"
         code += "#include <boost/shared_ptr.hpp>\n"
         code += "#include <boost/signals2.hpp>\n"
@@ -45,6 +47,7 @@ def genmodule(module_name, funcs):
                 code += "    }\n\n"
 
         code += "};\n\n"
-        code += "}\n"
+        code += "}\n\n"
+        code += "#endif\n"
 
         return code

@@ -25,6 +25,7 @@ public:
 	}
 
 	void reg_server(std::string ip, short port, std::string uuid) {
+		std::cout << "begin connect center server" << std::endl;
 		_center_caller->reg_server("dbproxy", ip, port, uuid);
 	}
 

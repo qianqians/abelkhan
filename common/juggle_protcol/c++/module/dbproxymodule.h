@@ -1,4 +1,6 @@
 /*this module file is codegen by juggle for c++*/
+#ifndef _dbproxy_module_h
+#define _dbproxy_module_h
 #include <Imodule.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/signals2.hpp>
@@ -12,6 +14,7 @@ public:
         protcolcall_set.insert(std::make_pair("reg_logic", boost::bind(&dbproxy::reg_logic, this, _1)));
         protcolcall_set.insert(std::make_pair("save_object", boost::bind(&dbproxy::save_object, this, _1)));
         protcolcall_set.insert(std::make_pair("find_object", boost::bind(&dbproxy::find_object, this, _1)));
+        protcolcall_set.insert(std::make_pair("logic_closed", boost::bind(&dbproxy::logic_closed, this, _1)));
     }
 
     ~dbproxy(){
@@ -38,6 +41,14 @@ public:
             boost::any_cast<int64_t>((*_event)[1]));
     }
 
+    boost::signals2::signal<void() > siglogic_closedhandle;
+    void logic_closed(boost::shared_ptr<std::vector<boost::any> > _event){
+        siglogic_closedhandle(
+);
+    }
+
 };
 
 }
+
+#endif

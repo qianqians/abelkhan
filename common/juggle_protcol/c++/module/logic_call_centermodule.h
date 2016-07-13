@@ -1,4 +1,6 @@
 /*this module file is codegen by juggle for c++*/
+#ifndef _logic_call_center_module_h
+#define _logic_call_center_module_h
 #include <Imodule.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/signals2.hpp>
@@ -25,3 +27,5 @@ public:
 };
 
 }
+
+#endif

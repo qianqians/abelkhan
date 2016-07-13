@@ -1,4 +1,6 @@
 /*this module file is codegen by juggle for c++*/
+#ifndef _center_call_server_module_h
+#define _center_call_server_module_h
 #include <Imodule.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/signals2.hpp>
@@ -31,3 +33,5 @@ public:
 };
 
 }
+
+#endif

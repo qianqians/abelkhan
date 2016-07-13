@@ -1,4 +1,6 @@
 /*this caller file is codegen by juggle for c++*/
+#ifndef _logic_call_logic_caller_h
+#define _logic_call_logic_caller_h
 #include <sstream>
 #include <tuple>
 #include <string>
@@ -41,3 +43,5 @@ public:
 };
 
 }
+
+#endif

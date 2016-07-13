@@ -1,4 +1,6 @@
 /*this caller file is codegen by juggle for c++*/
+#ifndef _client_call_gate_caller_h
+#define _client_call_gate_caller_h
 #include <sstream>
 #include <tuple>
 #include <string>
@@ -57,3 +59,5 @@ public:
 };
 
 }
+
+#endif

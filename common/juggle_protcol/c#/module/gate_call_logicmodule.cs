@@ -12,6 +12,16 @@ namespace module
 			module_name = "gate_call_logic";
         }
 
+        public delegate void reg_logic_sucesshandle();
+        public event reg_logic_sucesshandle onreg_logic_sucess;
+        public void reg_logic_sucess(ArrayList _event)
+        {
+            if(onreg_logic_sucess != null)
+            {
+                onreg_logic_sucess();
+            }
+        }
+
         public delegate void client_connecthandle(String argv0);
         public event client_connecthandle onclient_connect;
         public void client_connect(ArrayList _event)

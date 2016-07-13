@@ -1,4 +1,6 @@
 /*this caller file is codegen by juggle for c++*/
+#ifndef _gate_call_logic_caller_h
+#define _gate_call_logic_caller_h
 #include <sstream>
 #include <tuple>
 #include <string>
@@ -16,6 +18,14 @@ public:
     }
 
     ~gate_call_logic(){
+    }
+
+    void reg_logic_sucess(){
+        auto v = boost::make_shared<std::vector<boost::any> >();
+        v->push_back("gate_call_logic");
+        v->push_back("reg_logic_sucess");
+        v->push_back(boost::make_shared<std::vector<boost::any> >());
+        ch->push(v);
     }
 
     void client_connect(std::string argv0){
@@ -51,3 +61,5 @@ public:
 };
 
 }
+
+#endif

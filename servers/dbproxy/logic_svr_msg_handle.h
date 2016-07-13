@@ -16,6 +16,21 @@
 
 #include "logicsvrmanager.h"
 #include "mongodb_proxy.h"
+#include "closehandle.h"
+
+void reg_logic(boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<dbproxy::closehandle> _closehandle, std::string uuid) {
+	_logicsvrmanager->reg_channel(uuid, juggle::current_ch);
+	_closehandle->reg_logic();
+
+	boost::shared_ptr<caller::dbproxy_call_logic> _caller = boost::make_shared<caller::dbproxy_call_logic>(juggle::current_ch);
+	_caller->reg_logic_sucess();
+
+	std::cout << "logic server " << uuid << "connected" << std::endl;
+}
+
+void logic_closed(boost::shared_ptr<dbproxy::closehandle> _closehandle) {
+	_closehandle->logic_closed();
+}
 
 void save_object(boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string json_query, std::string json_info, int64_t callbackid) {
 	if (!_logicsvrmanager->is_logic(juggle::current_ch)) {

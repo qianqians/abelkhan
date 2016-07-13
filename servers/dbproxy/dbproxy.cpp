@@ -1,7 +1,7 @@
 /*
  * qianqians
  * 2016-7-5
- * test_cpp_service_server.cpp
+ * dbproxy.cpp
  */
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -27,6 +27,7 @@
 #include "centerproxy.h"
 #include "logicsvrmanager.h"
 #include "mongodb_proxy.h"
+#include "closehandle.h"
 
 void main(int argc, char * argv[]) {
 	auto svr_uuid = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
@@ -54,7 +55,9 @@ void main(int argc, char * argv[]) {
 	auto port = (short)_config->get_value_int("port");
 	_centerproxy->reg_server(ip, port, svr_uuid);
 
+	boost::shared_ptr<dbproxy::closehandle> _closehandle = boost::make_shared<dbproxy::closehandle>();
 	boost::shared_ptr<module::center_call_server> _center_call_server = boost::make_shared<module::center_call_server>();
+	_center_call_server->sigclose_serverhandle.connect(boost::bind(&close_server, _closehandle));
 	_center_call_server->sigreg_server_sucesshandle.connect(boost::bind(&reg_server_sucess, _centerproxy));
 	_center_process->reg_module(_center_call_server);
 
@@ -65,17 +68,21 @@ void main(int argc, char * argv[]) {
 	auto db_port = (short)_config->get_value_int("db_port");
 	auto db_name = _config->get_value_string("db_name");
 	auto db_collection = _config->get_value_string("db_collection");
-	boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy = boost::make_shared<dbproxy::mongodb_proxy>(db_ip, db_port, db_name, db_collection);
+	auto _mongodb_proxy = boost::make_shared<dbproxy::mongodb_proxy>(db_ip, db_port, db_name, db_collection);
+	_dbproxy->sigreg_logichandle.connect(boost::bind(&reg_logic, _logicsvrmanager, _closehandle, _1));
+	_dbproxy->siglogic_closedhandle.connect(boost::bind(&logic_closed, _closehandle));
 	_dbproxy->sigsave_objecthandle.connect(boost::bind(&save_object, _logicsvrmanager, _mongodb_proxy, _1, _2, _3));
 	_dbproxy->sigfind_objecthandle.connect(boost::bind(&find_object, _logicsvrmanager, _mongodb_proxy, _1, _2));
-	boost::shared_ptr<service::acceptnetworkservice> _acceptnetworkservice = boost::make_shared<service::acceptnetworkservice>(ip, port, _logic_process);
+	auto _acceptnetworkservice = boost::make_shared<service::acceptnetworkservice>(ip, port, _logic_process);
+
 	boost::shared_ptr<service::juggleservice> _juggleservice = boost::make_shared<service::juggleservice>();
 	_juggleservice->add_process(_center_process);
-
-	boost::shared_ptr<service::timerservice> _timerservice = boost::make_shared<service::timerservice>();
+	_juggleservice->add_process(_logic_process);
 
 	int64_t tick = clock();
 	int64_t tickcount = 0;
+
+	boost::shared_ptr<service::timerservice> _timerservice = boost::make_shared<service::timerservice>(tick);
 
 	while (true)
 	{
@@ -94,6 +101,11 @@ void main(int argc, char * argv[]) {
 		_connectnetworkservice->poll(tick);
 		_juggleservice->poll(tick);
 		_timerservice->poll(tick);
+
+		if (_closehandle->is_close()) {
+			std::cout << "server closed, dbproxy server " << svr_uuid << std::endl;
+			break;
+		}
 
 		tmptick = (clock() & 0xffffffff);
 		if (tmptick < tick)

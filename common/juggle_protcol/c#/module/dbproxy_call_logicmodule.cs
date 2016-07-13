@@ -12,6 +12,16 @@ namespace module
 			module_name = "dbproxy_call_logic";
         }
 
+        public delegate void reg_logic_sucesshandle();
+        public event reg_logic_sucesshandle onreg_logic_sucess;
+        public void reg_logic_sucess(ArrayList _event)
+        {
+            if(onreg_logic_sucess != null)
+            {
+                onreg_logic_sucess();
+            }
+        }
+
         public delegate void save_object_sucesshandle(Int64 argv0);
         public event save_object_sucesshandle onsave_object_sucess;
         public void save_object_sucess(ArrayList _event)
