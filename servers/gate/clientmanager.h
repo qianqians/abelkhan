@@ -13,6 +13,8 @@
 
 #include <Ichannel.h>
 
+#include <caller/gate_call_logiccaller.h>
+
 namespace gate {
 
 class clientmanager {
@@ -21,6 +23,28 @@ public:
 	}
 
 	~clientmanager() {
+	}
+
+	void heartbeat_client(int64_t ticktime) {
+		std::vector<boost::shared_ptr<juggle::Ichannel> > heartbeat_client;
+		for (auto item : client_time) {
+			if ((item.second + 5 * 60 * 1000)< ticktime) {
+				heartbeat_client.push_back(item.first);
+			}
+		}
+
+		for (auto _client : heartbeat_client){
+			auto client_uuid = client_uuid_map[_client];
+			auto _caller = boost::make_shared<caller::gate_call_logic>(client_map[client_uuid].second);
+			_caller->client_disconnect(client_uuid);
+		}
+
+		for (auto _client : heartbeat_client) {
+			client_time.erase(_client);
+			auto client_uuid = client_uuid_map[_client];
+			client_uuid_map.erase(_client);
+			client_map.erase(client_uuid);
+		}
 	}
 
 	void refresh_client(boost::shared_ptr<juggle::Ichannel> _client, int64_t ticktime) {

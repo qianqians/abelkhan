@@ -27,6 +27,7 @@
 #include "closehandle.h"
 #include "clientmanager.h"
 #include "logicsvrmanager.h"
+#include "heartbeat_handle.h"
 #include "center_msg_handle.h"
 #include "logic_svr_msg_handle.h"
 #include "client_msg_handle.h"
@@ -76,9 +77,8 @@ void main(int argc, char * argv[]) {
 	int64_t tickcount = 0;
 
 	boost::shared_ptr<service::timerservice> _timerservice = boost::make_shared<service::timerservice>(tick);
-	
-	auto outside_ip = _config->get_value_string("outside_ip");
-	auto outside_port = (short)_config->get_value_int("outside_port");
+	_timerservice->addticktime(tick + 5 * 60 * 1000, boost::bind(&heartbeat_handle, _clientmanager, _timerservice, _1));
+
 	auto _client_process = boost::make_shared<juggle::process>();
 	auto _client_call_gate = boost::make_shared<module::client_call_gate>();
 	_client_call_gate->sigconnect_serverhandle.connect(boost::bind(&connect_server, _logicsvrmanager, _clientmanager, _timerservice, _1));
@@ -86,6 +86,9 @@ void main(int argc, char * argv[]) {
 	_client_call_gate->sigforward_client_call_logichandle.connect(boost::bind(&forward_client_call_logic, _clientmanager, _1, _2, _3));
 	_client_call_gate->sigheartbeatshandle.connect(boost::bind(&heartbeats, _clientmanager, _timerservice));
 	_client_process->reg_module(_client_call_gate);
+
+	auto outside_ip = _config->get_value_string("outside_ip");
+	auto outside_port = (short)_config->get_value_int("outside_port");
 	auto _client_service = boost::make_shared<service::acceptnetworkservice>(outside_ip, outside_port, _logic_process);
 
 	boost::shared_ptr<service::juggleservice> _juggleservice = boost::make_shared<service::juggleservice>();

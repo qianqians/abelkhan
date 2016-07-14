@@ -8,7 +8,8 @@ set(server_header_list
     logicsvrmanager.h
     logic_svr_msg_handle.h
     center_msg_handle.h
-    closehandle.h)
+    closehandle.h
+    heartbeat_handle.h)
 
 SET(server_src_list 
     gate.cpp
