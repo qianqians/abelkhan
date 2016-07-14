@@ -5,31 +5,20 @@ using System.Collections.Generic;
 
 namespace module
 {
-    public class dbproxy_call_logic : juggle.Imodule 
+    public class dbproxy_call_hub : juggle.Imodule 
     {
-        public dbproxy_call_logic()
+        public dbproxy_call_hub()
         {
-			module_name = "dbproxy_call_logic";
+			module_name = "dbproxy_call_hub";
         }
 
-        public delegate void reg_logic_sucesshandle();
-        public event reg_logic_sucesshandle onreg_logic_sucess;
-        public void reg_logic_sucess(ArrayList _event)
+        public delegate void reg_hub_sucesshandle();
+        public event reg_hub_sucesshandle onreg_hub_sucess;
+        public void reg_hub_sucess(ArrayList _event)
         {
-            if(onreg_logic_sucess != null)
+            if(onreg_hub_sucess != null)
             {
-                onreg_logic_sucess();
-            }
-        }
-
-        public delegate void ack_create_persisted_objecthandle(Int64 argv0);
-        public event ack_create_persisted_objecthandle onack_create_persisted_object;
-        public void ack_create_persisted_object(ArrayList _event)
-        {
-            if(onack_create_persisted_object != null)
-            {
-                var argv0 = ((Int64)_event[0]);
-                onack_create_persisted_object( argv0);
+                onreg_hub_sucess();
             }
         }
 
@@ -53,6 +42,17 @@ namespace module
                 var argv0 = ((Int64)_event[0]);
                 var argv1 = ((String)_event[1]);
                 onack_get_object_info( argv0,  argv1);
+            }
+        }
+
+        public delegate void ack_get_object_info_endhandle(Int64 argv0);
+        public event ack_get_object_info_endhandle onack_get_object_info_end;
+        public void ack_get_object_info_end(ArrayList _event)
+        {
+            if(onack_get_object_info_end != null)
+            {
+                var argv0 = ((Int64)_event[0]);
+                onack_get_object_info_end( argv0);
             }
         }
 

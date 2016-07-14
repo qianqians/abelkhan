@@ -34,6 +34,15 @@ public:
 		mongoc_cleanup();
 	}
 
+	bool save(std::string json_data) {
+		bson_error_t error;
+
+		bson_t bdata;
+		bson_init_from_json(&bdata, json_data.c_str(), json_data.length(), &error);
+
+		return mongoc_collection_save(_collection, &bdata, nullptr, &error);
+	}
+
 	bool update(std::string json_query, std::string json_update) {
 		bson_error_t error;
 
@@ -43,7 +52,7 @@ public:
 		bson_t bupdate;
 		bson_init_from_json(&bupdate, json_update.c_str(), json_update.length(), &error);
 
-		return mongoc_collection_update(_collection, MONGOC_UPDATE_UPSERT, &bquery, &bupdate, nullptr, &error);
+		return mongoc_collection_update(_collection, MONGOC_UPDATE_MULTI_UPDATE, &bquery, &bupdate, nullptr, &error);
 	}
 
 	std::vector<std::string> find(int skip, int limit, int batch_size, std::string json_query, std::string json_fields) {

@@ -19,14 +19,17 @@ set(server_header_list
     logicsvrmanager.h
     center_msg_handle.h
     logic_svr_msg_handle.h
-    closehandle.h)
+    closehandle.h
+    hub_svr_msg_handle.h
+    hubsvrmanager.h)
 
 SET(server_src_list 
     centerproxy.cpp
     dbproxy.cpp
     mongodb_proxy.cpp
     logicsvrmanager.cpp
-    closehandle.cpp)
+    closehandle.cpp
+    hubsvrmanager.cpp)
 
 add_executable(dbproxy ${server_src_list} ${server_header_list})
 target_link_libraries(dbproxy pool)

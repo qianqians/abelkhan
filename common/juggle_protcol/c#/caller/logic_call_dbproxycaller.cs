@@ -7,11 +7,11 @@ using MsgPack.Serialization;
 
 namespace caller
 {
-    public class dbproxy : juggle.Icaller 
+    public class logic_call_dbproxy : juggle.Icaller 
     {
-        public dbproxy(juggle.Ichannel _ch) : base(_ch)
+        public logic_call_dbproxy(juggle.Ichannel _ch) : base(_ch)
         {
-            module_name = "dbproxy";
+            module_name = "logic_call_dbproxy";
         }
 
         public void reg_logic(String argv0)
@@ -21,21 +21,29 @@ namespace caller
             call_module_method("reg_logic", _argv);
         }
 
-        public void save_object(String argv0,String argv1,Int64 argv2)
+        public void create_persisted_object(String argv0,Int64 argv1)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            _argv.Add(argv1);
+            call_module_method("create_persisted_object", _argv);
+        }
+
+        public void updata_persisted_object(String argv0,String argv1,Int64 argv2)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             _argv.Add(argv1);
             _argv.Add(argv2);
-            call_module_method("save_object", _argv);
+            call_module_method("updata_persisted_object", _argv);
         }
 
-        public void find_object(String argv0,Int64 argv1)
+        public void get_object_info(String argv0,Int64 argv1)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             _argv.Add(argv1);
-            call_module_method("find_object", _argv);
+            call_module_method("get_object_info", _argv);
         }
 
         public void logic_closed()

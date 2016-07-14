@@ -1,6 +1,6 @@
 /*this caller file is codegen by juggle for c++*/
-#ifndef _dbproxy_call_logic_caller_h
-#define _dbproxy_call_logic_caller_h
+#ifndef _hub_call_dbproxy_caller_h
+#define _hub_call_dbproxy_caller_h
 #include <sstream>
 #include <tuple>
 #include <string>
@@ -11,45 +11,39 @@
 
 namespace caller
 {
-class dbproxy_call_logic : public juggle::Icaller {
+class hub_call_dbproxy : public juggle::Icaller {
 public:
-    dbproxy_call_logic(boost::shared_ptr<juggle::Ichannel> _ch) : Icaller(_ch) {
-        module_name = "dbproxy_call_logic";
+    hub_call_dbproxy(boost::shared_ptr<juggle::Ichannel> _ch) : Icaller(_ch) {
+        module_name = "hub_call_dbproxy";
     }
 
-    ~dbproxy_call_logic(){
+    ~hub_call_dbproxy(){
     }
 
-    void reg_logic_sucess(){
+    void reg_hub(std::string argv0){
         auto v = boost::make_shared<std::vector<boost::any> >();
-        v->push_back("dbproxy_call_logic");
-        v->push_back("reg_logic_sucess");
-        v->push_back(boost::make_shared<std::vector<boost::any> >());
-        ch->push(v);
-    }
-
-    void ack_create_persisted_object(int64_t argv0){
-        auto v = boost::make_shared<std::vector<boost::any> >();
-        v->push_back("dbproxy_call_logic");
-        v->push_back("ack_create_persisted_object");
+        v->push_back("hub_call_dbproxy");
+        v->push_back("reg_hub");
         v->push_back(boost::make_shared<std::vector<boost::any> >());
         (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
         ch->push(v);
     }
 
-    void ack_updata_persisted_object(int64_t argv0){
+    void updata_persisted_object(std::string argv0,std::string argv1,int64_t argv2){
         auto v = boost::make_shared<std::vector<boost::any> >();
-        v->push_back("dbproxy_call_logic");
-        v->push_back("ack_updata_persisted_object");
+        v->push_back("hub_call_dbproxy");
+        v->push_back("updata_persisted_object");
         v->push_back(boost::make_shared<std::vector<boost::any> >());
         (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
+        (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv1);
+        (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv2);
         ch->push(v);
     }
 
-    void ack_get_object_info(int64_t argv0,std::string argv1){
+    void get_object_info(std::string argv0,int64_t argv1){
         auto v = boost::make_shared<std::vector<boost::any> >();
-        v->push_back("dbproxy_call_logic");
-        v->push_back("ack_get_object_info");
+        v->push_back("hub_call_dbproxy");
+        v->push_back("get_object_info");
         v->push_back(boost::make_shared<std::vector<boost::any> >());
         (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
         (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv1);

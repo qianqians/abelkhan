@@ -1,9 +1,11 @@
-module dbproxy{
+module logic_call_dbproxy{
 	void reg_logic(string uuid);
 
-	void save_object(string json_query, string json_info, int callbackid);
+	void create_persisted_object(string object_info, int callbackid);
 
-	void find_object(string json_query, int callbackid);
+	void updata_persisted_object(string objectid, string object_info, int callbackid);
+
+	void get_object_info(string objectid, int callbackid);
 
 	void logic_closed();
 
@@ -12,8 +14,30 @@ module dbproxy{
 module dbproxy_call_logic{
 	void reg_logic_sucess();
 
-	void save_object_sucess(int callbackid);
+	void ack_create_persisted_object(int callbackid);
 
-	void ack_find_object(int callbackid, string json_info);
+	void ack_updata_persisted_object(int callbackid);
+
+	void ack_get_object_info(int callbackid, string object_info);
+
+}
+
+module hub_call_dbproxy{
+	void reg_hub(string uuid);
+
+	void updata_persisted_object(string query_json, string object_info, int callbackid);
+
+	void get_object_info(string query_json, int callbackid);
+
+}
+
+module dbproxy_call_hub{
+	void reg_hub_sucess();
+
+	void ack_updata_persisted_object(int callbackid);
+
+	void ack_get_object_info(int callbackid, string object_info);
+
+	void ack_get_object_info_end(int callbackid);
 
 }

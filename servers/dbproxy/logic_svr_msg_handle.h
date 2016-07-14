@@ -32,31 +32,42 @@ void logic_closed(boost::shared_ptr<dbproxy::closehandle> _closehandle) {
 	_closehandle->logic_closed();
 }
 
-void save_object(boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string json_query, std::string json_info, int64_t callbackid) {
+void create_persisted_object(boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string object_info, int64_t callbackid) {
 	if (!_logicsvrmanager->is_logic(juggle::current_ch)) {
 		return;
 	}
 
-	_mongodb_proxy->update(json_query, json_info);
+	_mongodb_proxy->save(object_info);
 
 	boost::shared_ptr<caller::dbproxy_call_logic> _caller = boost::make_shared<caller::dbproxy_call_logic>(juggle::current_ch);
-	_caller->save_object_sucess(callbackid);
+	_caller->ack_create_persisted_object(callbackid);
 }
 
-void find_object(boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string json_query, int64_t callbackid) {
+void logic_updata_persisted_object(boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string objectid, std::string object_info, int64_t callbackid) {
 	if (!_logicsvrmanager->is_logic(juggle::current_ch)) {
 		return;
 	}
 
-	auto s = _mongodb_proxy->find(0, 0, 0, json_query, "");
+	_mongodb_proxy->update("{\"objectid\":\"" + objectid + "\"}", object_info);
+
+	boost::shared_ptr<caller::dbproxy_call_logic> _caller = boost::make_shared<caller::dbproxy_call_logic>(juggle::current_ch);
+	_caller->ack_updata_persisted_object(callbackid);
+}
+
+void logic_get_object_info(boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string objectid, int64_t callbackid) {
+	if (!_logicsvrmanager->is_logic(juggle::current_ch)) {
+		return;
+	}
+
+	auto s = _mongodb_proxy->find(0, 0, 0, "{\"objectid\":\"" + objectid + "\"}", "");
 
 	if (s.size() > 1) {
-		std::cout << "have multi num object" << std::endl;
+		std::cout << "mutli objectid:" << objectid << std::endl;
 		return;
 	}
 
 	boost::shared_ptr<caller::dbproxy_call_logic> _caller = boost::make_shared<caller::dbproxy_call_logic>(juggle::current_ch);
-	_caller->ack_find_object(callbackid, s[0]);
+	_caller->ack_get_object_info(callbackid, s[0]);
 }
 
 #endif //_logic_svr_msg_handles_h
