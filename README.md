@@ -15,7 +15,7 @@ jsonparse
 -------
 json解析:https://github.com/qianqians/abelkhan/tree/master/jsonparse
 
-##与我联系
+##contact me
 QQ群:494405542
 
 论坛:http://abelkhan.com/forum.php?mod=forumdisplay&fid=2
