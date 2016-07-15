@@ -12,6 +12,7 @@ public:
     hub_call_dbproxy(){
         module_name = "hub_call_dbproxy";
         protcolcall_set.insert(std::make_pair("reg_hub", boost::bind(&hub_call_dbproxy::reg_hub, this, _1)));
+        protcolcall_set.insert(std::make_pair("create_persisted_object", boost::bind(&hub_call_dbproxy::create_persisted_object, this, _1)));
         protcolcall_set.insert(std::make_pair("updata_persisted_object", boost::bind(&hub_call_dbproxy::updata_persisted_object, this, _1)));
         protcolcall_set.insert(std::make_pair("get_object_info", boost::bind(&hub_call_dbproxy::get_object_info, this, _1)));
     }
@@ -23,6 +24,13 @@ public:
     void reg_hub(boost::shared_ptr<std::vector<boost::any> > _event){
         sigreg_hubhandle(
             boost::any_cast<std::string>((*_event)[0]));
+    }
+
+    boost::signals2::signal<void(std::string, int64_t) > sigcreate_persisted_objecthandle;
+    void create_persisted_object(boost::shared_ptr<std::vector<boost::any> > _event){
+        sigcreate_persisted_objecthandle(
+            boost::any_cast<std::string>((*_event)[0]), 
+            boost::any_cast<int64_t>((*_event)[1]));
     }
 
     boost::signals2::signal<void(std::string, std::string, int64_t) > sigupdata_persisted_objecthandle;

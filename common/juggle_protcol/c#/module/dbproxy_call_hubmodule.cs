@@ -22,6 +22,17 @@ namespace module
             }
         }
 
+        public delegate void ack_create_persisted_objecthandle(Int64 argv0);
+        public event ack_create_persisted_objecthandle onack_create_persisted_object;
+        public void ack_create_persisted_object(ArrayList _event)
+        {
+            if(onack_create_persisted_object != null)
+            {
+                var argv0 = ((Int64)_event[0]);
+                onack_create_persisted_object( argv0);
+            }
+        }
+
         public delegate void ack_updata_persisted_objecthandle(Int64 argv0);
         public event ack_updata_persisted_objecthandle onack_updata_persisted_object;
         public void ack_updata_persisted_object(ArrayList _event)

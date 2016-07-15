@@ -24,6 +24,8 @@ module dbproxy_call_logic{
 
 module hub_call_dbproxy{
 	void reg_hub(string uuid);
+	
+	void create_persisted_object(string object_info, int callbackid);
 
 	void updata_persisted_object(string query_json, string object_info, int callbackid);
 
@@ -33,6 +35,8 @@ module hub_call_dbproxy{
 
 module dbproxy_call_hub{
 	void reg_hub_sucess();
+	
+	void ack_create_persisted_object(int callbackid);
 
 	void ack_updata_persisted_object(int callbackid);
 

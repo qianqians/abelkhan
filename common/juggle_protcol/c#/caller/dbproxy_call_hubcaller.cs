@@ -20,6 +20,13 @@ namespace caller
             call_module_method("reg_hub_sucess", _argv);
         }
 
+        public void ack_create_persisted_object(Int64 argv0)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            call_module_method("ack_create_persisted_object", _argv);
+        }
+
         public void ack_updata_persisted_object(Int64 argv0)
         {
             ArrayList _argv = new ArrayList();

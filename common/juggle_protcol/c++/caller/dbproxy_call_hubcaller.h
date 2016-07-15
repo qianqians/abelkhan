@@ -28,6 +28,15 @@ public:
         ch->push(v);
     }
 
+    void ack_create_persisted_object(int64_t argv0){
+        auto v = boost::make_shared<std::vector<boost::any> >();
+        v->push_back("dbproxy_call_hub");
+        v->push_back("ack_create_persisted_object");
+        v->push_back(boost::make_shared<std::vector<boost::any> >());
+        (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
+        ch->push(v);
+    }
+
     void ack_updata_persisted_object(int64_t argv0){
         auto v = boost::make_shared<std::vector<boost::any> >();
         v->push_back("dbproxy_call_hub");

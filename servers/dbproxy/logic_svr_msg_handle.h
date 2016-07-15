@@ -32,7 +32,7 @@ void logic_closed(boost::shared_ptr<dbproxy::closehandle> _closehandle) {
 	_closehandle->logic_closed();
 }
 
-void create_persisted_object(boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string object_info, int64_t callbackid) {
+void logic_create_persisted_object(boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string object_info, int64_t callbackid) {
 	if (!_logicsvrmanager->is_logic(juggle::current_ch)) {
 		return;
 	}

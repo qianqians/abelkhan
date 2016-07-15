@@ -75,7 +75,7 @@ void main(int argc, char * argv[]) {
 	boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager = boost::make_shared<dbproxy::logicsvrmanager>();
 	_logic_call_dbproxy->sigreg_logichandle.connect(boost::bind(&reg_logic, _logicsvrmanager, _closehandle, _1));
 	_logic_call_dbproxy->siglogic_closedhandle.connect(boost::bind(&logic_closed, _closehandle));
-	_logic_call_dbproxy->sigcreate_persisted_objecthandle.connect(boost::bind(&create_persisted_object, _logicsvrmanager, _mongodb_proxy, _1, _2));
+	_logic_call_dbproxy->sigcreate_persisted_objecthandle.connect(boost::bind(&logic_create_persisted_object, _logicsvrmanager, _mongodb_proxy, _1, _2));
 	_logic_call_dbproxy->sigupdata_persisted_objecthandle.connect(boost::bind(&logic_updata_persisted_object, _logicsvrmanager, _mongodb_proxy, _1, _2, _3));
 	_logic_call_dbproxy->sigget_object_infohandle.connect(boost::bind(&logic_get_object_info, _logicsvrmanager, _mongodb_proxy, _1, _2));
 	_dbthings_process->reg_module(_logic_call_dbproxy);
@@ -83,6 +83,7 @@ void main(int argc, char * argv[]) {
 	boost::shared_ptr<module::hub_call_dbproxy> _hub_call_dbproxy = boost::make_shared<module::hub_call_dbproxy>();
 	boost::shared_ptr<dbproxy::hubsvrmanager> _hubsvrmanager = boost::make_shared<dbproxy::hubsvrmanager>();
 	_hub_call_dbproxy->sigreg_hubhandle.connect(boost::bind(&reg_hub, _hubsvrmanager, _closehandle, _1));
+	_hub_call_dbproxy->sigcreate_persisted_objecthandle.connect(boost::bind(&hub_create_persisted_object, _hubsvrmanager, _mongodb_proxy, _1, _2));
 	_hub_call_dbproxy->sigupdata_persisted_objecthandle.connect(boost::bind(&hub_updata_persisted_object, _hubsvrmanager, _mongodb_proxy, _1, _2, _3));
 	_hub_call_dbproxy->sigget_object_infohandle.connect(boost::bind(&hub_get_object_info, _hubsvrmanager, _mongodb_proxy, _1, _2));
 	_dbthings_process->reg_module(_hub_call_dbproxy);

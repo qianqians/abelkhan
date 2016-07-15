@@ -23,6 +23,18 @@ namespace module
             }
         }
 
+        public delegate void create_persisted_objecthandle(String argv0, Int64 argv1);
+        public event create_persisted_objecthandle oncreate_persisted_object;
+        public void create_persisted_object(ArrayList _event)
+        {
+            if(oncreate_persisted_object != null)
+            {
+                var argv0 = ((String)_event[0]);
+                var argv1 = ((Int64)_event[1]);
+                oncreate_persisted_object( argv0,  argv1);
+            }
+        }
+
         public delegate void updata_persisted_objecthandle(String argv0, String argv1, Int64 argv2);
         public event updata_persisted_objecthandle onupdata_persisted_object;
         public void updata_persisted_object(ArrayList _event)

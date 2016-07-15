@@ -12,6 +12,7 @@ public:
     dbproxy_call_hub(){
         module_name = "dbproxy_call_hub";
         protcolcall_set.insert(std::make_pair("reg_hub_sucess", boost::bind(&dbproxy_call_hub::reg_hub_sucess, this, _1)));
+        protcolcall_set.insert(std::make_pair("ack_create_persisted_object", boost::bind(&dbproxy_call_hub::ack_create_persisted_object, this, _1)));
         protcolcall_set.insert(std::make_pair("ack_updata_persisted_object", boost::bind(&dbproxy_call_hub::ack_updata_persisted_object, this, _1)));
         protcolcall_set.insert(std::make_pair("ack_get_object_info", boost::bind(&dbproxy_call_hub::ack_get_object_info, this, _1)));
         protcolcall_set.insert(std::make_pair("ack_get_object_info_end", boost::bind(&dbproxy_call_hub::ack_get_object_info_end, this, _1)));
@@ -24,6 +25,12 @@ public:
     void reg_hub_sucess(boost::shared_ptr<std::vector<boost::any> > _event){
         sigreg_hub_sucesshandle(
 );
+    }
+
+    boost::signals2::signal<void(int64_t) > sigack_create_persisted_objecthandle;
+    void ack_create_persisted_object(boost::shared_ptr<std::vector<boost::any> > _event){
+        sigack_create_persisted_objecthandle(
+            boost::any_cast<int64_t>((*_event)[0]));
     }
 
     boost::signals2::signal<void(int64_t) > sigack_updata_persisted_objecthandle;
