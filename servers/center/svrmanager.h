@@ -28,6 +28,17 @@ public:
 		svr_channel_info.insert(std::make_pair(ch, std::make_tuple(type, ip, port, uuid)));
 		svr_info.insert(std::make_pair(uuid, std::make_tuple(type, ip, port, uuid)));
 		svr_list.push_back(ch);
+
+		if (type == "dbproxy") {
+			if (dbproxy_info.size() > 0) {
+				std::cout << "multi dbproxy connect svr_id:" << uuid << "ip:" << ip << "port" << port << std::endl;
+			}
+			dbproxy_info.push_back(std::make_tuple(type, ip, port, uuid));
+		}
+
+		if (type == "hub") {
+			hub_list.push_back(ch);
+		}
 	}
 
 	void unreg_channel(boost::shared_ptr<juggle::Ichannel> ch) {
@@ -56,6 +67,17 @@ public:
 		return false;
 	}
 
+	bool get_svr_info(std::tuple<std::string, std::string, int64_t, std::string> & info, boost::shared_ptr<juggle::Ichannel> ch) {
+		auto f = svr_channel_info.find(ch);
+		if (f == svr_channel_info.end()) {
+			return false;
+		}
+
+		info = f->second;
+
+		return true;
+	}
+
 	bool get_svr_info(std::tuple<std::string, std::string, int64_t, std::string> & info, std::string uuid) {
 		auto f = svr_info.find(uuid);
 		if (f == svr_info.end()) {
@@ -67,17 +89,37 @@ public:
 		return true;
 	}
 
+	bool get_dbproxy_info(std::tuple<std::string, std::string, int64_t, std::string> & info) {
+		if (dbproxy_info.size() <= 0) {
+			return false;
+		}
+
+		info = dbproxy_info[0];
+
+		return true;
+	}
+
 	void for_each_svr(std::function<void(boost::shared_ptr<juggle::Ichannel> ch)> fn) {
 		for (auto ch : svr_list) {
 			fn(ch);
 		}
 	}
 
+	void for_each_hub(std::function<void(boost::shared_ptr<juggle::Ichannel> ch)> fn) {
+		for (auto ch : hub_list) {
+			fn(ch);
+		}
+	}
+
 private:
+	std::list<boost::shared_ptr<juggle::Ichannel> > hub_list;
+
 	std::list<boost::shared_ptr<juggle::Ichannel> > svr_list;
 
 	std::map<boost::shared_ptr<juggle::Ichannel>, std::tuple<std::string, std::string, int64_t, std::string> > svr_channel_info;
 	std::unordered_map<std::string, std::tuple<std::string, std::string, int64_t, std::string> > svr_info;
+
+	std::vector<std::tuple<std::string, std::string, int64_t, std::string> > dbproxy_info;
 
 
 };

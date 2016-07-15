@@ -42,6 +42,12 @@ public:
 		return false;
 	}
 
+	void for_each_logic(std::function<void(boost::shared_ptr<juggle::Ichannel> ch)> fn) {
+		for (auto ch : logic_svr_channel_list) {
+			fn(ch);
+		}
+	}
+
 private:
 	std::list<boost::shared_ptr<juggle::Ichannel> > logic_svr_channel_list;
 

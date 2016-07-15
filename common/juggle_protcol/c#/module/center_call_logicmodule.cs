@@ -12,6 +12,20 @@ namespace module
 			module_name = "center_call_logic";
         }
 
+        public delegate void distribute_server_addresshandle(String argv0, String argv1, Int64 argv2, String argv3);
+        public event distribute_server_addresshandle ondistribute_server_address;
+        public void distribute_server_address(ArrayList _event)
+        {
+            if(ondistribute_server_address != null)
+            {
+                var argv0 = ((String)_event[0]);
+                var argv1 = ((String)_event[1]);
+                var argv2 = ((Int64)_event[2]);
+                var argv3 = ((String)_event[3]);
+                ondistribute_server_address( argv0,  argv1,  argv2,  argv3);
+            }
+        }
+
         public delegate void ack_get_server_addresshandle(Boolean argv0, String argv1, String argv2, Int64 argv3, String argv4, Int64 argv5);
         public event ack_get_server_addresshandle onack_get_server_address;
         public void ack_get_server_address(ArrayList _event)
