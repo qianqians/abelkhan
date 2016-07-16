@@ -12,7 +12,7 @@ public:
     hub(){
         module_name = "hub";
         protcolcall_set.insert(std::make_pair("reg_logic", boost::bind(&hub::reg_logic, this, _1)));
-        protcolcall_set.insert(std::make_pair("logic_call_hub", boost::bind(&hub::logic_call_hub, this, _1)));
+        protcolcall_set.insert(std::make_pair("logic_call_hub_mothed", boost::bind(&hub::logic_call_hub_mothed, this, _1)));
     }
 
     ~hub(){
@@ -24,9 +24,9 @@ public:
             boost::any_cast<std::string>((*_event)[0]));
     }
 
-    boost::signals2::signal<void(std::string, std::string, std::string) > siglogic_call_hubhandle;
-    void logic_call_hub(boost::shared_ptr<std::vector<boost::any> > _event){
-        siglogic_call_hubhandle(
+    boost::signals2::signal<void(std::string, std::string, std::string) > siglogic_call_hub_mothedhandle;
+    void logic_call_hub_mothed(boost::shared_ptr<std::vector<boost::any> > _event){
+        siglogic_call_hub_mothedhandle(
             boost::any_cast<std::string>((*_event)[0]), 
             boost::any_cast<std::string>((*_event)[1]), 
             boost::any_cast<std::string>((*_event)[2]));

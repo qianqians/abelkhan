@@ -23,16 +23,16 @@ namespace module
             }
         }
 
-        public delegate void logic_call_hubhandle(String argv0, String argv1, String argv2);
-        public event logic_call_hubhandle onlogic_call_hub;
-        public void logic_call_hub(ArrayList _event)
+        public delegate void logic_call_hub_mothedhandle(String argv0, String argv1, String argv2);
+        public event logic_call_hub_mothedhandle onlogic_call_hub_mothed;
+        public void logic_call_hub_mothed(ArrayList _event)
         {
-            if(onlogic_call_hub != null)
+            if(onlogic_call_hub_mothed != null)
             {
                 var argv0 = ((String)_event[0]);
                 var argv1 = ((String)_event[1]);
                 var argv2 = ((String)_event[2]);
-                onlogic_call_hub( argv0,  argv1,  argv2);
+                onlogic_call_hub_mothed( argv0,  argv1,  argv2);
             }
         }
 

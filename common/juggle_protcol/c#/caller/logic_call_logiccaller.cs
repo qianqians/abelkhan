@@ -2,8 +2,6 @@
 using System;
 using System.Collections;
 using System.IO;
-using MsgPack;
-using MsgPack.Serialization;
 
 namespace caller
 {
@@ -21,13 +19,13 @@ namespace caller
             call_module_method("reg_logic", _argv);
         }
 
-        public void client_call_logic(String argv0,String argv1,String argv2)
+        public void logic_call_logic_mothed(String argv0,String argv1,String argv2)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             _argv.Add(argv1);
             _argv.Add(argv2);
-            call_module_method("client_call_logic", _argv);
+            call_module_method("logic_call_logic_mothed", _argv);
         }
 
     }

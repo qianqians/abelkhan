@@ -37,7 +37,7 @@ namespace juggle
 			}
 		}
 
-		public Ichannel current_ch;
+		public static Ichannel current_ch;
 		public String module_name;
     }
 }

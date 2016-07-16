@@ -1,13 +1,13 @@
 module hub{
 	void reg_logic(string uuid);
 
-	void logic_call_hub(string module, string func, string argv);
+	void logic_call_hub_mothed(string module, string func, string argv);
 
 }
 
 module hub_call_logic{
 	void reg_logic_sucess();
 
-	void hub_call_logic(string module, string func, string argv);
+	void hub_call_logic_mothed(string module, string func, string argv);
 
 }

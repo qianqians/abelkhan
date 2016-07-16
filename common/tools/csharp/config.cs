@@ -37,66 +37,66 @@ namespace config
 			return ((Hashtable)handle).ContainsKey(key);
 		}
 
-		bool get_value_bool(String key)
+		public bool get_value_bool(String key)
 		{
 			return (bool)((Hashtable)handle)[key];
 		}
 
-		Int64 get_value_int(String key)
+		public Int64 get_value_int(String key)
 		{
 			return (Int64)((Hashtable)handle)[key];
 		}
 
-		double get_value_float(String key)
+		public double get_value_float(String key)
 		{
 			return (double)((Hashtable)handle)[key];
 		}
 
-		String get_value_string(String key)
+		public String get_value_string(String key)
 		{
 			return (String)((Hashtable)handle)[key];
 		}
 
-		config get_value_dict(String key)
+		public config get_value_dict(String key)
 		{
 			var _handle = ((Hashtable)handle)[key];
 
 			return new config(_handle);
 		}
 
-		config get_value_list(String key)
+		public config get_value_list(String key)
 		{
 			var _handle = ((Hashtable)handle)[key];
 
 			return new config(_handle);
 		}
 
-		Int64 get_list_size()
+		public Int64 get_list_size()
 		{
 			return ((ArrayList)handle).Count;
 		}
 
-		bool get_list_bool(int index)
+		public bool get_list_bool(int index)
 		{
 			return (bool)(((ArrayList)handle)[index]);
 		}
 
-		Int64 get_list_int(int index)
+		public Int64 get_list_int(int index)
 		{
 			return (Int64)(((ArrayList)handle)[index]);
 		}
 
-		double get_list_float(int index)
+		public double get_list_float(int index)
 		{
 			return (double)(((ArrayList)handle)[index]);
 		}
 
-		String get_list_string(int index)
+		public String get_list_string(int index)
 		{
 			return (String)(((ArrayList)handle)[index]);
 		}
 
-		config get_list_dict(int index)
+		public config get_list_dict(int index)
 		{
 			var _handle = (((ArrayList)handle)[index]);
 

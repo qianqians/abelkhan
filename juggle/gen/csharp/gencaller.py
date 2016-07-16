@@ -8,9 +8,7 @@ def gencaller(module_name, funcs):
         code = "/*this caller file is codegen by juggle for c#*/\n"
         code += "using System;\n"
         code += "using System.Collections;\n"
-        code += "using System.IO;\n"
-        code += "using MsgPack;\n"
-        code += "using MsgPack.Serialization;\n\n"
+        code += "using System.IO;\n\n"
 
         code += "namespace caller\n"
         code += "{\n"
