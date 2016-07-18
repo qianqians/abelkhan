@@ -70,6 +70,8 @@ void main(int argc, char * argv[]) {
 	_logic_call_gate->sigreg_logichandle.connect(boost::bind(&reg_logic, _logicsvrmanager, _1));
 	_logic_call_gate->sigack_client_connect_serverhandle.connect(boost::bind(&ack_client_connect_server, _clientmanager, _1, _2));
 	_logic_call_gate->sigforward_logic_call_clienthandle.connect(boost::bind(&forward_logic_call_client, _clientmanager, _1, _2, _3, _4));
+	_logic_call_gate->sigforward_logic_call_group_clienthandle.connect(boost::bind(&forward_logic_call_group_client, _clientmanager, _1, _2, _3, _4));
+	_logic_call_gate->sigforward_logic_call_global_clienthandle.connect(boost::bind(&forward_logic_call_global_client, _clientmanager, _1, _2, _3));
 	_logic_process->reg_module(_logic_call_gate);
 	auto _logic_service = boost::make_shared<service::acceptnetworkservice>(inside_ip, inside_port, _logic_process);
 

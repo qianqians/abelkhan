@@ -39,4 +39,22 @@ void forward_logic_call_client(boost::shared_ptr<gate::clientmanager> _clientman
 	}
 }
 
+void forward_logic_call_group_client(boost::shared_ptr<gate::clientmanager> _clientmanager, boost::shared_ptr<std::vector<boost::any> > uuids, std::string module, std::string func, std::string argv) {
+	for (auto uuid : *uuids) {
+		if (_clientmanager->has_client(boost::any_cast<std::string>(uuid))) {
+			auto client_channel = _clientmanager->get_client_channel(boost::any_cast<std::string>(uuid));
+
+			boost::shared_ptr<caller::gate_call_client> _caller = boost::make_shared<caller::gate_call_client>(client_channel);
+			_caller->call_client(module, func, argv);
+		}
+	}
+}
+
+void forward_logic_call_global_client(boost::shared_ptr<gate::clientmanager> _clientmanager, std::string module, std::string func, std::string argv) {
+	_clientmanager->for_each_client([module, func, argv](std::string client_uuid, boost::shared_ptr<juggle::Ichannel> client_ch, boost::shared_ptr<juggle::Ichannel> logic_ch) {
+		boost::shared_ptr<caller::gate_call_client> _caller = boost::make_shared<caller::gate_call_client>(client_ch);
+		_caller->call_client(module, func, argv);
+	});
+}
+
 #endif //_logic_svr_msg_handle_h

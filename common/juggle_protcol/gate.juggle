@@ -16,4 +16,8 @@ module logic_call_gate{
 
 	void forward_logic_call_client(string uuid, string module, string func, string argv);
 
+	void forward_logic_call_group_client(array uuids, string module, string func, string argv);
+	
+	void forward_logic_call_global_client(string module, string func, string argv);
+
 }

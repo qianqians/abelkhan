@@ -77,6 +77,12 @@ public:
 		return client_map[uuid].second;
 	}
 
+	void for_each_client(std::function<void(std::string, boost::shared_ptr<juggle::Ichannel>, boost::shared_ptr<juggle::Ichannel>)> fn) {
+		for (auto client : client_map){
+			fn(client.first, client.second.first, client.second.second);
+		}
+	}
+
 private:
 	// first client_channel, second logic_channel
 	std::map<std::string, std::pair<boost::shared_ptr<juggle::Ichannel>, boost::shared_ptr<juggle::Ichannel> > > client_map;
