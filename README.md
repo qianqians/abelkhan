@@ -1,5 +1,5 @@
 ﻿# abelkhan
-基于c++和c#的分布式游戏服务器引擎
+分布式游戏服务器框架
 
 文档:http://abelkhan.com/forum.php?mod=forumdisplay&fid=2
 

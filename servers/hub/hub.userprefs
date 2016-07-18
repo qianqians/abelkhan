@@ -5,11 +5,11 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="hub\dbproxy_msg_handle.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="hub\dbproxyproxy.cs">
     <Files>
-      <File FileName="hub\hub.cs" Line="65" Column="56" />
-      <File FileName="hub\dbproxyproxy.cs" Line="2" Column="1" />
-      <File FileName="hub\dbproxy_msg_handle.cs" Line="34" Column="4" />
+      <File FileName="hub\hub.cs" Line="10" Column="44" />
+      <File FileName="hub\dbproxyproxy.cs" Line="12" Column="52" />
+      <File FileName="hub\dbproxy_msg_handle.cs" Line="33" Column="45" />
       <File FileName="..\..\common\juggle_protcol\c#\module\dbproxy_call_hubmodule.cs" Line="36" Column="24" />
     </Files>
   </MonoDevelop.Ide.Workbench>

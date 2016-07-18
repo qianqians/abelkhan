@@ -19,7 +19,7 @@ namespace caller
             call_module_method("reg_logic", _argv);
         }
 
-        public void create_persisted_object(String argv0,Int64 argv1)
+        public void create_persisted_object(String argv0,String argv1)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
@@ -27,7 +27,7 @@ namespace caller
             call_module_method("create_persisted_object", _argv);
         }
 
-        public void updata_persisted_object(String argv0,String argv1,Int64 argv2)
+        public void updata_persisted_object(String argv0,String argv1,String argv2)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
@@ -36,7 +36,7 @@ namespace caller
             call_module_method("updata_persisted_object", _argv);
         }
 
-        public void get_object_info(String argv0,Int64 argv1)
+        public void get_object_info(String argv0,String argv1)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);

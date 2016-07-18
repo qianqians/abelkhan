@@ -31,7 +31,7 @@ void reg_hub(boost::shared_ptr<dbproxy::hubsvrmanager> _hubsvrmanager, boost::sh
 	std::cout << "hub server " << uuid << "connected" << std::endl;
 }
 
-void hub_create_persisted_object(boost::shared_ptr<dbproxy::hubsvrmanager> _hubsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string object_info, int64_t callbackid) {
+void hub_create_persisted_object(boost::shared_ptr<dbproxy::hubsvrmanager> _hubsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string object_info, std::string callbackid) {
 	if (!_hubsvrmanager->is_hub(juggle::current_ch)) {
 		return;
 	}
@@ -42,7 +42,7 @@ void hub_create_persisted_object(boost::shared_ptr<dbproxy::hubsvrmanager> _hubs
 	_caller->ack_create_persisted_object(callbackid);
 }
 
-void hub_updata_persisted_object(boost::shared_ptr<dbproxy::hubsvrmanager> _hubsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string query_json, std::string object_info, int64_t callbackid) {
+void hub_updata_persisted_object(boost::shared_ptr<dbproxy::hubsvrmanager> _hubsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string query_json, std::string object_info, std::string callbackid) {
 	if (!_hubsvrmanager->is_hub(juggle::current_ch)) {
 		return;
 	}
@@ -53,7 +53,7 @@ void hub_updata_persisted_object(boost::shared_ptr<dbproxy::hubsvrmanager> _hubs
 	_caller->ack_updata_persisted_object(callbackid);
 }
 
-void hub_get_object_info(boost::shared_ptr<dbproxy::hubsvrmanager> _hubsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string query_json, int64_t callbackid) {
+void hub_get_object_info(boost::shared_ptr<dbproxy::hubsvrmanager> _hubsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string query_json, std::string callbackid) {
 	if (!_hubsvrmanager->is_hub(juggle::current_ch)) {
 		return;
 	}

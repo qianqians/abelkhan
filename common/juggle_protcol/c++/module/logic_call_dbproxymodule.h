@@ -27,26 +27,26 @@ public:
             boost::any_cast<std::string>((*_event)[0]));
     }
 
-    boost::signals2::signal<void(std::string, int64_t) > sigcreate_persisted_objecthandle;
+    boost::signals2::signal<void(std::string, std::string) > sigcreate_persisted_objecthandle;
     void create_persisted_object(boost::shared_ptr<std::vector<boost::any> > _event){
         sigcreate_persisted_objecthandle(
             boost::any_cast<std::string>((*_event)[0]), 
-            boost::any_cast<int64_t>((*_event)[1]));
+            boost::any_cast<std::string>((*_event)[1]));
     }
 
-    boost::signals2::signal<void(std::string, std::string, int64_t) > sigupdata_persisted_objecthandle;
+    boost::signals2::signal<void(std::string, std::string, std::string) > sigupdata_persisted_objecthandle;
     void updata_persisted_object(boost::shared_ptr<std::vector<boost::any> > _event){
         sigupdata_persisted_objecthandle(
             boost::any_cast<std::string>((*_event)[0]), 
             boost::any_cast<std::string>((*_event)[1]), 
-            boost::any_cast<int64_t>((*_event)[2]));
+            boost::any_cast<std::string>((*_event)[2]));
     }
 
-    boost::signals2::signal<void(std::string, int64_t) > sigget_object_infohandle;
+    boost::signals2::signal<void(std::string, std::string) > sigget_object_infohandle;
     void get_object_info(boost::shared_ptr<std::vector<boost::any> > _event){
         sigget_object_infohandle(
             boost::any_cast<std::string>((*_event)[0]), 
-            boost::any_cast<int64_t>((*_event)[1]));
+            boost::any_cast<std::string>((*_event)[1]));
     }
 
     boost::signals2::signal<void() > siglogic_closedhandle;

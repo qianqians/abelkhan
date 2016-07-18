@@ -26,22 +26,22 @@ public:
 );
     }
 
-    boost::signals2::signal<void(int64_t) > sigack_create_persisted_objecthandle;
+    boost::signals2::signal<void(std::string) > sigack_create_persisted_objecthandle;
     void ack_create_persisted_object(boost::shared_ptr<std::vector<boost::any> > _event){
         sigack_create_persisted_objecthandle(
-            boost::any_cast<int64_t>((*_event)[0]));
+            boost::any_cast<std::string>((*_event)[0]));
     }
 
-    boost::signals2::signal<void(int64_t) > sigack_updata_persisted_objecthandle;
+    boost::signals2::signal<void(std::string) > sigack_updata_persisted_objecthandle;
     void ack_updata_persisted_object(boost::shared_ptr<std::vector<boost::any> > _event){
         sigack_updata_persisted_objecthandle(
-            boost::any_cast<int64_t>((*_event)[0]));
+            boost::any_cast<std::string>((*_event)[0]));
     }
 
-    boost::signals2::signal<void(int64_t, std::string) > sigack_get_object_infohandle;
+    boost::signals2::signal<void(std::string, std::string) > sigack_get_object_infohandle;
     void ack_get_object_info(boost::shared_ptr<std::vector<boost::any> > _event){
         sigack_get_object_infohandle(
-            boost::any_cast<int64_t>((*_event)[0]), 
+            boost::any_cast<std::string>((*_event)[0]), 
             boost::any_cast<std::string>((*_event)[1]));
     }
 

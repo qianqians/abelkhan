@@ -8,8 +8,8 @@ namespace hub
 	{
 		public dbproxyproxy(juggle.Ichannel ch)
 		{
-			callbackidcount = 0;
 			_hub_call_dbproxy = new caller.hub_call_dbproxy(ch);
+			callback_set = new Dictionary<string, object>();
 		}
 
 		public void reg_hub(String uuid)
@@ -19,41 +19,41 @@ namespace hub
 
 		public void createPersistedObject(String object_info, onCreatePersistedObjectHandle _handle)
 		{
-			create_persisted_object(object_info, callbackidcount);
-			callback_set.Add(callbackidcount, (object)_handle);
-			callbackidcount++;
+			var callbackid = System.Guid.NewGuid().ToString();
+			create_persisted_object(object_info, callbackid);
+			callback_set.Add(callbackid, (object)_handle);
 		}
 
 		public void updataPersistedObject(String query_object, String updata_info, onUpdataPersistedObjectHandle _handle)
 		{
-			updata_persisted_object(query_object, updata_info, callbackidcount);
-			callback_set.Add(callbackidcount, (object)_handle);
-			callbackidcount++;
+			var callbackid = System.Guid.NewGuid().ToString();
+			updata_persisted_object(query_object, updata_info, callbackid);
+			callback_set.Add(callbackid, (object)_handle);
 		}
 
 		public void getObjectInfo(String query_object, onGetObjectInfoHandle _handle)
 		{
-			get_object_info(query_object, callbackidcount);
-			callback_set.Add(callbackidcount, (object)_handle);
-			callbackidcount++;
+			var callbackid = System.Guid.NewGuid().ToString();
+			get_object_info(query_object, callbackid);
+			callback_set.Add(callbackid, (object)_handle);
 		}
 
-		private void create_persisted_object(String object_info, Int64 callbackid)
+		private void create_persisted_object(String object_info, String callbackid)
 		{
 			_hub_call_dbproxy.create_persisted_object(object_info, callbackid);	
 		}
 
-		private void updata_persisted_object(String query_object, String updata_info, Int64 callbackid)
+		private void updata_persisted_object(String query_object, String updata_info, String callbackid)
 		{
 			_hub_call_dbproxy.updata_persisted_object(query_object, updata_info, callbackid);
 		}
 
-		private void get_object_info(String query_object, Int64 callbackid)
+		private void get_object_info(String query_object, String callbackid)
 		{
 			_hub_call_dbproxy.get_object_info(query_object, callbackid);
 		}
 
-		public object begin_callback(Int64 callbackid)
+		public object begin_callback(String callbackid)
 		{
 			if (callback_set.ContainsKey(callbackid))
 			{
@@ -63,7 +63,7 @@ namespace hub
 			return null;
 		}
 
-		public void end_callback(Int64 callbackid)
+		public void end_callback(String callbackid)
 		{
 			if (callback_set.ContainsKey(callbackid))
 			{
@@ -75,8 +75,7 @@ namespace hub
 		public delegate void onUpdataPersistedObjectHandle();
 		public delegate void onGetObjectInfoHandle(ArrayList obejctinfoarray);
 
-		private Int64 callbackidcount;
-		private Dictionary<Int64, object> callback_set;
+		private Dictionary<String, object> callback_set;
 
 		private caller.hub_call_dbproxy _hub_call_dbproxy;
 	}

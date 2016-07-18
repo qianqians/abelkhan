@@ -28,7 +28,7 @@ public:
         ch->push(v);
     }
 
-    void ack_create_persisted_object(int64_t argv0){
+    void ack_create_persisted_object(std::string argv0){
         auto v = boost::make_shared<std::vector<boost::any> >();
         v->push_back("dbproxy_call_hub");
         v->push_back("ack_create_persisted_object");
@@ -37,7 +37,7 @@ public:
         ch->push(v);
     }
 
-    void ack_updata_persisted_object(int64_t argv0){
+    void ack_updata_persisted_object(std::string argv0){
         auto v = boost::make_shared<std::vector<boost::any> >();
         v->push_back("dbproxy_call_hub");
         v->push_back("ack_updata_persisted_object");
@@ -46,7 +46,7 @@ public:
         ch->push(v);
     }
 
-    void ack_get_object_info(int64_t argv0,std::string argv1){
+    void ack_get_object_info(std::string argv0,std::string argv1){
         auto v = boost::make_shared<std::vector<boost::any> >();
         v->push_back("dbproxy_call_hub");
         v->push_back("ack_get_object_info");
@@ -56,7 +56,7 @@ public:
         ch->push(v);
     }
 
-    void ack_get_object_info_end(int64_t argv0){
+    void ack_get_object_info_end(std::string argv0){
         auto v = boost::make_shared<std::vector<boost::any> >();
         v->push_back("dbproxy_call_hub");
         v->push_back("ack_get_object_info_end");

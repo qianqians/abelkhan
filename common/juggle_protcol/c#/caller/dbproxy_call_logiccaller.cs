@@ -18,21 +18,21 @@ namespace caller
             call_module_method("reg_logic_sucess", _argv);
         }
 
-        public void ack_create_persisted_object(Int64 argv0)
+        public void ack_create_persisted_object(String argv0)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             call_module_method("ack_create_persisted_object", _argv);
         }
 
-        public void ack_updata_persisted_object(Int64 argv0)
+        public void ack_updata_persisted_object(String argv0)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             call_module_method("ack_updata_persisted_object", _argv);
         }
 
-        public void ack_get_object_info(Int64 argv0,String argv1)
+        public void ack_get_object_info(String argv0,String argv1)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
