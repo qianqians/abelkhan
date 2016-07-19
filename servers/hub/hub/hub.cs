@@ -16,20 +16,22 @@ namespace hub
 				_config = _config.get_value_dict(args[1]);
 			}
 
+			name = _config.get_value_string("hub_name");
+
 			_closehandle = new closehandle();
 
 			logics = new logicmanager();
 			_modulemanager = new common.modulemanager();
 
-			var logic_ip = _config.get_value_string("logic_ip");
-			var logic_port = (short)_config.get_value_int("logic_port");
+			var ip = _config.get_value_string("ip");
+			var port = (short)_config.get_value_int("port");
 			_logic_msg_handle = new logic_msg_handle(_modulemanager, logics);
 			_logic_call_hub = new module.hub();
 			_logic_call_hub.onlogic_call_hub_mothed += _logic_msg_handle.logic_call_hub_mothed;
 			_logic_call_hub.onreg_logic += _logic_msg_handle.reg_logic;
 			var _logic_process = new juggle.process();
 			_logic_process.reg_module(_logic_call_hub);
-			_accept_logic_service = new service.acceptnetworkservice(logic_ip, logic_port, _logic_process);
+			_accept_logic_service = new service.acceptnetworkservice(ip, port, _logic_process);
 
 			var center_ip = _center_config.get_value_string("ip");
 			var center_port = (short)_center_config.get_value_int("port");
@@ -41,7 +43,7 @@ namespace hub
 			_connect_center_service = new service.connectnetworkservice(_center_process);
 			var center_ch = _connect_center_service.connect(center_ip, center_port);
 			_centerproxy = new centerproxy(center_ch);
-			_centerproxy.reg_hub(logic_ip, logic_port, uuid);
+			_centerproxy.reg_hub(ip, port, uuid);
 			_center_msg_handle = new center_msg_handle(this, _closehandle, _centerproxy);
 			_center_call_server.onreg_server_sucess += _center_msg_handle.reg_server_sucess;
 			_center_call_server.onclose_server += _center_msg_handle.close_server;
@@ -64,6 +66,7 @@ namespace hub
 
 			_dbproxy_msg_handle = new dbproxy_msg_handle(dbproxy);
 			_dbproxy_call_hub = new module.dbproxy_call_hub();
+			_dbproxy_call_hub.onreg_hub_sucess += _dbproxy_msg_handle.reg_hub_sucess;
 			_dbproxy_call_hub.onack_create_persisted_object += _dbproxy_msg_handle.ack_create_persisted_object;
 			_dbproxy_call_hub.onack_updata_persisted_object += _dbproxy_msg_handle.ack_updata_persisted_object;
 			_dbproxy_call_hub.onack_get_object_info += _dbproxy_msg_handle.ack_get_object_info;
@@ -126,6 +129,8 @@ namespace hub
 				}
 			}
 		}
+
+		public static String name;
 
 		private String uuid;
 

@@ -4,9 +4,13 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="..\..\common\juggle_protcol\c#\module\center_call_logicmodule.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="logic\gatemanager.cs">
     <Files>
-      <File FileName="..\..\common\juggle_protcol\c#\module\center_call_logicmodule.cs" Line="1" Column="1" />
+      <File FileName="logic\logic.cs" Line="63" Column="57" />
+      <File FileName="logic\gatemanager.cs" Line="77" Column="69" />
+      <File FileName="logic\gateproxy.cs" Line="33" Column="88" />
+      <File FileName="logic\gate_msg_handle.cs" Line="39" Column="35" />
+      <File FileName="..\..\common\juggle_protcol\c#\module\gate_call_logicmodule.cs" Line="48" Column="46" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.ItemProperties.logic PreferredExecutionTarget="MonoDevelop.Default" />

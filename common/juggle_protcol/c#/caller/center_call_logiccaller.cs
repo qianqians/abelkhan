@@ -22,7 +22,7 @@ namespace caller
             call_module_method("distribute_server_address", _argv);
         }
 
-        public void ack_get_server_address(Boolean argv0,String argv1,String argv2,Int64 argv3,String argv4,Int64 argv5)
+        public void ack_get_server_address(Boolean argv0,String argv1,String argv2,Int64 argv3,String argv4,String argv5)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);

@@ -12,13 +12,14 @@ namespace module
 			module_name = "hub_call_logic";
         }
 
-        public delegate void reg_logic_sucesshandle();
-        public event reg_logic_sucesshandle onreg_logic_sucess;
-        public void reg_logic_sucess(ArrayList _event)
+        public delegate void reg_logic_sucess_and_notify_hub_nominatehandle(String argv0);
+        public event reg_logic_sucess_and_notify_hub_nominatehandle onreg_logic_sucess_and_notify_hub_nominate;
+        public void reg_logic_sucess_and_notify_hub_nominate(ArrayList _event)
         {
-            if(onreg_logic_sucess != null)
+            if(onreg_logic_sucess_and_notify_hub_nominate != null)
             {
-                onreg_logic_sucess();
+                var argv0 = ((String)_event[0]);
+                onreg_logic_sucess_and_notify_hub_nominate( argv0);
             }
         }
 

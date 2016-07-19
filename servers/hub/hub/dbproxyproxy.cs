@@ -24,17 +24,17 @@ namespace hub
 			callback_set.Add(callbackid, (object)_handle);
 		}
 
-		public void updataPersistedObject(String query_object, String updata_info, onUpdataPersistedObjectHandle _handle)
+		public void updataPersistedObject(String query_json, String updata_info, onUpdataPersistedObjectHandle _handle)
 		{
 			var callbackid = System.Guid.NewGuid().ToString();
-			updata_persisted_object(query_object, updata_info, callbackid);
+			updata_persisted_object(query_json, updata_info, callbackid);
 			callback_set.Add(callbackid, (object)_handle);
 		}
 
-		public void getObjectInfo(String query_object, onGetObjectInfoHandle _handle)
+		public void getObjectInfo(String query_json, onGetObjectInfoHandle _handle)
 		{
 			var callbackid = System.Guid.NewGuid().ToString();
-			get_object_info(query_object, callbackid);
+			get_object_info(query_json, callbackid);
 			callback_set.Add(callbackid, (object)_handle);
 		}
 

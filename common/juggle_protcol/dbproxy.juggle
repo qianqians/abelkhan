@@ -3,7 +3,7 @@ module logic_call_dbproxy{
 
 	void create_persisted_object(string object_info, string callbackid);
 
-	void updata_persisted_object(string objectid, string object_info, string callbackid);
+	void updata_persisted_object(string query_json, string object_info, string callbackid);
 
 	void get_object_info(string objectid, string callbackid);
 
@@ -19,6 +19,8 @@ module dbproxy_call_logic{
 	void ack_updata_persisted_object(string callbackid);
 
 	void ack_get_object_info(string callbackid, string object_info);
+
+	void ack_get_object_info_end(string callbackid);
 
 }
 

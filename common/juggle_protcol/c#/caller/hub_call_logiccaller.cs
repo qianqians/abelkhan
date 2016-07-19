@@ -12,10 +12,11 @@ namespace caller
             module_name = "hub_call_logic";
         }
 
-        public void reg_logic_sucess()
+        public void reg_logic_sucess_and_notify_hub_nominate(String argv0)
         {
             ArrayList _argv = new ArrayList();
-            call_module_method("reg_logic_sucess", _argv);
+            _argv.Add(argv0);
+            call_module_method("reg_logic_sucess_and_notify_hub_nominate", _argv);
         }
 
         public void hub_call_logic_mothed(String argv0,String argv1,String argv2)

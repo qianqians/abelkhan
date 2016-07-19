@@ -56,5 +56,16 @@ namespace module
             }
         }
 
+        public delegate void ack_get_object_info_endhandle(String argv0);
+        public event ack_get_object_info_endhandle onack_get_object_info_end;
+        public void ack_get_object_info_end(ArrayList _event)
+        {
+            if(onack_get_object_info_end != null)
+            {
+                var argv0 = ((String)_event[0]);
+                onack_get_object_info_end( argv0);
+            }
+        }
+
 	}
 }

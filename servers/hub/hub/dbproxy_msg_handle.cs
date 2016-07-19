@@ -10,6 +10,10 @@ namespace hub
 			_dbproxy = dbproxy_;
 		}
 
+		public void reg_hub_sucess()
+		{
+		}
+
 		public void ack_create_persisted_object(String callbackid)
 		{
 			dbproxyproxy.onCreatePersistedObjectHandle _handle = (dbproxyproxy.onCreatePersistedObjectHandle)_dbproxy.begin_callback(callbackid);

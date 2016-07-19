@@ -12,11 +12,20 @@ namespace caller
             module_name = "logic_call_logic";
         }
 
-        public void reg_logic(String argv0)
+        public void reg_logic(String argv0,String argv1)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
+            _argv.Add(argv1);
             call_module_method("reg_logic", _argv);
+        }
+
+        public void ack_reg_logic(String argv0,String argv1)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            _argv.Add(argv1);
+            call_module_method("ack_reg_logic", _argv);
         }
 
         public void logic_call_logic_mothed(String argv0,String argv1,String argv2)

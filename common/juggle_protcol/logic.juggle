@@ -10,7 +10,9 @@ module gate_call_logic{
 }
 
 module logic_call_logic{
-	void reg_logic(string uuid);
+	void reg_logic(string uuid, string callbackid);
+
+	void ack_reg_logic(string uuid, string callbackid);
 	
 	void logic_call_logic_mothed(string module, string func, string argv);
 

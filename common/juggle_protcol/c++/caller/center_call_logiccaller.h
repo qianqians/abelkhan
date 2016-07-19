@@ -32,7 +32,7 @@ public:
         ch->push(v);
     }
 
-    void ack_get_server_address(bool argv0,std::string argv1,std::string argv2,int64_t argv3,std::string argv4,int64_t argv5){
+    void ack_get_server_address(bool argv0,std::string argv1,std::string argv2,int64_t argv3,std::string argv4,std::string argv5){
         auto v = boost::make_shared<std::vector<boost::any> >();
         v->push_back("center_call_logic");
         v->push_back("ack_get_server_address");

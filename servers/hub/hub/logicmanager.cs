@@ -12,7 +12,9 @@ namespace hub
 
 		public void reg_logic(String uuid, juggle.Ichannel ch)
 		{
-			logicproxys.Add(uuid, new logicproxy(ch));
+			var _logicproxy = new logicproxy(ch);
+			logicproxys.Add(uuid, _logicproxy);
+			_logicproxy.reg_logic_sucess_and_notify_hub_nominate();
 		}
 
 		private bool has_logic(String uuid)
@@ -43,7 +45,7 @@ namespace hub
 			}
 		}
 
-		public void call_global_logic(String[] logic_uuids, String module_name, String mothed_name, ArrayList argvs)
+		public void call_global_logic(String module_name, String mothed_name, ArrayList argvs)
 		{
 			foreach (var _logicproxy in logicproxys.Values)
 			{

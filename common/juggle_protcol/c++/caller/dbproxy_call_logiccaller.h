@@ -56,6 +56,15 @@ public:
         ch->push(v);
     }
 
+    void ack_get_object_info_end(std::string argv0){
+        auto v = boost::make_shared<std::vector<boost::any> >();
+        v->push_back("dbproxy_call_logic");
+        v->push_back("ack_get_object_info_end");
+        v->push_back(boost::make_shared<std::vector<boost::any> >());
+        (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
+        ch->push(v);
+    }
+
 };
 
 }

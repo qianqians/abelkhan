@@ -20,12 +20,23 @@ public:
     ~logic_call_logic(){
     }
 
-    void reg_logic(std::string argv0){
+    void reg_logic(std::string argv0,std::string argv1){
         auto v = boost::make_shared<std::vector<boost::any> >();
         v->push_back("logic_call_logic");
         v->push_back("reg_logic");
         v->push_back(boost::make_shared<std::vector<boost::any> >());
         (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
+        (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv1);
+        ch->push(v);
+    }
+
+    void ack_reg_logic(std::string argv0,std::string argv1){
+        auto v = boost::make_shared<std::vector<boost::any> >();
+        v->push_back("logic_call_logic");
+        v->push_back("ack_reg_logic");
+        v->push_back(boost::make_shared<std::vector<boost::any> >());
+        (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
+        (boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv1);
         ch->push(v);
     }
 

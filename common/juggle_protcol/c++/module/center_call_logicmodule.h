@@ -27,7 +27,7 @@ public:
             boost::any_cast<std::string>((*_event)[3]));
     }
 
-    boost::signals2::signal<void(bool, std::string, std::string, int64_t, std::string, int64_t) > sigack_get_server_addresshandle;
+    boost::signals2::signal<void(bool, std::string, std::string, int64_t, std::string, std::string) > sigack_get_server_addresshandle;
     void ack_get_server_address(boost::shared_ptr<std::vector<boost::any> > _event){
         sigack_get_server_addresshandle(
             boost::any_cast<bool>((*_event)[0]), 
@@ -35,7 +35,7 @@ public:
             boost::any_cast<std::string>((*_event)[2]), 
             boost::any_cast<int64_t>((*_event)[3]), 
             boost::any_cast<std::string>((*_event)[4]), 
-            boost::any_cast<int64_t>((*_event)[5]));
+            boost::any_cast<std::string>((*_event)[5]));
     }
 
 };

@@ -12,14 +12,27 @@ namespace module
 			module_name = "logic_call_logic";
         }
 
-        public delegate void reg_logichandle(String argv0);
+        public delegate void reg_logichandle(String argv0, String argv1);
         public event reg_logichandle onreg_logic;
         public void reg_logic(ArrayList _event)
         {
             if(onreg_logic != null)
             {
                 var argv0 = ((String)_event[0]);
-                onreg_logic( argv0);
+                var argv1 = ((String)_event[1]);
+                onreg_logic( argv0,  argv1);
+            }
+        }
+
+        public delegate void ack_reg_logichandle(String argv0, String argv1);
+        public event ack_reg_logichandle onack_reg_logic;
+        public void ack_reg_logic(ArrayList _event)
+        {
+            if(onack_reg_logic != null)
+            {
+                var argv0 = ((String)_event[0]);
+                var argv1 = ((String)_event[1]);
+                onack_reg_logic( argv0,  argv1);
             }
         }
 

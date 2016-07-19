@@ -15,6 +15,7 @@ public:
         protcolcall_set.insert(std::make_pair("ack_create_persisted_object", boost::bind(&dbproxy_call_logic::ack_create_persisted_object, this, _1)));
         protcolcall_set.insert(std::make_pair("ack_updata_persisted_object", boost::bind(&dbproxy_call_logic::ack_updata_persisted_object, this, _1)));
         protcolcall_set.insert(std::make_pair("ack_get_object_info", boost::bind(&dbproxy_call_logic::ack_get_object_info, this, _1)));
+        protcolcall_set.insert(std::make_pair("ack_get_object_info_end", boost::bind(&dbproxy_call_logic::ack_get_object_info_end, this, _1)));
     }
 
     ~dbproxy_call_logic(){
@@ -43,6 +44,12 @@ public:
         sigack_get_object_infohandle(
             boost::any_cast<std::string>((*_event)[0]), 
             boost::any_cast<std::string>((*_event)[1]));
+    }
+
+    boost::signals2::signal<void(std::string) > sigack_get_object_info_endhandle;
+    void ack_get_object_info_end(boost::shared_ptr<std::vector<boost::any> > _event){
+        sigack_get_object_info_endhandle(
+            boost::any_cast<std::string>((*_event)[0]));
     }
 
 };

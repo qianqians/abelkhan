@@ -12,7 +12,7 @@ namespace caller
             module_name = "logic_call_center";
         }
 
-        public void req_get_server_address(String argv0,Int64 argv1)
+        public void req_get_server_address(String argv0,String argv1)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);

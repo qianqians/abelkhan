@@ -18,14 +18,14 @@ module center_call_server{
 }
 
 module logic_call_center{
-	void req_get_server_address(string uuid, int callbaclid);
+	void req_get_server_address(string uuid, string callbaclid);
 
 }
 
 module center_call_logic{
 	void distribute_server_address(string type, string ip, int port, string uuid);
 
-	void ack_get_server_address(bool have_svr, string type, string ip, int port, string uuid, int callbaclid);
+	void ack_get_server_address(bool have_svr, string type, string ip, int port, string uuid, string callbaclid);
 
 }
 
