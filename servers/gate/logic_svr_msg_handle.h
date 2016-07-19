@@ -21,12 +21,23 @@ void reg_logic(boost::shared_ptr<gate::logicsvrmanager> _logicsvrmanager, std::s
 	std::cout << "logic server " << uuid << "connected" << std::endl;
 }
 
-void ack_client_connect_server(boost::shared_ptr<gate::clientmanager> _clientmanager, std::string uuid, std::string result) {
+void ack_client_connect_server(boost::shared_ptr<gate::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<gate::clientmanager> _clientmanager, boost::shared_ptr<service::timerservice> _timerservice, std::string uuid, std::string result) {
 	if (_clientmanager->has_client(uuid)) {
 		auto client_channel = _clientmanager->get_client_channel(uuid);
 
-		boost::shared_ptr<caller::gate_call_client> _caller = boost::make_shared<caller::gate_call_client>(client_channel);
-		_caller->ack_connect_server(result);
+		if (result != "svr_is_busy")
+		{
+			boost::shared_ptr<caller::gate_call_client> _caller = boost::make_shared<caller::gate_call_client>(client_channel);
+			_caller->ack_connect_server(result);
+		}
+		else {
+			boost::shared_ptr<juggle::Ichannel> logic_channel = _logicsvrmanager->get_logic();
+
+			_clientmanager->reg_client(uuid, juggle::current_ch, logic_channel, _timerservice->ticktime);
+
+			boost::shared_ptr<caller::gate_call_logic> _caller = boost::make_shared<caller::gate_call_logic>(logic_channel);
+			_caller->client_connect(uuid);
+		}
 	}
 }
 

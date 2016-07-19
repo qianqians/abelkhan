@@ -47,6 +47,11 @@ void main(int argc, char * argv[]) {
 		_config = _config->get_value_dict(argv[2]);
 	}
 
+	int64_t tick = clock();
+	int64_t tickcount = 0;
+
+	boost::shared_ptr<service::timerservice> _timerservice = boost::make_shared<service::timerservice>(tick);
+
 	boost::shared_ptr<juggle::process> _center_process = boost::make_shared<juggle::process>();
 	auto _connectnetworkservice = boost::make_shared<service::connectnetworkservice>(_center_process);
 	auto center_ip = _center_config->get_value_string("ip");
@@ -68,17 +73,13 @@ void main(int argc, char * argv[]) {
 	auto _logicsvrmanager = boost::make_shared<gate::logicsvrmanager>();
 	auto _clientmanager = boost::make_shared<gate::clientmanager>();
 	_logic_call_gate->sigreg_logichandle.connect(boost::bind(&reg_logic, _logicsvrmanager, _1));
-	_logic_call_gate->sigack_client_connect_serverhandle.connect(boost::bind(&ack_client_connect_server, _clientmanager, _1, _2));
+	_logic_call_gate->sigack_client_connect_serverhandle.connect(boost::bind(&ack_client_connect_server, _logicsvrmanager, _clientmanager, _timerservice, _1, _2));
 	_logic_call_gate->sigforward_logic_call_clienthandle.connect(boost::bind(&forward_logic_call_client, _clientmanager, _1, _2, _3, _4));
 	_logic_call_gate->sigforward_logic_call_group_clienthandle.connect(boost::bind(&forward_logic_call_group_client, _clientmanager, _1, _2, _3, _4));
 	_logic_call_gate->sigforward_logic_call_global_clienthandle.connect(boost::bind(&forward_logic_call_global_client, _clientmanager, _1, _2, _3));
 	_logic_process->reg_module(_logic_call_gate);
 	auto _logic_service = boost::make_shared<service::acceptnetworkservice>(inside_ip, inside_port, _logic_process);
 
-	int64_t tick = clock();
-	int64_t tickcount = 0;
-
-	boost::shared_ptr<service::timerservice> _timerservice = boost::make_shared<service::timerservice>(tick);
 	_timerservice->addticktime(tick + 5 * 60 * 1000, boost::bind(&heartbeat_handle, _clientmanager, _timerservice, _1));
 
 	auto _client_process = boost::make_shared<juggle::process>();
