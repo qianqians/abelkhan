@@ -14,11 +14,13 @@
 
 #include <caller/center_call_logiccaller.h>
 #include <caller/center_call_hubcaller.h>
+#include <caller/center_call_servercaller.h>
 
 #include "svrmanager.h"
 
 void reg_server(boost::shared_ptr<center::svrmanager> _svrmanager, boost::shared_ptr<center::logicsvrmanager> _logicsvrmanager, std::string type, std::string ip, int64_t port, std::string uuid) {
-	_svrmanager->reg_channel(juggle::current_ch, type, ip, port, uuid);
+	auto _caller = boost::make_shared<caller::center_call_server>(juggle::current_ch);
+	_caller->reg_server_sucess();
 
 	_logicsvrmanager->for_each_logic([type, ip, port, uuid](boost::shared_ptr<juggle::Ichannel> ch) {
 		auto _caller = boost::make_shared<caller::center_call_logic>(ch);
@@ -52,7 +54,9 @@ void reg_server(boost::shared_ptr<center::svrmanager> _svrmanager, boost::shared
 		});
 	}
 
-	std::cout << type << " server" << uuid << " connected" << std::endl;
+	_svrmanager->reg_channel(juggle::current_ch, type, ip, port, uuid);
+
+	std::cout << type << " server " << uuid << " connected" << std::endl;
 }
 
 #endif //_svr_msg_handle_h

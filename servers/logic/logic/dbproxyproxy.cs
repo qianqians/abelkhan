@@ -21,6 +21,7 @@ namespace logic
 
 		public void reg_logic(String uuid)
 		{
+			Console.WriteLine("begin connect dbproxy server");
 			_logic_call_dbproxy.reg_logic(uuid);
 		}
 

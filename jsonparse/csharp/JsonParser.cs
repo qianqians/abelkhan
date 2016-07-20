@@ -123,13 +123,13 @@ namespace System.Text.Json
                 }
 
                 value = value.Trim();
-                while (value[0] == '\n' || value[0] == '\t')
+                while (value[0] == '\n' || value[0] == '\t' || value[0] == '\0')
                 {
                     value = value.Substring(1, value.Length - 1);
                 }
                 String v = value;
                 key = key.Trim();
-                while (key[0] == '\n' || key[0] == '\t')
+                while (key[0] == '\n' || key[0] == '\t' || key[0] == '\0')
                 {
                     key = key.Substring(1, key.Length - 1);
                 }
@@ -202,7 +202,7 @@ namespace System.Text.Json
                     return _c;
                 }
 
-                while (value[0] == '\n' || value[0] == '\t')
+                while (value[0] == '\n' || value[0] == '\t' || value[0] == '\0')
                 {
                     value = value.Substring(1, value.Length - 1);
                 }
@@ -320,7 +320,7 @@ namespace System.Text.Json
                         if (_table != null)
                         {
                             key = key.Trim();
-                            while (key[0] == '\n' || key[0] == '\t')
+                            while (key[0] == '\n' || key[0] == '\t' || key[0] == '\0')
                             {
                                 key = key.Substring(1, key.Length - 1);
                             }
@@ -363,7 +363,7 @@ namespace System.Text.Json
                         {
                             s.Push(_table);
                             key = key.Trim();
-                            while (key[0] == '\n' || key[0] == '\t')
+                            while (key[0] == '\n' || key[0] == '\t' || key[0] == '\0')
                             {
                                 key = key.Substring(1, key.Length - 1);
                             }

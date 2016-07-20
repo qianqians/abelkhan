@@ -11,6 +11,7 @@ namespace logic
 
 		public void reg_logic()
 		{
+			Console.WriteLine("begin connect hub server");
 			_logic_call_hub.reg_logic(logic.uuid);
 		}
 

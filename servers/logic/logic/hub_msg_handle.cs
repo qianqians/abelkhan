@@ -10,6 +10,7 @@ namespace logic
 
 		public void reg_logic_sucess_and_notify_hub_nominate(String hub_name)
 		{
+			Console.WriteLine("connect hub server sucess");
 			logic.hubs.reg_hub(hub_name, juggle.Imodule.current_ch);
 		}
 

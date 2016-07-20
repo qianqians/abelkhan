@@ -12,6 +12,7 @@ namespace logic
 
 		public void reg_logic_sucess()
 		{
+			Console.WriteLine("connect dbproxy server sucess");
 		}
 
 		public void ack_create_persisted_object(String callbackid)

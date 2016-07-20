@@ -17,6 +17,7 @@ namespace logic
 
 		public void reg_server_sucess()
 		{
+			Console.WriteLine("connect center server sucess");
 			_centerproxy.is_reg_sucess = true;
 		}
 
@@ -37,7 +38,7 @@ namespace logic
 			}
 			else if (type == "gate")
 			{
-				logic.gates.connaet_gate(uuid, ip, (short)port);
+				logic.gates.connect_gate(uuid, ip, (short)port);
 			}
 		}
 
@@ -53,7 +54,7 @@ namespace logic
 			}
 			else if (type == "gate")
 			{
-				logic.gates.connaet_gate(uuid, ip, (short)port);
+				logic.gates.connect_gate(uuid, ip, (short)port);
 			}
 		}
 

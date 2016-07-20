@@ -29,8 +29,9 @@ public:
 			throw std::exception(("cannot find config file" + file).c_str());
 		}
 
-		std::string buff;
-		fs >> buff;
+		std::stringstream buffer;
+		buffer << fs.rdbuf();
+		std::string buff(buffer.str());
 
 		Fossilizid::JsonParse::unpacker(handle, buff);
 	}

@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\gate\gate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\gate\centerproxy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\gate\clientmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\gate\logicsvrmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\gate\closehandle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\gate\centerproxy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\gate\client_msg_handle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\gate\clientmanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\gate\logicsvrmanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\gate\logic_svr_msg_handle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\gate\center_msg_handle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\gate\closehandle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\gate\heartbeat_handle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\gate\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{CC3BFFD0-D101-3949-9BF8-26BE6402322D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{F03844A5-2794-39CB-9796-D29F00CD1AA2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

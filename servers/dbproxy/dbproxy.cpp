@@ -54,6 +54,7 @@ void main(int argc, char * argv[]) {
 	auto center_port = (short)_center_config->get_value_int("port");
 	auto _center_ch = _connectnetworkservice->connect(center_ip, center_port);
 	boost::shared_ptr<dbproxy::centerproxy> _centerproxy = boost::make_shared<dbproxy::centerproxy>(_center_ch);
+	
 	auto ip = _config->get_value_string("ip");
 	auto port = (short)_config->get_value_int("port");
 	_centerproxy->reg_server(ip, port, svr_uuid);
@@ -82,7 +83,7 @@ void main(int argc, char * argv[]) {
 
 	boost::shared_ptr<module::hub_call_dbproxy> _hub_call_dbproxy = boost::make_shared<module::hub_call_dbproxy>();
 	boost::shared_ptr<dbproxy::hubsvrmanager> _hubsvrmanager = boost::make_shared<dbproxy::hubsvrmanager>();
-	_hub_call_dbproxy->sigreg_hubhandle.connect(boost::bind(&reg_hub, _hubsvrmanager, _closehandle, _1));
+	_hub_call_dbproxy->sigreg_hubhandle.connect(boost::bind(&reg_hub, _hubsvrmanager, _1));
 	_hub_call_dbproxy->sigcreate_persisted_objecthandle.connect(boost::bind(&hub_create_persisted_object, _hubsvrmanager, _mongodb_proxy, _1, _2));
 	_hub_call_dbproxy->sigupdata_persisted_objecthandle.connect(boost::bind(&hub_updata_persisted_object, _hubsvrmanager, _mongodb_proxy, _1, _2, _3));
 	_hub_call_dbproxy->sigget_object_infohandle.connect(boost::bind(&hub_get_object_info, _hubsvrmanager, _mongodb_proxy, _1, _2));
@@ -114,6 +115,7 @@ void main(int argc, char * argv[]) {
 		}
 
 		_connectnetworkservice->poll(tick);
+
 		_juggleservice->poll(tick);
 		_timerservice->poll(tick);
 
@@ -131,7 +133,8 @@ void main(int argc, char * argv[]) {
 		int64_t ticktime = (tmptick - tick);
 		tick = tmptick;
 
-		Sleep(15);
-
+		if (ticktime < 50) {
+			boost::this_thread::sleep(boost::posix_time::microseconds(15));
+		}
 	}
 }

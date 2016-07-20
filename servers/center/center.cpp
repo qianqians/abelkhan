@@ -54,8 +54,8 @@ void main(int argc, char * argv[]) {
 	_logic_call_center->sigreq_get_server_addresshandle.connect(boost::bind(&req_get_server_address, _logicsvrmanager, _svrmanager, _1, _2));
 	_svr_process->reg_module(_logic_call_center);
 
-	auto host_ip = _config->get_value_string("host_ip");
-	auto host_port = (short)_config->get_value_int("host_port");
+	auto host_ip = _config->get_value_string("ip");
+	auto host_port = (short)_config->get_value_int("port");
 	auto _host_service = boost::make_shared<service::acceptnetworkservice>(host_ip, host_port, _svr_process);
 
 	boost::shared_ptr<center::gmmanager> _gmmanager = boost::make_shared<center::gmmanager>();
@@ -108,7 +108,8 @@ void main(int argc, char * argv[]) {
 		int64_t ticktime = (tmptick - tick);
 		tick = tmptick;
 
-		Sleep(15);
-
+		if (ticktime < 50) {
+			boost::this_thread::sleep(boost::posix_time::microseconds(15));
+		}
 	}
 }

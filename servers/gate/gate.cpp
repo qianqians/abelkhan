@@ -7,6 +7,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/thread.hpp>
 
 #include <acceptnetworkservice.h>
 #include <connectnetworkservice.h>
@@ -132,7 +133,8 @@ void main(int argc, char * argv[]) {
 		int64_t ticktime = (tmptick - tick);
 		tick = tmptick;
 
-		Sleep(15);
-
+		if (ticktime < 50) {
+			boost::this_thread::sleep(boost::posix_time::microseconds(15));
+		}
 	}
 }

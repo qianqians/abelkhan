@@ -10,7 +10,7 @@
 #include "centerproxy.h"
 
 void reg_server_sucess(boost::shared_ptr<gate::centerproxy> _centerproxy) {
-	_centerproxy->is_reg_sucess;
+	_centerproxy->is_reg_sucess = true;
 
 	std::cout << "connect center server sucess" << std::endl;
 }

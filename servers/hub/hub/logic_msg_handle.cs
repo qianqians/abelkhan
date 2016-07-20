@@ -12,6 +12,7 @@ namespace hub
 
 		public void reg_logic(String uuid)
 		{
+			Console.WriteLine("logic server " + uuid + " connected");
 			_logicmanager.reg_logic(uuid, juggle.Imodule.current_ch);
 		}
 

@@ -43,27 +43,13 @@ namespace hub
 			_connect_center_service = new service.connectnetworkservice(_center_process);
 			var center_ch = _connect_center_service.connect(center_ip, center_port);
 			_centerproxy = new centerproxy(center_ch);
-			_centerproxy.reg_hub(ip, port, uuid);
 			_center_msg_handle = new center_msg_handle(this, _closehandle, _centerproxy);
 			_center_call_server.onreg_server_sucess += _center_msg_handle.reg_server_sucess;
 			_center_call_server.onclose_server += _center_msg_handle.close_server;
 			_center_call_hub.ondistribute_dbproxy_address += _center_msg_handle.distribute_dbproxy_address;
 
-			_juggle_service = new service.juggleservice();
-			_juggle_service.add_process(_logic_process);
-			_juggle_service.add_process(_center_process);
-
-			timer = new service.timerservice();
-		}
-
-		public void connect_dbproxy(String db_ip, short db_port)
-		{
 			var _dbproxy_process = new juggle.process();
 			_connect_dbproxy_service = new service.connectnetworkservice(_dbproxy_process);
-			var _db_ch = _connect_dbproxy_service.connect(db_ip, db_port);
-			dbproxy = new dbproxyproxy(_db_ch);
-			dbproxy.reg_hub(uuid);
-
 			_dbproxy_msg_handle = new dbproxy_msg_handle(dbproxy);
 			_dbproxy_call_hub = new module.dbproxy_call_hub();
 			_dbproxy_call_hub.onreg_hub_sucess += _dbproxy_msg_handle.reg_hub_sucess;
@@ -73,7 +59,21 @@ namespace hub
 			_dbproxy_call_hub.onack_get_object_info_end += _dbproxy_msg_handle.ack_get_object_info_end;
 			_dbproxy_process.reg_module(_dbproxy_call_hub);
 
+			_juggle_service = new service.juggleservice();
+			_juggle_service.add_process(_logic_process);
+			_juggle_service.add_process(_center_process);
 			_juggle_service.add_process(_dbproxy_process);
+
+			timer = new service.timerservice();
+
+			_centerproxy.reg_hub(ip, port, uuid);
+		}
+
+		public void connect_dbproxy(String db_ip, short db_port)
+		{
+			var _db_ch = _connect_dbproxy_service.connect(db_ip, db_port);
+			dbproxy = new dbproxyproxy(_db_ch);
+			dbproxy.reg_hub(uuid);
 		}
 
 		private void poll(Int64 tick)
@@ -123,7 +123,7 @@ namespace hub
 				Int64 ticktime = (tmptick - tick);
 				tick = tmptick;
 
-				if (ticktime < 100)
+				if (ticktime < 50)
 				{
 					Thread.Sleep(15);
 				}

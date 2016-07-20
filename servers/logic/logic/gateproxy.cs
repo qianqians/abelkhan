@@ -12,6 +12,7 @@ namespace logic
 
 		public void reg_logic()
 		{
+			Console.WriteLine("begin connect gate server");
 			_caller.reg_logic(logic.uuid);
 		}
 

@@ -18,7 +18,7 @@ void reg_logic(boost::shared_ptr<gate::logicsvrmanager> _logicsvrmanager, std::s
 	boost::shared_ptr<caller::gate_call_logic> _caller = boost::make_shared<caller::gate_call_logic>(juggle::current_ch);
 	_caller->reg_logic_sucess();
 
-	std::cout << "logic server " << uuid << "connected" << std::endl;
+	std::cout << "logic server " << uuid << " connected" << std::endl;
 }
 
 void ack_client_connect_server(boost::shared_ptr<gate::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<gate::clientmanager> _clientmanager, boost::shared_ptr<service::timerservice> _timerservice, std::string uuid, std::string result) {

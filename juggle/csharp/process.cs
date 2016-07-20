@@ -54,7 +54,7 @@ namespace juggle
 					}
 					else
 					{
-						Console.WriteLine("do not have a module named:" + module_name);
+						Console.WriteLine("do not have a module named:" + module_name + " " + (String)_event[1]);
 					}
 				}
             }

@@ -128,11 +128,13 @@ std::string pack(JsonObject & v){
 
 std::string pack(JsonArray & _array){
 	std::string _out = "[";
-	for (auto o : *_array){
-		_out += pack(o);
-		_out += ",";
+	if (_array->size() > 0) {
+		for (auto o : *_array) {
+			_out += pack(o);
+			_out += ",";
+		}
+		_out.erase(_out.length() - 1);
 	}
-	_out.erase(_out.length() - 1);
 	_out += "]";
 
 	return _out;
@@ -216,7 +218,7 @@ int unpack(JsonObject & out, JsonString s){
 				if (c[i] == '}') {
 					goto mapend;
 				}
-				else if (c[begin] == ' ' || c[begin] == '\0'){
+				else if (c[begin] == ' ' || c[begin] == '\0' || c[begin] == '\n' || c[begin] == '\t'){
 					continue;
 				} else{
 					break;
@@ -239,7 +241,7 @@ int unpack(JsonObject & out, JsonString s){
 			key = std::string(&c[begin + 1], end - begin - 1);
 
 			while (1){
-				if (c[i] == ':' || c[i] == ' ' || c[i] == '\0'){
+				if (c[i] == ':' || c[i] == ' ' || c[i] == '\0' || c[i] == '\n' || c[i] == '\t'){
 					i++;
 				} else{
 					break;
@@ -281,7 +283,7 @@ int unpack(JsonObject & out, JsonString s){
 				if (c[i] == ']') {
 					goto listend;
 				}
-				else if (c[i] == ' ' || c[i] == '\0'){
+				else if (c[i] == ' ' || c[i] == '\0' || c[i] == '\n' || c[i] == '\t'){
 					continue;
 				} 
 				else{
@@ -341,7 +343,7 @@ int unpack(JsonObject & out, JsonString s){
 					vend = i++;
 
 					while (1){
-						if (c[i] == ' ' || c[i] == '\0'){
+						if (c[i] == ' ' || c[i] == '\0' || c[i] == '\n' || c[i] == '\t'){
 							i++;
 							continue;
 						} else{
@@ -375,7 +377,7 @@ int unpack(JsonObject & out, JsonString s){
 				}
 
 				while (1){
-					if (c[i] == ' ' || c[i] == '\0'){
+					if (c[i] == ' ' || c[i] == '\0' || c[i] == '\n' || c[i] == '\t'){
 						i++;
 						continue;
 					} else{
@@ -408,7 +410,7 @@ int unpack(JsonObject & out, JsonString s){
 				}
 
 				while (1){
-					if (c[i] == ' ' || c[i] == '\0'){
+					if (c[i] == ' ' || c[i] == '\0' || c[i] == '\n' || c[i] == '\t'){
 						i++;
 						continue;
 					} else{
@@ -444,7 +446,7 @@ int unpack(JsonObject & out, JsonString s){
 				}
 
 				while (1){
-					if (c[i] == ' ' || c[i] == '\0'){
+					if (c[i] == ' ' || c[i] == '\0' || c[begin] == '\n' || c[begin] == '\t'){
 						i++;
 						continue;
 					} else{
@@ -482,7 +484,7 @@ int unpack(JsonObject & out, JsonString s){
 			else {
 				bool isint = true;
 				while (1){
-					if ((c[i++] > '9' && c[i] < '0') && c[i] != '.' && c[i] != ' ' && c[i] != '\0'){
+					if ((c[i++] > '9' && c[i] < '0') && c[i] != '.' && c[i] != ' ' && c[i] != '\0' && c[i] != '\n' && c[i] != '\t'){
 						throw jsonformatexception("error json fromat: can not be resolved value");
 					}
 
@@ -563,7 +565,7 @@ int unpack(JsonObject & out, JsonString s){
 					vend = i++;
 
 					while (1){
-						if (c[i] == ' ' || c[i] == '\0'){
+						if (c[i] == ' ' || c[i] == '\0' || c[i] == '\n' || c[i] == '\t'){
 							i++;
 							continue;
 						} else{
@@ -597,7 +599,7 @@ int unpack(JsonObject & out, JsonString s){
 				}
 
 				while (1){
-					if (c[i] == ' ' || c[i] == '\0'){
+					if (c[i] == ' ' || c[i] == '\0' || c[i] == '\n' || c[i] == '\t'){
 						i++;
 						continue;
 					} else{
@@ -630,7 +632,7 @@ int unpack(JsonObject & out, JsonString s){
 				}
 
 				while (1){
-					if (c[i] == ' ' || c[i] == '\0'){
+					if (c[i] == ' ' || c[i] == '\0' || c[i] == '\n' || c[i] == '\t'){
 						i++;
 						continue;
 					} else{
@@ -666,7 +668,7 @@ int unpack(JsonObject & out, JsonString s){
 				}
 
 				while (1){
-					if (c[i] == ' ' || c[i] == '\0'){
+					if (c[i] == ' ' || c[i] == '\0' || c[i] == '\n' || c[i] == '\t'){
 						i++;
 						continue;
 					} else{
@@ -703,7 +705,7 @@ int unpack(JsonObject & out, JsonString s){
 			} else {
 				bool isint = true;
 				while (1){
-					if ((c[i++] > '9' && c[i] < '0') && c[i] != '.' && c[i] != ' ' && c[i] != '\0'){
+					if ((c[i++] > '9' && c[i] < '0') && c[i] != '.' && c[i] != ' ' && c[i] != '\0' && c[i] != '\n' && c[i] != '\t'){
 						throw jsonformatexception("error json fromat: can not be resolved value");
 					}
 
@@ -712,10 +714,10 @@ int unpack(JsonObject & out, JsonString s){
 						count++;
 					}
 
-					if (c[i] == ' ' && c[i] == '\0'){
+					if (c[i] == ' ' && c[i] == '\0' && c[i] == '\n' && c[i] == '\t'){
 						vend = i;
 						while (1){
-							if (c[i] == ' ' && c[i] == '\0'){
+							if (c[i] == ' ' && c[i] == '\0' && c[i] == '\n' && c[i] == '\t'){
 								i++;
 								continue;
 							} else{

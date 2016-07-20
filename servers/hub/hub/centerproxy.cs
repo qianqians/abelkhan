@@ -12,6 +12,7 @@ namespace hub
 
 		public void reg_hub(String ip, short port, String uuid)
 		{
+			Console.WriteLine("begin connect center server");
 			_hub_call_center.reg_server("hub", ip, port, uuid);
 		}
 

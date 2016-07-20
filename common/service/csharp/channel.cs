@@ -34,7 +34,6 @@ namespace service
 			try
 			{
 				int read = ch.s.EndReceive(ar);
-				//Console.WriteLine("read {0:D}", read);
 
 				if (read > 0)
 				{
@@ -43,8 +42,7 @@ namespace service
 						int offset = 0;
 						do
 						{
-							Int32 len = ((Int32)recvbuf[0]) | ((Int32)recvbuf[1]) << 8 | ((Int32)recvbuf[2]) << 16 | ((Int32)recvbuf[3]) << 24;//BitConverter.ToInt32(recvbuf, offset);
-							//Console.WriteLine("len {0:D}", len);
+							Int32 len = ((Int32)recvbuf[offset + 0]) | ((Int32)recvbuf[offset + 1]) << 8 | ((Int32)recvbuf[offset + 2]) << 16 | ((Int32)recvbuf[offset + 3]) << 24;
 
 							if (len <= (read - 4))
 							{
@@ -58,13 +56,10 @@ namespace service
 
 								_tmp.Position = 0;
 
-								//var serializer = SerializationContext.Default.GetSerializer<ArrayList>();
-								//serializer.Unpack(_tmp);
 								ArrayList unpackedObject = (ArrayList)System.Text.Json.Jsonparser.unpack(System.Text.Encoding.Default.GetString(_tmp.ToArray()));
 
 								lock (que)
 								{
-									//Console.WriteLine("Enqueue {0:D}", read);
 									que.Enqueue(unpackedObject);
 								}
 							}
@@ -112,7 +107,7 @@ namespace service
 						int offset = 0;
 						do
 						{
-							Int32 len = ((Int32)tmpbuf[0]) | ((Int32)tmpbuf[1]) << 8 | ((Int32)tmpbuf[2]) << 16 | ((Int32)tmpbuf[3]) << 24;
+							Int32 len = ((Int32)tmpbuf[offset + 0]) | ((Int32)tmpbuf[offset + 1]) << 8 | ((Int32)tmpbuf[offset + 2]) << 16 | ((Int32)tmpbuf[offset + 3]) << 24;
 
 							if (len <= (tmpbufoffset - 4))
 							{
@@ -126,10 +121,7 @@ namespace service
 
 								_tmp.Position = 0;
 
-								//var serializer = SerializationContext.Default.GetSerializer<ArrayList>();
-								//ArrayList unpackedObject = serializer.Unpack(_tmp);
-
-								ArrayList unpackedObject = (ArrayList)System.Text.Json.Jsonparser.unpack(_tmp.ToString());//serializer.Unpack(_tmp);
+								ArrayList unpackedObject = (ArrayList)System.Text.Json.Jsonparser.unpack(_tmp.ToString());
 
 								lock (que)
 								{

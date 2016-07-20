@@ -10,6 +10,7 @@ namespace logic
 
 		public void onreg_logic_sucess()
 		{
+			Console.WriteLine("connect gate server sucess");
 		}
 
 		public void client_connect(String uuid)

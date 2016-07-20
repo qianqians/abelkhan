@@ -76,7 +76,6 @@ namespace logic
 			_center_connectnetworkservice = new service.connectnetworkservice(_center_process);
 			var _center_ch = _center_connectnetworkservice.connect(center_ip, center_port);
 			_centerproxy = new centerproxy(_center_ch);
-			_centerproxy.reg_logic(ip, port, uuid);
 			_center_msg_handle = new center_msg_handle(_closehandle, _centerproxy);
 			_center_call_server.onclose_server += _center_msg_handle.close_server;
 			_center_call_server.onreg_server_sucess += _center_msg_handle.reg_server_sucess;
@@ -91,12 +90,15 @@ namespace logic
 			_juggle_service.add_process(_center_process);
 
 			timer = new service.timerservice();
+
+			_centerproxy.reg_logic(ip, port, uuid);
 		}
 
 		private void poll(Int64 tick)
 		{
 			_juggle_service.poll(tick);
 			timer.poll(tick);
+
 			_dbproxy_connectnetworkservice.poll(tick);
 			_hub_connectnetworkservice.poll(tick);
 			_gate_connectnetworkservice.poll(tick);
@@ -152,7 +154,7 @@ namespace logic
 					is_busy = false;
 				}
 
-				if (ticktime < 100)
+				if (ticktime < 50)
 				{
 					Thread.Sleep(15);
 				}

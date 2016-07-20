@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\center\center.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\center\svrmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\center\logicsvrmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\center\gmmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\center\svrmanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\center\logicsvrmanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\center\gm_msg_handle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\center\logic_svr_msg_handle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\center\svr_msg_handle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\center\gmmanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\abelk\Documents\workspace\abelkhan\servers\center\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{CC3BFFD0-D101-3949-9BF8-26BE6402322D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{F03844A5-2794-39CB-9796-D29F00CD1AA2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -10,6 +10,10 @@ namespace logic
 		{
 			_gate_conn = _conn;
 			current_client_uuid = "";
+
+			clients = new Dictionary<string, gateproxy>();
+			ch_gateproxys = new Dictionary<juggle.Ichannel, gateproxy>();
+			gates = new Dictionary<string, gateproxy>();
 		}
 
 		public void connect_gate(String uuid, String ip, short port)
