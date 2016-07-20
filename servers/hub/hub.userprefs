@@ -14,4 +14,20 @@
       <File FileName="hub\logicproxy.cs" Line="13" Column="15" />
     </Files>
   </MonoDevelop.Ide.Workbench>
+</Properties>﻿<Properties StartupItem="hub\hub.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.hub PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench ActiveDocument="hub\logicproxy.cs">
+    <Files>
+      <File FileName="hub\center_msg_handle.cs" Line="27" Column="39" />
+      <File FileName="hub\hub.cs" Line="68" Column="4" />
+      <File FileName="hub\logic_msg_handle.cs" Line="15" Column="22" />
+      <File FileName="hub\logicmanager.cs" Line="17" Column="56" />
+      <File FileName="hub\logicproxy.cs" Line="13" Column="15" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
 </Properties>
