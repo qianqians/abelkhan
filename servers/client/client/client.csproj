@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8CC81F89-C1AC-4456-AE9F-EF45F10E3A37}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>client</RootNamespace>
+    <AssemblyName>client</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="client.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\..\..\jsonparse\csharp\JsonParser.cs">
+      <Link>JsonParser.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\juggle\csharp\Icaller.cs">
+      <Link>Icaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\juggle\csharp\Ichannel.cs">
+      <Link>Ichannel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\juggle\csharp\Imodule.cs">
+      <Link>Imodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\juggle\csharp\process.cs">
+      <Link>process.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\module\csharp\module.cs">
+      <Link>module.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\module\csharp\modulemanager.cs">
+      <Link>modulemanager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\tools\csharp\config.cs">
+      <Link>config.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\service\csharp\channel.cs">
+      <Link>channel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\service\csharp\connectnetworkservice.cs">
+      <Link>connectnetworkservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\service\csharp\juggleservice.cs">
+      <Link>juggleservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\service\csharp\service.cs">
+      <Link>service.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\service\csharp\timerservice.cs">
+      <Link>timerservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\client_call_gatecaller.cs">
+      <Link>client_call_gatecaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\gate_call_clientmodule.cs">
+      <Link>gate_call_clientmodule.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>
