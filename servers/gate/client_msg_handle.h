@@ -16,6 +16,8 @@ void connect_server(boost::shared_ptr<gate::logicsvrmanager> _logicsvrmanager, b
 	boost::shared_ptr<juggle::Ichannel> logic_channel = _logicsvrmanager->get_logic();
 
 	if (!_clientmanager->has_client(uuid)) {
+		std::cout << "client " << uuid << " connected" << std::endl;
+
 		_clientmanager->reg_client(uuid, juggle::current_ch, logic_channel, _timerservice->ticktime);
 	
 		boost::shared_ptr<caller::gate_call_logic> _caller = boost::make_shared<caller::gate_call_logic>(logic_channel);

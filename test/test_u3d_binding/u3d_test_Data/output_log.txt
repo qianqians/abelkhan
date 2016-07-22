@@ -20,13 +20,13 @@ Platform assembly: C:\Users\abelk\Documents\workspace\abelkhan\test\test_u3d_bin
 Loading C:\Users\abelk\Documents\workspace\abelkhan\test\test_u3d_binding\u3d_test_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
 Platform assembly: C:\Users\abelk\Documents\workspace\abelkhan\test\test_u3d_binding\u3d_test_Data\Managed\UnityEngine.UI.dll (this message is harmless)
 Loading C:\Users\abelk\Documents\workspace\abelkhan\test\test_u3d_binding\u3d_test_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
-- Completed reload, in  0.386 seconds
+- Completed reload, in  0.237 seconds
 Platform assembly: C:\Users\abelk\Documents\workspace\abelkhan\test\test_u3d_binding\u3d_test_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: C:\Users\abelk\Documents\workspace\abelkhan\test\test_u3d_binding\u3d_test_Data\Managed\System.dll (this message is harmless)
 desktop: 1600x900 59Hz; virtual: 1600x900 at 0,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 1.210849 ms
+UnloadTime: 1.731795 ms
 Setting up 1 worker threads for Enlighten.
-  Thread -> id: 25f8 -> priority: 1 
+  Thread -> id: 1f58 -> priority: 1 

@@ -93,7 +93,7 @@ void main(int argc, char * argv[]) {
 
 	auto outside_ip = _config->get_value_string("outside_ip");
 	auto outside_port = (short)_config->get_value_int("outside_port");
-	auto _client_service = boost::make_shared<service::acceptnetworkservice>(outside_ip, outside_port, _logic_process);
+	auto _client_service = boost::make_shared<service::acceptnetworkservice>(outside_ip, outside_port, _client_process);
 
 	boost::shared_ptr<service::juggleservice> _juggleservice = boost::make_shared<service::juggleservice>();
 	_juggleservice->add_process(_center_process);
@@ -134,7 +134,7 @@ void main(int argc, char * argv[]) {
 		tick = tmptick;
 
 		if (ticktime < 50) {
-			boost::this_thread::sleep(boost::posix_time::microseconds(15));
+			boost::thread::sleep(boost::get_system_time() + boost::posix_time::microseconds(15));
 		}
 	}
 }

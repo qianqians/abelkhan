@@ -109,7 +109,7 @@ void main(int argc, char * argv[]) {
 		tick = tmptick;
 
 		if (ticktime < 50) {
-			boost::this_thread::sleep(boost::posix_time::microseconds(15));
+			boost::thread::sleep(boost::get_system_time() + boost::posix_time::microseconds(15));
 		}
 	}
 }
