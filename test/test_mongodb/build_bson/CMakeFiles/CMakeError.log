@@ -1,0 +1,84 @@
+Determining if the function _set_output_format exists failed with the following output:
+Change Dir: C:/Users/abelk/Documents/workspace/abelkhan/test/test_mongodb/build_bson/CMakeFiles/CMakeTmp
+
+Run Build Command:"C:/Program Files (x86)/MSBuild/14.0/bin/MSBuild.exe" "cmTC_36a30.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=14.0"
+Microsoft (R) 生成引擎版本 14.0.25123.0
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2016/7/25 12:59:09。
+节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\cmTC_36a30.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_36a30.dir\Debug\”。
+  正在创建目录“C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_36a30.dir\Debug\cmTC_36a30.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_36a30.dir\Debug\cmTC_36a30.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=_set_output_format /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_36a30.dir\Debug\\" /Fd"cmTC_36a30.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue "C:\Program Files\CMake\share\cmake-3.6\Modules\CheckFunctionExists.c"
+  用于 x86 的 Microsoft (R) C/C++ 优化编译器 19.00.23918 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=_set_output_format /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_36a30.dir\Debug\\" /Fd"cmTC_36a30.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue "C:\Program Files\CMake\share\cmake-3.6\Modules\CheckFunctionExists.c"
+  
+  CheckFunctionExists.c
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\Debug\cmTC_36a30.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_mongodb/build_bson/CMakeFiles/CMakeTmp/Debug/cmTC_36a30.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_mongodb/build_bson/CMakeFiles/CMakeTmp/Debug/cmTC_36a30.lib" /MACHINE:X86 /SAFESEH  /machine:X86 cmTC_36a30.dir\Debug\CheckFunctionExists.obj
+CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 __set_output_format，该符号在函数 _main 中被引用 [C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\cmTC_36a30.vcxproj]
+C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\Debug\cmTC_36a30.exe : fatal error LNK1120: 1 个无法解析的外部命令 [C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\cmTC_36a30.vcxproj]
+已完成生成项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\cmTC_36a30.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\cmTC_36a30.vcxproj”(默认目标) (1) ->
+(Link 目标) -> 
+  CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 __set_output_format，该符号在函数 _main 中被引用 [C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\cmTC_36a30.vcxproj]
+  C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\Debug\cmTC_36a30.exe : fatal error LNK1120: 1 个无法解析的外部命令 [C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\cmTC_36a30.vcxproj]
+
+    0 个警告
+    2 个错误
+
+已用时间 00:00:01.43
+
+
+Determining if the function reallocf exists failed with the following output:
+Change Dir: C:/Users/abelk/Documents/workspace/abelkhan/test/test_mongodb/build_bson/CMakeFiles/CMakeTmp
+
+Run Build Command:"C:/Program Files (x86)/MSBuild/14.0/bin/MSBuild.exe" "cmTC_43a27.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=14.0"
+Microsoft (R) 生成引擎版本 14.0.25123.0
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2016/7/25 12:59:11。
+节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\cmTC_43a27.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_43a27.dir\Debug\”。
+  正在创建目录“C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_43a27.dir\Debug\cmTC_43a27.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_43a27.dir\Debug\cmTC_43a27.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=reallocf /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_43a27.dir\Debug\\" /Fd"cmTC_43a27.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue "C:\Program Files\CMake\share\cmake-3.6\Modules\CheckFunctionExists.c"
+  用于 x86 的 Microsoft (R) C/C++ 优化编译器 19.00.23918 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=reallocf /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_43a27.dir\Debug\\" /Fd"cmTC_43a27.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue "C:\Program Files\CMake\share\cmake-3.6\Modules\CheckFunctionExists.c"
+  
+  CheckFunctionExists.c
+Link:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\Debug\cmTC_43a27.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_mongodb/build_bson/CMakeFiles/CMakeTmp/Debug/cmTC_43a27.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/abelk/Documents/workspace/abelkhan/test/test_mongodb/build_bson/CMakeFiles/CMakeTmp/Debug/cmTC_43a27.lib" /MACHINE:X86 /SAFESEH  /machine:X86 cmTC_43a27.dir\Debug\CheckFunctionExists.obj
+CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 _reallocf，该符号在函数 _main 中被引用 [C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\cmTC_43a27.vcxproj]
+C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\Debug\cmTC_43a27.exe : fatal error LNK1120: 1 个无法解析的外部命令 [C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\cmTC_43a27.vcxproj]
+已完成生成项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\cmTC_43a27.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\cmTC_43a27.vcxproj”(默认目标) (1) ->
+(Link 目标) -> 
+  CheckFunctionExists.obj : error LNK2019: 无法解析的外部符号 _reallocf，该符号在函数 _main 中被引用 [C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\cmTC_43a27.vcxproj]
+  C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\Debug\cmTC_43a27.exe : fatal error LNK1120: 1 个无法解析的外部命令 [C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\CMakeTmp\cmTC_43a27.vcxproj]
+
+    0 个警告
+    2 个错误
+
+已用时间 00:00:01.28
+
+

@@ -27,7 +27,7 @@ namespace hub
 			return (logicproxy)logicproxys[uuid];
 		}
 
-		public void call_logic_mothed(String logic_uuid, String module_name, String mothed_name, ArrayList argvs)
+		public void call_logic_mothed(String logic_uuid, String module_name, String mothed_name, params object[] argvs)
 		{
 			if (has_logic(logic_uuid))
 			{
@@ -37,7 +37,7 @@ namespace hub
 			}
 		}
 
-		public void call_group_logic(String[] logic_uuids, String module_name, String mothed_name, ArrayList argvs)
+		public void call_group_logic(String[] logic_uuids, String module_name, String mothed_name, params object[] argvs)
 		{
 			foreach (var logic_uuid in logic_uuids)
 			{
@@ -45,7 +45,7 @@ namespace hub
 			}
 		}
 
-		public void call_global_logic(String module_name, String mothed_name, ArrayList argvs)
+		public void call_global_logic(String module_name, String mothed_name, params object[] argvs)
 		{
 			foreach (var _logicproxy in logicproxys.Values)
 			{

@@ -5,21 +5,11 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="hub\hub.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="hub\logicproxy.cs">
     <Files>
-      <File FileName="hub\hub.cs" Line="1" Column="1" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
-</Properties>﻿<Properties StartupItem="hub\hub.csproj">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.ItemProperties.hub PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
-  </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="hub\hub.cs">
-    <Files>
-      <File FileName="hub\hub.cs" Line="1" Column="1" />
+      <File FileName="hub\hub.cs" Line="68" Column="4" />
+      <File FileName="hub\logicmanager.cs" Line="48" Column="94" />
+      <File FileName="hub\logicproxy.cs" Line="26" Column="60" />
     </Files>
   </MonoDevelop.Ide.Workbench>
 </Properties>

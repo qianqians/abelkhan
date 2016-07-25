@@ -18,9 +18,9 @@ namespace logic
 				_config = _config.get_value_dict(args[1]);
 			}
 
-			_closehandle = new closehandle();
+			closeHandle = new closehandle();
 
-			_modulemanager = new common.modulemanager();
+			modules = new common.modulemanager();
 
 			_dbproxy_call_logic = new module.dbproxy_call_logic();
 			_dbproxy_process = new juggle.process();
@@ -39,7 +39,7 @@ namespace logic
 			_hub_process.reg_module(_hub_call_logic);
 			_hub_connectnetworkservice = new service.connectnetworkservice(_hub_process);
 			hubs = new hubmanager(_hub_connectnetworkservice);
-			_hub_msg_handle = new hub_msg_handle(_modulemanager);
+			_hub_msg_handle = new hub_msg_handle(modules);
 			_hub_call_logic.onreg_logic_sucess_and_notify_hub_nominate += _hub_msg_handle.reg_logic_sucess_and_notify_hub_nominate;
 			_hub_call_logic.onhub_call_logic_mothed += _hub_msg_handle.hub_call_logic_mothed;
 
@@ -50,7 +50,7 @@ namespace logic
 			_logic_connectnetworkservice = new service.connectnetworkservice(_logic_process);
 			_logic_acceptnetworkservice = new service.acceptnetworkservice(ip, port, _logic_process);
 			logics = new logicmanager(_logic_connectnetworkservice);
-			_logic_msg_handle = new logic_msg_handle(_modulemanager);
+			_logic_msg_handle = new logic_msg_handle(modules);
 			_logic_call_logic.onreg_logic += _logic_msg_handle.on_reg_logic;
 			_logic_call_logic.onack_reg_logic += _logic_msg_handle.on_ack_reg_logic;
 			_logic_call_logic.onlogic_call_logic_mothed += _logic_msg_handle.logic_call_logic_mothed;
@@ -60,7 +60,7 @@ namespace logic
 			_gate_process.reg_module(_gate_call_logic);
 			_gate_connectnetworkservice = new service.connectnetworkservice(_gate_process);
 			gates = new gatemanager(_gate_connectnetworkservice);
-			_gate_msg_handle = new gate_msg_handle(_modulemanager);
+			_gate_msg_handle = new gate_msg_handle(modules);
 			_gate_call_logic.onreg_logic_sucess += _gate_msg_handle.onreg_logic_sucess;
 			_gate_call_logic.onclient_connect += _gate_msg_handle.client_connect;
 			_gate_call_logic.onclient_disconnect += _gate_msg_handle.client_disconnect;
@@ -76,7 +76,7 @@ namespace logic
 			_center_connectnetworkservice = new service.connectnetworkservice(_center_process);
 			var _center_ch = _center_connectnetworkservice.connect(center_ip, center_port);
 			_centerproxy = new centerproxy(_center_ch);
-			_center_msg_handle = new center_msg_handle(_closehandle, _centerproxy);
+			_center_msg_handle = new center_msg_handle(closeHandle, _centerproxy);
 			_center_call_server.onclose_server += _center_msg_handle.close_server;
 			_center_call_server.onreg_server_sucess += _center_msg_handle.reg_server_sucess;
 			_center_call_logic.ondistribute_server_address += _center_msg_handle.distribute_server_address;
@@ -94,7 +94,7 @@ namespace logic
 			_centerproxy.reg_logic(ip, port, uuid);
 		}
 
-		private void poll(Int64 tick)
+		public void poll(Int64 tick)
 		{
 			_juggle_service.poll(tick);
 			timer.poll(tick);
@@ -107,7 +107,7 @@ namespace logic
 		}
 
 
-		public static void Main(String[] args)
+		private static void Main(String[] args)
 		{
 			if (args.Length <= 0)
 			{
@@ -130,7 +130,7 @@ namespace logic
 
 				_logic.poll(tick);
 
-				if (_logic._closehandle.is_close)
+				if (closeHandle.is_close)
 				{
 					Console.WriteLine("server closed, hub server " + logic.uuid);
 					break;
@@ -164,9 +164,9 @@ namespace logic
 		public static String uuid;
 		public static bool is_busy;
 
-		private closehandle _closehandle;
+		public static closehandle closeHandle;
 
-		private common.modulemanager _modulemanager;
+		public static common.modulemanager modules;
 
 		public static dbproxyproxy dbproxy;
 		private dbproxy_msg_handle _dbproxy_msg_handle;

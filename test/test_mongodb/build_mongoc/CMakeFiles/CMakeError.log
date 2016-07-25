@@ -1,0 +1,44 @@
+Determining if files strings.h exist failed with the following output:
+Change Dir: C:/Users/abelk/Documents/workspace/abelkhan/test/test_mongodb/build_mongoc/CMakeFiles/CMakeTmp
+
+Run Build Command:"C:/Program Files (x86)/MSBuild/14.0/bin/MSBuild.exe" "cmTC_58d5e.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=14.0"
+Microsoft (R) 生成引擎版本 14.0.25123.0
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+生成启动时间为 2016/7/25 13:00:24。
+节点 1 上的项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_mongoc\CMakeFiles\CMakeTmp\cmTC_58d5e.vcxproj”(默认目标)。
+PrepareForBuild:
+  正在创建目录“cmTC_58d5e.dir\Debug\”。
+  正在创建目录“C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_mongoc\CMakeFiles\CMakeTmp\Debug\”。
+  正在创建目录“cmTC_58d5e.dir\Debug\cmTC_58d5e.tlog\”。
+InitializeBuildStatus:
+  正在创建“cmTC_58d5e.dir\Debug\cmTC_58d5e.tlog\unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+ClCompile:
+  C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_58d5e.dir\Debug\\" /Fd"cmTC_58d5e.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_mongoc\CMakeFiles\CMakeTmp\CheckIncludeFiles.c
+  用于 x86 的 Microsoft (R) C/C++ 优化编译器 19.00.23918 版
+  版权所有(C) Microsoft Corporation。保留所有权利。
+  
+  cl /c /Zi /W3 /WX- /Od /Ob0 /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_58d5e.dir\Debug\\" /Fd"cmTC_58d5e.dir\Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:queue C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_mongoc\CMakeFiles\CMakeTmp\CheckIncludeFiles.c
+  
+  CheckIncludeFiles.c
+C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_mongoc\CMakeFiles\CMakeTmp\CheckIncludeFiles.c(2): fatal error C1083: 无法打开包括文件: “strings.h”: No such file or directory [C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_mongoc\CMakeFiles\CMakeTmp\cmTC_58d5e.vcxproj]
+已完成生成项目“C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_mongoc\CMakeFiles\CMakeTmp\cmTC_58d5e.vcxproj”(默认目标)的操作 - 失败。
+
+生成失败。
+
+“C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_mongoc\CMakeFiles\CMakeTmp\cmTC_58d5e.vcxproj”(默认目标) (1) ->
+(ClCompile 目标) -> 
+  C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_mongoc\CMakeFiles\CMakeTmp\CheckIncludeFiles.c(2): fatal error C1083: 无法打开包括文件: “strings.h”: No such file or directory [C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_mongoc\CMakeFiles\CMakeTmp\cmTC_58d5e.vcxproj]
+
+    0 个警告
+    1 个错误
+
+已用时间 00:00:01.40
+
+Source:
+/* */
+#include <strings.h>
+
+
+int main(void){return 0;}
+

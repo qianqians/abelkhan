@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+#include "mongoc-config.h"
+
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+#include "mongoc-metadata.h"
+#include "mongoc-metadata-private.h"
+#endif
+
 #include "mongoc-error.h"
 #include "mongoc-topology-private.h"
 #include "mongoc-client-private.h"
@@ -327,6 +334,10 @@ _mongoc_topology_do_blocking_scan (mongoc_topology_t *topology,
 
    topology->scanner_state = MONGOC_TOPOLOGY_SCANNER_SINGLE_THREADED;
 
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+   _mongoc_metadata_freeze ();
+#endif
+
    scanner = topology->scanner;
    mongoc_topology_scanner_start (scanner,
                                   (int32_t) topology->connect_timeout_msec,
@@ -350,6 +361,7 @@ mongoc_topology_compatible (const mongoc_topology_description_t *td,
                             int64_t                              heartbeat_msec,
                             bson_error_t                        *error)
 {
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
    int32_t max_staleness;
    int32_t max_wire_version;
 
@@ -371,6 +383,14 @@ mongoc_topology_compatible (const mongoc_topology_description_t *td,
          return false;
       }
 
+      /* shouldn't happen if we've properly enforced wire version */
+      if (!mongoc_topology_description_all_sds_have_write_date (td)) {
+         bson_set_error (error, MONGOC_ERROR_COMMAND,
+                         MONGOC_ERROR_PROTOCOL_BAD_WIRE_VERSION,
+                         "Not all servers have lastWriteDate");
+         return false;
+      }
+
       if ((td->type == MONGOC_TOPOLOGY_RS_WITH_PRIMARY ||
            td->type == MONGOC_TOPOLOGY_RS_NO_PRIMARY) &&
           max_staleness < 2 * heartbeat_msec) {
@@ -381,6 +401,7 @@ mongoc_topology_compatible (const mongoc_topology_description_t *td,
          return false;
       }
    }
+#endif
 
    return true;
 }
@@ -851,7 +872,8 @@ DONE:
  *       Start the topology background thread running. This should only be
  *       called once per pool. If clients are created separately (not
  *       through a pool) the SDAM logic will not be run in a background
- *       thread.
+ *       thread. Returns whether or not the scanner is running on termination
+ *       of the function.
  *
  *       NOTE: this method uses @topology's mutex.
  *
@@ -861,26 +883,24 @@ DONE:
 bool
 _mongoc_topology_start_background_scanner (mongoc_topology_t *topology)
 {
-   bool launch_thread = true;
-
    if (topology->single_threaded) {
       return false;
    }
 
    mongoc_mutex_lock (&topology->mutex);
-   if (topology->scanner_state != MONGOC_TOPOLOGY_SCANNER_OFF) {
-      launch_thread = false;
-   }
+   if (topology->scanner_state == MONGOC_TOPOLOGY_SCANNER_OFF) {
+      topology->scanner_state = MONGOC_TOPOLOGY_SCANNER_BG_RUNNING;
 
-   topology->scanner_state = MONGOC_TOPOLOGY_SCANNER_BG_RUNNING;
-   mongoc_mutex_unlock (&topology->mutex);
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+      _mongoc_metadata_freeze ();
+#endif
 
-   if (launch_thread) {
       mongoc_thread_create (&topology->thread, _mongoc_topology_run_background,
                             topology);
    }
 
-   return launch_thread;
+   mongoc_mutex_unlock (&topology->mutex);
+   return true;
 }
 
 /*
@@ -931,3 +951,20 @@ _mongoc_topology_background_thread_stop (mongoc_topology_t *topology)
       mongoc_cond_broadcast (&topology->cond_client);
    }
 }
+
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+bool
+_mongoc_topology_set_appname (mongoc_topology_t *topology,
+                              const char *appname)
+{
+   bool ret = false;
+   mongoc_mutex_lock (&topology->mutex);
+
+   if (topology->scanner_state == MONGOC_TOPOLOGY_SCANNER_OFF) {
+      ret = _mongoc_topology_scanner_set_appname (topology->scanner,
+                                                  appname);
+   }
+   mongoc_mutex_unlock (&topology->mutex);
+   return ret;
+}
+#endif

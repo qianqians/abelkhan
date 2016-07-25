@@ -1,0 +1,14 @@
+﻿<Properties StartupItem="logic_helloworld\logic_helloworld.csproj">
+  <MonoDevelop.Ide.ItemProperties.logic__helloworld PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench ActiveDocument="logic_helloworld\helloworld.cs">
+    <Files>
+      <File FileName="logic_helloworld\helloworld.cs" Line="11" Column="30" />
+      <File FileName="logic_helloworld\main.cs" Line="23" Column="47" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+</Properties>

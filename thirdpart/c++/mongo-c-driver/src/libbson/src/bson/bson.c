@@ -1159,6 +1159,7 @@ bson_append_int64 (bson_t      *bson,
 }
 
 
+#ifdef BSON_EXPERIMENTAL_FEATURES
 bool
 bson_append_decimal128 (bson_t                  *bson,
                         const char              *key,
@@ -1186,6 +1187,7 @@ bson_append_decimal128 (bson_t                  *bson,
                         1, &gZero,
                         16, value_le);
 }
+#endif
 
 
 bool
@@ -1927,16 +1929,14 @@ bson_t *
 bson_sized_new (size_t size)
 {
    bson_impl_alloc_t *impl_a;
-   bson_impl_inline_t *impl_i;
    bson_t *b;
 
    BSON_ASSERT (size <= INT32_MAX);
 
    b = bson_malloc (sizeof *b);
    impl_a = (bson_impl_alloc_t *)b;
-   impl_i = (bson_impl_inline_t *)b;
 
-   if (size <= sizeof impl_i->data) {
+   if (size <= BSON_INLINE_DATA_SIZE) {
       bson_init (b);
       b->flags &= ~BSON_FLAG_STATIC;
    } else {
@@ -2541,10 +2541,10 @@ _bson_as_json_visit_binary (const bson_iter_t  *iter,
    b64 = bson_malloc0 (b64_len);
    b64_ntop (v_binary, v_binary_len, b64, b64_len);
 
-   bson_string_append (state->str, "{ \"$type\" : \"");
-   bson_string_append_printf (state->str, "%02x", v_subtype);
-   bson_string_append (state->str, "\", \"$binary\" : \"");
+   bson_string_append (state->str, "{ \"$binary\" : \"");
    bson_string_append (state->str, b64);
+   bson_string_append (state->str, "\", \"$type\" : \"");
+   bson_string_append_printf (state->str, "%02x", v_subtype);
    bson_string_append (state->str, "\" }");
    bson_free (b64);
 

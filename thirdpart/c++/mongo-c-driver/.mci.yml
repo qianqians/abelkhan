@@ -46,15 +46,19 @@ c_driver_variables:
     - name: "integration-test-2.4"
     - name: "integration-test-2.4-replica-set"
     - name: "integration-test-2.4-sharded"
+    - name: "integration-test-2.4-shard-multi"
     - name: "integration-test-2.6"
     - name: "integration-test-2.6-replica-set"
     - name: "integration-test-2.6-sharded"
+    - name: "integration-test-2.6-shard-multi"
     - name: "integration-test-3.0"
     - name: "integration-test-3.0-replica-set"
     - name: "integration-test-3.0-sharded"
+    - name: "integration-test-3.0-shard-multi"
     - name: "integration-test-latest"
     - name: "integration-test-latest-replica-set"
     - name: "integration-test-latest-sharded"
+    - name: "integration-test-latest-shard-multi"
 
   topology_test_no_auth_list: &topology_tests_no_auth
     - name: "compile"
@@ -78,6 +82,7 @@ c_driver_variables:
     - name: "integration-test-latest-replica-set"
     - name: "integration-test-latest-replica-set-no-auth"
     - name: "integration-test-latest-sharded"
+    - name: "integration-test-latest-shard-multi"
     - name: "integration-test-latest-sharded-no-auth"
 
   ssl_tests_test_list: &ssl_tests_latest
@@ -181,7 +186,7 @@ c_driver_variables:
           . Scripts/activate
           git clone https://github.com/10gen/mongo-orchestration.git
           cd mongo-orchestration
-          python setup.py install
+          pip install .
           cd ../..
 
           mkdir -p /cygdrive/c/tmp/orchestration-home
@@ -194,10 +199,14 @@ c_driver_variables:
         start_mongo_orchestration: |
           echo "Starting Mongo Orchestration..."
           export MONGO_ORCHESTRATION_HOME=/tmp/orchestration-home
+          set +o errexit
           if [ -f /tmp/orchestration-home/server.pid ]; then
             echo "Prior Mongo Orchestration?"
             kill `cat /tmp/orchestration-home/server.pid`
           fi
+          killall mongod mongos
+          set -o errexit
+          mkdir -p /data/db
           mkdir -p $MONGO_ORCHESTRATION_HOME
           rm -f $MONGO_ORCHESTRATION_HOME/server.pid
           echo From shell `date` > $MONGO_ORCHESTRATION_HOME/server.log
@@ -233,6 +242,24 @@ c_driver_variables:
           set -o errexit
           set -o verbose
           ./autogen.sh --enable-experimental-features --enable-optimizations --enable-html-docs=no --enable-man-pages=no --enable-yelp=no --enable-examples=no --enable-sasl --enable-ssl=no --enable-maintainer-flags --enable-debug --with-libbson=bundled
+          make -j8
+          make abicheck
+          (cd src/libbson && make test TEST_ARGS="--no-fork -d")
+      unix_openssl11: &compile_unix_openssl11
+        compile_script: |
+          set -o errexit
+          set -o verbose
+          prefix=`pwd`/openssl
+          curl -s https://openssl.org/source/openssl-1.1.0-pre5.tar.gz --output openssl.tar.gz
+          tar zxvf openssl.tar.gz
+          cd openssl-1.1.0-pre5
+          ./config no-zlib no-weak-ssl-ciphers no-ssl3-method no-ssl3 --prefix=$prefix/ --openssldir=$prefix
+          make && make install
+          cd ..
+          export LDFLAGS="-L$prefix/lib -lssl -lcrypto"
+          export SSL_LIBS="-L$prefix/lib -lssl -lcrypto"
+          export SSL_CFLAGS="-I$prefix/include"
+          ./autogen.sh --enable-experimental-features --enable-optimizations --enable-html-docs=no --enable-man-pages=no --enable-yelp=no --enable-examples=no --enable-sasl --enable-ssl=openssl --enable-maintainer-flags --enable-debug --with-libbson=bundled
           make -j8
           make abicheck
           (cd src/libbson && make test TEST_ARGS="--no-fork -d")
@@ -275,7 +302,7 @@ c_driver_variables:
           "$MSBUILD" /m ALL_BUILD.vcxproj
           "$MSBUILD" /m INSTALL.vcxproj
           cd ../..
-          "$cmake" -G "$GENERATOR" "-DCMAKE_INSTALL_PREFIX=C:/mongo-c-driver" "-DBSON_ROOT_DIR=C:/mongo-c-driver" $CMAKE_DEFS
+          "$cmake" -G "$GENERATOR" "-DENABLE_EXPERIMENTAL_FEATURES=ON" "-DCMAKE_INSTALL_PREFIX=C:/mongo-c-driver" "-DBSON_ROOT_DIR=C:/mongo-c-driver" $CMAKE_DEFS
           "$MSBUILD" /m ALL_BUILD.vcxproj
           "$MSBUILD" /m INSTALL.vcxproj
           (cd src/libbson && ./Debug/test-libbson.exe --no-fork -d)
@@ -324,6 +351,26 @@ c_driver_variables:
           sed -i'' 's/\/data\/mci\/[a-z0-9]\{32\}\/mongo-c-driver/./g' test-libmongoc
           make TEST_ARGS="-d -F test-results.json" test
 
+      unix_openssl11: &run_integration_tests_unix_openssl11
+        run_integration_tests: |
+          prefix=`pwd`/openssl
+          curl -s https://openssl.org/source/openssl-1.1.0-pre5.tar.gz --output openssl.tar.gz
+          tar zxvf openssl.tar.gz
+          cd openssl-1.1.0-pre5
+          ./config no-zlib no-weak-ssl-ciphers no-ssl3-method no-ssl3 --prefix=$prefix/ --openssldir=$prefix
+          make && make install
+          cd ..
+          LD_EXTRA=":$prefix/lib"
+          export MONGOC_TEST_FUTURE_TIMEOUT_MS=30000
+          export MONGOC_ENABLE_MAJORITY_READ_CONCERN=on
+          export LD_LIBRARY_PATH=".libs:src/libbson/.libs$LD_EXTRA"
+
+          # This libtool wrapper script was built in a unique dir like
+          # "/data/mci/998e754a0d1ed79b8bf733f405b87778/mongo-c-driver",
+          # replace its absolute path with "." so it can run in the CWD.
+          sed -i'' 's/\/data\/mci\/[a-z0-9]\{32\}\/mongo-c-driver/./g' test-libmongoc
+          make TEST_ARGS="-d -F test-results.json" test
+
       osx: &run_integration_tests_osx
         run_integration_tests: |
           export MONGOC_TEST_FUTURE_TIMEOUT_MS=30000
@@ -332,6 +379,13 @@ c_driver_variables:
           make TEST_ARGS="-d -F test-results.json" test
 
 ## Other OS-specific attributes, grouped by OS
+  unix_common_openssl11: &unix_common_openssl11
+    <<: *compile_unix_openssl11
+    <<: *mongo_orchestration_unix
+    <<: *run_integration_tests_unix_openssl11
+    <<: *start_topology_command
+    <<: *unix_path
+
   unix_common: &unix_common
     <<: *compile_unix
     <<: *mongo_orchestration_unix
@@ -395,6 +449,11 @@ c_driver_variables:
       msbuild: /cygdrive/c/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe
       dllpath: "c:/openssl/bin,c:/sasl/bin"
       cmake_defs: "-DENABLE_SSL=WINDOWS"
+    msvc2015: &with_msvc2015_openssl
+      generator: Visual Studio 14 2015 Win64
+      msbuild: /cygdrive/c/Program Files (x86)/MSBuild/14.0/Bin/MSBuild.exe
+      dllpath: "c:/openssl/bin,c:/sasl/bin"
+      cmake_defs: "-DENABLE_SSL=OPENSSL"
 
   ## all windows buildvariants have these attributes in common
   windows_common: &windows_common
@@ -499,7 +558,7 @@ functions:
       script: |
           make abicheck
           (cd src/libbson && make test TEST_ARGS="--no-fork -d")
-          MONGOC_TEST_SKIP_LIVE=on MONGOC_TEST_SKIP_SLOW=on make test
+          MONGOC_TEST_SKIP_LIVE=on MONGOC_TEST_SKIP_SLOW=on make TEST_ARGS="-d -F test-results.json" test
 
   "set topology standalone" :
     command: expansions.update
@@ -536,6 +595,13 @@ functions:
           value: "auth.json"
         - key: "topology_type"
           value: "sharded_cluster"
+
+  "connect to two mongos servers" :
+    command: expansions.update
+    params:
+      updates:
+        - key: "mongoc_test_uri"
+          value: "mongodb://localhost:27017,localhost:27018"
 
   "set topology standalone ssl no auth" :
     command: expansions.update
@@ -675,6 +741,9 @@ functions:
         ${start_mongo_orchestration}
         ${start_topology}
         set +o errexit
+
+        # Use multi-mongos URI, or empty for default.
+        export MONGOC_TEST_URI="${mongoc_test_uri}"
         ${run_integration_tests}
 
         mongo-orchestration stop
@@ -867,6 +936,21 @@ tasks:
             use_auth: true
         - func: "report results"
 
+    - name: "integration-test-2.4-shard-multi"
+      depends_on:
+        - name: "compile"
+      commands:
+        - func: "set topology sharded"
+        - func: "set version 2.4"
+        - func: "create working directory"
+        - func: "fetch artifacts"
+        - func: "fetch mongodb"
+        - func: "connect to two mongos servers"
+        - func: "run integration tests"
+          vars:
+            use_auth: true
+        - func: "report results"
+
     - name: "integration-test-2.6"
       depends_on:
         - name: "compile"
@@ -904,6 +988,21 @@ tasks:
         - func: "create working directory"
         - func: "fetch artifacts"
         - func: "fetch mongodb"
+        - func: "run integration tests"
+          vars:
+            use_auth: true
+        - func: "report results"
+
+    - name: "integration-test-2.6-shard-multi"
+      depends_on:
+        - name: "compile"
+      commands:
+        - func: "set topology sharded"
+        - func: "set version 2.6"
+        - func: "create working directory"
+        - func: "fetch artifacts"
+        - func: "fetch mongodb"
+        - func: "connect to two mongos servers"
         - func: "run integration tests"
           vars:
             use_auth: true
@@ -951,6 +1050,21 @@ tasks:
             use_auth: true
         - func: "report results"
 
+    - name: "integration-test-3.0-shard-multi"
+      depends_on:
+        - name: "compile"
+      commands:
+        - func: "set topology sharded"
+        - func: "set version 3.0"
+        - func: "create working directory"
+        - func: "fetch artifacts"
+        - func: "fetch mongodb"
+        - func: "connect to two mongos servers"
+        - func: "run integration tests"
+          vars:
+            use_auth: true
+        - func: "report results"
+
     - name: "integration-test-latest"
       depends_on:
         - name: "compile"
@@ -988,6 +1102,21 @@ tasks:
         - func: "create working directory"
         - func: "fetch artifacts"
         - func: "fetch mongodb"
+        - func: "run integration tests"
+          vars:
+            use_auth: true
+        - func: "report results"
+
+    - name: "integration-test-latest-shard-multi"
+      depends_on:
+        - name: "compile"
+      commands:
+        - func: "set topology sharded"
+        - func: "set version latest"
+        - func: "create working directory"
+        - func: "fetch artifacts"
+        - func: "fetch mongodb"
+        - func: "connect to two mongos servers"
         - func: "run integration tests"
           vars:
             use_auth: true
@@ -1330,6 +1459,18 @@ buildvariants:
   - ubuntu1404-test
   tasks: *ssl_tests
 
+
+- name: ubuntu-1404-64-openssl1.1
+  display_name: "Ubu 14 gcc-4.8.4 64 OpenSSL 1.1"
+  expansions:
+    <<: *cflags_64_no_werror
+    <<: *mongo_url_ubuntu1404
+    <<: *unix_common_openssl11
+    <<: *ssl
+  run_on:
+  - ubuntu1404-test
+  tasks: *ssl_tests
+
 #######################################
 #         OS X Buildvariants          #
 #######################################
@@ -1462,6 +1603,17 @@ buildvariants:
     <<: *msvc_common
     <<: *mongo_url_windows64ssl
     <<: *with_msvc2015_nativessl
+    <<: *ssl
+  run_on:
+  - windows-64-vs2015-compile
+  tasks: *ssl_tests
+
+- name: windows-64-vs2015-openssl
+  display_name: "Win VS2015 64 OpenSSL"
+  expansions:
+    <<: *msvc_common
+    <<: *mongo_url_windows64ssl
+    <<: *with_msvc2015_openssl
     <<: *ssl
   run_on:
   - windows-64-vs2015-compile

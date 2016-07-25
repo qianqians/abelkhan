@@ -105,7 +105,7 @@ mock_server_new ()
 {
    mock_server_t *server = (mock_server_t *)bson_malloc0 (sizeof (mock_server_t));
 
-   server->request_timeout_msec = 10 * 1000;
+   server->request_timeout_msec = get_future_timeout_ms ();
    _mongoc_array_init (&server->autoresponders,
                        sizeof (autoresponder_handle_t));
    _mongoc_array_init (&server->worker_threads,
@@ -1534,8 +1534,8 @@ main_thread (void *data)
          mongoc_mutex_lock (&server->mutex);
          if (server->ssl) {
             server->ssl_opts.weak_cert_validation = 1;
-            client_stream = mongoc_stream_tls_new (client_stream,
-                                                   &server->ssl_opts, 0);
+            client_stream = mongoc_stream_tls_new_with_hostname (client_stream, NULL,
+                                                                 &server->ssl_opts, 0);
             if (!client_stream) {
                mongoc_mutex_unlock (&server->mutex);
                perror ("Failed to attach tls stream");
@@ -1611,7 +1611,7 @@ worker_thread (void *data)
 
    if (ssl) {
       if (!mongoc_stream_tls_handshake_block (client_stream, "localhost", TIMEOUT, &error)) {
-         MONGOC_ERROR("Blocking TLS handshake failed");
+         MONGOC_ERROR("Blocking TLS handshake failed: %s", error.message);
          mongoc_stream_close (client_stream);
          mongoc_stream_destroy (client_stream);
          RETURN (NULL);
@@ -1636,6 +1636,10 @@ again:
    }
 
    if (_mongoc_buffer_fill (&buffer, client_stream, 4, 100, &error) == -1) {
+      if (mongoc_stream_check_closed (client_stream)) {
+         GOTO (failure);
+      }
+
       GOTO (again);
    }
 

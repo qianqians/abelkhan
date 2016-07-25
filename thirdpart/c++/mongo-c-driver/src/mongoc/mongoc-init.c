@@ -20,6 +20,11 @@
 #include "mongoc-config.h"
 #include "mongoc-counters-private.h"
 #include "mongoc-init.h"
+
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+#include "mongoc-metadata-private.h"
+#endif
+
 #ifdef MONGOC_ENABLE_SSL
 # include "mongoc-scram-private.h"
 # include "mongoc-ssl.h"
@@ -120,6 +125,10 @@ static MONGOC_ONCE_FUN( _mongoc_do_init)
    }
 #endif
 
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+   _mongoc_metadata_init ();
+#endif
+
    MONGOC_ONCE_RETURN;
 }
 
@@ -150,6 +159,10 @@ static MONGOC_ONCE_FUN( _mongoc_do_cleanup)
 #endif
 
    _mongoc_counters_cleanup ();
+
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+   _mongoc_metadata_cleanup ();
+#endif
 
    MONGOC_ONCE_RETURN;
 }

@@ -58,8 +58,6 @@ test_bson_type_decimal128 (const uint8_t *bson_str,
                            uint32_t       canonical_extjson_str_len,
                            bool           lossy)
 {
-   char bson_string[BSON_DECIMAL128_STRING];
-   char json_string[BSON_DECIMAL128_STRING];
    bson_t bson;
    bson_t canonical_bson;
    bson_t *extjson;
@@ -67,7 +65,6 @@ test_bson_type_decimal128 (const uint8_t *bson_str,
    bson_decimal128_t bson_decimal128;
    bson_decimal128_t json_decimal128;
    bson_iter_t iter;
-   char *str1, *str2;
    bson_error_t error;
 
    BSON_ASSERT (bson_str);
@@ -133,18 +130,16 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
 
    if (bson_iter_init_find (&iter, scenario, "valid")) {
       const char *expected = NULL;
-      bson_t json;
-      bson_t bson_input = BSON_INITIALIZER;
 
       bson_iter_recurse (&iter, &inner_iter);
       while (bson_iter_next (&inner_iter)) {
-         bson_iter_t test;
-         uint8_t       *bson_str;
-         uint32_t       bson_str_len;
-         const uint8_t *extjson_str;
-         uint32_t       extjson_str_len;
-         const uint8_t *canonical_extjson_str;
-         uint32_t       canonical_extjson_str_len;
+         bson_iter_t    test;
+         uint8_t       *bson_str = NULL;
+         uint32_t       bson_str_len = 0;
+         const uint8_t *extjson_str = NULL;
+         uint32_t       extjson_str_len = 0;
+         const uint8_t *canonical_extjson_str = NULL;
+         uint32_t       canonical_extjson_str_len = 0;
          bool           lossy = false;
          bool           have_extjson = false;
          bool           have_canonical_extjson = false;
@@ -189,7 +184,7 @@ test_bson_type (bson_t *scenario, test_bson_type_valid_cb valid)
                 bson_str,
                 bson_str_len,
                 have_extjson ? extjson_str : NULL,
-                have_extjson ?  extjson_str_len : 0,
+                have_extjson ? extjson_str_len : 0,
                 have_canonical_extjson ? canonical_extjson_str : extjson_str,
                 have_canonical_extjson ? canonical_extjson_str_len : extjson_str_len,
                 lossy);

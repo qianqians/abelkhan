@@ -43,18 +43,19 @@
 
 #define MONGOC_STREAM_TLS_OPENSSL_BUFFER_SIZE 4096
 
-/* Magic vtable to make our BIO shim */
-static BIO_METHOD gMongocStreamTlsOpenSslRawMethods = {
-   BIO_TYPE_FILTER,
-   "mongoc-stream-tls-glue",
-   mongoc_stream_tls_openssl_bio_write,
-   mongoc_stream_tls_openssl_bio_read,
-   mongoc_stream_tls_openssl_bio_puts,
-   mongoc_stream_tls_openssl_bio_gets,
-   mongoc_stream_tls_openssl_bio_ctrl,
-   mongoc_stream_tls_openssl_bio_create,
-   mongoc_stream_tls_openssl_bio_destroy
-};
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+static void
+BIO_meth_free(BIO_METHOD *meth)
+{
+/* Nothing to free pre OpenSSL 1.1.0 */
+}
+
+static int
+BIO_get_shutdown (BIO *bio)
+{
+   return bio->shutdown;
+}
+#endif
 
 
 /*
@@ -82,8 +83,14 @@ _mongoc_stream_tls_openssl_destroy (mongoc_stream_t *stream)
 
    BSON_ASSERT (tls);
 
+   /* Attempt to be good TLS citizens and notify the other end we are shutting down */
+   BIO_ssl_shutdown (openssl->bio);
+
    BIO_free_all (openssl->bio);
    openssl->bio = NULL;
+
+   BIO_meth_free (openssl->meth);
+   openssl->meth = NULL;
 
    mongoc_stream_destroy (tls->base_stream);
    tls->base_stream = NULL;
@@ -520,9 +527,20 @@ _mongoc_stream_tls_openssl_get_base_stream (mongoc_stream_t *stream)
 static bool
 _mongoc_stream_tls_openssl_check_closed (mongoc_stream_t *stream) /* IN */
 {
-   mongoc_stream_tls_t *tls = (mongoc_stream_tls_t *)stream;
+   mongoc_stream_tls_t *tls;
+   mongoc_stream_tls_openssl_t *openssl;
+
+   ENTRY;
    BSON_ASSERT (stream);
-   return mongoc_stream_check_closed (tls->base_stream);
+
+   tls = (mongoc_stream_tls_t *) stream;
+   openssl = (mongoc_stream_tls_openssl_t *) tls->ctx;
+
+   if (BIO_get_shutdown (openssl->bio)) {
+      RETURN (true);
+   }
+
+   RETURN (mongoc_stream_check_closed (tls->base_stream));
 }
 
 
@@ -603,6 +621,7 @@ mongoc_stream_tls_openssl_handshake (mongoc_stream_t *stream,
 
 mongoc_stream_t *
 mongoc_stream_tls_openssl_new (mongoc_stream_t  *base_stream,
+                               const char       *host,
                                mongoc_ssl_opt_t *opt,
                                int               client)
 {
@@ -611,6 +630,7 @@ mongoc_stream_tls_openssl_new (mongoc_stream_t  *base_stream,
    SSL_CTX *ssl_ctx = NULL;
    BIO *bio_ssl = NULL;
    BIO *bio_mongoc_shim = NULL;
+   BIO_METHOD *meth;
 
    BSON_ASSERT(base_stream);
    BSON_ASSERT(opt);
@@ -622,15 +642,28 @@ mongoc_stream_tls_openssl_new (mongoc_stream_t  *base_stream,
       RETURN(NULL);
    }
 
+#if OPENSSL_VERSION_NUMBER >= 0x10002000L
+   if (!opt->allow_invalid_hostname) {
+      struct in_addr addr;
+      X509_VERIFY_PARAM *param = X509_VERIFY_PARAM_new();
+
+#ifdef X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS
+      X509_VERIFY_PARAM_set_hostflags (param, X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS);
+#endif
+      if (inet_pton (AF_INET, host, &addr)) {
+         X509_VERIFY_PARAM_set1_ip_asc (param, host);
+      } else {
+         X509_VERIFY_PARAM_set1_host (param, host, 0);
+      }
+      SSL_CTX_set1_param (ssl_ctx, param);
+      X509_VERIFY_PARAM_free (param);
+   }
+#endif
+
    if (opt->weak_cert_validation) {
       SSL_CTX_set_verify (ssl_ctx, SSL_VERIFY_NONE, NULL);
-      opt->allow_invalid_hostname = true;
    } else {
       SSL_CTX_set_verify (ssl_ctx, SSL_VERIFY_PEER, NULL);
-   }
-
-   if (!client) {
-      opt->allow_invalid_hostname = true;
    }
 
    bio_ssl = BIO_new_ssl (ssl_ctx, client);
@@ -638,11 +671,12 @@ mongoc_stream_tls_openssl_new (mongoc_stream_t  *base_stream,
       SSL_CTX_free (ssl_ctx);
       RETURN(NULL);
    }
-
-   bio_mongoc_shim = BIO_new (&gMongocStreamTlsOpenSslRawMethods);
+   meth = mongoc_stream_tls_openssl_bio_meth_new ();
+   bio_mongoc_shim = BIO_new (meth);
    if (!bio_mongoc_shim) {
       BIO_free_all (bio_ssl);
-      RETURN(NULL);
+      BIO_meth_free (meth);
+      RETURN (NULL);
    }
 
 
@@ -650,6 +684,7 @@ mongoc_stream_tls_openssl_new (mongoc_stream_t  *base_stream,
 
    openssl = (mongoc_stream_tls_openssl_t *)bson_malloc0 (sizeof *openssl);
    openssl->bio = bio_ssl;
+   openssl->meth = meth;
    openssl->ctx = ssl_ctx;
 
    tls = (mongoc_stream_tls_t *)bson_malloc0 (sizeof *tls);
@@ -668,7 +703,7 @@ mongoc_stream_tls_openssl_new (mongoc_stream_t  *base_stream,
    tls->ctx = (void *)openssl;
    tls->timeout_msec = -1;
    tls->base_stream = base_stream;
-   bio_mongoc_shim->ptr = tls;
+   mongoc_stream_tls_openssl_bio_set_data (bio_mongoc_shim, tls);
 
    mongoc_counter_streams_active_inc();
 

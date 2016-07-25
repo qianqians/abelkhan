@@ -4,21 +4,13 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="logic\logic.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="logic\logicmanager.cs">
     <Files>
-      <File FileName="logic\logic.cs" Line="1" Column="1" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
-  <MonoDevelop.Ide.ItemProperties.logic PreferredExecutionTarget="MonoDevelop.Default" />
-</Properties>﻿<Properties StartupItem="logic\logic.csproj">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
-  </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.Workbench ActiveDocument="logic\logic.cs">
-    <Files>
-      <File FileName="logic\logic.cs" Line="1" Column="1" />
+      <File FileName="logic\logic.cs" Line="32" Column="105" />
+      <File FileName="logic\hubmanager.cs" Line="43" Column="76" />
+      <File FileName="logic\hubproxy.cs" Line="18" Column="75" />
+      <File FileName="logic\logicmanager.cs" Line="80" Column="56" />
+      <File FileName="logic\gatemanager.cs" Line="94" Column="62" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.ItemProperties.logic PreferredExecutionTarget="MonoDevelop.Default" />

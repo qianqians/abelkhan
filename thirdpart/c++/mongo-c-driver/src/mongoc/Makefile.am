@@ -96,6 +96,7 @@ INST_H_FILES = \
 	src/mongoc/mongoc-topology-private.h \
 	src/mongoc/mongoc-topology-scanner-private.h \
 	src/mongoc/mongoc-trace.h \
+	src/mongoc/mongoc-trace-private.h \
 	src/mongoc/mongoc-uri.h \
 	src/mongoc/mongoc-uri-private.h \
 	src/mongoc/mongoc-util-private.h \
@@ -105,6 +106,13 @@ INST_H_FILES = \
 	src/mongoc/mongoc-write-concern-private.h \
 	src/mongoc/mongoc-write-concern.h \
 	src/mongoc/utlist.h
+
+if ENABLE_EXPERIMENTAL_FEATURES
+INST_H_FILES += \
+	src/mongoc/mongoc-metadata.h \
+	src/mongoc/mongoc-metadata-os-private.h \
+	src/mongoc/mongoc-metadata-private.h
+endif
 
 if ENABLE_SSL
 INST_H_FILES += \
@@ -204,6 +212,11 @@ MONGOC_SOURCES_SHARED += \
 	src/mongoc/mongoc-crypto-cng.c \
 	src/mongoc/mongoc-rand-cng.c
 endif
+endif
+
+if ENABLE_EXPERIMENTAL_FEATURES
+MONGOC_SOURCES_SHARED += \
+	src/mongoc/mongoc-metadata.c
 endif
 
 if ENABLE_SSL

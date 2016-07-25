@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_mongoc\CMakeFiles\96ebd8fb3a3492e0a496601f150cc525\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{CFD08F6F-6AF6-3B2E-A951-A02421B44D63}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

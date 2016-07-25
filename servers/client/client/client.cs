@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 
 namespace client
 {
@@ -58,8 +59,15 @@ namespace client
 			_client_call_gate.cancle_server();
 		}
 
-		public void call_logic(String module_name, String func_name, String argvs)
+		public void call_logic(String module_name, String func_name, params object[] _argvs)
 		{
+			ArrayList _argvs_list = new ArrayList();
+			foreach (var o in _argvs)
+			{
+				_argvs_list.Add(o);
+			}
+			var argvs = System.Text.Json.Jsonparser.pack(_argvs_list);
+			
 			_client_call_gate.forward_client_call_logic(module_name, func_name, argvs);
 		}
 

@@ -161,17 +161,16 @@ mongoc_client_pool_destroy (mongoc_client_pool_t *pool)
 
 
 /*
-  Start the background topology scanner.
-
-  This function assumes the pool's mutex is locked
-*/
+ * Start the background topology scanner.
+ *
+ * This function assumes the pool's mutex is locked
+ */
 static void
-_start_scanner_if_needed (mongoc_client_pool_t *pool) {
-   if (!_mongoc_topology_is_scanner_active (pool->topology)) {
-      if (!_mongoc_topology_start_background_scanner (pool->topology)) {
-         MONGOC_ERROR ("Background scanner did not start!");
-         abort ();
-      }
+_start_scanner_if_needed (mongoc_client_pool_t *pool)
+{
+   if (!_mongoc_topology_start_background_scanner (pool->topology)) {
+      MONGOC_ERROR ("Background scanner did not start!");
+      abort ();
    }
 }
 
@@ -349,3 +348,19 @@ mongoc_client_pool_set_error_api (mongoc_client_pool_t *pool,
 
    return true;
 }
+
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+bool
+mongoc_client_pool_set_appname (mongoc_client_pool_t *pool,
+                                const char           *appname)
+{
+   bool ret;
+
+   mongoc_mutex_lock (&pool->mutex);
+   ret = _mongoc_topology_set_appname (pool->topology,
+                                       appname);
+   mongoc_mutex_unlock (&pool->mutex);
+
+   return ret;
+}
+#endif

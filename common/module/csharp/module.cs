@@ -2,7 +2,7 @@
 
 namespace common
 {
-	public interface imodule
+	public class imodule
 	{
 	}
 }

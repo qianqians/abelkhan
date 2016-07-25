@@ -25,15 +25,26 @@ namespace common
 				var method = _type.GetMethod(func_name);
 				if (method != null)
 				{
-					var argv = (ArrayList)System.Text.Json.Jsonparser.unpack(argvs);
+					try
+					{
+						var argv = (ArrayList)System.Text.Json.Jsonparser.unpack(argvs);
 
-					if (argv.Count > 0)
-					{
-						method.Invoke(_module, argv.ToArray());
+						if (argv.Count > 0)
+						{
+							Console.WriteLine("in to process_module_mothed");
+
+							method.Invoke(_module, argv.ToArray());
+						}
+						else
+						{
+							Console.WriteLine("in to process_module_mothed1");
+
+							method.Invoke(_module, null);
+						}
 					}
-					else
+					catch (Exception e)
 					{
-						method.Invoke(_module, null);
+						Console.WriteLine("call rpc error {0}", e);
 					}
 				}
 			}

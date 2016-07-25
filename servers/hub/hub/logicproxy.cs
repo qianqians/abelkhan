@@ -15,9 +15,15 @@ namespace hub
 			_hub_call_logic.reg_logic_sucess_and_notify_hub_nominate(hub.name);
 		}
 
-		public void call_logic(String module_name, String func_name, ArrayList argvs)
+		public void call_logic(String module_name, String func_name, params object[] argvs)
 		{
-			var json_argvs = System.Text.Json.Jsonparser.pack(argvs);
+			ArrayList _argvs = new ArrayList();
+			foreach (var o in argvs)
+			{
+				_argvs.Add(o);
+			}
+			
+			var json_argvs = System.Text.Json.Jsonparser.pack(_argvs);
 			_hub_call_logic.hub_call_logic_mothed(module_name, func_name, json_argvs);
 		}
 

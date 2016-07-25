@@ -6,6 +6,10 @@
 #include "mongoc-cursor-private.h"
 #include "mongoc-util-private.h"
 
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+#include "mongoc-metadata-private.h"
+#endif
+
 #include "TestSuite.h"
 #include "test-conveniences.h"
 #include "test-libmongoc.h"
@@ -19,6 +23,93 @@
 
 #undef MONGOC_LOG_DOMAIN
 #define MONGOC_LOG_DOMAIN "client-test"
+
+
+/*
+ * test_client_cmd_write_concern:
+ *
+ * This test ensures that there is a lack of special
+ * handling for write concerns and write concern
+ * errors in generic functions that support commands
+ * that write.
+ *
+ */
+
+static void
+test_client_cmd_write_concern (void)
+{
+   mongoc_client_t *client;
+   bson_t reply;
+   bson_error_t error;
+   future_t *future;
+   request_t *request;
+   mock_server_t *server;
+   char *cmd;
+
+   /* set up client and wire protocol version */
+   server = mock_server_with_autoismaster (0);
+   mock_server_run (server);
+   client = mongoc_client_new_from_uri (mock_server_get_uri (server));
+
+   /* command with invalid writeConcern */
+   cmd = "{'foo' : 1, "
+         "'writeConcern' : {'w' : 99 }}";
+   future = future_client_command_simple (client, "test",
+                                          tmp_bson (cmd),
+                                          NULL,
+                                          &reply, &error);
+   request = mock_server_receives_command (
+           server, "test",
+           MONGOC_QUERY_SLAVE_OK,
+           cmd);
+   assert (request);
+
+   mock_server_replies_ok_and_destroys (request);
+   assert (future_get_bool (future));
+
+   future_destroy (future);
+
+   /* standalone response */
+   future = future_client_command_simple (client, "test",
+                                          tmp_bson (cmd),
+                                          NULL,
+                                          &reply, &error);
+   request = mock_server_receives_command (
+           server, "test",
+           MONGOC_QUERY_SLAVE_OK,
+           cmd);
+   assert (request);
+
+   mock_server_replies_simple (
+           request,
+           "{ 'ok' : 0, 'errmsg' : 'cannot use w > 1 when a "
+           "host is not replicated', 'code' : 2 }");
+
+   assert (!future_get_bool (future));
+   future_destroy (future);
+   request_destroy (request);
+
+   /* replicaset response */
+   future = future_client_command_simple (client, "test",
+                                          tmp_bson (cmd),
+                                          NULL,
+                                          &reply, &error);
+   request = mock_server_receives_command (
+           server, "test",
+           MONGOC_QUERY_SLAVE_OK,
+           cmd);
+   mock_server_replies_simple (
+           request,
+           "{ 'ok' : 1, 'n': 1, "
+           "'writeConcernError': {'code': 17, 'errmsg': 'foo'}}");
+   assert (future_get_bool (future));
+
+   future_destroy (future);
+   mock_server_destroy (server);
+   mongoc_client_destroy (client);
+   request_destroy (request);
+}
+
 
 static char *
 gen_test_user (void)
@@ -1428,6 +1519,7 @@ _test_mongoc_client_select_server_error (bool pooled)
    mongoc_server_description_t *sd;
    bson_error_t error;
    mongoc_read_prefs_t *prefs;
+   mongoc_topology_description_type_t tdtype;
    const char *server_type;
 
    if (pooled) {
@@ -1461,7 +1553,8 @@ _test_mongoc_client_select_server_error (bool pooled)
 
    /* Server Selection Spec: "With topology type Single, the single server is
     * always suitable for reads if it is available." */
-   if (client->topology->description.type == MONGOC_TOPOLOGY_SINGLE) {
+   tdtype = client->topology->description.type;
+   if (tdtype == MONGOC_TOPOLOGY_SINGLE || tdtype == MONGOC_TOPOLOGY_SHARDED) {
       ASSERT (sd);
       server_type = mongoc_server_description_type (sd);
       ASSERT (!strcmp (server_type, "Standalone") ||
@@ -1692,6 +1785,203 @@ test_ssl_reconnect_pooled (void)
 
 #endif
 
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+static void
+test_mongoc_client_application_metadata (void)
+{
+   enum { BUFFER_SIZE = METADATA_MAX_SIZE };
+   char big_string[BUFFER_SIZE];
+   const char *short_string = "hallo thar";
+   mongoc_client_t *client;
+   mock_server_t *server;
+   mongoc_uri_t *uri;
+
+   server = mock_server_new ();
+   mock_server_run (server);
+   uri = mongoc_uri_copy (mock_server_get_uri (server));
+   client = mongoc_client_new_from_uri (uri);
+
+   memset (big_string, 'a', BUFFER_SIZE - 1);
+   big_string[BUFFER_SIZE - 1] = '\0';
+
+   /* Check that setting too long a name causes failure */
+   ASSERT (!mongoc_client_set_appname (client, big_string));
+
+   /* Success case */
+   ASSERT (mongoc_client_set_appname (client, short_string));
+
+   /* Make sure we can't set it twice */
+   ASSERT (!mongoc_client_set_appname (client, "a"));
+
+   mongoc_client_destroy (client);
+   mongoc_uri_destroy (uri);
+   mock_server_destroy (server);
+}
+
+static void
+_assert_ismaster_valid (request_t *request,
+                        bool       needs_meta)
+{
+   const bson_t *request_doc;
+
+   ASSERT (request);
+   request_doc = request_get_doc (request, 0);
+   ASSERT (request_doc);
+   ASSERT (bson_has_field (request_doc, "isMaster"));
+   ASSERT (bson_has_field (request_doc, METADATA_FIELD) == needs_meta);
+}
+
+/* For single threaded clients, to cause an isMaster to be sent, we must wait
+ * until we're overdue for a heartbeat, and then execute some command */
+static future_t *
+_force_ismaster_with_ping (mongoc_client_t *client,
+                           int              heartbeat_ms)
+{
+   future_t *future;
+
+   /* Wait until we're overdue to send an isMaster */
+   _mongoc_usleep (heartbeat_ms * 2 * 1000);
+
+   /* Send a ping */
+   future = future_client_command_simple (client,
+                                          "admin",
+                                          tmp_bson ("{'ping': 1}"),
+                                          NULL,
+                                          NULL,
+                                          NULL);
+   ASSERT (future);
+   return future;
+}
+
+/* Call after we've dealt with the isMaster sent by
+ * _force_ismaster_with_ping */
+static void
+_respond_to_ping (future_t      *future,
+                  mock_server_t *server)
+{
+   request_t *request;
+
+   ASSERT (future);
+
+   request = mock_server_receives_command (server, "admin",
+                                           MONGOC_QUERY_SLAVE_OK,
+                                           "{'ping': 1}");
+
+   mock_server_replies_simple (request, "{'ok': 1}");
+
+   ASSERT (future_get_bool (future));
+   future_destroy (future);
+   request_destroy (request);
+}
+
+static void
+_test_client_sends_metadata (bool pooled)
+{
+   mock_server_t *server;
+   request_t *request;
+   mongoc_uri_t *uri;
+   future_t *future;
+   mongoc_client_t *client;
+   mongoc_client_pool_t *pool;
+   const char *const server_reply = "{'ok': 1, 'ismaster': true}";
+   const int heartbeat_ms = 500;
+
+   server = mock_server_new ();
+   mock_server_run (server);
+   uri = mongoc_uri_copy (mock_server_get_uri (server));
+   mongoc_uri_set_option_as_int32 (uri, "heartbeatFrequencyMS", heartbeat_ms);
+
+   if (pooled) {
+      pool = mongoc_client_pool_new (uri);
+
+      /* Pop a client to trigger the topology scanner */
+      client = mongoc_client_pool_pop (pool);
+   } else {
+      client = mongoc_client_new_from_uri (uri);
+      future = _force_ismaster_with_ping (client, heartbeat_ms);
+   }
+
+   request = mock_server_receives_ismaster (server);
+
+   /* Make sure the isMaster request has a "meta" field: */
+   _assert_ismaster_valid (request, true);
+
+   mock_server_replies_simple (request, server_reply);
+   request_destroy (request);
+
+   if (!pooled) {
+      _respond_to_ping (future, server);
+
+      /* Wait until another isMaster is sent */
+      future = _force_ismaster_with_ping (client, heartbeat_ms);
+   }
+
+   request = mock_server_receives_ismaster (server);
+   _assert_ismaster_valid (request, false);
+
+   mock_server_replies_simple (request, server_reply);
+   request_destroy (request);
+
+   if (!pooled) {
+      _respond_to_ping (future, server);
+      future = _force_ismaster_with_ping (client, heartbeat_ms);
+   }
+
+   /* Now wait for the client to send another isMaster command, but this
+    * time the server hangs up */
+   request = mock_server_receives_ismaster (server);
+   _assert_ismaster_valid (request, false);
+
+   mock_server_hangs_up (request);
+   request_destroy (request);
+
+   if (!pooled) {
+      /* The ping wasn't sent since we hung up with isMaster */
+      ASSERT (!future_get_bool (future));
+      future_destroy (future);
+
+      /* We're in cooldown for the next few seconds, so we're not
+       * allowed to send isMasters. Wait for the cooldown to end. */
+      _mongoc_usleep ((MONGOC_TOPOLOGY_COOLDOWN_MS + 1000) * 1000);
+      future = _force_ismaster_with_ping (client, heartbeat_ms);
+   }
+
+   /* Now the client should try to reconnect. They think the server's down
+    * so now they SHOULD send isMaster */
+   request = mock_server_receives_ismaster (server);
+   _assert_ismaster_valid (request, true);
+
+   mock_server_replies_simple (request, server_reply);
+   request_destroy (request);
+
+   if (!pooled) {
+      _respond_to_ping (future, server);
+   }
+
+   /* cleanup */
+   if (pooled) {
+      mongoc_client_pool_push (pool, client);
+      mongoc_client_pool_destroy (pool);
+   } else {
+      mongoc_client_destroy (client);
+   }
+
+   mongoc_uri_destroy (uri);
+   mock_server_destroy (server);
+}
+
+static void
+test_client_sends_metadata_single (void)
+{
+   _test_client_sends_metadata (false);
+}
+
+static void
+test_client_sends_metadata_pooled (void)
+{
+   _test_client_sends_metadata (true);
+}
+#endif
 
 void
 test_client_install (TestSuite *suite)
@@ -1715,6 +2005,8 @@ test_client_install (TestSuite *suite)
                       test_framework_skip_if_no_auth);
    TestSuite_AddLive (suite, "/Client/command", test_mongoc_client_command);
    TestSuite_AddLive (suite, "/Client/command_secondary", test_mongoc_client_command_secondary);
+   TestSuite_Add (suite, "/Client/cmd_w_write_concern",
+                  test_client_cmd_write_concern);
    TestSuite_Add (suite, "/Client/command/read_prefs/simple/single", test_command_simple_read_prefs_single);
    TestSuite_Add (suite, "/Client/command/read_prefs/simple/pooled", test_command_simple_read_prefs_pooled);
    TestSuite_Add (suite, "/Client/command/read_prefs/single", test_command_read_prefs_single);
@@ -1739,6 +2031,14 @@ test_client_install (TestSuite *suite)
    TestSuite_Add (suite, "/Client/database_names", test_get_database_names);
    TestSuite_AddFull (suite, "/Client/connect/uds", test_mongoc_client_unix_domain_socket, NULL, NULL, test_framework_skip_if_no_uds);
    TestSuite_Add (suite, "/Client/mismatched_me", test_mongoc_client_mismatched_me);
+
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+   TestSuite_Add (suite, "/Client/application_metadata", test_mongoc_client_application_metadata);
+   TestSuite_Add (suite, "/Client/sends_metadata_single",
+                  test_client_sends_metadata_single);
+   TestSuite_Add (suite, "/Client/sends_metadata_pooled",
+                  test_client_sends_metadata_pooled);
+#endif
 
 #ifdef TODO_CDRIVER_689
    TestSuite_Add (suite, "/Client/wire_version", test_wire_version);

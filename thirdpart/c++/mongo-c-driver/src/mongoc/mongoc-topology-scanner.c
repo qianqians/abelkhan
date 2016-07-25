@@ -17,10 +17,16 @@
 #include <bson.h>
 #include <bson-string.h>
 
+#include "mongoc-config.h"
 #include "mongoc-error.h"
 #include "mongoc-trace.h"
 #include "mongoc-topology-scanner-private.h"
 #include "mongoc-stream-socket.h"
+
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+#include "mongoc-metadata.h"
+#include "mongoc-metadata-private.h"
+#endif
 
 #ifdef MONGOC_ENABLE_SSL
 #include "mongoc-stream-tls.h"
@@ -41,6 +47,79 @@ mongoc_topology_scanner_ismaster_handler (mongoc_async_cmd_result_t async_status
                                           void                     *data,
                                           bson_error_t             *error);
 
+static void
+_add_ismaster (bson_t *cmd)
+{
+   BSON_APPEND_INT32 (cmd, "isMaster", 1);
+}
+
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+static bool
+_build_ismaster_with_metadata (mongoc_topology_scanner_t *ts)
+{
+   bson_t *doc = &ts->ismaster_cmd_with_metadata;
+   bson_t metadata_doc;
+   bool res;
+
+   _add_ismaster (doc);
+
+   BSON_APPEND_DOCUMENT_BEGIN (doc, METADATA_FIELD, &metadata_doc);
+   res = _mongoc_metadata_build_doc_with_application (&metadata_doc,
+                                                      ts->appname);
+   bson_append_document_end (doc, &metadata_doc);
+
+   /* Return whether the meta doc fit the size limit */
+   return res;
+}
+#endif
+
+static bson_t *
+_get_ismaster_doc (mongoc_topology_scanner_t      *ts,
+                   mongoc_topology_scanner_node_t *node)
+{
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+   bool ismaster_with_metadata_ok = true;
+
+   if (node->last_used != -1 && node->last_failed == -1) {
+      /* The node's been used before and not failed recently */
+      return &ts->ismaster_cmd;
+   }
+
+   /* If this is the first time using the node or if it's the first time
+    * using it after a failure, resend metadata */
+   if (bson_empty (&ts->ismaster_cmd_with_metadata)) {
+      ismaster_with_metadata_ok = _build_ismaster_with_metadata (ts);
+   }
+
+   /* If the doc turned out to be too big, and we couldn't prevent it */
+   if (!ismaster_with_metadata_ok ||
+       ts->ismaster_cmd_with_metadata.len > METADATA_MAX_SIZE) {
+      MONGOC_WARNING ("Metadata doc too big, not including in isMaster");
+      return &ts->ismaster_cmd;
+   }
+
+   return &ts->ismaster_cmd_with_metadata;
+#else
+   return &ts->ismaster_cmd;
+#endif
+}
+
+static void
+_begin_ismaster_cmd (mongoc_topology_scanner_t      *ts,
+                     mongoc_topology_scanner_node_t *node,
+                     int32_t                         timeout_msec)
+{
+   const bson_t *ismaster_cmd_to_send = _get_ismaster_doc (ts, node);
+
+   node->cmd = mongoc_async_cmd (
+      ts->async, node->stream, ts->setup,
+      node->host.host, "admin",
+      ismaster_cmd_to_send,
+      &mongoc_topology_scanner_ismaster_handler,
+      node, timeout_msec);
+}
+
+
 mongoc_topology_scanner_t *
 mongoc_topology_scanner_new (const mongoc_uri_t          *uri,
                              mongoc_topology_scanner_cb_t cb,
@@ -49,12 +128,15 @@ mongoc_topology_scanner_new (const mongoc_uri_t          *uri,
    mongoc_topology_scanner_t *ts = (mongoc_topology_scanner_t *)bson_malloc0 (sizeof (*ts));
 
    ts->async = mongoc_async_new ();
+
    bson_init (&ts->ismaster_cmd);
-   BSON_APPEND_INT32 (&ts->ismaster_cmd, "isMaster", 1);
+   _add_ismaster (&ts->ismaster_cmd);
+   bson_init (&ts->ismaster_cmd_with_metadata);
 
    ts->cb = cb;
    ts->cb_data = data;
    ts->uri = uri;
+   ts->appname = NULL;
 
    return ts;
 }
@@ -91,6 +173,9 @@ mongoc_topology_scanner_destroy (mongoc_topology_scanner_t *ts)
    mongoc_async_destroy (ts->async);
    bson_destroy (&ts->ismaster_cmd);
 
+   /* This field can be set by a mongoc_client */
+   bson_free ((char *) ts->appname);
+
    bson_free (ts);
 }
 
@@ -108,6 +193,7 @@ mongoc_topology_scanner_add (mongoc_topology_scanner_t *ts,
    node->id = id;
    node->ts = ts;
    node->last_failed = -1;
+   node->last_used = -1;
 
    DL_APPEND(ts->nodes, node);
 
@@ -128,12 +214,7 @@ mongoc_topology_scanner_add_and_scan (mongoc_topology_scanner_t *ts,
 
    /* begin non-blocking connection, don't wait for success */
    if (node && mongoc_topology_scanner_node_setup (node, &node->last_error)) {
-      node->cmd = mongoc_async_cmd (
-         ts->async, node->stream, ts->setup,
-         node->host.host, "admin",
-         &ts->ismaster_cmd,
-         &mongoc_topology_scanner_ismaster_handler,
-         node, (int32_t) timeout_msec);
+      _begin_ismaster_cmd (ts, node, timeout_msec);
    }
 
    /* if setup fails the node stays in the scanner. destroyed after the scan. */
@@ -278,9 +359,13 @@ mongoc_topology_scanner_ismaster_handler (mongoc_async_cmd_result_t async_status
       mongoc_stream_failed (node->stream);
       node->stream = NULL;
       node->last_failed = now;
-      message = async_status == MONGOC_ASYNC_CMD_TIMEOUT ?
-                "connection error" :
-                "connection timeout";
+      if (error->code) {
+         message = error->message;
+      } else {
+         message = async_status == MONGOC_ASYNC_CMD_TIMEOUT ?
+                   "connection error" :
+                   "connection timeout";
+      }
       bson_set_error (&node->last_error,
                       MONGOC_ERROR_CLIENT,
                       MONGOC_ERROR_STREAM_CONNECT,
@@ -481,7 +566,9 @@ mongoc_topology_scanner_node_setup (mongoc_topology_scanner_node_t *node,
 
 #ifdef MONGOC_ENABLE_SSL
       if (sock_stream && node->ts->ssl_opts) {
-         sock_stream = mongoc_stream_tls_new (sock_stream, node->ts->ssl_opts, 1);
+         sock_stream = mongoc_stream_tls_new_with_hostname (sock_stream,
+                                                            node->host.host,
+                                                            node->ts->ssl_opts, 1);
       }
 #endif
    }
@@ -549,15 +636,8 @@ mongoc_topology_scanner_start (mongoc_topology_scanner_t *ts,
       /* check node if it last failed before current cooldown period began */
       if (node->last_failed < cooldown) {
          if (mongoc_topology_scanner_node_setup (node, &node->last_error)) {
-
             BSON_ASSERT (!node->cmd);
-
-            node->cmd = mongoc_async_cmd (
-               ts->async, node->stream, ts->setup,
-               node->host.host, "admin",
-               &ts->ismaster_cmd,
-               &mongoc_topology_scanner_ismaster_handler,
-               node, timeout_msec);
+            _begin_ismaster_cmd (ts, node, timeout_msec);
          }
       }
    }
@@ -676,3 +756,24 @@ mongoc_topology_scanner_reset (mongoc_topology_scanner_t *ts)
    }
 }
 
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+/*
+ * Set a field in the topology scanner.
+ */
+bool
+_mongoc_topology_scanner_set_appname (mongoc_topology_scanner_t *ts,
+                                      const char                *appname)
+{
+   if (strlen (appname) > MONGOC_METADATA_APPNAME_MAX) {
+      return false;
+   }
+
+   if (ts->appname != NULL) {
+      /* We've already set it */
+      return false;
+   }
+
+   ts->appname = bson_strdup (appname);
+   return true;
+}
+#endif

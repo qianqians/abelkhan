@@ -112,8 +112,7 @@ when adding a new symbol.
 
  - Add the symbol to `src/libmongoc.symbols`
  - Add the symbol to `build/autotools/versions.ldscript`
- - Add the symbol to `build/cmake/libmongoc.def`
- - Add the symbol to `build/cmake/libmongoc-ssl.def`
+ - Add the symbol to all the `.def` files in `build/cmake/`.
  - Add documentation for the new symbol in `doc/mongoc_your_new_symbol_name.page`
 
 ### Documentation
@@ -157,7 +156,9 @@ Additional environment variables:
 
 * `MONGOC_TEST_HOST`: default `localhost`, the host running MongoDB.
 * `MONGOC_TEST_PORT`: default 27017, MongoDB's listening port.
-* `MONGOC_TEST_SERVER_VERBOSE`: set to `on` for wire protocol logging from 
+* `MONGOC_TEST_URI`: override both host and port with a full connection string,
+  like "mongodb://server1,server2".
+* `MONGOC_TEST_SERVER_VERBOSE`: set to `on` for wire protocol logging from
   tests that use `mock_server_t`. 
 
 If you start `mongod` with SSL, set these variables to configure how

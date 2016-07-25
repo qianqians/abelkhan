@@ -331,8 +331,8 @@ mongoc_client_default_stream_initiator (const mongoc_uri_t       *uri,
 
       if (client->use_ssl ||
           (mechanism && (0 == strcmp (mechanism, "MONGODB-X509")))) {
-         base_stream = mongoc_stream_tls_new (base_stream, &client->ssl_opts,
-                                              true);
+         base_stream = mongoc_stream_tls_new_with_hostname (base_stream, host->host,
+                                                            &client->ssl_opts, true);
 
          if (!base_stream) {
             bson_set_error (error,
@@ -1910,3 +1910,17 @@ mongoc_client_set_error_api (mongoc_client_t *client,
 
    return true;
 }
+
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+bool
+mongoc_client_set_appname (mongoc_client_t *client,
+                           const char      *appname)
+{
+   if (!client->topology->single_threaded) {
+      return false;
+   }
+
+   return _mongoc_topology_set_appname (client->topology,
+                                        appname);
+}
+#endif

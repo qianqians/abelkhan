@@ -839,6 +839,10 @@ _mongoc_stream_tls_secure_channel_check_closed (mongoc_stream_t *stream) /* IN *
 
    ENTRY;
    BSON_ASSERT (secure_channel);
+   if (secure_channel->recv_connection_closed) {
+      RETURN (true);
+   }
+
    RETURN (mongoc_stream_check_closed (tls->base_stream));
 }
 
@@ -917,6 +921,7 @@ mongoc_stream_tls_secure_channel_handshake (mongoc_stream_t *stream,
 
 mongoc_stream_t *
 mongoc_stream_tls_secure_channel_new (mongoc_stream_t  *base_stream,
+                                      const char       *host,
                                       mongoc_ssl_opt_t *opt,
                                       int               client)
 {
@@ -955,8 +960,6 @@ mongoc_stream_tls_secure_channel_new (mongoc_stream_t  *base_stream,
    memset (&schannel_cred, 0, sizeof (schannel_cred));
    schannel_cred.dwVersion = SCHANNEL_CRED_VERSION;
 
-   //opt->weak_cert_validation = true;  /* FIXME: REMOVE ME !*/
-
    /* SCHANNEL_CRED:
     *   https://msdn.microsoft.com/en-us/library/windows/desktop/aa379810.aspx */
    schannel_cred.dwFlags = SCH_USE_STRONG_CRYPTO;
@@ -965,17 +968,14 @@ mongoc_stream_tls_secure_channel_new (mongoc_stream_t  *base_stream,
                               SCH_CRED_IGNORE_NO_REVOCATION_CHECK |
                               SCH_CRED_IGNORE_REVOCATION_OFFLINE;
       TRACE ("disabled server certificate checks");
-      opt->allow_invalid_hostname = true;
    } else {
       schannel_cred.dwFlags |= SCH_CRED_AUTO_CRED_VALIDATION |
                               SCH_CRED_REVOCATION_CHECK_CHAIN;
       TRACE ("enabled server certificate checks");
    }
 
-   //opt->allow_invalid_hostname = true; /* FIXME: REMOVE ME ! */
    if (opt->allow_invalid_hostname) {
       schannel_cred.dwFlags |= SCH_CRED_NO_SERVERNAME_CHECK | SCH_CRED_IGNORE_NO_REVOCATION_CHECK;
-      TRACE ("Ignoring hostname verification");
    }
 
    if (opt->ca_file) {

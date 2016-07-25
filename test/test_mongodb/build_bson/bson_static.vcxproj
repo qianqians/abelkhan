@@ -1,0 +1,329 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|Win32">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|Win32">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{7850CAFB-172D-3B50-A999-E38F7CEDB26F}</ProjectGUID>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>Win32</Platform>
+    <ProjectName>bson_static</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\Debug\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bson_static.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bson-static-1.0</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bson_static.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bson-static-1.0</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\MinSizeRel\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">bson_static.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">bson-static-1.0</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">bson_static.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">bson-static-1.0</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">.lib</TargetExt>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;BSON_COMPILATION;BINARY_DIR="C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/binary";JSON_DIR="C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/json";CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;BSON_COMPILATION;BINARY_DIR=\"C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/binary\";JSON_DIR=\"C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/json\";CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;BSON_COMPILATION;BINARY_DIR="C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/binary";JSON_DIR="C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/json";CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;BSON_COMPILATION;BINARY_DIR=\"C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/binary\";JSON_DIR=\"C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/json\";CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;BSON_COMPILATION;BINARY_DIR="C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/binary";JSON_DIR="C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/json";CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;BSON_COMPILATION;BINARY_DIR=\"C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/binary\";JSON_DIR=\"C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/json\";CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsC</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;BSON_COMPILATION;BINARY_DIR="C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/binary";JSON_DIR="C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/json";CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;BSON_COMPILATION;BINARY_DIR=\"C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/binary\";JSON_DIR=\"C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson//tests/json\";CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions> /machine:X86 %(AdditionalOptions)</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson -BC:/Users/abelk/Documents/workspace/abelkhan/test/test_mongodb/build_bson --check-stamp-file C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson/CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeSystemSpecificInitialize.cmake;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeCCompiler.cmake;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC.cmake;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckFunctionExists.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckStructHasMember.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\TestBigEndian.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\InstallRequiredSystemLibraries.cmake;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\build\cmake\LoadVersion.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CPack.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CPackComponent.cmake;C:\Program Files\CMake\share\cmake-3.6\Templates\CPackConfig.cmake.in;C:\Program Files\CMake\share\cmake-3.6\Templates\CPackConfig.cmake.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-config.h.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-version.h.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\build\cmake\bson\bson-stdint.h;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\libbson-1.0.pc.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson -BC:/Users/abelk/Documents/workspace/abelkhan/test/test_mongodb/build_bson --check-stamp-file C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson/CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeSystemSpecificInitialize.cmake;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeCCompiler.cmake;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC.cmake;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckFunctionExists.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckStructHasMember.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\TestBigEndian.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\InstallRequiredSystemLibraries.cmake;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\build\cmake\LoadVersion.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CPack.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CPackComponent.cmake;C:\Program Files\CMake\share\cmake-3.6\Templates\CPackConfig.cmake.in;C:\Program Files\CMake\share\cmake-3.6\Templates\CPackConfig.cmake.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-config.h.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-version.h.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\build\cmake\bson\bson-stdint.h;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\libbson-1.0.pc.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">Building Custom Rule C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson -BC:/Users/abelk/Documents/workspace/abelkhan/test/test_mongodb/build_bson --check-stamp-file C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson/CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeSystemSpecificInitialize.cmake;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeCCompiler.cmake;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC.cmake;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckFunctionExists.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckStructHasMember.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\TestBigEndian.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\InstallRequiredSystemLibraries.cmake;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\build\cmake\LoadVersion.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CPack.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CPackComponent.cmake;C:\Program Files\CMake\share\cmake-3.6\Templates\CPackConfig.cmake.in;C:\Program Files\CMake\share\cmake-3.6\Templates\CPackConfig.cmake.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-config.h.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-version.h.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\build\cmake\bson\bson-stdint.h;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\libbson-1.0.pc.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">Building Custom Rule C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -HC:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson -BC:/Users/abelk/Documents/workspace/abelkhan/test/test_mongodb/build_bson --check-stamp-file C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:/Users/abelk/Documents/workspace/abelkhan/thirdpart/c++/mongo-c-driver/src/libbson/CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\CMakeLists.txt;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeSystem.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeSystemSpecificInitialize.cmake;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeCCompiler.cmake;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeCXXCompiler.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\WindowsPaths.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC.cmake;C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\3.6.0-rc2\CMakeRCCompiler.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckFunctionExists.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckIncludeFile.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckStructHasMember.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckCSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckCXXSourceCompiles.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CheckSymbolExists.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\TestBigEndian.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\InstallRequiredSystemLibraries.cmake;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\build\cmake\LoadVersion.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CPack.cmake;C:\Program Files\CMake\share\cmake-3.6\Modules\CPackComponent.cmake;C:\Program Files\CMake\share\cmake-3.6\Templates\CPackConfig.cmake.in;C:\Program Files\CMake\share\cmake-3.6\Templates\CPackConfig.cmake.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-config.h.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-version.h.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\build\cmake\bson\bson-stdint.h;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\libbson-1.0.pc.in;C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\src\bson\bson-config.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\src\bson\bson-stdint.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\test\test_mongodb\build_bson\src\bson\bson-version.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bcon.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-atomic.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-clock.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-compat.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-context.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-endian.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-error.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-iter.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-json.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-keys.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-macros.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-md5.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-memory.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-oid.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-reader.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-stdint-win32.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-string.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-types.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-utf8.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-value.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-version-functions.h" />
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-writer.h" />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bcon.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-atomic.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-clock.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-context.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-error.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-iso8601.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-iter.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-json.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-keys.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-md5.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-memory.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-oid.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-reader.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-string.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-timegm.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-utf8.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-value.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-version-functions.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\bson\bson-writer.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\yajl\yajl_alloc.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\yajl\yajl_buf.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\yajl\yajl.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\yajl\yajl_encode.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\yajl\yajl_gen.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\yajl\yajl_lex.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\yajl\yajl_parser.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\yajl\yajl_tree.c"  />
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\src\yajl\yajl_version.c"  />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:/Users/abelk/Documents/workspace/abelkhan/test/test_mongodb/build_bson/ZERO_CHECK.vcxproj">
+      <Project>4BECC869-92CD-36A8-9982-4F382864EE4E</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

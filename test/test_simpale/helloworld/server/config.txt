@@ -1,0 +1,36 @@
+{
+    "center":{
+        "ip":"127.0.0.1",
+        "port":1234,
+		"gm_ip":"127.0.0.1",
+        "gm_port":2234
+    },
+
+    "dbproxy":{
+		"ip":"127.0.0.1",
+		"port":1235,
+
+		"db_ip":"139.129.96.47",
+		"db_port":27017,
+		"db_name":"text",
+		"db_collection":"objects"
+	},
+
+	"gate":{
+		"inside_ip":"127.0.0.1",
+		"inside_port":1236,
+		"outside_ip":"127.0.0.1",
+		"outside_port":3236
+	},
+
+	"hub":{
+		"hub_name":"text_hub",
+		"ip":"127.0.0.1",
+		"port":1237
+	},
+
+	"logic":{
+		"ip":"127.0.0.1",
+		"port":1238
+	}
+}

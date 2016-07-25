@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\TestSuite.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-libbson.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-atomic.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-bson.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-endian.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-clock.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-error.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-iso8601.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-iter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-json.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-oid.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-reader.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-string.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-utf8.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-value.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-version.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-writer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-bcon-basic.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\test-bcon-extract.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\json-test.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\TestSuite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\tests\json-test.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\abelk\Documents\workspace\abelkhan\thirdpart\c++\mongo-c-driver\src\libbson\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{9819BC36-36D2-3C4B-B5A3-6AA4FD0790F3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{3BC2A8D0-B1B2-3CCC-B275-302D7499418B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

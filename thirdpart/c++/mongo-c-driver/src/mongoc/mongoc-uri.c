@@ -24,6 +24,7 @@
 /* strcasecmp on windows */
 #include "mongoc-util-private.h"
 
+#include "mongoc-config.h"
 #include "mongoc-host-list.h"
 #include "mongoc-host-list-private.h"
 #include "mongoc-log.h"
@@ -546,11 +547,13 @@ mongoc_uri_option_is_int32 (const char *key)
        !strcasecmp(key, "localthresholdms") ||
        !strcasecmp(key, "maxpoolsize") ||
        !strcasecmp(key, "minpoolsize") ||
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
+       !strcasecmp(key, "maxstalenessms") ||
+#endif
        !strcasecmp(key, "maxidletimems") ||
        !strcasecmp(key, "waitqueuemultiple") ||
        !strcasecmp(key, "waitqueuetimeoutms") ||
-       !strcasecmp(key, "wtimeoutms") ||
-       !strcasecmp(key, "maxstalenessms");
+       !strcasecmp(key, "wtimeoutms");
 }
 
 bool
@@ -948,8 +951,10 @@ mongoc_uri_new (const char *uri_string)
    uri->str = bson_strdup(uri_string);
 
    _mongoc_uri_assign_read_prefs_mode(uri);
+#ifdef MONGOC_EXPERIMENTAL_FEATURES
    max_staleness_ms = mongoc_uri_get_option_as_int32 (uri, "maxstalenessms", 0);
    mongoc_read_prefs_set_max_staleness_ms (uri->read_prefs, max_staleness_ms);
+#endif
 
    if (!mongoc_read_prefs_is_valid(uri->read_prefs)) {
       mongoc_uri_destroy(uri);

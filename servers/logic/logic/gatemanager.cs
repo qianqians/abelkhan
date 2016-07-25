@@ -43,7 +43,10 @@ namespace logic
 				var _proxy = ch_gateproxys[gate_ch];
 				clients.Add(client_uuid, _proxy);
 
-				clientConnect(client_uuid);
+				if (clientConnect != null)
+				{
+					clientConnect(client_uuid);
+				}
 			}
 		}
 
@@ -58,27 +61,48 @@ namespace logic
 			}
 		}
 
-		public void call_client(String uuid, String module, String func, String argv)
+		public void call_client(String uuid, String module, String func, params object[] _argvs)
 		{
 			if (clients.ContainsKey(uuid))
 			{
-				clients[uuid].forward_logic_call_client(uuid, module, func, argv);
+				ArrayList _argvs_list = new ArrayList();
+				foreach (var o in _argvs)
+				{
+					_argvs_list.Add(o);
+				}
+				var argvs = System.Text.Json.Jsonparser.pack(_argvs_list);
+
+				clients[uuid].forward_logic_call_client(uuid, module, func, argvs);
 			}
 		}
 
-		public void call_group_client(ArrayList uuids, String module, String func, String argv)
+		public void call_group_client(ArrayList uuids, String module, String func, params object[] _argvs)
 		{
 			foreach (var _proxy in ch_gateproxys)
 			{
-				_proxy.Value.forward_logic_call_group_client(uuids, module, func, argv);
+				ArrayList _argvs_list = new ArrayList();
+				foreach (var o in _argvs)
+				{
+					_argvs_list.Add(o);
+				}
+				var argvs = System.Text.Json.Jsonparser.pack(_argvs_list);
+
+				_proxy.Value.forward_logic_call_group_client(uuids, module, func, argvs);
 			}
 		}
 
-		public void call_global_client(String module, String func, String argv)
+		public void call_global_client(String module, String func, params object[] _argvs)
 		{
 			foreach (var _proxy in ch_gateproxys)
 			{
-				_proxy.Value.forward_logic_call_global_client(module, func, argv);
+				ArrayList _argvs_list = new ArrayList();
+				foreach (var o in _argvs)
+				{
+					_argvs_list.Add(o);
+				}
+				var argvs = System.Text.Json.Jsonparser.pack(_argvs_list);
+
+				_proxy.Value.forward_logic_call_global_client(module, func, argvs);
 			}
 		}
 	

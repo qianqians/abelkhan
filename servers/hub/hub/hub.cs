@@ -18,14 +18,14 @@ namespace hub
 
 			name = _config.get_value_string("hub_name");
 
-			_closehandle = new closehandle();
+			closeHandle = new closehandle();
 
 			logics = new logicmanager();
-			_modulemanager = new common.modulemanager();
+			modules = new common.modulemanager();
 
 			var ip = _config.get_value_string("ip");
 			var port = (short)_config.get_value_int("port");
-			_logic_msg_handle = new logic_msg_handle(_modulemanager, logics);
+			_logic_msg_handle = new logic_msg_handle(modules, logics);
 			_logic_call_hub = new module.hub();
 			_logic_call_hub.onlogic_call_hub_mothed += _logic_msg_handle.logic_call_hub_mothed;
 			_logic_call_hub.onreg_logic += _logic_msg_handle.reg_logic;
@@ -43,7 +43,7 @@ namespace hub
 			_connect_center_service = new service.connectnetworkservice(_center_process);
 			var center_ch = _connect_center_service.connect(center_ip, center_port);
 			_centerproxy = new centerproxy(center_ch);
-			_center_msg_handle = new center_msg_handle(this, _closehandle, _centerproxy);
+			_center_msg_handle = new center_msg_handle(this, closeHandle, _centerproxy);
 			_center_call_server.onreg_server_sucess += _center_msg_handle.reg_server_sucess;
 			_center_call_server.onclose_server += _center_msg_handle.close_server;
 			_center_call_hub.ondistribute_dbproxy_address += _center_msg_handle.distribute_dbproxy_address;
@@ -76,7 +76,7 @@ namespace hub
 			dbproxy.reg_hub(uuid);
 		}
 
-		private void poll(Int64 tick)
+		public void poll(Int64 tick)
 		{
 			_juggle_service.poll(tick);
 			timer.poll(tick);
@@ -85,7 +85,7 @@ namespace hub
 			_connect_dbproxy_service.poll(tick);
 		}
 
-		public static void Main(String[] args)
+		private static void Main(String[] args)
 		{
 			if (args.Length <= 0)
 			{
@@ -108,7 +108,7 @@ namespace hub
 
 				_hub.poll(tick);
 
-				if (_hub._closehandle.is_close)
+				if (closeHandle.is_close)
 				{
 					Console.WriteLine("server closed, hub server " + _hub.uuid);
 					break;
@@ -134,12 +134,12 @@ namespace hub
 
 		private String uuid;
 
-		private closehandle _closehandle;
+		public static closehandle closeHandle;
 
 		private service.acceptnetworkservice _accept_logic_service;
 		private module.hub _logic_call_hub;
 		private logic_msg_handle _logic_msg_handle;
-		private common.modulemanager _modulemanager;
+		public static common.modulemanager modules;
 		public static logicmanager logics;
 
 		private service.connectnetworkservice _connect_center_service;

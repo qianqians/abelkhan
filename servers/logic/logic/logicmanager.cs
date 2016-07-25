@@ -46,8 +46,15 @@ namespace logic
 			}
 		}
 
-		public void call_logic_mothed(String svr_uuid, String module_name, String func_name, String argvs)
+		public void call_logic_mothed(String svr_uuid, String module_name, String func_name, params object[] _argvs)
 		{
+			ArrayList _argvs_list = new ArrayList();
+			foreach (var o in _argvs)
+			{
+				_argvs_list.Add(o);
+			}
+			var argvs = System.Text.Json.Jsonparser.pack(_argvs_list);
+			
 			if (lgoicproxys.ContainsKey(svr_uuid))
 			{
 				lgoicproxys[svr_uuid].call_logic(module_name, func_name, argvs);
@@ -65,12 +72,12 @@ namespace logic
 					var callbackid = System.Guid.NewGuid().ToString();
 					_proxy.reg_logic(callbackid);
 
-					var _argvs = new ArrayList();
-					_argvs.Add(svr_uuid);
-					_argvs.Add(module_name);
-					_argvs.Add(func_name);
-					_argvs.Add(argvs);
-					callLogicCallback_argv_set.Add(callbackid, _argvs);
+					var _argvs_ = new ArrayList();
+					_argvs_.Add(svr_uuid);
+					_argvs_.Add(module_name);
+					_argvs_.Add(func_name);
+					_argvs_.Add(argvs);
+					callLogicCallback_argv_set.Add(callbackid, _argvs_);
 				}
 			}
 		}

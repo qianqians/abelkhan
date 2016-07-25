@@ -22,6 +22,8 @@ namespace logic
 			}
 			else 
 			{
+				Console.WriteLine("client " + uuid + " connected");
+				
 				logic.gates.client_connect(uuid, juggle.Imodule.current_ch);
 				var _proxy = logic.gates.get_gateproxy(juggle.Imodule.current_ch);
 				_proxy.ack_client_connect_server(uuid, "conn_sucess");
@@ -36,7 +38,7 @@ namespace logic
 		public void client_call_logic(String uuid, String module, String func, String argv)
 		{
 			logic.gates.current_client_uuid = uuid;
-			_modulemanager.process_module_mothed(module, func, argv);
+			logic.modules.process_module_mothed(module, func, argv);
 			logic.gates.current_client_uuid = "";
 		}
 

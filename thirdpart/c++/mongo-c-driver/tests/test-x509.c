@@ -3,7 +3,7 @@
 
 #include "TestSuite.h"
 
-#ifdef MONGOC_ENABLE_SSL_OPENSSL
+#ifdef MONGOC_ENABLE_SSL
 static void
 test_extract_subject (void)
 {
@@ -23,7 +23,7 @@ test_extract_subject (void)
 void
 test_x509_install (TestSuite *suite)
 {
-#ifdef MONGOC_ENABLE_SSL_OPENSSL
+#ifdef MONGOC_ENABLE_SSL
    TestSuite_Add (suite, "/X509/extract_subject", test_extract_subject);
 #endif
 }
