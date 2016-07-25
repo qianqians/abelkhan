@@ -94,7 +94,7 @@ test-x509
 # Windows things
 *.dir
 *.vcxproj*
-*.cmake
+#*.cmake
 Debug
 x64
 *.sdf
