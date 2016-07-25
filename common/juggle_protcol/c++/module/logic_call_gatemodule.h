@@ -34,30 +34,30 @@ public:
             boost::any_cast<std::string>((*_event)[1]));
     }
 
-    boost::signals2::signal<void(std::string, std::string, std::string, std::string) > sigforward_logic_call_clienthandle;
+    boost::signals2::signal<void(std::string, std::string, std::string, boost::shared_ptr<std::vector<boost::any> >) > sigforward_logic_call_clienthandle;
     void forward_logic_call_client(boost::shared_ptr<std::vector<boost::any> > _event){
         sigforward_logic_call_clienthandle(
             boost::any_cast<std::string>((*_event)[0]), 
             boost::any_cast<std::string>((*_event)[1]), 
             boost::any_cast<std::string>((*_event)[2]), 
-            boost::any_cast<std::string>((*_event)[3]));
+            boost::any_cast<boost::shared_ptr<std::vector<boost::any> >>((*_event)[3]));
     }
 
-    boost::signals2::signal<void(boost::shared_ptr<std::vector<boost::any> >, std::string, std::string, std::string) > sigforward_logic_call_group_clienthandle;
+    boost::signals2::signal<void(boost::shared_ptr<std::vector<boost::any> >, std::string, std::string, boost::shared_ptr<std::vector<boost::any> >) > sigforward_logic_call_group_clienthandle;
     void forward_logic_call_group_client(boost::shared_ptr<std::vector<boost::any> > _event){
         sigforward_logic_call_group_clienthandle(
             boost::any_cast<boost::shared_ptr<std::vector<boost::any> >>((*_event)[0]), 
             boost::any_cast<std::string>((*_event)[1]), 
             boost::any_cast<std::string>((*_event)[2]), 
-            boost::any_cast<std::string>((*_event)[3]));
+            boost::any_cast<boost::shared_ptr<std::vector<boost::any> >>((*_event)[3]));
     }
 
-    boost::signals2::signal<void(std::string, std::string, std::string) > sigforward_logic_call_global_clienthandle;
+    boost::signals2::signal<void(std::string, std::string, boost::shared_ptr<std::vector<boost::any> >) > sigforward_logic_call_global_clienthandle;
     void forward_logic_call_global_client(boost::shared_ptr<std::vector<boost::any> > _event){
         sigforward_logic_call_global_clienthandle(
             boost::any_cast<std::string>((*_event)[0]), 
             boost::any_cast<std::string>((*_event)[1]), 
-            boost::any_cast<std::string>((*_event)[2]));
+            boost::any_cast<boost::shared_ptr<std::vector<boost::any> >>((*_event)[2]));
     }
 
 };

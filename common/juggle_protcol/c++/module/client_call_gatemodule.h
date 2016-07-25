@@ -32,12 +32,12 @@ public:
 );
     }
 
-    boost::signals2::signal<void(std::string, std::string, std::string) > sigforward_client_call_logichandle;
+    boost::signals2::signal<void(std::string, std::string, boost::shared_ptr<std::vector<boost::any> >) > sigforward_client_call_logichandle;
     void forward_client_call_logic(boost::shared_ptr<std::vector<boost::any> > _event){
         sigforward_client_call_logichandle(
             boost::any_cast<std::string>((*_event)[0]), 
             boost::any_cast<std::string>((*_event)[1]), 
-            boost::any_cast<std::string>((*_event)[2]));
+            boost::any_cast<boost::shared_ptr<std::vector<boost::any> >>((*_event)[2]));
     }
 
     boost::signals2::signal<void() > sigheartbeatshandle;

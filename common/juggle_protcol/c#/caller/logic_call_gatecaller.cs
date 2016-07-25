@@ -27,7 +27,7 @@ namespace caller
             call_module_method("ack_client_connect_server", _argv);
         }
 
-        public void forward_logic_call_client(String argv0,String argv1,String argv2,String argv3)
+        public void forward_logic_call_client(String argv0,String argv1,String argv2,ArrayList argv3)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
@@ -37,7 +37,7 @@ namespace caller
             call_module_method("forward_logic_call_client", _argv);
         }
 
-        public void forward_logic_call_group_client(ArrayList argv0,String argv1,String argv2,String argv3)
+        public void forward_logic_call_group_client(ArrayList argv0,String argv1,String argv2,ArrayList argv3)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
@@ -47,7 +47,7 @@ namespace caller
             call_module_method("forward_logic_call_group_client", _argv);
         }
 
-        public void forward_logic_call_global_client(String argv0,String argv1,String argv2)
+        public void forward_logic_call_global_client(String argv0,String argv1,ArrayList argv2)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);

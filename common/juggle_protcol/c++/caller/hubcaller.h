@@ -29,7 +29,7 @@ public:
         ch->push(v);
     }
 
-    void logic_call_hub_mothed(std::string argv0,std::string argv1,std::string argv2){
+    void logic_call_hub_mothed(std::string argv0,std::string argv1,boost::shared_ptr<std::vector<boost::any> > argv2){
         auto v = boost::make_shared<std::vector<boost::any> >();
         v->push_back("hub");
         v->push_back("logic_call_hub_mothed");

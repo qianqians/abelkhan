@@ -70,9 +70,8 @@ namespace logic
 				{
 					_argvs_list.Add(o);
 				}
-				var argvs = System.Text.Json.Jsonparser.pack(_argvs_list);
 
-				clients[uuid].forward_logic_call_client(uuid, module, func, argvs);
+				clients[uuid].forward_logic_call_client(uuid, module, func, _argvs_list);
 			}
 		}
 
@@ -85,9 +84,8 @@ namespace logic
 				{
 					_argvs_list.Add(o);
 				}
-				var argvs = System.Text.Json.Jsonparser.pack(_argvs_list);
 
-				_proxy.Value.forward_logic_call_group_client(uuids, module, func, argvs);
+				_proxy.Value.forward_logic_call_group_client(uuids, module, func, _argvs_list);
 			}
 		}
 
@@ -100,9 +98,8 @@ namespace logic
 				{
 					_argvs_list.Add(o);
 				}
-				var argvs = System.Text.Json.Jsonparser.pack(_argvs_list);
 
-				_proxy.Value.forward_logic_call_global_client(module, func, argvs);
+				_proxy.Value.forward_logic_call_global_client(module, func, _argvs_list);
 			}
 		}
 	

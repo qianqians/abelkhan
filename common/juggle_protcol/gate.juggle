@@ -3,7 +3,7 @@ module client_call_gate{
 	
 	void cancle_server();
 
-	void forward_client_call_logic(string module, string func, string argv);
+	void forward_client_call_logic(string module, string func, array argv);
 	
 	void heartbeats();
 
@@ -14,10 +14,10 @@ module logic_call_gate{
 
 	void ack_client_connect_server(string uuid, string result);
 
-	void forward_logic_call_client(string uuid, string module, string func, string argv);
+	void forward_logic_call_client(string uuid, string module, string func, array argv);
 
-	void forward_logic_call_group_client(array uuids, string module, string func, string argv);
+	void forward_logic_call_group_client(array uuids, string module, string func, array argv);
 	
-	void forward_logic_call_global_client(string module, string func, string argv);
+	void forward_logic_call_global_client(string module, string func, array argv);
 
 }

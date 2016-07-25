@@ -41,7 +41,7 @@ void ack_client_connect_server(boost::shared_ptr<gate::logicsvrmanager> _logicsv
 	}
 }
 
-void forward_logic_call_client(boost::shared_ptr<gate::clientmanager> _clientmanager, std::string uuid, std::string module, std::string func, std::string argv) {
+void forward_logic_call_client(boost::shared_ptr<gate::clientmanager> _clientmanager, std::string uuid, std::string module, std::string func, boost::shared_ptr<std::vector<boost::any> > argv) {
 	if (_clientmanager->has_client(uuid)) {
 		auto client_channel = _clientmanager->get_client_channel(uuid);
 
@@ -50,7 +50,7 @@ void forward_logic_call_client(boost::shared_ptr<gate::clientmanager> _clientman
 	}
 }
 
-void forward_logic_call_group_client(boost::shared_ptr<gate::clientmanager> _clientmanager, boost::shared_ptr<std::vector<boost::any> > uuids, std::string module, std::string func, std::string argv) {
+void forward_logic_call_group_client(boost::shared_ptr<gate::clientmanager> _clientmanager, boost::shared_ptr<std::vector<boost::any> > uuids, std::string module, std::string func, boost::shared_ptr<std::vector<boost::any> > argv) {
 	for (auto uuid : *uuids) {
 		if (_clientmanager->has_client(boost::any_cast<std::string>(uuid))) {
 			auto client_channel = _clientmanager->get_client_channel(boost::any_cast<std::string>(uuid));
@@ -61,7 +61,7 @@ void forward_logic_call_group_client(boost::shared_ptr<gate::clientmanager> _cli
 	}
 }
 
-void forward_logic_call_global_client(boost::shared_ptr<gate::clientmanager> _clientmanager, std::string module, std::string func, std::string argv) {
+void forward_logic_call_global_client(boost::shared_ptr<gate::clientmanager> _clientmanager, std::string module, std::string func, boost::shared_ptr<std::vector<boost::any> > argv) {
 	_clientmanager->for_each_client([module, func, argv](std::string client_uuid, boost::shared_ptr<juggle::Ichannel> client_ch, boost::shared_ptr<juggle::Ichannel> logic_ch) {
 		boost::shared_ptr<caller::gate_call_client> _caller = boost::make_shared<caller::gate_call_client>(client_ch);
 		_caller->call_client(module, func, argv);

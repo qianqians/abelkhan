@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 
 namespace logic
 {
@@ -15,7 +16,7 @@ namespace logic
 			_logic_call_hub.reg_logic(logic.uuid);
 		}
 
-		public void logic_call_hub_mothed(String module_name, String func_name, String argvs)
+		public void logic_call_hub_mothed(String module_name, String func_name, ArrayList argvs)
 		{
 			_logic_call_hub.logic_call_hub_mothed(module_name, func_name, argvs);
 		}

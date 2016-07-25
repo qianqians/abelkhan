@@ -53,11 +53,10 @@ namespace logic
 			{
 				_argvs_list.Add(o);
 			}
-			var argvs = System.Text.Json.Jsonparser.pack(_argvs_list);
 			
 			if (lgoicproxys.ContainsKey(svr_uuid))
 			{
-				lgoicproxys[svr_uuid].call_logic(module_name, func_name, argvs);
+				lgoicproxys[svr_uuid].call_logic(module_name, func_name, _argvs_list);
 			}
 			else
 			{
@@ -76,7 +75,7 @@ namespace logic
 					_argvs_.Add(svr_uuid);
 					_argvs_.Add(module_name);
 					_argvs_.Add(func_name);
-					_argvs_.Add(argvs);
+					_argvs_.Add(_argvs_list);
 					callLogicCallback_argv_set.Add(callbackid, _argvs_);
 				}
 			}
@@ -90,12 +89,14 @@ namespace logic
 				var svr_uuid = (String)_argvs[0];
 				var module_name = (String)_argvs[1];
 				var func_name = (String)_argvs[2];
-				var argvs = (String)_argvs[3];
+				var argvs = (ArrayList)_argvs[3];
 
 				if (lgoicproxys.ContainsKey(svr_uuid))
 				{
 					lgoicproxys[svr_uuid].call_logic(module_name, func_name, argvs);
 				}
+
+				callLogicCallback_argv_set.Remove(callbackid);
 			}
 		}
 

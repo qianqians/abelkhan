@@ -22,9 +22,8 @@ namespace hub
 			{
 				_argvs.Add(o);
 			}
-			
-			var json_argvs = System.Text.Json.Jsonparser.pack(_argvs);
-			_hub_call_logic.hub_call_logic_mothed(module_name, func_name, json_argvs);
+
+			_hub_call_logic.hub_call_logic_mothed(module_name, func_name, _argvs);
 		}
 
 		private caller.hub_call_logic _hub_call_logic;

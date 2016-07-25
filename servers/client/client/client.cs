@@ -33,7 +33,7 @@ namespace client
 			}
 		}
 
-		private void on_call_client(String module_name, String func_name, String argvs)
+		private void on_call_client(String module_name, String func_name, ArrayList argvs)
 		{
 			modulemanager.process_module_mothed(module_name, func_name, argvs);
 		}
@@ -66,9 +66,8 @@ namespace client
 			{
 				_argvs_list.Add(o);
 			}
-			var argvs = System.Text.Json.Jsonparser.pack(_argvs_list);
 			
-			_client_call_gate.forward_client_call_logic(module_name, func_name, argvs);
+			_client_call_gate.forward_client_call_logic(module_name, func_name, _argvs_list);
 		}
 
 		public void poll(Int64 tick)

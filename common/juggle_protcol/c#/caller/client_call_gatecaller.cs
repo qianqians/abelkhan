@@ -25,7 +25,7 @@ namespace caller
             call_module_method("cancle_server", _argv);
         }
 
-        public void forward_client_call_logic(String argv0,String argv1,String argv2)
+        public void forward_client_call_logic(String argv0,String argv1,ArrayList argv2)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);

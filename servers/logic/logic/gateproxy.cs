@@ -21,17 +21,17 @@ namespace logic
 			_caller.ack_client_connect_server(uuid, result);
 		}
 
-		public void forward_logic_call_client(String uuid, String module, String func, String argv)
+		public void forward_logic_call_client(String uuid, String module, String func, ArrayList argv)
 		{
 			_caller.forward_logic_call_client(uuid, module, func, argv);
 		}
 
-		public void forward_logic_call_group_client(ArrayList uuids, String module, String func, String argv)
+		public void forward_logic_call_group_client(ArrayList uuids, String module, String func, ArrayList argv)
 		{
 			_caller.forward_logic_call_group_client(uuids, module, func, argv);
 		}
 
-		public void forward_logic_call_global_client(String module, String func, String argv)
+		public void forward_logic_call_global_client(String module, String func, ArrayList argv)
 		{
 			_caller.forward_logic_call_global_client(module, func, argv);
 		}

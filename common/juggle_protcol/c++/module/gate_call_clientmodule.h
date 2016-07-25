@@ -24,12 +24,12 @@ public:
             boost::any_cast<std::string>((*_event)[0]));
     }
 
-    boost::signals2::signal<void(std::string, std::string, std::string) > sigcall_clienthandle;
+    boost::signals2::signal<void(std::string, std::string, boost::shared_ptr<std::vector<boost::any> >) > sigcall_clienthandle;
     void call_client(boost::shared_ptr<std::vector<boost::any> > _event){
         sigcall_clienthandle(
             boost::any_cast<std::string>((*_event)[0]), 
             boost::any_cast<std::string>((*_event)[1]), 
-            boost::any_cast<std::string>((*_event)[2]));
+            boost::any_cast<boost::shared_ptr<std::vector<boost::any> >>((*_event)[2]));
     }
 
 };

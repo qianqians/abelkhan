@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 
 namespace logic
 {
@@ -21,7 +22,7 @@ namespace logic
 			logic.logics.do_callback(callbackid);
 		}
 
-		public void logic_call_logic_mothed(String module_name, String func_name, String argvs)
+		public void logic_call_logic_mothed(String module_name, String func_name, ArrayList argvs)
 		{
 			_modulemanager.process_module_mothed(module_name, func_name, argvs);
 		}

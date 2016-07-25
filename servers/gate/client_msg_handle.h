@@ -36,7 +36,7 @@ void cancle_server(boost::shared_ptr<gate::clientmanager> _clientmanager) {
 	}
 }
 
-void forward_client_call_logic(boost::shared_ptr<gate::clientmanager> _clientmanager, std::string module_name, std::string func_name, std::string argv) {
+void forward_client_call_logic(boost::shared_ptr<gate::clientmanager> _clientmanager, std::string module_name, std::string func_name, boost::shared_ptr<std::vector<boost::any> > argv) {
 	if (_clientmanager->has_client(juggle::current_ch)) {
 		std::string uuid = _clientmanager->get_client_uuid(juggle::current_ch);
 		auto _logic = _clientmanager->get_logic_channel(uuid);

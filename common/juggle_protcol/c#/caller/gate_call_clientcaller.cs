@@ -19,7 +19,7 @@ namespace caller
             call_module_method("ack_connect_server", _argv);
         }
 
-        public void call_client(String argv0,String argv1,String argv2)
+        public void call_client(String argv0,String argv1,ArrayList argv2)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);

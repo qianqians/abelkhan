@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+
 namespace logic
 {
 	public class hub_msg_handle
@@ -14,7 +16,7 @@ namespace logic
 			logic.hubs.reg_hub(hub_name, juggle.Imodule.current_ch);
 		}
 
-		public void hub_call_logic_mothed(String module, String func, String argvs)
+		public void hub_call_logic_mothed(String module, String func, ArrayList argvs)
 		{
 			_modulemanager.process_module_mothed(module, func, argvs);
 		}

@@ -5,7 +5,7 @@ module gate_call_logic{
 
 	void client_disconnect(string uuid);
 
-	void client_call_logic(string uuid, string module, string func, string argv);
+	void client_call_logic(string uuid, string module, string func, array argv);
 
 }
 
@@ -14,6 +14,6 @@ module logic_call_logic{
 
 	void ack_reg_logic(string uuid, string callbackid);
 	
-	void logic_call_logic_mothed(string module, string func, string argv);
+	void logic_call_logic_mothed(string module, string func, array argv);
 
 }

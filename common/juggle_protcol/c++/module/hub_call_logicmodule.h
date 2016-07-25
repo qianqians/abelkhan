@@ -24,12 +24,12 @@ public:
             boost::any_cast<std::string>((*_event)[0]));
     }
 
-    boost::signals2::signal<void(std::string, std::string, std::string) > sighub_call_logic_mothedhandle;
+    boost::signals2::signal<void(std::string, std::string, boost::shared_ptr<std::vector<boost::any> >) > sighub_call_logic_mothedhandle;
     void hub_call_logic_mothed(boost::shared_ptr<std::vector<boost::any> > _event){
         sighub_call_logic_mothedhandle(
             boost::any_cast<std::string>((*_event)[0]), 
             boost::any_cast<std::string>((*_event)[1]), 
-            boost::any_cast<std::string>((*_event)[2]));
+            boost::any_cast<boost::shared_ptr<std::vector<boost::any> >>((*_event)[2]));
     }
 
 };

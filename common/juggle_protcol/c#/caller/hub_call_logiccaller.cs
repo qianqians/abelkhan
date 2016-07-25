@@ -19,7 +19,7 @@ namespace caller
             call_module_method("reg_logic_sucess_and_notify_hub_nominate", _argv);
         }
 
-        public void hub_call_logic_mothed(String argv0,String argv1,String argv2)
+        public void hub_call_logic_mothed(String argv0,String argv1,ArrayList argv2)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);

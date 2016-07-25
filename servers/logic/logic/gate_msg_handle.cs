@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+
 namespace logic
 {
 	public class gate_msg_handle
@@ -35,7 +37,7 @@ namespace logic
 			logic.gates.client_disconnect(uuid);
 		}
 
-		public void client_call_logic(String uuid, String module, String func, String argv)
+		public void client_call_logic(String uuid, String module, String func, ArrayList argv)
 		{
 			logic.gates.current_client_uuid = uuid;
 			logic.modules.process_module_mothed(module, func, argv);

@@ -6,7 +6,7 @@
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.Workbench ActiveDocument="client\client.cs">
     <Files>
-      <File FileName="client\client.cs" Line="87" Column="48" />
+      <File FileName="client\client.cs" Line="70" Column="83" />
       <File FileName="..\..\common\juggle_protcol\c#\module\gate_call_clientmodule.cs" Line="27" Column="53" />
     </Files>
   </MonoDevelop.Ide.Workbench>

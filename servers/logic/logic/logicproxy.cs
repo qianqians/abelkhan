@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 
 namespace logic
 {
@@ -18,7 +19,7 @@ namespace logic
 			_caller.ack_reg_logic(logic.uuid, callbackid);
 		}
 
-		public void call_logic(String module_name, String func_name, String argvs)
+		public void call_logic(String module_name, String func_name, ArrayList argvs)
 		{
 			_caller.logic_call_logic_mothed(module_name, func_name, argvs);
 		}

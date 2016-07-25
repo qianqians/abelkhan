@@ -15,7 +15,7 @@ namespace common
 			modules.Add(module_name, _module);
 		}
 
-		public void process_module_mothed(String module_name, String func_name, String argvs)
+		public void process_module_mothed(String module_name, String func_name, ArrayList argvs)
 		{
 			if (modules.ContainsKey(module_name))
 			{
@@ -27,18 +27,12 @@ namespace common
 				{
 					try
 					{
-						var argv = (ArrayList)System.Text.Json.Jsonparser.unpack(argvs);
-
-						if (argv.Count > 0)
+						if (argvs.Count > 0)
 						{
-							Console.WriteLine("in to process_module_mothed");
-
-							method.Invoke(_module, argv.ToArray());
+							method.Invoke(_module, argvs.ToArray());
 						}
 						else
 						{
-							Console.WriteLine("in to process_module_mothed1");
-
 							method.Invoke(_module, null);
 						}
 					}

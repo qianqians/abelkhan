@@ -38,9 +38,8 @@ namespace logic
 				{
 					_argvs_list.Add(o);
 				}
-				var argvs = System.Text.Json.Jsonparser.pack(_argvs_list);
 
-				name_hubs[hub_name].logic_call_hub_mothed(module_name, func_name, argvs);
+				name_hubs[hub_name].logic_call_hub_mothed(module_name, func_name, _argvs_list);
 			}
 		}
 

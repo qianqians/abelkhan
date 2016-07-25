@@ -44,7 +44,7 @@ namespace module
             }
         }
 
-        public delegate void client_call_logichandle(String argv0, String argv1, String argv2, String argv3);
+        public delegate void client_call_logichandle(String argv0, String argv1, String argv2, ArrayList argv3);
         public event client_call_logichandle onclient_call_logic;
         public void client_call_logic(ArrayList _event)
         {
@@ -53,7 +53,7 @@ namespace module
                 var argv0 = ((String)_event[0]);
                 var argv1 = ((String)_event[1]);
                 var argv2 = ((String)_event[2]);
-                var argv3 = ((String)_event[3]);
+                var argv3 = ((ArrayList)_event[3]);
                 onclient_call_logic( argv0,  argv1,  argv2,  argv3);
             }
         }

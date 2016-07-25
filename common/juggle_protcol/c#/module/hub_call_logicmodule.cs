@@ -23,7 +23,7 @@ namespace module
             }
         }
 
-        public delegate void hub_call_logic_mothedhandle(String argv0, String argv1, String argv2);
+        public delegate void hub_call_logic_mothedhandle(String argv0, String argv1, ArrayList argv2);
         public event hub_call_logic_mothedhandle onhub_call_logic_mothed;
         public void hub_call_logic_mothed(ArrayList _event)
         {
@@ -31,7 +31,7 @@ namespace module
             {
                 var argv0 = ((String)_event[0]);
                 var argv1 = ((String)_event[1]);
-                var argv2 = ((String)_event[2]);
+                var argv2 = ((ArrayList)_event[2]);
                 onhub_call_logic_mothed( argv0,  argv1,  argv2);
             }
         }
