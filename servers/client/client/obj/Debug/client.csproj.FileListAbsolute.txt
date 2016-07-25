@@ -1,4 +1,0 @@
-C:\Users\abelk\Documents\workspace\abelkhan\servers\client\client\bin\Debug\client.dll
-C:\Users\abelk\Documents\workspace\abelkhan\servers\client\client\bin\Debug\client.pdb
-C:\Users\abelk\Documents\workspace\abelkhan\servers\client\client\obj\Debug\client.dll
-C:\Users\abelk\Documents\workspace\abelkhan\servers\client\client\obj\Debug\client.pdb
