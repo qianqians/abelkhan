@@ -76,7 +76,7 @@ public:
 			}
 
 			_tmp[_tmp_pop_slide]->~T();
-			_T_alloc.deallocate(_tmp[_tmp_pop_slide], 1);
+			pool::objpool<T>::deallocator(_tmp[_tmp_pop_slide], 1);
 		}
 		put_que(_tmp, _que_max);
 	}
