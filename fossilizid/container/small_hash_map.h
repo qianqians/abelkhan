@@ -10,10 +10,9 @@
 #include <string>
 #include <map>
 
-#include <boost/function.hpp>
-#include <boost/atomic.hpp>
-#include <boost/thread/shared_mutex.hpp>
-#include <boost/pool/pool_alloc.hpp>
+#include <functional>
+#include <atomic>
+#include <shared_mutex>
 
 namespace Fossilizid{
 namespace container{
@@ -23,12 +22,12 @@ namespace container{
 
 #define upgradlock 65536 
 
-template <typename K, typename V, typename _Allocator = boost::pool_allocator<V> >
+template <typename K, typename V, typename _Allocator = std::allocator<V> >
 class small_hash_map {
 private:
 	struct node {
 		V value;
-		boost::shared_mutex _mu;
+		std::shared_mutex _mu;
 	};
 		
 	typedef typename _Allocator::template rebind<std::pair<K, node> >::other _map_node_alloc;
@@ -37,8 +36,8 @@ private:
 	typedef std::map<K, node*, std::less<K>, _map_node_alloc> _map;
 	
 	struct bucket {
-		boost::atomic<_map * > _hash_bucket;
-		boost::shared_mutex _mu;
+		std::atomic<_map * > _hash_bucket;
+		std::shared_mutex _mu;
 	};
 
 	typedef typename _Allocator::template rebind<_map>::other _map_alloc_;
@@ -64,13 +63,13 @@ public:
 	/*
 	 * iterates the map
 	 */
-	void for_each(boost::function<void(V var) > handle ){
+	void for_each(std::function<void(V var) > handle ){
 		for(int i = 0; i < mask; i++){
-			boost::shared_lock<boost::shared_mutex> shared_lock(_hash_array[i]._mu);
+			std::shared_lock<std::shared_mutex> shared_lock(_hash_array[i]._mu);
 			_map * _map_ = (_map *)_hash_array[i]._hash_bucket.load();
 			if (_map_ != 0){
 				for(_map::iterator iter = _map_->begin(); iter != _map_->end(); iter++){
-					boost::shared_lock<boost::shared_mutex> lock(iter->second->_mu);
+					std::shared_lock<std::shared_mutex> lock(iter->second->_mu);
 					handle(iter->second->value); 
 				}
 			}
@@ -84,7 +83,7 @@ public:
 		unsigned int hash_value = hash(key, mask);
 		bucket * _bucket = (bucket *)&_hash_array[hash_value];
 		
-		boost::shared_lock<boost::shared_mutex> lock(_bucket->_mu);
+		std::shared_lock<std::shared_mutex> lock(_bucket->_mu);
 		
 		_map * _map_ = (_map *)_bucket->_hash_bucket.load();
 		_map::iterator iter = _map_->find(key);
@@ -92,7 +91,7 @@ public:
 			return false;
 		}
 		
-		boost::unique_lock<boost::shared_mutex> unique_lock(iter->second->_mu);
+		std::unique_lock<std::shared_mutex> unique_lock(iter->second->_mu);
 		
 		iter->second->value = value;
 
@@ -106,13 +105,13 @@ public:
 		unsigned int hash_value = hash(key, mask);
 		bucket * _bucket = (bucket *)&_hash_array[hash_value];
 		
-		boost::upgrade_lock<boost::shared_mutex> lock(_bucket->_mu);
+		std::upgrade_lock<std::shared_mutex> lock(_bucket->_mu);
 
 		_map * _map_ = (_map *)_bucket->_hash_bucket.load();
 		if (_map_ == 0){
 			_map_ = (_map *)_bucket->_hash_bucket.load();
 
-			boost::unique_lock<boost::shared_mutex> unique_lock(boost::move(lock));
+			std::unique_lock<std::shared_mutex> unique_lock(std::move(lock));
 			if (_map_ == 0){
 				_map_ = get_map();
 				_bucket->_hash_bucket.store(_map_);
@@ -121,10 +120,10 @@ public:
 			
 		_map::iterator iter = _map_->find(key);
 		if (iter != _map_->end()){
-			boost::unique_lock<boost::shared_mutex> unique_lock(iter->second->_mu);
+			std::unique_lock<std::shared_mutex> unique_lock(iter->second->_mu);
 			iter->second->value = value;
 		}else{
-			boost::unique_lock<boost::shared_mutex> unique_lock(boost::move(lock));
+			std::unique_lock<std::shared_mutex> unique_lock(std::move(lock));
 
 			node * _node = get_node();
 			_node->value = value;
@@ -141,7 +140,7 @@ public:
 		unsigned int hash_value = hash(key, mask);
 		bucket * _bucket = (bucket *)&_hash_array[hash_value];
 		
-		boost::shared_lock<boost::shared_mutex> lock(_bucket->_mu);
+		std::shared_lock<std::shared_mutex> lock(_bucket->_mu);
 		
 		_map * _map_ = (_map *)_bucket->_hash_bucket.load();
 		if (_map_ == 0){
@@ -153,7 +152,7 @@ public:
 			return false;
 		}
 		
-		boost::shared_lock<boost::shared_mutex> shared_lock(iter->second->_mu);
+		std::shared_lock<std::shared_mutex> shared_lock(iter->second->_mu);
 		value = iter->second->value;
 
 		return true;
@@ -166,7 +165,7 @@ public:
 		unsigned int hash_value = hash(key, mask);
 		bucket * _bucket = (bucket *)&_hash_array[hash_value];
 		
-		boost::upgrade_lock<boost::shared_mutex> lock(_bucket->_mu);
+		std::upgrade_lock<std::shared_mutex> lock(_bucket->_mu);
 		
 		_map * _map_ = (_map *)_bucket->_hash_bucket.load();
 		if (_map_ == 0){
@@ -178,7 +177,7 @@ public:
 			return false;
 		}
 		
-		boost::unique_lock<boost::shared_mutex> unique_lock(boost::move(lock));
+		std::unique_lock<std::shared_mutex> unique_lock(std::move(lock));
 
 		_map_->erase(iter);
 
@@ -310,7 +309,7 @@ private:
 
 private:
 	bucket _hash_array[mask];
-	boost::atomic_uint _size;
+	std::atomic_uint64_t _size;
 
 	_node_alloc_ _node_alloc;
 	_map_alloc_ _map_alloc;

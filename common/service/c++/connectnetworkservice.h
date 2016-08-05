@@ -6,9 +6,11 @@
 #ifndef _connectnetworkservice_h
 #define _connectnetworkservice_h
 
+#include <memory>
+#include <functional>
+
 #include <boost/asio.hpp>
 #include <boost/signals2.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <process_.h>
 
@@ -19,21 +21,21 @@ namespace service {
 
 class connectnetworkservice :public service{
 public:
-	connectnetworkservice(boost::shared_ptr<juggle::process> process_) {
+	connectnetworkservice(std::shared_ptr<juggle::process> process_) {
 		_process = process_;
 	}
 
 	~connectnetworkservice(){
 	}
 
-	boost::shared_ptr<channel> connect(std::string ip, short port){
+	std::shared_ptr<channel> connect(std::string ip, short port){
 		try {
-			boost::shared_ptr<boost::asio::ip::tcp::socket> s = boost::make_shared<boost::asio::ip::tcp::socket>(_service);
+			std::shared_ptr<boost::asio::ip::tcp::socket> s = std::make_shared<boost::asio::ip::tcp::socket>(_service);
 			s->connect(boost::asio::ip::tcp::endpoint(boost::asio::ip::address_v4::from_string(ip), port));
 
-			auto ch = boost::make_shared<channel>(s);
+			auto ch = std::make_shared<channel>(s);
 
-			ch->sigdisconn.connect(boost::bind(&connectnetworkservice::onChannelDisconn, this, _1));
+			ch->sigdisconn.connect(std::bind(&connectnetworkservice::onChannelDisconn, this, std::placeholders::_1));
 
 			_process->reg_channel(ch);
 
@@ -44,8 +46,8 @@ public:
 		}
 	}
 
-	boost::signals2::signal<void(boost::shared_ptr<channel>) > sigchanneldisconn;
-	void onChannelDisconn(boost::shared_ptr<channel> ch){
+	boost::signals2::signal<void(std::shared_ptr<channel>) > sigchanneldisconn;
+	void onChannelDisconn(std::shared_ptr<channel> ch){
 		if (!sigchanneldisconn.empty()){
 			sigchanneldisconn(ch);
 		}
@@ -56,7 +58,7 @@ public:
 	}
 
 private:
-	boost::shared_ptr<juggle::process> _process;
+	std::shared_ptr<juggle::process> _process;
 	boost::asio::io_service _service;
 
 };

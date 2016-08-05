@@ -14,14 +14,14 @@
 #include <caller/testcaller.h>
 
 void main() {
-	boost::shared_ptr<juggle::process> _process = boost::make_shared<juggle::process>();
+	std::shared_ptr<juggle::process> _process = std::make_shared<juggle::process>();
 
-	boost::shared_ptr<service::connectnetworkservice> _service = boost::make_shared<service::connectnetworkservice>(_process);
-	boost::shared_ptr<juggle::Ichannel> ch = _service->connect("127.0.0.1", 1234);
+	std::shared_ptr<service::connectnetworkservice> _service = std::make_shared<service::connectnetworkservice>(_process);
+	std::shared_ptr<juggle::Ichannel> ch = _service->connect("127.0.0.1", 1234);
 
-	boost::shared_ptr<caller::test> _test = boost::make_shared<caller::test>(ch);
+	std::shared_ptr<caller::test> _test = std::make_shared<caller::test>(ch);
 
-	boost::shared_ptr<service::juggleservice> _juggleservice = boost::make_shared<service::juggleservice>();
+	std::shared_ptr<service::juggleservice> _juggleservice = std::make_shared<service::juggleservice>();
 	_juggleservice->add_process(_process);
 
 	_test->test_func("test", 1);

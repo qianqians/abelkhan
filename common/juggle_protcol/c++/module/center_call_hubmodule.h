@@ -2,23 +2,24 @@
 #ifndef _center_call_hub_module_h
 #define _center_call_hub_module_h
 #include <Imodule.h>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/signals2.hpp>
 #include <string>
+
 namespace module
 {
 class center_call_hub : public juggle::Imodule {
 public:
     center_call_hub(){
         module_name = "center_call_hub";
-        protcolcall_set.insert(std::make_pair("distribute_dbproxy_address", boost::bind(&center_call_hub::distribute_dbproxy_address, this, _1)));
+        protcolcall_set.insert(std::make_pair("distribute_dbproxy_address", std::bind(&center_call_hub::distribute_dbproxy_address, this, std::placeholders::_1)));
     }
 
     ~center_call_hub(){
     }
 
     boost::signals2::signal<void(std::string, std::string, int64_t, std::string) > sigdistribute_dbproxy_addresshandle;
-    void distribute_dbproxy_address(boost::shared_ptr<std::vector<boost::any> > _event){
+    void distribute_dbproxy_address(std::shared_ptr<std::vector<boost::any> > _event){
         sigdistribute_dbproxy_addresshandle(
             boost::any_cast<std::string>((*_event)[0]), 
             boost::any_cast<std::string>((*_event)[1]), 

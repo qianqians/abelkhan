@@ -7,16 +7,16 @@
 #define _Ichannel_h
 
 #include <vector>
+#include <memory>
 
 #include <boost/any.hpp>
-#include <boost/shared_ptr.hpp>
 
 namespace juggle {
 
 class Ichannel {
 public:
-	virtual bool pop(boost::shared_ptr<std::vector<boost::any> >  &) = 0;
-	virtual void push(boost::shared_ptr<std::vector<boost::any> >) = 0;
+	virtual bool pop(std::shared_ptr<std::vector<boost::any> >  &) = 0;
+	virtual void push(std::shared_ptr<std::vector<boost::any> >) = 0;
 	
 };
 

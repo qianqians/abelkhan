@@ -3,6 +3,7 @@
  * 2016-7-5
  * dbproxy.cpp
  */
+#include <boost/thread.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -41,26 +42,26 @@ void main(int argc, char * argv[]) {
 	}
 
 	std::string config_file_path = argv[1];
-	auto _config = boost::make_shared<config::config>(config_file_path);
+	auto _config = std::make_shared<config::config>(config_file_path);
 	auto _center_config = _config->get_value_dict("center");
 	if (argc >= 3) {
 		_config = _config->get_value_dict(argv[2]);
 	}
 
-	boost::shared_ptr<juggle::process> _center_process = boost::make_shared<juggle::process>();
-	boost::shared_ptr<service::connectnetworkservice> _connectnetworkservice = boost::make_shared<service::connectnetworkservice>(_center_process);
+	std::shared_ptr<juggle::process> _center_process = std::make_shared<juggle::process>();
+	std::shared_ptr<service::connectnetworkservice> _connectnetworkservice = std::make_shared<service::connectnetworkservice>(_center_process);
 
 	auto center_ip = _center_config->get_value_string("ip");
 	auto center_port = (short)_center_config->get_value_int("port");
 	auto _center_ch = _connectnetworkservice->connect(center_ip, center_port);
-	boost::shared_ptr<dbproxy::centerproxy> _centerproxy = boost::make_shared<dbproxy::centerproxy>(_center_ch);
+	std::shared_ptr<dbproxy::centerproxy> _centerproxy = std::make_shared<dbproxy::centerproxy>(_center_ch);
 	
 	auto ip = _config->get_value_string("ip");
 	auto port = (short)_config->get_value_int("port");
 	_centerproxy->reg_server(ip, port, svr_uuid);
 
-	boost::shared_ptr<dbproxy::closehandle> _closehandle = boost::make_shared<dbproxy::closehandle>();
-	boost::shared_ptr<module::center_call_server> _center_call_server = boost::make_shared<module::center_call_server>();
+	std::shared_ptr<dbproxy::closehandle> _closehandle = std::make_shared<dbproxy::closehandle>();
+	std::shared_ptr<module::center_call_server> _center_call_server = std::make_shared<module::center_call_server>();
 	_center_call_server->sigclose_serverhandle.connect(boost::bind(&close_server, _closehandle));
 	_center_call_server->sigreg_server_sucesshandle.connect(boost::bind(&reg_server_sucess, _centerproxy));
 	_center_process->reg_module(_center_call_server);
@@ -69,36 +70,36 @@ void main(int argc, char * argv[]) {
 	auto db_port = (short)_config->get_value_int("db_port");
 	auto db_name = _config->get_value_string("db_name");
 	auto db_collection = _config->get_value_string("db_collection");
-	auto _mongodb_proxy = boost::make_shared<dbproxy::mongodb_proxy>(db_ip, db_port, db_name, db_collection);
+	auto _mongodb_proxy = std::make_shared<dbproxy::mongodb_proxy>(db_ip, db_port, db_name, db_collection);
 
-	boost::shared_ptr<juggle::process> _dbthings_process = boost::make_shared<juggle::process>();
-	boost::shared_ptr<module::logic_call_dbproxy> _logic_call_dbproxy = boost::make_shared<module::logic_call_dbproxy>();
-	boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager = boost::make_shared<dbproxy::logicsvrmanager>();
-	_logic_call_dbproxy->sigreg_logichandle.connect(boost::bind(&reg_logic, _logicsvrmanager, _closehandle, _1));
-	_logic_call_dbproxy->siglogic_closedhandle.connect(boost::bind(&logic_closed, _closehandle));
-	_logic_call_dbproxy->sigcreate_persisted_objecthandle.connect(boost::bind(&logic_create_persisted_object, _logicsvrmanager, _mongodb_proxy, _1, _2));
-	_logic_call_dbproxy->sigupdata_persisted_objecthandle.connect(boost::bind(&logic_updata_persisted_object, _logicsvrmanager, _mongodb_proxy, _1, _2, _3));
-	_logic_call_dbproxy->sigget_object_infohandle.connect(boost::bind(&logic_get_object_info, _logicsvrmanager, _mongodb_proxy, _1, _2));
+	std::shared_ptr<juggle::process> _dbthings_process = std::make_shared<juggle::process>();
+	std::shared_ptr<module::logic_call_dbproxy> _logic_call_dbproxy = std::make_shared<module::logic_call_dbproxy>();
+	std::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager = std::make_shared<dbproxy::logicsvrmanager>();
+	_logic_call_dbproxy->sigreg_logichandle.connect(std::bind(&reg_logic, _logicsvrmanager, _closehandle, std::placeholders::_1));
+	_logic_call_dbproxy->siglogic_closedhandle.connect(std::bind(&logic_closed, _closehandle));
+	_logic_call_dbproxy->sigcreate_persisted_objecthandle.connect(std::bind(&logic_create_persisted_object, _logicsvrmanager, _mongodb_proxy, std::placeholders::_1, std::placeholders::_2));
+	_logic_call_dbproxy->sigupdata_persisted_objecthandle.connect(std::bind(&logic_updata_persisted_object, _logicsvrmanager, _mongodb_proxy, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+	_logic_call_dbproxy->sigget_object_infohandle.connect(std::bind(&logic_get_object_info, _logicsvrmanager, _mongodb_proxy, std::placeholders::_1, std::placeholders::_2));
 	_dbthings_process->reg_module(_logic_call_dbproxy);
 
-	boost::shared_ptr<module::hub_call_dbproxy> _hub_call_dbproxy = boost::make_shared<module::hub_call_dbproxy>();
-	boost::shared_ptr<dbproxy::hubsvrmanager> _hubsvrmanager = boost::make_shared<dbproxy::hubsvrmanager>();
-	_hub_call_dbproxy->sigreg_hubhandle.connect(boost::bind(&reg_hub, _hubsvrmanager, _1));
-	_hub_call_dbproxy->sigcreate_persisted_objecthandle.connect(boost::bind(&hub_create_persisted_object, _hubsvrmanager, _mongodb_proxy, _1, _2));
-	_hub_call_dbproxy->sigupdata_persisted_objecthandle.connect(boost::bind(&hub_updata_persisted_object, _hubsvrmanager, _mongodb_proxy, _1, _2, _3));
-	_hub_call_dbproxy->sigget_object_infohandle.connect(boost::bind(&hub_get_object_info, _hubsvrmanager, _mongodb_proxy, _1, _2));
+	std::shared_ptr<module::hub_call_dbproxy> _hub_call_dbproxy = std::make_shared<module::hub_call_dbproxy>();
+	std::shared_ptr<dbproxy::hubsvrmanager> _hubsvrmanager = std::make_shared<dbproxy::hubsvrmanager>();
+	_hub_call_dbproxy->sigreg_hubhandle.connect(std::bind(&reg_hub, _hubsvrmanager, std::placeholders::_1));
+	_hub_call_dbproxy->sigcreate_persisted_objecthandle.connect(std::bind(&hub_create_persisted_object, _hubsvrmanager, _mongodb_proxy, std::placeholders::_1, std::placeholders::_2));
+	_hub_call_dbproxy->sigupdata_persisted_objecthandle.connect(std::bind(&hub_updata_persisted_object, _hubsvrmanager, _mongodb_proxy, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+	_hub_call_dbproxy->sigget_object_infohandle.connect(std::bind(&hub_get_object_info, _hubsvrmanager, _mongodb_proxy, std::placeholders::_1, std::placeholders::_2));
 	_dbthings_process->reg_module(_hub_call_dbproxy);
 
-	auto _acceptnetworkservice = boost::make_shared<service::acceptnetworkservice>(ip, port, _dbthings_process);
+	auto _acceptnetworkservice = std::make_shared<service::acceptnetworkservice>(ip, port, _dbthings_process);
 
-	boost::shared_ptr<service::juggleservice> _juggleservice = boost::make_shared<service::juggleservice>();
+	std::shared_ptr<service::juggleservice> _juggleservice = std::make_shared<service::juggleservice>();
 	_juggleservice->add_process(_center_process);
 	_juggleservice->add_process(_dbthings_process);
 
 	int64_t tick = clock();
 	int64_t tickcount = 0;
 
-	boost::shared_ptr<service::timerservice> _timerservice = boost::make_shared<service::timerservice>(tick);
+	std::shared_ptr<service::timerservice> _timerservice = std::make_shared<service::timerservice>(tick);
 
 	while (true)
 	{

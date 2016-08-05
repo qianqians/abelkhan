@@ -18,13 +18,13 @@ void handle_test(std::string argv0, int64_t argv1) {
 }
 
 void main() {
-	boost::shared_ptr<juggle::process> _process = boost::make_shared<juggle::process>();
-	boost::shared_ptr<module::test> _test = boost::make_shared<module::test>();
-	_test->sigtest_funchandle.connect(boost::bind(&handle_test, _1, _2));
+	std::shared_ptr<juggle::process> _process = std::make_shared<juggle::process>();
+	std::shared_ptr<module::test> _test = std::make_shared<module::test>();
+	_test->sigtest_funchandle.connect(std::bind(&handle_test, std::placeholders::_1, std::placeholders::_2));
 	_process->reg_module(_test);
 
-	boost::shared_ptr<service::acceptnetworkservice> _service = boost::make_shared<service::acceptnetworkservice>("127.0.0.1", 1234, _process);
-	boost::shared_ptr<service::juggleservice> _juggleservice = boost::make_shared<service::juggleservice>();
+	std::shared_ptr<service::acceptnetworkservice> _service = std::make_shared<service::acceptnetworkservice>("127.0.0.1", 1234, _process);
+	std::shared_ptr<service::juggleservice> _juggleservice = std::make_shared<service::juggleservice>();
 	_juggleservice->add_process(_process);
 
 	int64_t tick = clock();

@@ -7,7 +7,7 @@
 #define _juggleservice_h
 
 #include <list>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include <process_.h>
 
@@ -23,7 +23,7 @@ public:
 	~juggleservice(){
 	}
 
-	void add_process(boost::shared_ptr<juggle::process> _process){
+	void add_process(std::shared_ptr<juggle::process> _process){
 		process_set.push_back(_process);
 	}
 
@@ -34,7 +34,7 @@ public:
 	}
 
 private:
-	std::list<boost::shared_ptr<juggle::process> > process_set;
+	std::list<std::shared_ptr<juggle::process> > process_set;
 
 };
 

@@ -18,43 +18,43 @@
 #include "mongodb_proxy.h"
 #include "closehandle.h"
 
-void reg_logic(boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<dbproxy::closehandle> _closehandle, std::string uuid) {
+void reg_logic(std::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, std::shared_ptr<dbproxy::closehandle> _closehandle, std::string uuid) {
 	_logicsvrmanager->reg_channel(uuid, juggle::current_ch);
 	_closehandle->reg_logic();
 
-	boost::shared_ptr<caller::dbproxy_call_logic> _caller = boost::make_shared<caller::dbproxy_call_logic>(juggle::current_ch);
+	std::shared_ptr<caller::dbproxy_call_logic> _caller = std::make_shared<caller::dbproxy_call_logic>(juggle::current_ch);
 	_caller->reg_logic_sucess();
 
 	std::cout << "logic server " << uuid << "connected" << std::endl;
 }
 
-void logic_closed(boost::shared_ptr<dbproxy::closehandle> _closehandle) {
+void logic_closed(std::shared_ptr<dbproxy::closehandle> _closehandle) {
 	_closehandle->logic_closed();
 }
 
-void logic_create_persisted_object(boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string object_info, std::string callbackid) {
+void logic_create_persisted_object(std::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, std::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string object_info, std::string callbackid) {
 	if (!_logicsvrmanager->is_logic(juggle::current_ch)) {
 		return;
 	}
 
 	_mongodb_proxy->save(object_info);
 
-	boost::shared_ptr<caller::dbproxy_call_logic> _caller = boost::make_shared<caller::dbproxy_call_logic>(juggle::current_ch);
+	std::shared_ptr<caller::dbproxy_call_logic> _caller = std::make_shared<caller::dbproxy_call_logic>(juggle::current_ch);
 	_caller->ack_create_persisted_object(callbackid);
 }
 
-void logic_updata_persisted_object(boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string objectid, std::string object_info, std::string callbackid) {
+void logic_updata_persisted_object(std::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, std::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string objectid, std::string object_info, std::string callbackid) {
 	if (!_logicsvrmanager->is_logic(juggle::current_ch)) {
 		return;
 	}
 
 	_mongodb_proxy->update("{\"objectid\":\"" + objectid + "\"}", object_info);
 
-	boost::shared_ptr<caller::dbproxy_call_logic> _caller = boost::make_shared<caller::dbproxy_call_logic>(juggle::current_ch);
+	std::shared_ptr<caller::dbproxy_call_logic> _caller = std::make_shared<caller::dbproxy_call_logic>(juggle::current_ch);
 	_caller->ack_updata_persisted_object(callbackid);
 }
 
-void logic_get_object_info(boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string objectid, std::string callbackid) {
+void logic_get_object_info(std::shared_ptr<dbproxy::logicsvrmanager> _logicsvrmanager, std::shared_ptr<dbproxy::mongodb_proxy> _mongodb_proxy, std::string objectid, std::string callbackid) {
 	if (!_logicsvrmanager->is_logic(juggle::current_ch)) {
 		return;
 	}
@@ -66,7 +66,7 @@ void logic_get_object_info(boost::shared_ptr<dbproxy::logicsvrmanager> _logicsvr
 		return;
 	}
 
-	boost::shared_ptr<caller::dbproxy_call_logic> _caller = boost::make_shared<caller::dbproxy_call_logic>(juggle::current_ch);
+	std::shared_ptr<caller::dbproxy_call_logic> _caller = std::make_shared<caller::dbproxy_call_logic>(juggle::current_ch);
 	_caller->ack_get_object_info(callbackid, s[0]);
 }
 

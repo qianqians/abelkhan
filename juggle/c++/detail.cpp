@@ -8,6 +8,5 @@
 #include "process_.h"
 
 namespace juggle {
-
-	boost::shared_ptr<Ichannel> current_ch = nullptr;
+	std::shared_ptr<Ichannel> current_ch = nullptr;
 }

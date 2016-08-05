@@ -22,11 +22,11 @@ public:
 	~hubsvrmanager(){
 	}
 
-	void reg_channel(std::string uuid, boost::shared_ptr<juggle::Ichannel> ch) {
+	void reg_channel(std::string uuid, std::shared_ptr<juggle::Ichannel> ch) {
 		hub_svr_vector.push_back(std::make_pair(ch, uuid));
 	}
 
-	void unreg_channel(boost::shared_ptr<juggle::Ichannel> ch) {
+	void unreg_channel(std::shared_ptr<juggle::Ichannel> ch) {
 		for (auto it = hub_svr_vector.begin(); it != hub_svr_vector.end(); it++){
 			if (it->first == ch) {
 				hub_svr_vector.erase(it);
@@ -35,7 +35,7 @@ public:
 		}
 	}
 
-	bool is_hub(boost::shared_ptr<juggle::Ichannel> ch) {
+	bool is_hub(std::shared_ptr<juggle::Ichannel> ch) {
 		for (auto it = hub_svr_vector.begin(); it != hub_svr_vector.end(); it++){
 			if (it->first == ch) {
 				return true;
@@ -46,7 +46,7 @@ public:
 	}
 
 private:
-	std::vector<std::pair<boost::shared_ptr<juggle::Ichannel>, std::string> > hub_svr_vector;
+	std::vector<std::pair<std::shared_ptr<juggle::Ichannel>, std::string> > hub_svr_vector;
 
 };
 

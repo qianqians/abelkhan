@@ -9,13 +9,13 @@
 
 #include "centerproxy.h"
 
-void reg_server_sucess(boost::shared_ptr<gate::centerproxy> _centerproxy) {
+void reg_server_sucess(std::shared_ptr<gate::centerproxy> _centerproxy) {
 	_centerproxy->is_reg_sucess = true;
 
 	std::cout << "connect center server sucess" << std::endl;
 }
 
-void close_server(boost::shared_ptr<gate::closehandle> _closehandle) {
+void close_server(std::shared_ptr<gate::closehandle> _closehandle) {
 	_closehandle->is_closed = true;
 }
 

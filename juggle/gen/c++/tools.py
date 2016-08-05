@@ -8,12 +8,12 @@ def gentypetocpp(typestr):
     elif typestr == 'string':
         return 'std::string'
     elif typestr == 'array':
-        return 'boost::shared_ptr<std::vector<boost::any> >'
+        return 'std::shared_ptr<std::vector<boost::any> >'
     elif typestr == 'float':
         return 'double'
     elif typestr == 'bool':
         return 'bool'
     elif typestr == 'table':
-        return 'boost::shared_ptr<std::unordered_map<std::string, boost::any> >'
+        return 'std::shared_ptr<std::unordered_map<std::string, boost::any> >'
 
 	

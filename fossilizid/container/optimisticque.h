@@ -7,7 +7,7 @@
 #ifndef _optimisticque_H
 #define _optimisticque_H
 
-#include <boost/atomic.hpp>
+#include <atomic>
 
 #include "../container/detail/_hazard_ptr.h"
 #include "../pool/objpool.h"
@@ -26,20 +26,20 @@ private:
 		~node(){}
 
 		T data;
-		boost::atomic<node *> next, prev;
+		std::atomic<node *> next, prev;
 	};
 
 	struct list{
-		boost::atomic<node *> head;
-		boost::atomic<node *> detail;
-		boost::atomic_uint32_t size;
+		std::atomic<node *> head;
+		std::atomic<node *> detail;
+		std::atomic_uint32_t size;
 	};
 
 	typedef typename _Ax::template rebind<node>::other _Alloc_node; 
 	typedef typename _Ax::template rebind<list>::other _Alloc_list;
 
 public:
-	optimisticque() : _hsys(boost::bind(&optimisticque::put_node, this, _1)), _hsys_list(boost::bind(&optimisticque::put_list, this, _1)) {
+	optimisticque() : _hsys(std::bind(&optimisticque::put_node, this, std::placeholders::_1)), _hsys_list(std::bind(&optimisticque::put_list, this, std::placeholders::_1)) {
 		_list.store(get_list());
 	}
 
@@ -193,7 +193,7 @@ private:
 	}
 
 private:
-	boost::atomic<list *> _list;
+	std::atomic<list *> _list;
 
 	_Alloc_node _alloc_node;
 	_Alloc_list _alloc_list;

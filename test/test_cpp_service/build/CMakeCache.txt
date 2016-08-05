@@ -158,13 +158,13 @@ jsonparse_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/tes
 juggle_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../juggle/c++
 
 //juggle lib path
-juggle_LIBS_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../test/test_juggle/build/Debug
+juggle_LIBS_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../test/test_juggle/build/bin
 
 //lock_free include path
 lock_free_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../fossilizid
 
 //lock-free lib path
-lock_free_LIBS_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../test/test_fossilizid/build/bin/Debug
+lock_free_LIBS_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../test/test_fossilizid/build/bin
 
 //module include path
 module_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/../../test/test_juggle/output_cpp

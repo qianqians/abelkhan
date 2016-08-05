@@ -20,21 +20,21 @@ public:
 	process() {
 	}
 
-	void reg_channel(boost::shared_ptr<Ichannel> ch){
+	void reg_channel(std::shared_ptr<Ichannel> ch){
 		event_set.push_back(ch);
 	}
 
-	void unreg_channel(boost::shared_ptr<Ichannel> ch)
+	void unreg_channel(std::shared_ptr<Ichannel> ch)
 	{
 		event_set.remove(ch);
 	}
 
-	void reg_module(boost::shared_ptr<Imodule> module)
+	void reg_module(std::shared_ptr<Imodule> module)
 	{
 		module_set.insert(std::make_pair(module->module_name, module));
 	}
 
-	void unreg_module(boost::shared_ptr<Imodule> module)
+	void unreg_module(std::shared_ptr<Imodule> module)
 	{
 		module_set.erase(module->module_name);
 	}
@@ -43,7 +43,7 @@ public:
 	void poll(){
 		for (auto ch : event_set) {
 			while (true) {
-				boost::shared_ptr<std::vector<boost::any> > buff;
+				std::shared_ptr<std::vector<boost::any> > buff;
 				if (ch->pop(buff)) {
 
 					auto module_name = boost::any_cast<std::string>((*buff)[0]);
@@ -64,8 +64,8 @@ public:
 	}
 
 private:
-	std::list<boost::shared_ptr<Ichannel> > event_set;
-	std::unordered_map<std::string, boost::shared_ptr<Imodule> > module_set;
+	std::list<std::shared_ptr<Ichannel> > event_set;
+	std::unordered_map<std::string, std::shared_ptr<Imodule> > module_set;
 
 };
 

@@ -8,6 +8,7 @@
 #define _logicsvrmanager_h
 
 #include <list>
+#include <memory>
 
 namespace center {
 
@@ -19,11 +20,11 @@ public:
 	~logicsvrmanager() {
 	}
 
-	void reg_channel(boost::shared_ptr<juggle::Ichannel> ch) {
+	void reg_channel(std::shared_ptr<juggle::Ichannel> ch) {
 		logic_svr_channel_list.push_back(ch);
 	}
 
-	void unreg_channel(boost::shared_ptr<juggle::Ichannel> ch) {
+	void unreg_channel(std::shared_ptr<juggle::Ichannel> ch) {
 		for (auto it = logic_svr_channel_list.begin(); it != logic_svr_channel_list.end(); it++) {
 			if (*it == ch) {
 				logic_svr_channel_list.erase(it);
@@ -32,7 +33,7 @@ public:
 		}
 	}
 
-	bool is_logic(boost::shared_ptr<juggle::Ichannel> ch) {
+	bool is_logic(std::shared_ptr<juggle::Ichannel> ch) {
 		for (auto it = logic_svr_channel_list.begin(); it != logic_svr_channel_list.end(); it++) {
 			if (*it == ch) {
 				return true;
@@ -42,14 +43,14 @@ public:
 		return false;
 	}
 
-	void for_each_logic(std::function<void(boost::shared_ptr<juggle::Ichannel> ch)> fn) {
+	void for_each_logic(std::function<void(std::shared_ptr<juggle::Ichannel> ch)> fn) {
 		for (auto ch : logic_svr_channel_list) {
 			fn(ch);
 		}
 	}
 
 private:
-	std::list<boost::shared_ptr<juggle::Ichannel> > logic_svr_channel_list;
+	std::list<std::shared_ptr<juggle::Ichannel> > logic_svr_channel_list;
 
 };
 

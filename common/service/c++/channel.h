@@ -7,12 +7,10 @@
 #define _channel_h
 
 #include <sstream>
+#include <memory>
+#include <functional>
 
 #include <boost/asio.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/shared_array.hpp>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
 #include <boost/signals2.hpp>
 
 #include <container/optimisticque.h>
@@ -23,9 +21,9 @@
 
 namespace service {
 
-class channel : public juggle::Ichannel, public boost::enable_shared_from_this<channel> {
+class channel : public juggle::Ichannel, public std::enable_shared_from_this<channel> {
 public:
-	channel(boost::shared_ptr<boost::asio::ip::tcp::socket> _s) {
+	channel(std::shared_ptr<boost::asio::ip::tcp::socket> _s) {
 		s = _s;
 
 		buflen = 8 * 1024;
@@ -37,16 +35,15 @@ public:
 
 		s->async_receive(
 			boost::asio::buffer(buff, buflen), 
-			boost::bind(&channel::onRead, this, 
-				boost::asio::placeholders::error,
-				boost::asio::placeholders::bytes_transferred));
+			std::bind(&channel::onRead, this, 
+				std::placeholders::_1,
+				std::placeholders::_2));
 	}
 
 	~channel() {
 	}
 
-	boost::signals2::signal<void(boost::shared_ptr<channel>)> sigdisconn;
-
+	boost::signals2::signal<void(std::shared_ptr<channel>)> sigdisconn;
 	void onRead(const boost::system::error_code & error, size_t bytes_transferred) {
 		if (!error){
 			while (tmpbufflen < (tmpbufoffset + bytes_transferred)) {
@@ -71,7 +68,7 @@ public:
 							
 					boost::any object;
 					Fossilizid::JsonParse::unpacker(object, std::string(&tmpbuff[offset], &tmpbuff[offset + len]));
-					boost::shared_ptr<std::vector<boost::any> > o = boost::any_cast<boost::shared_ptr<std::vector<boost::any> > >(object);
+					std::shared_ptr<std::vector<boost::any> > o = boost::any_cast<std::shared_ptr<std::vector<boost::any> > >(object);
 							
 					que.push(o);
 
@@ -92,20 +89,20 @@ public:
 
 			s->async_receive(
 				boost::asio::buffer(buff, buflen),
-				boost::bind(&channel::onRead, this,
-					boost::asio::placeholders::error,
-					boost::asio::placeholders::bytes_transferred));
+				std::bind(&channel::onRead, this,
+					std::placeholders::_1,
+					std::placeholders::_2));
 		}
 		else {
 			sigdisconn(shared_from_this());
 		}
 	}
 	
-	bool pop(boost::shared_ptr<std::vector<boost::any> >  & data) {
+	bool pop(std::shared_ptr<std::vector<boost::any> >  & data) {
 		return que.pop(data);
 	}
 	
-	void push(boost::shared_ptr<std::vector<boost::any> > data) {
+	void push(std::shared_ptr<std::vector<boost::any> > data) {
 		auto buf = Fossilizid::JsonParse::pack(data);
 
 		size_t len = buf.size();
@@ -126,14 +123,14 @@ public:
 	}
 
 private:
-	boost::shared_ptr<boost::asio::ip::tcp::socket> s;
+	std::shared_ptr<boost::asio::ip::tcp::socket> s;
 	char * buff;
 	size_t buflen;
 	char * tmpbuff;
 	size_t tmpbufflen;
 	size_t tmpbufoffset;
 
-	Fossilizid::container::optimisticque<boost::shared_ptr<std::vector<boost::any> > > que;
+	Fossilizid::container::optimisticque<std::shared_ptr<std::vector<boost::any> > > que;
 
 };
 

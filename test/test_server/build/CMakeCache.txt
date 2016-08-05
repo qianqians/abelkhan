@@ -182,13 +182,13 @@ jsonparse_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/servers/
 juggle_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/servers/../juggle/c++
 
 //juggle lib path
-juggle_LIBS_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/servers/../test/test_juggle/build/bin/Debug
+juggle_LIBS_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/servers/../test/test_juggle/build/bin
 
 //lock_free include path
 lock_free_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/servers/../fossilizid
 
 //lock-free lib path
-lock_free_LIBS_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/servers/../test/test_fossilizid/build/bin/Debug
+lock_free_LIBS_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/servers/../test/test_fossilizid/build/bin
 
 //module include path
 module_INCLUDE_PATH:PATH=C:/Users/abelk/Documents/workspace/abelkhan/servers/../common/juggle_protcol/c++

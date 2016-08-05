@@ -1,1 +1,0 @@
-"libs\config\checks\architecture\power.cpp" -Fo"libs\config\checks\architecture\bin\msvc-14.0\debug\threading-multi\power.obj"    -TP /Z7 /Od /Ob0 /W3 /GR /MDd /Zc:forScope /Zc:wchar_t /wd4675 /EHs -c

@@ -7,8 +7,8 @@
 #ifndef _RINGQUE_H
 #define _RINGQUE_H
 
-#include <boost/atomic.hpp>
-#include <boost/thread.hpp>
+#include <atomic>
+#include <shared_mutex>
 
 #include "../pool/objpool.h"
 
@@ -18,8 +18,8 @@ namespace container{
 template<typename T, typename _Allocator = std::allocator<T>, unsigned detailsize = 1024 >
 class ringque{ 
 private:
-	typedef typename _Allocator::template rebind<boost::atomic<typename T *> >::other _Allque;
-	typedef boost::atomic<typename T *> * que;
+	typedef typename _Allocator::template rebind<std::atomic<typename T *> >::other _Allque;
+	typedef std::atomic<typename T *> * que;
 
 public:
 	ringque(){
@@ -53,7 +53,7 @@ public:
 	 * clear this que
 	 */
 	void clear(){
-		boost::unique_lock<boost::shared_mutex> lock(_mu);
+		std::unique_lock<std::shared_mutex> lock(_mu);
 
 		boost::atomic<typename T *> * _tmp = _que;
 		boost::uint32_t _tmp_push_slide = _push_slide.load();
@@ -85,7 +85,7 @@ public:
 	 * push a element to que
 	 */
 	void push(T data){
-		boost::shared_lock<boost::shared_mutex> lock(_mu);
+		std::shared_lock<std::shared_mutex> lock(_mu);
 
 		unsigned int slide = _push_slide.load();
 		unsigned int newslide = 0;
@@ -95,7 +95,7 @@ public:
 				lock.unlock();
 
 				{
-					boost::unique_lock<boost::shared_mutex> uniquelock(_mu, boost::try_to_lock);
+					std::unique_lock<std::shared_mutex> uniquelock(_mu, std::try_to_lock);
 					if (uniquelock.owns_lock()){
 						if (newslide == _pop_slide.load()){
 							resize();
@@ -126,7 +126,7 @@ public:
 	 * pop a element form que if empty return false 
 	 */
 	bool pop(T & data){
-		boost::shared_lock<boost::shared_mutex> lock(_mu);
+		std::shared_lock<std::shared_mutex> lock(_mu);
 
 		T * _tmp = 0;
 		unsigned int slide = _pop_slide.load(), slidetail = ((slide == _que_max) ? 0 : slide);
@@ -156,22 +156,22 @@ private:
 		unsigned int pushslide = _push_slide.load();
 		unsigned int popslide = _pop_slide.load();
 		unsigned int slidetail = ((popslide == _que_max) ? 0 : popslide);
-		boost::atomic<typename T *> * _tmp = 0;
+		std::atomic<typename T *> * _tmp = 0;
 
 		size = _que_max*2;
 		_tmp = get_que(size);
 		if (popslide >= pushslide){
 			for(size_t i = 0; i < pushslide; i++){
-				_tmp[i].store(_que[i].load(boost::memory_order_relaxed), boost::memory_order_relaxed);		
+				_tmp[i].store(_que[i].load(std::memory_order_relaxed), std::memory_order_relaxed);
 			}
 			size_t size1 = _que_max - popslide;
 			for(size_t i = 0; i < size1; i++){
-				_tmp[i+size-size1].store(_que[popslide+i].load(boost::memory_order_relaxed), boost::memory_order_relaxed);		
+				_tmp[i+size-size1].store(_que[popslide+i].load(std::memory_order_relaxed), std::memory_order_relaxed);
 			}
 			_pop_slide += _que_max;
 		}else{
 			for(size_t i = popslide; i < pushslide; i++){
-				_tmp[i].store(_que[i].load(boost::memory_order_relaxed), boost::memory_order_relaxed);	
+				_tmp[i].store(_que[i].load(std::memory_order_relaxed), std::memory_order_relaxed);
 			}
 		}
 		put_que(_que, _que_max);
@@ -186,7 +186,7 @@ private:
 			_que = _que_alloc.allocate(size);
 		}
 		for(uint32_t i = 0; i < size; i++){
-			_que[i].store(0, boost::memory_order_relaxed);		
+			_que[i].store(0, std::memory_order_relaxed);		
 		}
 
 		return _que;
@@ -197,9 +197,9 @@ private:
 	}
 
 private:
-	boost::shared_mutex _mu;
+	std::shared_mutex _mu;
 	que _que;
-	boost::atomic_uint _push_slide, _pop_slide, _size;
+	std::atomic_uint _push_slide, _pop_slide, _size;
 	unsigned int _que_max;
 	
 	_Allque _que_alloc;

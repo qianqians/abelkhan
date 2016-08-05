@@ -17,10 +17,10 @@ namespace gate{
 
 class centerproxy {
 public:
-	centerproxy(boost::shared_ptr<juggle::Ichannel> ch) {
+	centerproxy(std::shared_ptr<juggle::Ichannel> ch) {
 		is_reg_sucess = false;
 		_center_ch = ch;
-		_center_caller = boost::make_shared<caller::center>(_center_ch);
+		_center_caller = std::make_shared<caller::center>(_center_ch);
 	}
 
 	~centerproxy(){
@@ -35,8 +35,8 @@ public:
 	bool is_reg_sucess;
 
 private:
-	boost::shared_ptr<juggle::Ichannel> _center_ch;
-	boost::shared_ptr<caller::center> _center_caller;
+	std::shared_ptr<juggle::Ichannel> _center_ch;
+	std::shared_ptr<caller::center> _center_caller;
 
 };
 

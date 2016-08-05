@@ -24,7 +24,7 @@ public:
 	~svrmanager(){
 	}
 
-	void reg_channel(boost::shared_ptr<juggle::Ichannel> ch, std::string type, std::string ip, int64_t port, std::string uuid) {
+	void reg_channel(std::shared_ptr<juggle::Ichannel> ch, std::string type, std::string ip, int64_t port, std::string uuid) {
 		svr_channel_info.insert(std::make_pair(ch, std::make_tuple(type, ip, port, uuid)));
 		svr_info.insert(std::make_pair(uuid, std::make_tuple(type, ip, port, uuid)));
 		svr_list.push_back(ch);
@@ -41,7 +41,7 @@ public:
 		}
 	}
 
-	void unreg_channel(boost::shared_ptr<juggle::Ichannel> ch) {
+	void unreg_channel(std::shared_ptr<juggle::Ichannel> ch) {
 		for (auto it = svr_list.begin(); it != svr_list.end(); it++) {
 			if (*it == ch) {
 				svr_list.erase(it);
@@ -57,7 +57,7 @@ public:
 		svr_channel_info.erase(ch);
 	}
 
-	bool is_svr(boost::shared_ptr<juggle::Ichannel> ch) {
+	bool is_svr(std::shared_ptr<juggle::Ichannel> ch) {
 		for (auto it = svr_list.begin(); it != svr_list.end(); it++) {
 			if (*it == ch) {
 				return true;
@@ -67,7 +67,7 @@ public:
 		return false;
 	}
 
-	bool get_svr_info(std::tuple<std::string, std::string, int64_t, std::string> & info, boost::shared_ptr<juggle::Ichannel> ch) {
+	bool get_svr_info(std::tuple<std::string, std::string, int64_t, std::string> & info, std::shared_ptr<juggle::Ichannel> ch) {
 		auto f = svr_channel_info.find(ch);
 		if (f == svr_channel_info.end()) {
 			return false;
@@ -99,24 +99,24 @@ public:
 		return true;
 	}
 
-	void for_each_svr(std::function<void(boost::shared_ptr<juggle::Ichannel> ch)> fn) {
+	void for_each_svr(std::function<void(std::shared_ptr<juggle::Ichannel> ch)> fn) {
 		for (auto ch : svr_list) {
 			fn(ch);
 		}
 	}
 
-	void for_each_hub(std::function<void(boost::shared_ptr<juggle::Ichannel> ch)> fn) {
+	void for_each_hub(std::function<void(std::shared_ptr<juggle::Ichannel> ch)> fn) {
 		for (auto ch : hub_list) {
 			fn(ch);
 		}
 	}
 
 private:
-	std::list<boost::shared_ptr<juggle::Ichannel> > hub_list;
+	std::list<std::shared_ptr<juggle::Ichannel> > hub_list;
 
-	std::list<boost::shared_ptr<juggle::Ichannel> > svr_list;
+	std::list<std::shared_ptr<juggle::Ichannel> > svr_list;
 
-	std::map<boost::shared_ptr<juggle::Ichannel>, std::tuple<std::string, std::string, int64_t, std::string> > svr_channel_info;
+	std::map<std::shared_ptr<juggle::Ichannel>, std::tuple<std::string, std::string, int64_t, std::string> > svr_channel_info;
 	std::unordered_map<std::string, std::tuple<std::string, std::string, int64_t, std::string> > svr_info;
 
 	std::vector<std::tuple<std::string, std::string, int64_t, std::string> > dbproxy_info;

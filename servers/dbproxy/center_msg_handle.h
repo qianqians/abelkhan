@@ -10,13 +10,13 @@
 #include "centerproxy.h"
 #include "closehandle.h"
 
-void reg_server_sucess(boost::shared_ptr<dbproxy::centerproxy> _centerproxy) {
+void reg_server_sucess(std::shared_ptr<dbproxy::centerproxy> _centerproxy) {
 	_centerproxy->is_reg_sucess = true;
 
 	std::cout << "connect center server sucess" << std::endl;
 }
 
-void close_server(boost::shared_ptr<dbproxy::closehandle> _closehandle) {
+void close_server(std::shared_ptr<dbproxy::closehandle> _closehandle) {
 	_closehandle->is_closed = true;
 }
 

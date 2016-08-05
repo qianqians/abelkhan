@@ -9,20 +9,19 @@
 
 #include <string>
 #include <cstdint>
-
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include <caller/center_call_logiccaller.h>
 
 #include "logicsvrmanager.h"
 
-void req_get_server_address(boost::shared_ptr<center::logicsvrmanager> _logicsvrmanager, boost::shared_ptr<center::svrmanager> _svrmanager, std::string uuid, std::string callbackid) {
+void req_get_server_address(std::shared_ptr<center::logicsvrmanager> _logicsvrmanager, std::shared_ptr<center::svrmanager> _svrmanager, std::string uuid, std::string callbackid) {
 	if (!_logicsvrmanager->is_logic(juggle::current_ch)) {
 		std::cout << "not a logic channel call this function" << std::endl;
 		return;
 	}
 
-	auto _caller = boost::make_shared<caller::center_call_logic>(juggle::current_ch);
+	auto _caller = std::make_shared<caller::center_call_logic>(juggle::current_ch);
 
 	std::tuple<std::string, std::string, int64_t, std::string> info;
 	if (_svrmanager->get_svr_info(info, uuid)) {

@@ -8,12 +8,10 @@
 #ifndef _HAZARD_PTR_H
 #define _HAZARD_PTR_H
 
-#include <boost/array.hpp>
-#include <boost/thread.hpp>
-#include <boost/function.hpp>
-#include <boost/foreach.hpp>
-#include <boost/atomic.hpp>
-
+#include <array>
+#include <thread>
+#include <functional>
+#include <atomic>
 #include <vector>
 
 namespace Fossilizid{
@@ -24,7 +22,7 @@ namespace detail{
 template <typename X>
 struct _hazard_ptr{
 	X * _hazard; //
-	boost::atomic_int32_t _active; // 0 使用中/1 未使用
+	std::atomic_int32_t _active; // 0 使用中/1 未使用
 };
 
 // hazard system 
@@ -32,19 +30,20 @@ template <typename T, typename _Allocator = std::allocator<T> >
 class _hazard_system{
 private:
 	//Recover flag
-	boost::atomic_flag recoverflag;
+	std::atomic_flag recoverflag;
 
 	// deallocate function
-	typedef boost::function<void(typename T * )> fn_dealloc;
+	typedef std::function<void(typename T * )> fn_dealloc;
 	// deallocate struct data
 	typedef typename T * _deallocate_data;
 	typedef typename _Allocator::template rebind<_deallocate_data>::other _Allocator_deallocate_data;
 	// recover list
 	struct recover_list {
 		recover_list() : active(1) {re_vector.reserve(32);}
+		~recover_list(){}
 
 		std::vector<_deallocate_data, _Allocator_deallocate_data> re_vector;
-		boost::atomic_int32_t active; // 0 使用中 / 1 未使用
+		std::atomic_int32_t active; // 0 使用中 / 1 未使用
 	};
 
 	// allocator 
@@ -53,7 +52,7 @@ private:
 	__alloc_recover_list _alloc_recover_list;
 
 	// 回收队列集合
-	boost::array<recover_list * , 8> re_list_set;
+	std::array<recover_list * , 8> re_list_set;
 
 	fn_dealloc _fn_dealloc;
 
@@ -61,7 +60,7 @@ private:
 	typedef _hazard_ptr<typename T> _hazard_ptr_;
 	typedef struct _list_node{
 		_hazard_ptr_ _hazard;
-		boost::atomic<_list_node *> next;
+		std::atomic<_list_node *> next;
 	} _list_head;
 
 	// allocator 
@@ -70,9 +69,9 @@ private:
 	__alloc_list_node _alloc_list_node;
 
 	// hazard ptr list
-	boost::atomic<_list_head *> _head;
+	std::atomic<_list_head *> _head;
 	// list lenght
-	boost::atomic_uint32_t llen;
+	std::atomic_uint32_t llen;
 
 public:
 	_hazard_system(fn_dealloc _D) : _fn_dealloc(_D){
@@ -86,9 +85,9 @@ public:
 	}
 
 	~_hazard_system(){
-		BOOST_FOREACH(recover_list * _re_list, re_list_set){
+		for(recover_list * _re_list : re_list_set){
 			if(!_re_list->re_vector.empty()){
-				BOOST_FOREACH(_deallocate_data var, _re_list->re_vector){
+				for(_deallocate_data var : _re_list->re_vector){
 					_fn_dealloc(var);
 				}
 				_re_list->re_vector.clear();

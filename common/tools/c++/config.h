@@ -11,11 +11,9 @@
 #include <vector>
 #include <fstream>
 #include <exception>
+#include <memory>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/any.hpp>
-
-#include <pool/mempool.h>
 
 #include <JsonParser.h>
 
@@ -69,20 +67,20 @@ public:
 		return Fossilizid::JsonParse::JsonCast<Fossilizid::JsonParse::JsonString>((*(Fossilizid::JsonParse::JsonCast<Fossilizid::JsonParse::JsonTable>(handle)))[key]);
 	}
 
-	boost::shared_ptr<config> config::get_value_dict(std::string key) {
+	std::shared_ptr<config> config::get_value_dict(std::string key) {
 		auto _handle = (*(Fossilizid::JsonParse::JsonCast<Fossilizid::JsonParse::JsonTable>(handle)))[key];
 		config * _config = (config*)Fossilizid::pool::mempool::allocator(sizeof(config));
 		new (_config) config(_handle);
 
-		return boost::shared_ptr<config>(_config, boost::bind(config::releaseconfig, _1));
+		return std::shared_ptr<config>(_config, std::bind(config::releaseconfig, std::placeholders::_1));
 	}
 
-	boost::shared_ptr<config> config::get_value_list(std::string key) {
+	std::shared_ptr<config> config::get_value_list(std::string key) {
 		auto _handle = (*(Fossilizid::JsonParse::JsonCast<Fossilizid::JsonParse::JsonTable>(handle)))[key];
 		config * _config = (config*)Fossilizid::pool::mempool::allocator(sizeof(config));
 		new (_config)config(_handle);
 
-		return boost::shared_ptr<config>(_config, boost::bind(config::releaseconfig, _1));
+		return std::shared_ptr<config>(_config, std::bind(config::releaseconfig, std::placeholders::_1));
 	}
 
 	size_t config::get_list_size() {
@@ -105,12 +103,12 @@ public:
 		return Fossilizid::JsonParse::JsonCast<Fossilizid::JsonParse::JsonString>((*(Fossilizid::JsonParse::JsonCast<Fossilizid::JsonParse::JsonArray>(handle)))[index]);
 	}
 
-	boost::shared_ptr<config> config::get_list_dict(int index) {
+	std::shared_ptr<config> config::get_list_dict(int index) {
 		auto _handle = (*(Fossilizid::JsonParse::JsonCast<Fossilizid::JsonParse::JsonArray>(handle)))[index];
 		config * _config = (config*)Fossilizid::pool::mempool::allocator(sizeof(config));
 		new (_config) config(_handle);
 
-		return boost::shared_ptr<config>(_config, boost::bind(config::releaseconfig, _1));
+		return std::shared_ptr<config>(_config, std::bind(config::releaseconfig, std::placeholders::_1));
 	}
 
 private:
