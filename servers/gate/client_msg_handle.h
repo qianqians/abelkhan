@@ -26,7 +26,7 @@ void connect_server(std::shared_ptr<gate::logicsvrmanager> _logicsvrmanager, std
 }
 
 void cancle_server(std::shared_ptr<gate::clientmanager> _clientmanager) {
-	if (_clientmanager->has_client(juggle::current_ch)) {
+	if (_clientmanager->has_client_logic(juggle::current_ch)) {
 		std::string uuid = _clientmanager->get_client_uuid(juggle::current_ch);
 
 		auto _logic = _clientmanager->get_logic_channel(uuid);
@@ -37,7 +37,7 @@ void cancle_server(std::shared_ptr<gate::clientmanager> _clientmanager) {
 }
 
 void forward_client_call_logic(std::shared_ptr<gate::clientmanager> _clientmanager, std::string module_name, std::string func_name, std::shared_ptr<std::vector<boost::any> > argv) {
-	if (_clientmanager->has_client(juggle::current_ch)) {
+	if (_clientmanager->has_client_logic(juggle::current_ch)) {
 		std::string uuid = _clientmanager->get_client_uuid(juggle::current_ch);
 		auto _logic = _clientmanager->get_logic_channel(uuid);
 

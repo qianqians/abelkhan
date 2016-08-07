@@ -84,6 +84,15 @@ public:
 	std::shared_ptr<juggle::Ichannel> get_client_channel(std::string uuid) {
 		return client_map[uuid];
 	}
+	
+	bool has_client_logic(std::shared_ptr<juggle::Ichannel> _client) {
+		auto find = client_uuid_map.find(_client);
+		if (find == client_uuid_map.end()) {
+			return false;
+		}
+
+		return client_logic_map.find(find->second) != client_logic_map.end();
+	}
 
 	std::shared_ptr<juggle::Ichannel> get_logic_channel(std::string uuid) {
 		return client_logic_map[uuid];
