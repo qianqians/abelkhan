@@ -12,14 +12,15 @@ namespace module
 			module_name = "client_call_gate";
         }
 
-        public delegate void connect_serverhandle(String argv0);
+        public delegate void connect_serverhandle(String argv0, Int64 argv1);
         public event connect_serverhandle onconnect_server;
         public void connect_server(ArrayList _event)
         {
             if(onconnect_server != null)
             {
                 var argv0 = ((String)_event[0]);
-                onconnect_server( argv0);
+                var argv1 = ((Int64)_event[1]);
+                onconnect_server( argv0,  argv1);
             }
         }
 
@@ -46,13 +47,14 @@ namespace module
             }
         }
 
-        public delegate void heartbeatshandle();
+        public delegate void heartbeatshandle(Int64 argv0);
         public event heartbeatshandle onheartbeats;
         public void heartbeats(ArrayList _event)
         {
             if(onheartbeats != null)
             {
-                onheartbeats();
+                var argv0 = ((Int64)_event[0]);
+                onheartbeats( argv0);
             }
         }
 

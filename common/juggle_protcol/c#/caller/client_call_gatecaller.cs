@@ -12,10 +12,11 @@ namespace caller
             module_name = "client_call_gate";
         }
 
-        public void connect_server(String argv0)
+        public void connect_server(String argv0,Int64 argv1)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
+            _argv.Add(argv1);
             call_module_method("connect_server", _argv);
         }
 
@@ -34,9 +35,10 @@ namespace caller
             call_module_method("forward_client_call_logic", _argv);
         }
 
-        public void heartbeats()
+        public void heartbeats(Int64 argv0)
         {
             ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
             call_module_method("heartbeats", _argv);
         }
 

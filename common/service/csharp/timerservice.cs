@@ -17,7 +17,9 @@ namespace service
 
 		public void poll(Int64 tick)
 		{
-			{
+            Tick = tick;
+
+            {
 				List<Int64> list = new List<Int64>();
 
 				foreach (var item in tickHandledict)
@@ -66,6 +68,8 @@ namespace service
 		{
 			timeHandledict.Add(process, handle);
 		}
+
+        public Int64 Tick;
 
 		private Dictionary<Int64, tickHandle> tickHandledict;
 		private Dictionary<DateTime, timeHandle> timeHandledict;

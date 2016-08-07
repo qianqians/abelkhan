@@ -81,14 +81,14 @@ void main(int argc, char * argv[]) {
 	_logic_process->reg_module(_logic_call_gate);
 	auto _logic_service = std::make_shared<service::acceptnetworkservice>(inside_ip, inside_port, _logic_process);
 
-	_timerservice->addticktime(tick + 5 * 60 * 1000, std::bind(&heartbeat_handle, _clientmanager, _timerservice, std::placeholders::_1));
+	_timerservice->addticktime(tick + 30 * 1000, std::bind(&heartbeat_handle, _clientmanager, _timerservice, std::placeholders::_1));
 
 	auto _client_process = std::make_shared<juggle::process>();
 	auto _client_call_gate = std::make_shared<module::client_call_gate>();
-	_client_call_gate->sigconnect_serverhandle.connect(std::bind(&connect_server, _logicsvrmanager, _clientmanager, _timerservice, std::placeholders::_1));
+	_client_call_gate->sigconnect_serverhandle.connect(std::bind(&connect_server, _logicsvrmanager, _clientmanager, _timerservice, std::placeholders::_1, std::placeholders::_2));
 	_client_call_gate->sigcancle_serverhandle.connect(std::bind(&cancle_server, _clientmanager));
 	_client_call_gate->sigforward_client_call_logichandle.connect(std::bind(&forward_client_call_logic, _clientmanager, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
-	_client_call_gate->sigheartbeatshandle.connect(std::bind(&heartbeats, _clientmanager, _timerservice));
+	_client_call_gate->sigheartbeatshandle.connect(std::bind(&heartbeats, _clientmanager, _timerservice, std::placeholders::_1));
 	_client_process->reg_module(_client_call_gate);
 
 	auto outside_ip = _config->get_value_string("outside_ip");

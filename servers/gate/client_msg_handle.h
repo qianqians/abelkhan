@@ -12,13 +12,13 @@
 #include "logicsvrmanager.h"
 #include "clientmanager.h"
 
-void connect_server(std::shared_ptr<gate::logicsvrmanager> _logicsvrmanager, std::shared_ptr<gate::clientmanager> _clientmanager, std::shared_ptr<service::timerservice> _timerservice, std::string uuid) {
+void connect_server(std::shared_ptr<gate::logicsvrmanager> _logicsvrmanager, std::shared_ptr<gate::clientmanager> _clientmanager, std::shared_ptr<service::timerservice> _timerservice, std::string uuid, int64_t clienttick) {
 	std::shared_ptr<juggle::Ichannel> logic_channel = _logicsvrmanager->get_logic();
 
 	if (!_clientmanager->has_client(uuid)) {
 		std::cout << "client " << uuid << " connected" << std::endl;
 
-		_clientmanager->reg_client(uuid, juggle::current_ch, logic_channel, _timerservice->ticktime);
+		_clientmanager->reg_client(uuid, juggle::current_ch, _timerservice->ticktime, clienttick);
 	
 		std::shared_ptr<caller::gate_call_logic> _caller = std::make_shared<caller::gate_call_logic>(logic_channel);
 		_caller->client_connect(uuid);
@@ -46,9 +46,9 @@ void forward_client_call_logic(std::shared_ptr<gate::clientmanager> _clientmanag
 	}
 }
 
-void heartbeats(std::shared_ptr<gate::clientmanager> _clientmanager, std::shared_ptr<service::timerservice> _timerservice) {
+void heartbeats(std::shared_ptr<gate::clientmanager> _clientmanager, std::shared_ptr<service::timerservice> _timerservice, std::int64_t clienttick) {
 	if (_clientmanager->has_client(juggle::current_ch)) {
-		_clientmanager->refresh_client(juggle::current_ch, _timerservice->ticktime);
+		_clientmanager->refresh_and_check_client(juggle::current_ch, _timerservice->ticktime, clienttick);
 	}
 }
 

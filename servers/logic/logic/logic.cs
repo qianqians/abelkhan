@@ -64,7 +64,8 @@ namespace logic
 			_gate_call_logic.onreg_logic_sucess += _gate_msg_handle.onreg_logic_sucess;
 			_gate_call_logic.onclient_connect += _gate_msg_handle.client_connect;
 			_gate_call_logic.onclient_disconnect += _gate_msg_handle.client_disconnect;
-			_gate_call_logic.onclient_call_logic += _gate_msg_handle.client_call_logic;
+            _gate_call_logic.onclient_exception += _gate_msg_handle.client_exception;
+            _gate_call_logic.onclient_call_logic += _gate_msg_handle.client_call_logic;
 
 			var center_ip = _center_config.get_value_string("ip");
 			var center_port = (short)_center_config.get_value_int("port");
@@ -105,8 +106,7 @@ namespace logic
 			_logic_acceptnetworkservice.poll(tick);
 			_center_connectnetworkservice.poll(tick);
 		}
-
-
+        
 		private static void Main(String[] args)
 		{
 			if (args.Length <= 0)

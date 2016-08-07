@@ -32,6 +32,13 @@ namespace caller
             call_module_method("client_disconnect", _argv);
         }
 
+        public void client_exception(String argv0)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            call_module_method("client_exception", _argv);
+        }
+
         public void client_call_logic(String argv0,String argv1,String argv2,ArrayList argv3)
         {
             ArrayList _argv = new ArrayList();

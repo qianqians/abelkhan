@@ -15,7 +15,7 @@
 void heartbeat_handle(std::shared_ptr<gate::clientmanager> _clientmanager, std::shared_ptr<service::timerservice> _timerservice, int64_t tick) {
 	_clientmanager->heartbeat_client(tick);
 
-	_timerservice->addticktime(tick + 5 * 60 * 1000, std::bind(&heartbeat_handle, _clientmanager, _timerservice, std::placeholders::_1));
+	_timerservice->addticktime(tick + 30 * 1000, std::bind(&heartbeat_handle, _clientmanager, _timerservice, std::placeholders::_1));
 }
 
 #endif //_heartbeat_handle_h

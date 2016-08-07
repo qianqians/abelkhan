@@ -44,6 +44,17 @@ namespace module
             }
         }
 
+        public delegate void client_exceptionhandle(String argv0);
+        public event client_exceptionhandle onclient_exception;
+        public void client_exception(ArrayList _event)
+        {
+            if(onclient_exception != null)
+            {
+                var argv0 = ((String)_event[0]);
+                onclient_exception( argv0);
+            }
+        }
+
         public delegate void client_call_logichandle(String argv0, String argv1, String argv2, ArrayList argv3);
         public event client_call_logichandle onclient_call_logic;
         public void client_call_logic(ArrayList _event)

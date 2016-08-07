@@ -37,7 +37,12 @@ namespace logic
 			logic.gates.client_disconnect(uuid);
 		}
 
-		public void client_call_logic(String uuid, String module, String func, ArrayList argv)
+        public void client_exception(String uuid)
+        {
+            logic.gates.client_exception(uuid);
+        }
+
+        public void client_call_logic(String uuid, String module, String func, ArrayList argv)
 		{
 			logic.gates.current_client_uuid = uuid;
 			logic.modules.process_module_mothed(module, func, argv);

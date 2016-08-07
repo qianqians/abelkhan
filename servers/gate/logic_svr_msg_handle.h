@@ -27,13 +27,13 @@ void ack_client_connect_server(std::shared_ptr<gate::logicsvrmanager> _logicsvrm
 
 		if (result != "svr_is_busy")
 		{
+			_clientmanager->reg_client_logic(uuid, juggle::current_ch);
+
 			std::shared_ptr<caller::gate_call_client> _caller = std::make_shared<caller::gate_call_client>(client_channel);
 			_caller->ack_connect_server(result);
 		}
 		else {
 			std::shared_ptr<juggle::Ichannel> logic_channel = _logicsvrmanager->get_logic();
-
-			_clientmanager->reg_client(uuid, juggle::current_ch, logic_channel, _timerservice->ticktime);
 
 			std::shared_ptr<caller::gate_call_logic> _caller = std::make_shared<caller::gate_call_logic>(logic_channel);
 			_caller->client_connect(uuid);

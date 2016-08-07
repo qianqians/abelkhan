@@ -21,30 +21,39 @@ namespace client
 
 			_juggleservice = new service.juggleservice();
 			_juggleservice.add_process(_process);
-		}
+        }
 
-		public delegate void onConnectServerHandle(String result);
+        private void heartbeats(Int64 tick)
+        {
+            _client_call_gate.heartbeats(tick);
+
+            timer.addticktime(tick + 30 * 1000, heartbeats);
+        }
+
+        public delegate void onConnectServerHandle(String result);
 		public event onConnectServerHandle onConnectServer;
 		private void on_ack_connect_server(String result)
 		{
 			if (onConnectServer != null)
 			{
 				onConnectServer(result);
-			}
-		}
+            }
+
+            timer.addticktime(timer.Tick + 30*1000, heartbeats);
+        }
 
 		private void on_call_client(String module_name, String func_name, ArrayList argvs)
 		{
 			modulemanager.process_module_mothed(module_name, func_name, argvs);
 		}
 
-		public bool connect_server(String ip, short port)
+		public bool connect_server(String ip, short port, Int64 tick)
 		{
 			try
 			{
 				var ch = _conn.connect(ip, port);
 				_client_call_gate = new caller.client_call_gate(ch);
-				_client_call_gate.connect_server(uuid);
+				_client_call_gate.connect_server(uuid, tick);
 			}
 			catch (Exception)
 			{

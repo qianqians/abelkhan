@@ -15,6 +15,7 @@ public:
         protcolcall_set.insert(std::make_pair("reg_logic_sucess", std::bind(&gate_call_logic::reg_logic_sucess, this, std::placeholders::_1)));
         protcolcall_set.insert(std::make_pair("client_connect", std::bind(&gate_call_logic::client_connect, this, std::placeholders::_1)));
         protcolcall_set.insert(std::make_pair("client_disconnect", std::bind(&gate_call_logic::client_disconnect, this, std::placeholders::_1)));
+        protcolcall_set.insert(std::make_pair("client_exception", std::bind(&gate_call_logic::client_exception, this, std::placeholders::_1)));
         protcolcall_set.insert(std::make_pair("client_call_logic", std::bind(&gate_call_logic::client_call_logic, this, std::placeholders::_1)));
     }
 
@@ -36,6 +37,12 @@ public:
     boost::signals2::signal<void(std::string) > sigclient_disconnecthandle;
     void client_disconnect(std::shared_ptr<std::vector<boost::any> > _event){
         sigclient_disconnecthandle(
+            boost::any_cast<std::string>((*_event)[0]));
+    }
+
+    boost::signals2::signal<void(std::string) > sigclient_exceptionhandle;
+    void client_exception(std::shared_ptr<std::vector<boost::any> > _event){
+        sigclient_exceptionhandle(
             boost::any_cast<std::string>((*_event)[0]));
     }
 

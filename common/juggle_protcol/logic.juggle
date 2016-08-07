@@ -5,6 +5,8 @@ module gate_call_logic{
 
 	void client_disconnect(string uuid);
 
+	void client_exception(string uuid);
+
 	void client_call_logic(string uuid, string module, string func, array argv);
 
 }

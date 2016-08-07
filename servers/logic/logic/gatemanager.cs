@@ -54,14 +54,28 @@ namespace logic
 		public event clientDisconnecthandle clientDisconnect;
 		public void client_disconnect(String client_uuid)
 		{
-			if (clients.ContainsKey(client_uuid))
-			{
-				clients.Remove(client_uuid);
-				clientDisconnect(client_uuid);
-			}
+            if (clients.ContainsKey(client_uuid))
+            {
+                clients.Remove(client_uuid);
+
+                if (clientDisconnect != null)
+                {
+                    clientDisconnect(client_uuid);
+                }
+            }
 		}
 
-		public void call_client(String uuid, String module, String func, params object[] _argvs)
+        public delegate void clientExceptionhandle(String client_uuid);
+        public event clientExceptionhandle clientException;
+        public void client_exception(String client_uuid)
+        {
+            if (clientException != null)
+            {
+                clientException(client_uuid);
+            }
+        }
+
+        public void call_client(String uuid, String module, String func, params object[] _argvs)
 		{
 			if (clients.ContainsKey(uuid))
 			{

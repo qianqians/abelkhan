@@ -1,11 +1,11 @@
 module client_call_gate{
-	void connect_server(string uuid);
+	void connect_server(string uuid, int tick);
 	
 	void cancle_server();
 
 	void forward_client_call_logic(string module, string func, array argv);
 	
-	void heartbeats();
+	void heartbeats(int clockt);
 
 }
 

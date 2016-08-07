@@ -21,10 +21,11 @@ public:
     ~client_call_gate(){
     }
 
-    boost::signals2::signal<void(std::string) > sigconnect_serverhandle;
+    boost::signals2::signal<void(std::string, int64_t) > sigconnect_serverhandle;
     void connect_server(std::shared_ptr<std::vector<boost::any> > _event){
         sigconnect_serverhandle(
-            boost::any_cast<std::string>((*_event)[0]));
+            boost::any_cast<std::string>((*_event)[0]), 
+            boost::any_cast<int64_t>((*_event)[1]));
     }
 
     boost::signals2::signal<void() > sigcancle_serverhandle;
@@ -41,10 +42,10 @@ public:
             boost::any_cast<std::shared_ptr<std::vector<boost::any> >>((*_event)[2]));
     }
 
-    boost::signals2::signal<void() > sigheartbeatshandle;
+    boost::signals2::signal<void(int64_t) > sigheartbeatshandle;
     void heartbeats(std::shared_ptr<std::vector<boost::any> > _event){
         sigheartbeatshandle(
-);
+            boost::any_cast<int64_t>((*_event)[0]));
     }
 
 };
