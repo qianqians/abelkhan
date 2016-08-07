@@ -1,8 +1,0 @@
-C:/Users/abelk/Documents/workspace/abelkhan/test/test_server/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/abelk/Documents/workspace/abelkhan/test/test_server/build/CMakeFiles/ZERO_CHECK.dir
-C:/Users/abelk/Documents/workspace/abelkhan/test/test_server/build/center/CMakeFiles/center.dir
-C:/Users/abelk/Documents/workspace/abelkhan/test/test_server/build/center/CMakeFiles/ALL_BUILD.dir
-C:/Users/abelk/Documents/workspace/abelkhan/test/test_server/build/dbproxy/CMakeFiles/dbproxy.dir
-C:/Users/abelk/Documents/workspace/abelkhan/test/test_server/build/dbproxy/CMakeFiles/ALL_BUILD.dir
-C:/Users/abelk/Documents/workspace/abelkhan/test/test_server/build/gate/CMakeFiles/gate.dir
-C:/Users/abelk/Documents/workspace/abelkhan/test/test_server/build/gate/CMakeFiles/ALL_BUILD.dir

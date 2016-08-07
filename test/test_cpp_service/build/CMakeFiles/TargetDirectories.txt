@@ -1,4 +1,0 @@
-C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/test_client.dir
-C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/test_server.dir
-C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/abelk/Documents/workspace/abelkhan/test/test_cpp_service/build/CMakeFiles/ZERO_CHECK.dir
