@@ -1,0 +1,25 @@
+﻿<Properties StartupConfiguration="{65DF6C23-5C3D-48DE-A924-CD778E46024E}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="gate/hub_msg_handle.cs">
+    <Files>
+      <File FileName="gate/hub_msg_handle.cs" Line="37" Column="4" />
+      <File FileName="gate/hubmanager.cs" Line="1" Column="1" />
+      <File FileName="gate/hubproxy.cs" Line="1" Column="1" />
+      <File FileName="gate/clientproxy.cs" Line="20" Column="43" />
+      <File FileName="gate/clientmanager.cs" Line="26" Column="1" />
+      <File FileName="gate/client_msg_handle.cs" Line="31" Column="4" />
+      <File FileName="../../common/juggle_protcol/client.juggle" Line="5" Column="1" />
+      <File FileName="../../common/juggle_protcol/dbproxy.juggle" Line="1" Column="1" />
+      <File FileName="../../common/juggle_protcol/gate.juggle" Line="26" Column="3" />
+      <File FileName="../../common/juggle_protcol/hub.juggle" Line="19" Column="2" />
+      <File FileName="../../common/juggle_protcol/center.juggle" Line="1" Column="1" />
+      <File FileName="../../common/juggle_protcol/logic.juggle" Line="21" Column="2" />
+      <File FileName="gate/gate.cs" Line="50" Column="6" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.gate PreferredExecutionTarget="MonoDevelop.Default" />
+</Properties>

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{9C09315C-188C-4611-9AD8-CE81A3D30D5C}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>hub</RootNamespace>
+    <AssemblyName>hub</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\center_call_hubcaller.cs">
+      <Link>center_call_hubcaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\center_call_logiccaller.cs">
+      <Link>center_call_logiccaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\center_call_servercaller.cs">
+      <Link>center_call_servercaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\centercaller.cs">
+      <Link>centercaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\client_call_gatecaller.cs">
+      <Link>client_call_gatecaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\dbproxy_call_hubcaller.cs">
+      <Link>dbproxy_call_hubcaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\dbproxy_call_logiccaller.cs">
+      <Link>dbproxy_call_logiccaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\gate_call_clientcaller.cs">
+      <Link>gate_call_clientcaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\gate_call_logiccaller.cs">
+      <Link>gate_call_logiccaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\gm_centercaller.cs">
+      <Link>gm_centercaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\hub_call_dbproxycaller.cs">
+      <Link>hub_call_dbproxycaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\hub_call_logiccaller.cs">
+      <Link>hub_call_logiccaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\hubcaller.cs">
+      <Link>hubcaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\logic_call_centercaller.cs">
+      <Link>logic_call_centercaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\logic_call_dbproxycaller.cs">
+      <Link>logic_call_dbproxycaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\logic_call_gatecaller.cs">
+      <Link>logic_call_gatecaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\logic_call_logiccaller.cs">
+      <Link>logic_call_logiccaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\center_call_hubmodule.cs">
+      <Link>center_call_hubmodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\center_call_logicmodule.cs">
+      <Link>center_call_logicmodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\center_call_servermodule.cs">
+      <Link>center_call_servermodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\centermodule.cs">
+      <Link>centermodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\client_call_gatemodule.cs">
+      <Link>client_call_gatemodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\dbproxy_call_hubmodule.cs">
+      <Link>dbproxy_call_hubmodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\dbproxy_call_logicmodule.cs">
+      <Link>dbproxy_call_logicmodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\gate_call_clientmodule.cs">
+      <Link>gate_call_clientmodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\gate_call_logicmodule.cs">
+      <Link>gate_call_logicmodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\gm_centermodule.cs">
+      <Link>gm_centermodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\hub_call_dbproxymodule.cs">
+      <Link>hub_call_dbproxymodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\hub_call_logicmodule.cs">
+      <Link>hub_call_logicmodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\hubmodule.cs">
+      <Link>hubmodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\logic_call_centermodule.cs">
+      <Link>logic_call_centermodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\logic_call_dbproxymodule.cs">
+      <Link>logic_call_dbproxymodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\logic_call_gatemodule.cs">
+      <Link>logic_call_gatemodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\logic_call_logicmodule.cs">
+      <Link>logic_call_logicmodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\service\csharp\acceptnetworkservice.cs">
+      <Link>acceptnetworkservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\service\csharp\channel.cs">
+      <Link>channel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\service\csharp\connectnetworkservice.cs">
+      <Link>connectnetworkservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\service\csharp\juggleservice.cs">
+      <Link>juggleservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\service\csharp\service.cs">
+      <Link>service.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\service\csharp\timerservice.cs">
+      <Link>timerservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\juggle\csharp\Icaller.cs">
+      <Link>Icaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\juggle\csharp\Ichannel.cs">
+      <Link>Ichannel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\juggle\csharp\Imodule.cs">
+      <Link>Imodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\juggle\csharp\process.cs">
+      <Link>process.cs</Link>
+    </Compile>
+    <Compile Include="hub.cs" />
+    <Compile Include="centerproxy.cs" />
+    <Compile Include="dbproxyproxy.cs" />
+    <Compile Include="center_msg_handle.cs" />
+    <Compile Include="logic_msg_handle.cs" />
+    <Compile Include="dbproxy_msg_handle.cs" />
+    <Compile Include="..\..\..\jsonparse\csharp\JsonParser.cs">
+      <Link>JsonParser.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\tools\csharp\config.cs">
+      <Link>config.cs</Link>
+    </Compile>
+    <Compile Include="closehandle.cs" />
+    <Compile Include="logicproxy.cs" />
+    <Compile Include="logicmanager.cs" />
+    <Compile Include="..\..\..\common\module\csharp\modulemanager.cs">
+      <Link>modulemanager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\module\csharp\module.cs">
+      <Link>module.cs</Link>
+    </Compile>
+    <Compile Include="gate_msg_handle.cs" />
+    <Compile Include="gatemanager.cs" />
+    <Compile Include="gateproxy.cs" />
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\gate_call_hubcaller.cs">
+      <Link>gate_call_hubcaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\hub_call_gatecaller.cs">
+      <Link>hub_call_gatecaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\gate_call_hubmodule.cs">
+      <Link>gate_call_hubmodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\common\juggle_protcol\c#\module\hub_call_gatemodule.cs">
+      <Link>hub_call_gatemodule.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>
