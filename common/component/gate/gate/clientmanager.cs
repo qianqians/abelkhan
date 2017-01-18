@@ -12,6 +12,8 @@ namespace gate
 			clientproxys_ch = new Dictionary<juggle.Ichannel, clientproxy> ();
 			clientproxy_logicproxy = new Dictionary<clientproxy, logicproxy> ();
 			clientproxys_uuid = new Dictionary<clientproxy, string> ();
+			client_server_time = new Dictionary<juggle.Ichannel, long>();
+			client_time = new Dictionary<juggle.Ichannel, long>();
 		}
 
 		public clientproxy reg_client(string uuid, juggle.Ichannel ch, Int64 servertick, Int64 clienttick)

@@ -17,15 +17,6 @@ namespace gate
 			_hubproxy.reg_hub_sucess ();
 		}
 
-		//public void forward_hub_call_client(string uuid, string module, string func, ArrayList argv)
-		//{
-		//	clientproxy _clientproxy = _clientmanager.get_clientproxy(uuid);
-		//	if (_clientproxy != null) 
-		//	{
-		//		_clientproxy.call_client (module, func, argv);
-		//	}
-		//}
-
 		public void forward_hub_call_group_client(ArrayList uuids, string module, string func, ArrayList argv)
 		{
 			foreach(String uuid in uuids)

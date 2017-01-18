@@ -29,10 +29,10 @@ namespace logic
 			_dbproxy.end_callback(callbackid);
 		}
 
-		public void ack_get_object_info(String callbackid, String json_obejct_array)
+		public void ack_get_object_info(String callbackid, ArrayList obejct_array)
 		{
 			dbproxyproxy.onGetObjectInfoHandle _handle = (dbproxyproxy.onGetObjectInfoHandle)_dbproxy.begin_callback(callbackid);
-			_handle((ArrayList)(System.Text.Json.Jsonparser.unpack(json_obejct_array)));
+			_handle(obejct_array);
 		}
 
 		public void ack_get_object_info_end(String callbackid)

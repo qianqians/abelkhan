@@ -4,9 +4,10 @@ namespace center
 {
 	class gm_msg_handle
 	{
-		public gm_msg_handle(gmmanager _gmmanager_)
+		public gm_msg_handle(gmmanager _gmmanager_, svrmanager _svrmanager_)
 		{
 			_gmmanager = _gmmanager_;
+			_svrmanager = _svrmanager_;
 		}
 
 		public void confirm_gm(String gm_name)

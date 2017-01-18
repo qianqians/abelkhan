@@ -30,10 +30,13 @@ namespace dbproxy
 			var ip = _config.get_value_string("ip");
 			var port = (short)_config.get_value_int("port");
 
+			_logic_call_dbproxy = new module.logic_call_dbproxy();
 			_hub_call_dbproxy = new module.hub_call_dbproxy();
-			_hub_process = new juggle.process();
-			_hub_process.reg_module(_hub_call_dbproxy);
-			_hub_acceptnetworkservice = new service.acceptnetworkservice(ip, port, _hub_process);
+			_process = new juggle.process();
+			_process.reg_module(_logic_call_dbproxy);
+			_process.reg_module(_hub_call_dbproxy);
+			_acceptnetworkservice = new service.acceptnetworkservice(ip, port, _process);
+
 			_hubmanager = new hubmanager ();
 			_hub_msg_handle = new hub_msg_handle(_hubmanager, _mongodbproxy);
 			_hub_call_dbproxy.onreg_hub += _hub_msg_handle.reg_hub;
@@ -41,9 +44,6 @@ namespace dbproxy
 			_hub_call_dbproxy.onupdata_persisted_object += _hub_msg_handle.updata_persisted_object;
 			_hub_call_dbproxy.onget_object_info += _hub_msg_handle.get_object_info;
 
-			_logic_call_dbproxy = new module.logic_call_dbproxy();
-			_logic_process = new juggle.process();
-			_logic_acceptnetworkservice = new service.acceptnetworkservice(ip, port, _logic_process);
 			_logicmanager = new logicmanager();
 			_logic_msg_handle = new logic_msg_handle(_logicmanager, _mongodbproxy, closeHandle);
 			_logic_call_dbproxy.onreg_logic += _logic_msg_handle.reg_logic;
@@ -65,8 +65,7 @@ namespace dbproxy
 			_center_call_server.onreg_server_sucess += _center_msg_handle.reg_server_sucess;
 
 			_juggle_service = new service.juggleservice();
-			_juggle_service.add_process(_hub_process);
-			_juggle_service.add_process(_logic_process);
+			_juggle_service.add_process(_process);
 			_juggle_service.add_process(_center_process);
 
 			timer = new service.timerservice();
@@ -79,8 +78,7 @@ namespace dbproxy
 			_juggle_service.poll(tick);
 			timer.poll(tick);
 
-			_hub_acceptnetworkservice.poll(tick);
-			_logic_acceptnetworkservice.poll(tick);
+			_acceptnetworkservice.poll(tick);
 			_center_connectnetworkservice.poll(tick);
 		}
         
@@ -149,14 +147,13 @@ namespace dbproxy
 		private hubmanager _hubmanager;
 		private hub_msg_handle _hub_msg_handle;
 		private module.hub_call_dbproxy _hub_call_dbproxy;
-		private juggle.process _hub_process;
-		private service.acceptnetworkservice _hub_acceptnetworkservice;
 
 		private logicmanager _logicmanager;
 		private logic_msg_handle _logic_msg_handle;
 		private module.logic_call_dbproxy _logic_call_dbproxy;
-		private juggle.process _logic_process;
-		private service.acceptnetworkservice _logic_acceptnetworkservice;
+
+		private juggle.process _process;
+		private service.acceptnetworkservice _acceptnetworkservice;
 
 		private centerproxy _centerproxy;
 		private module.center_call_server _center_call_server;

@@ -25,21 +25,21 @@ namespace logic
 			_logic_call_dbproxy.reg_logic(uuid);
 		}
 
-		public void CreatePersistedObject(String object_info, onCreatePersistedObjectHandle _handle)
+		public void CreatePersistedObject(Hashtable object_info, onCreatePersistedObjectHandle _handle)
 		{
 			var callbackid = System.Guid.NewGuid().ToString();
 			_logic_call_dbproxy.create_persisted_object(object_info, callbackid);
 			callback_set.Add(callbackid, (object)_handle);
 		}
 
-		public void updataPersistedObject(String query_json, String updata_info, onUpdataPersistedObjectHandle _handle)
+		public void updataPersistedObject(Hashtable query_json, Hashtable updata_info, onUpdataPersistedObjectHandle _handle)
 		{
 			var callbackid = System.Guid.NewGuid().ToString();
 			_logic_call_dbproxy.updata_persisted_object(query_json, updata_info, callbackid);
 			callback_set.Add(callbackid, (object)_handle);
 		}
 
-		public void getObjectInfo(String query_json, onGetObjectInfoHandle _handle)
+		public void getObjectInfo(Hashtable query_json, onGetObjectInfoHandle _handle)
 		{
 			var callbackid = System.Guid.NewGuid().ToString();
 			_logic_call_dbproxy.get_object_info(query_json, callbackid);

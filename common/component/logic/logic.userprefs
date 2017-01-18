@@ -1,12 +1,18 @@
-﻿<Properties StartupItem="logic/logic.csproj">
+﻿<Properties StartupConfiguration="{90BD6407-331C-4A68-8FAD-FB0FB4D6A03F}|Default">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="logic/center_msg_handle.cs">
-    <Files>
-      <File FileName="logic/center_msg_handle.cs" Line="1" Column="1" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workbench ActiveDocument="logic\dbproxy_msg_handle.cs">
+    <Files>
+      <File FileName="logic\center_msg_handle.cs" Line="1" Column="1" />
+      <File FileName="logic\hubproxy.cs" Line="24" Column="21" />
+      <File FileName="logic\logic.cs" Line="34" Column="88" />
+      <File FileName="..\protcol\c#\module\dbproxy_call_logicmodule.cs" Line="48" Column="69" />
+      <File FileName="logic\dbproxy_msg_handle.cs" Line="35" Column="24" />
+      <File FileName="logic\dbproxyproxy.cs" Line="42" Column="38" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.logic PreferredExecutionTarget="MonoDevelop.Default" />
 </Properties>

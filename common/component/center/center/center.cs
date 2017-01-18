@@ -40,7 +40,7 @@ namespace center
 			juggle.process _gm_process = new juggle.process ();
 
 			_gm_center = new module.gm_center ();
-			_gm_msg_handle = new gm_msg_handle(_gmmanager);
+			_gm_msg_handle = new gm_msg_handle(_gmmanager, _svrmanager);
 			_gm_center.onconfirm_gm += _gm_msg_handle.confirm_gm;
 			_gm_center.onclose_clutter += _gm_msg_handle.close_clutter;
 			_gm_process.reg_module(_gm_center);

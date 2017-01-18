@@ -32,50 +32,53 @@
   <ItemGroup>
     <Compile Include="client.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\..\..\jsonparse\csharp\JsonParser.cs">
-      <Link>JsonParser.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\juggle\csharp\Icaller.cs">
-      <Link>Icaller.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\juggle\csharp\Ichannel.cs">
-      <Link>Ichannel.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\juggle\csharp\Imodule.cs">
-      <Link>Imodule.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\juggle\csharp\process.cs">
-      <Link>process.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\common\module\csharp\module.cs">
-      <Link>module.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\common\module\csharp\modulemanager.cs">
-      <Link>modulemanager.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\common\tools\csharp\config.cs">
-      <Link>config.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\common\service\csharp\channel.cs">
-      <Link>channel.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\common\service\csharp\connectnetworkservice.cs">
-      <Link>connectnetworkservice.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\common\service\csharp\juggleservice.cs">
-      <Link>juggleservice.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\common\service\csharp\service.cs">
-      <Link>service.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\common\service\csharp\timerservice.cs">
-      <Link>timerservice.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\common\juggle_protcol\c#\caller\client_call_gatecaller.cs">
+    <Compile Include="..\..\protcol\c#\caller\client_call_gatecaller.cs">
       <Link>client_call_gatecaller.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\common\juggle_protcol\c#\module\gate_call_clientmodule.cs">
+    <Compile Include="..\..\protcol\c#\module\gate_call_clientmodule.cs">
       <Link>gate_call_clientmodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\module\csharp\module.cs">
+      <Link>module.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\module\csharp\modulemanager.cs">
+      <Link>modulemanager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\service\csharp\acceptnetworkservice.cs">
+      <Link>acceptnetworkservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\service\csharp\channel.cs">
+      <Link>channel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\service\csharp\connectnetworkservice.cs">
+      <Link>connectnetworkservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\service\csharp\juggleservice.cs">
+      <Link>juggleservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\service\csharp\service.cs">
+      <Link>service.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\service\csharp\timerservice.cs">
+      <Link>timerservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\tools\csharp\config.cs">
+      <Link>config.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\thirdpart\jsonparse\csharp\JsonParser.cs">
+      <Link>JsonParser.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\thirdpart\juggle\csharp\Icaller.cs">
+      <Link>Icaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\thirdpart\juggle\csharp\Ichannel.cs">
+      <Link>Ichannel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\thirdpart\juggle\csharp\Imodule.cs">
+      <Link>Imodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\thirdpart\juggle\csharp\process.cs">
+      <Link>process.cs</Link>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -15,11 +15,6 @@ namespace hub
 			Console.WriteLine("begin connect gate server");
 			_caller.reg_hub(hub.uuid);
 		}
-			
-		public void forward_hub_call_client(String uuid, String module, String func, ArrayList argv)
-		{
-			_caller.forward_hub_call_client(uuid, module, func, argv);
-		}
 
 		public void forward_hub_call_group_client(ArrayList uuids, String module, String func, ArrayList argv)
 		{

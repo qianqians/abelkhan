@@ -17,19 +17,21 @@ namespace juggle
 
 			if (method != null)
 			{
-				if (_event.Count > 2)
+				try
 				{
 					object[] argv = new object[1];
-					argv[0] = (ArrayList)_event[2];
-
+					if (_event.Count > 2)
+					{
+						argv[0] = (ArrayList)_event[2];
+					}
 					method.Invoke(this, argv);
-				}
-				else
-				{
-					method.Invoke(this, null);
-				}
 
-				current_ch = null;
+					current_ch = null;
+				}
+				catch(Exception e)
+				{
+					Console.WriteLine("function name:" + func_name);
+				}
 			}
 			else
 			{
