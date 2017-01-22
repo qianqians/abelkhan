@@ -35,7 +35,9 @@ namespace gate
 
 				_logicproxy.client_disconnect (uuid);
 			}
-		}
+
+            _clientmanager.unreg_client(juggle.Imodule.current_ch);
+        }
 
 		public void forward_client_call_logic(string module, string func, ArrayList argv)
 		{
