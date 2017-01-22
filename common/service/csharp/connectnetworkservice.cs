@@ -14,8 +14,7 @@ namespace service
 		public channel connect(String ip, short port)
 		{
             Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-            s.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 0));
+            
 			try
 			{
 				s.Connect(new IPEndPoint(IPAddress.Parse(ip), port));

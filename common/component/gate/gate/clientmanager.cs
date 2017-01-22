@@ -19,12 +19,36 @@ namespace gate
 		public clientproxy reg_client(string uuid, juggle.Ichannel ch, Int64 servertick, Int64 clienttick)
 		{
 			clientproxy _clientproxy = new clientproxy (ch);
-			clientproxys.Add (uuid, _clientproxy);
-			client_server_time.Add (ch, servertick);
+            clientproxys.Add(uuid, _clientproxy);
+            clientproxys_uuid.Add(_clientproxy, uuid);
+            client_server_time.Add (ch, servertick);
 			client_time.Add (ch, clienttick);
 
 			return _clientproxy;
 		}
+
+        public void unreg_client(juggle.Ichannel ch)
+        {
+            if (clientproxys_ch.ContainsKey(ch))
+            {
+                clientproxy _proxy = clientproxys_ch[ch];
+                clientproxys_ch.Remove(ch);
+                client_server_time.Remove(ch);
+                client_time.Remove(ch);
+
+                if (clientproxys_uuid.ContainsKey(_proxy))
+                {
+                    string uuid = clientproxys_uuid[_proxy];
+                    clientproxys_uuid.Remove(_proxy);
+
+                    clientproxys.Remove(uuid);
+                }
+                if (clientproxy_logicproxy.ContainsKey(_proxy))
+                {
+                    clientproxy_logicproxy.Remove(_proxy);
+                }
+            }
+        }
 
 		public void reg_client_logic(string uuid, logicproxy _logicproxy)
 		{

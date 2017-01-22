@@ -5,6 +5,11 @@ namespace gate
 {
 	public class gate
 	{
+        public void onClientDissconnect(juggle.Ichannel ch)
+        {
+            _clientmanager.unreg_client(ch);
+        }
+
 		public gate(String[] args)
 		{
 			uuid = System.Guid.NewGuid().ToString();
@@ -30,12 +35,12 @@ namespace gate
 			var _client_process = new juggle.process();
 			_client_process.reg_module (_client_call_gate);
 
-
 			var outside_ip = _config.get_value_string("outside_ip");
 			var outside_port = (short)_config.get_value_int("outside_port");
 			_accept_client_service = new service.acceptnetworkservice(outside_ip, outside_port, _client_process);
+            _accept_client_service.onChannelDisconnect += onClientDissconnect;
 
-			_logic_msg_handle = new logic_msg_handle(_logicmanager, _clientmanager);
+            _logic_msg_handle = new logic_msg_handle(_logicmanager, _clientmanager);
 			_logic_call_gate = new module.logic_call_gate();
 			_logic_call_gate.onreg_logic += _logic_msg_handle.reg_logic;
 			_logic_call_gate.onack_client_connect_server += _logic_msg_handle.ack_client_connect_server;
@@ -47,7 +52,6 @@ namespace gate
 			_hub_msg_handle = new hub_msg_handle(_hubmanager, _clientmanager);
 			_hub_call_gate = new module.hub_call_gate ();
 			_hub_call_gate.onreg_hub += _hub_msg_handle.reg_hub;
-			//_hub_call_gate.onforward_hub_call_client += _hub_msg_handle.forward_hub_call_client;
 			_hub_call_gate.onforward_hub_call_global_client += _hub_msg_handle.forward_hub_call_global_client;
 			_hub_call_gate.onforward_hub_call_group_client += _hub_msg_handle.forward_hub_call_group_client;
 

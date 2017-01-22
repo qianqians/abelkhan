@@ -54,9 +54,13 @@ namespace gate
 		public void forward_logic_call_global_client(string module, string func, ArrayList argv)
 		{
 			_clientmanager.for_each_client(
-				(clientproxy _clientproxy) => {
-					_clientproxy.call_client(module, func, argv);
-				}
+				(clientproxy _clientproxy) =>
+                {
+                    if (_clientproxy != null)
+                    {
+                        _clientproxy.call_client(module, func, argv);
+                    }
+                }
 			);
 		}
 
