@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Threading;
 
 namespace client
 {
@@ -85,7 +86,43 @@ namespace client
 			timer.poll(tick);
         }
 
-		public String uuid;
+        private static void Main()
+        {
+            client _client = new client();
+
+            Int64 tick = Environment.TickCount;
+            _client.connect_server("139.129.96.47", 3236, tick);
+
+            Int64 tickcount = 0;
+            while (true)
+            {
+                Int64 tmptick = (Environment.TickCount & UInt32.MaxValue);
+                if (tmptick < tick)
+                {
+                    tickcount += 1;
+                    tmptick = tmptick + tickcount * UInt32.MaxValue;
+                }
+                tick = tmptick;
+
+                _client.poll(tick);
+
+                tmptick = (Environment.TickCount & UInt32.MaxValue);
+                if (tmptick < tick)
+                {
+                    tickcount += 1;
+                    tmptick = tmptick + tickcount * UInt32.MaxValue;
+                }
+                Int64 ticktime = (tmptick - tick);
+                tick = tmptick;
+
+                if (ticktime < 50)
+                {
+                    Thread.Sleep(15);
+                }
+            }
+        }
+
+        public String uuid;
 		public service.timerservice timer;
 		public common.modulemanager modulemanager;
 
