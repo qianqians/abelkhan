@@ -83,7 +83,7 @@ namespace client
 		{
 			_juggleservice.poll(tick);
 			timer.poll(tick);
-		}
+        }
 
 		public String uuid;
 		public service.timerservice timer;

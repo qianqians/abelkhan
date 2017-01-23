@@ -19,6 +19,7 @@ namespace service
 		{
             Tick = tick;
 
+            try
             {
 				List<Int64> list = new List<Int64>();
 
@@ -37,7 +38,12 @@ namespace service
 					tickHandledict.Remove(item);
 				}
 			}
+            catch(System.Exception e)
+            {
+                Console.WriteLine("System.Exceptio{0}", e);
+            }
 
+            try
 			{
 				List<DateTime> list = new List<DateTime>();
 
@@ -57,7 +63,11 @@ namespace service
 					timeHandledict.Remove(item);
 				}
 			}
-		}
+            catch (System.Exception e)
+            {
+                Console.WriteLine("System.Exceptio{0}", e);
+            }
+        }
 
 		public void addticktime(Int64 process, tickHandle handle)
 		{
