@@ -25,7 +25,7 @@ namespace logic
 			_logic_call_dbproxy.reg_logic(uuid);
 		}
 
-		public void CreatePersistedObject(Hashtable object_info, onCreatePersistedObjectHandle _handle)
+		public void createPersistedObject(Hashtable object_info, onCreatePersistedObjectHandle _handle)
 		{
 			var callbackid = System.Guid.NewGuid().ToString();
 			_logic_call_dbproxy.create_persisted_object(object_info, callbackid);

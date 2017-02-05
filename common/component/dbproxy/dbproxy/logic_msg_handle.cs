@@ -57,23 +57,31 @@ namespace dbproxy
 
 			int count = 0;
 			ArrayList _datalist = new ArrayList ();
-			foreach (var data in _list)
-			{
-				_datalist.Add (data);
+            if (_list.Count > 0)
+            {
+                foreach (var data in _list)
+                {
+                    _datalist.Add(data);
 
-				count++;
+                    count++;
 
-				if (count >= 100) 
-				{
-					_logicproxy.ack_get_object_info(callbackid, _datalist);
+                    if (count >= 100)
+                    {
+                        _logicproxy.ack_get_object_info(callbackid, _datalist);
 
-					count = 0;
-					_datalist = new ArrayList ();
-				}
-			}
-			if (count > 0 && count < 100) {
-				_logicproxy.ack_get_object_info(callbackid, _datalist);
-			}
+                        count = 0;
+                        _datalist = new ArrayList();
+                    }
+                }
+                if (count > 0 && count < 100)
+                {
+                    _logicproxy.ack_get_object_info(callbackid, _datalist);
+                }
+            }
+            else
+            {
+                _logicproxy.ack_get_object_info(callbackid, _datalist);
+            }
 
 			_logicproxy.ack_get_object_info_end(callbackid);
 		}
