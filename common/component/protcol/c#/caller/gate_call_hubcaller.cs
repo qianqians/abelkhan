@@ -18,6 +18,34 @@ namespace caller
             call_module_method("reg_hub_sucess", _argv);
         }
 
+        public void client_reg_hub(String argv0)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            call_module_method("client_reg_hub", _argv);
+        }
+
+        public void client_unreg_hub(String argv0)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            call_module_method("client_unreg_hub", _argv);
+        }
+
+        public void client_disconnect(String argv0)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            call_module_method("client_disconnect", _argv);
+        }
+
+        public void client_exception(String argv0)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            call_module_method("client_exception", _argv);
+        }
+
         public void client_call_hub(String argv0,String argv1,String argv2,ArrayList argv3)
         {
             ArrayList _argv = new ArrayList();

@@ -24,13 +24,13 @@ namespace gate
 
 		public void cancle_server()
 		{
-			logicproxy _logicproxy = _clientmanager.get_clientproxy_logicproxy (juggle.Imodule.current_ch);
-			if (_logicproxy != null)
-			{
-				string uuid = _clientmanager.get_client_uuid(_clientmanager.get_clientproxy(juggle.Imodule.current_ch));
+			//logicproxy _logicproxy = _clientmanager.get_clientproxy_logicproxy (juggle.Imodule.current_ch);
+			//if (_logicproxy != null)
+			//{
+			//	string uuid = _clientmanager.get_client_uuid(_clientmanager.get_clientproxy(juggle.Imodule.current_ch));
 
-				_logicproxy.client_disconnect (uuid);
-			}
+			//	_logicproxy.client_disconnect (uuid);
+			//}
 
             _clientmanager.unreg_client(juggle.Imodule.current_ch);
         }

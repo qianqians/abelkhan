@@ -16,6 +16,16 @@ namespace gate
 			_caller.reg_hub_sucess();
 		}
 
+        public void client_disconnect(string uuid)
+        {
+            _caller.client_disconnect(uuid);
+        }
+
+        public void client_exception(string uuid)
+        {
+            _caller.client_exception(uuid);
+        }
+
         public void client_call_hub(string client_uuid, string module, string func, ArrayList argv)
         {
             _caller.client_call_hub(client_uuid, module, func, argv);

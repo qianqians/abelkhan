@@ -43,10 +43,6 @@ namespace gate
 
                     clientproxys.Remove(uuid);
                 }
-                if (clientproxy_logicproxy.ContainsKey(_proxy))
-                {
-                    clientproxy_logicproxy.Remove(_proxy);
-                }
             }
         }
 
@@ -59,7 +55,19 @@ namespace gate
 			}
 		}
 
-		public bool has_client(string uuid)
+        public void unreg_client_logic(juggle.Ichannel ch)
+        {
+            if (clientproxys_ch.ContainsKey(ch))
+            {
+                clientproxy _proxy = clientproxys_ch[ch];
+                if (clientproxy_logicproxy.ContainsKey(_proxy))
+                {
+                    clientproxy_logicproxy.Remove(_proxy);
+                }
+            }
+        }
+
+        public bool has_client(string uuid)
 		{
 			return clientproxys.ContainsKey (uuid);
 		}
@@ -92,23 +100,6 @@ namespace gate
 			return null;
 		}
 
-		public logicproxy get_clientproxy_logicproxy(juggle.Ichannel ch)
-		{
-			if (clientproxys_ch.ContainsKey (ch))
-			{
-				clientproxy _clientproxy = clientproxys_ch [ch];
-
-				if (clientproxy_logicproxy.ContainsKey(_clientproxy))
-				{
-					return clientproxy_logicproxy[_clientproxy];
-				}
-
-				return null;
-			}
-
-			return null;
-		}
-
 		public String get_client_uuid(clientproxy _clientproxy)
 		{
 			if (clientproxys_uuid.ContainsKey (_clientproxy))
@@ -128,19 +119,58 @@ namespace gate
 					var _logic = clientproxy_logicproxy [_client];
 					_logic.client_exception (client_uuid);
 				}
-			}
+                if (clientproxy_hubproxy.ContainsKey(_client))
+                {
+                    var _hub = clientproxy_hubproxy[_client];
+                    _hub.client_exception(client_uuid);
+                }
+            }
 
 			client_server_time[_ch] = servertick;
 			client_time[_ch] = clienttick;
 		}
 
-		private Dictionary<clientproxy, String> clientproxys_uuid;
+        public void tick_client(Int64 servertick)
+        {
+            foreach (KeyValuePair<juggle.Ichannel, Int64> kvp in client_server_time)
+            {
+                if ((servertick - kvp.Value) > 60 * 1000)
+                {
+                    var _client = clientproxys_ch[kvp.Key];
+                    var client_uuid = clientproxys_uuid[_client];
+                    if (clientproxy_logicproxy.ContainsKey(_client))
+                    {
+                        var _logic = clientproxy_logicproxy[_client];
+                        _logic.client_disconnect(client_uuid);
+                    }
+                    if (clientproxy_hubproxy.ContainsKey(_client))
+                    {
+                        var _hub = clientproxy_hubproxy[_client];
+                        _hub.client_disconnect(client_uuid);
+                    }
+                    
+                    clientproxys_ch.Remove(kvp.Key);
+                    client_server_time.Remove(kvp.Key);
+                    client_time.Remove(kvp.Key);
+                    if (clientproxys_uuid.ContainsKey(_client))
+                    {
+                        string uuid = clientproxys_uuid[_client];
+                        clientproxys_uuid.Remove(_client);
+
+                        clientproxys.Remove(uuid);
+                    }
+                }
+            }
+        }
+
+        private Dictionary<clientproxy, String> clientproxys_uuid;
 		private Dictionary<juggle.Ichannel, clientproxy> clientproxys_ch;
 		private Dictionary<String, clientproxy> clientproxys;
 
 		private Dictionary<clientproxy, logicproxy> clientproxy_logicproxy;
+        private Dictionary<clientproxy, hubproxy> clientproxy_hubproxy;
 
-		private Dictionary<juggle.Ichannel, Int64 > client_server_time;
+        private Dictionary<juggle.Ichannel, Int64 > client_server_time;
 
 		private Dictionary<juggle.Ichannel, Int64 > client_time;
 

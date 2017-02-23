@@ -2,6 +2,10 @@ module gate_call_logic{
     void reg_logic_sucess();
 
 	void client_get_logic(string client_uuid);
+	
+	void client_reg_logic(string client_uuid);
+
+	void client_unreg_logic(string client_uuid);
 
 	void client_disconnect(string client_uuid);
 
