@@ -42,14 +42,14 @@ namespace caller
             call_module_method("forward_client_call_logic", _argv);
         }
 
-        public void forward_client_call_logic(String argv0,String argv1,String argv2,ArrayList argv3)
+        public void forward_client_call_hub(String argv0,String argv1,String argv2,ArrayList argv3)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             _argv.Add(argv1);
             _argv.Add(argv2);
             _argv.Add(argv3);
-            call_module_method("forward_client_call_logic", _argv);
+            call_module_method("forward_client_call_hub", _argv);
         }
 
         public void heartbeats(Int64 argv0)

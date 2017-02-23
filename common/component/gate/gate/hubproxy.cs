@@ -16,7 +16,12 @@ namespace gate
 			_caller.reg_hub_sucess();
 		}
 
-		private caller.gate_call_hub _caller;
+        public void client_call_hub(string client_uuid, string module, string func, ArrayList argv)
+        {
+            _caller.client_call_hub(client_uuid, module, func, argv);
+        }
+
+        private caller.gate_call_hub _caller;
 	}
 }
 

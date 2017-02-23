@@ -7,7 +7,7 @@ module client_call_gate{
 
 	void forward_client_call_logic(string logic_uuid, string module, string func, array argv);
 
-	void forward_client_call_logic(string hub_name, string module, string func, array argv);
+	void forward_client_call_hub(string hub_name, string module, string func, array argv);
 	
 	void heartbeats(int clockt);
 

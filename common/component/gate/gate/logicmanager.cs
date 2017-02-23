@@ -14,7 +14,7 @@ namespace gate
 
 		public logicproxy reg_logic(String uuid, juggle.Ichannel ch)
 		{
-			var _logicproxy = new logicproxy(ch);
+            logicproxy _logicproxy = new logicproxy(ch, uuid);
 			logicproxys.Add(ch, _logicproxy);
 			logicproxys_uuid.Add (uuid, _logicproxy);
 
@@ -31,7 +31,17 @@ namespace gate
 			return null;
 		}
 
-		public logicproxy get_logic()
+        public logicproxy get_logic(string logic_uuid)
+        {
+            if (logicproxys_uuid.ContainsKey(logic_uuid))
+            {
+                return logicproxys_uuid[logic_uuid];
+            }
+
+            return null;
+        }
+
+        public logicproxy get_logic()
 		{
 			Random rand = new Random ();
 			int r = rand.Next (0, logicproxys.Values.Count);

@@ -10,9 +10,9 @@ namespace gate
 			_caller = new caller.gate_call_client(ch);
 		}
 
-		public void ack_connect_server(string result)
+		public void ack_get_logic(string logic_uuid)
 		{
-			_caller.ack_connect_server(result);
+			_caller.ack_get_logic(logic_uuid);
 		}
 
 		public void call_client(string module, string func, ArrayList argv)

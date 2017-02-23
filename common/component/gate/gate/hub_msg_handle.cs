@@ -11,9 +11,9 @@ namespace gate
 			_clientmanager = _clientmanager_;
 		}
 
-		public void reg_hub(string uuid)
+		public void reg_hub(string uuid, string hub_name)
 		{
-			hubproxy _hubproxy = _hubmanager.reg_hub(juggle.Imodule.current_ch, uuid);
+			hubproxy _hubproxy = _hubmanager.reg_hub(juggle.Imodule.current_ch, uuid, hub_name);
 			_hubproxy.reg_hub_sucess ();
 		}
 

@@ -17,19 +17,19 @@ namespace gate
 			_logproxy.reg_logic_sucess ();
 		}
 
-		public void ack_client_connect_server(string uuid, string result)
+		public void ack_client_get_logic(string uuid, string result)
 		{
 			clientproxy _clientproxy = _clientmanager.get_clientproxy(uuid);
 			if (_clientproxy != null)
 			{
 				if (result != "svr_is_busy")
 				{
-					_clientmanager.reg_client_logic(uuid, _logicmanager.get_logic(juggle.Imodule.current_ch));
-					_clientproxy.ack_connect_server(result);
+                    logicproxy _logicproxy = _logicmanager.get_logic(juggle.Imodule.current_ch);
+                    _clientproxy.ack_get_logic(_logicproxy.uuid);
 				}
 				else {
 					logicproxy _logicproxy = _logicmanager.get_logic();
-					_logicproxy.client_connect (uuid);
+					_logicproxy.get_logic (uuid);
 				}
 			}
 		}
