@@ -12,14 +12,14 @@ namespace module
 			module_name = "gate_call_client";
         }
 
-        public delegate void ack_connect_serverhandle(String argv0);
-        public event ack_connect_serverhandle onack_connect_server;
-        public void ack_connect_server(ArrayList _event)
+        public delegate void ack_get_logichandle(String argv0);
+        public event ack_get_logichandle onack_get_logic;
+        public void ack_get_logic(ArrayList _event)
         {
-            if(onack_connect_server != null)
+            if(onack_get_logic != null)
             {
                 var argv0 = ((String)_event[0]);
-                onack_connect_server( argv0);
+                onack_get_logic( argv0);
             }
         }
 

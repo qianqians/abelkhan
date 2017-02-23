@@ -23,15 +23,15 @@ namespace module
             }
         }
 
-        public delegate void ack_client_connect_serverhandle(String argv0, String argv1);
-        public event ack_client_connect_serverhandle onack_client_connect_server;
-        public void ack_client_connect_server(ArrayList _event)
+        public delegate void ack_client_get_logichandle(String argv0, String argv1);
+        public event ack_client_get_logichandle onack_client_get_logic;
+        public void ack_client_get_logic(ArrayList _event)
         {
-            if(onack_client_connect_server != null)
+            if(onack_client_get_logic != null)
             {
                 var argv0 = ((String)_event[0]);
                 var argv1 = ((String)_event[1]);
-                onack_client_connect_server( argv0,  argv1);
+                onack_client_get_logic( argv0,  argv1);
             }
         }
 

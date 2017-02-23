@@ -1,5 +1,5 @@
 module gate_call_client{
-	void ack_connect_server(string result);
+	void ack_get_logic(string logic_uuid);
 
 	void call_client(string module, string func, array argv);
 

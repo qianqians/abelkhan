@@ -22,14 +22,14 @@ namespace module
             }
         }
 
-        public delegate void client_connecthandle(String argv0);
-        public event client_connecthandle onclient_connect;
-        public void client_connect(ArrayList _event)
+        public delegate void client_get_logichandle(String argv0);
+        public event client_get_logichandle onclient_get_logic;
+        public void client_get_logic(ArrayList _event)
         {
-            if(onclient_connect != null)
+            if(onclient_get_logic != null)
             {
                 var argv0 = ((String)_event[0]);
-                onclient_connect( argv0);
+                onclient_get_logic( argv0);
             }
         }
 

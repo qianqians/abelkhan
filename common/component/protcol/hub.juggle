@@ -1,5 +1,5 @@
 module hub{
-	void reg_logic(string uuid);
+	void reg_logic(string logic_uuid);
 
 	void logic_call_hub_mothed(string module, string func, array argv);
 
@@ -15,5 +15,5 @@ module hub_call_logic{
 module gate_call_hub{
 	void reg_hub_sucess();
 
-	//void client_call_hub(string uuid, string module, string func, array argv);
+	void client_call_hub(string client_uuid, string module, string func, array argv);
 }

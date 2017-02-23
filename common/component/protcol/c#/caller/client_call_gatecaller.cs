@@ -26,12 +26,29 @@ namespace caller
             call_module_method("cancle_server", _argv);
         }
 
-        public void forward_client_call_logic(String argv0,String argv1,ArrayList argv2)
+        public void get_logic()
+        {
+            ArrayList _argv = new ArrayList();
+            call_module_method("get_logic", _argv);
+        }
+
+        public void forward_client_call_logic(String argv0,String argv1,String argv2,ArrayList argv3)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             _argv.Add(argv1);
             _argv.Add(argv2);
+            _argv.Add(argv3);
+            call_module_method("forward_client_call_logic", _argv);
+        }
+
+        public void forward_client_call_logic(String argv0,String argv1,String argv2,ArrayList argv3)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            _argv.Add(argv1);
+            _argv.Add(argv2);
+            _argv.Add(argv3);
             call_module_method("forward_client_call_logic", _argv);
         }
 

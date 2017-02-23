@@ -34,7 +34,17 @@ namespace module
             }
         }
 
-        public delegate void forward_client_call_logichandle(String argv0, String argv1, ArrayList argv2);
+        public delegate void get_logichandle();
+        public event get_logichandle onget_logic;
+        public void get_logic(ArrayList _event)
+        {
+            if(onget_logic != null)
+            {
+                onget_logic();
+            }
+        }
+
+        public delegate void forward_client_call_logichandle(String argv0, String argv1, String argv2, ArrayList argv3);
         public event forward_client_call_logichandle onforward_client_call_logic;
         public void forward_client_call_logic(ArrayList _event)
         {
@@ -42,8 +52,23 @@ namespace module
             {
                 var argv0 = ((String)_event[0]);
                 var argv1 = ((String)_event[1]);
-                var argv2 = ((ArrayList)_event[2]);
-                onforward_client_call_logic( argv0,  argv1,  argv2);
+                var argv2 = ((String)_event[2]);
+                var argv3 = ((ArrayList)_event[3]);
+                onforward_client_call_logic( argv0,  argv1,  argv2,  argv3);
+            }
+        }
+
+        public delegate void forward_client_call_logichandle(String argv0, String argv1, String argv2, ArrayList argv3);
+        public event forward_client_call_logichandle onforward_client_call_logic;
+        public void forward_client_call_logic(ArrayList _event)
+        {
+            if(onforward_client_call_logic != null)
+            {
+                var argv0 = ((String)_event[0]);
+                var argv1 = ((String)_event[1]);
+                var argv2 = ((String)_event[2]);
+                var argv3 = ((ArrayList)_event[3]);
+                onforward_client_call_logic( argv0,  argv1,  argv2,  argv3);
             }
         }
 

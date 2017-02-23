@@ -12,14 +12,29 @@ namespace module
 			module_name = "hub_call_gate";
         }
 
-        public delegate void reg_hubhandle(String argv0);
+        public delegate void reg_hubhandle(String argv0, String argv1);
         public event reg_hubhandle onreg_hub;
         public void reg_hub(ArrayList _event)
         {
             if(onreg_hub != null)
             {
                 var argv0 = ((String)_event[0]);
-                onreg_hub( argv0);
+                var argv1 = ((String)_event[1]);
+                onreg_hub( argv0,  argv1);
+            }
+        }
+
+        public delegate void forward_hub_call_clienthandle(String argv0, String argv1, String argv2, ArrayList argv3);
+        public event forward_hub_call_clienthandle onforward_hub_call_client;
+        public void forward_hub_call_client(ArrayList _event)
+        {
+            if(onforward_hub_call_client != null)
+            {
+                var argv0 = ((String)_event[0]);
+                var argv1 = ((String)_event[1]);
+                var argv2 = ((String)_event[2]);
+                var argv3 = ((ArrayList)_event[3]);
+                onforward_hub_call_client( argv0,  argv1,  argv2,  argv3);
             }
         }
 
