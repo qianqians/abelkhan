@@ -11,6 +11,7 @@ namespace gate
 			clientproxys = new Dictionary<string, clientproxy> ();
 			clientproxys_ch = new Dictionary<juggle.Ichannel, clientproxy> ();
 			clientproxy_logicproxy = new Dictionary<clientproxy, logicproxy> ();
+            clientproxy_hubproxy = new Dictionary<clientproxy, List<hubproxy> >();
 			clientproxys_uuid = new Dictionary<clientproxy, string> ();
 			client_server_time = new Dictionary<juggle.Ichannel, long>();
 			client_time = new Dictionary<juggle.Ichannel, long>();
@@ -63,6 +64,32 @@ namespace gate
                 if (clientproxy_logicproxy.ContainsKey(_proxy))
                 {
                     clientproxy_logicproxy.Remove(_proxy);
+                }
+            }
+        }
+
+        public void reg_client_hub(string uuid, hubproxy _hubproxy)
+        {
+            var _clientproxy = get_clientproxy(uuid);
+            if (_clientproxy != null)
+            {
+                if (!clientproxy_hubproxy.ContainsKey(_clientproxy))
+                {
+                    clientproxy_hubproxy.Add(_clientproxy, new List<hubproxy>());
+                }
+
+                clientproxy_hubproxy[_clientproxy].Add(_hubproxy);
+            }
+        }
+
+        public void unreg_client_hub(juggle.Ichannel ch)
+        {
+            if (clientproxys_ch.ContainsKey(ch))
+            {
+                clientproxy _proxy = clientproxys_ch[ch];
+                if (clientproxy_hubproxy.ContainsKey(_proxy))
+                {
+                    clientproxy_hubproxy.Remove(_proxy);
                 }
             }
         }
@@ -121,8 +148,11 @@ namespace gate
 				}
                 if (clientproxy_hubproxy.ContainsKey(_client))
                 {
-                    var _hub = clientproxy_hubproxy[_client];
-                    _hub.client_exception(client_uuid);
+                    var _hubs = clientproxy_hubproxy[_client];
+                    foreach (var _hub in _hubs)
+                    {
+                        _hub.client_exception(client_uuid);
+                    }
                 }
             }
 
@@ -142,11 +172,16 @@ namespace gate
                     {
                         var _logic = clientproxy_logicproxy[_client];
                         _logic.client_disconnect(client_uuid);
+                        clientproxy_logicproxy.Remove(_client);
                     }
                     if (clientproxy_hubproxy.ContainsKey(_client))
                     {
-                        var _hub = clientproxy_hubproxy[_client];
-                        _hub.client_disconnect(client_uuid);
+                        var _hubs = clientproxy_hubproxy[_client];
+                        foreach(var _hub in _hubs)
+                        {
+                            _hub.client_disconnect(client_uuid);
+                        }
+                        clientproxy_hubproxy.Remove(_client);
                     }
                     
                     clientproxys_ch.Remove(kvp.Key);
@@ -168,7 +203,7 @@ namespace gate
 		private Dictionary<String, clientproxy> clientproxys;
 
 		private Dictionary<clientproxy, logicproxy> clientproxy_logicproxy;
-        private Dictionary<clientproxy, hubproxy> clientproxy_hubproxy;
+        private Dictionary<clientproxy, List<hubproxy> > clientproxy_hubproxy;
 
         private Dictionary<juggle.Ichannel, Int64 > client_server_time;
 

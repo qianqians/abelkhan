@@ -27,6 +27,13 @@ namespace caller
             call_module_method("ack_client_get_logic", _argv);
         }
 
+        public void connect_sucess(String argv0)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            call_module_method("connect_sucess", _argv);
+        }
+
         public void forward_logic_call_client(String argv0,String argv1,String argv2,ArrayList argv3)
         {
             ArrayList _argv = new ArrayList();

@@ -15,9 +15,7 @@ module hub_call_logic{
 module gate_call_hub{
 	void reg_hub_sucess();
 
-	void client_reg_hub(string client_uuid);
-
-	void client_unreg_hub(string client_uuid);
+	void client_connect(string client_uuid);
 
 	void client_disconnect(string client_uuid);
 

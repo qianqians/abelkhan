@@ -22,25 +22,14 @@ namespace module
             }
         }
 
-        public delegate void client_reg_hubhandle(String argv0);
-        public event client_reg_hubhandle onclient_reg_hub;
-        public void client_reg_hub(ArrayList _event)
+        public delegate void client_connecthandle(String argv0);
+        public event client_connecthandle onclient_connect;
+        public void client_connect(ArrayList _event)
         {
-            if(onclient_reg_hub != null)
+            if(onclient_connect != null)
             {
                 var argv0 = ((String)_event[0]);
-                onclient_reg_hub( argv0);
-            }
-        }
-
-        public delegate void client_unreg_hubhandle(String argv0);
-        public event client_unreg_hubhandle onclient_unreg_hub;
-        public void client_unreg_hub(ArrayList _event)
-        {
-            if(onclient_unreg_hub != null)
-            {
-                var argv0 = ((String)_event[0]);
-                onclient_unreg_hub( argv0);
+                onclient_connect( argv0);
             }
         }
 

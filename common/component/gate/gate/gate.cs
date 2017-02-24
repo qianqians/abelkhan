@@ -32,6 +32,10 @@ namespace gate
 			_client_call_gate = new module.client_call_gate ();
 			_client_call_gate.onconnect_server += _client_msg_handle.connect_server;
 			_client_call_gate.oncancle_server += _client_msg_handle.cancle_server;
+            _client_call_gate.onconnect_logic += _client_msg_handle.connect_logic;
+            _client_call_gate.ondisconnect_logic += _client_msg_handle.disconnect_logic;
+            _client_call_gate.onconnect_hub += _client_msg_handle.connect_hub;
+            _client_call_gate.ondisconnect_hub += _client_msg_handle.disconnect_hub;
             _client_call_gate.onforward_client_call_logic += _client_msg_handle.forward_client_call_logic;
             _client_call_gate.onforward_client_call_hub += _client_msg_handle.forward_client_call_hub;
             _client_call_gate.onheartbeats += _client_msg_handle.heartbeats;
@@ -47,14 +51,17 @@ namespace gate
 			_logic_call_gate = new module.logic_call_gate();
 			_logic_call_gate.onreg_logic += _logic_msg_handle.reg_logic;
 			_logic_call_gate.onack_client_get_logic += _logic_msg_handle.ack_client_get_logic;
-			_logic_call_gate.onforward_logic_call_client += _logic_msg_handle.forward_logic_call_client;
+            _logic_call_gate.onconnect_sucess += _logic_msg_handle.connect_sucess;
+            _logic_call_gate.onforward_logic_call_client += _logic_msg_handle.forward_logic_call_client;
 			_logic_call_gate.onforward_logic_call_global_client += _logic_msg_handle.forward_logic_call_global_client;
 			_logic_call_gate.onforward_logic_call_group_client += _logic_msg_handle.forward_logic_call_group_client;
 
 			_hub_msg_handle = new hub_msg_handle(_hubmanager, _clientmanager);
 			_hub_call_gate = new module.hub_call_gate ();
 			_hub_call_gate.onreg_hub += _hub_msg_handle.reg_hub;
-			_hub_call_gate.onforward_hub_call_global_client += _hub_msg_handle.forward_hub_call_global_client;
+            _hub_call_gate.onconnect_sucess += _hub_msg_handle.connect_sucess;
+            _hub_call_gate.onforward_hub_call_client += _hub_msg_handle.forward_hub_call_client;
+            _hub_call_gate.onforward_hub_call_global_client += _hub_msg_handle.forward_hub_call_global_client;
 			_hub_call_gate.onforward_hub_call_group_client += _hub_msg_handle.forward_hub_call_group_client;
 
 			var _logic_hub_process = new juggle.process();

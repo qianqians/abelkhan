@@ -35,6 +35,17 @@ namespace module
             }
         }
 
+        public delegate void connect_sucesshandle(String argv0);
+        public event connect_sucesshandle onconnect_sucess;
+        public void connect_sucess(ArrayList _event)
+        {
+            if(onconnect_sucess != null)
+            {
+                var argv0 = ((String)_event[0]);
+                onconnect_sucess( argv0);
+            }
+        }
+
         public delegate void forward_logic_call_clienthandle(String argv0, String argv1, String argv2, ArrayList argv3);
         public event forward_logic_call_clienthandle onforward_logic_call_client;
         public void forward_logic_call_client(ArrayList _event)

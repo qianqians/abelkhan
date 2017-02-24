@@ -41,9 +41,10 @@ namespace logic
 			if (ch_gateproxys.ContainsKey(gate_ch))
 			{
 				var _proxy = ch_gateproxys[gate_ch];
-				clients.Add(client_uuid, _proxy);
+                clients.Add(client_uuid, _proxy);
+                _proxy.connect_sucess(client_uuid);
 
-				if (clientConnect != null)
+                if (clientConnect != null)
 				{
 					clientConnect(client_uuid);
 				}
@@ -56,12 +57,12 @@ namespace logic
 		{
             if (clients.ContainsKey(client_uuid))
             {
-                clients.Remove(client_uuid);
-
                 if (clientDisconnect != null)
                 {
                     clientDisconnect(client_uuid);
                 }
+
+                clients.Remove(client_uuid);
             }
 		}
 

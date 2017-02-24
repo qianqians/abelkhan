@@ -16,9 +16,14 @@ namespace logic
 			_caller.reg_logic(logic.uuid);
 		}
 
-		public void ack_client_connect_server(String uuid, String result)
+        public void connect_sucess(string client_uuid)
+        {
+            _caller.connect_sucess(client_uuid);
+        }
+
+        public void ack_client_get_logic(String uuid, String result)
 		{
-			_caller.ack_client_connect_server(uuid, result);
+			_caller.ack_client_get_logic(uuid, result);
 		}
 
 		public void forward_logic_call_client(String uuid, String module, String func, ArrayList argv)

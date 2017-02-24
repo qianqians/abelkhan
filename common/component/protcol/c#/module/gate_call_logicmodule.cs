@@ -33,25 +33,14 @@ namespace module
             }
         }
 
-        public delegate void client_reg_logichandle(String argv0);
-        public event client_reg_logichandle onclient_reg_logic;
-        public void client_reg_logic(ArrayList _event)
+        public delegate void client_connecthandle(String argv0);
+        public event client_connecthandle onclient_connect;
+        public void client_connect(ArrayList _event)
         {
-            if(onclient_reg_logic != null)
+            if(onclient_connect != null)
             {
                 var argv0 = ((String)_event[0]);
-                onclient_reg_logic( argv0);
-            }
-        }
-
-        public delegate void client_unreg_logichandle(String argv0);
-        public event client_unreg_logichandle onclient_unreg_logic;
-        public void client_unreg_logic(ArrayList _event)
-        {
-            if(onclient_unreg_logic != null)
-            {
-                var argv0 = ((String)_event[0]);
-                onclient_unreg_logic( argv0);
+                onclient_connect( argv0);
             }
         }
 

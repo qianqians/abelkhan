@@ -25,18 +25,11 @@ namespace caller
             call_module_method("client_get_logic", _argv);
         }
 
-        public void client_reg_logic(String argv0)
+        public void client_connect(String argv0)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
-            call_module_method("client_reg_logic", _argv);
-        }
-
-        public void client_unreg_logic(String argv0)
-        {
-            ArrayList _argv = new ArrayList();
-            _argv.Add(argv0);
-            call_module_method("client_unreg_logic", _argv);
+            call_module_method("client_connect", _argv);
         }
 
         public void client_disconnect(String argv0)

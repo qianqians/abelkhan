@@ -32,36 +32,36 @@ namespace caller
             call_module_method("get_logic", _argv);
         }
 
-        public void reg_logic(String argv0,String argv1)
+        public void connect_logic(String argv0,String argv1)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             _argv.Add(argv1);
-            call_module_method("reg_logic", _argv);
+            call_module_method("connect_logic", _argv);
         }
 
-        public void unreg_logic(String argv0,String argv1)
+        public void disconnect_logic(String argv0,String argv1)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             _argv.Add(argv1);
-            call_module_method("unreg_logic", _argv);
+            call_module_method("disconnect_logic", _argv);
         }
 
-        public void reg_hub(String argv0,String argv1)
+        public void connect_hub(String argv0,String argv1)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             _argv.Add(argv1);
-            call_module_method("reg_hub", _argv);
+            call_module_method("connect_hub", _argv);
         }
 
-        public void unreg_hub(String argv0,String argv1)
+        public void disconnect_hub(String argv0,String argv1)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             _argv.Add(argv1);
-            call_module_method("unreg_hub", _argv);
+            call_module_method("disconnect_hub", _argv);
         }
 
         public void forward_client_call_logic(String argv0,String argv1,String argv2,ArrayList argv3)

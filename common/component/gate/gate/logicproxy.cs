@@ -21,6 +21,11 @@ namespace gate
 			_caller.client_get_logic(uuid);
 		}
 
+        public void client_connect(string uuid)
+        {
+            _caller.client_connect(uuid);
+        }
+
 		public void client_disconnect(string uuid)
 		{
 			_caller.client_disconnect(uuid);

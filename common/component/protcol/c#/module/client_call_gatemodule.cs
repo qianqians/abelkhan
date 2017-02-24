@@ -44,51 +44,51 @@ namespace module
             }
         }
 
-        public delegate void reg_logichandle(String argv0, String argv1);
-        public event reg_logichandle onreg_logic;
-        public void reg_logic(ArrayList _event)
+        public delegate void connect_logichandle(String argv0, String argv1);
+        public event connect_logichandle onconnect_logic;
+        public void connect_logic(ArrayList _event)
         {
-            if(onreg_logic != null)
+            if(onconnect_logic != null)
             {
                 var argv0 = ((String)_event[0]);
                 var argv1 = ((String)_event[1]);
-                onreg_logic( argv0,  argv1);
+                onconnect_logic( argv0,  argv1);
             }
         }
 
-        public delegate void unreg_logichandle(String argv0, String argv1);
-        public event unreg_logichandle onunreg_logic;
-        public void unreg_logic(ArrayList _event)
+        public delegate void disconnect_logichandle(String argv0, String argv1);
+        public event disconnect_logichandle ondisconnect_logic;
+        public void disconnect_logic(ArrayList _event)
         {
-            if(onunreg_logic != null)
+            if(ondisconnect_logic != null)
             {
                 var argv0 = ((String)_event[0]);
                 var argv1 = ((String)_event[1]);
-                onunreg_logic( argv0,  argv1);
+                ondisconnect_logic( argv0,  argv1);
             }
         }
 
-        public delegate void reg_hubhandle(String argv0, String argv1);
-        public event reg_hubhandle onreg_hub;
-        public void reg_hub(ArrayList _event)
+        public delegate void connect_hubhandle(String argv0, String argv1);
+        public event connect_hubhandle onconnect_hub;
+        public void connect_hub(ArrayList _event)
         {
-            if(onreg_hub != null)
+            if(onconnect_hub != null)
             {
                 var argv0 = ((String)_event[0]);
                 var argv1 = ((String)_event[1]);
-                onreg_hub( argv0,  argv1);
+                onconnect_hub( argv0,  argv1);
             }
         }
 
-        public delegate void unreg_hubhandle(String argv0, String argv1);
-        public event unreg_hubhandle onunreg_hub;
-        public void unreg_hub(ArrayList _event)
+        public delegate void disconnect_hubhandle(String argv0, String argv1);
+        public event disconnect_hubhandle ondisconnect_hub;
+        public void disconnect_hub(ArrayList _event)
         {
-            if(onunreg_hub != null)
+            if(ondisconnect_hub != null)
             {
                 var argv0 = ((String)_event[0]);
                 var argv1 = ((String)_event[1]);
-                onunreg_hub( argv0,  argv1);
+                ondisconnect_hub( argv0,  argv1);
             }
         }
 

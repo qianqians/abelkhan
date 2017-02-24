@@ -18,24 +18,57 @@ namespace gate
 			if (!_clientmanager.has_client(uuid)) {
 				System.Console.WriteLine("client " + uuid + " connected");
 
-				_clientmanager.reg_client(uuid, juggle.Imodule.current_ch, _timerservice.Tick, tick);
-			}
+				var _proxy = _clientmanager.reg_client(uuid, juggle.Imodule.current_ch, _timerservice.Tick, tick);
+                _proxy.connect_gate_sucessa();
+            }
 		}
 
 		public void cancle_server()
 		{
-			//logicproxy _logicproxy = _clientmanager.get_clientproxy_logicproxy (juggle.Imodule.current_ch);
-			//if (_logicproxy != null)
-			//{
-			//	string uuid = _clientmanager.get_client_uuid(_clientmanager.get_clientproxy(juggle.Imodule.current_ch));
-
-			//	_logicproxy.client_disconnect (uuid);
-			//}
-
-            _clientmanager.unreg_client(juggle.Imodule.current_ch);
+			_clientmanager.unreg_client(juggle.Imodule.current_ch);
         }
 
-		public void forward_client_call_logic(string logic_uuid, string module, string func, ArrayList argv)
+        public void connect_logic(string client_uuid, string logic_uuid)
+        {
+            logicproxy _logicproxy = _logicmanager.get_logic(logic_uuid);
+            if (_logicproxy != null)
+            {
+                _clientmanager.reg_client_logic(client_uuid, _logicproxy);
+                _logicproxy.client_connect(client_uuid);
+            }
+        }
+
+        public void disconnect_logic(string client_uuid, string logic_uuid)
+        {
+            logicproxy _logicproxy = _logicmanager.get_logic(logic_uuid);
+            if (_logicproxy != null)
+            {
+                _logicproxy.client_disconnect(client_uuid);
+                _clientmanager.unreg_client_logic(juggle.Imodule.current_ch);
+            }
+        }
+
+        public void connect_hub(string client_uuid, string hub_name)
+        {
+            hubproxy _hubproxy = _hubmanager.get_hub(hub_name);
+            if (_hubproxy != null)
+            {
+                _clientmanager.reg_client_hub(client_uuid, _hubproxy);
+                _hubproxy.client_connect(client_uuid);
+            }
+        }
+
+        public void disconnect_hub(string client_uuid, string hub_name)
+        {
+            hubproxy _hubproxy = _hubmanager.get_hub(hub_name);
+            if (_hubproxy != null)
+            {
+                _hubproxy.client_disconnect(client_uuid);
+                _clientmanager.unreg_client_hub(juggle.Imodule.current_ch);
+            }
+        }
+
+        public void forward_client_call_logic(string logic_uuid, string module, string func, ArrayList argv)
 		{
             logicproxy _logicproxy = _logicmanager.get_logic(logic_uuid);
 

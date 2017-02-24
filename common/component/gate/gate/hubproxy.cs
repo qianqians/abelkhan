@@ -6,15 +6,22 @@ namespace gate
 {
 	public class hubproxy
 	{
-		public hubproxy(juggle.Ichannel ch)
+		public hubproxy(juggle.Ichannel ch, string _uuid, string _hub_name)
 		{
 			_caller = new caller.gate_call_hub(ch);
+            uuid = _uuid;
+            name = _hub_name;
 		}
 
 		public void reg_hub_sucess()
 		{
 			_caller.reg_hub_sucess();
 		}
+
+        public void client_connect(string uuid)
+        {
+            _caller.client_connect(uuid);
+        }
 
         public void client_disconnect(string uuid)
         {
@@ -30,6 +37,9 @@ namespace gate
         {
             _caller.client_call_hub(client_uuid, module, func, argv);
         }
+
+        public string uuid;
+        public string name;
 
         private caller.gate_call_hub _caller;
 	}
