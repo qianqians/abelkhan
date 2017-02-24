@@ -19,12 +19,19 @@ namespace caller
             call_module_method("reg_logic", _argv);
         }
 
-        public void ack_client_connect_server(String argv0,String argv1)
+        public void ack_client_get_logic(String argv0,String argv1)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             _argv.Add(argv1);
-            call_module_method("ack_client_connect_server", _argv);
+            call_module_method("ack_client_get_logic", _argv);
+        }
+
+        public void connect_sucess(String argv0)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            call_module_method("connect_sucess", _argv);
         }
 
         public void forward_logic_call_client(String argv0,String argv1,String argv2,ArrayList argv3)

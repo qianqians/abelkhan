@@ -12,14 +12,46 @@ namespace module
 			module_name = "gate_call_client";
         }
 
-        public delegate void ack_connect_serverhandle(String argv0);
-        public event ack_connect_serverhandle onack_connect_server;
-        public void ack_connect_server(ArrayList _event)
+        public delegate void connect_gate_sucesshandle();
+        public event connect_gate_sucesshandle onconnect_gate_sucess;
+        public void connect_gate_sucess(ArrayList _event)
         {
-            if(onack_connect_server != null)
+            if(onconnect_gate_sucess != null)
+            {
+                onconnect_gate_sucess();
+            }
+        }
+
+        public delegate void ack_get_logichandle(String argv0);
+        public event ack_get_logichandle onack_get_logic;
+        public void ack_get_logic(ArrayList _event)
+        {
+            if(onack_get_logic != null)
             {
                 var argv0 = ((String)_event[0]);
-                onack_connect_server( argv0);
+                onack_get_logic( argv0);
+            }
+        }
+
+        public delegate void connect_logic_sucesshandle(String argv0);
+        public event connect_logic_sucesshandle onconnect_logic_sucess;
+        public void connect_logic_sucess(ArrayList _event)
+        {
+            if(onconnect_logic_sucess != null)
+            {
+                var argv0 = ((String)_event[0]);
+                onconnect_logic_sucess( argv0);
+            }
+        }
+
+        public delegate void connect_hub_sucesshandle(String argv0);
+        public event connect_hub_sucesshandle onconnect_hub_sucess;
+        public void connect_hub_sucess(ArrayList _event)
+        {
+            if(onconnect_hub_sucess != null)
+            {
+                var argv0 = ((String)_event[0]);
+                onconnect_hub_sucess( argv0);
             }
         }
 

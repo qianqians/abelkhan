@@ -18,6 +18,13 @@ namespace caller
             call_module_method("reg_logic_sucess", _argv);
         }
 
+        public void client_get_logic(String argv0)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            call_module_method("client_get_logic", _argv);
+        }
+
         public void client_connect(String argv0)
         {
             ArrayList _argv = new ArrayList();

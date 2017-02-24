@@ -17,24 +17,39 @@ namespace gate
 			_logproxy.reg_logic_sucess ();
 		}
 
-		public void ack_client_connect_server(string uuid, string result)
+		public void ack_client_get_logic(string client_uuid, string result)
 		{
-			clientproxy _clientproxy = _clientmanager.get_clientproxy(uuid);
+			clientproxy _clientproxy = _clientmanager.get_clientproxy(client_uuid);
 			if (_clientproxy != null)
-			{
-				if (result != "svr_is_busy")
+            {
+                logicproxy _logicproxy = _logicmanager.get_logic(juggle.Imodule.current_ch);
+                if (result == "svr_is_success")
 				{
-					_clientmanager.reg_client_logic(uuid, _logicmanager.get_logic(juggle.Imodule.current_ch));
-					_clientproxy.ack_connect_server(result);
+                    _clientproxy.ack_get_logic(_logicproxy.uuid);
 				}
 				else {
-					logicproxy _logicproxy = _logicmanager.get_logic();
-					_logicproxy.client_connect (uuid);
+                    Console.WriteLine(result + " svr:" + _logicproxy.uuid);
+
+					_logicproxy = _logicmanager.get_logic();
+					_logicproxy.get_logic (client_uuid);
 				}
 			}
 		}
 
-		public void forward_logic_call_client(string uuid, string module, string func, ArrayList argv)
+        public void connect_sucess(string client_uuid)
+        {
+            clientproxy _clientproxy = _clientmanager.get_clientproxy(client_uuid);
+            if (_clientproxy != null)
+            {
+                logicproxy _logicproxy = _logicmanager.get_logic(juggle.Imodule.current_ch);
+                if (_logicproxy != null)
+                {
+                    _clientproxy.connect_logic_sucess(_logicproxy.uuid);
+                }
+            }
+        }
+
+        public void forward_logic_call_client(string uuid, string module, string func, ArrayList argv)
 		{
 			clientproxy _clientproxy = _clientmanager.get_clientproxy(uuid);
 			if (_clientproxy != null)

@@ -15,24 +15,28 @@ namespace logic
 			Console.WriteLine("connect gate server sucess");
 		}
 
-		public void client_connect(String uuid)
+		public void client_get_logic(String uuid)
 		{
 			if (logic.is_busy)
 			{
 				var _proxy = logic.gates.get_gateproxy(juggle.Imodule.current_ch);
-				_proxy.ack_client_connect_server(uuid, "svr_is_busy");
+				_proxy.ack_client_get_logic(uuid, "svr_is_busy");
 			}
 			else 
 			{
-				Console.WriteLine("client " + uuid + " connected");
-				
-				logic.gates.client_connect(uuid, juggle.Imodule.current_ch);
 				var _proxy = logic.gates.get_gateproxy(juggle.Imodule.current_ch);
-				_proxy.ack_client_connect_server(uuid, "conn_sucess");
+				_proxy.ack_client_get_logic(uuid, "svr_is_sucess");
 			}
 		}
 
-		public void client_disconnect(String uuid)
+        public void client_connect(String uuid)
+        {
+            Console.WriteLine("client " + uuid + " connected");
+
+            logic.gates.client_connect(uuid, juggle.Imodule.current_ch);
+        }
+
+        public void client_disconnect(String uuid)
 		{
 			logic.gates.client_disconnect(uuid);
 		}

@@ -1,20 +1,22 @@
 module gate_call_logic{
     void reg_logic_sucess();
 
-	void client_connect(string uuid);
+	void client_get_logic(string client_uuid);
+	
+	void client_connect(string client_uuid);
 
-	void client_disconnect(string uuid);
+	void client_disconnect(string client_uuid);
 
-	void client_exception(string uuid);
+	void client_exception(string client_uuid);
 
-	void client_call_logic(string uuid, string module, string func, array argv);
+	void client_call_logic(string client_uuid, string module, string func, array argv);
 
 }
 
 module logic_call_logic{
-	void reg_logic(string uuid, string callbackid);
+	void reg_logic(string logic_uuid, string callbackid);
 
-	void ack_reg_logic(string uuid, string callbackid);
+	void ack_reg_logic(string logic_uuid, string callbackid);
 	
 	void logic_call_logic_mothed(string module, string func, array argv);
 

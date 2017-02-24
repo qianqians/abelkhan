@@ -1,5 +1,5 @@
 module logic_call_dbproxy{
-	void reg_logic(string uuid);
+	void reg_logic(string logic_uuid);
 
 	void create_persisted_object(table object_info, string callbackid);
 
@@ -25,7 +25,7 @@ module dbproxy_call_logic{
 }
 
 module hub_call_dbproxy{
-	void reg_hub(string uuid);
+	void reg_hub(string hub_uuid);
 	
 	void create_persisted_object(table object_info, string callbackid);
 
