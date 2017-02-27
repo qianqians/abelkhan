@@ -14,8 +14,11 @@ namespace client
 
 			_process = new juggle.process();
 			_gate_call_client = new module.gate_call_client();
-			_gate_call_client.onack_connect_server += on_ack_connect_server;
-			_gate_call_client.oncall_client += on_call_client;
+			_gate_call_client.onconnect_gate_sucess += on_ack_connect_gate;
+            _gate_call_client.onack_get_logic += on_ack_get_logic;
+            _gate_call_client.onconnect_logic_sucess += on_ack_connect_logic;
+            _gate_call_client.onconnect_hub_sucess += on_ack_connect_hub;
+            _gate_call_client.oncall_client += on_call_client;
 			_process.reg_module(_gate_call_client);
 
 			_conn = new service.connectnetworkservice(_process);
@@ -31,19 +34,53 @@ namespace client
             timer.addticktime(tick + 30 * 1000, heartbeats);
         }
 
-        public delegate void onConnectServerHandle(String result);
-		public event onConnectServerHandle onConnectServer;
-		private void on_ack_connect_server(String result)
+        public delegate void onConnectGateHandle();
+		public event onConnectGateHandle onConnectGate;
+		private void on_ack_connect_gate()
 		{
-			if (onConnectServer != null)
+			if (onConnectGate != null)
 			{
-				onConnectServer(result);
+                onConnectGate();
             }
 
             timer.addticktime(timer.Tick + 30*1000, heartbeats);
         }
 
-		private void on_call_client(String module_name, String func_name, ArrayList argvs)
+        public delegate void onConnectLogicHandle(string _logic_uuid);
+        public event onConnectLogicHandle onConnectLogic;
+        private void on_ack_connect_logic(string _logic_uuid)
+        {
+            if (onConnectLogic != null)
+            {
+                onConnectLogic(_logic_uuid);
+            }
+
+            timer.addticktime(timer.Tick + 30 * 1000, heartbeats);
+        }
+
+        public delegate void onConnectHubHandle(string _hub_name);
+        public event onConnectHubHandle onConnectHub;
+        private void on_ack_connect_hub(string _hub_name)
+        {
+            if (onConnectHub != null)
+            {
+                onConnectHub(_hub_name);
+            }
+
+            timer.addticktime(timer.Tick + 30 * 1000, heartbeats);
+        }
+
+        public delegate void onAckGetLogicHandle(string _logic_uuid);
+        public event onAckGetLogicHandle onAckGetLogic;
+        private void on_ack_get_logic(string _logic_uuid)
+        {
+            if (onAckGetLogic != null)
+            {
+                onAckGetLogic(_logic_uuid);
+            }
+        }
+
+        private void on_call_client(String module_name, String func_name, ArrayList argvs)
 		{
 			modulemanager.process_module_mothed(module_name, func_name, argvs);
 		}
@@ -69,7 +106,32 @@ namespace client
 			_client_call_gate.cancle_server();
 		}
 
-		public void call_logic(String module_name, String func_name, params object[] _argvs)
+        public void get_logic()
+        {
+            _client_call_gate.get_logic();
+        }
+
+        public void connect_logic(string logic_uuid)
+        {
+            _client_call_gate.connect_logic(uuid, logic_uuid);
+        }
+
+        public void disconnect_logic(string logic_uuid)
+        {
+            _client_call_gate.disconnect_logic(uuid, logic_uuid);
+        }
+
+        public void connect_hub(string hub_name)
+        {
+            _client_call_gate.connect_hub(uuid, hub_name);
+        }
+
+        public void disconnect_hub(string hub_name)
+        {
+            _client_call_gate.disconnect_hub(uuid, hub_name);
+        }
+
+        public void call_logic(String logic_uuid, String module_name, String func_name, params object[] _argvs)
 		{
 			ArrayList _argvs_list = new ArrayList();
 			foreach (var o in _argvs)
@@ -77,10 +139,21 @@ namespace client
 				_argvs_list.Add(o);
 			}
 			
-			_client_call_gate.forward_client_call_logic(module_name, func_name, _argvs_list);
+			_client_call_gate.forward_client_call_logic(logic_uuid, module_name, func_name, _argvs_list);
 		}
 
-		public void poll(Int64 tick)
+        public void call_hub(String hub_name, String module_name, String func_name, params object[] _argvs)
+        {
+            ArrayList _argvs_list = new ArrayList();
+            foreach (var o in _argvs)
+            {
+                _argvs_list.Add(o);
+            }
+
+            _client_call_gate.forward_client_call_hub(hub_name, module_name, func_name, _argvs_list);
+        }
+
+        public void poll(Int64 tick)
 		{
 			_juggleservice.poll(tick);
 			timer.poll(tick);
