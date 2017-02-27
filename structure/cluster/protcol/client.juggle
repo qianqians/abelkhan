@@ -1,6 +1,0 @@
-module gate_call_client{
-	void ack_connect_server(string result);
-
-	void call_client(string module, string func, array argv);
-
-}

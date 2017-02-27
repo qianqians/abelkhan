@@ -23,3 +23,9 @@ module gate_call_hub{
 	
 	void client_call_hub(string client_uuid, string module, string func, array argv);
 }
+
+module hub_call_hub{
+	void reg_hub(hub_name);
+
+	void hub_call_hub_mothed(string module, string func, array argv);
+}
