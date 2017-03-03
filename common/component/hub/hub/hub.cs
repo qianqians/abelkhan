@@ -21,17 +21,30 @@ namespace hub
 			closeHandle = new closehandle();
 
 			logics = new logicmanager();
+            hubs = new hubmanager();
 			modules = new common.modulemanager();
 
-			var ip = _config.get_value_string("ip");
-			var port = (short)_config.get_value_int("port");
-			_logic_msg_handle = new logic_msg_handle(modules, logics);
+            var _hub_logic_process = new juggle.process();
+            _connect_hub_service = new service.connectnetworkservice(_hub_logic_process);
+
+            _logic_msg_handle = new logic_msg_handle(modules, logics);
 			_logic_call_hub = new module.hub();
 			_logic_call_hub.onlogic_call_hub_mothed += _logic_msg_handle.logic_call_hub_mothed;
 			_logic_call_hub.onreg_logic += _logic_msg_handle.reg_logic;
-			var _logic_process = new juggle.process();
-			_logic_process.reg_module(_logic_call_hub);
-			_accept_logic_service = new service.acceptnetworkservice(ip, port, _logic_process);
+            _hub_logic_process.reg_module(_logic_call_hub);
+
+            hubs = new hubmanager();
+
+            _hub_msg_handle = new hub_msg_handle(modules, hubs);
+            _hub_call_hub = new module.hub_call_hub();
+            _hub_call_hub.onreg_hub += _hub_msg_handle.reg_hub;
+            _hub_call_hub.onreg_hub_sucess += _hub_msg_handle.reg_hub_sucess;
+            _hub_call_hub.onhub_call_hub_mothed += _hub_msg_handle.hub_call_hub_mothed;
+            _hub_logic_process.reg_module(_hub_call_hub);
+
+            var ip = _config.get_value_string("ip");
+            var port = (short)_config.get_value_int("port");
+            _accept_logic_service = new service.acceptnetworkservice(ip, port, _hub_logic_process);
 
 			var center_ip = _center_config.get_value_string("ip");
 			var center_port = (short)_center_config.get_value_int("port");
@@ -72,7 +85,7 @@ namespace hub
 			gates = new gatemanager (_connect_gate_servcie);
 
 			_juggle_service = new service.juggleservice();
-			_juggle_service.add_process(_logic_process);
+			_juggle_service.add_process(_hub_logic_process);
 			_juggle_service.add_process(_center_process);
 			_juggle_service.add_process(_dbproxy_process);
 			_juggle_service.add_process (_gate_process);
@@ -88,6 +101,13 @@ namespace hub
 			dbproxy = new dbproxyproxy(_db_ch);
 			dbproxy.reg_hub(uuid);
 		}
+
+        public void reg_hub(String hub_ip, short hub_port)
+        {
+            var ch = _connect_hub_service.connect(hub_ip, hub_port);
+            caller.hub_call_hub _caller = new caller.hub_call_hub(ch);
+            _caller.reg_hub(name);
+        }
 
 		public void poll(Int64 tick)
 		{
@@ -151,10 +171,14 @@ namespace hub
 		public static closehandle closeHandle;
 
 		private service.acceptnetworkservice _accept_logic_service;
+        private service.connectnetworkservice _connect_hub_service;
 		private module.hub _logic_call_hub;
-		private logic_msg_handle _logic_msg_handle;
-		public static common.modulemanager modules;
+        private logic_msg_handle _logic_msg_handle;
+        private module.hub_call_hub _hub_call_hub;
+        private hub_msg_handle _hub_msg_handle;
+        public static common.modulemanager modules;
 		public static logicmanager logics;
+        public static hubmanager hubs;
 
 		private service.connectnetworkservice _connect_center_service;
 		private module.center_call_hub _center_call_hub;

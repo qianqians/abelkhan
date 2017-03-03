@@ -48,10 +48,19 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\protcol\c#\caller\hub_call_hubcaller.cs">
+      <Link>hub_call_hubcaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\protcol\c#\module\hub_call_hubmodule.cs">
+      <Link>hub_call_hubmodule.cs</Link>
+    </Compile>
     <Compile Include="hub.cs" />
     <Compile Include="centerproxy.cs" />
     <Compile Include="dbproxyproxy.cs" />
     <Compile Include="center_msg_handle.cs" />
+    <Compile Include="hubmanager.cs" />
+    <Compile Include="hubproxy.cs" />
+    <Compile Include="hub_msg_handle.cs" />
     <Compile Include="logic_msg_handle.cs" />
     <Compile Include="dbproxy_msg_handle.cs" />
     <Compile Include="closehandle.cs" />

@@ -33,6 +33,10 @@ namespace hub
 			{
 				hub.gates.connect_gate(uuid, ip, (short)port);
 			}
+            if (type == "hub")
+            {
+                _hub.reg_hub(ip, (short)port);
+            }
 		}
 
 		private hub _hub;
