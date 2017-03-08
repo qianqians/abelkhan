@@ -36,17 +36,27 @@ namespace dbproxy
 		public ArrayList find(int skip, int limit, int batch_size, Hashtable json_query, Hashtable json_fields) 
 		{
 			MongoDB.Driver.QueryDocument _query = new MongoDB.Driver.QueryDocument(json_query);
-			MongoDB.Driver.FieldsDocument _fields = new MongoDB.Driver.FieldsDocument(json_fields);
 
-			var c = _collection.FindAs<MongoDB.Bson.BsonDocument>(_query).SetSkip(skip).SetLimit(limit).SetBatchSize(batch_size).SetFields(_fields);
-
-			ArrayList _list = new ArrayList ();
-			foreach (var data in c) 
+            MongoDB.Driver.MongoCursor<MongoDB.Bson.BsonDocument> c = null;
+            if (json_fields != null)
+            {
+                MongoDB.Driver.FieldsDocument _fields = new MongoDB.Driver.FieldsDocument(json_fields);
+                c = _collection.FindAs<MongoDB.Bson.BsonDocument>(_query).SetSkip(skip).SetLimit(limit).SetBatchSize(batch_size).SetFields(_fields);
+            }
+            else
+            {
+                c = _collection.FindAs<MongoDB.Bson.BsonDocument>(_query).SetSkip(skip).SetLimit(limit).SetBatchSize(batch_size);
+            }
+            
+            ArrayList _list = new ArrayList ();
+            foreach (var data in c) 
 			{
-				_list.Add(data.ToHashtable());
+                var _data = data.ToHashtable();
+                _data.Remove("_id");
+                _list.Add(_data);
 			}
 
-			return _list;
+            return _list;
 		}
 
 		public bool remove(Hashtable json_query) {

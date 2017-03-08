@@ -31,7 +31,7 @@ namespace hub
             hub.gates.client_exception(client_uuid);
         }
 
-        public void client_call_logic(String uuid, String module, String func, ArrayList argv)
+        public void client_call_hub(String uuid, String module, String func, ArrayList argv)
 		{
 			hub.gates.current_client_uuid = uuid;
 			hub.modules.process_module_mothed(module, func, argv);

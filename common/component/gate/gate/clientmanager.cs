@@ -20,6 +20,7 @@ namespace gate
 		public clientproxy reg_client(string uuid, juggle.Ichannel ch, Int64 servertick, Int64 clienttick)
 		{
 			clientproxy _clientproxy = new clientproxy (ch);
+            clientproxys_ch.Add(ch, _clientproxy);
             clientproxys.Add(uuid, _clientproxy);
             clientproxys_uuid.Add(_clientproxy, uuid);
             client_server_time.Add (ch, servertick);

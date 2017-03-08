@@ -29,19 +29,22 @@ namespace System.Text.Json
             Func<ArrayList, String> parselist = (ArrayList _array) =>
             {
                 String _out = "[";
-                foreach (Object o in _array)
+                if (_array.Count > 0)
                 {
-                    if ((typeof(Hashtable).IsInstanceOfType(o)) || (typeof(ArrayList).IsInstanceOfType(o)))
+                    foreach (Object o in _array)
                     {
-                        _out += pack(o);
+                        if ((typeof(Hashtable).IsInstanceOfType(o)) || (typeof(ArrayList).IsInstanceOfType(o)))
+                        {
+                            _out += pack(o);
+                        }
+                        else
+                        {
+                            _out += parsevalue(o);
+                        }
+                        _out += ",";
                     }
-                    else
-                    {
-                        _out += parsevalue(o);
-                    }
-                    _out += ",";
+                    _out = _out.Remove(_out.Length - 1, 1);
                 }
-                _out = _out.Remove(_out.Length - 1, 1);
                 _out += "]";
 
                 return _out;
@@ -49,21 +52,24 @@ namespace System.Text.Json
 
             Func<Hashtable, String> parsedict = (Hashtable _dict) =>{
                 String _out = "{";
-                foreach (System.Collections.DictionaryEntry _obj in _dict)
+                if (_dict.Count > 0)
                 {
-                    _out += "\"" + Convert.ToString(_obj.Key) + "\"";
-                    _out += ":";
-                    if ((typeof(Hashtable).IsInstanceOfType(_obj)) || (typeof(Array).IsInstanceOfType(_obj)))
+                    foreach (System.Collections.DictionaryEntry _obj in _dict)
                     {
-                        _out += pack(_obj.Value);
+                        _out += "\"" + Convert.ToString(_obj.Key) + "\"";
+                        _out += ":";
+                        if ((typeof(Hashtable).IsInstanceOfType(_obj)) || (typeof(Array).IsInstanceOfType(_obj)))
+                        {
+                            _out += pack(_obj.Value);
+                        }
+                        else
+                        {
+                            _out += parsevalue(_obj.Value);
+                        }
+                        _out += ",";
                     }
-                    else
-                    {
-                        _out += parsevalue(_obj.Value);
-                    }
-                    _out += ",";
+                    _out = _out.Remove(_out.Length - 1, 1);
                 }
-                _out = _out.Remove(_out.Length - 1, 1);
                 _out += "}";
 
                 return _out;
@@ -269,6 +275,8 @@ namespace System.Text.Json
             Func<String, String> parseenum = parsemap;
 
             Func<object, object> parsepop = (object o) =>{
+                _table = null;
+                _array = null;
                 if (typeof(Hashtable).IsInstanceOfType(o))
                 {
                     _table = (Hashtable)o;
@@ -420,6 +428,8 @@ namespace System.Text.Json
             {
                 _out = _array;
             }
+
+            Console.WriteLine(_out.ToString());
 
             return _out;
         }

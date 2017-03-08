@@ -85,8 +85,12 @@ namespace gate
 
             if (_hubproxy != null)
             {
-                string uuid = _clientmanager.get_client_uuid(_clientmanager.get_clientproxy(juggle.Imodule.current_ch));
-                _hubproxy.client_call_hub(uuid, module, func, argv);
+                var _proxy = _clientmanager.get_clientproxy(juggle.Imodule.current_ch);
+                if (_proxy != null)
+                {
+                    string uuid = _clientmanager.get_client_uuid(_proxy);
+                    _hubproxy.client_call_hub(uuid, module, func, argv);
+                }
             }
         }
 

@@ -46,8 +46,8 @@ namespace juggle
 					}
 
 					String module_name = (String)_event[0];
-
-					if (module_set.ContainsKey(module_name))
+                    
+                    if (module_set.ContainsKey(module_name))
 					{
 						Imodule _module = (Imodule)module_set[module_name];
 						_module.process_event(ch, _event);

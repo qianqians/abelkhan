@@ -40,6 +40,7 @@ namespace hub
         {
             if (ch_gateproxys.ContainsKey(gate_ch))
             {
+                Console.WriteLine("");
                 var _proxy = ch_gateproxys[gate_ch];
                 clients.Add(client_uuid, _proxy);
                 _proxy.connect_sucess(client_uuid);

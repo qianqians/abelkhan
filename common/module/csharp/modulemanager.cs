@@ -17,7 +17,7 @@ namespace common
 
 		public void process_module_mothed(String module_name, String func_name, ArrayList argvs)
 		{
-			if (modules.ContainsKey(module_name))
+            if (modules.ContainsKey(module_name))
 			{
 				imodule _module = (imodule)modules[module_name];
 
@@ -41,6 +41,10 @@ namespace common
 						Console.WriteLine("call rpc error {0}", e);
 					}
 				}
+                else
+                {
+                    Console.WriteLine("do not have a func named " + func_name);
+                }
 			}
 			else
 			{

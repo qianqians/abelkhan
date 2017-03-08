@@ -11,12 +11,37 @@ namespace service
 		
 		public timerservice()
 		{
-			tickHandledict = new Dictionary<Int64, tickHandle>();
-			timeHandledict = new Dictionary<DateTime, timeHandle>();
-		}
+            tickHandledict = new Dictionary<Int64, List<tickHandle> >();
+			timeHandledict = new Dictionary<DateTime, List<timeHandle> >();
+            addtickHandle = new Dictionary<Int64, List<tickHandle>>();
+            addtimeHandle = new Dictionary<DateTime, List<timeHandle>>();
+        }
 
 		public void poll(Int64 tick)
 		{
+            foreach (var item in addtickHandle)
+            {
+                if (!tickHandledict.ContainsKey(item.Key))
+                {
+                    tickHandledict.Add(item.Key, new List<tickHandle>());
+                }
+                foreach (var t in item.Value)
+                {
+                    tickHandledict[item.Key].Add(t);
+                }
+            }
+            foreach (var item in addtimeHandle)
+            {
+                if (!timeHandledict.ContainsKey(item.Key))
+                {
+                    timeHandledict.Add(item.Key, new List<timeHandle>());
+                }
+                foreach (var t in item.Value)
+                {
+                    timeHandledict[item.Key].Add(t);
+                }
+            }
+
             Tick = tick;
 
             try
@@ -29,7 +54,10 @@ namespace service
 					{
 						list.Add(item.Key);
 
-						item.Value(tick);
+                        foreach (var handle in item.Value)
+                        {
+                            handle(tick);
+                        }
 					}
 				}
 
@@ -54,8 +82,11 @@ namespace service
 					{
 						list.Add(item.Key);
 
-						item.Value(t);
-					}
+                        foreach (var handle in item.Value)
+                        {
+                            handle(t);
+                        }
+                    }
 				}
 
 				foreach (var item in list)
@@ -71,18 +102,28 @@ namespace service
 
 		public void addticktime(Int64 process, tickHandle handle)
 		{
-			tickHandledict.Add(process, handle);
+            if (!addtickHandle.ContainsKey(process))
+            {
+                addtickHandle.Add(process, new List<tickHandle>());
+            }
+            addtickHandle[process].Add( handle);
 		}
 
 		public void adddatetime(DateTime process, timeHandle handle)
 		{
-			timeHandledict.Add(process, handle);
-		}
+            if (!addtimeHandle.ContainsKey(process))
+            {
+                addtimeHandle.Add(process, new List<timeHandle>());
+            }
+            addtimeHandle[process].Add(handle);
+        }
 
         public Int64 Tick;
 
-		private Dictionary<Int64, tickHandle> tickHandledict;
-		private Dictionary<DateTime, timeHandle> timeHandledict;
-	}
+		private Dictionary<Int64, List<tickHandle> > tickHandledict;
+        private Dictionary<Int64, List<tickHandle>> addtickHandle;
+        private Dictionary<DateTime, List<timeHandle> > timeHandledict;
+        private Dictionary<DateTime, List<timeHandle> > addtimeHandle;
+    }
 }
 

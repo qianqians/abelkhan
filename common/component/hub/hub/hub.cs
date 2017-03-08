@@ -63,7 +63,7 @@ namespace hub
 
 			var _dbproxy_process = new juggle.process();
 			_connect_dbproxy_service = new service.connectnetworkservice(_dbproxy_process);
-			_dbproxy_msg_handle = new dbproxy_msg_handle(dbproxy);
+			_dbproxy_msg_handle = new dbproxy_msg_handle();
 			_dbproxy_call_hub = new module.dbproxy_call_hub();
 			_dbproxy_call_hub.onreg_hub_sucess += _dbproxy_msg_handle.reg_hub_sucess;
 			_dbproxy_call_hub.onack_create_persisted_object += _dbproxy_msg_handle.ack_create_persisted_object;
@@ -79,7 +79,7 @@ namespace hub
             _gate_call_hub.onclient_connect += _gate_msg_handle.client_connect;
             _gate_call_hub.onclient_disconnect += _gate_msg_handle.client_disconnect;
             _gate_call_hub.onclient_exception += _gate_msg_handle.client_exception;
-            _gate_call_hub.onclient_call_hub += _gate_msg_handle.client_call_logic;
+            _gate_call_hub.onclient_call_hub += _gate_msg_handle.client_call_hub;
 			_gate_process.reg_module (_gate_call_hub);
 			_connect_gate_servcie = new service.connectnetworkservice (_gate_process);
 			gates = new gatemanager (_connect_gate_servcie);

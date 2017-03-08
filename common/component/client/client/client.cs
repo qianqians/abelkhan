@@ -42,8 +42,6 @@ namespace client
 			{
                 onConnectGate();
             }
-
-            timer.addticktime(timer.Tick + 30*1000, heartbeats);
         }
 
         public delegate void onConnectLogicHandle(string _logic_uuid);
@@ -54,8 +52,6 @@ namespace client
             {
                 onConnectLogic(_logic_uuid);
             }
-
-            timer.addticktime(timer.Tick + 30 * 1000, heartbeats);
         }
 
         public delegate void onConnectHubHandle(string _hub_name);
@@ -66,8 +62,6 @@ namespace client
             {
                 onConnectHub(_hub_name);
             }
-
-            timer.addticktime(timer.Tick + 30 * 1000, heartbeats);
         }
 
         public delegate void onAckGetLogicHandle(string _logic_uuid);
@@ -164,7 +158,6 @@ namespace client
             client _client = new client();
 
             Int64 tick = Environment.TickCount;
-            _client.connect_server("139.129.96.47", 3236, tick);
 
             Int64 tickcount = 0;
             while (true)

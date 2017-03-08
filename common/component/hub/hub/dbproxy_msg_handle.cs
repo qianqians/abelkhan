@@ -5,9 +5,8 @@ namespace hub
 {
 	public class dbproxy_msg_handle
 	{
-		public dbproxy_msg_handle(dbproxyproxy dbproxy_)
+		public dbproxy_msg_handle()
 		{
-			_dbproxy = dbproxy_;
 		}
 
 		public void reg_hub_sucess()
@@ -17,30 +16,28 @@ namespace hub
 
 		public void ack_create_persisted_object(String callbackid)
 		{
-			dbproxyproxy.onCreatePersistedObjectHandle _handle = (dbproxyproxy.onCreatePersistedObjectHandle)_dbproxy.begin_callback(callbackid);
+			dbproxyproxy.onCreatePersistedObjectHandle _handle = (dbproxyproxy.onCreatePersistedObjectHandle)hub.dbproxy.begin_callback(callbackid);
 			_handle();
-			_dbproxy.end_callback(callbackid);
+			hub.dbproxy.end_callback(callbackid);
 		}
 
 		public void ack_updata_persisted_object(String callbackid)
 		{
-			dbproxyproxy.onUpdataPersistedObjectHandle _handle = (dbproxyproxy.onUpdataPersistedObjectHandle)_dbproxy.begin_callback(callbackid);
+			dbproxyproxy.onUpdataPersistedObjectHandle _handle = (dbproxyproxy.onUpdataPersistedObjectHandle)hub.dbproxy.begin_callback(callbackid);
 			_handle();
-			_dbproxy.end_callback(callbackid);
+            hub.dbproxy.end_callback(callbackid);
 		}
 
 		public void ack_get_object_info(String callbackid, ArrayList json_obejct_array)
 		{
-			dbproxyproxy.onGetObjectInfoHandle _handle = (dbproxyproxy.onGetObjectInfoHandle)_dbproxy.begin_callback(callbackid);
+			dbproxyproxy.onGetObjectInfoHandle _handle = (dbproxyproxy.onGetObjectInfoHandle)hub.dbproxy.begin_callback(callbackid);
 			_handle(json_obejct_array);
 		}
 
 		public void ack_get_object_info_end(String callbackid)
 		{
-			_dbproxy.end_callback(callbackid);
+            hub.dbproxy.end_callback(callbackid);
 		}
-
-		private dbproxyproxy _dbproxy;
 	}
 }
 

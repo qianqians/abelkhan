@@ -43,7 +43,7 @@ namespace dbproxy
 
 		public void get_object_info(Hashtable query_json, string callbackid)
 		{
-			ArrayList _list = _mongodbproxy.find(0, 0, 0, query_json, null);
+            ArrayList _list = _mongodbproxy.find(0, 0, 0, query_json, null);
 
 			hubproxy _hubproxy = _hubmanager.get_hub(juggle.Imodule.current_ch);
 
@@ -54,23 +54,31 @@ namespace dbproxy
 
 			int count = 0;
 			ArrayList _datalist = new ArrayList ();
-			foreach (var data in _list)
-			{
-				_datalist.Add (data);
+            if (_list.Count == 0)
+            {
+                _hubproxy.ack_get_object_info(callbackid, _datalist);
+            }
+            else
+            {
+                foreach (var data in _list)
+                {
+                    _datalist.Add(data);
 
-				count++;
+                    count++;
 
-				if (count >= 100) 
-				{
-					_hubproxy.ack_get_object_info(callbackid, _datalist);
+                    if (count >= 100)
+                    {
+                        _hubproxy.ack_get_object_info(callbackid, _datalist);
 
-					count = 0;
-					_datalist = new ArrayList ();
-				}
-			}
-			if (count > 0 && count < 100) {
-				_hubproxy.ack_get_object_info(callbackid, _datalist);
-			}
+                        count = 0;
+                        _datalist = new ArrayList();
+                    }
+                }
+                if (count > 0 && count < 100)
+                {
+                    _hubproxy.ack_get_object_info(callbackid, _datalist);
+                }
+            }
 
 			_hubproxy.ack_get_object_info_end(callbackid);
 		}

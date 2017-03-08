@@ -30,8 +30,8 @@ namespace juggle
 				}
 				catch(Exception e)
 				{
-					Console.WriteLine("function name:" + func_name);
-				}
+					Console.WriteLine("function name:" + func_name + " " + e.ToString());
+				} 
 			}
 			else
 			{
