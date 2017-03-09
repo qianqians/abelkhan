@@ -52,6 +52,7 @@ namespace gate
 			_logic_call_gate.onreg_logic += _logic_msg_handle.reg_logic;
 			_logic_call_gate.onack_client_get_logic += _logic_msg_handle.ack_client_get_logic;
             _logic_call_gate.onconnect_sucess += _logic_msg_handle.connect_sucess;
+            _logic_call_gate.ondisconnect_client += _logic_msg_handle.disconnect_client;
             _logic_call_gate.onforward_logic_call_client += _logic_msg_handle.forward_logic_call_client;
 			_logic_call_gate.onforward_logic_call_global_client += _logic_msg_handle.forward_logic_call_global_client;
 			_logic_call_gate.onforward_logic_call_group_client += _logic_msg_handle.forward_logic_call_group_client;
@@ -60,6 +61,7 @@ namespace gate
 			_hub_call_gate = new module.hub_call_gate ();
 			_hub_call_gate.onreg_hub += _hub_msg_handle.reg_hub;
             _hub_call_gate.onconnect_sucess += _hub_msg_handle.connect_sucess;
+            _hub_call_gate.ondisconnect_client += _hub_msg_handle.disconnect_client;
             _hub_call_gate.onforward_hub_call_client += _hub_msg_handle.forward_hub_call_client;
             _hub_call_gate.onforward_hub_call_global_client += _hub_msg_handle.forward_hub_call_global_client;
 			_hub_call_gate.onforward_hub_call_group_client += _hub_msg_handle.forward_hub_call_group_client;

@@ -46,6 +46,17 @@ namespace module
             }
         }
 
+        public delegate void disconnect_clienthandle(String argv0);
+        public event disconnect_clienthandle ondisconnect_client;
+        public void disconnect_client(ArrayList _event)
+        {
+            if(ondisconnect_client != null)
+            {
+                var argv0 = ((String)_event[0]);
+                ondisconnect_client( argv0);
+            }
+        }
+
         public delegate void forward_logic_call_clienthandle(String argv0, String argv1, String argv2, ArrayList argv3);
         public event forward_logic_call_clienthandle onforward_logic_call_client;
         public void forward_logic_call_client(ArrayList _event)

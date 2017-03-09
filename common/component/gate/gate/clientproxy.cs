@@ -7,7 +7,8 @@ namespace gate
 	{
 		public clientproxy(juggle.Ichannel ch)
 		{
-			_caller = new caller.gate_call_client(ch);
+            client_ch = ch;
+            _caller = new caller.gate_call_client(client_ch);
 		}
 
         public void connect_gate_sucessa()
@@ -36,6 +37,8 @@ namespace gate
 		}
 
 		private caller.gate_call_client _caller;
-	}
+        public juggle.Ichannel client_ch;
+
+    }
 }
 

@@ -21,6 +21,11 @@ namespace hub
             _caller.connect_sucess(client_uuid);
         }
 
+        public void disconnect_client(String uuid)
+        {
+            _caller.disconnect_client(uuid);
+        }
+
         public void forward_hub_call_client(String uuid, String module, String func, ArrayList argv)
         {
             _caller.forward_hub_call_client(uuid, module, func, argv);

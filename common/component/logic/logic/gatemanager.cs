@@ -76,6 +76,15 @@ namespace logic
             }
         }
 
+        public void disconnect_client(String uuid)
+        {
+            if(clients.ContainsKey(uuid))
+            {
+                clients[uuid].disconnect_client(uuid);
+                clients.Remove(uuid);
+            }
+        }
+
         public void call_client(String uuid, String module, String func, params object[] _argvs)
 		{
 			if (clients.ContainsKey(uuid))

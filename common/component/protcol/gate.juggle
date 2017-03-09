@@ -28,6 +28,8 @@ module logic_call_gate{
 
 	void connect_sucess(string client_uuid);
 
+	void disconnect_client(string client_uuid);
+	
 	void forward_logic_call_client(string client_uuid, string module, string func, array argv);
 
 	void forward_logic_call_group_client(array client_uuids, string module, string func, array argv);
@@ -40,6 +42,8 @@ module hub_call_gate{
 	void reg_hub(string hub_uuid, string hub_name);
 
 	void connect_sucess(string client_uuid);
+
+	void disconnect_client(string client_uuid);
 
 	void forward_hub_call_client(string client_uuid, string module, string func, array argv);
 

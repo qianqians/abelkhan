@@ -26,6 +26,11 @@ namespace logic
 			_caller.ack_client_get_logic(uuid, result);
 		}
 
+        public void disconnect_client(String uuid)
+        {
+            _caller.disconnect_client(uuid);
+        }
+
 		public void forward_logic_call_client(String uuid, String module, String func, ArrayList argv)
 		{
 			_caller.forward_logic_call_client(uuid, module, func, argv);

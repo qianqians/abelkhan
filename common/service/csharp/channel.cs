@@ -27,6 +27,11 @@ namespace service
 			s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
 		}
 
+        public void disconnect()
+        {
+            s.Close();
+        }
+
 		private void onRead(IAsyncResult ar)
 		{
 			channel ch = ar.AsyncState as channel;

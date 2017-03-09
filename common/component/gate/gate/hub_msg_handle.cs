@@ -30,6 +30,18 @@ namespace gate
             }
         }
 
+        public void disconnect_client(string client_uuid)
+        {
+            clientproxy _clientproxy = _clientmanager.get_clientproxy(client_uuid);
+            if (_clientproxy != null)
+            {
+                _clientmanager.unreg_client(_clientproxy.client_ch);
+                _clientmanager.unreg_client_hub(_clientproxy.client_ch);
+                _clientmanager.unreg_client_logic(_clientproxy.client_ch);
+                _clientproxy.client_ch.disconnect();
+            }
+        }
+
         public void forward_hub_call_client(string uuid, string module, string func, ArrayList argv)
         {
             clientproxy _clientproxy = _clientmanager.get_clientproxy(uuid);
