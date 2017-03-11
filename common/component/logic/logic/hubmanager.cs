@@ -17,6 +17,7 @@ namespace logic
 		{
 			var ch = _hub_connect.connect(ip, port);
 			hubproxy _hubproxy = new hubproxy(ch);
+            ch_hubs.Add(ch, _hubproxy);
 			_hubproxy.reg_logic();
 		}
 
@@ -29,7 +30,17 @@ namespace logic
 			}
 		}
 
-		public void call_hub(String hub_name, String module_name, String func_name, params object[] _argvs)
+        public hubproxy get_hub(juggle.Ichannel ch)
+        {
+            if (ch_hubs.ContainsKey(ch))
+            {
+                return ch_hubs[ch];
+            }
+
+            return null; 
+        }
+
+        public void call_hub(String hub_name, String module_name, String func_name, params object[] _argvs)
 		{
 			if (name_hubs.ContainsKey(hub_name))
 			{
