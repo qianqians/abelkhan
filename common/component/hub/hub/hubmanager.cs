@@ -9,26 +9,14 @@ namespace hub
         public hubmanager()
         {
             hubproxys = new Dictionary<string, hubproxy>();
-            hubproxys_ch = new Dictionary<juggle.Ichannel, hubproxy>();
         }
 
         public hubproxy reg_hub(String hub_name, juggle.Ichannel ch)
         {
             hubproxy _proxy = new hubproxy(hub_name, ch);
             hubproxys.Add(hub_name, _proxy);
-            hubproxys_ch.Add(ch, _proxy);
-
+        
             return _proxy;
-        }
-
-        public hubproxy get_hub(juggle.Ichannel ch)
-        {
-            if (hubproxys_ch.ContainsKey(ch))
-            {
-                return hubproxys_ch[ch];
-            }
-
-            return null;
         }
 
         public void call_hub(string hub_name, string module_name, string func_name, params object[] _argvs)
@@ -46,6 +34,5 @@ namespace hub
         }
 
         private Dictionary<String, hubproxy> hubproxys;
-        private Dictionary<juggle.Ichannel, hubproxy> hubproxys_ch;
     }
 }

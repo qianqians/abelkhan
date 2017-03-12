@@ -429,8 +429,6 @@ namespace System.Text.Json
                 _out = _array;
             }
 
-            Console.WriteLine(_out.ToString());
-
             return _out;
         }
     }

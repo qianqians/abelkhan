@@ -149,8 +149,8 @@ namespace client
 
         public void poll(Int64 tick)
 		{
-			_juggleservice.poll(tick);
-			timer.poll(tick);
+            _juggleservice.poll(tick);
+            timer.poll(tick);
         }
 
         private static void Main()

@@ -98,6 +98,10 @@ namespace hub
 
                 clients[uuid].forward_hub_call_client(uuid, module, func, _argvs_list);
             }
+            else
+            {
+                Console.WriteLine("no-exist client:" + uuid);
+            }
         }
 
         public void call_group_client(ArrayList uuids, String module, String func, params object[] _argvs)
