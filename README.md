@@ -13,9 +13,11 @@ hub 逻辑单点，可以配置多个，每个hub处理一种或多种逻辑上�
 logic 逻辑服务器，支持动态扩展，为玩家提供逻辑服务  
 gate 网关服务器，支持动态扩展，为玩家提供接入服务
   
-服务器基于自研的RPC框架juggle(https://github.com/qianqians/abelkhan/tree/master/juggle)和c#语言的反射机制实现了二级的RPC机制，易于扩展和二次开发。
+服务器基于自研的RPC框架juggle(https://github.com/qianqians/abelkhan/tree/master/juggle)  
+c#语言的反射机制实现了二级的RPC机制，易于扩展和二次开发。
   
-abelkhan采用LGPL2协议开源(https://github.com/qianqians/abelkhan/blob/master/LICENSE),欢迎大家参与我们的项目。
+abelkhan采用LGPL2协议开源(https://github.com/qianqians/abelkhan/blob/master/LICENSE)  
+欢迎大家参与我们的项目。
   
 技术支持:theDarkforce@aliyun.com  
 QQ:451517996  
