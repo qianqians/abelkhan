@@ -7,15 +7,20 @@ QQ群:494405542
 
 服务器框架采用分布式架构：
 
-# center
+center
+---
 全局唯一的单点，负责调度整个集群  
-# dbproxy
+dbproxy
+---
 数据库代理，集群的数据通过dbproxy存入数据库  
-# hub
+hub
+---
 逻辑单点，可以配置多个，每个hub处理一种或多种逻辑上的单点服务  
-# logic
+logic
+---
 逻辑服务器，支持动态扩展，为玩家提供逻辑服务  
-# gate
+gate
+---
 网关服务器，支持动态扩展，为玩家提供接入服务
   
 服务器基于自研的RPC框架juggle(https://github.com/qianqians/abelkhan/tree/master/juggle)  
