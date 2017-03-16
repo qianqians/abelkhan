@@ -45,6 +45,12 @@ namespace juggle
 						break;
 					}
 
+                    if (_event.Count < 2)
+                    {
+                        Console.WriteLine("error msg");
+                        break;
+                    }
+
 					String module_name = (String)_event[0];
                     
                     if (module_set.ContainsKey(module_name))
