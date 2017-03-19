@@ -38,31 +38,38 @@ namespace juggle
             {
 				while (true)
 				{
-					ArrayList _event = ch.pop();
-
-					if (_event == null)
-					{
-						break;
-					}
-
-                    if (_event.Count < 2)
+                    try
                     {
-                        Console.WriteLine("error msg");
-                        break;
-                    }
+                        ArrayList _event = ch.pop();
 
-					String module_name = (String)_event[0];
-                    
-                    if (module_set.ContainsKey(module_name))
-					{
-						Imodule _module = (Imodule)module_set[module_name];
-						_module.process_event(ch, _event);
-					}
-					else
-					{
-						Console.WriteLine("do not have a module named:" + module_name + " " + (String)_event[1]);
-					}
-				}
+                        if (_event == null)
+                        {
+                            break;
+                        }
+
+                        if (_event.Count < 2)
+                        {
+                            Console.WriteLine("error msg");
+                            break;
+                        }
+
+                        String module_name = (String)_event[0];
+
+                        if (module_set.ContainsKey(module_name))
+                        {
+                            Imodule _module = (Imodule)module_set[module_name];
+                            _module.process_event(ch, _event);
+                        }
+                        else
+                        {
+                            Console.WriteLine("do not have a module named:" + module_name + " " + (String)_event[1]);
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                }
             }
         }
 
