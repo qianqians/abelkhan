@@ -66,6 +66,33 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\config\config.cs">
+      <Link>config.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\module\module.cs">
+      <Link>module.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\module\modulemanager.cs">
+      <Link>modulemanager.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\service\acceptnetworkservice.cs">
+      <Link>acceptnetworkservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\service\channel.cs">
+      <Link>channel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\service\connectnetworkservice.cs">
+      <Link>connectnetworkservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\service\juggleservice.cs">
+      <Link>juggleservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\service\service.cs">
+      <Link>service.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\service\timerservice.cs">
+      <Link>timerservice.cs</Link>
+    </Compile>
     <Compile Include="center_msg_handle.cs" />
     <Compile Include="centerproxy.cs" />
     <Compile Include="closehandle.cs" />
@@ -109,27 +136,6 @@
     </Compile>
     <Compile Include="..\..\..\..\thirdpart\jsonparse\csharp\JsonParser.cs">
       <Link>JsonParser.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\service\csharp\acceptnetworkservice.cs">
-      <Link>acceptnetworkservice.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\service\csharp\channel.cs">
-      <Link>channel.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\service\csharp\connectnetworkservice.cs">
-      <Link>connectnetworkservice.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\service\csharp\juggleservice.cs">
-      <Link>juggleservice.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\service\csharp\service.cs">
-      <Link>service.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\service\csharp\timerservice.cs">
-      <Link>timerservice.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\tools\csharp\config.cs">
-      <Link>config.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
