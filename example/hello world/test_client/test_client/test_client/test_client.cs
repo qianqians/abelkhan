@@ -15,7 +15,7 @@ namespace client
             _client.modulemanager.add_module("login", _login);
 
             Int64 tick = Environment.TickCount;
-            _client.connect_server("139.129.96.47", 3236, tick);
+            _client.connect_server("127.0.0.1", 3236, tick);
 
             _client.onConnectGate += onGeteHandle;
             _client.onConnectHub += onConnectHub;
@@ -50,13 +50,13 @@ namespace client
 
         private static void onGeteHandle()
         {
-            Console.WriteLine("11111111111");
+            Console.WriteLine("onGeteHandle");
             _client.connect_hub("lobby");
         }
 
         private static void onConnectHub(string hub_name)
         {
-            Console.WriteLine("2222222222222");
+            Console.WriteLine("onConnectHub");
             _client.call_hub("lobby", "login", "player_login", "1234-1234", "qianqians");
         }
 
