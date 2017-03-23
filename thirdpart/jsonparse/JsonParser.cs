@@ -1,9 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Diagnostics;
 
 namespace System.Text.Json
 {
@@ -11,18 +7,23 @@ namespace System.Text.Json
     {
         public static String pack(object dict)
         {
+            Func<String, String> parsestring = (String str) =>
+            {
+                return "\"" + str + "\"";
+            };
+
             Func<object, String> parsevalue = (object value) =>
             {
                 String _out = "";
                 if (typeof(String).IsInstanceOfType(value))
                 {
-                    _out += "\"";
+                    _out += parsestring((String)value);
                 }
-                _out += Convert.ToString(value);
-                if (typeof(String).IsInstanceOfType(value))
+                else
                 {
-                    _out += "\"";
+                    _out += Convert.ToString(value);
                 }
+
                 return _out;
             };
 
