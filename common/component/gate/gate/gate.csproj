@@ -54,6 +54,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\..\thirdpart\jsonparse\JsonParser.cs">
+      <Link>JsonParser.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\config\config.cs">
       <Link>config.cs</Link>
     </Compile>
@@ -114,9 +117,6 @@
     </Compile>
     <Compile Include="..\..\protcol\c#\module\logic_call_gatemodule.cs">
       <Link>logic_call_gatemodule.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\thirdpart\jsonparse\csharp\JsonParser.cs">
-      <Link>JsonParser.cs</Link>
     </Compile>
     <Compile Include="..\..\..\..\thirdpart\juggle\csharp\Icaller.cs">
       <Link>Icaller.cs</Link>

@@ -66,6 +66,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\..\thirdpart\jsonparse\JsonParser.cs">
+      <Link>JsonParser.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\config\config.cs">
       <Link>config.cs</Link>
     </Compile>
@@ -133,9 +136,6 @@
     </Compile>
     <Compile Include="..\..\..\..\thirdpart\juggle\csharp\process.cs">
       <Link>process.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\thirdpart\jsonparse\csharp\JsonParser.cs">
-      <Link>JsonParser.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
