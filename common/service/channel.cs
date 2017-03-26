@@ -63,11 +63,10 @@ namespace service
 
 								ArrayList unpackedObject = (ArrayList)System.Text.Json.Jsonparser.unpack(System.Text.Encoding.Default.GetString(_tmp.ToArray()));
 
-								lock (que)
-								{
-									que.Enqueue(unpackedObject);
-								}
-							}
+                                Monitor.Enter(que);
+								que.Enqueue(unpackedObject);
+                                Monitor.Exit(que);
+                            }
 							else
 							{
 								if (tmpbuflenght == 0)
@@ -128,11 +127,10 @@ namespace service
 
                                 ArrayList unpackedObject = (ArrayList)System.Text.Json.Jsonparser.unpack(_tmp.ToString());
 
-								lock (que)
-								{
-									que.Enqueue(unpackedObject);
-								}
-							}
+                                Monitor.Enter(que);
+                                que.Enqueue(unpackedObject);
+                                Monitor.Exit(que);
+                            }
 							else
 							{
 								MemoryStream _tmp = new MemoryStream();
@@ -172,15 +170,14 @@ namespace service
 		{
 			ArrayList _array = null;
 
-			lock (que)
+            Monitor.Enter(que);
+			if (que.Count > 0)
 			{
-				if (que.Count > 0)
-				{
-					_array = (ArrayList)que.Dequeue();
-				}
+				_array = (ArrayList)que.Dequeue();
 			}
+            Monitor.Exit(que);
 
-			return _array;
+            return _array;
 		}
 
 		public void senddata(byte[] data)

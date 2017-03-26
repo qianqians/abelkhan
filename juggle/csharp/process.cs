@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace juggle
 {
@@ -8,18 +9,25 @@ namespace juggle
     {
 		public process()
 		{
-			event_set = new List<Ichannel>();
+            add_event = new List<Ichannel>();
+            remove_event = new List<Ichannel>();
+
+            event_set = new List<Ichannel>();
 			module_set = new Hashtable();
 		}
 
         public void reg_channel(Ichannel ch)
         {
-            event_set.Add(ch);
+            Monitor.Enter(add_event);
+            add_event.Add(ch);
+            Monitor.Exit(add_event);
         }
 
         public void unreg_channel(Ichannel ch)
         {
-            event_set.Remove(ch);
+            Monitor.Enter(remove_event);
+            remove_event.Add(ch);
+            Monitor.Exit(remove_event);
         }
 
 		public void reg_module(Imodule module)
@@ -34,14 +42,39 @@ namespace juggle
 
         public void poll()
         {
+            Monitor.Enter(add_event);
+            foreach(var ch in add_event)
+            {
+                event_set.Add(ch);
+            }
+            add_event.Clear();
+            Monitor.Exit(add_event);
+
+            Monitor.Enter(remove_event);
+            foreach (var ch in remove_event)
+            {
+                event_set.Remove(ch);
+            }
+            remove_event.Clear();
+            Monitor.Exit(remove_event);
+
             foreach (Ichannel ch in event_set)
             {
 				while (true)
 				{
+                    ArrayList _event = null;
                     try
                     {
-                        ArrayList _event = ch.pop();
+                        _event = ch.pop();
 
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("channel pop, {0}", e);
+                    }
+
+                    try
+                    {
                         if (_event == null)
                         {
                             break;
@@ -65,13 +98,16 @@ namespace juggle
                             Console.WriteLine("do not have a module named:" + module_name + " " + (String)_event[1]);
                         }
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
-                        Console.WriteLine(e);
+                        Console.WriteLine("process event, {0}", e);
                     }
                 }
             }
         }
+
+        private List<Ichannel> add_event;
+        private List<Ichannel> remove_event;
 
         private List<Ichannel> event_set;
         private Hashtable module_set;

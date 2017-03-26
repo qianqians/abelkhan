@@ -48,8 +48,20 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\..\thirdpart\jsonparse\JsonParser.cs">
+    <Compile Include="..\..\..\..\jsonparse\JsonParser.cs">
       <Link>JsonParser.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\juggle\csharp\Icaller.cs">
+      <Link>Icaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\juggle\csharp\Ichannel.cs">
+      <Link>Ichannel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\juggle\csharp\Imodule.cs">
+      <Link>Imodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\..\juggle\csharp\process.cs">
+      <Link>process.cs</Link>
     </Compile>
     <Compile Include="..\..\..\config\config.cs">
       <Link>config.cs</Link>
@@ -122,18 +134,6 @@
     </Compile>
     <Compile Include="..\..\protcol\c#\module\hubmodule.cs">
       <Link>hubmodule.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\thirdpart\juggle\csharp\Icaller.cs">
-      <Link>Icaller.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\thirdpart\juggle\csharp\Ichannel.cs">
-      <Link>Ichannel.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\thirdpart\juggle\csharp\Imodule.cs">
-      <Link>Imodule.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\thirdpart\juggle\csharp\process.cs">
-      <Link>process.cs</Link>
     </Compile>
     <Compile Include="..\..\protcol\c#\module\center_call_servermodule.cs">
       <Link>center_call_servermodule.cs</Link>
