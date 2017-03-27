@@ -19,6 +19,10 @@ namespace System.Text.Json
                 {
                     _out += parsestring((String)value);
                 }
+                else if (typeof(bool).IsInstanceOfType(value))
+                {
+                    _out += Convert.ToString(value).ToLower();
+                }
                 else
                 {
                     _out += Convert.ToString(value);
@@ -59,7 +63,7 @@ namespace System.Text.Json
                     {
                         _out += "\"" + Convert.ToString(_obj.Key) + "\"";
                         _out += ":";
-                        if ((typeof(Hashtable).IsInstanceOfType(_obj)) || (typeof(Array).IsInstanceOfType(_obj)))
+                        if ((typeof(Hashtable).IsInstanceOfType(_obj.Value)) || (typeof(ArrayList).IsInstanceOfType(_obj.Value)))
                         {
                             _out += pack(_obj.Value);
                         }
