@@ -169,14 +169,26 @@ namespace System.Text.Json
                     {
                         int status = 0;
 
-                        foreach (char _ch in v)
+                        for (int i = 0; i < v.Length; i++)
                         {
-                            if ((_ch < '0' || _ch > '9') && _ch != '.')
+                            if (v[i] == '-')
+                            {
+                                if (i == 0)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    throw new Exception("format error");
+                                }
+                            }
+
+                            if ((v[i] < '0' || v[i] > '9') && v[i] != '.')
                             {
                                 throw new Exception("format error");
                             }
 
-                            if (_ch == '.')
+                            if (v[i] == '.')
                             {
                                 status++;
                             }
@@ -242,14 +254,26 @@ namespace System.Text.Json
                     {
                         int status = 0;
 
-                        foreach (char _ch in v)
+                        for (int i = 0; i < v.Length; i++)
                         {
-                            if ((_ch < '0' || _ch > '9') && _ch != '.')
+                            if (v[i] == '-')
+                            {
+                                if (i == 0)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    throw new Exception("format error");
+                                }
+                            }
+
+                            if ((v[i] < '0' || v[i] > '9') && v[i] != '.')
                             {
                                 throw new Exception("format error");
                             }
 
-                            if (_ch == '.')
+                            if (v[i] == '.')
                             {
                                 status++;
                             }

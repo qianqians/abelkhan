@@ -11,7 +11,7 @@ namespace json_test
             Hashtable o = (Hashtable)System.Text.Json.Jsonparser.unpack(str);
 
             Hashtable t = new Hashtable();
-            t.Add("key1", 1);
+            t.Add("key1", 0-1);
             t.Add("key2", "2");
             t.Add("key3", 3.1);
             t.Add("key4", true);
@@ -42,6 +42,7 @@ namespace json_test
             l1.Add(2.2);
             l1.Add(false);
             l1.Add(l);
+            l1.Add(t);
             t1.Add("key7", l1);
             s = System.Text.Json.Jsonparser.pack(t1);
             o = (Hashtable)System.Text.Json.Jsonparser.unpack(s);

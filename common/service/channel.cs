@@ -61,11 +61,20 @@ namespace service
 
 								_tmp.Position = 0;
 
-								ArrayList unpackedObject = (ArrayList)System.Text.Json.Jsonparser.unpack(System.Text.Encoding.Default.GetString(_tmp.ToArray()));
+                                var json = System.Text.Encoding.Default.GetString(_tmp.ToArray());
+                                try
+                                {
+                                    ArrayList unpackedObject = (ArrayList)System.Text.Json.Jsonparser.unpack(json);
 
-                                Monitor.Enter(que);
-								que.Enqueue(unpackedObject);
-                                Monitor.Exit(que);
+                                    Monitor.Enter(que);
+                                    que.Enqueue(unpackedObject);
+                                    Monitor.Exit(que);
+                                }
+                                catch(Exception e)
+                                {
+                                    Console.WriteLine(json);
+                                    Console.WriteLine("exception {0}", e);
+                                }
                             }
 							else
 							{
@@ -113,33 +122,42 @@ namespace service
 						{
 							Int32 len = ((Int32)tmpbuf[offset + 0]) | ((Int32)tmpbuf[offset + 1]) << 8 | ((Int32)tmpbuf[offset + 2]) << 16 | ((Int32)tmpbuf[offset + 3]) << 24;
 
-							if (len <= (tmpbufoffset - 4))
-							{
-								tmpbufoffset -= len + 4;
-								offset += 4;
+                            if (len <= (tmpbufoffset - 4))
+                            {
+                                tmpbufoffset -= len + 4;
+                                offset += 4;
 
-								MemoryStream _tmp = new MemoryStream();
+                                MemoryStream _tmp = new MemoryStream();
 
-								_tmp.Write(tmpbuf, offset, len);
-								offset += len;
+                                _tmp.Write(tmpbuf, offset, len);
+                                offset += len;
 
-								_tmp.Position = 0;
+                                _tmp.Position = 0;
 
-                                ArrayList unpackedObject = (ArrayList)System.Text.Json.Jsonparser.unpack(_tmp.ToString());
+                                var json = System.Text.Encoding.Default.GetString(_tmp.ToArray());
+                                try
+                                {
+                                    ArrayList unpackedObject = (ArrayList)System.Text.Json.Jsonparser.unpack(json);
 
-                                Monitor.Enter(que);
-                                que.Enqueue(unpackedObject);
-                                Monitor.Exit(que);
+                                    Monitor.Enter(que);
+                                    que.Enqueue(unpackedObject);
+                                    Monitor.Exit(que);
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine(json);
+                                    Console.WriteLine("exception {0}", e);
+                                }
                             }
-							else
-							{
-								MemoryStream _tmp = new MemoryStream();
-								_tmp.Write(tmpbuf, offset, tmpbufoffset);
+                            else
+                            {
+                                MemoryStream _tmp = new MemoryStream();
+                                _tmp.Write(tmpbuf, offset, tmpbufoffset);
 
-								_tmp.ToArray().CopyTo(tmpbuf, 0);
+                                _tmp.ToArray().CopyTo(tmpbuf, 0);
 
-								break;
-							}
+                                break;
+                            }
 
 						} while (true);
 					}
