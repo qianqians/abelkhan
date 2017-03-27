@@ -154,14 +154,16 @@ namespace service
 			}
 			catch(System.Net.Sockets.SocketException )
 			{
-				ch.s.Close();
+                ch.s.Shutdown(SocketShutdown.Both);
+                ch.s.Close();
 				onDisconnect(ch);
 			}
 			catch (System.Exception e)
 			{
-				System.Console.WriteLine("System.Exceptio{0}", e);
+				System.Console.WriteLine("System.Exception {0}", e);
 
-				ch.s.Close();
+                ch.s.Shutdown(SocketShutdown.Both);
+                ch.s.Close();
 				onDisconnect(ch);
 			}
 		}
@@ -195,14 +197,16 @@ namespace service
 			}
 			catch (System.Net.Sockets.SocketException)
 			{
+                s.Shutdown(SocketShutdown.Both);
 				s.Close();
 				onDisconnect(this);
 			}
 			catch (System.Exception e)
 			{
-				System.Console.WriteLine("System.Exceptio{0}", e);
+				System.Console.WriteLine("System.Exception {0}", e);
 
-				s.Close();
+                s.Shutdown(SocketShutdown.Both);
+                s.Close();
 				onDisconnect(this);
 			}
 		}
