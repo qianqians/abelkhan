@@ -54,47 +54,71 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\..\jsonparse\JsonParser.cs">
-      <Link>JsonParser.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\juggle\csharp\Icaller.cs">
-      <Link>Icaller.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\juggle\csharp\Ichannel.cs">
-      <Link>Ichannel.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\juggle\csharp\Imodule.cs">
-      <Link>Imodule.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\..\juggle\csharp\process.cs">
-      <Link>process.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\config\config.cs">
+    <Compile Include="..\..\common\config\config.cs">
       <Link>config.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\module\module.cs">
+    <Compile Include="..\..\common\module\module.cs">
       <Link>module.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\module\modulemanager.cs">
+    <Compile Include="..\..\common\module\modulemanager.cs">
       <Link>modulemanager.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\service\acceptnetworkservice.cs">
+    <Compile Include="..\..\common\protcol\c#\caller\centercaller.cs">
+      <Link>centercaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\caller\gate_call_clientcaller.cs">
+      <Link>gate_call_clientcaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\caller\gate_call_hubcaller.cs">
+      <Link>gate_call_hubcaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\caller\gate_call_logiccaller.cs">
+      <Link>gate_call_logiccaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\module\center_call_servermodule.cs">
+      <Link>center_call_servermodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\module\client_call_gatemodule.cs">
+      <Link>client_call_gatemodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\module\hub_call_gatemodule.cs">
+      <Link>hub_call_gatemodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\module\logic_call_gatemodule.cs">
+      <Link>logic_call_gatemodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\acceptnetworkservice.cs">
       <Link>acceptnetworkservice.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\service\channel.cs">
+    <Compile Include="..\..\common\service\channel.cs">
       <Link>channel.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\service\connectnetworkservice.cs">
+    <Compile Include="..\..\common\service\connectnetworkservice.cs">
       <Link>connectnetworkservice.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\service\juggleservice.cs">
+    <Compile Include="..\..\common\service\juggleservice.cs">
       <Link>juggleservice.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\service\service.cs">
+    <Compile Include="..\..\common\service\service.cs">
       <Link>service.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\service\timerservice.cs">
+    <Compile Include="..\..\common\service\timerservice.cs">
       <Link>timerservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\thirdpart\jsonparse\JsonParser.cs">
+      <Link>JsonParser.cs</Link>
+    </Compile>
+    <Compile Include="..\..\thirdpart\juggle\csharp\Icaller.cs">
+      <Link>Icaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\thirdpart\juggle\csharp\Ichannel.cs">
+      <Link>Ichannel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\thirdpart\juggle\csharp\Imodule.cs">
+      <Link>Imodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\thirdpart\juggle\csharp\process.cs">
+      <Link>process.cs</Link>
     </Compile>
     <Compile Include="center_msg_handle.cs" />
     <Compile Include="centerproxy.cs" />
@@ -109,29 +133,5 @@
     <Compile Include="logic_msg_handle.cs" />
     <Compile Include="logicmanager.cs" />
     <Compile Include="logicproxy.cs" />
-    <Compile Include="..\..\protcol\c#\caller\centercaller.cs">
-      <Link>centercaller.cs</Link>
-    </Compile>
-    <Compile Include="..\..\protcol\c#\caller\gate_call_clientcaller.cs">
-      <Link>gate_call_clientcaller.cs</Link>
-    </Compile>
-    <Compile Include="..\..\protcol\c#\caller\gate_call_hubcaller.cs">
-      <Link>gate_call_hubcaller.cs</Link>
-    </Compile>
-    <Compile Include="..\..\protcol\c#\caller\gate_call_logiccaller.cs">
-      <Link>gate_call_logiccaller.cs</Link>
-    </Compile>
-    <Compile Include="..\..\protcol\c#\module\client_call_gatemodule.cs">
-      <Link>client_call_gatemodule.cs</Link>
-    </Compile>
-    <Compile Include="..\..\protcol\c#\module\hub_call_gatemodule.cs">
-      <Link>hub_call_gatemodule.cs</Link>
-    </Compile>
-    <Compile Include="..\..\protcol\c#\module\logic_call_gatemodule.cs">
-      <Link>logic_call_gatemodule.cs</Link>
-    </Compile>
-    <Compile Include="..\..\protcol\c#\module\center_call_servermodule.cs">
-      <Link>center_call_servermodule.cs</Link>
-    </Compile>
   </ItemGroup>
 </Project>
