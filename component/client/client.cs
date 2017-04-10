@@ -38,7 +38,9 @@ namespace client
 		public event onConnectGateHandle onConnectGate;
 		private void on_ack_connect_gate()
 		{
-			if (onConnectGate != null)
+            timer.addticktime(timer.Tick + 30 * 1000, heartbeats);
+
+            if (onConnectGate != null)
 			{
                 onConnectGate();
             }
@@ -148,9 +150,9 @@ namespace client
         }
 
         public void poll(Int64 tick)
-		{
-            _juggleservice.poll(tick);
+        {
             timer.poll(tick);
+            _juggleservice.poll(tick);
         }
 
         private static void Main()

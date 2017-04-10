@@ -17,7 +17,7 @@ namespace service
             
 			try
 			{
-				s.Connect(new IPEndPoint(IPAddress.Parse(ip), port));
+                s.Connect(new IPEndPoint(IPAddress.Parse(ip), port));
 
 				channel ch = new channel(s);
 				ch.onDisconnect += this.onChannelDisconn;

@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hub", "hub\hub.csproj", "{9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "logic", "logic\logic.csproj", "{90BD6407-331C-4A68-8FAD-FB0FB4D6A03F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "robot", "robot\robot.csproj", "{95535BA1-7E85-492A-82BA-9D72A21E92F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,14 @@ Global
 		{90BD6407-331C-4A68-8FAD-FB0FB4D6A03F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{90BD6407-331C-4A68-8FAD-FB0FB4D6A03F}.Release|x86.ActiveCfg = Release|x86
 		{90BD6407-331C-4A68-8FAD-FB0FB4D6A03F}.Release|x86.Build.0 = Release|x86
+		{95535BA1-7E85-492A-82BA-9D72A21E92F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95535BA1-7E85-492A-82BA-9D72A21E92F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95535BA1-7E85-492A-82BA-9D72A21E92F6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{95535BA1-7E85-492A-82BA-9D72A21E92F6}.Debug|x86.Build.0 = Debug|Any CPU
+		{95535BA1-7E85-492A-82BA-9D72A21E92F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95535BA1-7E85-492A-82BA-9D72A21E92F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95535BA1-7E85-492A-82BA-9D72A21E92F6}.Release|x86.ActiveCfg = Release|Any CPU
+		{95535BA1-7E85-492A-82BA-9D72A21E92F6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
