@@ -10,7 +10,12 @@ namespace gate
             _clientmanager.unreg_client(ch);
         }
 
-		public gate(String[] args)
+        public void onChannelConnect(juggle.Ichannel ch)
+        {
+            Console.WriteLine("onChannelConnect");
+        }
+
+        public gate(String[] args)
 		{
 			uuid = System.Guid.NewGuid().ToString();
 
@@ -73,7 +78,7 @@ namespace gate
 			var inside_port = (short)_config.get_value_int("inside_port");
 			_accept_logic_hub_service = new service.acceptnetworkservice(inside_ip, inside_port, _logic_hub_process);
 
-			var center_ip = _center_config.get_value_string("ip");
+            var center_ip = _center_config.get_value_string("ip");
 			var center_port = (short)_center_config.get_value_int("port");
 			_center_call_server = new module.center_call_server();
 			var _center_process = new juggle.process();
