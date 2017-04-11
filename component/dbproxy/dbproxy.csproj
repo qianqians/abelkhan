@@ -126,4 +126,7 @@
     <Compile Include="logicproxy.cs" />
     <Compile Include="mongodbproxy.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>
