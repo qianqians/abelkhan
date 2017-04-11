@@ -173,13 +173,10 @@ namespace robot
 
             try
             {
-                //for (int i = 0; i > _robot_num; i++)
-                //{
-                    var ch = _conn.connect(_ip, _port);
-                    var proxy = new client_proxy(ch);
-                    proxys.Add(ch, proxy);
-                    proxy.connect_server(tick);
-                //}
+                var ch = _conn.connect(_ip, _port);
+                var proxy = new client_proxy(ch);
+                proxys.Add(ch, proxy);
+                proxy.connect_server(tick);
                 
             }
             catch (Exception)

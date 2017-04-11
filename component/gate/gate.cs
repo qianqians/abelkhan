@@ -37,6 +37,7 @@ namespace gate
 			_client_call_gate = new module.client_call_gate ();
 			_client_call_gate.onconnect_server += _client_msg_handle.connect_server;
 			_client_call_gate.oncancle_server += _client_msg_handle.cancle_server;
+            _client_call_gate.onget_logic += _client_msg_handle.get_logic;
             _client_call_gate.onconnect_logic += _client_msg_handle.connect_logic;
             _client_call_gate.ondisconnect_logic += _client_msg_handle.disconnect_logic;
             _client_call_gate.onconnect_hub += _client_msg_handle.connect_hub;

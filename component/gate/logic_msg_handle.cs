@@ -23,11 +23,12 @@ namespace gate
 			if (_clientproxy != null)
             {
                 logicproxy _logicproxy = _logicmanager.get_logic(juggle.Imodule.current_ch);
-                if (result == "svr_is_success")
+                if (String.Equals(result, "svr_is_sucess"))
 				{
                     _clientproxy.ack_get_logic(_logicproxy.uuid);
 				}
-				else {
+				else
+                {
                     Console.WriteLine(result + " svr:" + _logicproxy.uuid);
 
 					_logicproxy = _logicmanager.get_logic();

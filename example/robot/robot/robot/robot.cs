@@ -49,7 +49,7 @@ namespace robot
 
         private static void onGateHandle()
         {
-            Console.WriteLine("onGateHandle");
+            //Console.WriteLine("onGateHandle");
 
             var _proxy = _robot.get_client_proxy(juggle.Imodule.current_ch);
             _proxy.get_logic();
@@ -58,7 +58,7 @@ namespace robot
 
         private static void onAckGetLogic(string _logic_uuid)
         {
-            Console.WriteLine("onAckGetLogic:" + _logic_uuid);
+            //Console.WriteLine("onAckGetLogic:" + _logic_uuid);
 
             var _proxy = _robot.get_client_proxy(juggle.Imodule.current_ch);
             _proxy.connect_logic(_logic_uuid);
@@ -66,12 +66,12 @@ namespace robot
 
         private static void onConnectLogic(string logic_uuid)
         {
-            Console.WriteLine("onConnectLogic:" + logic_uuid);
+            //Console.WriteLine("onConnectLogic:" + logic_uuid);
         }
 
         private static void onConnectHub(string hub_name)
         {
-            Console.WriteLine("onConnectHub:" + hub_name);
+            //Console.WriteLine("onConnectHub:" + hub_name);
         }
 
 
