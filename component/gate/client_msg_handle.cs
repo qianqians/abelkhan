@@ -28,6 +28,16 @@ namespace gate
 			_clientmanager.unreg_client(juggle.Imodule.current_ch);
         }
 
+        public void get_logic()
+        {
+            logicproxy _logicproxy = _logicmanager.get_logic();
+            if (_logicproxy != null)
+            {
+                string uuid = _clientmanager.get_client_uuid(_clientmanager.get_clientproxy(juggle.Imodule.current_ch));
+                _logicproxy.get_logic(uuid);
+            }
+        }
+
         public void connect_logic(string client_uuid, string logic_uuid)
         {
             logicproxy _logicproxy = _logicmanager.get_logic(logic_uuid);

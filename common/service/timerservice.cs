@@ -11,7 +11,7 @@ namespace service
 		
 		public timerservice()
 		{
-            tickHandledict = new Dictionary<Int64, List<tickHandle> >();
+            tickHandledict = new SortedDictionary<Int64, List<tickHandle> >();
 			timeHandledict = new Dictionary<DateTime, List<timeHandle> >();
             addtickHandle = new Dictionary<Int64, List<tickHandle>>();
             addtimeHandle = new Dictionary<DateTime, List<timeHandle>>();
@@ -47,10 +47,10 @@ namespace service
             try
             {
 				List<Int64> list = new List<Int64>();
-
-				foreach (var item in tickHandledict)
+                
+                foreach (var item in tickHandledict)
 				{
-					if (item.Key >= tick)
+					if (item.Key <= tick)
 					{
 						list.Add(item.Key);
 
@@ -59,6 +59,10 @@ namespace service
                             handle(tick);
                         }
 					}
+                    else
+                    {
+                        break;
+                    }
 				}
 
 				foreach (var item in list)
@@ -120,7 +124,7 @@ namespace service
 
         public Int64 Tick;
 
-		private Dictionary<Int64, List<tickHandle> > tickHandledict;
+		private SortedDictionary<Int64, List<tickHandle> > tickHandledict;
         private Dictionary<Int64, List<tickHandle>> addtickHandle;
         private Dictionary<DateTime, List<timeHandle> > timeHandledict;
         private Dictionary<DateTime, List<timeHandle> > addtimeHandle;
