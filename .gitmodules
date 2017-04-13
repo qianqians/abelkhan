@@ -1,3 +1,6 @@
 [submodule "thirdpart/juggle"]
 	path = thirdpart/juggle
 	url = https://github.com/qianqians/juggle
+[submodule "thirdpart/jsonparse"]
+	path = thirdpart/jsonparse
+	url = https://github.com/qianqians/jsonparse.git
