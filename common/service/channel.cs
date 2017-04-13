@@ -47,58 +47,66 @@ namespace service
 						int offset = 0;
 						do
 						{
-							Int32 len = ((Int32)recvbuf[offset + 0]) | ((Int32)recvbuf[offset + 1]) << 8 | ((Int32)recvbuf[offset + 2]) << 16 | ((Int32)recvbuf[offset + 3]) << 24;
+                            if (read > 0)
+                            {
+                                Int32 len = ((Int32)recvbuf[offset + 0]) | ((Int32)recvbuf[offset + 1]) << 8 | ((Int32)recvbuf[offset + 2]) << 16 | ((Int32)recvbuf[offset + 3]) << 24;
+                                //Console.WriteLine("len:{0}", len);
 
-							if (len <= (read - 4))
-							{
-								read -= len + 4;
-								offset += 4;
-
-								MemoryStream _tmp = new MemoryStream();
-
-								_tmp.Write(recvbuf, offset, len);
-								offset += len;
-
-								_tmp.Position = 0;
-
-                                var json = System.Text.Encoding.Default.GetString(_tmp.ToArray());
-                                try
+                                if (len <= (read - 4))
                                 {
-                                    ArrayList unpackedObject = (ArrayList)System.Text.Json.Jsonparser.unpack(json);
+                                    read -= len + 4;
+                                    offset += 4;
 
-                                    Monitor.Enter(que);
-                                    que.Enqueue(unpackedObject);
-                                    Monitor.Exit(que);
+                                    MemoryStream _tmp = new MemoryStream();
+
+                                    _tmp.Write(recvbuf, offset, len);
+                                    offset += len;
+
+                                    _tmp.Position = 0;
+
+                                    var json = System.Text.Encoding.Default.GetString(_tmp.ToArray());
+                                    try
+                                    {
+                                        ArrayList unpackedObject = (ArrayList)System.Text.Json.Jsonparser.unpack(json);
+
+                                        Monitor.Enter(que);
+                                        que.Enqueue(unpackedObject);
+                                        Monitor.Exit(que);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine(json);
+                                        Console.WriteLine("exception {0}", e);
+                                    }
                                 }
-                                catch(Exception e)
+                                else
                                 {
-                                    Console.WriteLine(json);
-                                    Console.WriteLine("exception {0}", e);
+                                    if (tmpbuflenght == 0)
+                                    {
+                                        tmpbuflenght = recvbuflenght * 2;
+                                        tmpbuf = new byte[tmpbuflenght];
+                                    }
+
+                                    while ((tmpbuflenght - tmpbufoffset) < read)
+                                    {
+                                        byte[] newtmpbuf = new byte[2 * tmpbuflenght];
+                                        tmpbuf.CopyTo(newtmpbuf, 0);
+                                        tmpbuf = newtmpbuf;
+                                    }
+
+                                    MemoryStream _tmp = new MemoryStream();
+                                    _tmp.Write(recvbuf, offset, read);
+
+                                    _tmp.ToArray().CopyTo(tmpbuf, tmpbufoffset);
+                                    tmpbufoffset = read;
+
+                                    break;
                                 }
                             }
-							else
-							{
-								if (tmpbuflenght == 0)
-								{
-									tmpbuflenght = recvbuflenght * 2;
-									tmpbuf = new byte[tmpbuflenght];
-								}
-
-								while ((tmpbuflenght - tmpbufoffset) < read)
-								{
-									byte[] newtmpbuf = new byte[2 * tmpbuflenght];
-									tmpbuf.CopyTo(newtmpbuf, 0);
-									tmpbuf = newtmpbuf;
-								}
-
-								MemoryStream _tmp = new MemoryStream();
-								_tmp.Write(recvbuf, offset, read);
-
-								_tmp.ToArray().CopyTo(tmpbuf, tmpbufoffset);
-								tmpbufoffset = read;
-
-								break;
-							}
+                            else
+                            {
+                                break;
+                            }
 
 						} while (true);
 					}
@@ -120,42 +128,50 @@ namespace service
 						int offset = 0;
 						do
 						{
-							Int32 len = ((Int32)tmpbuf[offset + 0]) | ((Int32)tmpbuf[offset + 1]) << 8 | ((Int32)tmpbuf[offset + 2]) << 16 | ((Int32)tmpbuf[offset + 3]) << 24;
-
-                            if (len <= (tmpbufoffset - 4))
+                            if (tmpbufoffset > 0)
                             {
-                                tmpbufoffset -= len + 4;
-                                offset += 4;
+                                Int32 len = ((Int32)tmpbuf[offset + 0]) | ((Int32)tmpbuf[offset + 1]) << 8 | ((Int32)tmpbuf[offset + 2]) << 16 | ((Int32)tmpbuf[offset + 3]) << 24;
+                                //Console.WriteLine("len:{0}", len);
 
-                                MemoryStream _tmp = new MemoryStream();
-
-                                _tmp.Write(tmpbuf, offset, len);
-                                offset += len;
-
-                                _tmp.Position = 0;
-
-                                var json = System.Text.Encoding.Default.GetString(_tmp.ToArray());
-                                try
+                                if (len <= (tmpbufoffset - 4))
                                 {
-                                    ArrayList unpackedObject = (ArrayList)System.Text.Json.Jsonparser.unpack(json);
+                                    tmpbufoffset -= len + 4;
+                                    offset += 4;
 
-                                    Monitor.Enter(que);
-                                    que.Enqueue(unpackedObject);
-                                    Monitor.Exit(que);
+                                    MemoryStream _tmp = new MemoryStream();
+
+                                    _tmp.Write(tmpbuf, offset, len);
+                                    offset += len;
+
+                                    _tmp.Position = 0;
+
+                                    var json = System.Text.Encoding.Default.GetString(_tmp.ToArray());
+                                    try
+                                    {
+                                        ArrayList unpackedObject = (ArrayList)System.Text.Json.Jsonparser.unpack(json);
+
+                                        Monitor.Enter(que);
+                                        que.Enqueue(unpackedObject);
+                                        Monitor.Exit(que);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine(json);
+                                        Console.WriteLine("exception {0}", e);
+                                    }
                                 }
-                                catch (Exception e)
+                                else
                                 {
-                                    Console.WriteLine(json);
-                                    Console.WriteLine("exception {0}", e);
+                                    MemoryStream _tmp = new MemoryStream();
+                                    _tmp.Write(tmpbuf, offset, tmpbufoffset);
+
+                                    _tmp.ToArray().CopyTo(tmpbuf, 0);
+
+                                    break;
                                 }
                             }
                             else
                             {
-                                MemoryStream _tmp = new MemoryStream();
-                                _tmp.Write(tmpbuf, offset, tmpbufoffset);
-
-                                _tmp.ToArray().CopyTo(tmpbuf, 0);
-
                                 break;
                             }
 

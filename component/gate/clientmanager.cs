@@ -163,6 +163,7 @@ namespace gate
 
         public void tick_client(Int64 servertick)
         {
+            var remove = new List<juggle.Ichannel>();
             foreach (KeyValuePair<juggle.Ichannel, Int64> kvp in client_server_time)
             {
                 if ((servertick - kvp.Value) > 60 * 1000)
@@ -184,17 +185,24 @@ namespace gate
                         }
                         clientproxy_hubproxy.Remove(_client);
                     }
-                    
-                    clientproxys_ch.Remove(kvp.Key);
-                    client_server_time.Remove(kvp.Key);
-                    client_time.Remove(kvp.Key);
-                    if (clientproxys_uuid.ContainsKey(_client))
-                    {
-                        string uuid = clientproxys_uuid[_client];
-                        clientproxys_uuid.Remove(_client);
 
-                        clientproxys.Remove(uuid);
-                    }
+                    remove.Add(kvp.Key);
+                }
+            }
+
+            foreach (var ch in remove)
+            {
+                var _client = clientproxys_ch[ch];
+
+                clientproxys_ch.Remove(ch);
+                client_server_time.Remove(ch);
+                client_time.Remove(ch);
+                if (clientproxys_uuid.ContainsKey(_client))
+                {
+                    string uuid = clientproxys_uuid[_client];
+                    clientproxys_uuid.Remove(_client);
+
+                    clientproxys.Remove(uuid);
                 }
             }
         }
