@@ -9,7 +9,7 @@
     "dbproxy":{
 	"ip":"127.0.0.1",
 	"port":1235,
-	"db_ip":"139.129.96.47",
+	"db_ip":"122.112.209.196",
 	"db_port":27017,
 	"db_name":"test",
 	"db_collection":"objects"

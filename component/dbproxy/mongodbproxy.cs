@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Threading;
 
 namespace dbproxy
 {
@@ -8,12 +7,12 @@ namespace dbproxy
 	{
 		public mongodbproxy(String ip, short port, String db, String collection)
 		{
-			var setting = new MongoDB.Driver.MongoServerSettings ();
+            var setting = new MongoDB.Driver.MongoServerSettings ();
 			setting.Server = new MongoDB.Driver.MongoServerAddress (ip, port);
-			_mongoserver = new MongoDB.Driver.MongoServer(setting);
+            _mongoserver = new MongoDB.Driver.MongoServer(setting);
 			var _db = _mongoserver.GetDatabase(db);
-			_collection = _db.GetCollection<MongoDB.Bson.BsonDocument> (collection);
-		}
+            _collection = _db.GetCollection<MongoDB.Bson.BsonDocument> (collection) as MongoDB.Driver.MongoCollection<MongoDB.Bson.BsonDocument>;
+        }
 
 		public bool save(Hashtable json_data) 
 		{

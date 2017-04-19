@@ -43,12 +43,15 @@ namespace dbproxy
 
 		public void get_object_info(Hashtable query_json, string callbackid)
 		{
+            Console.WriteLine("get_object_info");
+
             ArrayList _list = _mongodbproxy.find(0, 0, 0, query_json, null);
 
 			hubproxy _hubproxy = _hubmanager.get_hub(juggle.Imodule.current_ch);
 
 			if (_hubproxy == null) 
 			{
+                Console.WriteLine("get_object_info hubproxy is null");
 				return;
 			}
 
