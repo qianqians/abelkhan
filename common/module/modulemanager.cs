@@ -38,7 +38,7 @@ namespace common
 					}
 					catch (Exception e)
 					{
-						Console.WriteLine("call rpc error {0}", e);
+						Console.WriteLine("call rpc error {0} {1}", func_name, e);
 					}
 				}
                 else

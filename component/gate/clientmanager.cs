@@ -138,27 +138,35 @@ namespace gate
 			return null;
 		}
 
-		public void refresh_and_check_client(juggle.Ichannel _ch, Int64 servertick, Int64 clienttick) {
-			if (((clienttick - client_time[_ch]) - (servertick - client_server_time[_ch])) > 10 * 1000) {
-				var _client = clientproxys_ch [_ch];
-				var client_uuid = clientproxys_uuid[_client];
-				if (clientproxy_logicproxy.ContainsKey (_client))
-				{
-					var _logic = clientproxy_logicproxy [_client];
-					_logic.client_exception (client_uuid);
-				}
-                if (clientproxy_hubproxy.ContainsKey(_client))
+		public void refresh_and_check_client(juggle.Ichannel _ch, Int64 servertick, Int64 clienttick)
+        {
+            if (client_time.ContainsKey(_ch) && client_server_time.ContainsKey(_ch))
+            {
+                if (((clienttick - client_time[_ch]) - (servertick - client_server_time[_ch])) > 10 * 1000)
                 {
-                    var _hubs = clientproxy_hubproxy[_client];
-                    foreach (var _hub in _hubs)
+                    if (clientproxys_ch.ContainsKey(_ch))
                     {
-                        _hub.client_exception(client_uuid);
+                        var _client = clientproxys_ch[_ch];
+                        var client_uuid = clientproxys_uuid[_client];
+                        if (clientproxy_logicproxy.ContainsKey(_client))
+                        {
+                            var _logic = clientproxy_logicproxy[_client];
+                            _logic.client_exception(client_uuid);
+                        }
+                        if (clientproxy_hubproxy.ContainsKey(_client))
+                        {
+                            var _hubs = clientproxy_hubproxy[_client];
+                            foreach (var _hub in _hubs)
+                            {
+                                _hub.client_exception(client_uuid);
+                            }
+                        }
                     }
                 }
-            }
 
-			client_server_time[_ch] = servertick;
-			client_time[_ch] = clienttick;
+                client_server_time[_ch] = servertick;
+                client_time[_ch] = clienttick;
+            }
 		}
 
         public void tick_client(Int64 servertick)
