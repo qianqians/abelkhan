@@ -30,6 +30,7 @@ namespace service
                     tickHandledict[item.Key].Add(t);
                 }
             }
+            addtickHandle.Clear();
             foreach (var item in addtimeHandle)
             {
                 if (!timeHandledict.ContainsKey(item.Key))
@@ -41,6 +42,7 @@ namespace service
                     timeHandledict[item.Key].Add(t);
                 }
             }
+            addtimeHandle.Clear();
 
             Tick = tick;
 
@@ -59,10 +61,6 @@ namespace service
                             handle(tick);
                         }
 					}
-                    else
-                    {
-                        break;
-                    }
 				}
 
 				foreach (var item in list)

@@ -47,10 +47,9 @@ namespace service
 						int offset = 0;
 						do
 						{
-                            if (read > 0)
+                            if (read > 4)
                             {
                                 Int32 len = ((Int32)recvbuf[offset + 0]) | ((Int32)recvbuf[offset + 1]) << 8 | ((Int32)recvbuf[offset + 2]) << 16 | ((Int32)recvbuf[offset + 3]) << 24;
-                                //Console.WriteLine("len:{0}", len);
 
                                 if (len <= (read - 4))
                                 {
@@ -105,6 +104,27 @@ namespace service
                             }
                             else
                             {
+                                if (read > 0)
+                                {
+                                    if (tmpbuflenght == 0)
+                                    {
+                                        tmpbuflenght = recvbuflenght * 2;
+                                        tmpbuf = new byte[tmpbuflenght];
+                                    }
+
+                                    while ((tmpbuflenght - tmpbufoffset) < read)
+                                    {
+                                        byte[] newtmpbuf = new byte[2 * tmpbuflenght];
+                                        tmpbuf.CopyTo(newtmpbuf, 0);
+                                        tmpbuf = newtmpbuf;
+                                    }
+
+                                    MemoryStream _tmp = new MemoryStream();
+                                    _tmp.Write(recvbuf, offset, read);
+
+                                    _tmp.ToArray().CopyTo(tmpbuf, tmpbufoffset);
+                                    tmpbufoffset = read;
+                                }
                                 break;
                             }
 
@@ -128,10 +148,9 @@ namespace service
 						int offset = 0;
 						do
 						{
-                            if (tmpbufoffset > 0)
+                            if (tmpbufoffset > 4)
                             {
                                 Int32 len = ((Int32)tmpbuf[offset + 0]) | ((Int32)tmpbuf[offset + 1]) << 8 | ((Int32)tmpbuf[offset + 2]) << 16 | ((Int32)tmpbuf[offset + 3]) << 24;
-                                //Console.WriteLine("len:{0}", len);
 
                                 if (len <= (tmpbufoffset - 4))
                                 {
@@ -172,6 +191,13 @@ namespace service
                             }
                             else
                             {
+                                if (tmpbufoffset > 0)
+                                {
+                                    MemoryStream _tmp = new MemoryStream();
+                                    _tmp.Write(tmpbuf, offset, tmpbufoffset);
+
+                                    _tmp.ToArray().CopyTo(tmpbuf, 0);
+                                }
                                 break;
                             }
 
