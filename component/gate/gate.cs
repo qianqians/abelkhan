@@ -7,7 +7,7 @@ namespace gate
 	{
         public void onClientDissconnect(juggle.Ichannel ch)
         {
-            _clientmanager.unreg_client(ch);
+            clients.unreg_client(ch);
         }
 
         public void onChannelConnect(juggle.Ichannel ch)
@@ -28,12 +28,14 @@ namespace gate
 
 			closeHandle = new closehandle();
 
-			timer = new service.timerservice();
+            enable_heartbeats = _config.get_value_bool("heartbeats");
+
+            timer = new service.timerservice();
 			_logicmanager = new logicmanager();
             _hubmanager = new hubmanager();
-            _clientmanager = new clientmanager ();
+            clients = new clientmanager ();
 
-			_client_msg_handle = new client_msg_handle (_clientmanager, _logicmanager, _hubmanager, timer);
+			_client_msg_handle = new client_msg_handle (clients, _logicmanager, _hubmanager, timer);
 			_client_call_gate = new module.client_call_gate ();
 			_client_call_gate.onconnect_server += _client_msg_handle.connect_server;
 			_client_call_gate.oncancle_server += _client_msg_handle.cancle_server;
@@ -53,7 +55,7 @@ namespace gate
 			_accept_client_service = new service.acceptnetworkservice(outside_ip, outside_port, _client_process);
             _accept_client_service.onChannelDisconnect += onClientDissconnect;
 
-            _logic_msg_handle = new logic_msg_handle(_logicmanager, _clientmanager);
+            _logic_msg_handle = new logic_msg_handle(_logicmanager, clients);
 			_logic_call_gate = new module.logic_call_gate();
 			_logic_call_gate.onreg_logic += _logic_msg_handle.reg_logic;
 			_logic_call_gate.onack_client_get_logic += _logic_msg_handle.ack_client_get_logic;
@@ -63,7 +65,7 @@ namespace gate
 			_logic_call_gate.onforward_logic_call_global_client += _logic_msg_handle.forward_logic_call_global_client;
 			_logic_call_gate.onforward_logic_call_group_client += _logic_msg_handle.forward_logic_call_group_client;
 
-			_hub_msg_handle = new hub_msg_handle(_hubmanager, _clientmanager);
+			_hub_msg_handle = new hub_msg_handle(_hubmanager, clients);
 			_hub_call_gate = new module.hub_call_gate ();
 			_hub_call_gate.onreg_hub += _hub_msg_handle.reg_hub;
             _hub_call_gate.onconnect_sucess += _hub_msg_handle.connect_sucess;
@@ -98,7 +100,10 @@ namespace gate
 
 			_centerproxy.reg_gate(inside_ip, inside_port, uuid);
 
-            timer.addticktime(60 * 1000, _clientmanager.tick_client);
+            if (enable_heartbeats)
+            {
+                timer.addticktime(60 * 1000, clients.tick_client);
+            }
         }
 
 		public void poll(Int64 tick)
@@ -161,10 +166,12 @@ namespace gate
 
 		public static closehandle closeHandle;
 
-		private service.acceptnetworkservice _accept_client_service;
+        public static bool enable_heartbeats;
+
+        private service.acceptnetworkservice _accept_client_service;
 		private module.client_call_gate _client_call_gate;
 		private client_msg_handle _client_msg_handle;
-		private clientmanager _clientmanager;
+        public static clientmanager clients;
 
 		private service.acceptnetworkservice _accept_logic_hub_service;
 		private module.logic_call_gate _logic_call_gate;

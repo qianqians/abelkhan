@@ -212,7 +212,11 @@ namespace gate
 
                     clientproxys.Remove(uuid);
                 }
+
+                ch.disconnect();
             }
+
+            gate.timer.addticktime(60 * 1000, gate.clients.tick_client);
         }
 
         private Dictionary<clientproxy, String> clientproxys_uuid;
