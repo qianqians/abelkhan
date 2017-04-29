@@ -11,8 +11,8 @@ namespace logic
 		}
 
 		public void reg_logic_sucess()
-		{
-			Console.WriteLine("connect dbproxy server sucess");
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "connect dbproxy server sucess");
 		}
 
 		public void ack_create_persisted_object(String callbackid)

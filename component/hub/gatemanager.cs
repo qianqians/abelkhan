@@ -40,7 +40,8 @@ namespace hub
         {
             if (ch_gateproxys.ContainsKey(gate_ch))
             {
-                Console.WriteLine("");
+                log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "client {0} connected", client_uuid);
+
                 var _proxy = ch_gateproxys[gate_ch];
                 clients.Add(client_uuid, _proxy);
                 _proxy.connect_sucess(client_uuid);
@@ -100,7 +101,7 @@ namespace hub
             }
             else
             {
-                Console.WriteLine("no-exist client:" + uuid);
+                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "no-exist client:", uuid);
             }
         }
 

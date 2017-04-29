@@ -13,8 +13,9 @@ namespace hub
 		}
 
 		public void reg_hub(String uuid)
-		{
-			Console.WriteLine("begin connect dbproxy server");
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin connect dbproxy server");
+
 			_hub_call_dbproxy.reg_hub(uuid);
 		}
 

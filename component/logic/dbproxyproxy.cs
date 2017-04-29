@@ -20,8 +20,9 @@ namespace logic
 		}
 
 		public void reg_logic(String uuid)
-		{
-			Console.WriteLine("begin connect dbproxy server");
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin connect dbproxy server");
+
 			_logic_call_dbproxy.reg_logic(uuid);
 		}
 

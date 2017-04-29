@@ -15,10 +15,11 @@ namespace gate
 
 		public void connect_server(string uuid, long tick)
 		{
-			if (!_clientmanager.has_client(uuid)) {
-				System.Console.WriteLine("client " + uuid + " connected");
+			if (!_clientmanager.has_client(uuid))
+            {
+                log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "client {0} connected", uuid);
 
-				var _proxy = _clientmanager.reg_client(uuid, juggle.Imodule.current_ch, _timerservice.Tick, tick);
+				var _proxy = _clientmanager.reg_client(uuid, juggle.Imodule.current_ch, service.timerservice.Tick, tick);
                 _proxy.connect_gate_sucessa();
             }
 		}
@@ -106,7 +107,7 @@ namespace gate
 
         public void heartbeats(long clockt)
 		{
-			_clientmanager.refresh_and_check_client(juggle.Imodule.current_ch, _timerservice.Tick, clockt);
+			_clientmanager.refresh_and_check_client(juggle.Imodule.current_ch, service.timerservice.Tick, clockt);
 		}
 
 		private clientmanager _clientmanager;

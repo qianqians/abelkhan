@@ -14,8 +14,28 @@ namespace center
 			{
 				_config = _config.get_value_dict(args[1]);
 			}
-				
-			_svrmanager = new svrmanager ();
+
+            var log_level = _config.get_value_string("log_level");
+            if (log_level == "debug")
+            {
+                log.log.logMode = log.log.enLogMode.Debug;
+            }
+            else if (log_level == "release")
+            {
+                log.log.logMode = log.log.enLogMode.Release;
+            }
+            var log_file = _config.get_value_string("log_file");
+            log.log.logFile = log_file;
+            var log_dir = _config.get_value_string("log_dir");
+            log.log.logPath = log_dir;
+            {
+                if (!System.IO.Directory.Exists(log_dir))
+                {
+                    System.IO.Directory.CreateDirectory(log_dir);
+                }
+            }
+
+            _svrmanager = new svrmanager ();
 			_logicmanager = new logicmanager ();
 			_hubmanager = new hubmanager ();
 
@@ -56,51 +76,39 @@ namespace center
 			_juggle_service.add_process (_gm_process);
 		}
 
-		public void poll(Int64 tick)
+		public Int64 poll()
 		{
-			_juggle_service.poll(tick);
-			timer.poll(tick);
+            Int64 tick = timer.poll();
+
+            _juggle_service.poll(tick);
 			_accept_svr_service.poll(tick);
 			_accept_gm_service.poll(tick);
-		}
+
+            return tick;
+        }
 
 		private static void Main (string[] args)
 		{
 			if (args.Length <= 0)
-			{
-				System.Console.WriteLine ("non input start argv");
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "non input start argv");
 				return;
 			}
 
 			center _center = new center(args);
 
-			Int64 tick = Environment.TickCount;
-			Int64 tickcount = 0;
-			while (true)
+            Int64 old_tick = 0;
+            Int64 tick = 0;
+            while (true)
 			{
-				Int64 tmptick = (Environment.TickCount & UInt32.MaxValue);
-				if (tmptick < tick)
-				{
-					tickcount += 1;
-					tmptick = tmptick + tickcount * UInt32.MaxValue;
-				}
-				tick = tmptick;
+                old_tick = tick;
+                tick = _center.poll();
 
-				_center.poll(tick);
-
-				tmptick = (Environment.TickCount & UInt32.MaxValue);
-				if (tmptick < tick)
-				{
-					tickcount += 1;
-					tmptick = tmptick + tickcount * UInt32.MaxValue;
-				}
-				Int64 ticktime = (tmptick - tick);
-				tick = tmptick;
-
-				if (ticktime < 50)
-				{
-					Thread.Sleep(15);
-				}
+                Int64 tmp = tick - old_tick;
+                if (tmp < 50)
+                {
+                    System.Threading.Thread.Sleep(15);
+                }
 			}
 		}
 

@@ -20,35 +20,20 @@ namespace lobby
             login _login = new login();
             hub.hub.modules.add_module("login", _login);
 
-            Int64 tick = Environment.TickCount;
-            Int64 tickcount = 0;
+            Int64 oldtick = 0;
+            Int64 tick = 0;
             while (true)
             {
-                Int64 tmptick = (Environment.TickCount & UInt32.MaxValue);
-                if (tmptick < tick)
-                {
-                    tickcount += 1;
-                    tmptick = tmptick + tickcount * UInt32.MaxValue;
-                }
-                tick = tmptick;
-
-                _hub.poll(tick);
+                oldtick = tick;
+                tick = _hub.poll();
 
                 if (hub.hub.closeHandle.is_close)
                 {
-                    Console.WriteLine("server closed, hub server " + hub.hub.uuid);
+                    log.log.trace(new System.Diagnostics.StackFrame(true), tick, "server closed, hub server:{0}", hub.hub.uuid);
                     break;
                 }
-
-                tmptick = (Environment.TickCount & UInt32.MaxValue);
-                if (tmptick < tick)
-                {
-                    tickcount += 1;
-                    tmptick = tmptick + tickcount * UInt32.MaxValue;
-                }
-                Int64 ticktime = (tmptick - tick);
-                tick = tmptick;
-
+                
+                Int64 ticktime = (tick - oldtick);
                 if (ticktime < 50)
                 {
                     Thread.Sleep(15);

@@ -14,33 +14,20 @@ namespace client
             login _login = new login();
             _client.modulemanager.add_module("login", _login);
 
-            Int64 tick = Environment.TickCount;
+            Int64 tick = service.timerservice.Tick;
             _client.connect_server("127.0.0.1", 3236, tick);
 
             _client.onConnectGate += onGeteHandle;
             _client.onConnectHub += onConnectHub;
-            Int64 tickcount = 0;
+            
+            Int64 oldtick = 0;
             while (true)
             {
-                Int64 tmptick = (Environment.TickCount & UInt32.MaxValue);
-                if (tmptick < tick)
-                {
-                    tickcount += 1;
-                    tmptick = tmptick + tickcount * UInt32.MaxValue;
-                }
-                tick = tmptick;
+                oldtick = tick;
+                tick = _client.poll();
 
-                _client.poll(tick);
-
-                tmptick = (Environment.TickCount & UInt32.MaxValue);
-                if (tmptick < tick)
-                {
-                    tickcount += 1;
-                    tmptick = tmptick + tickcount * UInt32.MaxValue;
-                }
-                Int64 ticktime = (tmptick - tick);
-                tick = tmptick;
-
+                
+                Int64 ticktime = (tick - oldtick);
                 if (ticktime < 50)
                 {
                     Thread.Sleep(15);

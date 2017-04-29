@@ -11,8 +11,9 @@ namespace logic
 		}
 
 		public void onreg_logic_sucess()
-		{
-			Console.WriteLine("connect gate server sucess");
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "connect gate server sucess");
+
 		}
 
 		public void client_get_logic(String uuid)
@@ -31,7 +32,7 @@ namespace logic
 
         public void client_connect(String uuid)
         {
-            Console.WriteLine("client " + uuid + " connected");
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "client {0} connected", uuid);
 
             logic.gates.client_connect(uuid, juggle.Imodule.current_ch);
         }

@@ -82,8 +82,39 @@ namespace robot
 
     public class robot
     {
-        public robot(Int64 robot_num)
+        public robot(String[] args)
         {
+            config.config _config = new config.config(args[0]);
+            if (args.Length > 1)
+            {
+                _config = _config.get_value_dict(args[1]);
+            }
+
+            var log_level = _config.get_value_string("log_level");
+            if (log_level == "debug")
+            {
+                log.log.logMode = log.log.enLogMode.Debug;
+            }
+            else if (log_level == "release")
+            {
+                log.log.logMode = log.log.enLogMode.Release;
+            }
+            var log_file = _config.get_value_string("log_file");
+            log.log.logFile = log_file;
+            var log_dir = _config.get_value_string("log_dir");
+            log.log.logPath = log_dir;
+            {
+                if (!System.IO.Directory.Exists(log_dir))
+                {
+                    System.IO.Directory.CreateDirectory(log_dir);
+                }
+            }
+
+            Int64 robot_num = _config.get_value_int("robot_num");
+            
+            _ip = _config.get_value_string("ip");
+            _port = (short)_config.get_value_int("port");
+            
             timer = new service.timerservice();
             modulemanager = new common.modulemanager();
 
@@ -111,18 +142,18 @@ namespace robot
         public event onConnectGateHandle onConnectGate;
         private void on_ack_connect_gate()
         {
-            timer.addticktime(timer.Tick + 30 * 1000, proxys[juggle.Imodule.current_ch].heartbeats);
+            timer.addticktime(service.timerservice.Tick + 30 * 1000, proxys[juggle.Imodule.current_ch].heartbeats);
 
             if ( (++_robot_num) < _max_robot_num )
             {
                 var ch = _conn.connect(_ip, _port);
                 var proxy = new client_proxy(ch);
                 proxys.Add(ch, proxy);
-                proxy.connect_server(timer.Tick);
+                proxy.connect_server(service.timerservice.Tick);
             }
             else
             {
-                Console.WriteLine("all robots connected");
+                log.log.operation(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "all robots connected");
             }
 
             if (onConnectGate != null)
@@ -166,11 +197,8 @@ namespace robot
             modulemanager.process_module_mothed(module_name, func_name, argvs);
         }
 
-        public bool connect_server(String ip, short port, Int64 tick)
+        public bool connect_server(Int64 tick)
         {
-            _ip = ip;
-            _port = port;
-
             try
             {
                 var ch = _conn.connect(_ip, _port);
@@ -187,10 +215,12 @@ namespace robot
             return true;
         }
         
-        public void poll(Int64 tick)
+        public Int64 poll()
         {
-            timer.poll(tick);
+            Int64 tick = timer.poll();
             _juggleservice.poll(tick);
+
+            return tick;
         }
 
         public client_proxy get_client_proxy(juggle.Ichannel ch)

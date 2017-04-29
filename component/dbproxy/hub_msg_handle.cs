@@ -13,7 +13,7 @@ namespace dbproxy
 
 		public void reg_hub(string uuid)
 		{
-			System.Console.WriteLine ("hub " + uuid + " connected");
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "hub {0} connected", uuid);
 
 			hubproxy _hubproxy = _hubmanager.reg_hub(juggle.Imodule.current_ch, uuid);
 			_hubproxy.reg_hub_sucess ();
@@ -42,16 +42,16 @@ namespace dbproxy
 		}
 
 		public void get_object_info(Hashtable query_json, string callbackid)
-		{
-            Console.WriteLine("get_object_info");
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "get_object_info");
 
             ArrayList _list = _mongodbproxy.find(0, 0, 0, query_json, null);
 
 			hubproxy _hubproxy = _hubmanager.get_hub(juggle.Imodule.current_ch);
 
-			if (_hubproxy == null) 
-			{
-                Console.WriteLine("get_object_info hubproxy is null");
+			if (_hubproxy == null)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "get_object_info hubproxy is null");
 				return;
 			}
 

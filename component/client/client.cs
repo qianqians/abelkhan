@@ -38,7 +38,7 @@ namespace client
 		public event onConnectGateHandle onConnectGate;
 		private void on_ack_connect_gate()
 		{
-            timer.addticktime(timer.Tick + 30 * 1000, heartbeats);
+            timer.addticktime(service.timerservice.Tick + 30 * 1000, heartbeats);
 
             if (onConnectGate != null)
 			{
@@ -149,40 +149,26 @@ namespace client
             _client_call_gate.forward_client_call_hub(hub_name, module_name, func_name, _argvs_list);
         }
 
-        public void poll(Int64 tick)
+        public Int64 poll()
         {
-            timer.poll(tick);
+            Int64 tick = timer.poll();
             _juggleservice.poll(tick);
+
+            return tick;
         }
 
         private static void Main()
         {
             client _client = new client();
 
-            Int64 tick = Environment.TickCount;
-
-            Int64 tickcount = 0;
+            Int64 old_tick = 0;
+            Int64 tick = 0;
             while (true)
             {
-                Int64 tmptick = (Environment.TickCount & UInt32.MaxValue);
-                if (tmptick < tick)
-                {
-                    tickcount += 1;
-                    tmptick = tmptick + tickcount * UInt32.MaxValue;
-                }
-                tick = tmptick;
-
-                _client.poll(tick);
-
-                tmptick = (Environment.TickCount & UInt32.MaxValue);
-                if (tmptick < tick)
-                {
-                    tickcount += 1;
-                    tmptick = tmptick + tickcount * UInt32.MaxValue;
-                }
-                Int64 ticktime = (tmptick - tick);
-                tick = tmptick;
-
+                old_tick = tick;
+                tick = _client.poll();
+                
+                Int64 ticktime = (tick - old_tick);
                 if (ticktime < 50)
                 {
                     Thread.Sleep(15);

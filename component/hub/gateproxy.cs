@@ -11,8 +11,9 @@ namespace hub
 		}
 
 		public void reg_logic()
-		{
-			Console.WriteLine("begin connect gate server");
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin connect gate server");
+
 			_caller.reg_hub(hub.uuid, hub.name);
 		}
 

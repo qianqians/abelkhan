@@ -29,7 +29,7 @@ namespace gate
 				}
 				else
                 {
-                    Console.WriteLine(result + " svr:" + _logicproxy.uuid);
+                    log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "{0} svr:{1}", result, _logicproxy.uuid);
 
 					_logicproxy = _logicmanager.get_logic();
 					_logicproxy.get_logic (client_uuid);

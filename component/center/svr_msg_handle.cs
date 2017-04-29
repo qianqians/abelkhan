@@ -53,7 +53,7 @@ namespace center
 			svrproxy _svrproxy = _svrmanager.reg_svr(juggle.Imodule.current_ch, type, ip, port, uuid);
 			_svrproxy.reg_server_sucess();
 
-			System.Console.WriteLine (type + " server " + uuid + " connected");
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "{0} server {1} connected", type, uuid);
 		}
 
 		private svrmanager _svrmanager;

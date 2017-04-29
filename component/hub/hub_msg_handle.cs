@@ -13,7 +13,8 @@ namespace hub
 
         public void reg_hub(string hub_name)
         {
-            Console.WriteLine("hub:" + hub_name + " registered!");
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "hub:{0} registered!", hub_name);
+
             var _proxy = _hubmanager.reg_hub(hub_name, juggle.Imodule.current_ch);
             _proxy.reg_hub_sucess();
         }

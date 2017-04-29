@@ -11,8 +11,9 @@ namespace gate
 		}
 
 		public void reg_gate(String ip, short port, String uuid)
-		{
-			Console.WriteLine("begin connect center server");
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin connect center server");
+
 			_hub_call_center.reg_server("gate", ip, port, uuid);
 		}
 

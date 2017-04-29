@@ -25,8 +25,8 @@ namespace center
 				}
 			} 
 			else
-			{
-				System.Console.WriteLine("not a logic channel call this function");
+            {
+                log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "not a logic channel call this function");
 			}
 		}
 

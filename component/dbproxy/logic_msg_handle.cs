@@ -13,8 +13,8 @@ namespace dbproxy
 		}
 
 		public void reg_logic(string uuid)
-		{
-			System.Console.WriteLine ("logic " + uuid + " connected");
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "logic {0} connected", uuid);
 
 			_closehandle.reg_logic ();
 			var _logicproxy = _logicmanager.reg_logic(uuid, juggle.Imodule.current_ch);

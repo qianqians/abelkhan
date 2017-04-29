@@ -18,7 +18,27 @@ namespace logic
 				_config = _config.get_value_dict(args[1]);
 			}
 
-			closeHandle = new closehandle();
+            var log_level = _config.get_value_string("log_level");
+            if (log_level == "debug")
+            {
+                log.log.logMode = log.log.enLogMode.Debug;
+            }
+            else if (log_level == "release")
+            {
+                log.log.logMode = log.log.enLogMode.Release;
+            }
+            var log_file = _config.get_value_string("log_file");
+            log.log.logFile = log_file;
+            var log_dir = _config.get_value_string("log_dir");
+            log.log.logPath = log_dir;
+            {
+                if (!System.IO.Directory.Exists(log_dir))
+                {
+                    System.IO.Directory.CreateDirectory(log_dir);
+                }
+            }
+
+            closeHandle = new closehandle();
 
 			modules = new common.modulemanager();
 
@@ -96,17 +116,20 @@ namespace logic
 			_centerproxy.reg_logic(ip, port, uuid);
 		}
 
-		public void poll(Int64 tick)
-		{
-			_juggle_service.poll(tick);
-			timer.poll(tick);
+		public Int64 poll()
+        {
+            Int64 tick = timer.poll();
+
+            _juggle_service.poll(tick);
 
 			_dbproxy_connectnetworkservice.poll(tick);
 			_hub_connectnetworkservice.poll(tick);
 			_gate_connectnetworkservice.poll(tick);
 			_logic_acceptnetworkservice.poll(tick);
 			_center_connectnetworkservice.poll(tick);
-		}
+
+            return tick;
+        }
         
 		private static void Main(String[] args)
 		{
@@ -117,35 +140,20 @@ namespace logic
 
 			logic _logic = new logic(args);
 
-			Int64 tick = Environment.TickCount;
-			Int64 tickcount = 0;
+			Int64 oldtick = 0;
+			Int64 tick = 0;
 			while (true)
 			{
-				Int64 tmptick = (Environment.TickCount & UInt32.MaxValue);
-				if (tmptick < tick)
-				{
-					tickcount += 1;
-					tmptick = tmptick + tickcount * UInt32.MaxValue;
-				}
-				tick = tmptick;
-
-				_logic.poll(tick);
+                oldtick = tick;
+                tick = _logic.poll();
 
 				if (closeHandle.is_close)
-				{
-					Console.WriteLine("server closed, hub server " + logic.uuid);
+                {
+                    log.log.operation(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "server closed, logic server:{0}", logic.uuid);
 					break;
 				}
-
-				tmptick = (Environment.TickCount & UInt32.MaxValue);
-				if (tmptick < tick)
-				{
-					tickcount += 1;
-					tmptick = tmptick + tickcount * UInt32.MaxValue;
-				}
-				Int64 ticktime = (tmptick - tick);
-				tick = tmptick;
-
+                
+				Int64 ticktime = (tick - oldtick);
 				if (ticktime > 200)
 				{
 					is_busy = true;
@@ -154,7 +162,6 @@ namespace logic
 				{
 					is_busy = false;
 				}
-
 				if (ticktime < 50)
 				{
 					Thread.Sleep(15);

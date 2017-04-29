@@ -11,13 +11,14 @@ namespace hub
 		}
 
 		public void reg_hub_sucess()
-		{
-			Console.WriteLine("connect gate server sucess");
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "connect gate server sucess");
 		}
 
         public void client_connect(String client_uuid)
         {
-            Console.WriteLine("client " + client_uuid + " connected");
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "client {0} connected", client_uuid);
+
             hub.gates.client_connect(client_uuid, juggle.Imodule.current_ch);
         }
 

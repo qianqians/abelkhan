@@ -11,8 +11,9 @@ namespace logic
 		}
 
 		public void reg_logic()
-		{
-			Console.WriteLine("begin connect hub server");
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin connect hub server");
+
 			_logic_call_hub.reg_logic(logic.uuid);
 		}
 

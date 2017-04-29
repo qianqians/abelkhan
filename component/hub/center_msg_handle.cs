@@ -12,8 +12,9 @@ namespace hub
 		}
 
 		public void reg_server_sucess()
-		{
-			Console.WriteLine("connect center server sucess");
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "connect center server sucess");
+
 			_centerproxy.is_reg_center_sucess = true;
 		}
 
@@ -23,8 +24,9 @@ namespace hub
 		}
 
 		public void distribute_server_address(String type, String ip, Int64 port, String uuid)
-		{
-			Console.WriteLine("recv distribute server address");
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "recv distribute server address");
+
 			if (type == "dbproxy") 
 			{
 				_hub.connect_dbproxy (ip, (short)port);

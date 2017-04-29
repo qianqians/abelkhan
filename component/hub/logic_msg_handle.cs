@@ -12,8 +12,9 @@ namespace hub
 		}
 
 		public void reg_logic(String uuid)
-		{
-			Console.WriteLine("logic server " + uuid + " connected");
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "logic server {0} connected", uuid);
+
 			_logicmanager.reg_logic(uuid, juggle.Imodule.current_ch);
 		}
 

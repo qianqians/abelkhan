@@ -16,8 +16,8 @@ namespace dbproxy
 		}
 
 		public void reg_server_sucess()
-		{
-			Console.WriteLine("connect center server sucess");
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "connect center server sucess");
 
 			_centerproxy.is_reg_sucess = true;
 		}

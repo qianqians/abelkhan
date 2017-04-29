@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Collections;
-using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -33,13 +32,12 @@ namespace service
         }
 
 		private void onRead(IAsyncResult ar)
-		{
-			channel ch = ar.AsyncState as channel;
+        {
+            channel ch = ar.AsyncState as channel;
 
-			try
-			{
-				int read = ch.s.EndReceive(ar);
-
+            try
+            {
+                int read = ch.s.EndReceive(ar);
 				if (read > 0)
 				{
 					if (tmpbufoffset == 0)
@@ -74,8 +72,7 @@ namespace service
                                     }
                                     catch (Exception e)
                                     {
-                                        Console.WriteLine(json);
-                                        Console.WriteLine("exception {0}", e);
+                                        log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "msg:{0}, System.Exception:{1}", json, e);
                                     }
                                 }
                                 else
@@ -175,8 +172,7 @@ namespace service
                                     }
                                     catch (Exception e)
                                     {
-                                        Console.WriteLine(json);
-                                        Console.WriteLine("exception {0}", e);
+                                        log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "msg:{0}, System.Exception:{1}", json, e);
                                     }
                                 }
                                 else
@@ -207,22 +203,20 @@ namespace service
 					ch.s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
 				}
 				else
-				{
-					ch.s.Close();
+                {
+                    ch.s.Close();
 					onDisconnect(ch);
 				}
 			}
 			catch(System.Net.Sockets.SocketException )
 			{
-                ch.s.Shutdown(SocketShutdown.Both);
                 ch.s.Close();
 				onDisconnect(ch);
 			}
 			catch (System.Exception e)
-			{
-				System.Console.WriteLine("System.Exception {0}", e);
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
 
-                ch.s.Shutdown(SocketShutdown.Both);
                 ch.s.Close();
 				onDisconnect(ch);
 			}
@@ -257,15 +251,13 @@ namespace service
 			}
 			catch (System.Net.Sockets.SocketException)
 			{
-                s.Shutdown(SocketShutdown.Both);
 				s.Close();
 				onDisconnect(this);
 			}
 			catch (System.Exception e)
-			{
-				System.Console.WriteLine("System.Exception {0}", e);
-
-                s.Shutdown(SocketShutdown.Both);
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
+                
                 s.Close();
 				onDisconnect(this);
 			}

@@ -12,7 +12,8 @@ namespace dbproxy
 
 		public void reg_dbproxy(String ip, short port, String uuid)
 		{
-			Console.WriteLine("begin connect center server");
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin connect center server");
+
 			_logic_call_center.reg_server("dbproxy", ip, port, uuid);
 		}
 

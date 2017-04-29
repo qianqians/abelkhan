@@ -28,15 +28,15 @@ namespace service
 			}
 			catch (System.Net.Sockets.SocketException e)
 			{
-				System.Console.WriteLine("System.Net.Sockets.SocketException{0}", e);
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Net.Sockets.SocketException:{0}", e);
 
-				return null;
+                return null;
 			}
 			catch (System.Exception e)
-			{
-				System.Console.WriteLine("System.Exceptio{0}", e);
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exceptio:{0}", e);
 
-				return null;
+                return null;
 			}
         }
 

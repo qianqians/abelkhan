@@ -37,18 +37,18 @@ namespace common
 						}
 					}
 					catch (Exception e)
-					{
-						Console.WriteLine("call rpc error {0} {1}", func_name, e);
+                    {
+                        log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "call rpc error, function name:{0} System.Exception:{1}", func_name, e);
 					}
 				}
                 else
                 {
-                    Console.WriteLine("do not have a func named " + func_name);
+                    log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "do not have a func name:", func_name);
                 }
 			}
 			else
-			{
-				Console.WriteLine("do not have a module named " + module_name);
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "do not have a module name:", module_name);
 			}
 		}
 

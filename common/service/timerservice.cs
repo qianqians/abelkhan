@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace service
 {
-	public class timerservice : service
+	public class timerservice
 	{
 		public delegate void tickHandle(Int64 tick);
 		public delegate void timeHandle(DateTime time);
@@ -15,10 +15,14 @@ namespace service
 			timeHandledict = new Dictionary<DateTime, List<timeHandle> >();
             addtickHandle = new Dictionary<Int64, List<tickHandle>>();
             addtimeHandle = new Dictionary<DateTime, List<timeHandle>>();
+            
+            Tick = (Int64)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
         }
 
-		public void poll(Int64 tick)
+		public Int64 poll()
 		{
+            Tick = (Int64)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
+
             foreach (var item in addtickHandle)
             {
                 if (!tickHandledict.ContainsKey(item.Key))
@@ -44,21 +48,19 @@ namespace service
             }
             addtimeHandle.Clear();
 
-            Tick = tick;
-
             try
             {
 				List<Int64> list = new List<Int64>();
                 
                 foreach (var item in tickHandledict)
 				{
-					if (item.Key <= tick)
+					if (item.Key <= Tick)
 					{
 						list.Add(item.Key);
 
                         foreach (var handle in item.Value)
                         {
-                            handle(tick);
+                            handle(Tick);
                         }
 					}
 				}
@@ -70,7 +72,7 @@ namespace service
 			}
             catch(System.Exception e)
             {
-                Console.WriteLine("System.Exceptio{0}", e);
+                log.log.error(new System.Diagnostics.StackFrame(true), Tick, "System.Exceptio{0}", e);
             }
 
             try
@@ -98,8 +100,10 @@ namespace service
 			}
             catch (System.Exception e)
             {
-                Console.WriteLine("System.Exceptio{0}", e);
+                log.log.error(new System.Diagnostics.StackFrame(true), Tick, "System.Exceptio{0}", e);
             }
+
+            return Tick;
         }
 
 		public void addticktime(Int64 process, tickHandle handle)
@@ -120,7 +124,7 @@ namespace service
             addtimeHandle[process].Add(handle);
         }
 
-        public Int64 Tick;
+        static public Int64 Tick;
 
 		private SortedDictionary<Int64, List<tickHandle> > tickHandledict;
         private Dictionary<Int64, List<tickHandle>> addtickHandle;
