@@ -97,8 +97,17 @@ namespace dbproxy
         {
             Int64 tick = timer.poll();
 
-            _juggle_service.poll(tick);
-			_acceptnetworkservice.poll(tick);
+            try
+            {
+                _juggle_service.poll(tick);
+            }
+            catch(juggle.Exception e)
+            {
+                juggle.Imodule.current_ch.disconnect();
+                log.log.error(new System.Diagnostics.StackFrame(true), tick, e.Message);
+            }
+
+            _acceptnetworkservice.poll(tick);
 			_center_connectnetworkservice.poll(tick);
 
             return tick;

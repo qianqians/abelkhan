@@ -120,6 +120,9 @@
     <Compile Include="..\..\thirdpart\jsonparse\JsonParser.cs">
       <Link>JsonParser.cs</Link>
     </Compile>
+    <Compile Include="..\..\thirdpart\juggle\csharp\Exception.cs">
+      <Link>Exception.cs</Link>
+    </Compile>
     <Compile Include="..\..\thirdpart\juggle\csharp\Icaller.cs">
       <Link>Icaller.cs</Link>
     </Compile>

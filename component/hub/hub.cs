@@ -133,7 +133,16 @@ namespace hub
         {
             Int64 tick = timer.poll();
 
-            _juggle_service.poll(tick);
+            try
+            {
+                _juggle_service.poll(tick);
+            }
+            catch(juggle.Exception e)
+            {
+                juggle.Imodule.current_ch.disconnect();
+                log.log.error(new System.Diagnostics.StackFrame(true), tick, e.Message);
+            }
+
 			_accept_logic_service.poll(tick);
 			_connect_center_service.poll(tick);
 			_connect_dbproxy_service.poll(tick);

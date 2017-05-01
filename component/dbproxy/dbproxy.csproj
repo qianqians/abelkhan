@@ -72,12 +72,6 @@
     <Compile Include="..\..\common\log\log.cs">
       <Link>log.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\module\module.cs">
-      <Link>module.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\module\modulemanager.cs">
-      <Link>modulemanager.cs</Link>
-    </Compile>
     <Compile Include="..\..\common\protcol\c#\caller\centercaller.cs">
       <Link>centercaller.cs</Link>
     </Compile>
@@ -116,6 +110,9 @@
     </Compile>
     <Compile Include="..\..\thirdpart\jsonparse\JsonParser.cs">
       <Link>JsonParser.cs</Link>
+    </Compile>
+    <Compile Include="..\..\thirdpart\juggle\csharp\Exception.cs">
+      <Link>Exception.cs</Link>
     </Compile>
     <Compile Include="..\..\thirdpart\juggle\csharp\Icaller.cs">
       <Link>Icaller.cs</Link>

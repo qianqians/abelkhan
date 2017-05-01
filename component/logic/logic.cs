@@ -120,9 +120,17 @@ namespace logic
         {
             Int64 tick = timer.poll();
 
-            _juggle_service.poll(tick);
+            try
+            {
+                _juggle_service.poll(tick);
+            }
+            catch (juggle.Exception e)
+            {
+                juggle.Imodule.current_ch.disconnect();
+                log.log.error(new System.Diagnostics.StackFrame(true), tick, e.Message);
+            }
 
-			_dbproxy_connectnetworkservice.poll(tick);
+            _dbproxy_connectnetworkservice.poll(tick);
 			_hub_connectnetworkservice.poll(tick);
 			_gate_connectnetworkservice.poll(tick);
 			_logic_acceptnetworkservice.poll(tick);

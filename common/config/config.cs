@@ -24,7 +24,7 @@ namespace config
 				offset += read;
 			}
 
-			handle = System.Text.Json.Jsonparser.unpack(System.Text.Encoding.Default.GetString(data));
+			handle = Json.Jsonparser.unpack(System.Text.Encoding.Default.GetString(data));
         }
 
 		private config(object sub_handle)
