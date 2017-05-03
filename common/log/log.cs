@@ -36,12 +36,7 @@ namespace log
             System.DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1));
             System.DateTime time = startTime.AddMilliseconds((double)tmptime);
 
-            /*string codefilename = sf.GetFileName();
-            string extension = System.IO.Path.GetExtension(codefilename);
-            string codefilenamewithoutext = System.IO.Path.GetFileNameWithoutExtension(codefilename);
-            codefilename = codefilenamewithoutext + extension;*/
-
-            string strlog = string.Format("[{0}] [{1}] [{2}] [{3}]:{4}", time, sf.GetMethod().DeclaringType.FullName, sf.GetMethod().Name, level, log);
+            string strlog = string.Format("[{0}] [{1}] [{2}] [{3}]:{4}", time, level, sf.GetMethod().DeclaringType.FullName, sf.GetMethod().Name, log);
 
             lock (logFile)
             {

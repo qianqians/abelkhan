@@ -86,7 +86,6 @@ namespace center
             }
             catch (juggle.Exception e)
             {
-                juggle.Imodule.current_ch.disconnect();
                 log.log.error(new System.Diagnostics.StackFrame(true), tick, e.Message);
             }
 
