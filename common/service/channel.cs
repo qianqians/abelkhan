@@ -61,7 +61,7 @@ namespace service
 
                                     _tmp.Position = 0;
 
-                                    var json = System.Text.Encoding.Default.GetString(_tmp.ToArray());
+                                    var json = System.Text.Encoding.UTF8.GetString(_tmp.ToArray());
                                     try
                                     {
                                         ArrayList unpackedObject = (ArrayList)Json.Jsonparser.unpack(json);
@@ -161,7 +161,7 @@ namespace service
 
                                     _tmp.Position = 0;
 
-                                    var json = System.Text.Encoding.Default.GetString(_tmp.ToArray());
+                                    var json = System.Text.Encoding.UTF8.GetString(_tmp.ToArray());
                                     try
                                     {
                                         ArrayList unpackedObject = (ArrayList)Json.Jsonparser.unpack(json);
