@@ -208,16 +208,10 @@ namespace service
 					onDisconnect(ch);
 				}
 			}
-			catch(System.Net.Sockets.SocketException )
-			{
-                ch.s.Close();
-				onDisconnect(ch);
-			}
 			catch (System.Exception e)
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
-
-                ch.s.Close();
+                
 				onDisconnect(ch);
 			}
 		}
