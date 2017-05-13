@@ -15,7 +15,7 @@ https://github.com/qianqians/abelkhan/wiki
 [LGPL-2.1](https://github.com/qianqians/abelkhan/blob/master/LICENSE)
   
 ## 技术支持
-theDarkforce@aliyun.com  
+abelkhan@abelkhan.com  
   
 ## QQ群
 494405542
