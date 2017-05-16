@@ -38,7 +38,7 @@ namespace common
 					}
 					catch (Exception e)
                     {
-                        log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "call rpc error, function name:{0} System.Exception:{1}", func_name, e);
+                        log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "call rpc error, function name:{0} System.Exception:{1}, agrv:{2}", func_name, e, Json.Jsonparser.pack(argvs));
 					}
 				}
                 else
