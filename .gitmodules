@@ -4,6 +4,3 @@
 [submodule "thirdpart/jsonparse"]
 	path = thirdpart/jsonparse
 	url = https://github.com/qianqians/jsonparse.git
-[submodule "tools/meter"]
-	path = tools/meter
-	url = https://github.com/qianqians/meter.git
