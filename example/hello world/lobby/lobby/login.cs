@@ -29,7 +29,7 @@ namespace lobby
                 Hashtable _query = new Hashtable();
                 _query.Add("token", token);
                 _query.Add("wechat_name", wechat_name);
-                hub.hub.dbproxy.getObjectInfo(_query, (ArrayList date_list) => { query_player_info(client_uuid, token, wechat_name, date_list); });
+                hub.hub.dbproxy.getObjectInfo(_query, (ArrayList date_list) => { query_player_info(client_uuid, token, wechat_name, date_list); }, ()=> { });
             }
         }
 

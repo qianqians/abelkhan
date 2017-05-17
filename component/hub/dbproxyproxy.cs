@@ -10,7 +10,8 @@ namespace hub
 		{
 			_hub_call_dbproxy = new caller.hub_call_dbproxy(ch);
 			callback_set = new Dictionary<string, object>();
-		}
+            end_cb_set = new Dictionary<string, object>();
+        }
 
 		public void reg_hub(String uuid)
         {
@@ -33,12 +34,13 @@ namespace hub
 			callback_set.Add(callbackid, (object)_handle);
 		}
 
-		public void getObjectInfo(Hashtable query_json, onGetObjectInfoHandle _handle)
+		public void getObjectInfo(Hashtable query_json, onGetObjectInfoHandle _handle, onGetObjectInfoEnd _end)
 		{
 			var callbackid = System.Guid.NewGuid().ToString();
 			get_object_info(query_json, callbackid);
 			callback_set.Add(callbackid, (object)_handle);
-		}
+            end_cb_set.Add(callbackid, (object)_end);
+        }
 
 		private void create_persisted_object(Hashtable object_info, String callbackid)
 		{
@@ -73,11 +75,25 @@ namespace hub
 			}
 		}
 
-		public delegate void onCreatePersistedObjectHandle();
+        public object end_get_object_info_callback(String callbackid)
+        {
+            end_callback(callbackid);
+
+            if (end_cb_set.ContainsKey(callbackid))
+            {
+                return end_cb_set[callbackid];
+            }
+
+            return null;
+        }
+
+        public delegate void onCreatePersistedObjectHandle();
 		public delegate void onUpdataPersistedObjectHandle();
 		public delegate void onGetObjectInfoHandle(ArrayList obejctinfoarray);
+        public delegate void onGetObjectInfoEnd();
 
-		private Dictionary<String, object> callback_set;
+        private Dictionary<String, object> callback_set;
+        private Dictionary<String, object> end_cb_set;
 
 		private caller.hub_call_dbproxy _hub_call_dbproxy;
 	}

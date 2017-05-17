@@ -103,22 +103,22 @@
     <Compile Include="..\..\common\service\timerservice.cs">
       <Link>timerservice.cs</Link>
     </Compile>
-    <Compile Include="..\..\thirdpart\jsonparse\JsonParser.cs">
+    <Compile Include="..\..\tools\jsonparse\JsonParser.cs">
       <Link>JsonParser.cs</Link>
     </Compile>
-    <Compile Include="..\..\thirdpart\juggle\csharp\Exception.cs">
+    <Compile Include="..\..\tools\juggle\csharp\Exception.cs">
       <Link>Exception.cs</Link>
     </Compile>
-    <Compile Include="..\..\thirdpart\juggle\csharp\Icaller.cs">
+    <Compile Include="..\..\tools\juggle\csharp\Icaller.cs">
       <Link>Icaller.cs</Link>
     </Compile>
-    <Compile Include="..\..\thirdpart\juggle\csharp\Ichannel.cs">
+    <Compile Include="..\..\tools\juggle\csharp\Ichannel.cs">
       <Link>Ichannel.cs</Link>
     </Compile>
-    <Compile Include="..\..\thirdpart\juggle\csharp\Imodule.cs">
+    <Compile Include="..\..\tools\juggle\csharp\Imodule.cs">
       <Link>Imodule.cs</Link>
     </Compile>
-    <Compile Include="..\..\thirdpart\juggle\csharp\process.cs">
+    <Compile Include="..\..\tools\juggle\csharp\process.cs">
       <Link>process.cs</Link>
     </Compile>
     <Compile Include="center_msg_handle.cs" />
@@ -134,8 +134,5 @@
     <Compile Include="logic_msg_handle.cs" />
     <Compile Include="logicmanager.cs" />
     <Compile Include="logicproxy.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
   </ItemGroup>
 </Project>

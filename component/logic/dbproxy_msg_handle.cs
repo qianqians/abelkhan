@@ -37,8 +37,9 @@ namespace logic
 
 		public void ack_get_object_info_end(String callbackid)
 		{
-			_dbproxy.end_callback(callbackid);
-		}
+            dbproxyproxy.onGetObjectInfoEnd _end = (dbproxyproxy.onGetObjectInfoEnd)_dbproxy.end_get_object_info_callback(callbackid);
+            _end();
+        }
 
 		private dbproxyproxy _dbproxy;
 	}

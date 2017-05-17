@@ -36,8 +36,9 @@ namespace hub
 
 		public void ack_get_object_info_end(String callbackid)
 		{
-            hub.dbproxy.end_callback(callbackid);
-		}
+            dbproxyproxy.onGetObjectInfoEnd _end = (dbproxyproxy.onGetObjectInfoEnd)hub.dbproxy.end_get_object_info_callback(callbackid);
+            _end();
+        }
 	}
 }
 
