@@ -25,7 +25,7 @@ namespace hub
 
         public void hub_call_hub_mothed(string module_name, string func_name, ArrayList argvs)
         {
-            _modulemanager.process_module_mothed(module_name, func_name, argvs);
+            hub.modules.process_module_mothed(module_name, func_name, argvs);
         }
 
         private common.modulemanager _modulemanager;

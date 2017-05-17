@@ -20,7 +20,7 @@ namespace hub
 
 		public void logic_call_hub_mothed(String module_name, String func_name, ArrayList argvs)
 		{
-			_modulemanager.process_module_mothed(module_name, func_name, argvs);
+            hub.modules.process_module_mothed(module_name, func_name, argvs);
 		}
 
 		private common.modulemanager _modulemanager;

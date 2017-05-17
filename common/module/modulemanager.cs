@@ -29,7 +29,13 @@ namespace common
 					{
 						if (argvs.Count > 0)
 						{
-							method.Invoke(_module, argvs.ToArray());
+                            object[] _argv = new object[argvs.Count];
+                            int index = 0;
+                            foreach(var item in argvs)
+                            {
+                                _argv[index++] = item;
+                            }
+							method.Invoke(_module, _argv);
 						}
 						else
 						{
@@ -38,7 +44,7 @@ namespace common
 					}
 					catch (Exception e)
                     {
-                        log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "call rpc error, function name:{0} System.Exception:{1}, agrv:{2}", func_name, e, Json.Jsonparser.pack(argvs));
+                        log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "call rpc error, function name:{0} System.Exception:{1}, agrv:{2}, frist agrv type:{3}", func_name, e, Json.Jsonparser.pack(argvs), argvs[0].GetType().ToString());
 					}
 				}
                 else
