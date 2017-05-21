@@ -25,7 +25,8 @@ namespace logic
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin connect dbproxy server");
 
 			_logic_call_dbproxy.reg_logic(uuid);
-		}
+
+        }
 
 		public void createPersistedObject(Hashtable object_info, onCreatePersistedObjectHandle _handle)
 		{

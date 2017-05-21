@@ -5,13 +5,16 @@ namespace hub
 {
 	public class dbproxy_msg_handle
 	{
-		public dbproxy_msg_handle()
+		public dbproxy_msg_handle(hub _hub)
 		{
-		}
+            _hub_ = _hub;
+        }
 
 		public void reg_hub_sucess()
         {
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "connect dbproxy server sucess");
+
+            _hub_.onConnectDB_event();
 		}
 
 		public void ack_create_persisted_object(String callbackid)
@@ -39,6 +42,8 @@ namespace hub
             dbproxyproxy.onGetObjectInfoEnd _end = (dbproxyproxy.onGetObjectInfoEnd)hub.dbproxy.end_get_object_info_callback(callbackid);
             _end();
         }
+
+        private hub _hub_;
 	}
 }
 

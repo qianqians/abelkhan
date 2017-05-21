@@ -83,7 +83,7 @@ namespace hub
 
 			var _dbproxy_process = new juggle.process();
 			_connect_dbproxy_service = new service.connectnetworkservice(_dbproxy_process);
-			_dbproxy_msg_handle = new dbproxy_msg_handle();
+			_dbproxy_msg_handle = new dbproxy_msg_handle(this);
 			_dbproxy_call_hub = new module.dbproxy_call_hub();
 			_dbproxy_call_hub.onreg_hub_sucess += _dbproxy_msg_handle.reg_hub_sucess;
 			_dbproxy_call_hub.onack_create_persisted_object += _dbproxy_msg_handle.ack_create_persisted_object;
@@ -115,7 +115,17 @@ namespace hub
 			_centerproxy.reg_hub(ip, port, uuid);
 		}
 
-		public void connect_dbproxy(String db_ip, short db_port)
+        public delegate void onConnectDBHandle();
+        public event onConnectDBHandle onConnectDB;
+        public void onConnectDB_event()
+        {
+            if (onConnectDB != null)
+            {
+                onConnectDB();
+            }
+        }
+
+        public void connect_dbproxy(String db_ip, short db_port)
 		{
 			var _db_ch = _connect_dbproxy_service.connect(db_ip, db_port);
 			dbproxy = new dbproxyproxy(_db_ch);

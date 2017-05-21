@@ -29,7 +29,7 @@ namespace dbproxy
 
 			var ret = _collection.Update(_query, _update);
 
-			return true;
+            return true;
 		}
 
 		public ArrayList find(int skip, int limit, int batch_size, Hashtable json_query, Hashtable json_fields) 

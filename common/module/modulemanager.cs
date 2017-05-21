@@ -49,12 +49,12 @@ namespace common
 				}
                 else
                 {
-                    log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "do not have a func name:", func_name);
+                    log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "do not have a func name:{0}", func_name);
                 }
 			}
 			else
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "do not have a module name:", module_name);
+                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "do not have a module name:{0}", module_name);
 			}
 		}
 

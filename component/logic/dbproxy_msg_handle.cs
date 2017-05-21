@@ -5,15 +5,18 @@ namespace logic
 {
 	public class dbproxy_msg_handle
 	{
-		public dbproxy_msg_handle(dbproxyproxy dbproxy_)
+		public dbproxy_msg_handle(dbproxyproxy dbproxy_, logic _logic_)
 		{
 			_dbproxy = dbproxy_;
-		}
+            _logic = _logic_;
+        }
 
 		public void reg_logic_sucess()
         {
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "connect dbproxy server sucess");
-		}
+
+            _logic.onConnectDB_event();
+        }
 
 		public void ack_create_persisted_object(String callbackid)
 		{
@@ -42,6 +45,7 @@ namespace logic
         }
 
 		private dbproxyproxy _dbproxy;
+        private logic _logic;
 	}
 }
 

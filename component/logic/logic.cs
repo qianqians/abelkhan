@@ -47,7 +47,7 @@ namespace logic
 			_dbproxy_process.reg_module(_dbproxy_call_logic);
 			_dbproxy_connectnetworkservice = new service.connectnetworkservice(_dbproxy_process);
 			dbproxy = new dbproxyproxy(_dbproxy_connectnetworkservice);
-			_dbproxy_msg_handle = new dbproxy_msg_handle(dbproxy);
+			_dbproxy_msg_handle = new dbproxy_msg_handle(dbproxy, this);
 			_dbproxy_call_logic.onreg_logic_sucess += _dbproxy_msg_handle.reg_logic_sucess;
 			_dbproxy_call_logic.onack_create_persisted_object += _dbproxy_msg_handle.ack_create_persisted_object;
 			_dbproxy_call_logic.onack_updata_persisted_object += _dbproxy_msg_handle.ack_updata_persisted_object;
@@ -137,8 +137,18 @@ namespace logic
 
             return tick;
         }
-        
-		private static void Main(String[] args)
+
+        public delegate void onConnectDBHandle();
+        public event onConnectDBHandle onConnectDB;
+        public void onConnectDB_event()
+        {
+            if (onConnectDB != null)
+            {
+                onConnectDB();
+            }
+        }
+
+        private static void Main(String[] args)
 		{
 			if (args.Length <= 0)
 			{
