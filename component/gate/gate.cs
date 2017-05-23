@@ -138,6 +138,10 @@ namespace gate
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), tick, e.Message);
             }
+            catch(System.Exception e)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), tick, "{0}", e);
+            }
 
             _accept_logic_hub_service.poll(tick);
 			_connect_center_service.poll(tick);

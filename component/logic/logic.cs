@@ -128,6 +128,10 @@ namespace logic
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), tick, e.Message);
             }
+            catch (System.Exception e)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), tick, "{0}", e);
+            }
 
             _dbproxy_connectnetworkservice.poll(tick);
 			_hub_connectnetworkservice.poll(tick);

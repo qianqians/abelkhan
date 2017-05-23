@@ -88,6 +88,10 @@ namespace center
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), tick, e.Message);
             }
+            catch (System.Exception e)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), tick, "{0}", e);
+            }
 
             _accept_svr_service.poll(tick);
             _accept_gm_service.poll(tick);
