@@ -10,7 +10,6 @@ namespace gate
 		{
 			clientproxys = new Dictionary<string, clientproxy> ();
 			clientproxys_ch = new Dictionary<juggle.Ichannel, clientproxy> ();
-			clientproxy_logicproxy = new Dictionary<clientproxy, logicproxy> ();
             clientproxy_hubproxy = new Dictionary<clientproxy, List<hubproxy> >();
 			clientproxys_uuid = new Dictionary<clientproxy, string> ();
 			client_server_time = new Dictionary<juggle.Ichannel, long>();
@@ -44,27 +43,6 @@ namespace gate
                     clientproxys_uuid.Remove(_proxy);
 
                     clientproxys.Remove(uuid);
-                }
-            }
-        }
-
-		public void reg_client_logic(string uuid, logicproxy _logicproxy)
-		{
-			var _clientproxy = get_clientproxy (uuid);
-			if (_clientproxy != null)
-			{
-				clientproxy_logicproxy.Add (_clientproxy, _logicproxy);
-			}
-		}
-
-        public void unreg_client_logic(juggle.Ichannel ch)
-        {
-            if (clientproxys_ch.ContainsKey(ch))
-            {
-                clientproxy _proxy = clientproxys_ch[ch];
-                if (clientproxy_logicproxy.ContainsKey(_proxy))
-                {
-                    clientproxy_logicproxy.Remove(_proxy);
                 }
             }
         }
@@ -148,11 +126,6 @@ namespace gate
                     {
                         var _client = clientproxys_ch[_ch];
                         var client_uuid = clientproxys_uuid[_client];
-                        if (clientproxy_logicproxy.ContainsKey(_client))
-                        {
-                            var _logic = clientproxy_logicproxy[_client];
-                            _logic.client_exception(client_uuid);
-                        }
                         if (clientproxy_hubproxy.ContainsKey(_client))
                         {
                             var _hubs = clientproxy_hubproxy[_client];
@@ -178,12 +151,6 @@ namespace gate
                 {
                     var _client = clientproxys_ch[kvp.Key];
                     var client_uuid = clientproxys_uuid[_client];
-                    if (clientproxy_logicproxy.ContainsKey(_client))
-                    {
-                        var _logic = clientproxy_logicproxy[_client];
-                        _logic.client_disconnect(client_uuid);
-                        clientproxy_logicproxy.Remove(_client);
-                    }
                     if (clientproxy_hubproxy.ContainsKey(_client))
                     {
                         var _hubs = clientproxy_hubproxy[_client];
@@ -222,8 +189,7 @@ namespace gate
         private Dictionary<clientproxy, String> clientproxys_uuid;
 		private Dictionary<juggle.Ichannel, clientproxy> clientproxys_ch;
 		private Dictionary<String, clientproxy> clientproxys;
-
-		private Dictionary<clientproxy, logicproxy> clientproxy_logicproxy;
+        
         private Dictionary<clientproxy, List<hubproxy> > clientproxy_hubproxy;
 
         private Dictionary<juggle.Ichannel, Int64 > client_server_time;

@@ -22,28 +22,6 @@ namespace module
             }
         }
 
-        public delegate void ack_get_logichandle(String argv0);
-        public event ack_get_logichandle onack_get_logic;
-        public void ack_get_logic(ArrayList _event)
-        {
-            if(onack_get_logic != null)
-            {
-                var argv0 = ((String)_event[0]);
-                onack_get_logic( argv0);
-            }
-        }
-
-        public delegate void connect_logic_sucesshandle(String argv0);
-        public event connect_logic_sucesshandle onconnect_logic_sucess;
-        public void connect_logic_sucess(ArrayList _event)
-        {
-            if(onconnect_logic_sucess != null)
-            {
-                var argv0 = ((String)_event[0]);
-                onconnect_logic_sucess( argv0);
-            }
-        }
-
         public delegate void connect_hub_sucesshandle(String argv0);
         public event connect_hub_sucesshandle onconnect_hub_sucess;
         public void connect_hub_sucess(ArrayList _event)

@@ -40,18 +40,11 @@ namespace hub
 
 			closeHandle = new closehandle();
 
-			logics = new logicmanager();
             hubs = new hubmanager();
 			modules = new common.modulemanager();
 
             var _hub_logic_process = new juggle.process();
             _connect_hub_service = new service.connectnetworkservice(_hub_logic_process);
-
-            _logic_msg_handle = new logic_msg_handle(modules, logics);
-			_logic_call_hub = new module.hub();
-			_logic_call_hub.onlogic_call_hub_mothed += _logic_msg_handle.logic_call_hub_mothed;
-			_logic_call_hub.onreg_logic += _logic_msg_handle.reg_logic;
-            _hub_logic_process.reg_module(_logic_call_hub);
 
             hubs = new hubmanager();
 
@@ -202,12 +195,9 @@ namespace hub
 
 		private service.acceptnetworkservice _accept_logic_service;
         private service.connectnetworkservice _connect_hub_service;
-		private module.hub _logic_call_hub;
-        private logic_msg_handle _logic_msg_handle;
         private module.hub_call_hub _hub_call_hub;
         private hub_msg_handle _hub_msg_handle;
         public static common.modulemanager modules;
-		public static logicmanager logics;
         public static hubmanager hubs;
 
 		private service.connectnetworkservice _connect_center_service;

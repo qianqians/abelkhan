@@ -29,7 +29,7 @@ namespace lobby
                 Hashtable _query = new Hashtable();
                 _query.Add("token", token);
                 _query.Add("wechat_name", wechat_name);
-                hub.hub.dbproxy.getObjectInfo(_query, (ArrayList date_list) => { query_player_info(client_uuid, token, wechat_name, date_list); }, ()=> { });
+                hub.hub.dbproxy.getCollection("test", "objects").getObjectInfo(_query, (ArrayList date_list) => { query_player_info(client_uuid, token, wechat_name, date_list); }, ()=> { });
             }
         }
 
@@ -47,7 +47,7 @@ namespace lobby
                 Hashtable _data = new Hashtable();
                 _data.Add("token", token);
                 _data.Add("wechat_name", wechat_name);
-                hub.hub.dbproxy.createPersistedObject(_data, ()=> { create_player(uuid, _data); });
+                hub.hub.dbproxy.getCollection("test", "objects").createPersistedObject(_data, ()=> { create_player(uuid, _data); });
             }
             else
             {

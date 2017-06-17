@@ -1,37 +1,11 @@
-module logic_call_dbproxy{
-	void reg_logic(string logic_uuid);
-
-	void create_persisted_object(table object_info, string callbackid);
-
-	void updata_persisted_object(table query_json, table object_info, string callbackid);
-
-	void get_object_info(table query_json, string callbackid);
-
-	void logic_closed();
-
-}
-
-module dbproxy_call_logic{
-	void reg_logic_sucess();
-
-	void ack_create_persisted_object(string callbackid);
-
-	void ack_updata_persisted_object(string callbackid);
-
-	void ack_get_object_info(string callbackid, array object_info);
-
-	void ack_get_object_info_end(string callbackid);
-
-}
-
 module hub_call_dbproxy{
 	void reg_hub(string hub_uuid);
 	
-	void create_persisted_object(table object_info, string callbackid);
+	void create_persisted_object(string db, string collection, table object_info, string callbackid);
 
-	void updata_persisted_object(table query_json, table object_info, string callbackid);
+	void updata_persisted_object(string db, string collection, table query_json, table object_info, string callbackid);
 
-	void get_object_info(table query_json, string callbackid);
+	void get_object_info(string db, string collection, table query_json, string callbackid);
 
 }
 

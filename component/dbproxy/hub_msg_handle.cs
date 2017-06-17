@@ -19,9 +19,9 @@ namespace dbproxy
 			_hubproxy.reg_hub_sucess ();
 		}
 
-		public void create_persisted_object(Hashtable object_info, string callbackid)
+		public void create_persisted_object(string db, string collection, Hashtable object_info, string callbackid)
 		{
-			_mongodbproxy.save(object_info);
+			_mongodbproxy.save(db, collection, object_info);
 
 			hubproxy _hubproxy = _hubmanager.get_hub(juggle.Imodule.current_ch);
 			if (_hubproxy != null)
@@ -30,9 +30,9 @@ namespace dbproxy
 			}
 		}
 
-		public void updata_persisted_object(Hashtable query_json, Hashtable object_info, string callbackid)
+		public void updata_persisted_object(string db, string collection, Hashtable query_json, Hashtable object_info, string callbackid)
 		{
-			_mongodbproxy.update(query_json, object_info);
+			_mongodbproxy.update(db, collection, query_json, object_info);
 
 			hubproxy _hubproxy = _hubmanager.get_hub(juggle.Imodule.current_ch);
 			if (_hubproxy != null) 
@@ -41,11 +41,11 @@ namespace dbproxy
 			}
 		}
 
-		public void get_object_info(Hashtable query_json, string callbackid)
+		public void get_object_info(string db, string collection, Hashtable query_json, string callbackid)
         {
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "get_object_info");
 
-            ArrayList _list = _mongodbproxy.find(0, 0, 0, query_json, null);
+            ArrayList _list = _mongodbproxy.find(db, collection, 0, 0, 0, query_json, null);
 
 			hubproxy _hubproxy = _hubmanager.get_hub(juggle.Imodule.current_ch);
 

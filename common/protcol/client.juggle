@@ -1,10 +1,6 @@
 module gate_call_client{
 	void connect_gate_sucess();
 
-	void ack_get_logic(string logic_uuid);
-
-	void connect_logic_sucess(string logic_uuid);
-
 	void connect_hub_sucess(string hub_name);
 
 	void call_client(string module, string func, array argv);

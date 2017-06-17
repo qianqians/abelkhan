@@ -36,20 +36,14 @@ namespace center
             }
 
             _svrmanager = new svrmanager ();
-			_logicmanager = new logicmanager ();
 			_hubmanager = new hubmanager ();
 
 			juggle.process _center_process = new juggle.process ();
 
 			_svr_call_center = new module.center ();
-			_svr_msg_handle = new svr_msg_handle (_svrmanager, _hubmanager, _logicmanager);
+			_svr_msg_handle = new svr_msg_handle (_svrmanager, _hubmanager);
 			_svr_call_center.onreg_server += _svr_msg_handle.reg_server;
 			_center_process.reg_module (_svr_call_center);
-
-			_logic_call_center = new module.logic_call_center ();
-			_logic_msg_handle = new logic_svr_msg_handle (_svrmanager, _logicmanager);
-			_logic_call_center.onreq_get_server_address += _logic_msg_handle.req_get_server_address;
-			_center_process.reg_module (_logic_call_center);
 
 			var ip = _config.get_value_string("ip");
 			var port = (short)_config.get_value_int("port");
@@ -131,10 +125,6 @@ namespace center
 		private module.center _svr_call_center;
 		private svr_msg_handle _svr_msg_handle;
 		private svrmanager _svrmanager;
-
-		private module.logic_call_center _logic_call_center;
-		private logic_svr_msg_handle _logic_msg_handle;
-		private logicmanager _logicmanager;
 
 		private hubmanager _hubmanager;
 

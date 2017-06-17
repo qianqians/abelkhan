@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="robot">
-      <HintPath>..\..\bin\robot.dll</HintPath>
+      <HintPath>..\..\..\..\..\release\bin\robot.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

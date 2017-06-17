@@ -42,18 +42,16 @@ namespace dbproxy
 
 			var db_ip = _config.get_value_string("db_ip");
 			var db_port = (short)_config.get_value_int("db_port");
-			var db = _config.get_value_string("db_name");
-			var collection = _config.get_value_string("db_collection");
+			//var db = _config.get_value_string("db_name");
+			//var collection = _config.get_value_string("db_collection");
 
-			_mongodbproxy = new mongodbproxy(db_ip, db_port, db, collection);
+			_mongodbproxy = new mongodbproxy(db_ip, db_port);
 
 			var ip = _config.get_value_string("ip");
 			var port = (short)_config.get_value_int("port");
-
-			_logic_call_dbproxy = new module.logic_call_dbproxy();
+            
 			_hub_call_dbproxy = new module.hub_call_dbproxy();
 			_process = new juggle.process();
-			_process.reg_module(_logic_call_dbproxy);
 			_process.reg_module(_hub_call_dbproxy);
 			_acceptnetworkservice = new service.acceptnetworkservice(ip, port, _process);
 
@@ -63,14 +61,6 @@ namespace dbproxy
 			_hub_call_dbproxy.oncreate_persisted_object += _hub_msg_handle.create_persisted_object;
 			_hub_call_dbproxy.onupdata_persisted_object += _hub_msg_handle.updata_persisted_object;
 			_hub_call_dbproxy.onget_object_info += _hub_msg_handle.get_object_info;
-
-			_logicmanager = new logicmanager();
-			_logic_msg_handle = new logic_msg_handle(_logicmanager, _mongodbproxy, closeHandle);
-			_logic_call_dbproxy.onreg_logic += _logic_msg_handle.reg_logic;
-			_logic_call_dbproxy.onlogic_closed += _logic_msg_handle.logic_closed;
-			_logic_call_dbproxy.oncreate_persisted_object += _logic_msg_handle.create_persisted_object;
-			_logic_call_dbproxy.onupdata_persisted_object += _logic_msg_handle.updata_persisted_object;
-			_logic_call_dbproxy.onget_object_info += _logic_msg_handle.get_object_info;
 
 			var center_ip = _center_config.get_value_string("ip");
 			var center_port = (short)_center_config.get_value_int("port");
@@ -165,10 +155,6 @@ namespace dbproxy
 		private hubmanager _hubmanager;
 		private hub_msg_handle _hub_msg_handle;
 		private module.hub_call_dbproxy _hub_call_dbproxy;
-
-		private logicmanager _logicmanager;
-		private logic_msg_handle _logic_msg_handle;
-		private module.logic_call_dbproxy _logic_call_dbproxy;
 
 		private juggle.process _process;
 		private service.acceptnetworkservice _acceptnetworkservice;

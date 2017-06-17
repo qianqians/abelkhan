@@ -34,40 +34,6 @@ namespace module
             }
         }
 
-        public delegate void get_logichandle();
-        public event get_logichandle onget_logic;
-        public void get_logic(ArrayList _event)
-        {
-            if(onget_logic != null)
-            {
-                onget_logic();
-            }
-        }
-
-        public delegate void connect_logichandle(String argv0, String argv1);
-        public event connect_logichandle onconnect_logic;
-        public void connect_logic(ArrayList _event)
-        {
-            if(onconnect_logic != null)
-            {
-                var argv0 = ((String)_event[0]);
-                var argv1 = ((String)_event[1]);
-                onconnect_logic( argv0,  argv1);
-            }
-        }
-
-        public delegate void disconnect_logichandle(String argv0, String argv1);
-        public event disconnect_logichandle ondisconnect_logic;
-        public void disconnect_logic(ArrayList _event)
-        {
-            if(ondisconnect_logic != null)
-            {
-                var argv0 = ((String)_event[0]);
-                var argv1 = ((String)_event[1]);
-                ondisconnect_logic( argv0,  argv1);
-            }
-        }
-
         public delegate void connect_hubhandle(String argv0, String argv1);
         public event connect_hubhandle onconnect_hub;
         public void connect_hub(ArrayList _event)

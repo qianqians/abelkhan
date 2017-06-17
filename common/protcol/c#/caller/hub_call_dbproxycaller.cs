@@ -19,28 +19,34 @@ namespace caller
             call_module_method("reg_hub", _argv);
         }
 
-        public void create_persisted_object(Hashtable argv0,String argv1)
-        {
-            ArrayList _argv = new ArrayList();
-            _argv.Add(argv0);
-            _argv.Add(argv1);
-            call_module_method("create_persisted_object", _argv);
-        }
-
-        public void updata_persisted_object(Hashtable argv0,Hashtable argv1,String argv2)
+        public void create_persisted_object(String argv0,String argv1,Hashtable argv2,String argv3)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             _argv.Add(argv1);
             _argv.Add(argv2);
-            call_module_method("updata_persisted_object", _argv);
+            _argv.Add(argv3);
+            call_module_method("create_persisted_object", _argv);
         }
 
-        public void get_object_info(Hashtable argv0,String argv1)
+        public void updata_persisted_object(String argv0,String argv1,Hashtable argv2,Hashtable argv3,String argv4)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             _argv.Add(argv1);
+            _argv.Add(argv2);
+            _argv.Add(argv3);
+            _argv.Add(argv4);
+            call_module_method("updata_persisted_object", _argv);
+        }
+
+        public void get_object_info(String argv0,String argv1,Hashtable argv2,String argv3)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            _argv.Add(argv1);
+            _argv.Add(argv2);
+            _argv.Add(argv3);
             call_module_method("get_object_info", _argv);
         }
 

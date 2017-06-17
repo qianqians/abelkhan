@@ -20,42 +20,62 @@ namespace hub
 			_hub_call_dbproxy.reg_hub(uuid);
 		}
 
-		public void createPersistedObject(Hashtable object_info, onCreatePersistedObjectHandle _handle)
-		{
-			var callbackid = System.Guid.NewGuid().ToString();
-			create_persisted_object(object_info, callbackid);
-			callback_set.Add(callbackid, (object)_handle);
-		}
-
-		public void updataPersistedObject(Hashtable query_json, Hashtable updata_info, onUpdataPersistedObjectHandle _handle)
-		{
-			var callbackid = System.Guid.NewGuid().ToString();
-			updata_persisted_object(query_json, updata_info, callbackid);
-			callback_set.Add(callbackid, (object)_handle);
-		}
-
-		public void getObjectInfo(Hashtable query_json, onGetObjectInfoHandle _handle, onGetObjectInfoEnd _end)
-		{
-			var callbackid = System.Guid.NewGuid().ToString();
-			get_object_info(query_json, callbackid);
-			callback_set.Add(callbackid, (object)_handle);
-            end_cb_set.Add(callbackid, (object)_end);
+        public Collection getCollection(string db, string collection)
+        {
+           return new Collection(db, collection, this);
         }
 
-		private void create_persisted_object(Hashtable object_info, String callbackid)
-		{
-			_hub_call_dbproxy.create_persisted_object(object_info, callbackid);	
-		}
+        public class Collection
+        {
+            public Collection(string db, string collection, dbproxyproxy proxy)
+            {
+                _db = db;
+                _collection = collection;
 
-		private void updata_persisted_object(Hashtable query_object, Hashtable updata_info, String callbackid)
-		{
-			_hub_call_dbproxy.updata_persisted_object(query_object, updata_info, callbackid);
-		}
+                _dbproxy = proxy;
+            }
 
-		private void get_object_info(Hashtable query_object, String callbackid)
-		{
-			_hub_call_dbproxy.get_object_info(query_object, callbackid);
-		}
+            public void createPersistedObject(Hashtable object_info, onCreatePersistedObjectHandle _handle)
+            {
+                var callbackid = System.Guid.NewGuid().ToString();
+                create_persisted_object(object_info, callbackid);
+                _dbproxy.callback_set.Add(callbackid, (object)_handle);
+            }
+
+            public void updataPersistedObject(Hashtable query_json, Hashtable updata_info, onUpdataPersistedObjectHandle _handle)
+            {
+                var callbackid = System.Guid.NewGuid().ToString();
+                updata_persisted_object(query_json, updata_info, callbackid);
+                _dbproxy.callback_set.Add(callbackid, (object)_handle);
+            }
+
+            public void getObjectInfo(Hashtable query_json, onGetObjectInfoHandle _handle, onGetObjectInfoEnd _end)
+            {
+                var callbackid = System.Guid.NewGuid().ToString();
+                get_object_info(query_json, callbackid);
+                _dbproxy.callback_set.Add(callbackid, (object)_handle);
+                _dbproxy.end_cb_set.Add(callbackid, (object)_end);
+            }
+
+            private void create_persisted_object(Hashtable object_info, String callbackid)
+            {
+                _dbproxy._hub_call_dbproxy.create_persisted_object(_db, _collection, object_info, callbackid);
+            }
+
+            private void updata_persisted_object(Hashtable query_object, Hashtable updata_info, String callbackid)
+            {
+                _dbproxy._hub_call_dbproxy.updata_persisted_object(_db, _collection, query_object, updata_info, callbackid);
+            }
+
+            private void get_object_info(Hashtable query_object, String callbackid)
+            {
+                _dbproxy._hub_call_dbproxy.get_object_info(_db, _collection, query_object, callbackid);
+            }
+
+            private string _db;
+            private string _collection;
+            private dbproxyproxy _dbproxy;
+        }
 
 		public object begin_callback(String callbackid)
 		{

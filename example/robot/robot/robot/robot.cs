@@ -11,8 +11,6 @@ namespace robot
         {
             _robot = new robot(args);
             _robot.onConnectGate += onGateHandle;
-            _robot.onAckGetLogic += onAckGetLogic;
-            _robot.onConnectLogic += onConnectLogic;
             _robot.onConnectHub += onConnectHub;
             
             _robot.connect_server(service.timerservice.Tick);
@@ -37,21 +35,7 @@ namespace robot
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "onGateHandle");
 
             var _proxy = _robot.get_client_proxy(juggle.Imodule.current_ch);
-            _proxy.get_logic();
             _proxy.connect_hub("hub");
-        }
-
-        private static void onAckGetLogic(string _logic_uuid)
-        {
-            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "onAckGetLogic:{0}", _logic_uuid);
-
-            var _proxy = _robot.get_client_proxy(juggle.Imodule.current_ch);
-            _proxy.connect_logic(_logic_uuid);
-        }
-
-        private static void onConnectLogic(string logic_uuid)
-        {
-            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "onConnectLogic:{0}", logic_uuid);
         }
 
         private static void onConnectHub(string hub_name)

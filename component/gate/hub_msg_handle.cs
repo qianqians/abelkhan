@@ -37,7 +37,6 @@ namespace gate
             {
                 _clientmanager.unreg_client(_clientproxy.client_ch);
                 _clientmanager.unreg_client_hub(_clientproxy.client_ch);
-                _clientmanager.unreg_client_logic(_clientproxy.client_ch);
                 _clientproxy.client_ch.disconnect();
             }
         }

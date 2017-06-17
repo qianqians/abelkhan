@@ -18,20 +18,6 @@ namespace caller
             call_module_method("connect_gate_sucess", _argv);
         }
 
-        public void ack_get_logic(String argv0)
-        {
-            ArrayList _argv = new ArrayList();
-            _argv.Add(argv0);
-            call_module_method("ack_get_logic", _argv);
-        }
-
-        public void connect_logic_sucess(String argv0)
-        {
-            ArrayList _argv = new ArrayList();
-            _argv.Add(argv0);
-            call_module_method("connect_logic_sucess", _argv);
-        }
-
         public void connect_hub_sucess(String argv0)
         {
             ArrayList _argv = new ArrayList();

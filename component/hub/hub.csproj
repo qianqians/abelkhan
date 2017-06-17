@@ -76,9 +76,6 @@
     <Compile Include="..\..\common\protcol\c#\caller\hub_call_hubcaller.cs">
       <Link>hub_call_hubcaller.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\protcol\c#\caller\hub_call_logiccaller.cs">
-      <Link>hub_call_logiccaller.cs</Link>
-    </Compile>
     <Compile Include="..\..\common\protcol\c#\module\center_call_hubmodule.cs">
       <Link>center_call_hubmodule.cs</Link>
     </Compile>
@@ -90,9 +87,6 @@
     </Compile>
     <Compile Include="..\..\common\protcol\c#\module\gate_call_hubmodule.cs">
       <Link>gate_call_hubmodule.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\protcol\c#\module\hubmodule.cs">
-      <Link>hubmodule.cs</Link>
     </Compile>
     <Compile Include="..\..\common\protcol\c#\module\hub_call_hubmodule.cs">
       <Link>hub_call_hubmodule.cs</Link>
@@ -140,11 +134,8 @@
     <Compile Include="hubmanager.cs" />
     <Compile Include="hubproxy.cs" />
     <Compile Include="hub_msg_handle.cs" />
-    <Compile Include="logic_msg_handle.cs" />
     <Compile Include="dbproxy_msg_handle.cs" />
     <Compile Include="closehandle.cs" />
-    <Compile Include="logicproxy.cs" />
-    <Compile Include="logicmanager.cs" />
     <Compile Include="gate_msg_handle.cs" />
     <Compile Include="gatemanager.cs" />
     <Compile Include="gateproxy.cs" />

@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="hub">
-      <HintPath>..\..\..\..\bin\hub.dll</HintPath>
+      <HintPath>..\..\..\..\..\release\bin\hub.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

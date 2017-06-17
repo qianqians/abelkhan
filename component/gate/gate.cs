@@ -51,20 +51,15 @@ namespace gate
             enable_heartbeats = _config.get_value_bool("heartbeats");
 
             timer = new service.timerservice();
-			_logicmanager = new logicmanager();
             _hubmanager = new hubmanager();
             clients = new clientmanager ();
 
-			_client_msg_handle = new client_msg_handle (clients, _logicmanager, _hubmanager, timer);
+			_client_msg_handle = new client_msg_handle (clients, _hubmanager, timer);
 			_client_call_gate = new module.client_call_gate ();
 			_client_call_gate.onconnect_server += _client_msg_handle.connect_server;
 			_client_call_gate.oncancle_server += _client_msg_handle.cancle_server;
-            _client_call_gate.onget_logic += _client_msg_handle.get_logic;
-            _client_call_gate.onconnect_logic += _client_msg_handle.connect_logic;
-            _client_call_gate.ondisconnect_logic += _client_msg_handle.disconnect_logic;
             _client_call_gate.onconnect_hub += _client_msg_handle.connect_hub;
             _client_call_gate.ondisconnect_hub += _client_msg_handle.disconnect_hub;
-            _client_call_gate.onforward_client_call_logic += _client_msg_handle.forward_client_call_logic;
             _client_call_gate.onforward_client_call_hub += _client_msg_handle.forward_client_call_hub;
             _client_call_gate.onheartbeats += _client_msg_handle.heartbeats;
 			var _client_process = new juggle.process();
@@ -74,16 +69,6 @@ namespace gate
 			var outside_port = (short)_config.get_value_int("outside_port");
 			_accept_client_service = new service.acceptnetworkservice(outside_ip, outside_port, _client_process);
             _accept_client_service.onChannelDisconnect += onClientDissconnect;
-
-            _logic_msg_handle = new logic_msg_handle(_logicmanager, clients);
-			_logic_call_gate = new module.logic_call_gate();
-			_logic_call_gate.onreg_logic += _logic_msg_handle.reg_logic;
-			_logic_call_gate.onack_client_get_logic += _logic_msg_handle.ack_client_get_logic;
-            _logic_call_gate.onconnect_sucess += _logic_msg_handle.connect_sucess;
-            _logic_call_gate.ondisconnect_client += _logic_msg_handle.disconnect_client;
-            _logic_call_gate.onforward_logic_call_client += _logic_msg_handle.forward_logic_call_client;
-			_logic_call_gate.onforward_logic_call_global_client += _logic_msg_handle.forward_logic_call_global_client;
-			_logic_call_gate.onforward_logic_call_group_client += _logic_msg_handle.forward_logic_call_group_client;
 
 			_hub_msg_handle = new hub_msg_handle(_hubmanager, clients);
 			_hub_call_gate = new module.hub_call_gate ();
@@ -95,7 +80,6 @@ namespace gate
 			_hub_call_gate.onforward_hub_call_group_client += _hub_msg_handle.forward_hub_call_group_client;
 
 			var _logic_hub_process = new juggle.process();
-			_logic_hub_process.reg_module(_logic_call_gate);
 			_logic_hub_process.reg_module(_hub_call_gate);
 			var inside_ip = _config.get_value_string("inside_ip");
 			var inside_port = (short)_config.get_value_int("inside_port");
@@ -194,9 +178,6 @@ namespace gate
         public static clientmanager clients;
 
 		private service.acceptnetworkservice _accept_logic_hub_service;
-		private module.logic_call_gate _logic_call_gate;
-		private logic_msg_handle _logic_msg_handle;
-		private logicmanager _logicmanager;
 		private module.hub_call_gate _hub_call_gate;
 		private hub_msg_handle _hub_msg_handle;
 		private hubmanager _hubmanager;

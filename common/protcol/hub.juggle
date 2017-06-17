@@ -1,17 +1,3 @@
-module hub{
-	void reg_logic(string logic_uuid);
-
-	void logic_call_hub_mothed(string module, string func, array argv);
-
-}
-
-module hub_call_logic{
-	void reg_logic_sucess_and_notify_hub_nominate(string hub_name);
-
-	void hub_call_logic_mothed(string module, string func, array argv);
-
-}
-
 module gate_call_hub{
 	void reg_hub_sucess();
 

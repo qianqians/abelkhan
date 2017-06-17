@@ -16,20 +16,10 @@ namespace gate
             _caller.connect_gate_sucess();
         }
 
-        public void connect_logic_sucess(string logic_uuid)
-        {
-            _caller.connect_logic_sucess(logic_uuid);
-        }
-
         public void connect_hub_sucess(string hub_name)
         {
             _caller.connect_hub_sucess(hub_name);
         }
-
-		public void ack_get_logic(string logic_uuid)
-		{
-			_caller.ack_get_logic(logic_uuid);
-		}
 
 		public void call_client(string module, string func, ArrayList argv)
 		{

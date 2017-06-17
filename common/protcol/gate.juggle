@@ -3,12 +3,6 @@ module client_call_gate{
 	
 	void cancle_server();
 
-	void get_logic();
-
-	void connect_logic(string client_uuid, string logic_uuid);
-
-	void disconnect_logic(string client_uuid, string logic_uuid);
-
 	void connect_hub(string client_uuid, string hub_name);
 
 	void disconnect_hub(string client_uuid, string hub_name);
@@ -21,22 +15,6 @@ module client_call_gate{
 
 }
 
-module logic_call_gate{
-	void reg_logic(string uuid);
-
-	void ack_client_get_logic(string client_uuid, string result);
-
-	void connect_sucess(string client_uuid);
-
-	void disconnect_client(string client_uuid);
-	
-	void forward_logic_call_client(string client_uuid, string module, string func, array argv);
-
-	void forward_logic_call_group_client(array client_uuids, string module, string func, array argv);
-	
-	void forward_logic_call_global_client(string module, string func, array argv);
-
-}
 
 module hub_call_gate{
 	void reg_hub(string hub_uuid, string hub_name);

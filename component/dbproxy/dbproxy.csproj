@@ -79,17 +79,11 @@
     <Compile Include="..\..\common\protcol\c#\caller\dbproxy_call_hubcaller.cs">
       <Link>dbproxy_call_hubcaller.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\protcol\c#\caller\dbproxy_call_logiccaller.cs">
-      <Link>dbproxy_call_logiccaller.cs</Link>
-    </Compile>
     <Compile Include="..\..\common\protcol\c#\module\center_call_servermodule.cs">
       <Link>center_call_servermodule.cs</Link>
     </Compile>
     <Compile Include="..\..\common\protcol\c#\module\hub_call_dbproxymodule.cs">
       <Link>hub_call_dbproxymodule.cs</Link>
-    </Compile>
-    <Compile Include="..\..\common\protcol\c#\module\logic_call_dbproxymodule.cs">
-      <Link>logic_call_dbproxymodule.cs</Link>
     </Compile>
     <Compile Include="..\..\common\service\acceptnetworkservice.cs">
       <Link>acceptnetworkservice.cs</Link>
@@ -134,9 +128,6 @@
     <Compile Include="hub_msg_handle.cs" />
     <Compile Include="hubmanager.cs" />
     <Compile Include="hubproxy.cs" />
-    <Compile Include="logic_msg_handle.cs" />
-    <Compile Include="logicmanager.cs" />
-    <Compile Include="logicproxy.cs" />
     <Compile Include="mongodbproxy.cs" />
   </ItemGroup>
 </Project>
