@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.4
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "center", "center\center.csproj", "{F24797AD-75C0-45BF-AA80-EFCCA3320DDC}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hub", "hub\hub.csproj", "{9C09315C-188C-4611-9AD8-CE81A3D30D5C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "robot", "robot\robot.csproj", "{95535BA1-7E85-492A-82BA-9D72A21E92F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gm", "gm\gm.csproj", "{CDCFE7A4-315A-464F-9171-4F3B76EEDFC7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +73,14 @@ Global
 		{95535BA1-7E85-492A-82BA-9D72A21E92F6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{95535BA1-7E85-492A-82BA-9D72A21E92F6}.Release|x86.ActiveCfg = Release|Any CPU
 		{95535BA1-7E85-492A-82BA-9D72A21E92F6}.Release|x86.Build.0 = Release|Any CPU
+		{CDCFE7A4-315A-464F-9171-4F3B76EEDFC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDCFE7A4-315A-464F-9171-4F3B76EEDFC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDCFE7A4-315A-464F-9171-4F3B76EEDFC7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CDCFE7A4-315A-464F-9171-4F3B76EEDFC7}.Debug|x86.Build.0 = Debug|Any CPU
+		{CDCFE7A4-315A-464F-9171-4F3B76EEDFC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDCFE7A4-315A-464F-9171-4F3B76EEDFC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDCFE7A4-315A-464F-9171-4F3B76EEDFC7}.Release|x86.ActiveCfg = Release|Any CPU
+		{CDCFE7A4-315A-464F-9171-4F3B76EEDFC7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
