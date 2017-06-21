@@ -15,6 +15,8 @@ namespace center
 				_config = _config.get_value_dict(args[1]);
 			}
 
+            closeHandle = new closehandle();
+
             var log_level = _config.get_value_string("log_level");
             if (log_level == "debug")
             {
@@ -110,6 +112,12 @@ namespace center
                 old_tick = tick;
                 tick = _center.poll();
 
+                if (closeHandle.is_close)
+                {
+                    System.Threading.Thread.Sleep(100);
+                    break;
+                }
+
                 Int64 tmp = tick - old_tick;
                 if (tmp < 50)
                 {
@@ -120,7 +128,9 @@ namespace center
 
 		private String uuid;
 
-		private service.acceptnetworkservice _accept_svr_service;
+        public static closehandle closeHandle;
+
+        private service.acceptnetworkservice _accept_svr_service;
 
 		private module.center _svr_call_center;
 		private svr_msg_handle _svr_msg_handle;

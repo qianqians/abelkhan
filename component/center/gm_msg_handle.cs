@@ -24,6 +24,10 @@ namespace center
 						_svrproxy.close_server();
 					}
 				);
+
+                center.closeHandle.is_close = true;
+
+                log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "close clutter!");
 			}
 		}
 

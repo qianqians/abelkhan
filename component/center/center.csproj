@@ -111,6 +111,7 @@
       <Link>process.cs</Link>
     </Compile>
     <Compile Include="center.cs" />
+    <Compile Include="closehandle.cs" />
     <Compile Include="svr_msg_handle.cs" />
     <Compile Include="svrmanager.cs" />
     <Compile Include="svrproxy.cs" />

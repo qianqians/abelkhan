@@ -27,7 +27,7 @@ namespace gm
     {
         public gm(string[] args)
         {
-            Console.WriteLine("Enter gm name");
+            Console.WriteLine("Enter gm name:");
             gm_name = Console.ReadLine();
 
             config.config _config = new config.config(args[0]);
@@ -48,8 +48,6 @@ namespace gm
 
             _juggle_service = new service.juggleservice();
             _juggle_service.add_process(_gm_process);
-
-            output_cmd();
         }
 
         public Int64 poll()
@@ -93,7 +91,9 @@ namespace gm
             bool runing = true;
 
             Dictionary<String, handle> cmd_callback = new Dictionary<string, handle>();
-            cmd_callback.Add("close", () => { _gm._center_proxy.close_clutter(_gm.gm_name); runing = false; });
+            cmd_callback.Add("close", () => {
+                _gm._center_proxy.close_clutter(_gm.gm_name);
+            });
 
             Int64 old_tick = 0;
             Int64 tick = 0;
@@ -101,6 +101,8 @@ namespace gm
             {
                 old_tick = tick;
                 tick = _gm.poll();
+
+                _gm.output_cmd();
 
                 string cmd = Console.ReadLine();
                 if (cmd_callback.ContainsKey(cmd))
@@ -111,8 +113,6 @@ namespace gm
                 {
                     Console.WriteLine("invalid gm cmd!");
                 }
-
-                _gm.output_cmd();
 
                 Int64 tmp = tick - old_tick;
                 if (tmp < 50)
