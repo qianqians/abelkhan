@@ -34,7 +34,7 @@ namespace service
 			listener.BeginAcceptSocket(new AsyncCallback(this.onAccept), listener);
 		}
 
-		public delegate void ChannelConnectHandle(channel ch);
+		public delegate void ChannelConnectHandle(juggle.Ichannel ch);
 		public event ChannelConnectHandle onChannelConnect;
 
 		public void onChannelConn(channel ch)
@@ -47,10 +47,10 @@ namespace service
 			}
 		}
 
-		public delegate void ChannelDisconnectHandle(channel ch);
+		public delegate void ChannelDisconnectHandle(juggle.Ichannel ch);
 		public event ChannelDisconnectHandle onChannelDisconnect;
 
-		public void onChannelDisconn(channel ch)
+		public void onChannelDisconn(juggle.Ichannel ch)
 		{
 			if (onChannelDisconnect != null)
 			{

@@ -6,3 +6,10 @@ module gate_call_client{
 	void call_client(string module, string func, array argv);
 
 }
+
+module gate_call_client_fast{
+	void confirm_refresh_udp_end_point();
+
+	void call_client(string module, string func, array argv);
+
+}

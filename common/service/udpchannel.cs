@@ -1,29 +1,28 @@
 ﻿using System;
 using System.IO;
 using System.Collections;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
 namespace service
 {
-	public class channel : juggle.Ichannel
+	public class udpchannel : juggle.Ichannel
 	{
 		public delegate void DisconnectHandle(juggle.Ichannel ch);
 		public event DisconnectHandle onDisconnect;
 
-		public channel(Socket _s)
+		public udpchannel(Socket _s, IPEndPoint _remote_ep)
 		{
 			s = _s;
+            remote_ep = new IPEndPoint(_remote_ep.Address, _remote_ep.Port);
 
-			que = new Queue();
+            que = new Queue();
 
             recvbuflenght = 16 * 1024;
-            recvbuf = new byte[recvbuflenght];
-			tmpbuf = null;
+            tmpbuf = null;
 			tmpbuflenght = 0;
 			tmpbufoffset = 0;
-
-			s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
 		}
 
         public void disconnect()
@@ -31,20 +30,17 @@ namespace service
             s.Close();
         }
 
-		private void onRead(IAsyncResult ar)
+		public void recv(byte[] recvbuf, int read)
         {
-            channel ch = ar.AsyncState as channel;
-
             try
             {
-                int read = ch.s.EndReceive(ar);
-				if (read > 0)
-				{
-					if (tmpbufoffset == 0)
-					{
-						int offset = 0;
-						do
-						{
+                if (read > 0)
+                {
+                    if (tmpbufoffset == 0)
+                    {
+                        int offset = 0;
+                        do
+                        {
                             if (read > 4)
                             {
                                 Int32 len = ((Int32)recvbuf[offset + 0]) | ((Int32)recvbuf[offset + 1]) << 8 | ((Int32)recvbuf[offset + 2]) << 16 | ((Int32)recvbuf[offset + 3]) << 24;
@@ -126,26 +122,26 @@ namespace service
                                 break;
                             }
 
-						} while (true);
-					}
-					else if (tmpbufoffset > 0)
-					{
-						while ((tmpbuflenght - tmpbufoffset) < read)
-						{
-							byte[] newtmpbuf = new byte[2 * tmpbuflenght];
-							tmpbuf.CopyTo(newtmpbuf, 0);
-							tmpbuf = newtmpbuf;
-						}
+                        } while (true);
+                    }
+                    else if (tmpbufoffset > 0)
+                    {
+                        while ((tmpbuflenght - tmpbufoffset) < read)
+                        {
+                            byte[] newtmpbuf = new byte[2 * tmpbuflenght];
+                            tmpbuf.CopyTo(newtmpbuf, 0);
+                            tmpbuf = newtmpbuf;
+                        }
 
-						MemoryStream _tmp_ = new MemoryStream();
-						_tmp_.Write(recvbuf, 0, read);
+                        MemoryStream _tmp_ = new MemoryStream();
+                        _tmp_.Write(recvbuf, 0, read);
 
-						_tmp_.ToArray().CopyTo(tmpbuf, tmpbufoffset);
-						tmpbufoffset += (Int32)_tmp_.Length;
+                        _tmp_.ToArray().CopyTo(tmpbuf, tmpbufoffset);
+                        tmpbufoffset += (Int32)_tmp_.Length;
 
-						int offset = 0;
-						do
-						{
+                        int offset = 0;
+                        do
+                        {
                             if (tmpbufoffset > 4)
                             {
                                 Int32 len = ((Int32)tmpbuf[offset + 0]) | ((Int32)tmpbuf[offset + 1]) << 8 | ((Int32)tmpbuf[offset + 2]) << 16 | ((Int32)tmpbuf[offset + 3]) << 24;
@@ -199,27 +195,24 @@ namespace service
                                 break;
                             }
 
-						} while (true);
-					}
-
-					ch.s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
-				}
-				else
+                        } while (true);
+                    }
+                }
+                else
                 {
-                    ch.s.Close();
-					onDisconnect(ch);
-				}
-			}
+                    onDisconnect(this);
+                }
+            }
             catch (System.Net.Sockets.SocketException )
             {
-                onDisconnect(ch);
+                onDisconnect(this);
             }
 			catch (System.Exception e)
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
-                
-				onDisconnect(ch);
-			}
+
+                onDisconnect(this);
+            }
 		}
 
 		public ArrayList pop()
@@ -240,34 +233,34 @@ namespace service
 		{
 			try
 			{
-				int offset = s.Send(data);
+				int offset = s.SendTo(data, remote_ep);
 				while (offset < data.Length)
 				{
 					MemoryStream st = new MemoryStream();
 					st.Write(data, offset, data.Length - offset);
 					data = st.ToArray();
-					offset = s.Send(data);
-				}
+					offset = s.SendTo(data, remote_ep);
+                }
 			}
 			catch (System.Net.Sockets.SocketException)
 			{
-				s.Close();
 				onDisconnect(this);
 			}
 			catch (System.Exception e)
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
                 
-                s.Close();
 				onDisconnect(this);
 			}
 		}
 
 		private Socket s;
-		private byte[] recvbuf;
+
+        private IPEndPoint remote_ep;
+
+        private byte[] tmpbuf;
         private Int32 recvbuflenght;
-		private byte[] tmpbuf;
-		private Int32 tmpbuflenght;
+        private Int32 tmpbuflenght;
 		private Int32 tmpbufoffset;
 
 		private Queue que;

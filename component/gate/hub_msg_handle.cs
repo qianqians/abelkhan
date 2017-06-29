@@ -75,7 +75,28 @@ namespace gate
 			);
 		}
 
-		private hubmanager _hubmanager;
+        public void forward_hub_call_client_fast(string uuid, string module, string func, ArrayList argv)
+        {
+            clientproxy _clientproxy = _clientmanager.get_clientproxy(uuid);
+            if (_clientproxy != null)
+            {
+                _clientproxy.call_client_fast(module, func, argv);
+            }
+        }
+
+        public void forward_hub_call_group_client_fast(ArrayList uuids, string module, string func, ArrayList argv)
+        {
+            foreach (String uuid in uuids)
+            {
+                clientproxy _clientproxy = _clientmanager.get_clientproxy(uuid);
+                if (_clientproxy != null)
+                {
+                    _clientproxy.call_client_fast(module, func, argv);
+                }
+            }
+        }
+
+        private hubmanager _hubmanager;
 		private clientmanager _clientmanager;
 	}
 }

@@ -4,22 +4,20 @@ using System.Net.Sockets;
 
 namespace service
 {
-	public class connectnetworkservice : service
+	public class udpconnectnetworkservice : service
 	{
-		public connectnetworkservice(juggle.process _process)
+		public udpconnectnetworkservice(juggle.process _process)
 		{
 			process_ = _process;
 		}
 
 		public juggle.Ichannel connect(String ip, short port)
 		{
-            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            
-			try
-			{
-                s.Connect(new IPEndPoint(IPAddress.Parse(ip), port));
+            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
-				channel ch = new channel(s);
+            try
+			{
+				udpchannel ch = new udpchannel(s, new IPEndPoint(IPAddress.Parse(ip), port));
 				ch.onDisconnect += this.onChannelDisconn;
 
 				process_.reg_channel(ch);

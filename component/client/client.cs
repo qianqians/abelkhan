@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Threading;
+using System.Net;
 
 namespace client
 {
@@ -20,8 +21,14 @@ namespace client
 			_process.reg_module(_gate_call_client);
 
 			_conn = new service.connectnetworkservice(_process);
+            _gate_call_client_fast = new module.gate_call_client_fast();
+            _gate_call_client_fast.onconfirm_refresh_udp_end_point += onconfirm_refresh_udp_end_point;
+            _gate_call_client_fast.oncall_client += on_call_client;
+            _udp_process = new juggle.process();
 
-			_juggleservice = new service.juggleservice();
+            _udp_conn = new service.udpconnectnetworkservice(_udp_process);
+
+            _juggleservice = new service.juggleservice();
 			_juggleservice.add_process(_process);
         }
 
@@ -32,11 +39,19 @@ namespace client
             timer.addticktime(tick + 30 * 1000, heartbeats);
         }
 
+        private void refresh_udp_link(Int64 tick)
+        {
+            _client_call_gate_fast.refresh_udp_end_point();
+
+            timer.addticktime(tick + 10 * 1000, refresh_udp_link);
+        }
+
         public delegate void onConnectGateHandle();
 		public event onConnectGateHandle onConnectGate;
 		private void on_ack_connect_gate()
 		{
             timer.addticktime(service.timerservice.Tick + 30 * 1000, heartbeats);
+            timer.addticktime(service.timerservice.Tick + 10 * 1000, refresh_udp_link);
 
             if (onConnectGate != null)
 			{
@@ -54,19 +69,28 @@ namespace client
             }
         }
 
+        private void onconfirm_refresh_udp_end_point()
+        {
+            _client_call_gate_fast.confirm_create_udp_link(uuid);
+        }
+
         private void on_call_client(String module_name, String func_name, ArrayList argvs)
 		{
 			modulemanager.process_module_mothed(module_name, func_name, argvs);
 		}
 
-		public bool connect_server(String ip, short port, Int64 tick)
+		public bool connect_server(String tcp_ip, short tcp_port, String udp_ip, short udp_port, Int64 tick)
 		{
 			try
 			{
-				var ch = _conn.connect(ip, port);
+				var ch = _conn.connect(tcp_ip, tcp_port);
 				_client_call_gate = new caller.client_call_gate(ch);
 				_client_call_gate.connect_server(uuid, tick);
-			}
+                
+                var udp_ch = _udp_conn.connect(udp_ip, udp_port);
+                _client_call_gate_fast = new caller.client_call_gate_fast(udp_ch);
+                _client_call_gate_fast.refresh_udp_end_point();
+            }
 			catch (Exception)
 			{
 				return false;
@@ -135,10 +159,15 @@ namespace client
 		private service.connectnetworkservice _conn;
 		private juggle.process _process;
 		private module.gate_call_client _gate_call_client;
-		private service.juggleservice _juggleservice;
-
 		private caller.client_call_gate _client_call_gate;
 
-	}
+        private service.udpconnectnetworkservice _udp_conn;
+        private juggle.process _udp_process;
+        private module.gate_call_client_fast _gate_call_client_fast;
+        private caller.client_call_gate_fast _client_call_gate_fast;
+
+        private service.juggleservice _juggleservice;
+
+    }
 }
 

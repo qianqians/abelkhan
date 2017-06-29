@@ -56,21 +56,31 @@ namespace gate
 
 			_client_msg_handle = new client_msg_handle (clients, _hubmanager, timer);
 			_client_call_gate = new module.client_call_gate ();
-			_client_call_gate.onconnect_server += _client_msg_handle.connect_server;
+            _client_call_gate.onconnect_server += _client_msg_handle.connect_server;
 			_client_call_gate.oncancle_server += _client_msg_handle.cancle_server;
             _client_call_gate.onconnect_hub += _client_msg_handle.connect_hub;
             _client_call_gate.ondisconnect_hub += _client_msg_handle.disconnect_hub;
             _client_call_gate.onforward_client_call_hub += _client_msg_handle.forward_client_call_hub;
             _client_call_gate.onheartbeats += _client_msg_handle.heartbeats;
-			var _client_process = new juggle.process();
-			_client_process.reg_module (_client_call_gate);
+            var _client_process = new juggle.process();
+			_client_process.reg_module(_client_call_gate);
 
-			var outside_ip = _config.get_value_string("outside_ip");
+            var outside_ip = _config.get_value_string("outside_ip");
 			var outside_port = (short)_config.get_value_int("outside_port");
 			_accept_client_service = new service.acceptnetworkservice(outside_ip, outside_port, _client_process);
             _accept_client_service.onChannelDisconnect += onClientDissconnect;
+            
+            _client_call_gate_fast = new module.client_call_gate_fast();
+            _client_call_gate_fast.onrefresh_udp_end_point += _client_msg_handle.refresh_udp_end_point;
+            _client_call_gate_fast.onconfirm_create_udp_link += _client_msg_handle.confirm_create_udp_link;
+            var _udp_client_process = new juggle.process();
+            _udp_client_process.reg_module(_client_call_gate_fast);
 
-			_hub_msg_handle = new hub_msg_handle(_hubmanager, clients);
+            var udp_outside_ip = _config.get_value_string("udp_outside_ip");
+            var udp_outside_port = (short)_config.get_value_int("udp_outside_port");
+            _udp_accept_service = new service.udpacceptnetworkservice(udp_outside_ip, udp_outside_port, _udp_client_process);
+
+            _hub_msg_handle = new hub_msg_handle(_hubmanager, clients);
 			_hub_call_gate = new module.hub_call_gate ();
 			_hub_call_gate.onreg_hub += _hub_msg_handle.reg_hub;
             _hub_call_gate.onconnect_sucess += _hub_msg_handle.connect_sucess;
@@ -78,8 +88,10 @@ namespace gate
             _hub_call_gate.onforward_hub_call_client += _hub_msg_handle.forward_hub_call_client;
             _hub_call_gate.onforward_hub_call_global_client += _hub_msg_handle.forward_hub_call_global_client;
 			_hub_call_gate.onforward_hub_call_group_client += _hub_msg_handle.forward_hub_call_group_client;
+            _hub_call_gate.onforward_hub_call_client_fast += _hub_msg_handle.forward_hub_call_client_fast;
+            _hub_call_gate.onforward_hub_call_group_client_fast += _hub_msg_handle.forward_hub_call_group_client_fast;
 
-			var _logic_hub_process = new juggle.process();
+            var _logic_hub_process = new juggle.process();
 			_logic_hub_process.reg_module(_hub_call_gate);
 			var inside_ip = _config.get_value_string("inside_ip");
 			var inside_port = (short)_config.get_value_int("inside_port");
@@ -174,7 +186,9 @@ namespace gate
 
         private service.acceptnetworkservice _accept_client_service;
 		private module.client_call_gate _client_call_gate;
-		private client_msg_handle _client_msg_handle;
+        private service.udpacceptnetworkservice _udp_accept_service;
+        private module.client_call_gate_fast _client_call_gate_fast;
+        private client_msg_handle _client_msg_handle;
         public static clientmanager clients;
 
 		private service.acceptnetworkservice _accept_logic_hub_service;
@@ -187,7 +201,7 @@ namespace gate
 		private centerproxy _centerproxy;
 		private center_msg_handle _center_msg_handle;
 
-		private service.juggleservice _juggle_service;
+        private service.juggleservice _juggle_service;
 		public static service.timerservice timer;
 	}
 }

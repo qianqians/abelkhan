@@ -48,8 +48,14 @@
     <Compile Include="..\..\common\protcol\c#\caller\client_call_gatecaller.cs">
       <Link>client_call_gatecaller.cs</Link>
     </Compile>
+    <Compile Include="..\..\common\protcol\c#\caller\client_call_gate_fastcaller.cs">
+      <Link>client_call_gate_fastcaller.cs</Link>
+    </Compile>
     <Compile Include="..\..\common\protcol\c#\module\gate_call_clientmodule.cs">
       <Link>gate_call_clientmodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\module\gate_call_client_fastmodule.cs">
+      <Link>gate_call_client_fastmodule.cs</Link>
     </Compile>
     <Compile Include="..\..\common\service\channel.cs">
       <Link>channel.cs</Link>
@@ -65,6 +71,12 @@
     </Compile>
     <Compile Include="..\..\common\service\timerservice.cs">
       <Link>timerservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\udpchannel.cs">
+      <Link>udpchannel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\udpconnectnetworkservice.cs">
+      <Link>udpconnectnetworkservice.cs</Link>
     </Compile>
     <Compile Include="..\..\tools\jsonparse\JsonParser.cs">
       <Link>JsonParser.cs</Link>
