@@ -34,11 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="client">
-<<<<<<< HEAD:demo/hello world/test_client/test_client/test_client.csproj
-      <HintPath>..\..\..\..\bin\client.dll</HintPath>
-=======
       <HintPath>..\..\..\bin\client.dll</HintPath>
->>>>>>> af5e801adc7dd80c5bd7a3a82b5069faadb42817:demo/hello world/test_client/test_client.csproj
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

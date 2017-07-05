@@ -9,7 +9,9 @@ namespace service
 	{
 		public udpconnectnetworkservice(juggle.process _process)
 		{
-			process_ = _process;
+            _tmp_socket_data = new Dictionary<Socket, tmp_socket_data>();
+
+            process_ = _process;
 		}
 
 
