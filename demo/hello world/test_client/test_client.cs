@@ -15,7 +15,7 @@ namespace client
             _client.modulemanager.add_module("login", _login);
 
             Int64 tick = service.timerservice.Tick;
-            _client.connect_server("127.0.0.1", 3236, tick);
+            _client.connect_server("127.0.0.1", 3236, "127.0.0.1", 3237, tick);
 
             _client.onConnectGate += onGeteHandle;
             _client.onConnectHub += onConnectHub;
