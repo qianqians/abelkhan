@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{81ACC9DA-6835-47CE-A1EE-B5C76B23132A}</ProjectGuid>
+    <ProjectGuid>{1265E45C-7CE5-460C-B825-91F26A2752B0}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>lobby</RootNamespace>
-    <AssemblyName>lobby</AssemblyName>
+    <RootNamespace>test_client</RootNamespace>
+    <AssemblyName>test_client</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,14 +27,18 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="hub">
-      <HintPath>..\..\..\..\..\release\bin\hub.dll</HintPath>
+    <Reference Include="client">
+<<<<<<< HEAD:demo/hello world/test_client/test_client/test_client.csproj
+      <HintPath>..\..\..\..\bin\client.dll</HintPath>
+=======
+      <HintPath>..\..\..\bin\client.dll</HintPath>
+>>>>>>> af5e801adc7dd80c5bd7a3a82b5069faadb42817:demo/hello world/test_client/test_client.csproj
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,9 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="login.cs" />
-    <Compile Include="playermng.cs" />
-    <Compile Include="playerproxy.cs" />
-    <Compile Include="server.cs" />
+    <Compile Include="test_client.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -256,7 +256,7 @@ namespace service
 
 		private Socket s;
 
-        private IPEndPoint remote_ep;
+        public IPEndPoint remote_ep;
 
         private byte[] tmpbuf;
         private Int32 recvbuflenght;

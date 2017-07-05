@@ -66,7 +66,11 @@ namespace lobby
             server.players.reg_player(uuid, _data);
 
             hub.hub.gates.call_client(uuid, "login", "login_sucess");
+<<<<<<< HEAD:demo/hello world/lobby/lobby/login.cs
             hub.hub.gates.call_client(uuid, "login", "login_sucess");
+=======
+            hub.hub.gates.call_client_fast(uuid, "login", "login_sucess");
+>>>>>>> af5e801adc7dd80c5bd7a3a82b5069faadb42817:demo/hello world/lobby/login.cs
 
             Console.WriteLine("rsp client " + uuid);
         }
