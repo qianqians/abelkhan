@@ -19,17 +19,17 @@ namespace client
             _gate_call_client.onconnect_hub_sucess += on_ack_connect_hub;
             _gate_call_client.oncall_client += on_call_client;
 			_process.reg_module(_gate_call_client);
-
 			_conn = new service.connectnetworkservice(_process);
+
+            _udp_process = new juggle.process();
             _gate_call_client_fast = new module.gate_call_client_fast();
             _gate_call_client_fast.onconfirm_refresh_udp_end_point += onconfirm_refresh_udp_end_point;
             _gate_call_client_fast.oncall_client += on_call_client;
-            _udp_process = new juggle.process();
-
             _udp_conn = new service.udpconnectnetworkservice(_udp_process);
-
+            _udp_process.reg_module(_gate_call_client_fast);
             _juggleservice = new service.juggleservice();
 			_juggleservice.add_process(_process);
+            _juggleservice.add_process(_udp_process);
         }
 
         private void heartbeats(Int64 tick)

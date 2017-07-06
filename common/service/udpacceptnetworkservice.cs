@@ -22,7 +22,7 @@ namespace service
             recvbuf = new byte[recvbuflenght];
 
             IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
-            EndPoint tempRemoteEP = (EndPoint)sender;
+            tempRemoteEP = (EndPoint)sender;
 
             listen.BeginReceiveFrom(recvbuf, 0, recvbuflenght, 0, ref tempRemoteEP, new AsyncCallback(this.onRecv), this);
 		}

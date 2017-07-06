@@ -21,6 +21,8 @@ namespace service
 
             try
 			{
+                s.Bind(new IPEndPoint(IPAddress.Any, 0));
+
                 udpchannel ch = new udpchannel(s, new IPEndPoint(IPAddress.Parse(ip), port));
 				ch.onDisconnect += this.onChannelDisconn;
 
@@ -54,7 +56,13 @@ namespace service
             {
                 IPEndPoint sender = (IPEndPoint)_tmp_socket_data[s].remote_ep;
 
-                if (sender.Address == _tmp_socket_data[s].ch.remote_ep.Address &&
+                var ip_sender = sender.Address.GetAddressBytes();
+                var ip_remote = _tmp_socket_data[s].ch.remote_ep.Address.GetAddressBytes();
+
+                if (ip_sender[0] == ip_remote[0] &&
+                    ip_sender[1] == ip_remote[1] &&
+                    ip_sender[2] == ip_remote[2] &&
+                    ip_sender[3] == ip_remote[3] &&
                     sender.Port == _tmp_socket_data[s].ch.remote_ep.Port)
                 {
                     _tmp_socket_data[s].ch.recv(_tmp_socket_data[s].recvbuf, read);

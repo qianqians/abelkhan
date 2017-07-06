@@ -113,8 +113,9 @@ namespace gate
 			_juggle_service.add_process(_logic_hub_process);
 			_juggle_service.add_process(_center_process);
 			_juggle_service.add_process(_client_process);
+            _juggle_service.add_process(_udp_client_process);
 
-			_centerproxy.reg_gate(inside_ip, inside_port, uuid);
+            _centerproxy.reg_gate(inside_ip, inside_port, uuid);
 
             if (enable_heartbeats)
             {
