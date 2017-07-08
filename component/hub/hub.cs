@@ -9,14 +9,14 @@ namespace hub
 		{
 			uuid = System.Guid.NewGuid().ToString();
 
-			config.config _config = new config.config(args[0]);
-			config.config _center_config = _config.get_value_dict("center");
+            config = new config.config(args[0]);
+			config.config _center_config = config.get_value_dict("center");
 			if (args.Length > 1)
 			{
-				_config = _config.get_value_dict(args[1]);
+                config = config.get_value_dict(args[1]);
 			}
 
-            var log_level = _config.get_value_string("log_level");
+            var log_level = config.get_value_string("log_level");
             if (log_level == "debug")
             {
                 log.log.logMode = log.log.enLogMode.Debug;
@@ -25,9 +25,9 @@ namespace hub
             {
                 log.log.logMode = log.log.enLogMode.Release;
             }
-            var log_file = _config.get_value_string("log_file");
+            var log_file = config.get_value_string("log_file");
             log.log.logFile = log_file;
-            var log_dir = _config.get_value_string("log_dir");
+            var log_dir = config.get_value_string("log_dir");
             log.log.logPath = log_dir;
             {
                 if (!System.IO.Directory.Exists(log_dir))
@@ -36,7 +36,7 @@ namespace hub
                 }
             }
 
-            name = _config.get_value_string("hub_name");
+            name = config.get_value_string("hub_name");
 
 			closeHandle = new closehandle();
 
@@ -55,8 +55,8 @@ namespace hub
             _hub_call_hub.onhub_call_hub_mothed += _hub_msg_handle.hub_call_hub_mothed;
             _hub_logic_process.reg_module(_hub_call_hub);
 
-            var ip = _config.get_value_string("ip");
-            var port = (short)_config.get_value_int("port");
+            var ip = config.get_value_string("ip");
+            var port = (short)config.get_value_int("port");
             _accept_logic_service = new service.acceptnetworkservice(ip, port, _hub_logic_process);
 
 			var center_ip = _center_config.get_value_string("ip");
@@ -192,6 +192,8 @@ namespace hub
 		public static String uuid;
 
 		public static closehandle closeHandle;
+
+        public static config.config config;
 
 		private service.acceptnetworkservice _accept_logic_service;
         private service.connectnetworkservice _connect_hub_service;
