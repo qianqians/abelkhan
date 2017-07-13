@@ -29,6 +29,7 @@ namespace service
         public void disconnect()
         {
             s.Close();
+            onDisconnect(this);
         }
 
 		private void onRead(IAsyncResult ar)

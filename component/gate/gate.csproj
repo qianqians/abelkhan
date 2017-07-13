@@ -137,5 +137,6 @@
     <Compile Include="hub_msg_handle.cs" />
     <Compile Include="hubmanager.cs" />
     <Compile Include="hubproxy.cs" />
+    <Compile Include="udpchannelmanager.cs" />
   </ItemGroup>
 </Project>

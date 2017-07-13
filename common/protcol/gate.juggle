@@ -7,8 +7,6 @@ module client_call_gate{
 
 	void disconnect_hub(string client_uuid, string hub_name);
 
-	void forward_client_call_logic(string logic_uuid, string module, string func, array argv);
-
 	void forward_client_call_hub(string hub_name, string module, string func, array argv);
 	
 	void heartbeats(int clockt);

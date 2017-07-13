@@ -27,7 +27,7 @@ namespace service
 
         public void disconnect()
         {
-            s.Close();
+            onDisconnect(this);
         }
 
 		public void recv(byte[] recvbuf, int read)
@@ -254,7 +254,7 @@ namespace service
 			}
 		}
 
-		private Socket s;
+        public Socket s;
 
         public IPEndPoint remote_ep;
 

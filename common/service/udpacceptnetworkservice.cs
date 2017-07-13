@@ -81,7 +81,10 @@ namespace service
 			}
 
 			process_.unreg_channel(ch);
-		}
+
+            udpchannel udp_ch = ch as udpchannel;
+            udpchannels.Remove(udp_ch.remote_ep.ToString());
+        }
 
 		public void poll(Int64 tick)
 		{

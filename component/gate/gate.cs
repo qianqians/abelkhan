@@ -5,6 +5,11 @@ namespace gate
 {
 	public class gate
 	{
+        public void onUdpChannelConnect(juggle.Ichannel ch)
+        {
+            udpchannels.add_udpchannel(ch);
+        }
+
         public void onClientDissconnect(juggle.Ichannel ch)
         {
             clients.unreg_client(ch);
@@ -53,8 +58,9 @@ namespace gate
             timer = new service.timerservice();
             _hubmanager = new hubmanager();
             clients = new clientmanager ();
+            udpchannels = new udpchannelmanager();
 
-			_client_msg_handle = new client_msg_handle (clients, _hubmanager, timer);
+            _client_msg_handle = new client_msg_handle (clients, _hubmanager, timer);
 			_client_call_gate = new module.client_call_gate ();
             _client_call_gate.onconnect_server += _client_msg_handle.connect_server;
 			_client_call_gate.oncancle_server += _client_msg_handle.cancle_server;
@@ -79,6 +85,7 @@ namespace gate
             var udp_outside_ip = _config.get_value_string("udp_outside_ip");
             var udp_outside_port = (short)_config.get_value_int("udp_outside_port");
             _udp_accept_service = new service.udpacceptnetworkservice(udp_outside_ip, udp_outside_port, _udp_client_process);
+            _udp_accept_service.onChannelConnect += onUdpChannelConnect;
 
             _hub_msg_handle = new hub_msg_handle(_hubmanager, clients);
 			_hub_call_gate = new module.hub_call_gate ();
@@ -178,11 +185,8 @@ namespace gate
 		}
 
 		public static String name;
-
 		public static String uuid;
-
 		public static closehandle closeHandle;
-
         public static bool enable_heartbeats;
 
         private service.acceptnetworkservice _accept_client_service;
@@ -191,8 +195,9 @@ namespace gate
         private module.client_call_gate_fast _client_call_gate_fast;
         private client_msg_handle _client_msg_handle;
         public static clientmanager clients;
+        public static udpchannelmanager udpchannels;
 
-		private service.acceptnetworkservice _accept_logic_hub_service;
+        private service.acceptnetworkservice _accept_logic_hub_service;
 		private module.hub_call_gate _hub_call_gate;
 		private hub_msg_handle _hub_msg_handle;
 		private hubmanager _hubmanager;
