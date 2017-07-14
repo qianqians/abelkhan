@@ -211,6 +211,10 @@ namespace service
 					onDisconnect(ch);
 				}
 			}
+            catch (System.ObjectDisposedException )
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "socket is release");
+            }
             catch (System.Net.Sockets.SocketException )
             {
                 onDisconnect(ch);
