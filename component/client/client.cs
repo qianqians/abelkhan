@@ -56,7 +56,7 @@ namespace client
             _client_call_gate_fast.refresh_udp_end_point();
 
             timer.addticktime(service.timerservice.Tick + 30 * 1000, heartbeats);
-            //timer.addticktime(service.timerservice.Tick + 10 * 1000, refresh_udp_link);
+            timer.addticktime(service.timerservice.Tick + 10 * 1000, refresh_udp_link);
 
             if (onConnectGate != null)
 			{
@@ -91,16 +91,9 @@ namespace client
 				var ch = _conn.connect(tcp_ip, tcp_port);
 				_client_call_gate = new caller.client_call_gate(ch);
 				_client_call_gate.connect_server(uuid, tick);
-<<<<<<< HEAD
-                
-                //var udp_ch = _udp_conn.connect(udp_ip, udp_port);
-                //_client_call_gate_fast = new caller.client_call_gate_fast(udp_ch);
-                //_client_call_gate_fast.refresh_udp_end_point();
-=======
 
                 _udp_ip = udp_ip;
                 _udp_port = udp_port;
->>>>>>> 25e6d88a67ef15eadd5a5d84ce19af7b6d22d418
             }
 			catch (Exception)
 			{
