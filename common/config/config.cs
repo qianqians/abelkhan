@@ -96,6 +96,13 @@ namespace config
 			return (String)(((ArrayList)handle)[index]);
 		}
 
+        public config get_list_list(int index)
+        {
+            var _handle = (((ArrayList)handle)[index]);
+
+            return new config(_handle);
+        }
+
 		public config get_list_dict(int index)
 		{
 			var _handle = (((ArrayList)handle)[index]);
