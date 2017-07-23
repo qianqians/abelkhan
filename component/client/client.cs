@@ -13,7 +13,7 @@ namespace client
 			timer = new service.timerservice();
 			modulemanager = new common.modulemanager();
 
-			_process = new juggle.process();
+			var _process = new juggle.process();
 			_gate_call_client = new module.gate_call_client();
 			_gate_call_client.onconnect_gate_sucess += on_ack_connect_gate;
             _gate_call_client.onconnect_hub_sucess += on_ack_connect_hub;
@@ -21,7 +21,7 @@ namespace client
 			_process.reg_module(_gate_call_client);
 			_conn = new service.connectnetworkservice(_process);
 
-            _udp_process = new juggle.process();
+            var _udp_process = new juggle.process();
             _gate_call_client_fast = new module.gate_call_client_fast();
             _gate_call_client_fast.onconfirm_refresh_udp_end_point += onconfirm_refresh_udp_end_point;
             _gate_call_client_fast.oncall_client += on_call_client;
@@ -161,14 +161,12 @@ namespace client
 		public common.modulemanager modulemanager;
 
 		private service.connectnetworkservice _conn;
-		private juggle.process _process;
 		private module.gate_call_client _gate_call_client;
 		private caller.client_call_gate _client_call_gate;
 
         private string _udp_ip;
         private short _udp_port;
         private service.udpconnectnetworkservice _udp_conn;
-        private juggle.process _udp_process;
         private module.gate_call_client_fast _gate_call_client_fast;
         private caller.client_call_gate_fast _client_call_gate_fast;
 
