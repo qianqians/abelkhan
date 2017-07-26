@@ -1,11 +1,6 @@
 [submodule "tools/juggle"]
 	path = tools/juggle
 	url = https://github.com/qianqians/juggle
-[submodule "tools/jsonparse"]
-	path = tools/jsonparse
-	url = https://github.com/qianqians/jsonparse.git
 [submodule "tools/meter"]
-
 	path = tools/meter
-
 	url = https://github.com/qianqians/meter.git
