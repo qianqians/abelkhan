@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Threading;
-using System.Net;
 
 namespace client
 {
@@ -29,7 +28,7 @@ namespace client
             _udp_conn = new service.udpconnectnetworkservice(_udp_process);
 
             _juggleservice = new service.juggleservice();
-			_juggleservice.add_process(_process);
+            _juggleservice.add_process(_process);
             _juggleservice.add_process(_udp_process);
         }
 

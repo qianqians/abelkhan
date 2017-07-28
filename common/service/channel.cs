@@ -63,7 +63,6 @@ namespace service
                                     _tmp.Position = 0;
 
                                     var json = System.Text.Encoding.UTF8.GetString(_tmp.ToArray());
-                                    log.log.trace(new System.Diagnostics.StackFrame(true), timerservice.Tick, "{0}", json);
                                     try
                                     {
                                         ArrayList unpackedObject = (ArrayList)Json.Jsonparser.unpack(json);
@@ -164,7 +163,6 @@ namespace service
                                     _tmp.Position = 0;
 
                                     var json = System.Text.Encoding.UTF8.GetString(_tmp.ToArray());
-                                    log.log.trace(new System.Diagnostics.StackFrame(true), timerservice.Tick, "{0}", json);
                                     try
                                     {
                                         ArrayList unpackedObject = (ArrayList)Json.Jsonparser.unpack(json);
