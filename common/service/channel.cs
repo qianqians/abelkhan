@@ -225,7 +225,7 @@ namespace service
                 
 				onDisconnect(ch);
 			}
-		}
+        }
 
 		public ArrayList pop()
 		{
@@ -241,11 +241,37 @@ namespace service
             return _array;
 		}
 
-		public void senddata(byte[] data)
+        public void push(ArrayList ev)
+        {
+            try
+            {
+                var _tmp = Json.Jsonparser.pack(ev);
+
+                log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "send:{0}", _tmp);
+
+                var _tmpdata = System.Text.Encoding.UTF8.GetBytes(_tmp);
+                var _tmplenght = _tmpdata.Length + 4;
+
+                byte[] buf = new byte[4 + _tmplenght];
+                buf[0] = (byte)(_tmplenght & 0xff);
+                buf[1] = (byte)((_tmplenght >> 8) & 0xff);
+                buf[2] = (byte)((_tmplenght >> 16) & 0xff);
+                buf[3] = (byte)((_tmplenght >> 24) & 0xff);
+                _tmpdata.CopyTo(buf, 4);
+
+                senddata(buf);
+            }
+            catch (System.Exception e)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
+            }
+        }
+
+		private void senddata(byte[] data)
 		{
 			try
 			{
-				int offset = s.Send(data);
+                int offset = s.Send(data);
 				while (offset < data.Length)
 				{
 					MemoryStream st = new MemoryStream();
@@ -253,7 +279,7 @@ namespace service
 					data = st.ToArray();
 					offset = s.Send(data);
 				}
-			}
+            }
 			catch (System.Net.Sockets.SocketException)
 			{
 				s.Close();
