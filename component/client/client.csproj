@@ -20,6 +20,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <Prefer32Bit>false</Prefer32Bit>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -36,9 +37,6 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\common\log\log.cs">
-      <Link>log.cs</Link>
-    </Compile>
     <Compile Include="..\..\common\module\module.cs">
       <Link>module.cs</Link>
     </Compile>
@@ -97,6 +95,7 @@
       <Link>process.cs</Link>
     </Compile>
     <Compile Include="client.cs" />
+    <Compile Include="log.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
