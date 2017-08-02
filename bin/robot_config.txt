@@ -62,6 +62,9 @@
 
     "gm":{
 	"gm_ip":"127.0.0.1",
-        "gm_port":2234
+        "gm_port":2234,
+	"log_level":"debug",
+	"log_file":"control.txt",
+	"log_dir":"./log/"
     }
 }
