@@ -21,6 +21,11 @@ namespace gate
             _caller.connect_hub_sucess(hub_name);
         }
 
+        public void ack_heartbeats()
+        {
+            _caller.ack_heartbeats();
+        }
+
 		public void call_client(string module, string func, ArrayList argv)
 		{
 			_caller.call_client(module, func, argv);

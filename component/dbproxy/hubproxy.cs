@@ -25,6 +25,11 @@ namespace dbproxy
 			_caller.ack_updata_persisted_object(callbackid);
 		}
 
+        public void ack_get_object_count(string callbackid, Int64 count)
+        {
+            _caller.ack_get_object_count(callbackid, count);
+        }
+
 		public void ack_get_object_info(string callbackid, ArrayList object_info)
 		{
 			_caller.ack_get_object_info(callbackid, object_info);

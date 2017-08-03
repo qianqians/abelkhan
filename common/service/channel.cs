@@ -75,6 +75,9 @@ namespace service
                                     catch (Exception e)
                                     {
                                         log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "msg:{0}, System.Exception:{1}", json, e);
+
+                                        ch.s.Close();
+                                        onDisconnect(ch);
                                     }
                                 }
                                 else
@@ -176,6 +179,9 @@ namespace service
                                     catch (Exception e)
                                     {
                                         log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "msg:{0}, System.Exception:{1}", json, e);
+
+                                        ch.s.Close();
+                                        onDisconnect(ch);
                                     }
                                 }
                                 else

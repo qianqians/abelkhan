@@ -41,6 +41,23 @@ namespace dbproxy
 			}
 		}
 
+        public void get_object_count(string db, string collection, Hashtable query_json, string callbackid)
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "get_object_info");
+
+            ArrayList _list = _mongodbproxy.find(db, collection, 0, 0, 0, query_json, null);
+
+            hubproxy _hubproxy = _hubmanager.get_hub(juggle.Imodule.current_ch);
+
+            if (_hubproxy == null)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "get_object_info hubproxy is null");
+                return;
+            }
+
+            _hubproxy.ack_get_object_count(callbackid, _list.Count);
+        }
+
 		public void get_object_info(string db, string collection, Hashtable query_json, string callbackid)
         {
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "get_object_info");

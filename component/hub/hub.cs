@@ -81,7 +81,8 @@ namespace hub
 			_dbproxy_call_hub.onreg_hub_sucess += _dbproxy_msg_handle.reg_hub_sucess;
 			_dbproxy_call_hub.onack_create_persisted_object += _dbproxy_msg_handle.ack_create_persisted_object;
 			_dbproxy_call_hub.onack_updata_persisted_object += _dbproxy_msg_handle.ack_updata_persisted_object;
-			_dbproxy_call_hub.onack_get_object_info += _dbproxy_msg_handle.ack_get_object_info;
+            _dbproxy_call_hub.onack_get_object_count += _dbproxy_msg_handle.ack_get_object_count;
+            _dbproxy_call_hub.onack_get_object_info += _dbproxy_msg_handle.ack_get_object_info;
 			_dbproxy_call_hub.onack_get_object_info_end += _dbproxy_msg_handle.ack_get_object_info_end;
 			_dbproxy_process.reg_module(_dbproxy_call_hub);
 

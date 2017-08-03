@@ -31,6 +31,12 @@ namespace hub
             hub.dbproxy.end_callback(callbackid);
 		}
 
+        public void ack_get_object_count(String callbackid, Int64 count)
+        {
+            dbproxyproxy.onGetObjectCountHandle _handle = (dbproxyproxy.onGetObjectCountHandle)hub.dbproxy.begin_callback(callbackid);
+            _handle(count);
+        }
+
 		public void ack_get_object_info(String callbackid, ArrayList json_obejct_array)
 		{
 			dbproxyproxy.onGetObjectInfoHandle _handle = (dbproxyproxy.onGetObjectInfoHandle)hub.dbproxy.begin_callback(callbackid);

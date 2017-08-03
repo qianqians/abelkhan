@@ -49,6 +49,13 @@ namespace hub
                 _dbproxy.callback_set.Add(callbackid, (object)_handle);
             }
 
+            public void getObjectCount(Hashtable query_json, onGetObjectCountHandle _handle)
+            {
+                var callbackid = System.Guid.NewGuid().ToString();
+                get_object_count(query_json, callbackid);
+                _dbproxy.callback_set.Add(callbackid, (object)_handle);
+            }
+
             public void getObjectInfo(Hashtable query_json, onGetObjectInfoHandle _handle, onGetObjectInfoEnd _end)
             {
                 var callbackid = System.Guid.NewGuid().ToString();
@@ -65,6 +72,11 @@ namespace hub
             private void updata_persisted_object(Hashtable query_object, Hashtable updata_info, String callbackid)
             {
                 _dbproxy._hub_call_dbproxy.updata_persisted_object(_db, _collection, query_object, updata_info, callbackid);
+            }
+
+            private void get_object_count(Hashtable query_object, String callbackid)
+            {
+                _dbproxy._hub_call_dbproxy.get_object_count(_db, _collection, query_object, callbackid);
             }
 
             private void get_object_info(Hashtable query_object, String callbackid)
@@ -109,6 +121,7 @@ namespace hub
 
         public delegate void onCreatePersistedObjectHandle();
 		public delegate void onUpdataPersistedObjectHandle();
+        public delegate void onGetObjectCountHandle(Int64 count);
 		public delegate void onGetObjectInfoHandle(ArrayList obejctinfoarray);
         public delegate void onGetObjectInfoEnd();
 

@@ -6,7 +6,10 @@ namespace client
 {
 	public class client
 	{
-		public client()
+        public delegate void onDisConnectHandle();
+        public event onDisConnectHandle onDisConnect;
+
+        public client()
 		{
 			uuid = System.Guid.NewGuid().ToString();
 			timer = new service.timerservice();
@@ -16,9 +19,11 @@ namespace client
 			_gate_call_client = new module.gate_call_client();
 			_gate_call_client.onconnect_gate_sucess += on_ack_connect_gate;
             _gate_call_client.onconnect_hub_sucess += on_ack_connect_hub;
+            _gate_call_client.onack_heartbeats += on_ack_heartbeats;
             _gate_call_client.oncall_client += on_call_client;
 			_process.reg_module(_gate_call_client);
 			_conn = new service.connectnetworkservice(_process);
+            _conn.onChannelDisconnect += on_disconnect;
 
             var _udp_process = new juggle.process();
             _gate_call_client_fast = new module.gate_call_client_fast();
@@ -30,13 +35,38 @@ namespace client
             _juggleservice = new service.juggleservice();
             _juggleservice.add_process(_process);
             _juggleservice.add_process(_udp_process);
+
+            _heartbeats = 0;
+        }
+
+        private void on_disconnect(juggle.Ichannel ch)
+        {
+            if (onDisConnect != null)
+            {
+                onDisConnect();
+            }
         }
 
         private void heartbeats(Int64 tick)
         {
-            _client_call_gate.heartbeats(tick);
+            if (_heartbeats < tick - 35 * 1000)
+            {
+                if (onDisConnect != null)
+                {
+                    onDisConnect();
+                }
+            }
+            else
+            {
+                _client_call_gate.heartbeats(tick);
 
-            timer.addticktime(tick + 30 * 1000, heartbeats);
+                timer.addticktime(tick + 30 * 1000, heartbeats);
+            }
+        }
+
+        private void on_ack_heartbeats()
+        {
+            _heartbeats = service.timerservice.Tick;
         }
 
         private void refresh_udp_link(Int64 tick)
@@ -53,6 +83,9 @@ namespace client
             var udp_ch = _udp_conn.connect(_udp_ip, _udp_port);
             _client_call_gate_fast = new caller.client_call_gate_fast(udp_ch);
             _client_call_gate_fast.refresh_udp_end_point();
+
+            _heartbeats = service.timerservice.Tick;
+            _client_call_gate.heartbeats(service.timerservice.Tick);
 
             timer.addticktime(service.timerservice.Tick + 30 * 1000, heartbeats);
             timer.addticktime(service.timerservice.Tick + 10 * 1000, refresh_udp_link);
@@ -159,7 +192,9 @@ namespace client
 		public service.timerservice timer;
 		public common.modulemanager modulemanager;
 
-		private service.connectnetworkservice _conn;
+        private Int64 _heartbeats;
+
+        private service.connectnetworkservice _conn;
 		private module.gate_call_client _gate_call_client;
 		private caller.client_call_gate _client_call_gate;
 

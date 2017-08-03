@@ -52,6 +52,20 @@ namespace module
             }
         }
 
+        public delegate void get_object_counthandle(String argv0, String argv1, Hashtable argv2, String argv3);
+        public event get_object_counthandle onget_object_count;
+        public void get_object_count(ArrayList _event)
+        {
+            if(onget_object_count != null)
+            {
+                var argv0 = ((String)_event[0]);
+                var argv1 = ((String)_event[1]);
+                var argv2 = ((Hashtable)_event[2]);
+                var argv3 = ((String)_event[3]);
+                onget_object_count( argv0,  argv1,  argv2,  argv3);
+            }
+        }
+
         public delegate void get_object_infohandle(String argv0, String argv1, Hashtable argv2, String argv3);
         public event get_object_infohandle onget_object_info;
         public void get_object_info(ArrayList _event)

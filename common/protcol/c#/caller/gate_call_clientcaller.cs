@@ -25,6 +25,12 @@ namespace caller
             call_module_method("connect_hub_sucess", _argv);
         }
 
+        public void ack_heartbeats()
+        {
+            ArrayList _argv = new ArrayList();
+            call_module_method("ack_heartbeats", _argv);
+        }
+
         public void call_client(String argv0,String argv1,ArrayList argv2)
         {
             ArrayList _argv = new ArrayList();

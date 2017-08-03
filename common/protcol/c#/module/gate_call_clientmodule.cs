@@ -33,6 +33,16 @@ namespace module
             }
         }
 
+        public delegate void ack_heartbeatshandle();
+        public event ack_heartbeatshandle onack_heartbeats;
+        public void ack_heartbeats(ArrayList _event)
+        {
+            if(onack_heartbeats != null)
+            {
+                onack_heartbeats();
+            }
+        }
+
         public delegate void call_clienthandle(String argv0, String argv1, ArrayList argv2);
         public event call_clienthandle oncall_client;
         public void call_client(ArrayList _event)

@@ -42,8 +42,6 @@ namespace dbproxy
 
 			var db_ip = _config.get_value_string("db_ip");
 			var db_port = (short)_config.get_value_int("db_port");
-			//var db = _config.get_value_string("db_name");
-			//var collection = _config.get_value_string("db_collection");
 
 			_mongodbproxy = new mongodbproxy(db_ip, db_port);
 
@@ -60,7 +58,8 @@ namespace dbproxy
 			_hub_call_dbproxy.onreg_hub += _hub_msg_handle.reg_hub;
 			_hub_call_dbproxy.oncreate_persisted_object += _hub_msg_handle.create_persisted_object;
 			_hub_call_dbproxy.onupdata_persisted_object += _hub_msg_handle.updata_persisted_object;
-			_hub_call_dbproxy.onget_object_info += _hub_msg_handle.get_object_info;
+            _hub_call_dbproxy.onget_object_count += _hub_msg_handle.get_object_count;
+            _hub_call_dbproxy.onget_object_info += _hub_msg_handle.get_object_info;
 
 			var center_ip = _center_config.get_value_string("ip");
 			var center_port = (short)_center_config.get_value_int("port");

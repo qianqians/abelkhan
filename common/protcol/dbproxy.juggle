@@ -5,6 +5,8 @@ module hub_call_dbproxy{
 
 	void updata_persisted_object(string db, string collection, table query_json, table object_info, string callbackid);
 
+	void get_object_count(string db, string collection, table query_json, string callbackid);
+
 	void get_object_info(string db, string collection, table query_json, string callbackid);
 
 }
@@ -15,6 +17,8 @@ module dbproxy_call_hub{
 	void ack_create_persisted_object(string callbackid);
 
 	void ack_updata_persisted_object(string callbackid);
+
+	void ack_get_object_count(string callbackid, int count);
 
 	void ack_get_object_info(string callbackid, array object_info);
 

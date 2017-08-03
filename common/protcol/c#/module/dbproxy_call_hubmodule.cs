@@ -44,6 +44,18 @@ namespace module
             }
         }
 
+        public delegate void ack_get_object_counthandle(String argv0, Int64 argv1);
+        public event ack_get_object_counthandle onack_get_object_count;
+        public void ack_get_object_count(ArrayList _event)
+        {
+            if(onack_get_object_count != null)
+            {
+                var argv0 = ((String)_event[0]);
+                var argv1 = ((Int64)_event[1]);
+                onack_get_object_count( argv0,  argv1);
+            }
+        }
+
         public delegate void ack_get_object_infohandle(String argv0, ArrayList argv1);
         public event ack_get_object_infohandle onack_get_object_info;
         public void ack_get_object_info(ArrayList _event)

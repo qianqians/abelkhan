@@ -32,6 +32,14 @@ namespace caller
             call_module_method("ack_updata_persisted_object", _argv);
         }
 
+        public void ack_get_object_count(String argv0,Int64 argv1)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            _argv.Add(argv1);
+            call_module_method("ack_get_object_count", _argv);
+        }
+
         public void ack_get_object_info(String argv0,ArrayList argv1)
         {
             ArrayList _argv = new ArrayList();

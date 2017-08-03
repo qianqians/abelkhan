@@ -66,7 +66,12 @@ namespace gate
         public void heartbeats(long clockt)
 		{
 			_clientmanager.refresh_and_check_client(juggle.Imodule.current_ch, service.timerservice.Tick, clockt);
-		}
+            var _proxy = _clientmanager.get_clientproxy(juggle.Imodule.current_ch);
+            if (_proxy != null)
+            {
+                _proxy.ack_heartbeats();
+            }
+        }
 
         public void refresh_udp_end_point()
         {
