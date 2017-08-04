@@ -11,6 +11,10 @@ namespace client
         {
             _client = new client();
 
+            _client.onDisConnect += () => {
+                log.log.trace(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "disconnect");
+            };
+
             login _login = new login();
             _client.modulemanager.add_module("login", _login);
 
