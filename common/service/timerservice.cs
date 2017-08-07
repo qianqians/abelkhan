@@ -448,9 +448,9 @@ namespace service
         private Dictionary<day_time, List<timeHandle> > adddaytimeHandle;
         private Dictionary<day_time, List<timeHandle> > loopdaytimeHandle;
 
-        private Dictionary<week_day_time, List<timeHandle>> loopweekdaytimeHandledict;
-        private Dictionary<week_day_time, List<timeHandle>> addloopweekdaytimeHandle;
-        private Dictionary<week_day_time, List<timeHandle>> loopweekdaytimeHandle;
+        private Dictionary<week_day_time, List<timeHandle> > loopweekdaytimeHandledict;
+        private Dictionary<week_day_time, List<timeHandle> > addloopweekdaytimeHandle;
+        private Dictionary<week_day_time, List<timeHandle> > loopweekdaytimeHandle;
     }
 }
 
