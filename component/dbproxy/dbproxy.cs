@@ -60,8 +60,9 @@ namespace dbproxy
 			_hub_call_dbproxy.onupdata_persisted_object += _hub_msg_handle.updata_persisted_object;
             _hub_call_dbproxy.onget_object_count += _hub_msg_handle.get_object_count;
             _hub_call_dbproxy.onget_object_info += _hub_msg_handle.get_object_info;
+            _hub_call_dbproxy.onremove_object += _hub_msg_handle.remove_object;
 
-			var center_ip = _center_config.get_value_string("ip");
+            var center_ip = _center_config.get_value_string("ip");
 			var center_port = (short)_center_config.get_value_int("port");
 			_center_call_server = new module.center_call_server();
 			_center_process = new juggle.process();

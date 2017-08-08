@@ -55,5 +55,12 @@ namespace caller
             call_module_method("ack_get_object_info_end", _argv);
         }
 
+        public void ack_remove_object(String argv0)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            call_module_method("ack_remove_object", _argv);
+        }
+
     }
 }

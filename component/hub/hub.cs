@@ -84,7 +84,9 @@ namespace hub
             _dbproxy_call_hub.onack_get_object_count += _dbproxy_msg_handle.ack_get_object_count;
             _dbproxy_call_hub.onack_get_object_info += _dbproxy_msg_handle.ack_get_object_info;
 			_dbproxy_call_hub.onack_get_object_info_end += _dbproxy_msg_handle.ack_get_object_info_end;
-			_dbproxy_process.reg_module(_dbproxy_call_hub);
+            _dbproxy_call_hub.onack_remove_object += _dbproxy_msg_handle.ack_remove_object;
+
+            _dbproxy_process.reg_module(_dbproxy_call_hub);
 
 			juggle.process _gate_process = new juggle.process();
 			_gate_msg_handle = new gate_msg_handle(modules);

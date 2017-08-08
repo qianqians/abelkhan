@@ -64,6 +64,13 @@ namespace hub
                 _dbproxy.end_cb_set.Add(callbackid, (object)_end);
             }
 
+            public void removeObject(Hashtable query_json, onRemoveObjectHandle _handle)
+            {
+                var callbackid = System.Guid.NewGuid().ToString();
+                remove_object(query_json, callbackid);
+                _dbproxy.callback_set.Add(callbackid, (object)_handle);
+            }
+
             private void create_persisted_object(Hashtable object_info, String callbackid)
             {
                 _dbproxy._hub_call_dbproxy.create_persisted_object(_db, _collection, object_info, callbackid);
@@ -82,6 +89,11 @@ namespace hub
             private void get_object_info(Hashtable query_object, String callbackid)
             {
                 _dbproxy._hub_call_dbproxy.get_object_info(_db, _collection, query_object, callbackid);
+            }
+
+            private void remove_object(Hashtable query_object, String callbackid)
+            {
+                _dbproxy._hub_call_dbproxy.remove_object(_db, _collection, query_object, callbackid);
             }
 
             private string _db;
@@ -124,6 +136,7 @@ namespace hub
         public delegate void onGetObjectCountHandle(Int64 count);
 		public delegate void onGetObjectInfoHandle(ArrayList obejctinfoarray);
         public delegate void onGetObjectInfoEnd();
+        public delegate void onRemoveObjectHandle();
 
         private Dictionary<String, object> callback_set;
         private Dictionary<String, object> end_cb_set;

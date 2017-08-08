@@ -49,6 +49,12 @@ namespace hub
             _end();
         }
 
+        public void ack_remove_object(String callbackid)
+        {
+            dbproxyproxy.onRemoveObjectHandle _handle = (dbproxyproxy.onRemoveObjectHandle)hub.dbproxy.begin_callback(callbackid);
+            _handle();
+        }
+
         private hub _hub_;
 	}
 }

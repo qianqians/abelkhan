@@ -40,7 +40,12 @@ namespace dbproxy
 			_caller.ack_get_object_info_end(callbackid);
 		}
 
-		private caller.dbproxy_call_hub _caller;
+        public void ack_remove_object(string callbackid)
+        {
+            _caller.ack_remove_object(callbackid);
+        }
+
+        private caller.dbproxy_call_hub _caller;
 	}
 }
 

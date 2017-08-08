@@ -9,6 +9,8 @@ module hub_call_dbproxy{
 
 	void get_object_info(string db, string collection, table query_json, string callbackid);
 
+	void remove_object(string db, string collection, table query_json, string callbackid);
+
 }
 
 module dbproxy_call_hub{
@@ -23,5 +25,7 @@ module dbproxy_call_hub{
 	void ack_get_object_info(string callbackid, array object_info);
 
 	void ack_get_object_info_end(string callbackid);
+
+	void ack_remove_object(string callbackid);
 
 }

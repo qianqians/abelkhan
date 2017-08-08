@@ -80,5 +80,19 @@ namespace module
             }
         }
 
+        public delegate void remove_objecthandle(String argv0, String argv1, Hashtable argv2, String argv3);
+        public event remove_objecthandle onremove_object;
+        public void remove_object(ArrayList _event)
+        {
+            if(onremove_object != null)
+            {
+                var argv0 = ((String)_event[0]);
+                var argv1 = ((String)_event[1]);
+                var argv2 = ((Hashtable)_event[2]);
+                var argv3 = ((String)_event[3]);
+                onremove_object( argv0,  argv1,  argv2,  argv3);
+            }
+        }
+
 	}
 }

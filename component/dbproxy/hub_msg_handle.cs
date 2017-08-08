@@ -103,6 +103,18 @@ namespace dbproxy
 			_hubproxy.ack_get_object_info_end(callbackid);
 		}
 
+        public void remove_object(string db, string collection, Hashtable query_json, string callbackid)
+        {
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "remove_object");
+
+            _mongodbproxy.remove(db, collection, query_json);
+            hubproxy _hubproxy = _hubmanager.get_hub(juggle.Imodule.current_ch);
+            if (_hubproxy != null)
+            {
+                _hubproxy.ack_remove_object(callbackid);
+            }
+        }
+
 		private hubmanager _hubmanager;
 		private mongodbproxy _mongodbproxy;
 	}

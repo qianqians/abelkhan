@@ -60,5 +60,15 @@ namespace caller
             call_module_method("get_object_info", _argv);
         }
 
+        public void remove_object(String argv0,String argv1,Hashtable argv2,String argv3)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            _argv.Add(argv1);
+            _argv.Add(argv2);
+            _argv.Add(argv3);
+            call_module_method("remove_object", _argv);
+        }
+
     }
 }

@@ -79,5 +79,16 @@ namespace module
             }
         }
 
+        public delegate void ack_remove_objecthandle(String argv0);
+        public event ack_remove_objecthandle onack_remove_object;
+        public void ack_remove_object(ArrayList _event)
+        {
+            if(onack_remove_object != null)
+            {
+                var argv0 = ((String)_event[0]);
+                onack_remove_object( argv0);
+            }
+        }
+
 	}
 }
