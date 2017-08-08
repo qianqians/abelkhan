@@ -29,6 +29,9 @@ namespace service
             loopweekdaytimeHandle = new Dictionary<week_day_time, List<timeHandle> >();
 
             Tick = (Int64)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
+
+            loopdaytick = 0;
+            loopweekdaytick = 0;
         }
 
 		public Int64 poll()
@@ -196,7 +199,8 @@ namespace service
                     loopdaytimeHandledict.Remove(item);
                 }
 
-                if (t.Hour == 0 && t.Minute == 0 && t.Second == 0)
+                if (t.Hour == 0 && t.Minute == 0 && t.Second == 0 &&
+                    (Tick - loopdaytick) >= 24 * 60 * 60 * 1000 )
                 {
                     foreach(var item in loopdaytimeHandle)
                     {
@@ -207,6 +211,8 @@ namespace service
                         loopdaytimeHandledict[item.Key].AddRange(item.Value);
                     }
                     loopdaytimeHandle.Clear();
+
+                    loopdaytick = Tick;
                 }
             }
             catch (System.Exception e)
@@ -242,7 +248,8 @@ namespace service
                     loopweekdaytimeHandledict.Remove(item);
                 }
 
-                if (t.DayOfWeek == DayOfWeek.Sunday && t.Hour == 0 && t.Minute == 0 && t.Second == 0)
+                if (t.DayOfWeek == DayOfWeek.Sunday && t.Hour == 0 && t.Minute == 0 && t.Second == 0 &&
+                    (Tick - loopweekdaytick) >= 7 * 24 * 60 * 60 * 1000)
                 {
                     foreach(var item in loopweekdaytimeHandle)
                     {
@@ -253,6 +260,8 @@ namespace service
                         loopweekdaytimeHandledict[item.Key].AddRange(item.Value);
                     }
                     loopweekdaytimeHandle.Clear();
+
+                    loopweekdaytick = Tick;
                 }
             }
             catch (System.Exception e)
@@ -447,10 +456,12 @@ namespace service
         private Dictionary<day_time, List<timeHandle> > loopdaytimeHandledict;
         private Dictionary<day_time, List<timeHandle> > adddaytimeHandle;
         private Dictionary<day_time, List<timeHandle> > loopdaytimeHandle;
+        private Int64 loopdaytick;
 
         private Dictionary<week_day_time, List<timeHandle> > loopweekdaytimeHandledict;
         private Dictionary<week_day_time, List<timeHandle> > addloopweekdaytimeHandle;
         private Dictionary<week_day_time, List<timeHandle> > loopweekdaytimeHandle;
+        private Int64 loopweekdaytick;
     }
 }
 
