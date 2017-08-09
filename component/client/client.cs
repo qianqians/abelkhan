@@ -49,7 +49,7 @@ namespace client
 
         private void heartbeats(Int64 tick)
         {
-            if (_heartbeats < tick - 35 * 1000)
+            if (_heartbeats < tick - 6 * 1000)
             {
                 if (onDisConnect != null)
                 {
@@ -60,7 +60,7 @@ namespace client
             {
                 _client_call_gate.heartbeats(tick);
 
-                timer.addticktime(tick + 30 * 1000, heartbeats);
+                timer.addticktime(tick + 5 * 1000, heartbeats);
             }
         }
 
@@ -87,7 +87,7 @@ namespace client
             _heartbeats = service.timerservice.Tick;
             _client_call_gate.heartbeats(service.timerservice.Tick);
 
-            timer.addticktime(service.timerservice.Tick + 30 * 1000, heartbeats);
+            timer.addticktime(service.timerservice.Tick + 5 * 1000, heartbeats);
             timer.addticktime(service.timerservice.Tick + 10 * 1000, refresh_udp_link);
 
             if (onConnectGate != null)
