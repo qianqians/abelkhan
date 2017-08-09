@@ -19,9 +19,10 @@ namespace service
 
             recvbuflenght = 16 * 1024;
             recvbuf = new byte[recvbuflenght];
-			tmpbuf = null;
-			tmpbuflenght = 0;
-			tmpbufoffset = 0;
+
+            tmpbuflenght = 16 * 1024;
+            tmpbuf = new byte[tmpbuflenght];
+            tmpbufoffset = 0;
 
 			s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
 		}
@@ -41,175 +42,61 @@ namespace service
                 int read = ch.s.EndReceive(ar);
 				if (read > 0)
 				{
-					if (tmpbufoffset == 0)
-					{
-						int offset = 0;
-						do
-						{
-                            if (read > 4)
-                            {
-                                Int32 len = ((Int32)recvbuf[offset + 0]) | ((Int32)recvbuf[offset + 1]) << 8 | ((Int32)recvbuf[offset + 2]) << 16 | ((Int32)recvbuf[offset + 3]) << 24;
+					while( (tmpbuflenght - tmpbufoffset) < read )
+                    {
+                        tmpbuflenght *= 2;
+                        byte[] new_buff = new byte[tmpbuflenght];
+                        tmpbuf.CopyTo(new_buff, 0);
+                        tmpbuf = new_buff;
+                    }
+                    recvbuf.CopyTo(tmpbuf, tmpbufoffset);
+                    int data_len = tmpbufoffset + read;
 
-                                if (len <= (read - 4))
-                                {
-                                    read -= len + 4;
-                                    offset += 4;
+                    int offset = 0;
+                    while(offset < data_len)
+                    {
+                        int over_len = data_len - offset;
+                        if (over_len < 4)
+                        {
+                            break;
+                        }
 
-                                    MemoryStream _tmp = new MemoryStream();
+                        Int32 len = ((Int32)tmpbuf[offset + 0]) | ((Int32)tmpbuf[offset + 1]) << 8 | ((Int32)tmpbuf[offset + 2]) << 16 | ((Int32)tmpbuf[offset + 3]) << 24;
+                        if (over_len < len + 4)
+                        {
+                            break;
+                        }
 
-                                    _tmp.Write(recvbuf, offset, len);
-                                    offset += len;
+                        offset += 4;
+                        MemoryStream _tmp = new MemoryStream();
+                        _tmp.Write(recvbuf, offset, len);
+                        offset += len;
+                        _tmp.Position = 0;
+                        var json = System.Text.Encoding.UTF8.GetString(_tmp.ToArray());
+                        log.log.trace(new System.Diagnostics.StackFrame(true), timerservice.Tick, "msg:{0}", json);
+                        try
+                        {
+                            ArrayList unpackedObject = (ArrayList)Json.Jsonparser.unpack(json);
 
-                                    _tmp.Position = 0;
+                            Monitor.Enter(que);
+                            que.Enqueue(unpackedObject);
+                            Monitor.Exit(que);
+                        }
+                        catch (Exception e)
+                        {
+                            log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "msg:{0}, System.Exception:{1}", json, e);
+                        }
+                    }
 
-                                    var json = System.Text.Encoding.UTF8.GetString(_tmp.ToArray());
-                                    log.log.trace(new System.Diagnostics.StackFrame(true), timerservice.Tick, "msg:{0}", json);
-                                    try
-                                    {
-                                        ArrayList unpackedObject = (ArrayList)Json.Jsonparser.unpack(json);
+                    int overplus_len = data_len - offset;
+                    MemoryStream st = new MemoryStream();
+                    st.Write(tmpbuf, offset, overplus_len);
+                    st.Position = 0;
+                    var data = st.ToArray();
+                    data.CopyTo(tmpbuf, 0);
+                    tmpbufoffset = overplus_len;
 
-                                        Monitor.Enter(que);
-                                        que.Enqueue(unpackedObject);
-                                        Monitor.Exit(que);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "msg:{0}, System.Exception:{1}", json, e);
-
-                                        ch.s.Close();
-                                        onDisconnect(ch);
-                                    }
-                                }
-                                else
-                                {
-                                    if (tmpbuflenght == 0)
-                                    {
-                                        tmpbuflenght = recvbuflenght * 2;
-                                        tmpbuf = new byte[tmpbuflenght];
-                                    }
-
-                                    while ((tmpbuflenght - tmpbufoffset) < read)
-                                    {
-                                        byte[] newtmpbuf = new byte[2 * tmpbuflenght];
-                                        tmpbuf.CopyTo(newtmpbuf, 0);
-                                        tmpbuf = newtmpbuf;
-                                    }
-
-                                    MemoryStream _tmp = new MemoryStream();
-                                    _tmp.Write(recvbuf, offset, read);
-
-                                    _tmp.ToArray().CopyTo(tmpbuf, tmpbufoffset);
-                                    tmpbufoffset = read;
-
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                if (read > 0)
-                                {
-                                    if (tmpbuflenght == 0)
-                                    {
-                                        tmpbuflenght = recvbuflenght * 2;
-                                        tmpbuf = new byte[tmpbuflenght];
-                                    }
-
-                                    while ((tmpbuflenght - tmpbufoffset) < read)
-                                    {
-                                        byte[] newtmpbuf = new byte[2 * tmpbuflenght];
-                                        tmpbuf.CopyTo(newtmpbuf, 0);
-                                        tmpbuf = newtmpbuf;
-                                    }
-
-                                    MemoryStream _tmp = new MemoryStream();
-                                    _tmp.Write(recvbuf, offset, read);
-
-                                    _tmp.ToArray().CopyTo(tmpbuf, tmpbufoffset);
-                                    tmpbufoffset = read;
-                                }
-                                break;
-                            }
-
-						} while (true);
-					}
-					else if (tmpbufoffset > 0)
-					{
-						while ((tmpbuflenght - tmpbufoffset) < read)
-						{
-							byte[] newtmpbuf = new byte[2 * tmpbuflenght];
-							tmpbuf.CopyTo(newtmpbuf, 0);
-							tmpbuf = newtmpbuf;
-						}
-
-						MemoryStream _tmp_ = new MemoryStream();
-						_tmp_.Write(recvbuf, 0, read);
-
-						_tmp_.ToArray().CopyTo(tmpbuf, tmpbufoffset);
-						tmpbufoffset += (Int32)_tmp_.Length;
-
-						int offset = 0;
-						do
-						{
-                            if (tmpbufoffset > 4)
-                            {
-                                Int32 len = ((Int32)tmpbuf[offset + 0]) | ((Int32)tmpbuf[offset + 1]) << 8 | ((Int32)tmpbuf[offset + 2]) << 16 | ((Int32)tmpbuf[offset + 3]) << 24;
-
-                                if (len <= (tmpbufoffset - 4))
-                                {
-                                    tmpbufoffset -= len + 4;
-                                    offset += 4;
-
-                                    MemoryStream _tmp = new MemoryStream();
-
-                                    _tmp.Write(tmpbuf, offset, len);
-                                    offset += len;
-
-                                    _tmp.Position = 0;
-
-                                    var json = System.Text.Encoding.UTF8.GetString(_tmp.ToArray());
-                                    log.log.trace(new System.Diagnostics.StackFrame(true), timerservice.Tick, "msg:{0}", json);
-                                    try
-                                    {
-                                        ArrayList unpackedObject = (ArrayList)Json.Jsonparser.unpack(json);
-
-                                        Monitor.Enter(que);
-                                        que.Enqueue(unpackedObject);
-                                        Monitor.Exit(que);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "msg:{0}, System.Exception:{1}", json, e);
-
-                                        ch.s.Close();
-                                        onDisconnect(ch);
-                                    }
-                                }
-                                else
-                                {
-                                    MemoryStream _tmp = new MemoryStream();
-                                    _tmp.Write(tmpbuf, offset, tmpbufoffset);
-
-                                    _tmp.ToArray().CopyTo(tmpbuf, 0);
-
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                if (tmpbufoffset > 0)
-                                {
-                                    MemoryStream _tmp = new MemoryStream();
-                                    _tmp.Write(tmpbuf, offset, tmpbufoffset);
-
-                                    _tmp.ToArray().CopyTo(tmpbuf, 0);
-                                }
-                                break;
-                            }
-
-						} while (true);
-					}
-
-					ch.s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
+                    ch.s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
 				}
 				else
                 {
@@ -301,8 +188,10 @@ namespace service
 		}
 
 		private Socket s;
-		private byte[] recvbuf;
+
+        private byte[] recvbuf;
         private Int32 recvbuflenght;
+
 		private byte[] tmpbuf;
 		private Int32 tmpbuflenght;
 		private Int32 tmpbufoffset;
