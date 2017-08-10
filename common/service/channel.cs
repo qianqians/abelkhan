@@ -40,11 +40,9 @@ namespace service
             try
             {
                 int read = ch.s.EndReceive(ar);
-                if (read >= recvbuflenght)
-                {
-                    read = recvbuflenght;
-                }
 
+                log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "recv data len:{0}", read);
+                
 				if (read > 0)
 				{
 					while( (tmpbuflenght - tmpbufoffset) < read )
@@ -58,7 +56,7 @@ namespace service
                     int data_len = tmpbufoffset + read;
 
                     int offset = 0;
-                    while(offset < data_len)
+                    while(true)
                     {
                         int over_len = data_len - offset;
                         if (over_len < 4)
@@ -74,7 +72,7 @@ namespace service
 
                         offset += 4;
                         MemoryStream _tmp = new MemoryStream();
-                        _tmp.Write(recvbuf, offset, len);
+                        _tmp.Write(tmpbuf, offset, len);
                         offset += len;
                         _tmp.Position = 0;
                         var json = System.Text.Encoding.UTF8.GetString(_tmp.ToArray());
