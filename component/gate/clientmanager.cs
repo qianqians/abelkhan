@@ -147,7 +147,7 @@ namespace gate
             var remove = new List<juggle.Ichannel>();
             foreach (KeyValuePair<juggle.Ichannel, Int64> kvp in client_server_time)
             {
-                if ((servertick - kvp.Value) > 60 * 1000)
+                if ((servertick - kvp.Value) > 7 * 1000)
                 {
                     var _client = clientproxys_ch[kvp.Key];
                     var client_uuid = clientproxys_uuid[_client];
@@ -183,7 +183,7 @@ namespace gate
                 ch.disconnect();
             }
 
-            gate.timer.addticktime(60 * 1000, gate.clients.tick_client);
+            gate.timer.addticktime(5 * 1000, gate.clients.tick_client);
         }
 
         private Dictionary<clientproxy, String> clientproxys_uuid;

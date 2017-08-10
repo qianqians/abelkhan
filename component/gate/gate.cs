@@ -126,7 +126,7 @@ namespace gate
 
             if (enable_heartbeats)
             {
-                timer.addticktime(60 * 1000, clients.tick_client);
+                timer.addticktime(5 * 1000, clients.tick_client);
             }
         }
 

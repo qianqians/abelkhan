@@ -173,9 +173,24 @@ namespace service
 
             try
             {
-                List<day_time> list = new List<day_time>();
-
                 DateTime t = DateTime.Now;
+                if (t.Hour == 0 && t.Minute == 0 && t.Second == 0 &&
+                    (Tick - loopdaytick) >= 24 * 60 * 60 * 1000)
+                {
+                    foreach (var item in loopdaytimeHandle)
+                    {
+                        if (!loopdaytimeHandledict.ContainsKey(item.Key))
+                        {
+                            loopdaytimeHandledict.Add(item.Key, new List<timeHandle>());
+                        }
+                        loopdaytimeHandledict[item.Key].AddRange(item.Value);
+                    }
+                    loopdaytimeHandle.Clear();
+
+                    loopdaytick = Tick;
+                }
+
+                List<day_time> list = new List<day_time>();
                 foreach (var item in loopdaytimeHandledict)
                 {
                     if (item.Key.hour == t.Hour && item.Key.minute == t.Minute && item.Key.second == t.Second)
@@ -198,22 +213,6 @@ namespace service
                     loopdaytimeHandle[item].AddRange(loopdaytimeHandledict[item]);
                     loopdaytimeHandledict.Remove(item);
                 }
-
-                if (t.Hour == 0 && t.Minute == 0 && t.Second == 0 &&
-                    (Tick - loopdaytick) >= 24 * 60 * 60 * 1000 )
-                {
-                    foreach(var item in loopdaytimeHandle)
-                    {
-                        if (!loopdaytimeHandledict.ContainsKey(item.Key))
-                        {
-                            loopdaytimeHandledict.Add(item.Key, new List<timeHandle>());
-                        }
-                        loopdaytimeHandledict[item.Key].AddRange(item.Value);
-                    }
-                    loopdaytimeHandle.Clear();
-
-                    loopdaytick = Tick;
-                }
             }
             catch (System.Exception e)
             {
@@ -222,9 +221,24 @@ namespace service
 
             try
             {
-                List<week_day_time> list = new List<week_day_time>();
-
                 DateTime t = DateTime.Now;
+                if (t.DayOfWeek == DayOfWeek.Sunday && t.Hour == 0 && t.Minute == 0 && t.Second == 0 &&
+                    (Tick - loopweekdaytick) >= 7 * 24 * 60 * 60 * 1000)
+                {
+                    foreach (var item in loopweekdaytimeHandle)
+                    {
+                        if (!loopweekdaytimeHandledict.ContainsKey(item.Key))
+                        {
+                            loopweekdaytimeHandledict.Add(item.Key, new List<timeHandle>());
+                        }
+                        loopweekdaytimeHandledict[item.Key].AddRange(item.Value);
+                    }
+                    loopweekdaytimeHandle.Clear();
+
+                    loopweekdaytick = Tick;
+                }
+
+                List<week_day_time> list = new List<week_day_time>();
                 foreach (var item in loopweekdaytimeHandledict)
                 {
                     if (item.Key.day == t.DayOfWeek && item.Key.hour == t.Hour && item.Key.minute == t.Minute && item.Key.second == t.Second)
@@ -246,22 +260,6 @@ namespace service
                     }
                     loopweekdaytimeHandle[item].AddRange(loopweekdaytimeHandledict[item]);
                     loopweekdaytimeHandledict.Remove(item);
-                }
-
-                if (t.DayOfWeek == DayOfWeek.Sunday && t.Hour == 0 && t.Minute == 0 && t.Second == 0 &&
-                    (Tick - loopweekdaytick) >= 7 * 24 * 60 * 60 * 1000)
-                {
-                    foreach(var item in loopweekdaytimeHandle)
-                    {
-                        if (!loopweekdaytimeHandledict.ContainsKey(item.Key))
-                        {
-                            loopweekdaytimeHandledict.Add(item.Key, new List<timeHandle>());
-                        }
-                        loopweekdaytimeHandledict[item.Key].AddRange(item.Value);
-                    }
-                    loopweekdaytimeHandle.Clear();
-
-                    loopweekdaytick = Tick;
                 }
             }
             catch (System.Exception e)

@@ -49,7 +49,7 @@ namespace client
 
         private void heartbeats(Int64 tick)
         {
-            if (_heartbeats < tick - 6 * 1000)
+            if (_heartbeats < tick - 7 * 1000)
             {
                 if (onDisConnect != null)
                 {

@@ -40,6 +40,11 @@ namespace service
             try
             {
                 int read = ch.s.EndReceive(ar);
+                if (read >= recvbuflenght)
+                {
+                    read = recvbuflenght;
+                }
+
 				if (read > 0)
 				{
 					while( (tmpbuflenght - tmpbufoffset) < read )
