@@ -18,9 +18,8 @@ namespace service
             remote_ep = new IPEndPoint(_remote_ep.Address, _remote_ep.Port);
 
             que = new Queue();
-
-            tmpbuflenght = 16 * 1024;
-            tmpbuf = new byte[tmpbuflenght];
+            
+            tmpbuf = null;
             tmpbufoffset = 0;
         }
 
@@ -39,15 +38,18 @@ namespace service
 
                     if (read > 0)
                     {
-                        while ((tmpbuflenght - tmpbufoffset) < read)
+                        MemoryStream st = new MemoryStream();
+                        if (tmpbufoffset > 0)
                         {
-                            tmpbuflenght *= 2;
-                            byte[] new_buff = new byte[tmpbuflenght];
-                            tmpbuf.CopyTo(new_buff, 0);
-                            tmpbuf = new_buff;
+                            st.Write(tmpbuf, 0, tmpbufoffset);
                         }
-                        recvbuf.CopyTo(tmpbuf, tmpbufoffset);
+                        st.Write(recvbuf, 0, read);
+                        st.Position = 0;
+                        byte[] data = st.ToArray();
                         int data_len = tmpbufoffset + read;
+
+                        tmpbuf = null;
+                        tmpbufoffset = 0;
 
                         int offset = 0;
                         while (true)
@@ -58,7 +60,7 @@ namespace service
                                 break;
                             }
 
-                            Int32 len = ((Int32)tmpbuf[offset + 0]) | ((Int32)tmpbuf[offset + 1]) << 8 | ((Int32)tmpbuf[offset + 2]) << 16 | ((Int32)tmpbuf[offset + 3]) << 24;
+                            Int32 len = ((Int32)data[offset + 0]) | ((Int32)data[offset + 1]) << 8 | ((Int32)data[offset + 2]) << 16 | ((Int32)data[offset + 3]) << 24;
                             if (over_len < len + 4)
                             {
                                 break;
@@ -66,7 +68,7 @@ namespace service
 
                             offset += 4;
                             MemoryStream _tmp = new MemoryStream();
-                            _tmp.Write(tmpbuf, offset, len);
+                            _tmp.Write(data, offset, len);
                             offset += len;
                             _tmp.Position = 0;
                             var json = System.Text.Encoding.UTF8.GetString(_tmp.ToArray());
@@ -86,11 +88,10 @@ namespace service
                         }
 
                         int overplus_len = data_len - offset;
-                        MemoryStream st = new MemoryStream();
-                        st.Write(tmpbuf, offset, overplus_len);
+                        st = new MemoryStream();
+                        st.Write(data, offset, overplus_len);
                         st.Position = 0;
-                        var data = st.ToArray();
-                        data.CopyTo(tmpbuf, 0);
+                        tmpbuf = st.ToArray();
                         tmpbufoffset = overplus_len;
                     }
                 }
@@ -181,7 +182,6 @@ namespace service
         public IPEndPoint remote_ep;
 
         private byte[] tmpbuf;
-        private Int32 tmpbuflenght;
 		private Int32 tmpbufoffset;
 
 		private Queue que;

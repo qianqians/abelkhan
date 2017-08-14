@@ -34,6 +34,26 @@ namespace module
             }
         }
 
+        public delegate void enable_heartbeatshandle();
+        public event enable_heartbeatshandle onenable_heartbeats;
+        public void enable_heartbeats(ArrayList _event)
+        {
+            if(onenable_heartbeats != null)
+            {
+                onenable_heartbeats();
+            }
+        }
+
+        public delegate void disable_heartbeatshandle();
+        public event disable_heartbeatshandle ondisable_heartbeats;
+        public void disable_heartbeats(ArrayList _event)
+        {
+            if(ondisable_heartbeats != null)
+            {
+                ondisable_heartbeats();
+            }
+        }
+
         public delegate void connect_hubhandle(String argv0, String argv1);
         public event connect_hubhandle onconnect_hub;
         public void connect_hub(ArrayList _event)

@@ -26,6 +26,18 @@ namespace caller
             call_module_method("cancle_server", _argv);
         }
 
+        public void enable_heartbeats()
+        {
+            ArrayList _argv = new ArrayList();
+            call_module_method("enable_heartbeats", _argv);
+        }
+
+        public void disable_heartbeats()
+        {
+            ArrayList _argv = new ArrayList();
+            call_module_method("disable_heartbeats", _argv);
+        }
+
         public void connect_hub(String argv0,String argv1)
         {
             ArrayList _argv = new ArrayList();

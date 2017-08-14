@@ -37,6 +37,7 @@ namespace client
             _juggleservice.add_process(_udp_process);
 
             _heartbeats = 0;
+            _is_enable_heartbeats = false;
         }
 
         private void on_disconnect(juggle.Ichannel ch)
@@ -49,7 +50,7 @@ namespace client
 
         private void heartbeats(Int64 tick)
         {
-            if (_heartbeats < tick - 9 * 1000)
+            if (_is_enable_heartbeats && (_heartbeats < (tick - 20 * 1000)))
             {
                 if (onDisConnect != null)
                 {
@@ -140,6 +141,21 @@ namespace client
 			_client_call_gate.cancle_server();
 		}
 
+        public void enable_heartbeats()
+        {
+            _client_call_gate.enable_heartbeats();
+
+            _is_enable_heartbeats = true;
+            _heartbeats = service.timerservice.Tick;
+        }
+
+        public void disable_heartbeats()
+        {
+            _client_call_gate.disable_heartbeats();
+
+            _is_enable_heartbeats = false;
+        }
+
         public void connect_hub(string hub_name)
         {
             _client_call_gate.connect_hub(uuid, hub_name);
@@ -193,6 +209,7 @@ namespace client
 		public common.modulemanager modulemanager;
 
         private Int64 _heartbeats;
+        private bool _is_enable_heartbeats;
 
         private service.connectnetworkservice _conn;
 		private module.gate_call_client _gate_call_client;

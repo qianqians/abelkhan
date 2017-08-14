@@ -28,6 +28,16 @@ namespace gate
 			_clientmanager.unreg_client(juggle.Imodule.current_ch);
         }
 
+        public void enable_heartbeats()
+        {
+            _clientmanager.enable_heartbeats(juggle.Imodule.current_ch);
+        }
+
+        public void disable_heartbeats()
+        {
+            _clientmanager.disable_heartbeats(juggle.Imodule.current_ch);
+        }
+
         public void connect_hub(string client_uuid, string hub_name)
         {
             hubproxy _hubproxy = _hubmanager.get_hub(hub_name);

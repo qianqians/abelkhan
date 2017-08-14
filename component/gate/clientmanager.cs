@@ -14,7 +14,8 @@ namespace gate
 			clientproxys_uuid = new Dictionary<clientproxy, string> ();
 			client_server_time = new Dictionary<juggle.Ichannel, long>();
 			client_time = new Dictionary<juggle.Ichannel, long>();
-		}
+            heartbeats_list = new List<juggle.Ichannel>();
+        }
 
 		public clientproxy reg_client(string uuid, juggle.Ichannel ch, Int64 servertick, Int64 clienttick)
 		{
@@ -116,7 +117,24 @@ namespace gate
 			return null;
 		}
 
-		public void refresh_and_check_client(juggle.Ichannel _ch, Int64 servertick, Int64 clienttick)
+        public void enable_heartbeats(juggle.Ichannel ch)
+        {
+            if (!heartbeats_list.Contains(ch))
+            {
+                heartbeats_list.Add(ch);
+                client_server_time[ch] = service.timerservice.Tick;
+            }
+        }
+
+        public void disable_heartbeats(juggle.Ichannel ch)
+        {
+            if (heartbeats_list.Contains(ch))
+            {
+                heartbeats_list.Remove(ch);
+            }
+        }
+
+        public void refresh_and_check_client(juggle.Ichannel _ch, Int64 servertick, Int64 clienttick)
         {
             if (client_time.ContainsKey(_ch) && client_server_time.ContainsKey(_ch))
             {
@@ -147,28 +165,30 @@ namespace gate
             var remove = new List<juggle.Ichannel>();
             foreach (KeyValuePair<juggle.Ichannel, Int64> kvp in client_server_time)
             {
-                if ((servertick - kvp.Value) > 9 * 1000)
+                if ((servertick - kvp.Value) > 20 * 1000)
                 {
-                    var _client = clientproxys_ch[kvp.Key];
-                    var client_uuid = clientproxys_uuid[_client];
-                    if (clientproxy_hubproxy.ContainsKey(_client))
+                    if (heartbeats_list.Contains(kvp.Key))
                     {
-                        var _hubs = clientproxy_hubproxy[_client];
-                        foreach(var _hub in _hubs)
-                        {
-                            _hub.client_disconnect(client_uuid);
-                        }
-                        clientproxy_hubproxy.Remove(_client);
+                        remove.Add(kvp.Key);
                     }
-
-                    remove.Add(kvp.Key);
                 }
             }
 
             foreach (var ch in remove)
             {
                 var _client = clientproxys_ch[ch];
-
+                
+                var client_uuid = clientproxys_uuid[_client];
+                if (clientproxy_hubproxy.ContainsKey(_client))
+                {
+                    var _hubs = clientproxy_hubproxy[_client];
+                    foreach (var _hub in _hubs)
+                    {
+                        _hub.client_disconnect(client_uuid);
+                    }
+                    clientproxy_hubproxy.Remove(_client);
+                }
+                
                 clientproxys_ch.Remove(ch);
                 client_server_time.Remove(ch);
                 client_time.Remove(ch);
@@ -180,11 +200,15 @@ namespace gate
                     clientproxys.Remove(uuid);
                 }
 
+                heartbeats_list.Remove(ch);
+
                 ch.disconnect();
             }
 
             gate.timer.addticktime(5 * 1000, gate.clients.tick_client);
         }
+
+        private List<juggle.Ichannel> heartbeats_list;
 
         private Dictionary<clientproxy, String> clientproxys_uuid;
 		private Dictionary<juggle.Ichannel, clientproxy> clientproxys_ch;
