@@ -76,6 +76,7 @@ namespace gate
             var outside_ip = _config.get_value_string("outside_ip");
 			var outside_port = (short)_config.get_value_int("outside_port");
 			_accept_client_service = new service.acceptnetworkservice(outside_ip, outside_port, _client_process);
+            _accept_client_service.onChannelConnect += onChannelConnect;
             _accept_client_service.onChannelDisconnect += onClientDissconnect;
             
             _client_call_gate_fast = new module.client_call_gate_fast();
