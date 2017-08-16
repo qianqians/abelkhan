@@ -42,7 +42,6 @@ namespace gate
                 {
                     string uuid = clientproxys_uuid[_proxy];
                     clientproxys_uuid.Remove(_proxy);
-<<<<<<< HEAD
                     clientproxys.Remove(uuid);
                 }
             }
@@ -72,11 +71,6 @@ namespace gate
                         }
                         clientproxy_hubproxy.Remove(_proxy);
                     }
-
-=======
-
-                    clientproxys.Remove(uuid);
->>>>>>> origin/master
                 }
             }
         }
@@ -229,10 +223,6 @@ namespace gate
                 {
                     string uuid = clientproxys_uuid[_client];
                     clientproxys_uuid.Remove(_client);
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
                     clientproxys.Remove(uuid);
                 }
 

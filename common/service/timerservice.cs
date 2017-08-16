@@ -272,10 +272,7 @@ namespace service
 
 		public void addticktime(Int64 process, tickHandle handle)
 		{
-<<<<<<< HEAD
             process += Tick;
-=======
->>>>>>> origin/master
             if (!addtickHandle.ContainsKey(process))
             {
                 addtickHandle.Add(process, new List<tickHandle>());
