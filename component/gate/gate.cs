@@ -12,7 +12,11 @@ namespace gate
 
         public void onClientDissconnect(juggle.Ichannel ch)
         {
+<<<<<<< HEAD
             clients.on_client_disconnect(ch);
+=======
+            clients.unreg_client(ch);
+>>>>>>> origin/master
         }
 
         public void onChannelConnect(juggle.Ichannel ch)
