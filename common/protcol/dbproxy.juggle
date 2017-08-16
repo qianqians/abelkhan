@@ -1,0 +1,31 @@
+module hub_call_dbproxy{
+	void reg_hub(string hub_uuid);
+	
+	void create_persisted_object(string db, string collection, table object_info, string callbackid);
+
+	void updata_persisted_object(string db, string collection, table query_json, table object_info, string callbackid);
+
+	void get_object_count(string db, string collection, table query_json, string callbackid);
+
+	void get_object_info(string db, string collection, table query_json, string callbackid);
+
+	void remove_object(string db, string collection, table query_json, string callbackid);
+
+}
+
+module dbproxy_call_hub{
+	void reg_hub_sucess();
+	
+	void ack_create_persisted_object(string callbackid);
+
+	void ack_updata_persisted_object(string callbackid);
+
+	void ack_get_object_count(string callbackid, int count);
+
+	void ack_get_object_info(string callbackid, array object_info);
+
+	void ack_get_object_info_end(string callbackid);
+
+	void ack_remove_object(string callbackid);
+
+}

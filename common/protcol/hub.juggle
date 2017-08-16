@@ -1,0 +1,19 @@
+module gate_call_hub{
+	void reg_hub_sucess();
+
+	void client_connect(string client_uuid);
+
+	void client_disconnect(string client_uuid);
+
+	void client_exception(string client_uuid);
+	
+	void client_call_hub(string client_uuid, string module, string func, array argv);
+}
+
+module hub_call_hub{
+	void reg_hub(string hub_name);
+
+	void reg_hub_sucess();
+
+	void hub_call_hub_mothed(string module, string func, array argv);
+}

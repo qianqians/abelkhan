@@ -1,0 +1,70 @@
+{
+    "center":{
+        "ip":"127.0.0.1",
+        "port":1234,
+        "gm_ip":"127.0.0.1",
+        "gm_port":2234,
+	"log_level":"debug",
+	"log_file":"center.txt",
+	"log_dir":"./log/"
+    },
+
+    "dbproxy":{
+	"ip":"127.0.0.1",
+	"port":1235,
+	"db_ip":"122.112.209.196",
+	"db_port":27017,
+	"db_name":"test",
+	"db_collection":"objects",
+	"log_level":"debug",
+	"log_file":"dbproxy.txt",
+	"log_dir":"./log/"
+    },
+
+    "gate":{
+	"inside_ip":"127.0.0.1",
+	"inside_port":1236,
+	"outside_ip":"0.0.0.0",
+	"outside_port":3236,
+	"udp_outside_ip":"0.0.0.0",
+	"udp_outside_port":3237,
+	"heartbeats":true,
+	"log_level":"debug",
+	"log_file":"gate.txt",
+	"log_dir":"./log/"
+    },
+
+    "test_hub":{
+	"hub_name":"test_hub",
+	"ip":"127.0.0.1",
+	"port":1237,
+	"log_level":"debug",
+	"log_file":"test_hub.txt",
+	"log_dir":"./log/"
+    },
+
+    "test_logic":{
+	"ip":"127.0.0.1",
+	"port":1238,
+	"log_level":"debug",
+	"log_file":"test_logic.txt",
+	"log_dir":"./log/"
+    }
+
+    "test_robot":{
+	"ip":"127.0.0.1",
+	"port":3236,
+        "robot_num":100,
+	"log_level":"release",
+	"log_file":"test_robot.txt",
+	"log_dir":"./log/"
+    }
+
+    "gm":{
+	"gm_ip":"127.0.0.1",
+        "gm_port":2234,
+	"log_level":"debug",
+	"log_file":"control.txt",
+	"log_dir":"./log/"
+    }
+}

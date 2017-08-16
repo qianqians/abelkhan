@@ -1,0 +1,17 @@
+module gate_call_client{
+	void connect_gate_sucess();
+
+	void connect_hub_sucess(string hub_name);
+
+	void ack_heartbeats();
+
+	void call_client(string module, string func, array argv);
+
+}
+
+module gate_call_client_fast{
+	void confirm_refresh_udp_end_point();
+
+	void call_client(string module, string func, array argv);
+
+}

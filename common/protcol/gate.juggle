@@ -1,0 +1,44 @@
+module client_call_gate{
+	void connect_server(string client_uuid, int tick);
+	
+	void cancle_server();
+
+	void enable_heartbeats();
+
+	void disable_heartbeats();
+
+	void connect_hub(string client_uuid, string hub_name);
+
+	void disconnect_hub(string client_uuid, string hub_name);
+
+	void forward_client_call_hub(string hub_name, string module, string func, array argv);
+	
+	void heartbeats(int clockt);
+
+}
+
+module client_call_gate_fast{
+	void refresh_udp_end_point();
+
+	void confirm_create_udp_link(string client_uuid);
+
+}
+
+module hub_call_gate{
+	void reg_hub(string hub_uuid, string hub_name);
+
+	void connect_sucess(string client_uuid);
+
+	void disconnect_client(string client_uuid);
+
+	void forward_hub_call_client(string client_uuid, string module, string func, array argv);
+
+	void forward_hub_call_group_client(array client_uuids, string module, string func, array argv);
+	
+	void forward_hub_call_global_client(string module, string func, array argv);
+
+	void forward_hub_call_client_fast(string client_uuid, string module, string func, array argv);
+
+	void forward_hub_call_group_client_fast(array client_uuids, string module, string func, array argv);
+
+}

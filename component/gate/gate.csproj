@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{65DF6C23-5C3D-48DE-A924-CD778E46024E}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>gate</RootNamespace>
+    <AssemblyName>gate</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>..\..\bin\</OutputPath>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="System.Net" />
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\common\config\config.cs">
+      <Link>config.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\log\log.cs">
+      <Link>log.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\caller\centercaller.cs">
+      <Link>centercaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\caller\gate_call_clientcaller.cs">
+      <Link>gate_call_clientcaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\caller\gate_call_client_fastcaller.cs">
+      <Link>gate_call_client_fastcaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\caller\gate_call_hubcaller.cs">
+      <Link>gate_call_hubcaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\module\center_call_servermodule.cs">
+      <Link>center_call_servermodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\module\client_call_gatemodule.cs">
+      <Link>client_call_gatemodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\module\client_call_gate_fastmodule.cs">
+      <Link>client_call_gate_fastmodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\module\hub_call_gatemodule.cs">
+      <Link>hub_call_gatemodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\acceptnetworkservice.cs">
+      <Link>acceptnetworkservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\channel.cs">
+      <Link>channel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\connectnetworkservice.cs">
+      <Link>connectnetworkservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\juggleservice.cs">
+      <Link>juggleservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\service.cs">
+      <Link>service.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\timerservice.cs">
+      <Link>timerservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\udpacceptnetworkservice.cs">
+      <Link>udpacceptnetworkservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\udpchannel.cs">
+      <Link>udpchannel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\tools\jsonparse\JsonParser.cs">
+      <Link>JsonParser.cs</Link>
+    </Compile>
+    <Compile Include="..\..\tools\juggle\csharp\Exception.cs">
+      <Link>Exception.cs</Link>
+    </Compile>
+    <Compile Include="..\..\tools\juggle\csharp\Icaller.cs">
+      <Link>Icaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\tools\juggle\csharp\Ichannel.cs">
+      <Link>Ichannel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\tools\juggle\csharp\Imodule.cs">
+      <Link>Imodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\tools\juggle\csharp\process.cs">
+      <Link>process.cs</Link>
+    </Compile>
+    <Compile Include="center_msg_handle.cs" />
+    <Compile Include="centerproxy.cs" />
+    <Compile Include="client_msg_handle.cs" />
+    <Compile Include="clientmanager.cs" />
+    <Compile Include="clientproxy.cs" />
+    <Compile Include="closehandle.cs" />
+    <Compile Include="gate.cs" />
+    <Compile Include="hub_msg_handle.cs" />
+    <Compile Include="hubmanager.cs" />
+    <Compile Include="hubproxy.cs" />
+    <Compile Include="udpchannelmanager.cs" />
+  </ItemGroup>
+</Project>
