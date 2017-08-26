@@ -71,14 +71,13 @@ namespace service
                         {
                             break;
                         }
-
                         offset += 4;
+
                         MemoryStream _tmp = new MemoryStream();
                         _tmp.Write(data, offset, len);
-                        offset += len;
                         _tmp.Position = 0;
                         var json = System.Text.Encoding.UTF8.GetString(_tmp.ToArray());
-                        log.log.trace(new System.Diagnostics.StackFrame(true), timerservice.Tick, "msg:{0}", json);
+                        log.log.trace(new System.Diagnostics.StackFrame(true), timerservice.Tick, "len:{0} msg:{1}", len, json);
                         try
                         {
                             ArrayList unpackedObject = (ArrayList)Json.Jsonparser.unpack(json);
@@ -91,6 +90,7 @@ namespace service
                         {
                             log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "msg:{0}, System.Exception:{1}", json, e);
                         }
+                        offset += len;
                     }
 
                     int overplus_len = data_len - offset;
@@ -148,15 +148,19 @@ namespace service
 
                 var _tmpdata = System.Text.Encoding.UTF8.GetBytes(_tmp);
                 var _tmplenght = _tmpdata.Length + 4;
-
-                byte[] buf = new byte[4 + _tmplenght];
-                buf[0] = (byte)(_tmplenght & 0xff);
-                buf[1] = (byte)((_tmplenght >> 8) & 0xff);
-                buf[2] = (byte)((_tmplenght >> 16) & 0xff);
-                buf[3] = (byte)((_tmplenght >> 24) & 0xff);
-                _tmpdata.CopyTo(buf, 4);
-
-                senddata(buf);
+                    
+                var st = new MemoryStream();
+                st.WriteByte((byte)(_tmplenght & 0xff));
+                st.WriteByte((byte)((_tmplenght >> 8) & 0xff));
+                st.WriteByte((byte)((_tmplenght >> 16) & 0xff));
+                st.WriteByte((byte)((_tmplenght >> 24) & 0xff));
+                st.Write(_tmpdata, 0, _tmpdata.Length);
+                st.WriteByte(0);
+                st.WriteByte(0);
+                st.WriteByte(0);
+                st.WriteByte(0);
+                st.Position = 0;
+                senddata(st.ToArray());
             }
             catch (System.Exception e)
             {
@@ -168,13 +172,10 @@ namespace service
 		{
 			try
 			{
-                int offset = s.Send(data);
+                int offset = s.Send(data, 0, data.Length, SocketFlags.None);
 				while (offset < data.Length)
 				{
-					MemoryStream st = new MemoryStream();
-					st.Write(data, offset, data.Length - offset);
-					data = st.ToArray();
-					offset = s.Send(data);
+					offset = s.Send(data, offset, data.Length - offset, SocketFlags.None);
 				}
             }
 			catch (System.Net.Sockets.SocketException)
