@@ -25,7 +25,7 @@ namespace service
 			Socket clientSocket = listener.EndAcceptSocket(ar);
 
 			{
-				channel ch = new channel(clientSocket);
+                channel ch = new channel(clientSocket);
 				ch.onDisconnect += this.onChannelDisconn;
 
 				onChannelConn(ch);
