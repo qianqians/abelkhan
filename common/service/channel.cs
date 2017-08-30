@@ -40,10 +40,10 @@ namespace service
             {
                 int read = ch.s.EndReceive(ar);
 
-                log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "recv data len:{0}", read);
-                
 				if (read > 0)
-				{
+                {
+                    log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "recv data len:{0}", read);
+
                     MemoryStream st = new MemoryStream();
 					if (tmpbufoffset > 0)
                     {
@@ -99,20 +99,15 @@ namespace service
                     st.Position = 0;
                     tmpbuf = st.ToArray();
                     tmpbufoffset = overplus_len;
+                }
 
-                    ch.s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
-				}
-				else
-                {
-                    ch.s.Close();
-					onDisconnect(ch);
-				}
-			}
+                ch.s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
+            }
             catch (System.ObjectDisposedException )
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "socket is release");
             }
-            catch (System.Net.Sockets.SocketException )
+            catch (System.Net.Sockets.SocketException)
             {
                 onDisconnect(ch);
             }
@@ -160,6 +155,7 @@ namespace service
                 st.WriteByte(0);
                 st.WriteByte(0);
                 st.Position = 0;
+
                 senddata(st.ToArray());
             }
             catch (System.Exception e)
@@ -172,10 +168,14 @@ namespace service
 		{
 			try
 			{
+                log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "data.Length:{0}", data.Length);
+
                 int offset = s.Send(data, 0, data.Length, SocketFlags.None);
 				while (offset < data.Length)
 				{
-					offset = s.Send(data, offset, data.Length - offset, SocketFlags.None);
+                    log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "offset:{0} data.Length:{1}", offset, data.Length);
+
+                    offset += s.Send(data, offset, data.Length - offset, SocketFlags.None);
 				}
             }
 			catch (System.Net.Sockets.SocketException)

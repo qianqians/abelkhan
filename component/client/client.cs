@@ -61,7 +61,7 @@ namespace client
             {
                 _client_call_gate.heartbeats(tick);
 
-                timer.addticktime(tick + 5 * 1000, heartbeats);
+                timer.addticktime(5 * 1000, heartbeats);
             }
         }
 
@@ -74,7 +74,7 @@ namespace client
         {
             _client_call_gate_fast.refresh_udp_end_point();
 
-            timer.addticktime(tick + 10 * 1000, refresh_udp_link);
+            timer.addticktime(10 * 1000, refresh_udp_link);
         }
 
         public delegate void onConnectGateHandle();
@@ -88,8 +88,8 @@ namespace client
             _heartbeats = service.timerservice.Tick;
             _client_call_gate.heartbeats(service.timerservice.Tick);
 
-            timer.addticktime(service.timerservice.Tick + 5 * 1000, heartbeats);
-            timer.addticktime(service.timerservice.Tick + 10 * 1000, refresh_udp_link);
+            timer.addticktime(5 * 1000, heartbeats);
+            timer.addticktime(10 * 1000, refresh_udp_link);
 
             if (onConnectGate != null)
 			{
