@@ -23,7 +23,10 @@ namespace service
             tmpbuf = null;
             tmpbufoffset = 0;
 
-			s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
+            _send_state = send_state.idel;
+            send_buff = new Queue();
+
+            s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
 		}
 
         public void disconnect()
@@ -82,9 +85,10 @@ namespace service
                         {
                             ArrayList unpackedObject = (ArrayList)Json.Jsonparser.unpack(json);
 
-                            Monitor.Enter(que);
-                            que.Enqueue(unpackedObject);
-                            Monitor.Exit(que);
+                            lock (que)
+                            {
+                                que.Enqueue(unpackedObject);
+                            }
                         }
                         catch (Exception e)
                         {
@@ -99,35 +103,16 @@ namespace service
                     st.Position = 0;
                     tmpbuf = st.ToArray();
                     tmpbufoffset = overplus_len;
-                }
-
-<<<<<<< HEAD
-                    ch.s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
 				}
-				else
-                {
-                    log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "recv data len:{0}", read);
 
-                    ch.s.Close();
-					onDisconnect(ch);
-				}
-			}
-=======
                 ch.s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
             }
->>>>>>> origin/HEAD
             catch (System.ObjectDisposedException )
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "socket is release");
             }
-<<<<<<< HEAD
-            catch (System.Net.Sockets.SocketException e)
-=======
             catch (System.Net.Sockets.SocketException)
->>>>>>> origin/HEAD
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Net.Sockets.SocketException:{0}", e);
-
                 onDisconnect(ch);
             }
 			catch (System.Exception e)
@@ -142,12 +127,13 @@ namespace service
 		{
 			ArrayList _array = null;
 
-            Monitor.Enter(que);
-			if (que.Count > 0)
-			{
-				_array = (ArrayList)que.Dequeue();
-			}
-            Monitor.Exit(que);
+            lock (que)
+            {
+                if (que.Count > 0)
+                {
+                    _array = (ArrayList)que.Dequeue();
+                }
+            }
 
             return _array;
 		}
@@ -162,17 +148,6 @@ namespace service
 
                 var _tmpdata = System.Text.Encoding.UTF8.GetBytes(_tmp);
                 var _tmplenght = _tmpdata.Length + 4;
-<<<<<<< HEAD
-
-                var data = new byte[4 + _tmplenght];
-                data[0] = (byte)(_tmplenght & 0xff);
-                data[1] = (byte)((_tmplenght >> 8) & 0xff);
-                data[2] = (byte)((_tmplenght >> 16) & 0xff);
-                data[3] = (byte)((_tmplenght >> 24) & 0xff);
-                _tmpdata.CopyTo(data, 4);
-
-                senddata(data);
-=======
                     
                 var st = new MemoryStream();
                 st.WriteByte((byte)(_tmplenght & 0xff));
@@ -187,7 +162,6 @@ namespace service
                 st.Position = 0;
 
                 senddata(st.ToArray());
->>>>>>> origin/HEAD
             }
             catch (System.Exception e)
             {
@@ -199,25 +173,20 @@ namespace service
 		{
 			try
 			{
-<<<<<<< HEAD
-                int offset = s.Send(data);
-                while (offset < data.Length)
-                {
-                    log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "data.Length:{0} offset:{1}", data.Length, offset);
-                    
-                    offset += s.Send(data, offset, data.Length - offset, SocketFlags.None);
-                }
-=======
                 log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "data.Length:{0}", data.Length);
 
-                int offset = s.Send(data, 0, data.Length, SocketFlags.None);
-				while (offset < data.Length)
-				{
-                    log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "offset:{0} data.Length:{1}", offset, data.Length);
-
-                    offset += s.Send(data, offset, data.Length - offset, SocketFlags.None);
-				}
->>>>>>> origin/HEAD
+                lock(send_buff)
+                {
+                    if (_send_state == send_state.idel)
+                    {
+                        _send_state = send_state.busy;
+                        s.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(this.send_callback), this);
+                    }
+                    else
+                    {
+                        send_buff.Enqueue(data);
+                    }
+                }
             }
 			catch (System.Net.Sockets.SocketException e)
 			{
@@ -234,6 +203,42 @@ namespace service
 			}
 		}
 
+        private void send_callback(IAsyncResult ar)
+        {
+            channel ch = ar.AsyncState as channel;
+
+            try
+            {
+                int send = ch.s.EndSend(ar);
+
+                lock (send_buff)
+                {
+                    if (send_buff.Count <= 0)
+                    {
+                        _send_state = send_state.idel;
+                    }
+                    else
+                    {
+                        var data = (byte[])send_buff.Dequeue();
+                        s.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(this.send_callback), this);
+                    }
+                }
+            }
+            catch (System.Net.Sockets.SocketException e)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Net.Sockets.SocketException:{0}", e);
+
+                onDisconnect(this);
+            }
+            catch (System.Exception e)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
+
+                s.Close();
+                onDisconnect(this);
+            }
+        }
+
 		private Socket s;
 
         private byte[] recvbuf;
@@ -241,6 +246,14 @@ namespace service
 
 		private byte[] tmpbuf;
 		private Int32 tmpbufoffset;
+        
+        private Queue send_buff;
+        enum send_state
+        {
+            idel = 0,
+            busy = 1,
+        }
+        send_state _send_state;
 
 		private Queue que;
 	}

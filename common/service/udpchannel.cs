@@ -18,7 +18,7 @@ namespace service
             remote_ep = new IPEndPoint(_remote_ep.Address, _remote_ep.Port);
 
             que = new Queue();
-            
+
             tmpbuf = null;
             tmpbufoffset = 0;
         }
@@ -161,14 +161,10 @@ namespace service
 		{
 			try
 			{
-				int offset = s.SendTo(data, remote_ep);
+				int offset = s.SendTo(data, 0, data.Length, SocketFlags.None, remote_ep);
 				while (offset < data.Length)
 				{
-					MemoryStream st = new MemoryStream();
-					st.Write(data, offset, data.Length - offset);
-                    st.Position = 0;
-                    data = st.ToArray();
-					offset = s.SendTo(data, remote_ep);
+					offset += s.SendTo(data, offset, data.Length - offset, SocketFlags.None, remote_ep);
                 }
 			}
 			catch (System.Net.Sockets.SocketException)
@@ -190,7 +186,7 @@ namespace service
         private byte[] tmpbuf;
 		private Int32 tmpbufoffset;
 
-		private Queue que;
+        private Queue que;
 	}
 }
 
