@@ -40,10 +40,10 @@ namespace service
             {
                 int read = ch.s.EndReceive(ar);
 
-                log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "recv data len:{0}", read);
-                
 				if (read > 0)
-				{
+                {
+                    log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "recv data len:{0}", read);
+
                     MemoryStream st = new MemoryStream();
 					if (tmpbufoffset > 0)
                     {
@@ -99,7 +99,9 @@ namespace service
                     st.Position = 0;
                     tmpbuf = st.ToArray();
                     tmpbufoffset = overplus_len;
+                }
 
+<<<<<<< HEAD
                     ch.s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
 				}
 				else
@@ -110,11 +112,19 @@ namespace service
 					onDisconnect(ch);
 				}
 			}
+=======
+                ch.s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
+            }
+>>>>>>> origin/HEAD
             catch (System.ObjectDisposedException )
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "socket is release");
             }
+<<<<<<< HEAD
             catch (System.Net.Sockets.SocketException e)
+=======
+            catch (System.Net.Sockets.SocketException)
+>>>>>>> origin/HEAD
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Net.Sockets.SocketException:{0}", e);
 
@@ -152,6 +162,7 @@ namespace service
 
                 var _tmpdata = System.Text.Encoding.UTF8.GetBytes(_tmp);
                 var _tmplenght = _tmpdata.Length + 4;
+<<<<<<< HEAD
 
                 var data = new byte[4 + _tmplenght];
                 data[0] = (byte)(_tmplenght & 0xff);
@@ -161,6 +172,22 @@ namespace service
                 _tmpdata.CopyTo(data, 4);
 
                 senddata(data);
+=======
+                    
+                var st = new MemoryStream();
+                st.WriteByte((byte)(_tmplenght & 0xff));
+                st.WriteByte((byte)((_tmplenght >> 8) & 0xff));
+                st.WriteByte((byte)((_tmplenght >> 16) & 0xff));
+                st.WriteByte((byte)((_tmplenght >> 24) & 0xff));
+                st.Write(_tmpdata, 0, _tmpdata.Length);
+                st.WriteByte(0);
+                st.WriteByte(0);
+                st.WriteByte(0);
+                st.WriteByte(0);
+                st.Position = 0;
+
+                senddata(st.ToArray());
+>>>>>>> origin/HEAD
             }
             catch (System.Exception e)
             {
@@ -172,6 +199,7 @@ namespace service
 		{
 			try
 			{
+<<<<<<< HEAD
                 int offset = s.Send(data);
                 while (offset < data.Length)
                 {
@@ -179,6 +207,17 @@ namespace service
                     
                     offset += s.Send(data, offset, data.Length - offset, SocketFlags.None);
                 }
+=======
+                log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "data.Length:{0}", data.Length);
+
+                int offset = s.Send(data, 0, data.Length, SocketFlags.None);
+				while (offset < data.Length)
+				{
+                    log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "offset:{0} data.Length:{1}", offset, data.Length);
+
+                    offset += s.Send(data, offset, data.Length - offset, SocketFlags.None);
+				}
+>>>>>>> origin/HEAD
             }
 			catch (System.Net.Sockets.SocketException e)
 			{
