@@ -104,6 +104,8 @@ namespace service
 				}
 				else
                 {
+                    log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "recv data len:{0}", read);
+
                     ch.s.Close();
 					onDisconnect(ch);
 				}
@@ -112,8 +114,10 @@ namespace service
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "socket is release");
             }
-            catch (System.Net.Sockets.SocketException )
+            catch (System.Net.Sockets.SocketException e)
             {
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Net.Sockets.SocketException:{0}", e);
+
                 onDisconnect(ch);
             }
 			catch (System.Exception e)
@@ -148,19 +152,15 @@ namespace service
 
                 var _tmpdata = System.Text.Encoding.UTF8.GetBytes(_tmp);
                 var _tmplenght = _tmpdata.Length + 4;
-                    
-                var st = new MemoryStream();
-                st.WriteByte((byte)(_tmplenght & 0xff));
-                st.WriteByte((byte)((_tmplenght >> 8) & 0xff));
-                st.WriteByte((byte)((_tmplenght >> 16) & 0xff));
-                st.WriteByte((byte)((_tmplenght >> 24) & 0xff));
-                st.Write(_tmpdata, 0, _tmpdata.Length);
-                st.WriteByte(0);
-                st.WriteByte(0);
-                st.WriteByte(0);
-                st.WriteByte(0);
-                st.Position = 0;
-                senddata(st.ToArray());
+
+                var data = new byte[4 + _tmplenght];
+                data[0] = (byte)(_tmplenght & 0xff);
+                data[1] = (byte)((_tmplenght >> 8) & 0xff);
+                data[2] = (byte)((_tmplenght >> 16) & 0xff);
+                data[3] = (byte)((_tmplenght >> 24) & 0xff);
+                _tmpdata.CopyTo(data, 4);
+
+                senddata(data);
             }
             catch (System.Exception e)
             {
@@ -172,15 +172,18 @@ namespace service
 		{
 			try
 			{
-                int offset = s.Send(data, 0, data.Length, SocketFlags.None);
-				while (offset < data.Length)
-				{
-					offset = s.Send(data, offset, data.Length - offset, SocketFlags.None);
-				}
+                int offset = s.Send(data);
+                while (offset < data.Length)
+                {
+                    log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "data.Length:{0} offset:{1}", data.Length, offset);
+                    
+                    offset += s.Send(data, offset, data.Length - offset, SocketFlags.None);
+                }
             }
-			catch (System.Net.Sockets.SocketException)
+			catch (System.Net.Sockets.SocketException e)
 			{
-				s.Close();
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Net.Sockets.SocketException:{0}", e);
+                
 				onDisconnect(this);
 			}
 			catch (System.Exception e)

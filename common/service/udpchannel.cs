@@ -137,14 +137,19 @@ namespace service
                 var _tmpdata = System.Text.Encoding.UTF8.GetBytes(_tmp);
                 var _tmplenght = _tmpdata.Length + 4;
 
-                byte[] buf = new byte[4 + _tmplenght];
-                buf[0] = (byte)(_tmplenght & 0xff);
-                buf[1] = (byte)((_tmplenght >> 8) & 0xff);
-                buf[2] = (byte)((_tmplenght >> 16) & 0xff);
-                buf[3] = (byte)((_tmplenght >> 24) & 0xff);
-                _tmpdata.CopyTo(buf, 4);
+                var st = new MemoryStream();
+                st.WriteByte((byte)(_tmplenght & 0xff));
+                st.WriteByte((byte)((_tmplenght >> 8) & 0xff));
+                st.WriteByte((byte)((_tmplenght >> 16) & 0xff));
+                st.WriteByte((byte)((_tmplenght >> 24) & 0xff));
+                st.Write(_tmpdata, 0, _tmpdata.Length);
+                st.WriteByte(0);
+                st.WriteByte(0);
+                st.WriteByte(0);
+                st.WriteByte(0);
+                st.Position = 0;
 
-                senddata(buf);
+                senddata(st.ToArray());
             }
             catch (System.Exception e)
             {
@@ -161,7 +166,8 @@ namespace service
 				{
 					MemoryStream st = new MemoryStream();
 					st.Write(data, offset, data.Length - offset);
-					data = st.ToArray();
+                    st.Position = 0;
+                    data = st.ToArray();
 					offset = s.SendTo(data, remote_ep);
                 }
 			}
