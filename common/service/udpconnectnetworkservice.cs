@@ -79,7 +79,7 @@ namespace service
 		{
             udpchannel udp_ch = ch as udpchannel;
             _tmp_socket_data.Remove(udp_ch.s);
-
+            
             if (onChannelDisconnect != null)
 			{
 				onChannelDisconnect(ch);

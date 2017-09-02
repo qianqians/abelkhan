@@ -88,8 +88,11 @@ namespace client
             _heartbeats = service.timerservice.Tick;
             _client_call_gate.heartbeats(service.timerservice.Tick);
 
-            timer.addticktime(5 * 1000, heartbeats);
-            timer.addticktime(10 * 1000, refresh_udp_link);
+            if (!is_reconnect)
+            {
+                timer.addticktime(5 * 1000, heartbeats);
+                timer.addticktime(10 * 1000, refresh_udp_link);
+            }
 
             if (onConnectGate != null)
 			{
@@ -117,11 +120,34 @@ namespace client
 			modulemanager.process_module_mothed(module_name, func_name, argvs);
 		}
 
+        public bool reconnect_server(String tcp_ip, short tcp_port, String udp_ip, short udp_port, Int64 tick)
+        {
+            try
+            {
+                is_reconnect = true;
+
+                var ch = _conn.connect(tcp_ip, tcp_port);
+                _client_call_gate = new caller.client_call_gate(ch);
+                _client_call_gate.connect_server(uuid, tick);
+
+                _udp_ip = udp_ip;
+                _udp_port = udp_port;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
 		public bool connect_server(String tcp_ip, short tcp_port, String udp_ip, short udp_port, Int64 tick)
 		{
 			try
 			{
-				var ch = _conn.connect(tcp_ip, tcp_port);
+                is_reconnect = false;
+
+                var ch = _conn.connect(tcp_ip, tcp_port);
 				_client_call_gate = new caller.client_call_gate(ch);
 				_client_call_gate.connect_server(uuid, tick);
 
@@ -182,6 +208,8 @@ namespace client
             Int64 tick = timer.poll();
             _juggleservice.poll(tick);
 
+            System.GC.Collect();
+
             return tick;
         }
 
@@ -215,6 +243,7 @@ namespace client
 		private module.gate_call_client _gate_call_client;
 		private caller.client_call_gate _client_call_gate;
 
+        private bool is_reconnect;
         private string _udp_ip;
         private short _udp_port;
         private service.udpconnectnetworkservice _udp_conn;

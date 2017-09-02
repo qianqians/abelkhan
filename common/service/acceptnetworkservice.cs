@@ -50,9 +50,11 @@ namespace service
 		public delegate void ChannelDisconnectHandle(juggle.Ichannel ch);
 		public event ChannelDisconnectHandle onChannelDisconnect;
 
-		public void onChannelDisconn(juggle.Ichannel ch)
+		public void onChannelDisconn(channel ch)
 		{
-			if (onChannelDisconnect != null)
+            ch.s.Dispose();
+
+            if (onChannelDisconnect != null)
 			{
 				onChannelDisconnect(ch);
 			}

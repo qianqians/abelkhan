@@ -12,11 +12,28 @@ namespace robot
             _client_call_gate = new caller.client_call_gate(ch);
         }
 
+        public void bind_udpchannel(juggle.Ichannel udp_ch)
+        {
+            _client_call_gate_fast = new caller.client_call_gate_fast(udp_ch);
+        }
+
         public void heartbeats(Int64 tick)
         {
             _client_call_gate.heartbeats(tick);
 
-            robot.timer.addticktime(tick + 30 * 1000, heartbeats);
+            robot.timer.addticktime(5 * 1000, heartbeats);
+        }
+
+        public void refresh_udp_link(Int64 tick)
+        {
+            _client_call_gate_fast.refresh_udp_end_point();
+
+            robot.timer.addticktime(10 * 1000, refresh_udp_link);
+        }
+
+        public void confirm_create_udp_link()
+        {
+            _client_call_gate_fast.confirm_create_udp_link(uuid);
         }
 
         public void connect_server(Int64 tick)
@@ -52,6 +69,7 @@ namespace robot
 
         public String uuid;
         public caller.client_call_gate _client_call_gate;
+        public caller.client_call_gate_fast _client_call_gate_fast;
     }
 
     public class robot
@@ -88,21 +106,31 @@ namespace robot
             
             _ip = _config.get_value_string("ip");
             _port = (short)_config.get_value_int("port");
-            
+
+            _udp_ip = _config.get_value_string("udp_ip");
+            _udp_port = (short)_config.get_value_int("udp_port");
+
             timer = new service.timerservice();
             modulemanager = new common.modulemanager();
 
-            _process = new juggle.process();
+            _tcp_process = new juggle.process();
             _gate_call_client = new module.gate_call_client();
             _gate_call_client.onconnect_gate_sucess += on_ack_connect_gate;
             _gate_call_client.onconnect_hub_sucess += on_ack_connect_hub;
             _gate_call_client.oncall_client += on_call_client;
-            _process.reg_module(_gate_call_client);
+            _gate_call_client.onack_heartbeats += on_ack_heartbeats;
+            _tcp_process.reg_module(_gate_call_client);
+            _conn = new service.connectnetworkservice(_tcp_process);
 
-            _conn = new service.connectnetworkservice(_process);
+            _udp_process = new juggle.process();
+            _gate_call_client_fast = new module.gate_call_client_fast();
+            _gate_call_client_fast.onconfirm_refresh_udp_end_point += on_confirm_refresh_udp_end_point;
+            _gate_call_client_fast.oncall_client += on_call_client;
+            _udp_process.reg_module(_gate_call_client_fast);
+            _udp_conn = new service.udpconnectnetworkservice(_udp_process);
 
             _juggleservice = new service.juggleservice();
-            _juggleservice.add_process(_process);
+            _juggleservice.add_process(_tcp_process);
 
             proxys = new Dictionary<juggle.Ichannel, client_proxy>();
 
@@ -110,11 +138,21 @@ namespace robot
             _robot_num = 0;
         }
 
+        private void on_confirm_refresh_udp_end_point()
+        {
+            var _pre_proxy = proxys[juggle.Imodule.current_ch];
+            _pre_proxy.confirm_create_udp_link();
+        }
+
         public delegate void onConnectGateHandle();
         public event onConnectGateHandle onConnectGate;
         private void on_ack_connect_gate()
         {
-            timer.addticktime(service.timerservice.Tick + 30 * 1000, proxys[juggle.Imodule.current_ch].heartbeats);
+            var _pre_proxy = proxys[juggle.Imodule.current_ch];
+            var udp_ch = _udp_conn.connect(_udp_ip, _udp_port);
+            _pre_proxy.bind_udpchannel(udp_ch);
+            timer.addticktime(5 * 1000, _pre_proxy.heartbeats);
+            timer.addticktime(10 * 1000, _pre_proxy.refresh_udp_link);
 
             if ( (++_robot_num) < _max_robot_num )
             {
@@ -142,6 +180,10 @@ namespace robot
             {
                 onConnectHub(_hub_name);
             }
+        }
+
+        private void on_ack_heartbeats()
+        {
         }
 
         private void on_call_client(String module_name, String func_name, ArrayList argvs)
@@ -172,6 +214,8 @@ namespace robot
             Int64 tick = timer.poll();
             _juggleservice.poll(tick);
 
+            System.GC.Collect();
+
             return tick;
         }
 
@@ -189,14 +233,21 @@ namespace robot
         public common.modulemanager modulemanager;
 
         private service.connectnetworkservice _conn;
-        private juggle.process _process;
+        private juggle.process _tcp_process;
         private module.gate_call_client _gate_call_client;
+
+        private service.udpconnectnetworkservice _udp_conn;
+        private juggle.process _udp_process;
+        private module.gate_call_client_fast _gate_call_client_fast;
+
         private service.juggleservice _juggleservice;
 
         private Dictionary<juggle.Ichannel, client_proxy> proxys;
 
         private string _ip;
         private short _port;
+        private string _udp_ip;
+        private short _udp_port;
         private Int64 _robot_num;
         private Int64 _max_robot_num;
     }

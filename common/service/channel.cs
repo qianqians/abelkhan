@@ -8,7 +8,7 @@ namespace service
 {
 	public class channel : juggle.Ichannel
 	{
-		public delegate void DisconnectHandle(juggle.Ichannel ch);
+		public delegate void DisconnectHandle(channel ch);
 		public event DisconnectHandle onDisconnect;
 
 		public channel(Socket _s)
@@ -32,7 +32,11 @@ namespace service
         public void disconnect()
         {
             s.Close();
-            onDisconnect(this);
+
+            if (onDisconnect != null)
+            {
+                onDisconnect(this);
+            }
         }
 
 		private void onRead(IAsyncResult ar)
@@ -113,14 +117,21 @@ namespace service
             }
             catch (System.Net.Sockets.SocketException)
             {
-                onDisconnect(ch);
+                if (onDisconnect != null)
+                {
+                    onDisconnect(this);
+                }
             }
 			catch (System.Exception e)
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
-                
-				onDisconnect(ch);
-			}
+
+                ch.s.Close();
+                if (onDisconnect != null)
+                {
+                    onDisconnect(this);
+                }
+            }
         }
 
 		public ArrayList pop()
@@ -191,16 +202,22 @@ namespace service
 			catch (System.Net.Sockets.SocketException e)
 			{
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Net.Sockets.SocketException:{0}", e);
-                
-				onDisconnect(this);
-			}
+
+                if (onDisconnect != null)
+                {
+                    onDisconnect(this);
+                }
+            }
 			catch (System.Exception e)
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
                 
                 s.Close();
-				onDisconnect(this);
-			}
+                if (onDisconnect != null)
+                {
+                    onDisconnect(this);
+                }
+            }
 		}
 
         private void send_callback(IAsyncResult ar)
@@ -228,18 +245,24 @@ namespace service
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Net.Sockets.SocketException:{0}", e);
 
-                onDisconnect(this);
+                if (onDisconnect != null)
+                {
+                    onDisconnect(this);
+                }
             }
             catch (System.Exception e)
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
 
                 s.Close();
-                onDisconnect(this);
+                if (onDisconnect != null)
+                {
+                    onDisconnect(this);
+                }
             }
         }
 
-		private Socket s;
+		public Socket s;
 
         private byte[] recvbuf;
         private Int32 recvbuflenght;

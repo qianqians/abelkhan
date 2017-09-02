@@ -54,7 +54,9 @@
     "test_robot":{
 	"ip":"127.0.0.1",
 	"port":3236,
-        "robot_num":100,
+	"udp_ip":"127.0.0.1",
+	"udp_port":3237,
+        "robot_num":1000,
 	"log_level":"release",
 	"log_file":"test_robot.txt",
 	"log_dir":"./log/"

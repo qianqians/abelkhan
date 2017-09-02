@@ -103,6 +103,8 @@ namespace dbproxy
             _acceptnetworkservice.poll(tick);
 			_center_connectnetworkservice.poll(tick);
 
+            System.GC.Collect();
+
             return tick;
         }
         

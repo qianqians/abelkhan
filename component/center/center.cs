@@ -92,6 +92,8 @@ namespace center
             _accept_svr_service.poll(tick);
             _accept_gm_service.poll(tick);
 
+            System.GC.Collect();
+
             return tick;
         }
 

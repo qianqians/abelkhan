@@ -69,6 +69,8 @@ namespace gm
             
             _conn_center.poll(tick);
 
+            System.GC.Collect();
+
             return tick;
         }
 

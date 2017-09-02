@@ -43,13 +43,15 @@ namespace service
 		public delegate void ChannelDisconnectHandle(juggle.Ichannel ch);
 		public event ChannelDisconnectHandle onChannelDisconnect;
 
-		public void onChannelDisconn(juggle.Ichannel ch)
+		public void onChannelDisconn(channel ch)
 		{
-			if (onChannelDisconnect != null)
+            if (onChannelDisconnect != null)
 			{
 				onChannelDisconnect(ch);
 			}
-		}
+
+            process_.unreg_channel(ch);
+        }
 
 		public void poll(Int64 tick)
 		{
