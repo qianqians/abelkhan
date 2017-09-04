@@ -140,7 +140,7 @@ namespace dbproxy
 				{
 					is_busy = false;
 				}
-				if (ticktime < 50)
+				if (ticktime < 100)
 				{
 					Thread.Sleep(15);
 				}

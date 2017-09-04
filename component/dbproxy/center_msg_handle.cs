@@ -12,8 +12,13 @@ namespace dbproxy
 
 		public void close_server()
 		{
-			_closehandle._is_close = true;
+            dbproxy.timer.addticktime(10 * 1000, close_server_impl);
 		}
+
+        private void close_server_impl(Int64 tick)
+        {
+            _closehandle._is_close = true;
+        }
 
 		public void reg_server_sucess()
         {

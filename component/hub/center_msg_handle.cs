@@ -20,7 +20,7 @@ namespace hub
 
 		public void close_server()
 		{
-			_closehandle.is_close = true;
+            _hub.onCloseServer_event();
 		}
 
 		public void distribute_server_address(String type, String ip, Int64 port, String uuid)

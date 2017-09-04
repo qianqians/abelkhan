@@ -121,6 +121,18 @@ namespace hub
             }
         }
 
+        public delegate void onCloseServerHandle();
+        public event onCloseServerHandle onCloseServer;
+        public void onCloseServer_event()
+        {
+            if (onCloseServer != null)
+            {
+                onCloseServer();
+            }
+
+            closeHandle.is_close = true;
+        }
+
         public void connect_dbproxy(String db_ip, short db_port)
 		{
 			var _db_ch = _connect_dbproxy_service.connect(db_ip, db_port);
@@ -185,7 +197,7 @@ namespace hub
 				}
                 
 				Int64 ticktime = (tick - oldtick);
-				if (ticktime < 50)
+				if (ticktime < 100)
 				{
 					Thread.Sleep(15);
 				}

@@ -182,7 +182,7 @@ namespace gate
 				}
                 
 				Int64 ticktime = (tick - oldtick);
-				if (ticktime < 50)
+				if (ticktime < 100)
 				{
 					Thread.Sleep(15);
 				}

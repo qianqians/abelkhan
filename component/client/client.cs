@@ -124,6 +124,8 @@ namespace client
         {
             try
             {
+                uuid = System.Guid.NewGuid().ToString();
+
                 is_reconnect = true;
 
                 var ch = _conn.connect(tcp_ip, tcp_port);
@@ -225,7 +227,7 @@ namespace client
                 tick = _client.poll();
                 
                 Int64 ticktime = (tick - old_tick);
-                if (ticktime < 50)
+                if (ticktime < 100)
                 {
                     Thread.Sleep(15);
                 }

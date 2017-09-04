@@ -121,7 +121,7 @@ namespace center
                 }
 
                 Int64 tmp = tick - old_tick;
-                if (tmp < 50)
+                if (tmp < 100)
                 {
                     System.Threading.Thread.Sleep(15);
                 }
