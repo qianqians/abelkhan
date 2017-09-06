@@ -9,10 +9,13 @@ namespace service
 {
 	public class udpchannel : juggle.Ichannel
 	{
-		public delegate void DisconnectHandle(juggle.Ichannel ch);
-		public event DisconnectHandle onDisconnect;
+		public delegate void onDisconnectHandle(juggle.Ichannel ch);
+		public event onDisconnectHandle onDisconnect;
 
-		public udpchannel(Socket _s, IPEndPoint _remote_ep)
+        public delegate void DisconnectHandle(juggle.Ichannel ch);
+        public event DisconnectHandle Disconnect;
+
+        public udpchannel(Socket _s, IPEndPoint _remote_ep)
 		{
 			s = _s;
             remote_ep = new IPEndPoint(_remote_ep.Address, _remote_ep.Port);
@@ -25,7 +28,10 @@ namespace service
 
         public void disconnect()
         {
-            onDisconnect(this);
+            if (Disconnect != null)
+            {
+                Disconnect(this);
+            }
         }
 
 		public void recv(byte[] recvbuf, int read)

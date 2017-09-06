@@ -25,8 +25,9 @@ namespace service
 
                 udpchannel ch = new udpchannel(s, new IPEndPoint(IPAddress.Parse(ip), port));
 				ch.onDisconnect += this.onChannelDisconn;
+                ch.Disconnect += this.disconn_channel;
 
-				process_.reg_channel(ch);
+                process_.reg_channel(ch);
 
                 _tmp_socket_data.Add(s, new tmp_socket_data(ch));
                 s.BeginReceiveFrom(_tmp_socket_data[s].recvbuf, 0, _tmp_socket_data[s].recvbuflenght, 0, ref _tmp_socket_data[s].remote_ep, new AsyncCallback(this.onRecv), s);
@@ -51,25 +52,39 @@ namespace service
         {
             Socket s = ar.AsyncState as Socket;
 
-            int read = s.EndReceiveFrom(ar, ref _tmp_socket_data[s].remote_ep);
-            if (read > 0)
+            try
             {
-                IPEndPoint sender = (IPEndPoint)_tmp_socket_data[s].remote_ep;
-
-                var ip_sender = sender.Address.GetAddressBytes();
-                var ip_remote = _tmp_socket_data[s].ch.remote_ep.Address.GetAddressBytes();
-
-                if (ip_sender[0] == ip_remote[0] &&
-                    ip_sender[1] == ip_remote[1] &&
-                    ip_sender[2] == ip_remote[2] &&
-                    ip_sender[3] == ip_remote[3] &&
-                    sender.Port == _tmp_socket_data[s].ch.remote_ep.Port)
+                int read = s.EndReceiveFrom(ar, ref _tmp_socket_data[s].remote_ep);
+                if (read > 0)
                 {
-                    _tmp_socket_data[s].ch.recv(_tmp_socket_data[s].recvbuf, read);
-                }
-            }
+                    IPEndPoint sender = (IPEndPoint)_tmp_socket_data[s].remote_ep;
 
-            s.BeginReceiveFrom(_tmp_socket_data[s].recvbuf, 0, _tmp_socket_data[s].recvbuflenght, 0, ref _tmp_socket_data[s].remote_ep, new AsyncCallback(this.onRecv), s);
+                    var ip_sender = sender.Address.GetAddressBytes();
+                    var ip_remote = _tmp_socket_data[s].ch.remote_ep.Address.GetAddressBytes();
+
+                    if (ip_sender[0] == ip_remote[0] &&
+                        ip_sender[1] == ip_remote[1] &&
+                        ip_sender[2] == ip_remote[2] &&
+                        ip_sender[3] == ip_remote[3] &&
+                        sender.Port == _tmp_socket_data[s].ch.remote_ep.Port)
+                    {
+                        _tmp_socket_data[s].ch.recv(_tmp_socket_data[s].recvbuf, read);
+                    }
+                }
+
+                s.BeginReceiveFrom(_tmp_socket_data[s].recvbuf, 0, _tmp_socket_data[s].recvbuflenght, 0, ref _tmp_socket_data[s].remote_ep, new AsyncCallback(this.onRecv), s);
+            }
+            catch (System.Exception e)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
+            }
+        }
+
+        public void disconn_channel(juggle.Ichannel ch)
+        {
+            udpchannel udp_ch = ch as udpchannel;
+            _tmp_socket_data.Remove(udp_ch.s);
+            udp_ch.s.Close();
         }
 
         public delegate void ChannelDisconnectHandle(juggle.Ichannel ch);
@@ -77,9 +92,8 @@ namespace service
 
 		public void onChannelDisconn(juggle.Ichannel ch)
 		{
-            udpchannel udp_ch = ch as udpchannel;
-            _tmp_socket_data.Remove(udp_ch.s);
-            
+            disconn_channel(ch);
+
             if (onChannelDisconnect != null)
 			{
 				onChannelDisconnect(ch);

@@ -8,8 +8,8 @@ namespace service
 {
 	public class channel : juggle.Ichannel
 	{
-		public delegate void DisconnectHandle(channel ch);
-		public event DisconnectHandle onDisconnect;
+		public delegate void onDisconnectHandle(channel ch);
+		public event onDisconnectHandle onDisconnect;
 
 		public channel(Socket _s)
 		{
@@ -32,11 +32,6 @@ namespace service
         public void disconnect()
         {
             s.Close();
-
-            if (onDisconnect != null)
-            {
-                onDisconnect(this);
-            }
         }
 
 		private void onRead(IAsyncResult ar)
@@ -46,11 +41,10 @@ namespace service
             try
             {
                 int read = ch.s.EndReceive(ar);
+                log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "recv data len:{0}", read);
 
-				if (read > 0)
+                if (read > 0)
                 {
-                    log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "recv data len:{0}", read);
-
                     MemoryStream st = new MemoryStream();
 					if (tmpbufoffset > 0)
                     {
@@ -107,9 +101,17 @@ namespace service
                     st.Position = 0;
                     tmpbuf = st.ToArray();
                     tmpbufoffset = overplus_len;
-				}
 
-                ch.s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
+                    ch.s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
+                }
+                else
+                {
+                    ch.s.Close();
+                    if (onDisconnect != null)
+                    {
+                        onDisconnect(this);
+                    }
+                }
             }
             catch (System.ObjectDisposedException )
             {
@@ -199,7 +201,11 @@ namespace service
                     }
                 }
             }
-			catch (System.Net.Sockets.SocketException e)
+            catch (System.ObjectDisposedException)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "socket is release");
+            }
+            catch (System.Net.Sockets.SocketException e)
 			{
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Net.Sockets.SocketException:{0}", e);
 

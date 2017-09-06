@@ -31,30 +31,37 @@ namespace service
 		{
             udpacceptnetworkservice service = ar.AsyncState as udpacceptnetworkservice;
 
-			int read = listen.EndReceiveFrom(ar, ref tempRemoteEP);
-			if (read > 0)
+            try
             {
-                IPEndPoint sender = (IPEndPoint)tempRemoteEP;
-
-                if (udpchannels.ContainsKey(sender.ToString()))
+                int read = listen.EndReceiveFrom(ar, ref tempRemoteEP);
+                if (read > 0)
                 {
-                    udpchannel ch = udpchannels[sender.ToString()];
+                    IPEndPoint sender = (IPEndPoint)tempRemoteEP;
 
-                    ch.recv(recvbuf, read);
+                    if (udpchannels.ContainsKey(sender.ToString()))
+                    {
+                        udpchannel ch = udpchannels[sender.ToString()];
+
+                        ch.recv(recvbuf, read);
+                    }
+                    else
+                    {
+                        udpchannel ch = new udpchannel(listen, sender);
+                        ch.onDisconnect += this.onChannelDisconn;
+
+                        udpchannels.Add(sender.ToString(), ch);
+                        onChannelConn(ch);
+
+                        ch.recv(recvbuf, read);
+                    }
                 }
-                else
-                {
-                    udpchannel ch = new udpchannel(listen, sender);
-                    ch.onDisconnect += this.onChannelDisconn;
 
-                    udpchannels.Add(sender.ToString(), ch);
-                    onChannelConn(ch);
-
-                    ch.recv(recvbuf, read);
-                }
-			}
-
-            listen.BeginReceiveFrom(recvbuf, 0, recvbuflenght, 0, ref tempRemoteEP, new AsyncCallback(this.onRecv), this);
+                listen.BeginReceiveFrom(recvbuf, 0, recvbuflenght, 0, ref tempRemoteEP, new AsyncCallback(this.onRecv), this);
+            }
+            catch (System.Exception e)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
+            }
         }
 
 		public delegate void ChannelConnectHandle(juggle.Ichannel ch);

@@ -81,7 +81,7 @@ namespace client
 		public event onConnectGateHandle onConnectGate;
 		private void on_ack_connect_gate()
 		{
-            var udp_ch = _udp_conn.connect(_udp_ip, _udp_port);
+            udp_ch = _udp_conn.connect(_udp_ip, _udp_port);
             _client_call_gate_fast = new caller.client_call_gate_fast(udp_ch);
             _client_call_gate_fast.refresh_udp_end_point();
 
@@ -125,11 +125,13 @@ namespace client
             try
             {
                 uuid = System.Guid.NewGuid().ToString();
+                tcp_ch.disconnect();
+                udp_ch.disconnect();
 
                 is_reconnect = true;
 
-                var ch = _conn.connect(tcp_ip, tcp_port);
-                _client_call_gate = new caller.client_call_gate(ch);
+                tcp_ch = _conn.connect(tcp_ip, tcp_port);
+                _client_call_gate = new caller.client_call_gate(tcp_ch);
                 _client_call_gate.connect_server(uuid, tick);
 
                 _udp_ip = udp_ip;
@@ -149,8 +151,8 @@ namespace client
 			{
                 is_reconnect = false;
 
-                var ch = _conn.connect(tcp_ip, tcp_port);
-				_client_call_gate = new caller.client_call_gate(ch);
+                tcp_ch = _conn.connect(tcp_ip, tcp_port);
+				_client_call_gate = new caller.client_call_gate(tcp_ch);
 				_client_call_gate.connect_server(uuid, tick);
 
                 _udp_ip = udp_ip;
@@ -242,6 +244,7 @@ namespace client
         private bool _is_enable_heartbeats;
 
         private service.connectnetworkservice _conn;
+        private juggle.Ichannel tcp_ch;
 		private module.gate_call_client _gate_call_client;
 		private caller.client_call_gate _client_call_gate;
 
@@ -249,6 +252,7 @@ namespace client
         private string _udp_ip;
         private short _udp_port;
         private service.udpconnectnetworkservice _udp_conn;
+        private juggle.Ichannel udp_ch;
         private module.gate_call_client_fast _gate_call_client_fast;
         private caller.client_call_gate_fast _client_call_gate_fast;
 
