@@ -74,6 +74,9 @@ namespace service
 
                 s.BeginReceiveFrom(_tmp_socket_data[s].recvbuf, 0, _tmp_socket_data[s].recvbuflenght, 0, ref _tmp_socket_data[s].remote_ep, new AsyncCallback(this.onRecv), s);
             }
+            catch (System.Net.Sockets.SocketException)
+            {
+            }
             catch (System.Exception e)
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);

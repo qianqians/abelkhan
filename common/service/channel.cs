@@ -193,6 +193,8 @@ namespace service
                     if (_send_state == send_state.idel)
                     {
                         _send_state = send_state.busy;
+                        tmp_send_buff = data;
+                        send_len = 0;
                         s.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(this.send_callback), this);
                     }
                     else
@@ -242,8 +244,18 @@ namespace service
                     }
                     else
                     {
-                        var data = (byte[])send_buff.Dequeue();
-                        s.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(this.send_callback), this);
+                        send_len += send;
+                        if (send_len < tmp_send_buff.Length)
+                        {
+                            s.BeginSend(tmp_send_buff, send_len, tmp_send_buff.Length - send_len, SocketFlags.None, new AsyncCallback(this.send_callback), this);
+                        }
+                        else if (send_len == tmp_send_buff.Length)
+                        {
+                            var data = (byte[])send_buff.Dequeue();
+                            tmp_send_buff = data;
+                            send_len = 0;
+                            s.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(this.send_callback), this);
+                        }
                     }
                 }
             }
@@ -282,7 +294,9 @@ namespace service
             idel = 0,
             busy = 1,
         }
-        send_state _send_state;
+        private send_state _send_state;
+        private byte[] tmp_send_buff;
+        private int send_len;
 
 		private Queue que;
 	}

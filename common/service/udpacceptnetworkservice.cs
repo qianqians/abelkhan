@@ -58,6 +58,9 @@ namespace service
 
                 listen.BeginReceiveFrom(recvbuf, 0, recvbuflenght, 0, ref tempRemoteEP, new AsyncCallback(this.onRecv), this);
             }
+            catch (System.Net.Sockets.SocketException)
+            {
+            }
             catch (System.Exception e)
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
