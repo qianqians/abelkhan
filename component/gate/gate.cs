@@ -150,10 +150,6 @@ namespace gate
                 log.log.error(new System.Diagnostics.StackFrame(true), tick, "{0}", e);
             }
 
-            _accept_logic_hub_service.poll(tick);
-			_connect_center_service.poll(tick);
-			_accept_client_service.poll(tick);
-
             System.GC.Collect();
 
             return tick;

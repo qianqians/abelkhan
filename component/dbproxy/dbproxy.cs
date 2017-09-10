@@ -100,9 +100,6 @@ namespace dbproxy
                 log.log.error(new System.Diagnostics.StackFrame(true), tick, "{0}", e);
             }
 
-            _acceptnetworkservice.poll(tick);
-			_center_connectnetworkservice.poll(tick);
-
             System.GC.Collect();
 
             return tick;

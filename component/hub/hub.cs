@@ -164,11 +164,6 @@ namespace hub
                 log.log.error(new System.Diagnostics.StackFrame(true), tick, "{0}", e);
             }
 
-            _accept_logic_service.poll(tick);
-			_connect_center_service.poll(tick);
-			_connect_dbproxy_service.poll(tick);
-			_connect_gate_servcie.poll (tick);
-
             System.GC.Collect();
 
             return tick;

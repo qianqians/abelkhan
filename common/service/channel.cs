@@ -107,6 +107,7 @@ namespace service
                 else
                 {
                     ch.s.Close();
+
                     if (onDisconnect != null)
                     {
                         onDisconnect(this);
@@ -129,6 +130,7 @@ namespace service
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
 
                 ch.s.Close();
+
                 if (onDisconnect != null)
                 {
                     onDisconnect(this);
@@ -207,24 +209,12 @@ namespace service
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "socket is release");
             }
-            catch (System.Net.Sockets.SocketException e)
+            catch (System.Net.Sockets.SocketException)
 			{
-                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Net.Sockets.SocketException:{0}", e);
-
-                if (onDisconnect != null)
-                {
-                    onDisconnect(this);
-                }
             }
 			catch (System.Exception e)
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
-                
-                s.Close();
-                if (onDisconnect != null)
-                {
-                    onDisconnect(this);
-                }
             }
 		}
 
@@ -259,24 +249,16 @@ namespace service
                     }
                 }
             }
-            catch (System.Net.Sockets.SocketException e)
+            catch (System.ObjectDisposedException)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Net.Sockets.SocketException:{0}", e);
-
-                if (onDisconnect != null)
-                {
-                    onDisconnect(this);
-                }
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "socket is release");
+            }
+            catch (System.Net.Sockets.SocketException)
+            {
             }
             catch (System.Exception e)
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
-
-                s.Close();
-                if (onDisconnect != null)
-                {
-                    onDisconnect(this);
-                }
             }
         }
 

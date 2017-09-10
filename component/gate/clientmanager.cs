@@ -20,56 +20,68 @@ namespace gate
 		public clientproxy reg_client(string uuid, juggle.Ichannel ch, Int64 servertick, Int64 clienttick)
 		{
 			clientproxy _clientproxy = new clientproxy (ch);
-            clientproxys_ch.Add(ch, _clientproxy);
-            clientproxys.Add(uuid, _clientproxy);
-            clientproxys_uuid.Add(_clientproxy, uuid);
-            client_server_time.Add (ch, servertick);
-			client_time.Add (ch, clienttick);
+
+            lock (clientproxys)
+            {
+                clientproxys_ch.Add(ch, _clientproxy);
+                clientproxys.Add(uuid, _clientproxy);
+                clientproxys_uuid.Add(_clientproxy, uuid);
+                client_server_time.Add(ch, servertick);
+                client_time.Add(ch, clienttick);
+            }
 
 			return _clientproxy;
 		}
 
         public void unreg_client(juggle.Ichannel ch)
         {
-            if (clientproxys_ch.ContainsKey(ch))
+            lock (clientproxys)
             {
-                clientproxy _proxy = clientproxys_ch[ch];
-                clientproxys_ch.Remove(ch);
-                client_server_time.Remove(ch);
-                client_time.Remove(ch);
-
-                if (clientproxys_uuid.ContainsKey(_proxy))
+                if (clientproxys_ch.ContainsKey(ch))
                 {
-                    string uuid = clientproxys_uuid[_proxy];
-                    clientproxys_uuid.Remove(_proxy);
-                    clientproxys.Remove(uuid);
+                
+                    clientproxy _proxy = clientproxys_ch[ch];
+                    clientproxys_ch.Remove(ch);
+                    client_server_time.Remove(ch);
+                    client_time.Remove(ch);
+
+                    if (clientproxys_uuid.ContainsKey(_proxy))
+                    {
+                        string uuid = clientproxys_uuid[_proxy];
+                        clientproxys_uuid.Remove(_proxy);
+                        clientproxys.Remove(uuid);
+                    }
                 }
             }
         }
 
         public void on_client_disconnect(juggle.Ichannel ch)
         {
-            if (clientproxys_ch.ContainsKey(ch))
+            lock (clientproxys_ch)
             {
-                clientproxy _proxy = clientproxys_ch[ch];
-                clientproxys_ch.Remove(ch);
-                client_server_time.Remove(ch);
-                client_time.Remove(ch);
-                
-                if (clientproxys_uuid.ContainsKey(_proxy))
+                if (clientproxys_ch.ContainsKey(ch))
                 {
-                    string uuid = clientproxys_uuid[_proxy];
-                    clientproxys_uuid.Remove(_proxy);
-                    clientproxys.Remove(uuid);
+                
+                    clientproxy _proxy = clientproxys_ch[ch];
+                    clientproxys_ch.Remove(ch);
+                    client_server_time.Remove(ch);
+                    client_time.Remove(ch);
 
-                    if (clientproxy_hubproxy.ContainsKey(_proxy))
+                    if (clientproxys_uuid.ContainsKey(_proxy))
                     {
-                        var _hubs = clientproxy_hubproxy[_proxy];
-                        foreach (var _hub in _hubs)
+                        string uuid = clientproxys_uuid[_proxy];
+                        clientproxys_uuid.Remove(_proxy);
+                        clientproxys.Remove(uuid);
+
+                        if (clientproxy_hubproxy.ContainsKey(_proxy))
                         {
-                            _hub.client_disconnect(uuid);
+                            var _hubs = clientproxy_hubproxy[_proxy];
+                            foreach (var _hub in _hubs)
+                            {
+                                _hub.client_disconnect(uuid);
+                            }
+                            clientproxy_hubproxy.Remove(_proxy);
                         }
-                        clientproxy_hubproxy.Remove(_proxy);
                     }
                 }
             }
@@ -108,10 +120,13 @@ namespace gate
 
 		public void for_each_client(Action<clientproxy> func)
 		{
-			foreach (clientproxy _clientproxy in clientproxys.Values) 
-			{
-				func (_clientproxy);
-			}
+            lock (clientproxys)
+            {
+                foreach (clientproxy _clientproxy in clientproxys.Values)
+                {
+                    func(_clientproxy);
+                }
+            }
 		}
 
 		public clientproxy get_clientproxy(String uuid)
@@ -201,34 +216,37 @@ namespace gate
                 }
             }
 
-            foreach (var ch in remove)
+            lock (clientproxys)
             {
-                var _client = clientproxys_ch[ch];
-                
-                var client_uuid = clientproxys_uuid[_client];
-                if (clientproxy_hubproxy.ContainsKey(_client))
+                foreach (var ch in remove)
                 {
-                    var _hubs = clientproxy_hubproxy[_client];
-                    foreach (var _hub in _hubs)
+                    var _client = clientproxys_ch[ch];
+
+                    var client_uuid = clientproxys_uuid[_client];
+                    if (clientproxy_hubproxy.ContainsKey(_client))
                     {
-                        _hub.client_disconnect(client_uuid);
+                        var _hubs = clientproxy_hubproxy[_client];
+                        foreach (var _hub in _hubs)
+                        {
+                            _hub.client_disconnect(client_uuid);
+                        }
+                        clientproxy_hubproxy.Remove(_client);
                     }
-                    clientproxy_hubproxy.Remove(_client);
-                }
-                
-                clientproxys_ch.Remove(ch);
-                client_server_time.Remove(ch);
-                client_time.Remove(ch);
-                if (clientproxys_uuid.ContainsKey(_client))
-                {
-                    string uuid = clientproxys_uuid[_client];
-                    clientproxys_uuid.Remove(_client);
-                    clientproxys.Remove(uuid);
-                }
 
-                heartbeats_list.Remove(ch);
+                    clientproxys_ch.Remove(ch);
+                    client_server_time.Remove(ch);
+                    client_time.Remove(ch);
+                    if (clientproxys_uuid.ContainsKey(_client))
+                    {
+                        string uuid = clientproxys_uuid[_client];
+                        clientproxys_uuid.Remove(_client);
+                        clientproxys.Remove(uuid);
+                    }
 
-                ch.disconnect();
+                    heartbeats_list.Remove(ch);
+
+                    ch.disconnect();
+                }
             }
 
             gate.timer.addticktime(5 * 1000, gate.clients.tick_client);
