@@ -197,7 +197,7 @@ namespace hub
 				}
                 
 				Int64 ticktime = (tick - oldtick);
-				if (ticktime < 100)
+				if (ticktime < 50)
 				{
 					Thread.Sleep(15);
 				}
