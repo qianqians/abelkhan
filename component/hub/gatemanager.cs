@@ -101,7 +101,7 @@ namespace hub
             }
             else
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "no-exist client:", uuid);
+                log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "no-exist client:", uuid);
             }
         }
 
@@ -147,7 +147,7 @@ namespace hub
             }
             else
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "no-exist client:", uuid);
+                log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "no-exist client:", uuid);
             }
         }
 
