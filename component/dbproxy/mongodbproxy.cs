@@ -18,9 +18,14 @@ namespace dbproxy
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument> (collection) as MongoDB.Driver.MongoCollection<MongoDB.Bson.BsonDocument>;
 
             MongoDB.Bson.BsonDocument _d = new MongoDB.Bson.BsonDocument(json_data);
-			_collection.Save(_d);
+			var ret = _collection.Insert(_d);
 
-			return true;
+            if (ret != null && ret.HasLastErrorMessage)
+            {
+                log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, ret.LastErrorMessage);
+            }
+
+            return true;
 		}
 
 		public bool update(string db, string collection, Hashtable json_query, Hashtable json_update) 
@@ -32,6 +37,11 @@ namespace dbproxy
 			MongoDB.Driver.UpdateDocument _update = new MongoDB.Driver.UpdateDocument(json_update);
 
 			var ret = _collection.Update(_query, _update);
+
+            if (ret != null && ret.HasLastErrorMessage)
+            {
+                log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, ret.LastErrorMessage);
+            }
 
             return true;
 		}
@@ -70,9 +80,14 @@ namespace dbproxy
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection) as MongoDB.Driver.MongoCollection<MongoDB.Bson.BsonDocument>;
 
             MongoDB.Driver.QueryDocument _query = new MongoDB.Driver.QueryDocument(json_query);
-			_collection.Remove (_query);
+			var ret = _collection.Remove (_query);
 
-			return true;
+            if (ret != null && ret.HasLastErrorMessage)
+            {
+                log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, ret.LastErrorMessage);
+            }
+
+            return true;
 		}
 
 		private MongoDB.Driver.MongoServer _mongoserver;
