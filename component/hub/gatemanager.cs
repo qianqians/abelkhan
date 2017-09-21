@@ -38,19 +38,28 @@ namespace hub
         public event clientConnecthandle clientConnect;
         public void client_connect(String client_uuid, juggle.Ichannel gate_ch)
         {
-            if (ch_gateproxys.ContainsKey(gate_ch))
+            if (!ch_gateproxys.ContainsKey(gate_ch))
             {
-                log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "client {0} connected", client_uuid);
-
-                var _proxy = ch_gateproxys[gate_ch];
-                clients.Add(client_uuid, _proxy);
-                _proxy.connect_sucess(client_uuid);
-
-                if (clientConnect != null)
-                {
-                    clientConnect(client_uuid);
-                }
+                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "invaild gate");
+                return;
             }
+
+            if (clients.ContainsKey(client_uuid))
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "repeated client");
+                return;
+            }
+
+            var _proxy = ch_gateproxys[gate_ch];
+            clients.Add(client_uuid, _proxy);
+            _proxy.connect_sucess(client_uuid);
+
+            if (clientConnect != null)
+            {
+                clientConnect(client_uuid);
+            }
+
+            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "client {0} connected", client_uuid);
         }
 
         public delegate void clientDisconnecthandle(String client_uuid);

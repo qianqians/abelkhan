@@ -13,10 +13,7 @@ namespace log
 
         static public void trace(StackFrame st, Int64 tmptime, string log, params object[] agrvs)
         {
-            if (logMode <= enLogMode.Debug)
-            {
-                output(st, tmptime, "trace", log, agrvs);
-            }
+            output(st, tmptime, "trace", log, agrvs);
         }
 
         static public void error(StackFrame st, Int64 tmptime, string log, params object[] agrvs)
@@ -58,7 +55,10 @@ namespace log
                     }
                 }
 
-                Console.WriteLine(strlog);
+                if (logMode <= enLogMode.Debug)
+                {
+                    Console.WriteLine(strlog);
+                }
 
                 System.IO.StreamWriter fs = new System.IO.StreamWriter(realLogFile, true);
                 fs.WriteLine(strlog);
