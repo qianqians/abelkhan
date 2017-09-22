@@ -181,7 +181,7 @@ namespace hub
 			Int64 oldtick = 0;
 			Int64 tick = 0;
 			while (true)
-			{
+            {
                 oldtick = tick;
                 tick = _hub.poll();
 
