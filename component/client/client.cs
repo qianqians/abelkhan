@@ -38,10 +38,13 @@ namespace client
 
             _heartbeats = 0;
             _is_enable_heartbeats = false;
+            connect_state = false;
         }
 
         private void on_disconnect(juggle.Ichannel ch)
         {
+            connect_state = false;
+
             if (onDisConnect != null)
             {
                 onDisConnect();
@@ -50,8 +53,15 @@ namespace client
 
         private void heartbeats(Int64 tick)
         {
+            if (!connect_state)
+            {
+                return;
+            }
+
             if (_is_enable_heartbeats && (_heartbeats < (tick - 20 * 1000)))
             {
+                log.log.trace(new System.Diagnostics.StackFrame(), tick, "heartbeats:{0}", _heartbeats);
+
                 if (onDisConnect != null)
                 {
                     onDisConnect();
@@ -72,6 +82,11 @@ namespace client
 
         private void refresh_udp_link(Int64 tick)
         {
+            if (!connect_state)
+            {
+                return;
+            }
+
             _client_call_gate_fast.refresh_udp_end_point();
 
             timer.addticktime(10 * 1000, refresh_udp_link);
@@ -98,6 +113,8 @@ namespace client
 			{
                 onConnectGate();
             }
+
+            connect_state = true;
         }
 
         public delegate void onConnectHubHandle(string _hub_name);
@@ -124,10 +141,10 @@ namespace client
         {
             try
             {
-                uuid = System.Guid.NewGuid().ToString();
                 tcp_ch.disconnect();
                 udp_ch.disconnect();
 
+                uuid = System.Guid.NewGuid().ToString();
                 is_reconnect = true;
 
                 tcp_ch = _conn.connect(tcp_ip, tcp_port);
@@ -248,6 +265,7 @@ namespace client
 		private module.gate_call_client _gate_call_client;
 		private caller.client_call_gate _client_call_gate;
 
+        private bool connect_state;
         private bool is_reconnect;
         private string _udp_ip;
         private short _udp_port;

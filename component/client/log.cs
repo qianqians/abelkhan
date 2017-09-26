@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.Text;
+using System.Diagnostics;
 
 namespace log
 {
@@ -37,28 +37,27 @@ namespace log
             System.DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1));
             System.DateTime time = startTime.AddMilliseconds((double)tmptime);
 
-            string strlog = string.Format("[{0}] [{1}] [{2}] [{3}]:{4}", time, level, sf.GetMethod().DeclaringType.FullName, sf.GetMethod().Name, log);
+            StringBuilder debugStr = new StringBuilder();
+            debugStr.AppendFormat("[{0}] [{1}] [{2}] [{3}]:{4}", time, level, sf.GetMethod().DeclaringType.FullName, sf.GetMethod().Name, log);
+            var str = debugStr.ToString();
 
-            lock (logs)
-            {
-                System.Console.WriteLine(strlog);
-
-                logs.Add(strlog);
-            }
+            alllog.AppendLine(str);
+            logHandle(str);
         }
 
-        static public void traverse_log(Action<String> func)
+        static public void setLogHandle(Action<String> func)
         {
-            lock(logs)
-            {
-                foreach(var log in logs)
-                {
-                    func(log);
-                }
-            }
+            logHandle = func;
         }
+
+        static public string getAllLog()
+        {
+            return alllog.ToString();
+        }
+
+        static private StringBuilder alllog = new StringBuilder();
+        static private Action<String> logHandle = (string strlog) => { System.Console.WriteLine(strlog); };
 
         static public enLogMode logMode = enLogMode.Debug;
-        static private List<string> logs = new List<string>();
     }
 }
