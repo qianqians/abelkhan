@@ -55,10 +55,16 @@ namespace log
                     }
                 }
 
-                if (logMode <= enLogMode.Debug)
+                do
                 {
+                    if (level == "trace" && logMode > enLogMode.Debug)
+                    {
+                        break;
+                    }
+
                     Console.WriteLine(strlog);
-                }
+
+                } while (false);
 
                 System.IO.StreamWriter fs = new System.IO.StreamWriter(realLogFile, true);
                 fs.WriteLine(strlog);

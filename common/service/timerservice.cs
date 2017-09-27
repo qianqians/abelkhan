@@ -108,7 +108,15 @@ namespace service
                             }
 
                             var handle = impl.handle as tickHandle;
-                            handle(Tick);
+
+                            try
+                            {
+                                handle(Tick);
+                            }
+                            catch (System.Exception e)
+                            {
+                                log.log.error(new System.Diagnostics.StackFrame(true), Tick, "System.Exceptio{0}", e);
+                            }
                         }
 					}
 				}
@@ -142,7 +150,15 @@ namespace service
                             }
 
                             var handle = impl.handle as timeHandle;
-                            handle(t);
+
+                            try
+                            {
+                                handle(t);
+                            }
+                            catch (System.Exception e)
+                            {
+                                log.log.error(new System.Diagnostics.StackFrame(true), Tick, "System.Exceptio{0}", e);
+                            }
                         }
                     }
 				}
@@ -176,7 +192,15 @@ namespace service
                             }
 
                             var handle = impl.handle as timeHandle;
-                            handle(t);
+
+                            try
+                            {
+                                handle(t);
+                            }
+                            catch (System.Exception e)
+                            {
+                                log.log.error(new System.Diagnostics.StackFrame(true), Tick, "System.Exceptio{0}", e);
+                            }
                         }
                     }
                 }
@@ -225,7 +249,15 @@ namespace service
                             }
 
                             var handle = impl.handle as timeHandle;
-                            handle(t);
+
+                            try
+                            {
+                                handle(t);
+                            }
+                            catch (System.Exception e)
+                            {
+                                log.log.error(new System.Diagnostics.StackFrame(true), Tick, "System.Exceptio{0}", e);
+                            }
                         }
                     }
                 }
@@ -287,7 +319,15 @@ namespace service
                             }
 
                             var handle = impl.handle as timeHandle;
-                            handle(t);
+
+                            try
+                            {
+                                handle(t);
+                            }
+                            catch (System.Exception e)
+                            {
+                                log.log.error(new System.Diagnostics.StackFrame(true), Tick, "System.Exceptio{0}", e);
+                            }
                         }
                     }
                 }

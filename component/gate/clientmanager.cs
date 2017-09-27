@@ -19,6 +19,11 @@ namespace gate
 
 		public clientproxy reg_client(string uuid, juggle.Ichannel ch, Int64 servertick, Int64 clienttick)
 		{
+            if (clientproxys_ch.ContainsKey(ch))
+            {
+                return clientproxys_ch[ch];
+            }
+
 			clientproxy _clientproxy = new clientproxy (ch);
 
             lock (clientproxys)
@@ -39,7 +44,6 @@ namespace gate
             {
                 if (clientproxys_ch.ContainsKey(ch))
                 {
-                
                     clientproxy _proxy = clientproxys_ch[ch];
                     clientproxys_ch.Remove(ch);
                     client_server_time.Remove(ch);
@@ -50,7 +54,14 @@ namespace gate
                         string uuid = clientproxys_uuid[_proxy];
                         clientproxys_uuid.Remove(_proxy);
                         clientproxys.Remove(uuid);
+
+                        if (clientproxy_hubproxy.ContainsKey(_proxy))
+                        {
+                            clientproxy_hubproxy.Remove(_proxy);
+                        }
                     }
+
+                    heartbeats_list.Remove(ch);
                 }
             }
         }
@@ -61,7 +72,6 @@ namespace gate
             {
                 if (clientproxys_ch.ContainsKey(ch))
                 {
-                
                     clientproxy _proxy = clientproxys_ch[ch];
                     clientproxys_ch.Remove(ch);
                     client_server_time.Remove(ch);
@@ -82,6 +92,8 @@ namespace gate
                             }
                             clientproxy_hubproxy.Remove(_proxy);
                         }
+
+                        heartbeats_list.Remove(ch);
                     }
                 }
             }
@@ -204,46 +216,60 @@ namespace gate
 
         public void tick_client(Int64 servertick)
         {
-            var remove = new List<juggle.Ichannel>();
-            foreach (KeyValuePair<juggle.Ichannel, Int64> kvp in client_server_time)
-            {
-                if ((servertick - kvp.Value) > 20 * 1000)
-                {
-                    if (heartbeats_list.Contains(kvp.Key))
-                    {
-                        remove.Add(kvp.Key);
-                    }
-                }
-            }
-
             lock (clientproxys)
             {
+                var remove = new List<juggle.Ichannel>();
+                foreach (KeyValuePair<juggle.Ichannel, Int64> kvp in client_server_time)
+                {
+                    if ((servertick - kvp.Value) > 20 * 1000)
+                    {
+                        if (heartbeats_list.Contains(kvp.Key))
+                        {
+                            remove.Add(kvp.Key);
+                        }
+                    }
+                }
+
                 foreach (var ch in remove)
                 {
-                    var _client = clientproxys_ch[ch];
-
-                    var client_uuid = clientproxys_uuid[_client];
-                    if (clientproxy_hubproxy.ContainsKey(_client))
+                    if (clientproxys_ch.ContainsKey(ch))
                     {
-                        var _hubs = clientproxy_hubproxy[_client];
-                        foreach (var _hub in _hubs)
+                        var _client = clientproxys_ch[ch];
+
+                        if (clientproxys_uuid.ContainsKey(_client))
                         {
-                            _hub.client_disconnect(client_uuid);
+                            string uuid = clientproxys_uuid[_client];
+
+                            if (clientproxy_hubproxy.ContainsKey(_client))
+                            {
+                                var _hubs = clientproxy_hubproxy[_client];
+                                foreach (var _hub in _hubs)
+                                {
+                                    _hub.client_disconnect(uuid);
+                                }
+                                clientproxy_hubproxy.Remove(_client);
+                            }
+
+                            clientproxys_uuid.Remove(_client);
+                            clientproxys.Remove(uuid);
                         }
-                        clientproxy_hubproxy.Remove(_client);
                     }
-
-                    clientproxys_ch.Remove(ch);
-                    client_server_time.Remove(ch);
-                    client_time.Remove(ch);
-                    if (clientproxys_uuid.ContainsKey(_client))
+                    if (clientproxys_ch.ContainsKey(ch))
                     {
-                        string uuid = clientproxys_uuid[_client];
-                        clientproxys_uuid.Remove(_client);
-                        clientproxys.Remove(uuid);
+                        clientproxys_ch.Remove(ch);
                     }
-
-                    heartbeats_list.Remove(ch);
+                    if (client_server_time.ContainsKey(ch))
+                    {
+                        client_server_time.Remove(ch);
+                    }
+                    if (client_time.ContainsKey(ch))
+                    {
+                        client_time.Remove(ch);
+                    }
+                    if (heartbeats_list.Contains(ch))
+                    {
+                        heartbeats_list.Remove(ch);
+                    }
 
                     ch.disconnect();
                 }
