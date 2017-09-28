@@ -13,10 +13,9 @@ namespace service
 
 		public juggle.Ichannel connect(String ip, short port)
 		{
-            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            
 			try
-			{
+            {
+                Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 s.Connect(new IPEndPoint(IPAddress.Parse(ip), port));
 
                 channel ch = new channel(s);

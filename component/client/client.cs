@@ -15,6 +15,8 @@ namespace client
 			timer = new service.timerservice();
 			modulemanager = new common.modulemanager();
 
+            log.log.logMode = log.log.enLogMode.Release;
+
 			var _process = new juggle.process();
 			_gate_call_client = new module.gate_call_client();
 			_gate_call_client.onconnect_gate_sucess += on_ack_connect_gate;
@@ -43,6 +45,18 @@ namespace client
 
         private void on_disconnect(juggle.Ichannel ch)
         {
+            if (ch != tcp_ch)
+            {
+                return;
+            }
+
+            if (!connect_state)
+            {
+                return;
+            }
+
+            log.log.error(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "on_disconnect");
+
             connect_state = false;
 
             if (onDisConnect != null)
@@ -53,26 +67,32 @@ namespace client
 
         private void heartbeats(Int64 tick)
         {
-            if (!connect_state)
+            do
             {
-                return;
-            }
-
-            if (_is_enable_heartbeats && (_heartbeats < (tick - 20 * 1000)))
-            {
-                log.log.trace(new System.Diagnostics.StackFrame(), tick, "heartbeats:{0}", _heartbeats);
-
-                if (onDisConnect != null)
+                if (!connect_state)
                 {
-                    onDisConnect();
+                    break;
                 }
-            }
-            else
-            {
+
+                if (_is_enable_heartbeats && (_heartbeats < (tick - 20 * 1000)))
+                {
+                    log.log.error(new System.Diagnostics.StackFrame(), tick, "heartbeats:{0}", _heartbeats);
+
+                    connect_state = false;
+
+                    if (onDisConnect != null)
+                    {
+                        onDisConnect();
+                    }
+
+                    break;
+                }
+
                 _client_call_gate.heartbeats(tick);
 
-                timer.addticktime(5 * 1000, heartbeats);
-            }
+            } while (false);
+
+            timer.addticktime(5 * 1000, heartbeats);
         }
 
         private void on_ack_heartbeats()
@@ -82,12 +102,16 @@ namespace client
 
         private void refresh_udp_link(Int64 tick)
         {
-            if (!connect_state)
+            do
             {
-                return;
-            }
+                if (!connect_state)
+                {
+                    break;
+                }
 
-            _client_call_gate_fast.refresh_udp_end_point();
+                _client_call_gate_fast.refresh_udp_end_point();
+
+            } while (false);
 
             timer.addticktime(10 * 1000, refresh_udp_link);
         }
@@ -144,7 +168,9 @@ namespace client
                 tcp_ch.disconnect();
                 udp_ch.disconnect();
 
+                log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "uuid:{0}", uuid);
                 uuid = System.Guid.NewGuid().ToString();
+                log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "uuid:{0}", uuid);
                 is_reconnect = true;
 
                 tcp_ch = _conn.connect(tcp_ip, tcp_port);

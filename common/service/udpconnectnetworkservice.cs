@@ -54,6 +54,11 @@ namespace service
 
             try
             {
+                if (!_tmp_socket_data.ContainsKey(s))
+                {
+                    return;
+                }
+
                 int read = s.EndReceiveFrom(ar, ref _tmp_socket_data[s].remote_ep);
                 if (read > 0)
                 {

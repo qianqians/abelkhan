@@ -41,7 +41,7 @@ namespace service
             try
             {
                 int read = ch.s.EndReceive(ar);
-                log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "recv data len:{0}", read);
+                log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "recv data len:{0}, ch:{1}", read, ch);
 
                 if (read > 0)
                 {
@@ -106,6 +106,8 @@ namespace service
                 }
                 else
                 {
+                    log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "recv data len:0 ch:{0}", ch);
+
                     ch.s.Close();
 
                     if (onDisconnect != null)
@@ -120,6 +122,8 @@ namespace service
             }
             catch (System.Net.Sockets.SocketException)
             {
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "SocketException");
+
                 if (onDisconnect != null)
                 {
                     onDisconnect(this);

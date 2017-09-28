@@ -29,8 +29,10 @@ namespace gate
             lock (clientproxys)
             {
                 clientproxys_ch.Add(ch, _clientproxy);
+
                 clientproxys.Add(uuid, _clientproxy);
                 clientproxys_uuid.Add(_clientproxy, uuid);
+
                 client_server_time.Add(ch, servertick);
                 client_time.Add(ch, clienttick);
             }
@@ -209,6 +211,8 @@ namespace gate
                     }
                 }
 
+                log.log.trace(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "servertick:{0}", servertick);
+
                 client_server_time[_ch] = servertick;
                 client_time[_ch] = clienttick;
             }
@@ -219,12 +223,16 @@ namespace gate
             lock (clientproxys)
             {
                 var remove = new List<juggle.Ichannel>();
-                foreach (KeyValuePair<juggle.Ichannel, Int64> kvp in client_server_time)
+                foreach (var kvp in client_server_time)
                 {
                     if ((servertick - kvp.Value) > 20 * 1000)
                     {
+                        log.log.trace(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "servertick:{0}, old tick{1}", servertick, kvp.Value);
+
                         if (heartbeats_list.Contains(kvp.Key))
                         {
+                            log.log.trace(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "remove ch servertick:{0}, old tick{1}", servertick, kvp.Value);
+
                             remove.Add(kvp.Key);
                         }
                     }
@@ -271,6 +279,8 @@ namespace gate
                         heartbeats_list.Remove(ch);
                     }
 
+                    log.log.trace(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "disconnect ch");
+
                     ch.disconnect();
                 }
             }
@@ -280,15 +290,16 @@ namespace gate
 
         private List<juggle.Ichannel> heartbeats_list;
 
+        private Dictionary<juggle.Ichannel, clientproxy> clientproxys_ch;
+
         private Dictionary<clientproxy, String> clientproxys_uuid;
-		private Dictionary<juggle.Ichannel, clientproxy> clientproxys_ch;
 		private Dictionary<String, clientproxy> clientproxys;
-        
+
+        private Dictionary<juggle.Ichannel, Int64> client_server_time;
+        private Dictionary<juggle.Ichannel, Int64> client_time;
+
         private Dictionary<clientproxy, List<hubproxy> > clientproxy_hubproxy;
 
-        private Dictionary<juggle.Ichannel, Int64 > client_server_time;
-
-		private Dictionary<juggle.Ichannel, Int64 > client_time;
 
 	}
 }
