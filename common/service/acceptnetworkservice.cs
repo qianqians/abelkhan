@@ -21,17 +21,21 @@ namespace service
 		private void onAccept(IAsyncResult ar)
 		{
 			TcpListener listener = ar.AsyncState as TcpListener;
-
-			Socket clientSocket = listener.EndAcceptSocket(ar);
-
+            
+            try
 			{
+                Socket clientSocket = listener.EndAcceptSocket(ar);
                 channel ch = new channel(clientSocket);
 				ch.onDisconnect += this.onChannelDisconn;
 
 				onChannelConn(ch);
 			}
+            catch (System.Exception e)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
+            }
 
-			listener.BeginAcceptSocket(new AsyncCallback(this.onAccept), listener);
+            listener.BeginAcceptSocket(new AsyncCallback(this.onAccept), listener);
 		}
 
 		public delegate void ChannelConnectHandle(juggle.Ichannel ch);
