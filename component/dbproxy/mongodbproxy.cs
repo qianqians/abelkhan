@@ -28,13 +28,15 @@ namespace dbproxy
             return true;
 		}
 
-		public bool update(string db, string collection, Hashtable json_query, Hashtable json_update) 
-		{
+        public bool update(string db, string collection, Hashtable json_query, Hashtable json_update)
+        {
             var _db = _mongoserver.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection) as MongoDB.Driver.MongoCollection<MongoDB.Bson.BsonDocument>;
 
-            MongoDB.Driver.QueryDocument  _query = new MongoDB.Driver.QueryDocument(json_query);
-			MongoDB.Driver.UpdateDocument _update = new MongoDB.Driver.UpdateDocument(json_update);
+            var _update_impl = new Hashtable() { { "$set", json_update } };
+
+            MongoDB.Driver.QueryDocument _query = new MongoDB.Driver.QueryDocument(json_query);
+			MongoDB.Driver.UpdateDocument _update = new MongoDB.Driver.UpdateDocument(_update_impl);
 
 			var ret = _collection.Update(_query, _update);
 

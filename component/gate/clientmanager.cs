@@ -47,6 +47,7 @@ namespace gate
                 if (clientproxys_ch.ContainsKey(ch))
                 {
                     clientproxy _proxy = clientproxys_ch[ch];
+
                     clientproxys_ch.Remove(ch);
                     client_server_time.Remove(ch);
                     client_time.Remove(ch);
@@ -54,13 +55,14 @@ namespace gate
                     if (clientproxys_uuid.ContainsKey(_proxy))
                     {
                         string uuid = clientproxys_uuid[_proxy];
+
                         clientproxys_uuid.Remove(_proxy);
                         clientproxys.Remove(uuid);
-
-                        if (clientproxy_hubproxy.ContainsKey(_proxy))
-                        {
-                            clientproxy_hubproxy.Remove(_proxy);
-                        }
+                    }
+                    
+                    if (clientproxy_hubproxy.ContainsKey(_proxy))
+                    {
+                        clientproxy_hubproxy.Remove(_proxy);
                     }
 
                     heartbeats_list.Remove(ch);
@@ -75,6 +77,7 @@ namespace gate
                 if (clientproxys_ch.ContainsKey(ch))
                 {
                     clientproxy _proxy = clientproxys_ch[ch];
+
                     clientproxys_ch.Remove(ch);
                     client_server_time.Remove(ch);
                     client_time.Remove(ch);
@@ -82,9 +85,7 @@ namespace gate
                     if (clientproxys_uuid.ContainsKey(_proxy))
                     {
                         string uuid = clientproxys_uuid[_proxy];
-                        clientproxys_uuid.Remove(_proxy);
-                        clientproxys.Remove(uuid);
-
+                        
                         if (clientproxy_hubproxy.ContainsKey(_proxy))
                         {
                             var _hubs = clientproxy_hubproxy[_proxy];
@@ -92,11 +93,15 @@ namespace gate
                             {
                                 _hub.client_disconnect(uuid);
                             }
+
                             clientproxy_hubproxy.Remove(_proxy);
                         }
 
-                        heartbeats_list.Remove(ch);
+                        clientproxys_uuid.Remove(_proxy);
+                        clientproxys.Remove(uuid);
                     }
+
+                    heartbeats_list.Remove(ch);
                 }
             }
         }
