@@ -26,8 +26,31 @@ namespace service
             _send_state = send_state.idel;
             send_buff = new Queue();
 
-            s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
-		}
+            try
+            {
+                s.BeginReceive(recvbuf, 0, recvbuflenght, 0, new AsyncCallback(this.onRead), this);
+            }
+            catch (System.Net.Sockets.SocketException)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "SocketException");
+
+                if (onDisconnect != null)
+                {
+                    onDisconnect(this);
+                }
+            }
+            catch (System.Exception e)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "System.Exception:{0}", e);
+
+                s.Close();
+
+                if (onDisconnect != null)
+                {
+                    onDisconnect(this);
+                }
+            }
+        }
 
         public void disconnect()
         {
