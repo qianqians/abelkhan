@@ -72,7 +72,7 @@ namespace gate
 
         public void on_client_disconnect(juggle.Ichannel ch)
         {
-            lock (clientproxys_ch)
+            lock (clientproxys)
             {
                 if (clientproxys_ch.ContainsKey(ch))
                 {
@@ -227,17 +227,15 @@ namespace gate
         {
             lock (clientproxys)
             {
+                log.log.trace(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "clientproxys.Count:{0}", clientproxys.Count);
+
                 var remove = new List<juggle.Ichannel>();
                 foreach (var kvp in client_server_time)
                 {
                     if ((servertick - kvp.Value) > 20 * 1000)
                     {
-                        log.log.trace(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "servertick:{0}, old tick{1}", servertick, kvp.Value);
-
                         if (heartbeats_list.Contains(kvp.Key))
                         {
-                            log.log.trace(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "remove ch servertick:{0}, old tick{1}", servertick, kvp.Value);
-
                             remove.Add(kvp.Key);
                         }
                     }

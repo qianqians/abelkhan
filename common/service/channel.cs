@@ -17,7 +17,7 @@ namespace service
 
 			que = new Queue();
 
-            recvbuflenght = 16 * 1024;
+            recvbuflenght = 8 * 1024;
             recvbuf = new byte[recvbuflenght];
             
             tmpbuf = null;
