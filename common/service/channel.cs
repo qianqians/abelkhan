@@ -142,6 +142,11 @@ namespace service
             catch (System.ObjectDisposedException )
             {
                 log.log.error(new System.Diagnostics.StackFrame(true), timerservice.Tick, "socket is release");
+
+                if (onDisconnect != null)
+                {
+                    onDisconnect(this);
+                }
             }
             catch (System.Net.Sockets.SocketException)
             {
