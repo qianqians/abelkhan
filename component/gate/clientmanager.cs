@@ -232,6 +232,12 @@ namespace gate
                 var remove = new List<juggle.Ichannel>();
                 foreach (var kvp in client_server_time)
                 {
+                    if ((servertick - kvp.Value) > 60 * 60 * 1000)
+                    {
+                        remove.Add(kvp.Key);
+                        continue;
+                    }
+
                     if ((servertick - kvp.Value) > 20 * 1000)
                     {
                         if (heartbeats_list.Contains(kvp.Key))
