@@ -18,6 +18,8 @@ namespace gate
         public void onChannelConnect(juggle.Ichannel ch)
         {
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "onChannelConnect");
+
+            clients.add_wait_channel(ch);
         }
 
         public gate(String[] args)

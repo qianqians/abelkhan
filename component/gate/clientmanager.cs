@@ -8,7 +8,8 @@ namespace gate
 	{
 		public clientmanager()
 		{
-			clientproxys = new Dictionary<string, clientproxy> ();
+            wait_channel_list = new Dictionary<juggle.Ichannel, long>();
+            clientproxys = new Dictionary<string, clientproxy> ();
 			clientproxys_ch = new Dictionary<juggle.Ichannel, clientproxy> ();
             clientproxy_hubproxy = new Dictionary<clientproxy, List<hubproxy> >();
 			clientproxys_uuid = new Dictionary<clientproxy, string> ();
@@ -17,8 +18,21 @@ namespace gate
             heartbeats_list = new List<juggle.Ichannel>();
         }
 
+        public void add_wait_channel(juggle.Ichannel ch)
+        {
+            lock (wait_channel_list)
+            {
+                wait_channel_list.Add(ch, service.timerservice.Tick + 10 * 60 * 1000);
+            }
+        }
+
 		public clientproxy reg_client(string uuid, juggle.Ichannel ch, Int64 servertick, Int64 clienttick)
 		{
+            lock (wait_channel_list)
+            {
+                wait_channel_list.Remove(ch);
+            }
+
             if (clientproxys_ch.ContainsKey(ch))
             {
                 return clientproxys_ch[ch];
@@ -225,6 +239,24 @@ namespace gate
 
         public void tick_client(Int64 servertick)
         {
+            lock (wait_channel_list)
+            {
+                var remove = new List<juggle.Ichannel>();
+                foreach (var ch in wait_channel_list)
+                {
+                    if (ch.Value < servertick)
+                    {
+                        remove.Add(ch.Key);
+                    }
+                }
+
+                foreach(var ch in remove)
+                {
+                    ch.disconnect();
+                    wait_channel_list.Remove(ch);
+                }
+            }
+
             lock (clientproxys)
             {
                 log.log.trace(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "clientproxys.Count:{0}", clientproxys.Count);
@@ -296,6 +328,8 @@ namespace gate
 
             gate.timer.addticktime(5 * 1000, gate.clients.tick_client);
         }
+
+        private Dictionary<juggle.Ichannel, Int64> wait_channel_list;
 
         private List<juggle.Ichannel> heartbeats_list;
 

@@ -11,7 +11,10 @@ namespace service
 		public delegate void onDisconnectHandle(channel ch);
 		public event onDisconnectHandle onDisconnect;
 
-		public channel(Socket _s)
+        public delegate void DisconnectHandle(channel ch);
+        public event DisconnectHandle Disconnect;
+
+        public channel(Socket _s)
 		{
 			s = _s;
 
@@ -55,6 +58,11 @@ namespace service
         public void disconnect()
         {
             s.Close();
+
+            if (Disconnect != null)
+            {
+                Disconnect(this);
+            }
         }
 
 		private void onRead(IAsyncResult ar)

@@ -27,8 +27,9 @@ namespace service
                 Socket clientSocket = listener.EndAcceptSocket(ar);
                 channel ch = new channel(clientSocket);
 				ch.onDisconnect += this.onChannelDisconn;
+                ch.Disconnect += this.ChannelDisconn;
 
-				onChannelConn(ch);
+                onChannelConn(ch);
 			}
             catch (System.Exception e)
             {
@@ -66,7 +67,12 @@ namespace service
 			process_.unreg_channel(ch);
 		}
 
-		public void poll(Int64 tick)
+        public void ChannelDisconn(channel ch)
+        {
+            process_.unreg_channel(ch);
+        }
+        
+        public void poll(Int64 tick)
 		{
 		}
 
