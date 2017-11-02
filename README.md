@@ -17,12 +17,12 @@ https://github.com/qianqians/abelkhan/wiki
 abelkhan@abelkhan.com  
 
 ## 相关项目
-juggle:https://github.com/qianqians/juggle
-jsonparse:https://github.com/qianqians/jsonparse
-meter:https://github.com/qianqians/meter
-jsonparsepp:https://github.com/qianqians/jsonparsepp
-abelkhan_client_il2cpp:https://github.com/qianqians/abelkhan_client_il2cpp
-abelkhan_cpp_client:https://github.com/qianqians/abelkhan_cpp_client
+juggle:https://github.com/qianqians/juggle  
+jsonparse:https://github.com/qianqians/jsonparse  
+meter:https://github.com/qianqians/meter  
+jsonparsepp:https://github.com/qianqians/jsonparsepp  
+abelkhan_client_il2cpp:https://github.com/qianqians/abelkhan_client_il2cpp  
+abelkhan_cpp_client:https://github.com/qianqians/abelkhan_cpp_client  
   
 ## QQ群
 494405542
