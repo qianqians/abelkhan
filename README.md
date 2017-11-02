@@ -15,6 +15,10 @@ https://github.com/qianqians/abelkhan/wiki
   
 ## 技术支持
 abelkhan@abelkhan.com  
-  
+
+## 相关项目
+abelkhan_client_il2cpp:https://github.com/qianqians/abelkhan_client_il2cpp
+abelkhan_cpp_client:https://github.com/qianqians/abelkhan_cpp_client
+  
 ## QQ群
 494405542
