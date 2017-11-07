@@ -36,7 +36,14 @@ namespace service
             loopweekdaytick = 0;
         }
 
-		public Int64 poll()
+        public Int64 refresh()
+        {
+            Tick = (Int64)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
+
+            return Tick;
+        }
+
+        public Int64 poll()
 		{
             Tick = (Int64)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
 

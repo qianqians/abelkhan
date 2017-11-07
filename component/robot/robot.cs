@@ -199,7 +199,6 @@ namespace robot
                 var proxy = new client_proxy(ch);
                 proxys.Add(ch, proxy);
                 proxy.connect_server(tick);
-                
             }
             catch (Exception)
             {
@@ -211,12 +210,14 @@ namespace robot
         
         public Int64 poll()
         {
-            Int64 tick = timer.poll();
-            _juggleservice.poll(tick);
+            Int64 tick_begin = timer.poll();
+            _juggleservice.poll(tick_begin);
 
             System.GC.Collect();
 
-            return tick;
+            Int64 tick_end = timer.refresh();
+
+            return tick_end - tick_begin;
         }
 
         public client_proxy get_client_proxy(juggle.Ichannel ch)
