@@ -252,29 +252,25 @@ namespace client
 
         public Int64 poll()
         {
-            Int64 tick = timer.poll();
-            _juggleservice.poll(tick);
+            Int64 tick_begin = timer.poll();
+            _juggleservice.poll(tick_begin);
 
             System.GC.Collect();
 
-            return tick;
+            Int64 tick_end = timer.refresh();
+
+            return tick_end - tick_begin;
         }
 
         private static void Main()
         {
             client _client = new client();
-
-            Int64 old_tick = 0;
-            Int64 tick = 0;
+            
             while (true)
             {
-                old_tick = tick;
-                tick = _client.poll();
-                
-                Int64 ticktime = (tick - old_tick);
-                if (ticktime < 100)
+                if (_client.poll() < 50)
                 {
-                    Thread.Sleep(15);
+                    Thread.Sleep(1);
                 }
             }
         }

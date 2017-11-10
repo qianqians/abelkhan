@@ -149,24 +149,26 @@ namespace hub
 
 		public Int64 poll()
         {
-            Int64 tick = timer.poll();
+            Int64 tick_begin = timer.poll();
 
             try
             {
-                _juggle_service.poll(tick);
+                _juggle_service.poll(tick_begin);
             }
             catch(juggle.Exception e)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick, e.Message);
+                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, e.Message);
             }
             catch (System.Exception e)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick, "{0}", e);
+                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, "{0}", e);
             }
 
             System.GC.Collect();
 
-            return tick;
+            Int64 tick_end = timer.refresh();
+
+            return tick_end - tick_begin;
         }
 
 		private static void Main(String[] args)
@@ -177,13 +179,10 @@ namespace hub
 			}
 
 			hub _hub = new hub(args);
-
-			Int64 oldtick = 0;
-			Int64 tick = 0;
+            
 			while (true)
             {
-                oldtick = tick;
-                tick = _hub.poll();
+                var ticktime = _hub.poll();
 
 				if (closeHandle.is_close)
                 {
@@ -191,10 +190,9 @@ namespace hub
 					break;
 				}
                 
-				Int64 ticktime = (tick - oldtick);
 				if (ticktime < 50)
 				{
-					Thread.Sleep(15);
+					Thread.Sleep(1);
 				}
 			}
 		}

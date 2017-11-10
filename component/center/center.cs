@@ -74,27 +74,26 @@ namespace center
 
 		public Int64 poll()
         {
-            Int64 tick = timer.poll();
+            Int64 tick_begin = timer.poll();
 
             try
             {
-                _juggle_service.poll(tick);
+                _juggle_service.poll(tick_begin);
             }
             catch (juggle.Exception e)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick, e.Message);
+                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, e.Message);
             }
             catch (System.Exception e)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick, "{0}", e);
+                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, "{0}", e);
             }
-
-            _accept_svr_service.poll(tick);
-            _accept_gm_service.poll(tick);
 
             System.GC.Collect();
 
-            return tick;
+            Int64 tick_end = timer.refresh();
+
+            return tick_end - tick_begin;
         }
 
 		private static void Main (string[] args)
@@ -106,24 +105,20 @@ namespace center
 			}
 
 			center _center = new center(args);
-
-            Int64 old_tick = 0;
-            Int64 tick = 0;
+            
             while (true)
 			{
-                old_tick = tick;
-                tick = _center.poll();
+                var tmp = _center.poll();
 
                 if (closeHandle.is_close)
                 {
                     System.Threading.Thread.Sleep(100);
                     break;
                 }
-
-                Int64 tmp = tick - old_tick;
-                if (tmp < 100)
+                
+                if (tmp < 50)
                 {
-                    System.Threading.Thread.Sleep(15);
+                    System.Threading.Thread.Sleep(1);
                 }
 			}
 		}

@@ -85,24 +85,26 @@ namespace dbproxy
 
 		public Int64 poll()
         {
-            Int64 tick = timer.poll();
+            Int64 tick_begin = timer.poll();
 
             try
             {
-                _juggle_service.poll(tick);
+                _juggle_service.poll(tick_begin);
             }
             catch(juggle.Exception e)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick, e.Message);
+                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, e.Message);
             }
             catch (System.Exception e)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick, "{0}", e);
+                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, "{0}", e);
             }
 
             System.GC.Collect();
 
-            return tick;
+            Int64 tick_end = timer.refresh();
+
+            return tick_end - tick_begin;
         }
         
 		private static void Main(String[] args)
@@ -114,13 +116,10 @@ namespace dbproxy
 			}
 
 			dbproxy _dbproxy = new dbproxy(args);
-
-			Int64 oldtick = 0;
-			Int64 tick = 0;
+            
 			while (true)
 			{
-                oldtick = tick;
-                tick = _dbproxy.poll();
+                var ticktime = _dbproxy.poll();
 
 				if (closeHandle.is_close())
                 {
@@ -128,7 +127,6 @@ namespace dbproxy
 					break;
 				}
                 
-				Int64 ticktime = (tick - oldtick);
 				if (ticktime > 200)
 				{
 					is_busy = true;
@@ -137,9 +135,10 @@ namespace dbproxy
 				{
 					is_busy = false;
 				}
+
 				if (ticktime < 50)
 				{
-					Thread.Sleep(15);
+					Thread.Sleep(1);
 				}
 			}
 		}

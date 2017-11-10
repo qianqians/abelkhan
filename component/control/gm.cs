@@ -52,26 +52,26 @@ namespace gm
 
         public Int64 poll()
         {
-            Int64 tick = timer.poll();
+            Int64 tick_begin = timer.poll();
 
             try
             {
-                _juggle_service.poll(tick);
+                _juggle_service.poll(tick_begin);
             }
             catch (juggle.Exception e)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick, e.Message);
+                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, e.Message);
             }
             catch (System.Exception e)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick, "{0}", e);
+                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, "{0}", e);
             }
-            
-            _conn_center.poll(tick);
 
             System.GC.Collect();
 
-            return tick;
+            Int64 tick_end = timer.refresh();
+
+            return tick_end - tick_begin;
         }
 
         public void output_cmd()
@@ -96,13 +96,10 @@ namespace gm
             cmd_callback.Add("close", () => {
                 _gm._center_proxy.close_clutter(_gm.gm_name);
             });
-
-            Int64 old_tick = 0;
-            Int64 tick = 0;
+            
             while (runing)
             {
-                old_tick = tick;
-                tick = _gm.poll();
+                var tmp = _gm.poll();
 
                 _gm.output_cmd();
 
@@ -115,11 +112,10 @@ namespace gm
                 {
                     Console.WriteLine("invalid gm cmd!");
                 }
-
-                Int64 tmp = tick - old_tick;
+                
                 if (tmp < 50)
                 {
-                    System.Threading.Thread.Sleep(15);
+                    System.Threading.Thread.Sleep(1);
                 }
             }
         }
