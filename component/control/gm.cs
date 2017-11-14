@@ -115,7 +115,7 @@ namespace gm
                 
                 if (tmp < 50)
                 {
-                    System.Threading.Thread.Sleep(1);
+                    System.Threading.Thread.Sleep(15);
                 }
             }
         }

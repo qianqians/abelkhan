@@ -192,7 +192,7 @@ namespace hub
                 
 				if (ticktime < 50)
 				{
-					Thread.Sleep(1);
+					Thread.Sleep(15);
 				}
 			}
 		}
