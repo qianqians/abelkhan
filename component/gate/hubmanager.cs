@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace gate
 {
@@ -16,9 +14,9 @@ namespace gate
 		public hubproxy reg_hub(juggle.Ichannel ch, string uuid, string hub_name)
 		{
 			hubproxy _hubproxy = new hubproxy (ch, uuid, hub_name);
-			hubs.Add (ch, _hubproxy);
-			hubs_uuid.Add (uuid, _hubproxy);
-            hubs_hub_name.Add(hub_name, _hubproxy);
+			hubs[ch] = _hubproxy;
+			hubs_uuid[uuid] = _hubproxy;
+            hubs_hub_name[hub_name] = _hubproxy;
 
             return _hubproxy;
 		}

@@ -14,7 +14,7 @@ namespace hub
         public hubproxy reg_hub(String hub_name, juggle.Ichannel ch)
         {
             hubproxy _proxy = new hubproxy(hub_name, ch);
-            hubproxys.Add(hub_name, _proxy);
+            hubproxys[hub_name] = _proxy;
         
             return _proxy;
         }
