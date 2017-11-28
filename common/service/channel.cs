@@ -268,18 +268,18 @@ namespace service
 
                 lock (send_buff)
                 {
-                    if (send_buff.Count <= 0)
+                    send_len += send;
+                    if (send_len < tmp_send_buff.Length)
                     {
-                        _send_state = send_state.idel;
+                        s.BeginSend(tmp_send_buff, send_len, tmp_send_buff.Length - send_len, SocketFlags.None, new AsyncCallback(this.send_callback), this);
                     }
-                    else
+                    else if (send_len == tmp_send_buff.Length)
                     {
-                        send_len += send;
-                        if (send_len < tmp_send_buff.Length)
+                        if (send_buff.Count <= 0)
                         {
-                            s.BeginSend(tmp_send_buff, send_len, tmp_send_buff.Length - send_len, SocketFlags.None, new AsyncCallback(this.send_callback), this);
+                            _send_state = send_state.idel;
                         }
-                        else if (send_len == tmp_send_buff.Length)
+                        else
                         {
                             var data = (byte[])send_buff.Dequeue();
                             tmp_send_buff = data;
