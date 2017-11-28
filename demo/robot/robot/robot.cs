@@ -14,16 +14,10 @@ namespace robot
             _robot.onConnectHub += onConnectHub;
             
             _robot.connect_server(service.timerservice.Tick);
-
-            Int64 oldtick = 0;
-            Int64 tick = 0;
+            
             while (true)
             {
-                oldtick = tick;
-                tick = _robot.poll();
-                
-                Int64 ticktime = (tick - oldtick);
-                if (ticktime < 50)
+                if (_robot.poll() < 50)
                 {
                     Thread.Sleep(15);
                 }

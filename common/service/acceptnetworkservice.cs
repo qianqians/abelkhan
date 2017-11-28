@@ -13,7 +13,7 @@ namespace service
 
 			listen = new TcpListener(IPAddress.Parse(ip), port);
 
-			listen.Start();
+            listen.Start(32);
 
 			listen.BeginAcceptSocket(new AsyncCallback(this.onAccept), listen);
 		}

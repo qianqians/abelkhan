@@ -211,7 +211,19 @@ namespace robot
         public Int64 poll()
         {
             Int64 tick_begin = timer.poll();
-            _juggleservice.poll(tick_begin);
+
+            try
+            {
+                _juggleservice.poll(tick_begin);
+            }
+            catch (juggle.Exception e)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, e.Message);
+            }
+            catch (System.Exception e)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, "{0}", e);
+            }
 
             System.GC.Collect();
 
