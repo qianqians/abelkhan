@@ -255,6 +255,7 @@ namespace gate
                     ch.disconnect();
                     wait_channel_list.Remove(ch);
                 }
+                remove.Clear();
             }
 
             lock (clientproxys)
@@ -324,6 +325,7 @@ namespace gate
 
                     ch.disconnect();
                 }
+                remove.Clear();
             }
 
             gate.timer.addticktime(5 * 1000, gate.clients.tick_client);
