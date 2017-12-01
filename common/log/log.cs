@@ -46,7 +46,7 @@ namespace log
                         tmp.Close();
                     }
                     System.IO.FileInfo finfo = new System.IO.FileInfo(realLogFile);
-                    if (finfo.Length > 1024 * 1024 * 16) 
+                    if (finfo.Length > 1024 * 1024 * 32) 
                     {
                         string tmpfile = realLogFile + string.Format(".{0}", time.ToString("yyyy_MM_dd_h_m_s"));
                         finfo.MoveTo(tmpfile);
