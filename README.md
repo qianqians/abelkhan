@@ -22,7 +22,8 @@ jsonparse:https://github.com/qianqians/jsonparse
 meter:https://github.com/qianqians/meter  
 jsonparsepp:https://github.com/qianqians/jsonparsepp  
 abelkhan_client_il2cpp:https://github.com/qianqians/abelkhan_client_il2cpp  
-abelkhan_cpp_client_gate:https://github.com/qianqians/abelkhan_cpp_client_gate
+abelkhan_cpp_client_gate:https://github.com/qianqians/abelkhan_cpp_client_gate  
+abelkhan_demo_mj:https://github.com/qianqians/abelkhan_demo_mj
   
 ## QQ群
 494405542
