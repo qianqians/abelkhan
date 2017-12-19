@@ -38,6 +38,8 @@ namespace gate
                 ch_refresh_table.Remove(ch);
                 ch.disconnect();
             }
+
+            gate.timer.addticktime(10 * 1000, tick_udpchannel);
         }
 
         private Dictionary<juggle.Ichannel, Int64> ch_refresh_table;

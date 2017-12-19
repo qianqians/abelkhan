@@ -21,7 +21,7 @@ namespace hub
 			var ch = _gate_conn.connect(ip, port);
 			gates.Add(uuid, new gateproxy(ch));
 			ch_gateproxys.Add(ch, gates[uuid]);
-			gates[uuid].reg_logic();
+			gates[uuid].reg_hub();
 		}
 
 		public gateproxy get_gateproxy(juggle.Ichannel gate_ch)

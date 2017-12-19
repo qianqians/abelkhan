@@ -10,7 +10,7 @@ namespace hub
 			_caller = new caller.hub_call_gate(ch);
 		}
 
-		public void reg_logic()
+		public void reg_hub()
         {
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin connect gate server");
 

@@ -48,6 +48,7 @@ namespace service
                     {
                         udpchannel ch = new udpchannel(listen, sender);
                         ch.onDisconnect += this.onChannelDisconn;
+                        ch.Disconnect += ChannelDisconn;
 
                         udpchannels.Add(sender.ToString(), ch);
                         onChannelConn(ch);
@@ -96,7 +97,15 @@ namespace service
             udpchannels.Remove(udp_ch.remote_ep.ToString());
         }
 
-		public void poll(Int64 tick)
+        public void ChannelDisconn(juggle.Ichannel ch)
+        {
+            process_.unreg_channel(ch);
+
+            udpchannel udp_ch = ch as udpchannel;
+            udpchannels.Remove(udp_ch.remote_ep.ToString());
+        }
+
+        public void poll(Int64 tick)
 		{
 		}
 

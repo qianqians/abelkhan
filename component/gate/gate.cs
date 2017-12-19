@@ -133,6 +133,7 @@ namespace gate
             {
                 timer.addticktime(5 * 1000, clients.tick_client);
             }
+            timer.addticktime(10 * 1000, udpchannels.tick_udpchannel);
         }
 
 		public Int64 poll()
