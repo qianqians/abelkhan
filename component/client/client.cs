@@ -161,7 +161,7 @@ namespace client
 			modulemanager.process_module_mothed(module_name, func_name, argvs);
 		}
 
-        public bool reconnect_server(String tcp_ip, short tcp_port, String udp_ip, short udp_port, Int64 tick)
+        public bool reconnect_server(String tcp_ip, short tcp_port, String udp_ip, short udp_port)
         {
             try
             {
@@ -175,7 +175,7 @@ namespace client
 
                 tcp_ch = _conn.connect(tcp_ip, tcp_port);
                 _client_call_gate = new caller.client_call_gate(tcp_ch);
-                _client_call_gate.connect_server(uuid, tick);
+                _client_call_gate.connect_server(uuid, service.timerservice.Tick);
 
                 _udp_ip = udp_ip;
                 _udp_port = udp_port;
@@ -188,7 +188,7 @@ namespace client
             return true;
         }
 
-		public bool connect_server(String tcp_ip, short tcp_port, String udp_ip, short udp_port, Int64 tick)
+		public bool connect_server(String tcp_ip, short tcp_port, String udp_ip, short udp_port)
 		{
 			try
 			{
@@ -196,7 +196,7 @@ namespace client
 
                 tcp_ch = _conn.connect(tcp_ip, tcp_port);
 				_client_call_gate = new caller.client_call_gate(tcp_ch);
-				_client_call_gate.connect_server(uuid, tick);
+				_client_call_gate.connect_server(uuid, service.timerservice.Tick);
 
                 _udp_ip = udp_ip;
                 _udp_port = udp_port;
