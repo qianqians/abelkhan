@@ -138,7 +138,7 @@ namespace dbproxy
 
 				if (ticktime < 50)
 				{
-					Thread.Sleep(15);
+					Thread.Sleep(5);
 				}
 			}
 		}

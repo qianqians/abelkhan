@@ -270,7 +270,7 @@ namespace client
             {
                 if (_client.poll() < 50)
                 {
-                    Thread.Sleep(15);
+                    Thread.Sleep(5);
                 }
             }
         }
