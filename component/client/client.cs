@@ -27,16 +27,8 @@ namespace client
 			_conn = new service.connectnetworkservice(_process);
             _conn.onChannelDisconnect += on_disconnect;
 
-            var _udp_process = new juggle.process();
-            _gate_call_client_fast = new module.gate_call_client_fast();
-            _gate_call_client_fast.onconfirm_refresh_udp_end_point += onconfirm_refresh_udp_end_point;
-            _gate_call_client_fast.oncall_client += on_call_client;
-            _udp_process.reg_module(_gate_call_client_fast);
-            _udp_conn = new service.udpconnectnetworkservice(_udp_process);
-
             _juggleservice = new service.juggleservice();
             _juggleservice.add_process(_process);
-            _juggleservice.add_process(_udp_process);
 
             _heartbeats = 0;
             _is_enable_heartbeats = false;
@@ -100,37 +92,16 @@ namespace client
             _heartbeats = service.timerservice.Tick;
         }
 
-        private void refresh_udp_link(Int64 tick)
-        {
-            do
-            {
-                if (!connect_state)
-                {
-                    break;
-                }
-
-                _client_call_gate_fast.refresh_udp_end_point();
-
-            } while (false);
-
-            timer.addticktime(10 * 1000, refresh_udp_link);
-        }
-
         public delegate void onConnectGateHandle();
 		public event onConnectGateHandle onConnectGate;
 		private void on_ack_connect_gate()
 		{
-            udp_ch = _udp_conn.connect(_udp_ip, _udp_port);
-            _client_call_gate_fast = new caller.client_call_gate_fast(udp_ch);
-            _client_call_gate_fast.refresh_udp_end_point();
-
             _heartbeats = service.timerservice.Tick;
             _client_call_gate.heartbeats(service.timerservice.Tick);
 
             if (!is_reconnect)
             {
                 timer.addticktime(5 * 1000, heartbeats);
-                timer.addticktime(10 * 1000, refresh_udp_link);
             }
 
             if (onConnectGate != null)
@@ -151,22 +122,16 @@ namespace client
             }
         }
 
-        private void onconfirm_refresh_udp_end_point()
-        {
-            _client_call_gate_fast.confirm_create_udp_link(uuid);
-        }
-
         private void on_call_client(String module_name, String func_name, ArrayList argvs)
 		{
 			modulemanager.process_module_mothed(module_name, func_name, argvs);
 		}
 
-        public bool reconnect_server(String tcp_ip, short tcp_port, String udp_ip, short udp_port)
+        public bool reconnect_server(String tcp_ip, short tcp_port)
         {
             try
             {
                 tcp_ch.disconnect();
-                udp_ch.disconnect();
 
                 log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "uuid:{0}", uuid);
                 uuid = System.Guid.NewGuid().ToString();
@@ -176,9 +141,6 @@ namespace client
                 tcp_ch = _conn.connect(tcp_ip, tcp_port);
                 _client_call_gate = new caller.client_call_gate(tcp_ch);
                 _client_call_gate.connect_server(uuid, service.timerservice.Tick);
-
-                _udp_ip = udp_ip;
-                _udp_port = udp_port;
             }
             catch (Exception)
             {
@@ -188,7 +150,7 @@ namespace client
             return true;
         }
 
-		public bool connect_server(String tcp_ip, short tcp_port, String udp_ip, short udp_port)
+		public bool connect_server(String tcp_ip, short tcp_port)
 		{
 			try
 			{
@@ -197,9 +159,6 @@ namespace client
                 tcp_ch = _conn.connect(tcp_ip, tcp_port);
 				_client_call_gate = new caller.client_call_gate(tcp_ch);
 				_client_call_gate.connect_server(uuid, service.timerservice.Tick);
-
-                _udp_ip = udp_ip;
-                _udp_port = udp_port;
             }
 			catch (Exception)
 			{
@@ -289,12 +248,6 @@ namespace client
 
         private bool connect_state;
         private bool is_reconnect;
-        private string _udp_ip;
-        private short _udp_port;
-        private service.udpconnectnetworkservice _udp_conn;
-        private juggle.Ichannel udp_ch;
-        private module.gate_call_client_fast _gate_call_client_fast;
-        private caller.client_call_gate_fast _client_call_gate_fast;
 
         private service.juggleservice _juggleservice;
 

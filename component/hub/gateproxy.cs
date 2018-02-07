@@ -42,16 +42,6 @@ namespace hub
 			_caller.forward_hub_call_global_client(module, func, argv);
 		}
 
-        public void forward_hub_call_client_fast(String uuid, String module, String func, ArrayList argv)
-        {
-            _caller.forward_hub_call_client_fast(uuid, module, func, argv);
-        }
-
-        public void forward_hub_call_group_client_fast(ArrayList uuids, String module, String func, ArrayList argv)
-        {
-            _caller.forward_hub_call_group_client_fast(uuids, module, func, argv);
-        }
-
         private caller.hub_call_gate _caller;
 	}
 }

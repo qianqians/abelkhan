@@ -17,13 +17,6 @@ module client_call_gate{
 
 }
 
-module client_call_gate_fast{
-	void refresh_udp_end_point();
-
-	void confirm_create_udp_link(string client_uuid);
-
-}
-
 module hub_call_gate{
 	void reg_hub(string hub_uuid, string hub_name);
 
@@ -36,9 +29,5 @@ module hub_call_gate{
 	void forward_hub_call_group_client(array client_uuids, string module, string func, array argv);
 	
 	void forward_hub_call_global_client(string module, string func, array argv);
-
-	void forward_hub_call_client_fast(string client_uuid, string module, string func, array argv);
-
-	void forward_hub_call_group_client_fast(array client_uuids, string module, string func, array argv);
 
 }

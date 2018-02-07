@@ -63,25 +63,5 @@ namespace caller
             call_module_method("forward_hub_call_global_client", _argv);
         }
 
-        public void forward_hub_call_client_fast(String argv0,String argv1,String argv2,ArrayList argv3)
-        {
-            ArrayList _argv = new ArrayList();
-            _argv.Add(argv0);
-            _argv.Add(argv1);
-            _argv.Add(argv2);
-            _argv.Add(argv3);
-            call_module_method("forward_hub_call_client_fast", _argv);
-        }
-
-        public void forward_hub_call_group_client_fast(ArrayList argv0,String argv1,String argv2,ArrayList argv3)
-        {
-            ArrayList _argv = new ArrayList();
-            _argv.Add(argv0);
-            _argv.Add(argv1);
-            _argv.Add(argv2);
-            _argv.Add(argv3);
-            call_module_method("forward_hub_call_group_client_fast", _argv);
-        }
-
     }
 }

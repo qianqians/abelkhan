@@ -19,7 +19,7 @@ namespace test_hub
             {
                 if (hub.hub.closeHandle.is_close)
                 {
-                    log.log.operation(new System.Diagnostics.StackFrame(true), tick, "server closed, hub server:{0}", hub.hub.uuid);
+                    log.log.operation(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "server closed, hub server:{0}", hub.hub.uuid);
                     break;
                 }
                 

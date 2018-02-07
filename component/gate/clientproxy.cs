@@ -31,30 +31,8 @@ namespace gate
 			_caller.call_client(module, func, argv);
 		}
 
-        public void bind_udp_channel(juggle.Ichannel ch)
-        {
-            udp_client_ch = ch;
-            _caller_fast = new caller.gate_call_client_fast(ch);
-        }
-
-        public void call_client_fast(string module, string func, ArrayList argv)
-        {
-            if (_caller_fast != null)
-            {
-                log.log.trace(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "call by udp link");
-                _caller_fast.call_client(module, func, argv);
-            }
-            else
-            {
-                _caller.call_client(module, func, argv);
-            }
-        }
-
 		private caller.gate_call_client _caller;
         public juggle.Ichannel client_ch;
-
-        private caller.gate_call_client_fast _caller_fast;
-        public juggle.Ichannel udp_client_ch;
 
     }
 }

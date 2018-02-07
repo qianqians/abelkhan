@@ -142,38 +142,6 @@ namespace hub
 			}
 		}
 
-        public void call_client_fast(String uuid, String module, String func, params object[] _argvs)
-        {
-            if (clients.ContainsKey(uuid))
-            {
-                ArrayList _argvs_list = new ArrayList();
-                foreach (var o in _argvs)
-                {
-                    _argvs_list.Add(o);
-                }
-
-                clients[uuid].forward_hub_call_client_fast(uuid, module, func, _argvs_list);
-            }
-            else
-            {
-                log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "no-exist client:", uuid);
-            }
-        }
-
-        public void call_group_client_fast(ArrayList uuids, String module, String func, params object[] _argvs)
-        {
-            foreach (var _proxy in ch_gateproxys)
-            {
-                ArrayList _argvs_list = new ArrayList();
-                foreach (var o in _argvs)
-                {
-                    _argvs_list.Add(o);
-                }
-
-                _proxy.Value.forward_hub_call_group_client_fast(uuids, module, func, _argvs_list);
-            }
-        }
-
         public String current_client_uuid;
 
 		private Dictionary<String, gateproxy> clients;

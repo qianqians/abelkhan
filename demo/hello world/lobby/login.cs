@@ -66,7 +66,6 @@ namespace lobby
             server.players.reg_player(uuid, _data);
 
             hub.hub.gates.call_client(uuid, "login", "login_sucess");
-            hub.hub.gates.call_client_fast(uuid, "login", "udp_link_sucess");
 
             Console.WriteLine("rsp client " + uuid);
         }
