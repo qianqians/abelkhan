@@ -26,5 +26,11 @@ namespace caller
             call_module_method("close_clutter", _argv);
         }
 
+        public void reload()
+        {
+            ArrayList _argv = new ArrayList();
+            call_module_method("reload", _argv);
+        }
+
     }
 }

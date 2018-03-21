@@ -34,5 +34,15 @@ namespace module
             }
         }
 
+        public delegate void reloadhandle();
+        public event reloadhandle onreload;
+        public void reload(ArrayList _event)
+        {
+            if(onreload != null)
+            {
+                onreload();
+            }
+        }
+
 	}
 }

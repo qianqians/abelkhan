@@ -22,5 +22,11 @@ namespace caller
             call_module_method("distribute_server_address", _argv);
         }
 
+        public void reload()
+        {
+            ArrayList _argv = new ArrayList();
+            call_module_method("reload", _argv);
+        }
+
     }
 }
