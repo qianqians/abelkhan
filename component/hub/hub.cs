@@ -73,8 +73,9 @@ namespace hub
 			_center_call_server.onreg_server_sucess += _center_msg_handle.reg_server_sucess;
 			_center_call_server.onclose_server += _center_msg_handle.close_server;
 			_center_call_hub.ondistribute_server_address += _center_msg_handle.distribute_server_address;
+            _center_call_hub.onreload += onReload_event;
 
-			var _dbproxy_process = new juggle.process();
+            var _dbproxy_process = new juggle.process();
 			_connect_dbproxy_service = new service.connectnetworkservice(_dbproxy_process);
 			_dbproxy_msg_handle = new dbproxy_msg_handle(this);
 			_dbproxy_call_hub = new module.dbproxy_call_hub();
@@ -131,6 +132,16 @@ namespace hub
             }
 
             closeHandle.is_close = true;
+        }
+
+        public delegate void onReloadHandle(string argv);
+        public event onReloadHandle onReload;
+        public void onReload_event(string argv)
+        {
+            if (onReload != null)
+            {
+                onReload(argv);
+            }
         }
 
         public void connect_dbproxy(String db_ip, short db_port)

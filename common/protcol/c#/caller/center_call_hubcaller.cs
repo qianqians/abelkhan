@@ -22,9 +22,10 @@ namespace caller
             call_module_method("distribute_server_address", _argv);
         }
 
-        public void reload()
+        public void reload(String argv0)
         {
             ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
             call_module_method("reload", _argv);
         }
 

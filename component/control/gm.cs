@@ -20,6 +20,11 @@ namespace gm
             center_caller.close_clutter(gm_name);
         }
 
+        public void reload(string gm_name, string argv)
+        {
+            center_caller.reload(gm_name, argv);
+        }
+
         private caller.gm_center center_caller;
     }
 
@@ -77,10 +82,11 @@ namespace gm
         public void output_cmd()
         {
             Console.WriteLine("Enter gm cmd:");
-            Console.WriteLine(" close----close clutter");
+            Console.WriteLine(" close_----close clutter");
+            Console.WriteLine(" reload----reload hub");
         }
 
-        public delegate void handle();
+        public delegate void handle(string[] cmds);
         private static void Main(string[] args)
         {
             if (args.Length <= 0)
@@ -93,10 +99,13 @@ namespace gm
             bool runing = true;
 
             Dictionary<String, handle> cmd_callback = new Dictionary<string, handle>();
-            cmd_callback.Add("close", () => {
+            cmd_callback.Add("close", (string[] cmds) => {
                 _gm._center_proxy.close_clutter(_gm.gm_name);
             });
-            
+            cmd_callback.Add("reload", (string[] cmds) => {
+                _gm._center_proxy.reload(_gm.gm_name, cmds[1]);
+            });
+
             while (runing)
             {
                 var tmp = _gm.poll();
@@ -104,9 +113,10 @@ namespace gm
                 _gm.output_cmd();
 
                 string cmd = Console.ReadLine();
-                if (cmd_callback.ContainsKey(cmd))
+                string[] cmds = cmd.Split(' ');
+                if (cmd_callback.ContainsKey(cmds[0]))
                 {
-                    cmd_callback[cmd]();
+                    cmd_callback[cmds[0]](cmds);
                 }
                 else
                 {

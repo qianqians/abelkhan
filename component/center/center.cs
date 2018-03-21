@@ -56,10 +56,11 @@ namespace center
 			juggle.process _gm_process = new juggle.process ();
 
 			_gm_center = new module.gm_center ();
-			_gm_msg_handle = new gm_msg_handle(_gmmanager, _svrmanager);
+			_gm_msg_handle = new gm_msg_handle(_gmmanager, _svrmanager, _hubmanager);
 			_gm_center.onconfirm_gm += _gm_msg_handle.confirm_gm;
 			_gm_center.onclose_clutter += _gm_msg_handle.close_clutter;
-			_gm_process.reg_module(_gm_center);
+            _gm_center.onreload += _gm_msg_handle.reload;
+            _gm_process.reg_module(_gm_center);
 
 			var gm_ip = _config.get_value_string("gm_ip");
 			var gm_port = (short)_config.get_value_int("gm_port");

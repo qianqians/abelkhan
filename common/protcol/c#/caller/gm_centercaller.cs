@@ -26,9 +26,11 @@ namespace caller
             call_module_method("close_clutter", _argv);
         }
 
-        public void reload()
+        public void reload(String argv0,String argv1)
         {
             ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            _argv.Add(argv1);
             call_module_method("reload", _argv);
         }
 

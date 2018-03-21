@@ -26,13 +26,14 @@ namespace module
             }
         }
 
-        public delegate void reloadhandle();
+        public delegate void reloadhandle(String argv0);
         public event reloadhandle onreload;
         public void reload(ArrayList _event)
         {
             if(onreload != null)
             {
-                onreload();
+                var argv0 = ((String)_event[0]);
+                onreload( argv0);
             }
         }
 

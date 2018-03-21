@@ -8,7 +8,7 @@ module gm_center{
 
 	void close_clutter(string gmname);
 
-	void reload();
+	void reload(string gmname, string argv);
 }
 
 module center_call_server{
@@ -21,5 +21,5 @@ module center_call_server{
 module center_call_hub{
 	void distribute_server_address(string type, string ip, int port, string uuid);
 
-	void reload();
+	void reload(string argv);
 }

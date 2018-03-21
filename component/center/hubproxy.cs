@@ -14,6 +14,11 @@ namespace center
 			_caller.distribute_server_address(type, ip, port, uuid);
 		}
 
+        public void reload(String argv)
+        {
+            _caller.reload(argv);
+        }
+
 		private caller.center_call_hub _caller;
 	}
 }
