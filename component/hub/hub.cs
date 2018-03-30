@@ -39,8 +39,6 @@ namespace hub
             name = config.get_value_string("hub_name");
 
 			closeHandle = new closehandle();
-
-            hubs = new hubmanager();
 			modules = new common.modulemanager();
 
             var _hub_logic_process = new juggle.process();
@@ -161,6 +159,7 @@ namespace hub
 		public Int64 poll()
         {
             Int64 tick_begin = timer.poll();
+            Int64 tmp = timer.refresh();
 
             try
             {
@@ -178,8 +177,17 @@ namespace hub
             System.GC.Collect();
 
             Int64 tick_end = timer.refresh();
+            Int64 poll_tick = tick_end - tick_begin;
 
-            return tick_end - tick_begin;
+            if (poll_tick > 50)
+            {
+                Int64 timer_poll_tick = tmp - tick_begin;
+                Int64 juggle_service_poll_tick = tick_end - tmp;
+
+                log.log.trace(new System.Diagnostics.StackFrame(true), tick_end, "timer_tick:{0}, juggle_service_poll:{1}", timer_poll_tick, juggle_service_poll_tick);
+            }
+
+            return poll_tick;
         }
 
 		private static void Main(String[] args)
