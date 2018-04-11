@@ -5,8 +5,9 @@ namespace robot
 {
     class test_robot
     {
-        static robot _robot;
+        public delegate long poll_handle();
 
+        static robot _robot;
         static void Main(string[] args)
         {
             _robot = new robot(args);
@@ -14,10 +15,11 @@ namespace robot
             _robot.onConnectHub += onConnectHub;
             
             _robot.connect_server(service.timerservice.Tick);
-            
+
+            poll_handle _poll_handle = _robot.poll;
             while (true)
             {
-                if (_robot.poll() < 50)
+                if (_poll_handle() < 50)
                 {
                     Thread.Sleep(15);
                 }

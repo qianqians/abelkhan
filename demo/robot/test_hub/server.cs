@@ -6,6 +6,8 @@ namespace test_hub
 {
     class server
     {
+        public delegate long poll_handle();
+
         static void Main(string[] args)
         {
             if (args.Length <= 0)
@@ -22,8 +24,9 @@ namespace test_hub
                     log.log.operation(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "server closed, hub server:{0}", hub.hub.uuid);
                     break;
                 }
-                
-                if (_hub.poll() < 50)
+
+                poll_handle _poll_handle = _hub.poll;
+                if (_poll_handle() < 50)
                 {
                     Thread.Sleep(15);
                 }
