@@ -1,6 +1,3 @@
-[submodule "tools/meter"]
-	path = tools/meter
-	url = https://github.com/qianqians/meter.git
 [submodule "tools/jsonparse"]
 
 	path = tools/jsonparse
