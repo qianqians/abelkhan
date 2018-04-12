@@ -12,7 +12,14 @@ namespace dbproxy
             _mongoserver = new MongoDB.Driver.MongoServer(setting);
         }
 
-		public bool save(string db, string collection, Hashtable json_data) 
+        public mongodbproxy(String url)
+        {
+            var setting = new MongoDB.Driver.MongoServerSettings();
+            setting.Server = new MongoDB.Driver.MongoServerAddress(url);
+            _mongoserver = new MongoDB.Driver.MongoServer(setting);
+        }
+
+        public bool save(string db, string collection, Hashtable json_data) 
 		{
             var _db = _mongoserver.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument> (collection) as MongoDB.Driver.MongoCollection<MongoDB.Bson.BsonDocument>;

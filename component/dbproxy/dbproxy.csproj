@@ -125,6 +125,7 @@
     <Compile Include="center_msg_handle.cs" />
     <Compile Include="centerproxy.cs" />
     <Compile Include="closehandle.cs" />
+    <Compile Include="dbevent.cs" />
     <Compile Include="dbproxy.cs" />
     <Compile Include="hub_msg_handle.cs" />
     <Compile Include="hubmanager.cs" />
