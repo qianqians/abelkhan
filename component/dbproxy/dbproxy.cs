@@ -40,10 +40,20 @@ namespace dbproxy
 
             closeHandle = new closehandle();
 
-			var db_ip = _config.get_value_string("db_ip");
-			var db_port = (short)_config.get_value_int("db_port");
+            _dbevent = new dbevent();
+            _dbevent.start();
 
-			_mongodbproxy = new mongodbproxy(db_ip, db_port);
+            if (_config.has_key("db_ip") && _config.has_key("db_port"))
+            {
+                var db_ip = _config.get_value_string("db_ip");
+                var db_port = (short)_config.get_value_int("db_port");
+
+                _mongodbproxy = new mongodbproxy(db_ip, db_port);
+            }
+            else if (_config.has_key("db_url"))
+            {
+                _mongodbproxy = new mongodbproxy(_config.get_value_string("db_url"));
+            }
 
 			var ip = _config.get_value_string("ip");
 			var port = (short)_config.get_value_int("port");
@@ -148,9 +158,11 @@ namespace dbproxy
 
 		public static closehandle closeHandle;
 
-		private mongodbproxy _mongodbproxy;
+        public static dbevent _dbevent;
 
-		private hubmanager _hubmanager;
+        public static mongodbproxy _mongodbproxy;
+
+        public static hubmanager _hubmanager;
 		private hub_msg_handle _hub_msg_handle;
 		private module.hub_call_dbproxy _hub_call_dbproxy;
 
