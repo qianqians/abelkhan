@@ -1,3 +1,0 @@
-module test{
-	void test_func(string argv1, int argv2);
-}
