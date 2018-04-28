@@ -109,7 +109,7 @@ namespace dbproxy
 
         public void do_event()
         {
-            ArrayList _list = dbproxy._mongodbproxy.find(db, collection, 0, 0, 0, query_json, null);
+            ArrayList _list = dbproxy._mongodbproxy.find(db, collection, query_json);
 
             hubproxy _hubproxy = dbproxy._hubmanager.get_hub(juggle.Imodule.current_ch);
             if (_hubproxy == null)
@@ -138,7 +138,7 @@ namespace dbproxy
 
         public void do_event()
         {
-            ArrayList _list = dbproxy._mongodbproxy.find(db, collection, 0, 0, 0, query_json, null);
+            ArrayList _list = dbproxy._mongodbproxy.find(db, collection, query_json);
 
             hubproxy _hubproxy = dbproxy._hubmanager.get_hub(juggle.Imodule.current_ch);
             if (_hubproxy == null)

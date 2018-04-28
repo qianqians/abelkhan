@@ -14,6 +14,10 @@ namespace gate
         {
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "onChannelConnect");
 
+            service.channel _ch = ch as service.channel;
+            _ch.compress_and_encrypt = (byte[] input) => { return common.compress_and_encrypt.CompressAndEncrypt(input, xor_key); };
+            _ch.unencrypt_and_uncompress = (byte[] input) => { return common.compress_and_encrypt.UnEncryptAndUnCompress(input, xor_key); };
+
             clients.add_wait_channel(ch);
         }
 
@@ -51,6 +55,7 @@ namespace gate
             closeHandle = new closehandle();
 
             enable_heartbeats = _config.get_value_bool("heartbeats");
+            xor_key = (byte)_config.get_value_int("key");
 
             timer = new service.timerservice();
             _hubmanager = new hubmanager();
@@ -169,6 +174,8 @@ namespace gate
 		public static String uuid;
 		public static closehandle closeHandle;
         public static bool enable_heartbeats;
+
+        public byte xor_key;
 
         private service.acceptnetworkservice _accept_client_service;
 		private module.client_call_gate _client_call_gate;

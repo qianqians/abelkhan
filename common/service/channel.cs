@@ -14,6 +14,9 @@ namespace service
         public delegate void DisconnectHandle(channel ch);
         public event DisconnectHandle Disconnect;
 
+        public Func<byte[], byte[]> compress_and_encrypt = null;
+        public Func<byte[], byte[]> unencrypt_and_uncompress = null;
+
         public channel(Socket _s)
 		{
 			s = _s;
@@ -108,7 +111,12 @@ namespace service
                         MemoryStream _tmp = new MemoryStream();
                         _tmp.Write(data, offset, len);
                         _tmp.Position = 0;
-                        var json = System.Text.Encoding.UTF8.GetString(_tmp.ToArray());
+                        byte[] _tmp_data = _tmp.ToArray();
+                        if (unencrypt_and_uncompress != null)
+                        {
+                            _tmp_data = unencrypt_and_uncompress(_tmp_data);
+                        }
+                        var json = System.Text.Encoding.UTF8.GetString(_tmp_data);
                         log.log.trace(new System.Diagnostics.StackFrame(true), timerservice.Tick, "len:{0} msg:{1}", len, json);
                         try
                         {
@@ -202,7 +210,11 @@ namespace service
                 log.log.trace(new System.Diagnostics.StackFrame(), timerservice.Tick, "send:{0}", _tmp);
 
                 var _tmpdata = System.Text.Encoding.UTF8.GetBytes(_tmp);
-                var _tmplenght = _tmpdata.Length + 4;
+                if (compress_and_encrypt != null)
+                {
+                    _tmpdata = compress_and_encrypt(_tmpdata);
+                }
+                var _tmplenght = _tmpdata.Length;
                     
                 var st = new MemoryStream();
                 st.WriteByte((byte)(_tmplenght & 0xff));
@@ -210,10 +222,6 @@ namespace service
                 st.WriteByte((byte)((_tmplenght >> 16) & 0xff));
                 st.WriteByte((byte)((_tmplenght >> 24) & 0xff));
                 st.Write(_tmpdata, 0, _tmpdata.Length);
-                st.WriteByte(0);
-                st.WriteByte(0);
-                st.WriteByte(0);
-                st.WriteByte(0);
                 st.Position = 0;
 
                 senddata(st.ToArray());

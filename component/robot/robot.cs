@@ -85,7 +85,8 @@ namespace robot
             }
 
             Int64 robot_num = _config.get_value_int("robot_num");
-            
+            xor_key = (byte)_config.get_value_int("key");
+
             _ip = _config.get_value_string("ip");
             _port = (short)_config.get_value_int("port");
 
@@ -154,11 +155,20 @@ namespace robot
             modulemanager.process_module_mothed(module_name, func_name, argvs);
         }
 
+        public juggle.Ichannel onConnect(juggle.Ichannel ch)
+        {
+            service.channel _ch = ch as service.channel;
+            _ch.compress_and_encrypt = (byte[] input) => { return common.compress_and_encrypt.CompressAndEncrypt(input, xor_key); };
+            _ch.unencrypt_and_uncompress = (byte[] input) => { return common.compress_and_encrypt.UnEncryptAndUnCompress(input, xor_key); };
+
+            return _ch;
+        }
+
         public bool connect_server(Int64 tick)
         {
             try
             {
-                var ch = _conn.connect(_ip, _port);
+                var ch = onConnect(_conn.connect(_ip, _port));
                 var proxy = new client_proxy(ch);
                 proxys.Add(ch, proxy);
                 proxy.connect_server(tick);
@@ -207,6 +217,8 @@ namespace robot
 
         public static service.timerservice timer;
         public common.modulemanager modulemanager;
+
+        public byte xor_key;
 
         private service.connectnetworkservice _conn;
         private juggle.process _tcp_process;

@@ -52,10 +52,16 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net" />
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\common\compress_and_encrypt\compress_and_encrypt.cs">
+      <Link>compress_and_encrypt.cs</Link>
+    </Compile>
     <Compile Include="..\..\common\config\config.cs">
       <Link>config.cs</Link>
     </Compile>
@@ -126,5 +132,8 @@
     <Compile Include="hub_msg_handle.cs" />
     <Compile Include="hubmanager.cs" />
     <Compile Include="hubproxy.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

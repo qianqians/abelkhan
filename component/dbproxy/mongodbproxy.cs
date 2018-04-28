@@ -1,105 +1,129 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace dbproxy
 {
 	public class mongodbproxy
 	{
+        private Func<MongoDB.Driver.MongoClient> createMongocLient;
+        private List<MongoDB.Driver.MongoClient> client_pool = new List<MongoDB.Driver.MongoClient>();
+
 		public mongodbproxy(String ip, short port)
 		{
-            var setting = new MongoDB.Driver.MongoServerSettings ();
-			setting.Server = new MongoDB.Driver.MongoServerAddress (ip, port);
-            _mongoserver = new MongoDB.Driver.MongoServer(setting);
+            createMongocLient = ()=>
+            {
+                var setting = new MongoDB.Driver.MongoClientSettings();
+                setting.Server = new MongoDB.Driver.MongoServerAddress(ip, port);
+                return new MongoDB.Driver.MongoClient(setting);
+            };
         }
 
         public mongodbproxy(String url)
         {
-            var setting = new MongoDB.Driver.MongoServerSettings();
-            setting.Server = new MongoDB.Driver.MongoServerAddress(url);
-            _mongoserver = new MongoDB.Driver.MongoServer(setting);
+            createMongocLient = () =>
+            {
+                var mongo_url = new MongoDB.Driver.MongoUrl(url);
+                return new MongoDB.Driver.MongoClient(mongo_url);
+            };
+        }
+
+        private MongoDB.Driver.MongoClient getMongoCLient()
+        {
+            lock(client_pool)
+            {
+                if (client_pool.Count > 0)
+                {
+                    var tmp = client_pool[0];
+                    client_pool.Remove(tmp);
+                    return tmp;
+                }
+            }
+
+            return createMongocLient();
+        }
+
+        private void releaseMongoClient(MongoDB.Driver.MongoClient client)
+        {
+            lock (client_pool)
+            {
+                client_pool.Add(client);
+            }
         }
 
         public bool save(string db, string collection, Hashtable json_data) 
 		{
-            var _db = _mongoserver.GetDatabase(db);
-            var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument> (collection) as MongoDB.Driver.MongoCollection<MongoDB.Bson.BsonDocument>;
+            var _mongoclient = getMongoCLient();
+            var _db = _mongoclient.GetDatabase(db);
+            var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument> (collection) as MongoDB.Driver.IMongoCollection<MongoDB.Bson.BsonDocument>;
 
             MongoDB.Bson.BsonDocument _d = new MongoDB.Bson.BsonDocument(json_data);
-			var ret = _collection.Insert(_d);
+			_collection.InsertOne(_d);
 
-            if (ret != null && ret.HasLastErrorMessage)
-            {
-                log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, ret.LastErrorMessage);
-            }
+            releaseMongoClient(_mongoclient);
 
             return true;
 		}
 
         public bool update(string db, string collection, Hashtable json_query, Hashtable json_update)
         {
-            var _db = _mongoserver.GetDatabase(db);
-            var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection) as MongoDB.Driver.MongoCollection<MongoDB.Bson.BsonDocument>;
+            var _mongoclient = getMongoCLient();
+            var _db = _mongoclient.GetDatabase(db);
+            var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection) as MongoDB.Driver.IMongoCollection<MongoDB.Bson.BsonDocument>;
 
             var _update_impl = new Hashtable() { { "$set", json_update } };
+            
+            var _bson_query = new MongoDB.Bson.BsonDocument(json_query);
+            var _query = new MongoDB.Driver.BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
+            var _bson_update_impl = new MongoDB.Bson.BsonDocument(_update_impl);
+            var _update = new MongoDB.Driver.BsonDocumentUpdateDefinition<MongoDB.Bson.BsonDocument>(_bson_update_impl);
 
-            MongoDB.Driver.QueryDocument _query = new MongoDB.Driver.QueryDocument(json_query);
-			MongoDB.Driver.UpdateDocument _update = new MongoDB.Driver.UpdateDocument(_update_impl);
+			_collection.UpdateOne(_query, _update);
 
-			var ret = _collection.Update(_query, _update);
-
-            if (ret != null && ret.HasLastErrorMessage)
-            {
-                log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, ret.LastErrorMessage);
-            }
+            releaseMongoClient(_mongoclient);
 
             return true;
 		}
 
-		public ArrayList find(string db, string collection, int skip, int limit, int batch_size, Hashtable json_query, Hashtable json_fields) 
+		public ArrayList find(string db, string collection, Hashtable json_query) 
 		{
-            var _db = _mongoserver.GetDatabase(db);
-            var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection) as MongoDB.Driver.MongoCollection<MongoDB.Bson.BsonDocument>;
+            var _mongoclient = getMongoCLient();
+            var _db = _mongoclient.GetDatabase(db);
+            var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection) as MongoDB.Driver.IMongoCollection<MongoDB.Bson.BsonDocument>;
 
-            MongoDB.Driver.QueryDocument _query = new MongoDB.Driver.QueryDocument(json_query);
+            var _bson_query = new MongoDB.Bson.BsonDocument(json_query);
+            var _query = new MongoDB.Driver.BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
 
-            MongoDB.Driver.MongoCursor<MongoDB.Bson.BsonDocument> c = null;
-            if (json_fields != null)
-            {
-                MongoDB.Driver.FieldsDocument _fields = new MongoDB.Driver.FieldsDocument(json_fields);
-                c = _collection.FindAs<MongoDB.Bson.BsonDocument>(_query).SetSkip(skip).SetLimit(limit).SetBatchSize(batch_size).SetFields(_fields);
-            }
-            else
-            {
-                c = _collection.FindAs<MongoDB.Bson.BsonDocument>(_query).SetSkip(skip).SetLimit(limit).SetBatchSize(batch_size);
-            }
-            
+            var c = _collection.FindSync<MongoDB.Bson.BsonDocument>(_query);
+            var _c = c.Current;
+
             ArrayList _list = new ArrayList ();
-            foreach (var data in c) 
-			{
+            foreach(var data in _c)
+            {
                 var _data = data.ToHashtable();
-                _data.Remove("_id");
                 _list.Add(_data);
-			}
+            }
+
+            releaseMongoClient(_mongoclient);
 
             return _list;
 		}
 
-		public bool remove(string db, string collection, Hashtable json_query) {
-            var _db = _mongoserver.GetDatabase(db);
-            var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection) as MongoDB.Driver.MongoCollection<MongoDB.Bson.BsonDocument>;
+		public bool remove(string db, string collection, Hashtable json_query)
+        {
+            var _mongoclient = getMongoCLient();
+            var _db = _mongoclient.GetDatabase(db);
+            var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection) as MongoDB.Driver.IMongoCollection<MongoDB.Bson.BsonDocument>;
 
-            MongoDB.Driver.QueryDocument _query = new MongoDB.Driver.QueryDocument(json_query);
-			var ret = _collection.Remove (_query);
+            var _bson_query = new MongoDB.Bson.BsonDocument(json_query);
+            var _query = new MongoDB.Driver.BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
 
-            if (ret != null && ret.HasLastErrorMessage)
-            {
-                log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, ret.LastErrorMessage);
-            }
+            _collection.DeleteOne(_query);
+
+            releaseMongoClient(_mongoclient);
 
             return true;
 		}
-
-		private MongoDB.Driver.MongoServer _mongoserver;
 
 	}
 }
