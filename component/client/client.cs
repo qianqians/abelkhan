@@ -9,9 +9,9 @@ namespace client
         public delegate void onDisConnectHandle();
         public event onDisConnectHandle onDisConnect;
 
-        public client(byte _xor_key)
+        public client(Int64 _xor_key)
 		{
-            xor_key = _xor_key;
+            xor_key = (byte)(_xor_key %  256);
 
             uuid = System.Guid.NewGuid().ToString();
 			timer = new service.timerservice();

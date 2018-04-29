@@ -55,7 +55,7 @@ namespace gate
             closeHandle = new closehandle();
 
             enable_heartbeats = _config.get_value_bool("heartbeats");
-            xor_key = (byte)_config.get_value_int("key");
+            xor_key = (byte)(_config.get_value_int("key") % 256);
 
             timer = new service.timerservice();
             _hubmanager = new hubmanager();
