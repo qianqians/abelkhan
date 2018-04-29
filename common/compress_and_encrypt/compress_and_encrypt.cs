@@ -8,11 +8,13 @@ namespace common
     {
         static public byte[] CompressAndEncrypt(byte[] input, byte XORKey)
         {
-            MemoryStream input_stream = new MemoryStream(input);
-            var output_stream = new ICSharpCode.SharpZipLib.Zip.Compression.Streams.DeflaterOutputStream(input_stream);
+            MemoryStream input_stream = new MemoryStream();
 
-            byte[] output = new byte[output_stream.Length];
-            output_stream.Read(output, 0, output.Length);
+            var output_stream = new ICSharpCode.SharpZipLib.Zip.Compression.Streams.DeflaterOutputStream(input_stream);
+            output_stream.Write(input, 0, input.Length);
+            output_stream.Close();
+
+            byte[] output = input_stream.ToArray();
 
             for(int i = 0; i < output.Length; i++)
             {
@@ -31,9 +33,9 @@ namespace common
 
             MemoryStream input_stream = new MemoryStream(input);
             var output_stream = new ICSharpCode.SharpZipLib.Zip.Compression.Streams.InflaterInputStream(input_stream);
-
-            byte[] output = new byte[output_stream.Length];
-            output_stream.Read(output, 0, output.Length);
+            StreamReader rader = new StreamReader(output_stream, System.Text.Encoding.UTF8);
+            var tmp = rader.ReadToEnd();
+            byte[] output = System.Text.Encoding.UTF8.GetBytes(tmp);
 
             return output;
         }

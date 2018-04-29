@@ -97,23 +97,6 @@ namespace service
             }
             addloopweekdaytimeHandle.Clear();
 
-            if (tickHandledict.Count > 0)
-            {
-                log.log.trace(new System.Diagnostics.StackFrame(true), Tick, "tickHandledict.Count{0}", tickHandledict.Count);
-            }
-            if (timeHandledict.Count > 0)
-            {
-                log.log.trace(new System.Diagnostics.StackFrame(true), Tick, "timeHandledict.Count{0}", timeHandledict.Count);
-            }
-            if (loopdaytimeHandledict.Count > 0)
-            {
-                log.log.trace(new System.Diagnostics.StackFrame(true), Tick, "loopdaytimeHandledict.Count{0}", loopdaytimeHandledict.Count);
-            }
-            if (loopweekdaytimeHandledict.Count > 0)
-            {
-                log.log.trace(new System.Diagnostics.StackFrame(true), Tick, "loopweekdaytimeHandledict.Count{0}", loopweekdaytimeHandledict.Count);
-            }
-
             try
             {
 				List<Int64> list = new List<Int64>();
