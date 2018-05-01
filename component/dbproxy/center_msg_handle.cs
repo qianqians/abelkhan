@@ -12,7 +12,7 @@ namespace dbproxy
 
 		public void close_server()
 		{
-            dbproxy.timer.addticktime(10 * 1000, close_server_impl);
+            dbproxy.timer.addticktime(3 * 1000, close_server_impl);
 		}
 
         private void close_server_impl(Int64 tick)

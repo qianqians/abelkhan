@@ -16,6 +16,7 @@ namespace center
             if (_hubmanager.checkAllHubClosed())
             {
                 _svrmanager.close_db();
+                center.closeHandle.is_close = true;
             }
         }
 
