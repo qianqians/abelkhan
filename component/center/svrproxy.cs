@@ -4,9 +4,10 @@ namespace center
 {
 	class svrproxy
 	{
-		public svrproxy(juggle.Ichannel ch)
+		public svrproxy(juggle.Ichannel ch, String _type)
 		{
-			caller = new caller.center_call_server(ch);
+            type = _type;
+            caller = new caller.center_call_server(ch);
 		}
 
 		public void reg_server_sucess()
@@ -18,6 +19,8 @@ namespace center
 		{
 			caller.close_server();
 		}
+
+        public string type;
 
 		private caller.center_call_server caller;
 	}

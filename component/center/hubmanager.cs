@@ -27,6 +27,24 @@ namespace center
 			}
 		}
 
+        public void hub_closed(juggle.Ichannel ch)
+        {
+            hubproxys[ch].Item5.is_closed = true;
+        }
+
+        public bool checkAllHubClosed()
+        {
+            foreach (Tuple<String, String, Int64, String, hubproxy> value in hubproxys.Values)
+            {
+                if (!value.Item5.is_closed)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
 		private Dictionary<juggle.Ichannel, Tuple<String, String,Int64, String, hubproxy> > hubproxys;
 	}
 }

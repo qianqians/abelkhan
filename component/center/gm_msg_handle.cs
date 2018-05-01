@@ -22,11 +22,11 @@ namespace center
 			{
 				_svrmanager.for_each_svr(
 					(svrproxy _svrproxy) => {
-						_svrproxy.close_server();
+                        if (_svrproxy.type != "dbproxy") {
+                            _svrproxy.close_server();
+                        }
 					}
 				);
-
-                center.closeHandle.is_close = true;
 
                 log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "close clutter!");
 			}

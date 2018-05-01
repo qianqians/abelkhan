@@ -68,6 +68,9 @@
     <Compile Include="..\..\common\protcol\c#\caller\centercaller.cs">
       <Link>centercaller.cs</Link>
     </Compile>
+    <Compile Include="..\..\common\protcol\c#\caller\hub_call_centercaller.cs">
+      <Link>hub_call_centercaller.cs</Link>
+    </Compile>
     <Compile Include="..\..\common\protcol\c#\caller\hub_call_dbproxycaller.cs">
       <Link>hub_call_dbproxycaller.cs</Link>
     </Compile>

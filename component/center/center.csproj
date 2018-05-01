@@ -96,6 +96,9 @@
     <Compile Include="..\..\common\protcol\c#\module\gm_centermodule.cs">
       <Link>gm_centermodule.cs</Link>
     </Compile>
+    <Compile Include="..\..\common\protcol\c#\module\hub_call_centermodule.cs">
+      <Link>hub_call_centermodule.cs</Link>
+    </Compile>
     <Compile Include="..\..\common\service\acceptnetworkservice.cs">
       <Link>acceptnetworkservice.cs</Link>
     </Compile>
@@ -134,6 +137,7 @@
     </Compile>
     <Compile Include="center.cs" />
     <Compile Include="closehandle.cs" />
+    <Compile Include="hub_msg_handle.cs" />
     <Compile Include="svr_msg_handle.cs" />
     <Compile Include="svrmanager.cs" />
     <Compile Include="svrproxy.cs" />

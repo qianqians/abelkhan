@@ -14,12 +14,22 @@ namespace center
 
 		public svrproxy reg_svr(juggle.Ichannel ch, String type, String ip, Int64 port, String uuid)
 		{
-			svrproxy _svrproxy = new svrproxy(ch);
+			svrproxy _svrproxy = new svrproxy(ch, type);
 			svrproxys.Add(ch, Tuple.Create(type, ip, port, uuid, _svrproxy));
 			svrproxys_uuid.Add(uuid, Tuple.Create(type, ip, port, uuid, _svrproxy));
 
-			return _svrproxy;
+            if (type == "dbproxy")
+            {
+                _dbproxy = _svrproxy;
+            }
+
+            return _svrproxy;
 		}
+
+        public void close_db()
+        {
+            _dbproxy.close_server();
+        }
 
 		public Tuple<String, String,Int64, String, svrproxy> get_svr_info(String uuid)
 		{
@@ -47,7 +57,8 @@ namespace center
 			}
 		}
 
-		private Dictionary<juggle.Ichannel, Tuple<String, String,Int64, String, svrproxy> > svrproxys;
+        private svrproxy _dbproxy;
+        private Dictionary<juggle.Ichannel, Tuple<String, String,Int64, String, svrproxy> > svrproxys;
 		private Dictionary<String, Tuple<String, String,Int64, String, svrproxy> > svrproxys_uuid;
 	}
 }

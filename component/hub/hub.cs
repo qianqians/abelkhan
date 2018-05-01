@@ -128,6 +128,7 @@ namespace hub
             {
                 onCloseServer();
             }
+            _centerproxy.closed();
 
             closeHandle.is_close = true;
         }

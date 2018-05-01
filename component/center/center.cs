@@ -47,7 +47,12 @@ namespace center
 			_svr_call_center.onreg_server += _svr_msg_handle.reg_server;
 			_center_process.reg_module (_svr_call_center);
 
-			var ip = _config.get_value_string("ip");
+            var _hub_call_center = new module.hub_call_center();
+            var _hub_msg_handle = new hub_msg_handle(_svrmanager, _hubmanager);
+            _hub_call_center.onclosed += _hub_msg_handle.closed;
+            _center_process.reg_module(_hub_call_center);
+
+            var ip = _config.get_value_string("ip");
 			var port = (short)_config.get_value_int("port");
 			_accept_svr_service = new service.acceptnetworkservice (ip, port, _center_process);
 

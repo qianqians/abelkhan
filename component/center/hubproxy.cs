@@ -19,6 +19,8 @@ namespace center
             _caller.reload(argv);
         }
 
+        public bool is_closed = false;
+
 		private caller.center_call_hub _caller;
 	}
 }

@@ -23,3 +23,7 @@ module center_call_hub{
 
 	void reload(string argv);
 }
+
+module hub_call_center{
+    	void closed();
+}
