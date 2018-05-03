@@ -18,10 +18,11 @@ namespace caller
             call_module_method("reg_hub_sucess", _argv);
         }
 
-        public void ack_create_persisted_object(String argv0)
+        public void ack_create_persisted_object(String argv0,Boolean argv1)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
+            _argv.Add(argv1);
             call_module_method("ack_create_persisted_object", _argv);
         }
 

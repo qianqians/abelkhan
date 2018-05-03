@@ -15,9 +15,9 @@ namespace dbproxy
 			_caller.reg_hub_sucess();
 		}
 
-		public void ack_create_persisted_object(String callbackid)
+		public void ack_create_persisted_object(String callbackid, bool is_create_sucess)
 		{
-			_caller.ack_create_persisted_object(callbackid);
+			_caller.ack_create_persisted_object(callbackid, is_create_sucess);
 		}
 
 		public void ack_updata_persisted_object(String callbackid)

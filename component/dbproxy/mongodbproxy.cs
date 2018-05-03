@@ -51,16 +51,37 @@ namespace dbproxy
             }
         }
 
+        public void create_index(string db, string collection, string key)
+        {
+            var _mongoclient = getMongoCLient();
+            var _db = _mongoclient.GetDatabase(db);
+            var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection) as MongoDB.Driver.IMongoCollection<MongoDB.Bson.BsonDocument>;
+
+            var builder = new MongoDB.Driver.IndexKeysDefinitionBuilder<MongoDB.Bson.BsonDocument>();
+            var opt = new MongoDB.Driver.CreateIndexOptions();
+            opt.Unique = true;
+            _collection.Indexes.CreateOne(builder.Ascending(key), opt);
+        }
+
         public bool save(string db, string collection, Hashtable json_data) 
 		{
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument> (collection) as MongoDB.Driver.IMongoCollection<MongoDB.Bson.BsonDocument>;
 
-            MongoDB.Bson.BsonDocument _d = new MongoDB.Bson.BsonDocument(json_data);
-			_collection.InsertOne(_d);
-
-            releaseMongoClient(_mongoclient);
+            try
+            {
+                MongoDB.Bson.BsonDocument _d = new MongoDB.Bson.BsonDocument(json_data);
+                _collection.InsertOne(_d);
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                releaseMongoClient(_mongoclient);
+            }
 
             return true;
 		}

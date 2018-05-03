@@ -19,8 +19,8 @@ namespace dbproxy
 
         public void do_event()
         {
-            dbproxy._mongodbproxy.save(db, collection, object_info);
-            _hubproxy.ack_create_persisted_object(callbackid);
+            var is_create_sucess = dbproxy._mongodbproxy.save(db, collection, object_info);
+            _hubproxy.ack_create_persisted_object(callbackid, is_create_sucess);
 
         }
 

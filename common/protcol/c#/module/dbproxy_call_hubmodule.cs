@@ -22,14 +22,15 @@ namespace module
             }
         }
 
-        public delegate void ack_create_persisted_objecthandle(String argv0);
+        public delegate void ack_create_persisted_objecthandle(String argv0, Boolean argv1);
         public event ack_create_persisted_objecthandle onack_create_persisted_object;
         public void ack_create_persisted_object(ArrayList _event)
         {
             if(onack_create_persisted_object != null)
             {
                 var argv0 = ((String)_event[0]);
-                onack_create_persisted_object( argv0);
+                var argv1 = ((Boolean)_event[1]);
+                onack_create_persisted_object( argv0,  argv1);
             }
         }
 

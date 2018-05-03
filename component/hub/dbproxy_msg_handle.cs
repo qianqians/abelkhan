@@ -17,10 +17,10 @@ namespace hub
             _hub_.onConnectDB_event();
 		}
 
-		public void ack_create_persisted_object(String callbackid)
+		public void ack_create_persisted_object(String callbackid, bool is_create_sucess)
 		{
 			dbproxyproxy.onCreatePersistedObjectHandle _handle = (dbproxyproxy.onCreatePersistedObjectHandle)hub.dbproxy.begin_callback(callbackid);
-			_handle();
+			_handle(is_create_sucess);
 			hub.dbproxy.end_callback(callbackid);
 		}
 

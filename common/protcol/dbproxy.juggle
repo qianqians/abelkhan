@@ -16,7 +16,7 @@ module hub_call_dbproxy{
 module dbproxy_call_hub{
 	void reg_hub_sucess();
 	
-	void ack_create_persisted_object(string callbackid);
+	void ack_create_persisted_object(string callbackid, bool is_create_sucessed);
 
 	void ack_updata_persisted_object(string callbackid);
 

@@ -131,7 +131,7 @@ namespace hub
             return null;
         }
 
-        public delegate void onCreatePersistedObjectHandle();
+        public delegate void onCreatePersistedObjectHandle(bool is_create_sucess);
 		public delegate void onUpdataPersistedObjectHandle();
         public delegate void onGetObjectCountHandle(Int64 count);
 		public delegate void onGetObjectInfoHandle(ArrayList obejctinfoarray);
