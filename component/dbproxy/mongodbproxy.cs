@@ -57,10 +57,20 @@ namespace dbproxy
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection) as MongoDB.Driver.IMongoCollection<MongoDB.Bson.BsonDocument>;
 
-            var builder = new MongoDB.Driver.IndexKeysDefinitionBuilder<MongoDB.Bson.BsonDocument>();
-            var opt = new MongoDB.Driver.CreateIndexOptions();
-            opt.Unique = is_unique;
-            _collection.Indexes.CreateOne(builder.Ascending(key), opt);
+            try
+            {
+                var builder = new MongoDB.Driver.IndexKeysDefinitionBuilder<MongoDB.Bson.BsonDocument>();
+                var opt = new MongoDB.Driver.CreateIndexOptions();
+                opt.Unique = is_unique;
+                _collection.Indexes.CreateOne(builder.Ascending(key), opt);
+            }
+            catch
+            {
+            }
+            finally
+            {
+                releaseMongoClient(_mongoclient);
+            }
         }
 
         public bool save(string db, string collection, Hashtable json_data) 
@@ -116,17 +126,22 @@ namespace dbproxy
             var _query = new MongoDB.Driver.BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
 
             var c = _collection.FindSync<MongoDB.Bson.BsonDocument>(_query);
-            var _c = c.Current;
 
-            ArrayList _list = new ArrayList ();
-            if (_c != null)
+            ArrayList _list = new ArrayList();
+            do
             {
-                foreach (var data in _c)
+                var _c = c.Current;
+
+                if (_c != null)
                 {
-                    var _data = data.ToHashtable();
-                    _list.Add(_data);
+                    foreach (var data in _c)
+                    {
+                        var _data = data.ToHashtable();
+                        _data.Remove("_id");
+                        _list.Add(_data);
+                    }
                 }
-            }
+            } while (c.MoveNext());
 
             releaseMongoClient(_mongoclient);
 
