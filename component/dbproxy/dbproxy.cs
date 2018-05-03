@@ -60,7 +60,7 @@ namespace dbproxy
                 var _index_config = _config.get_value_list("index");
                 for (int i = 0; i < _index_config.get_list_size(); i++)
                 {
-                    var index = _index_config.get_list_list(i);
+                    var index = _index_config.get_list_dict(i);
                     var db = index.get_value_string("db");
                     var collection = index.get_value_string("collection");
                     var key = index.get_value_string("key");
