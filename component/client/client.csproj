@@ -21,7 +21,7 @@
     <ConsolePause>false</ConsolePause>
     <Prefer32Bit>false</Prefer32Bit>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <IntermediateOutputPath>C:\Users\QIANQI~1\AppData\Local\Temp\vs2792.tmp\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\PC-3\AppData\Local\Temp\vsCB6A.tmp\Debug\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -30,7 +30,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <Prefer32Bit>false</Prefer32Bit>
-    <IntermediateOutputPath>C:\Users\QIANQI~1\AppData\Local\Temp\vs2792.tmp\Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\PC-3\AppData\Local\Temp\vsCB6A.tmp\Release\</IntermediateOutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup>

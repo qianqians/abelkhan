@@ -151,7 +151,9 @@ namespace dbproxy
 					Thread.Sleep(5);
 				}
 			}
-		}
+
+            dbproxy._dbevent.join_all();
+        }
 
 		public static String uuid;
 		public static bool is_busy;

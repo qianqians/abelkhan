@@ -8,8 +8,9 @@ namespace dbproxy
     /*write event*/
     public class create_event
     {
-        public create_event(string _db, string _collection, Hashtable _object_info, string _callbackid)
+        public create_event(hubproxy _hubproxy_, string _db, string _collection, Hashtable _object_info, string _callbackid)
         {
+            _hubproxy = _hubproxy_;
             db = _db;
             collection = _collection;
             object_info = _object_info;
@@ -19,17 +20,11 @@ namespace dbproxy
         public void do_event()
         {
             dbproxy._mongodbproxy.save(db, collection, object_info);
-
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(juggle.Imodule.current_ch);
-            if (_hubproxy == null)
-            {
-                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "hubproxy is null");
-                return;
-            }
             _hubproxy.ack_create_persisted_object(callbackid);
 
         }
 
+        public hubproxy _hubproxy;
         public string db;
         public string collection;
         public Hashtable object_info;
@@ -38,8 +33,9 @@ namespace dbproxy
 
     public class update_event
     {
-        public update_event(string _db, string _collection, Hashtable _query_json, Hashtable _object_info, string _callbackid)
+        public update_event(hubproxy _hubproxy_, string _db, string _collection, Hashtable _query_json, Hashtable _object_info, string _callbackid)
         {
+            _hubproxy = _hubproxy_;
             db = _db;
             collection = _collection;
             query_json = _query_json;
@@ -50,16 +46,10 @@ namespace dbproxy
         public void do_event()
         {
             dbproxy._mongodbproxy.update(db, collection, query_json, object_info);
-
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(juggle.Imodule.current_ch);
-            if (_hubproxy == null)
-            {
-                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "hubproxy is null");
-                return;
-            }
             _hubproxy.ack_updata_persisted_object(callbackid);
         }
 
+        public hubproxy _hubproxy;
         public string db;
         public string collection;
         public Hashtable query_json;
@@ -69,8 +59,9 @@ namespace dbproxy
 
     public class remove_event
     {
-        public remove_event(string _db, string _collection, Hashtable _query_json, string _callbackid)
+        public remove_event(hubproxy _hubproxy_, string _db, string _collection, Hashtable _query_json, string _callbackid)
         {
+            _hubproxy = _hubproxy_;
             db = _db;
             collection = _collection;
             query_json = _query_json;
@@ -80,16 +71,10 @@ namespace dbproxy
         public void do_event()
         {
             dbproxy._mongodbproxy.remove(db, collection, query_json);
-
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(juggle.Imodule.current_ch);
-            if (_hubproxy == null)
-            {
-                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "hubproxy is null");
-                return;
-            }
             _hubproxy.ack_remove_object(callbackid);
         }
 
+        public hubproxy _hubproxy;
         public string db;
         public string collection;
         public Hashtable query_json;
@@ -99,8 +84,9 @@ namespace dbproxy
     /*read event*/
     public class count_event
     {
-        public count_event(string _db, string _collection, Hashtable _query_json, string _callbackid)
+        public count_event(hubproxy _hubproxy_, string _db, string _collection, Hashtable _query_json, string _callbackid)
         {
+            _hubproxy = _hubproxy_;
             db = _db;
             collection = _collection;
             query_json = _query_json;
@@ -110,16 +96,10 @@ namespace dbproxy
         public void do_event()
         {
             ArrayList _list = dbproxy._mongodbproxy.find(db, collection, query_json);
-
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(juggle.Imodule.current_ch);
-            if (_hubproxy == null)
-            {
-                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "hubproxy is null");
-                return;
-            }
             _hubproxy.ack_get_object_count(callbackid, _list.Count);
         }
 
+        public hubproxy _hubproxy;
         public string db;
         public string collection;
         public Hashtable query_json;
@@ -128,8 +108,9 @@ namespace dbproxy
 
     public class find_event
     {
-        public find_event(string _db, string _collection, Hashtable _query_json, string _callbackid)
+        public find_event(hubproxy _hubproxy_, string _db, string _collection, Hashtable _query_json, string _callbackid)
         {
+            _hubproxy = _hubproxy_;
             db = _db;
             collection = _collection;
             query_json = _query_json;
@@ -139,13 +120,6 @@ namespace dbproxy
         public void do_event()
         {
             ArrayList _list = dbproxy._mongodbproxy.find(db, collection, query_json);
-
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(juggle.Imodule.current_ch);
-            if (_hubproxy == null)
-            {
-                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "hubproxy is null");
-                return;
-            }
 
             int count = 0;
             ArrayList _datalist = new ArrayList();
@@ -177,6 +151,7 @@ namespace dbproxy
             _hubproxy.ack_get_object_info_end(callbackid);
         }
 
+        public hubproxy _hubproxy;
         public string db;
         public string collection;
         public Hashtable query_json;
@@ -213,13 +188,13 @@ namespace dbproxy
             }
         }
 
-        public void start()
+        public Thread start()
         {
             Thread t = new Thread(() =>
             {
-                bool do_nothing = true;
                 while (true)
                 {
+                    bool do_nothing = true;
                     lock (create_event_list)
                     {
                         if (create_event_list.Count > 0)
@@ -253,11 +228,24 @@ namespace dbproxy
                     }
                 }
             });
+            t.Start();
+
+            return t;
         }
     }
 
     public class dbevent
     {
+        private List<Thread> th_list = new List<Thread>();
+
+        public void join_all()
+        {
+            foreach(var t in th_list)
+            {
+                t.Join();
+            }
+        }
+
         private Queue<count_event> count_event_list = new Queue<count_event>();
         private Queue<find_event> find_event_list = new Queue<find_event>();
 
@@ -283,9 +271,9 @@ namespace dbproxy
             {
                 Thread t = new Thread(() =>
                 {
-                    bool do_nothing = true;
                     while (true)
                     {
+                        bool do_nothing = true;
                         lock (count_event_list)
                         {
                             if (count_event_list.Count > 0)
@@ -310,6 +298,9 @@ namespace dbproxy
                         }
                     }
                 });
+                t.Start();
+
+                th_list.Add(t);
             }
         }
 
@@ -351,7 +342,7 @@ namespace dbproxy
             }
 
             var _write_event_list = new db_collection_write_event();
-            _write_event_list.start();
+            th_list.Add(_write_event_list.start());
 
             collection_write_event_list.Add(collection, _write_event_list);
         }

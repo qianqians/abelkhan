@@ -23,7 +23,14 @@ namespace dbproxy
 		{
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin create_persisted_object");
 
-            dbproxy._dbevent.push_create_event(new create_event(db, collection, object_info, callbackid));
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(juggle.Imodule.current_ch);
+            if (_hubproxy == null)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "hubproxy is null");
+                return;
+            }
+
+            dbproxy._dbevent.push_create_event(new create_event(_hubproxy, db, collection, object_info, callbackid));
 
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "end create_persisted_object");
         }
@@ -32,7 +39,14 @@ namespace dbproxy
 		{
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin updata_persisted_object");
 
-            dbproxy._dbevent.push_updata_event(new update_event(db, collection, query_json, object_info, callbackid));
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(juggle.Imodule.current_ch);
+            if (_hubproxy == null)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "hubproxy is null");
+                return;
+            }
+
+            dbproxy._dbevent.push_updata_event(new update_event(_hubproxy, db, collection, query_json, object_info, callbackid));
 
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "end updata_persisted_object");
         }
@@ -41,7 +55,14 @@ namespace dbproxy
         {
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin remove_object");
 
-            dbproxy._dbevent.push_remove_event(new remove_event(db, collection, query_json, callbackid));
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(juggle.Imodule.current_ch);
+            if (_hubproxy == null)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "hubproxy is null");
+                return;
+            }
+
+            dbproxy._dbevent.push_remove_event(new remove_event(_hubproxy, db, collection, query_json, callbackid));
 
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "end remove_object");
         }
@@ -50,7 +71,14 @@ namespace dbproxy
         {
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin get_object_info");
 
-            dbproxy._dbevent.push_count_event(new count_event(db, collection, query_json, callbackid));
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(juggle.Imodule.current_ch);
+            if (_hubproxy == null)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "hubproxy is null");
+                return;
+            }
+
+            dbproxy._dbevent.push_count_event(new count_event(_hubproxy, db, collection, query_json, callbackid));
 
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "end get_object_info");
         }
@@ -59,7 +87,14 @@ namespace dbproxy
         {
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin get_object_info");
 
-            dbproxy._dbevent.push_find_event(new find_event(db, collection, query_json, callbackid));
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(juggle.Imodule.current_ch);
+            if (_hubproxy == null)
+            {
+                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "hubproxy is null");
+                return;
+            }
+
+            dbproxy._dbevent.push_find_event(new find_event(_hubproxy, db, collection, query_json, callbackid));
 
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "end get_object_info");
         }

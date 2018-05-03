@@ -98,10 +98,13 @@ namespace dbproxy
             var _c = c.Current;
 
             ArrayList _list = new ArrayList ();
-            foreach(var data in _c)
+            if (_c != null)
             {
-                var _data = data.ToHashtable();
-                _list.Add(_data);
+                foreach (var data in _c)
+                {
+                    var _data = data.ToHashtable();
+                    _list.Add(_data);
+                }
             }
 
             releaseMongoClient(_mongoclient);
