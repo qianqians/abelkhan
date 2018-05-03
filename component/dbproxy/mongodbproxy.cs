@@ -51,7 +51,7 @@ namespace dbproxy
             }
         }
 
-        public void create_index(string db, string collection, string key)
+        public void create_index(string db, string collection, string key, bool is_unique)
         {
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
@@ -59,7 +59,7 @@ namespace dbproxy
 
             var builder = new MongoDB.Driver.IndexKeysDefinitionBuilder<MongoDB.Bson.BsonDocument>();
             var opt = new MongoDB.Driver.CreateIndexOptions();
-            opt.Unique = true;
+            opt.Unique = is_unique;
             _collection.Indexes.CreateOne(builder.Ascending(key), opt);
         }
 

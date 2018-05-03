@@ -55,7 +55,21 @@ namespace dbproxy
                 _mongodbproxy = new mongodbproxy(_config.get_value_string("db_url"));
             }
 
-			var ip = _config.get_value_string("ip");
+            if (_config.has_key("index"))
+            {
+                var _index_config = _config.get_value_list("index");
+                for (int i = 0; i < _index_config.get_list_size(); i++)
+                {
+                    var index = _index_config.get_list_list(i);
+                    var db = index.get_value_string("db");
+                    var collection = index.get_value_string("collection");
+                    var key = index.get_value_string("key");
+                    var is_unique = index.get_value_bool("is_unique");
+                    _mongodbproxy.create_index(db, collection, key, is_unique);
+                }
+            }
+
+            var ip = _config.get_value_string("ip");
 			var port = (short)_config.get_value_int("port");
             
 			_hub_call_dbproxy = new module.hub_call_dbproxy();
