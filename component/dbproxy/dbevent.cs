@@ -192,7 +192,7 @@ namespace dbproxy
         {
             Thread t = new Thread(() =>
             {
-                while (true)
+                while (!dbproxy.closeHandle.is_close())
                 {
                     bool do_nothing = true;
                     lock (create_event_list)
@@ -271,7 +271,7 @@ namespace dbproxy
             {
                 Thread t = new Thread(() =>
                 {
-                    while (true)
+                    while (!dbproxy.closeHandle.is_close())
                     {
                         bool do_nothing = true;
                         lock (count_event_list)
