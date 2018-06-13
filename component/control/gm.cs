@@ -30,10 +30,9 @@ namespace gm
 
     class gm
     {
-        public gm(string[] args)
+        public gm(string[] args, string _gm_name)
         {
-            Console.WriteLine("Enter gm name:");
-            gm_name = Console.ReadLine();
+            gm_name = _gm_name;
 
             config.config _config = new config.config(args[0]);
             if (args.Length > 1)
@@ -95,7 +94,25 @@ namespace gm
                 return;
             }
 
-            gm _gm = new gm(args);
+            string gm_name = null;
+            string[] argv_cmd = null;
+            if (args.Length > 3)
+            {
+                gm_name = args[2];
+
+                argv_cmd = new string[2];
+                for (int i = 3; i < args.Length; i++)
+                {
+                    argv_cmd[i - 3] = args[3];
+                }
+            }
+            else
+            {
+                Console.WriteLine("Enter gm name:");
+                gm_name = Console.ReadLine();
+            }
+
+            gm _gm = new gm(args, gm_name);
             bool runing = true;
 
             Dictionary<String, handle> cmd_callback = new Dictionary<string, handle>();
@@ -110,19 +127,29 @@ namespace gm
             {
                 var tmp = _gm.poll();
 
-                _gm.output_cmd();
-
-                string cmd = Console.ReadLine();
-                string[] cmds = cmd.Split(' ');
-                if (cmd_callback.ContainsKey(cmds[0]))
+                if (argv_cmd != null)
                 {
-                    cmd_callback[cmds[0]](cmds);
+                    if (cmd_callback.ContainsKey(argv_cmd[0]))
+                    {
+                        cmd_callback[argv_cmd[0]](argv_cmd);
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("invalid gm cmd!");
+                    _gm.output_cmd();
+
+                    string cmd = Console.ReadLine();
+                    string[] cmds = cmd.Split(' ');
+                    if (cmd_callback.ContainsKey(cmds[0]))
+                    {
+                        cmd_callback[cmds[0]](cmds);
+                    }
+                    else
+                    {
+                        Console.WriteLine("invalid gm cmd!");
+                    }
                 }
-                
+
                 if (tmp < 50)
                 {
                     System.Threading.Thread.Sleep(15);
