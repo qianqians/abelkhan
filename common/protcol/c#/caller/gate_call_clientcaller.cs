@@ -12,17 +12,10 @@ namespace caller
             module_name = "gate_call_client";
         }
 
-        public void connect_gate_sucess()
+        public void connect_server_sucess()
         {
             ArrayList _argv = new ArrayList();
-            call_module_method("connect_gate_sucess", _argv);
-        }
-
-        public void connect_hub_sucess(String argv0)
-        {
-            ArrayList _argv = new ArrayList();
-            _argv.Add(argv0);
-            call_module_method("connect_hub_sucess", _argv);
+            call_module_method("connect_server_sucess", _argv);
         }
 
         public void ack_heartbeats()

@@ -21,8 +21,7 @@ namespace client
 
 			var _process = new juggle.process();
 			_gate_call_client = new module.gate_call_client();
-			_gate_call_client.onconnect_gate_sucess += on_ack_connect_gate;
-            _gate_call_client.onconnect_hub_sucess += on_ack_connect_hub;
+			_gate_call_client.onconnect_server_sucess += on_ack_connect_server;
             _gate_call_client.onack_heartbeats += on_ack_heartbeats;
             _gate_call_client.oncall_client += on_call_client;
 			_process.reg_module(_gate_call_client);
@@ -94,9 +93,9 @@ namespace client
             _heartbeats = service.timerservice.Tick;
         }
 
-        public delegate void onConnectGateHandle();
-		public event onConnectGateHandle onConnectGate;
-		private void on_ack_connect_gate()
+        public delegate void onConnectServerHandle();
+		public event onConnectServerHandle onConnectServer;
+		private void on_ack_connect_server()
 		{
             _heartbeats = service.timerservice.Tick;
             _client_call_gate.heartbeats(service.timerservice.Tick);
@@ -106,9 +105,9 @@ namespace client
                 timer.addticktime(5 * 1000, heartbeats);
             }
 
-            if (onConnectGate != null)
+            if (onConnectServer != null)
 			{
-                onConnectGate();
+                onConnectServer();
             }
 
             connect_state = true;
@@ -197,16 +196,6 @@ namespace client
             _client_call_gate.disable_heartbeats();
 
             _is_enable_heartbeats = false;
-        }
-
-        public void connect_hub(string hub_name)
-        {
-            _client_call_gate.connect_hub(uuid, hub_name);
-        }
-
-        public void disconnect_hub(string hub_name)
-        {
-            _client_call_gate.disconnect_hub(uuid, hub_name);
         }
 
         public void call_hub(String hub_name, String module_name, String func_name, params object[] _argvs)

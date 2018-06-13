@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace gate
 {
@@ -39,6 +40,14 @@ namespace gate
             }
 
             return null;
+        }
+
+        public void for_each(Action<hubproxy> cb)
+        {
+            foreach (var _proxy in hubs_hub_name.Values)
+            {
+                cb(_proxy);
+            }
         }
 
         private Dictionary<juggle.Ichannel, hubproxy> hubs;

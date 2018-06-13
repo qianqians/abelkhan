@@ -12,24 +12,13 @@ namespace module
 			module_name = "gate_call_client";
         }
 
-        public delegate void connect_gate_sucesshandle();
-        public event connect_gate_sucesshandle onconnect_gate_sucess;
-        public void connect_gate_sucess(ArrayList _event)
+        public delegate void connect_server_sucesshandle();
+        public event connect_server_sucesshandle onconnect_server_sucess;
+        public void connect_server_sucess(ArrayList _event)
         {
-            if(onconnect_gate_sucess != null)
+            if(onconnect_server_sucess != null)
             {
-                onconnect_gate_sucess();
-            }
-        }
-
-        public delegate void connect_hub_sucesshandle(String argv0);
-        public event connect_hub_sucesshandle onconnect_hub_sucess;
-        public void connect_hub_sucess(ArrayList _event)
-        {
-            if(onconnect_hub_sucess != null)
-            {
-                var argv0 = ((String)_event[0]);
-                onconnect_hub_sucess( argv0);
+                onconnect_server_sucess();
             }
         }
 

@@ -11,14 +11,9 @@ namespace gate
             _caller = new caller.gate_call_client(client_ch);
 		}
 
-        public void connect_gate_sucessa()
+        public void connect_server_sucess()
         {
-            _caller.connect_gate_sucess();
-        }
-
-        public void connect_hub_sucess(string hub_name)
-        {
-            _caller.connect_hub_sucess(hub_name);
+            _caller.connect_server_sucess();
         }
 
         public void ack_heartbeats()

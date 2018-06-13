@@ -29,16 +29,6 @@ namespace robot
             _client_call_gate.cancle_server();
         }
 
-        public void connect_hub(string hub_name)
-        {
-            _client_call_gate.connect_hub(uuid, hub_name);
-        }
-
-        public void disconnect_hub(string hub_name)
-        {
-            _client_call_gate.disconnect_hub(uuid, hub_name);
-        }
-
         public void call_hub(String hub_name, String module_name, String func_name, params object[] _argvs)
         {
             ArrayList _argvs_list = new ArrayList();
@@ -95,8 +85,7 @@ namespace robot
 
             _tcp_process = new juggle.process();
             _gate_call_client = new module.gate_call_client();
-            _gate_call_client.onconnect_gate_sucess += on_ack_connect_gate;
-            _gate_call_client.onconnect_hub_sucess += on_ack_connect_hub;
+            _gate_call_client.onconnect_server_sucess += on_ack_connect_server;
             _gate_call_client.oncall_client += on_call_client;
             _gate_call_client.onack_heartbeats += on_ack_heartbeats;
             _tcp_process.reg_module(_gate_call_client);
@@ -111,9 +100,9 @@ namespace robot
             _robot_num = 0;
         }
 
-        public delegate void onConnectGateHandle();
-        public event onConnectGateHandle onConnectGate;
-        private void on_ack_connect_gate()
+        public delegate void onConnectServerHandle();
+        public event onConnectServerHandle onConnectServer;
+        private void on_ack_connect_server()
         {
             var _pre_proxy = proxys[juggle.Imodule.current_ch];
             timer.addticktime(5 * 1000, _pre_proxy.heartbeats);
@@ -130,19 +119,9 @@ namespace robot
                 log.log.operation(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "all robots connected");
             }
 
-            if (onConnectGate != null)
+            if (onConnectServer != null)
             {
-                onConnectGate();
-            }
-        }
-
-        public delegate void onConnectHubHandle(string _hub_name);
-        public event onConnectHubHandle onConnectHub;
-        private void on_ack_connect_hub(string _hub_name)
-        {
-            if (onConnectHub != null)
-            {
-                onConnectHub(_hub_name);
+                onConnectServer();
             }
         }
 

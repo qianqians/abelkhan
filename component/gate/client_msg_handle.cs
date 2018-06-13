@@ -18,8 +18,12 @@ namespace gate
             {
                 log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "client {0} connected", uuid);
 
-				var _proxy = _clientmanager.reg_client(uuid, juggle.Imodule.current_ch, service.timerservice.Tick, tick);
-                _proxy.connect_gate_sucessa();
+                _hubmanager.for_each((hubproxy _hubproxy) => {
+                    _hubproxy.client_connect(uuid);
+                });
+
+                var _proxy = _clientmanager.reg_client(uuid, juggle.Imodule.current_ch, service.timerservice.Tick, tick);
+                _proxy.connect_server_sucess();
             }
 		}
 
@@ -36,26 +40,6 @@ namespace gate
         public void disable_heartbeats()
         {
             _clientmanager.disable_heartbeats(juggle.Imodule.current_ch);
-        }
-
-        public void connect_hub(string client_uuid, string hub_name)
-        {
-            hubproxy _hubproxy = _hubmanager.get_hub(hub_name);
-            if (_hubproxy != null)
-            {
-                _clientmanager.reg_client_hub(client_uuid, _hubproxy);
-                _hubproxy.client_connect(client_uuid);
-            }
-        }
-
-        public void disconnect_hub(string client_uuid, string hub_name)
-        {
-            hubproxy _hubproxy = _hubmanager.get_hub(hub_name);
-            if (_hubproxy != null)
-            {
-                _hubproxy.client_disconnect(client_uuid);
-                _clientmanager.unreg_client_hub(juggle.Imodule.current_ch);
-            }
         }
 
         public void forward_client_call_hub(string hub_name, string module, string func, ArrayList argv)

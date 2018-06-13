@@ -25,7 +25,6 @@ namespace gate
                 hubproxy _hubproxy = _hubmanager.get_hub(juggle.Imodule.current_ch);
                 if (_hubproxy != null)
                 {
-                    _clientproxy.connect_hub_sucess(_hubproxy.name);
                 }
             }
         }

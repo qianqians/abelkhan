@@ -115,29 +115,44 @@ namespace hub
         }
 
         public void call_group_client(ArrayList uuids, String module, String func, params object[] _argvs)
-		{
-			foreach (var _proxy in ch_gateproxys)
-			{
-				ArrayList _argvs_list = new ArrayList();
-				foreach (var o in _argvs)
-				{
-					_argvs_list.Add(o);
-				}
+        {
+            ArrayList _argvs_list = new ArrayList();
+            foreach (var o in _argvs)
+            {
+                _argvs_list.Add(o);
+            }
 
-				_proxy.Value.forward_hub_call_group_client(uuids, module, func, _argvs_list);
+            var tmp_gates = new List<gateproxy>();
+            foreach (var uuid in uuids)
+            {
+                var _uuid = uuid as string;
+                if (clients.ContainsKey(_uuid))
+                {
+                    var _proxy = clients[_uuid];
+
+                    if (!tmp_gates.Contains(_proxy))
+                    {
+                        tmp_gates.Add(_proxy);
+                    }
+                }
+            }
+
+            foreach (var _proxy in tmp_gates)
+			{
+				_proxy.forward_hub_call_group_client(uuids, module, func, _argvs_list);
 			}
 		}
 
 		public void call_global_client(String module, String func, params object[] _argvs)
 		{
-			foreach (var _proxy in ch_gateproxys)
-			{
-				ArrayList _argvs_list = new ArrayList();
-				foreach (var o in _argvs)
-				{
-					_argvs_list.Add(o);
-				}
+            ArrayList _argvs_list = new ArrayList();
+            foreach (var o in _argvs)
+            {
+                _argvs_list.Add(o);
+            }
 
+            foreach (var _proxy in ch_gateproxys)
+			{
 				_proxy.Value.forward_hub_call_global_client(module, func, _argvs_list);
 			}
 		}
