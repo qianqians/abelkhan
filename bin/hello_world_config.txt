@@ -26,6 +26,7 @@
 	"outside_port":3236,
 	"udp_outside_ip":"0.0.0.0",
 	"udp_outside_port":3237,
+        "key":123456
 	"heartbeats":true,
 	"log_level":"debug",
 	"log_file":"gate.txt",
