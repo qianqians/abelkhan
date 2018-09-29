@@ -40,15 +40,17 @@ namespace center
             _svrmanager = new svrmanager ();
 			_hubmanager = new hubmanager ();
 
+            var _clutter = new clutter();
+
 			juggle.process _center_process = new juggle.process ();
 
 			_svr_call_center = new module.center ();
-			_svr_msg_handle = new svr_msg_handle (_svrmanager, _hubmanager);
+			_svr_msg_handle = new svr_msg_handle (_svrmanager, _hubmanager, _clutter);
 			_svr_call_center.onreg_server += _svr_msg_handle.reg_server;
 			_center_process.reg_module (_svr_call_center);
 
             var _hub_call_center = new module.hub_call_center();
-            var _hub_msg_handle = new hub_msg_handle(_svrmanager, _hubmanager);
+            var _hub_msg_handle = new hub_msg_handle(_svrmanager, _hubmanager, _clutter);
             _hub_call_center.onclosed += _hub_msg_handle.closed;
             _center_process.reg_module(_hub_call_center);
 
@@ -61,9 +63,10 @@ namespace center
 			juggle.process _gm_process = new juggle.process ();
 
 			_gm_center = new module.gm_center ();
-			_gm_msg_handle = new gm_msg_handle(_gmmanager, _svrmanager, _hubmanager);
+			_gm_msg_handle = new gm_msg_handle(_gmmanager, _svrmanager, _hubmanager, _clutter);
 			_gm_center.onconfirm_gm += _gm_msg_handle.confirm_gm;
 			_gm_center.onclose_clutter += _gm_msg_handle.close_clutter;
+            _gm_center.onclose_zone += _gm_msg_handle.close_zone;
             _gm_center.onreload += _gm_msg_handle.reload;
             _gm_process.reg_module(_gm_center);
 
@@ -111,7 +114,7 @@ namespace center
 			}
 
 			center _center = new center(args);
-            
+
             while (true)
 			{
                 var tmp = _center.poll();
@@ -119,9 +122,9 @@ namespace center
                 if (closeHandle.is_close)
                 {
                     System.Threading.Thread.Sleep(100);
-                    break;
+                    return;
                 }
-                
+
                 if (tmp < 50)
                 {
                     System.Threading.Thread.Sleep(15);

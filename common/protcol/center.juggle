@@ -1,5 +1,5 @@
 module center{
-	void reg_server(string type, string ip, int port, string uuid);
+	void reg_server(string type, string ip, int port, string uuid, int zone_id);
 
 }
 
@@ -7,6 +7,8 @@ module gm_center{
 	void confirm_gm(string gm_name);
 
 	void close_clutter(string gmname);
+
+	void close_zone(string gmname, int zone_id);
 
 	void reload(string gmname, string argv);
 }

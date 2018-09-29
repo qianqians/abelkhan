@@ -12,13 +12,14 @@ namespace caller
             module_name = "center";
         }
 
-        public void reg_server(String argv0,String argv1,Int64 argv2,String argv3)
+        public void reg_server(String argv0,String argv1,Int64 argv2,String argv3,Int64 argv4)
         {
             ArrayList _argv = new ArrayList();
             _argv.Add(argv0);
             _argv.Add(argv1);
             _argv.Add(argv2);
             _argv.Add(argv3);
+            _argv.Add(argv4);
             call_module_method("reg_server", _argv);
         }
 

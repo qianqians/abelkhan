@@ -26,6 +26,14 @@ namespace caller
             call_module_method("close_clutter", _argv);
         }
 
+        public void close_zone(String argv0,Int64 argv1)
+        {
+            ArrayList _argv = new ArrayList();
+            _argv.Add(argv0);
+            _argv.Add(argv1);
+            call_module_method("close_zone", _argv);
+        }
+
         public void reload(String argv0,String argv1)
         {
             ArrayList _argv = new ArrayList();

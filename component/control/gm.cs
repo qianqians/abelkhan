@@ -20,6 +20,11 @@ namespace gm
             center_caller.close_clutter(gm_name);
         }
 
+        public void close_zone(string gm_name, Int64 zone_id)
+        {
+            center_caller.close_zone(gm_name, zone_id);
+        }
+
         public void reload(string gm_name, string argv)
         {
             center_caller.reload(gm_name, argv);
@@ -81,7 +86,8 @@ namespace gm
         public void output_cmd()
         {
             Console.WriteLine("Enter gm cmd:");
-            Console.WriteLine(" close_----close clutter");
+            Console.WriteLine(" close-----close clutter");
+            Console.WriteLine(" close_zone-----close zone");
             Console.WriteLine(" reload----reload hub");
         }
 
@@ -95,15 +101,15 @@ namespace gm
             }
 
             string gm_name = null;
-            string[] argv_cmd = null;
+            string[] cmd = null;
             if (args.Length > 3)
             {
                 gm_name = args[2];
 
-                argv_cmd = new string[2];
+                cmd = new string[2];
                 for (int i = 3; i < args.Length; i++)
                 {
-                    argv_cmd[i - 3] = args[3];
+                    cmd[i - 3] = args[i];
                 }
             }
             else
@@ -119,6 +125,9 @@ namespace gm
             cmd_callback.Add("close", (string[] cmds) => {
                 _gm._center_proxy.close_clutter(_gm.gm_name);
             });
+            cmd_callback.Add("close_zone", (string[] cmds) => {
+                _gm._center_proxy.close_zone(_gm.gm_name, Int64.Parse(cmds[1]));
+            });
             cmd_callback.Add("reload", (string[] cmds) => {
                 _gm._center_proxy.reload(_gm.gm_name, cmds[1]);
             });
@@ -127,19 +136,26 @@ namespace gm
             {
                 var tmp = _gm.poll();
 
-                if (argv_cmd != null)
+                if (cmd != null)
                 {
-                    if (cmd_callback.ContainsKey(argv_cmd[0]))
+                    if (cmd_callback.ContainsKey(cmd[0]))
                     {
-                        cmd_callback[argv_cmd[0]](argv_cmd);
+                        cmd_callback[cmd[0]](cmd);
                     }
+                    else
+                    {
+                        Console.WriteLine("invalid gm cmd!");
+                    }
+
+                    System.Threading.Thread.Sleep(1500);
+                    runing = false;
                 }
                 else
                 {
                     _gm.output_cmd();
 
-                    string cmd = Console.ReadLine();
-                    string[] cmds = cmd.Split(' ');
+                    string cmd1 = Console.ReadLine();
+                    string[] cmds = cmd1.Split(' ');
                     if (cmd_callback.ContainsKey(cmds[0]))
                     {
                         cmd_callback[cmds[0]](cmds);

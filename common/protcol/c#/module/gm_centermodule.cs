@@ -34,6 +34,18 @@ namespace module
             }
         }
 
+        public delegate void close_zonehandle(String argv0, Int64 argv1);
+        public event close_zonehandle onclose_zone;
+        public void close_zone(ArrayList _event)
+        {
+            if(onclose_zone != null)
+            {
+                var argv0 = ((String)_event[0]);
+                var argv1 = ((Int64)_event[1]);
+                onclose_zone( argv0,  argv1);
+            }
+        }
+
         public delegate void reloadhandle(String argv0, String argv1);
         public event reloadhandle onreload;
         public void reload(ArrayList _event)

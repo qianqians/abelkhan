@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace center
@@ -9,18 +8,18 @@ namespace center
 		public svrmanager()
 		{
 			svrproxys = new Dictionary<juggle.Ichannel, Tuple<String, String,Int64, String, svrproxy> >();
-			svrproxys_uuid = new Dictionary<String, Tuple<String, String,Int64, String, svrproxy> >();
-		}
+            _dbproxys = new List<svrproxy>();
+
+        }
 
 		public svrproxy reg_svr(juggle.Ichannel ch, String type, String ip, Int64 port, String uuid)
 		{
 			svrproxy _svrproxy = new svrproxy(ch, type);
 			svrproxys.Add(ch, Tuple.Create(type, ip, port, uuid, _svrproxy));
-			svrproxys_uuid.Add(uuid, Tuple.Create(type, ip, port, uuid, _svrproxy));
 
             if (type == "dbproxy")
             {
-                _dbproxy = _svrproxy;
+                _dbproxys.Add(_svrproxy);
             }
 
             return _svrproxy;
@@ -28,18 +27,11 @@ namespace center
 
         public void close_db()
         {
-            _dbproxy.close_server();
+            foreach (var _dbproxy in _dbproxys)
+            {
+                _dbproxy.close_server();
+            }
         }
-
-		public Tuple<String, String,Int64, String, svrproxy> get_svr_info(String uuid)
-		{
-			if (svrproxys_uuid.ContainsKey (uuid)) 
-			{
-				return svrproxys_uuid[uuid];
-			}
-			
-			return null;
-		}
 
 		public void for_each_svr_info(Action<String, String, Int64, String> func)
 		{
@@ -57,8 +49,17 @@ namespace center
 			}
 		}
 
-        private svrproxy _dbproxy;
+        public Tuple<String, String, Int64, String, svrproxy> get_svr(juggle.Ichannel ch)
+        {
+            if (svrproxys.ContainsKey(ch))
+            {
+                return svrproxys[ch];
+            }
+
+            return null;
+        }
+
+        private List<svrproxy> _dbproxys;
         private Dictionary<juggle.Ichannel, Tuple<String, String,Int64, String, svrproxy> > svrproxys;
-		private Dictionary<String, Tuple<String, String,Int64, String, svrproxy> > svrproxys_uuid;
 	}
 }
