@@ -107,7 +107,7 @@ namespace hub
 
 			timer = new service.timerservice();
 
-			_centerproxy.reg_hub(ip, port, uuid);
+			_centerproxy.reg_hub(ip, port, uuid, (int)config.get_value_int("zone_id"));
 		}
 
         public delegate void onConnectDBHandle();
