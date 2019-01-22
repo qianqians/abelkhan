@@ -10,11 +10,11 @@ namespace gate
 			_hub_call_center = new caller.center(ch);
 		}
 
-		public void reg_gate(String ip, short port, String uuid, int zone_id)
+		public void reg_gate(String ip, short port, String uuid)
         {
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin connect center server");
 
-			_hub_call_center.reg_server("gate", ip, port, uuid, zone_id);
+			_hub_call_center.reg_server("gate", ip, port, uuid);
 		}
 
 		public bool is_reg_center_sucess;

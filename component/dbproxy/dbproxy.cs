@@ -104,7 +104,7 @@ namespace dbproxy
 
 			timer = new service.timerservice();
 
-			_centerproxy.reg_dbproxy(ip, port, uuid, (int)_config.get_value_int("zone_id"));
+			_centerproxy.reg_dbproxy(ip, port, uuid);
 		}
 
 		public Int64 poll()

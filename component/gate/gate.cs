@@ -110,7 +110,7 @@ namespace gate
 			_juggle_service.add_process(_center_process);
 			_juggle_service.add_process(_client_process);
 
-            _centerproxy.reg_gate(inside_ip, inside_port, uuid, (int)_config.get_value_int("zone_id"));
+            _centerproxy.reg_gate(inside_ip, inside_port, uuid);
 
             if (enable_heartbeats)
             {

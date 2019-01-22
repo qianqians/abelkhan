@@ -1,5 +1,5 @@
 module center{
-	void reg_server(string type, string ip, int port, string uuid, int zone_id);
+	void reg_server(string type, string ip, int port, string uuid);
 
 }
 

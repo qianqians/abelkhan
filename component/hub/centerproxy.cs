@@ -12,11 +12,11 @@ namespace hub
 
         }
 
-		public void reg_hub(String ip, short port, String uuid, int zone_id)
+		public void reg_hub(String ip, short port, String uuid)
         {
             log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin connect center server");
 
-            _center.reg_server("hub", ip, port, uuid, zone_id);
+            _center.reg_server("hub", ip, port, uuid);
 		}
 
         public void closed()

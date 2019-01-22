@@ -12,8 +12,10 @@ namespace center
 
         }
 
-		public void reg_server(String type, String ip, Int64 port, String uuid, Int64 zone_id)
-		{
+		public void reg_server(String type, String ip, Int64 port, String uuid)
+        {
+            Int64 zone_id = 0;
+
             if (type != "dbproxy")
             {
                 if (zone_id != 0)
