@@ -3,6 +3,8 @@ module client_call_gate{
 
 	void cancle_server();
 
+	void connect_hub(string hub_name);
+
 	void enable_heartbeats();
 
 	void disable_heartbeats();
