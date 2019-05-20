@@ -214,7 +214,7 @@ namespace client
             Int64 tick_begin = timer.poll();
             _juggleservice.poll(tick_begin);
 
-            System.GC.Collect();
+            //System.GC.Collect();
 
             Int64 tick_end = timer.refresh();
 

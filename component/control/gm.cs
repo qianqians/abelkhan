@@ -76,7 +76,7 @@ namespace gm
                 log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, "{0}", e);
             }
 
-            System.GC.Collect();
+            //System.GC.Collect();
 
             Int64 tick_end = timer.refresh();
 
