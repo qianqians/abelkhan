@@ -49,10 +49,6 @@ namespace center
                         (juggle.Ichannel ch) =>
                         {
                             var tmp_svr_info = _svrmanager.get_svr(ch);
-                            if (tmp_svr_info.Item1 == "dbproxy")
-                            {
-                                return;
-                            }
                             _hubproxy.distribute_server_address(tmp_svr_info.Item1, tmp_svr_info.Item2, tmp_svr_info.Item3, tmp_svr_info.Item4);
                         }
                     );
@@ -62,10 +58,6 @@ namespace center
                     _svrmanager.for_each_svr_info(
                         (String _type, String _ip, Int64 _port, String _uuid) =>
                         {
-                            if (_type == "dbproxy")
-                            {
-                                return;
-                            }
                             _hubproxy.distribute_server_address(_type, _ip, _port, _uuid);
                         }
                     );
