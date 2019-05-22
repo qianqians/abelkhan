@@ -3,3 +3,6 @@
 	path = tools/juggle
 
 	url = https://github.com/qianqians/juggle.git
+[submodule "tools/jsonparse"]
+	path = tools/jsonparse
+	url = https://github.com/qianqians/jsonparse.git
