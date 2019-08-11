@@ -35,7 +35,7 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
-    <IntermediateOutputPath>C:\Users\PC-3\AppData\Local\Temp\vsD06C.tmp\x86\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\QIANQI~1\AppData\Local\Temp\vs4472.tmp\x86\Debug\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>full</DebugType>
@@ -45,18 +45,18 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
-    <IntermediateOutputPath>C:\Users\PC-3\AppData\Local\Temp\vsD06C.tmp\x86\Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\QIANQI~1\AppData\Local\Temp\vs4472.tmp\x86\Release\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\..\bin\</OutputPath>
+    <OutputPath>..\..\bin\</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
-    <IntermediateOutputPath>C:\Users\PC-3\AppData\Local\Temp\vsD06C.tmp\Debug\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\QIANQI~1\AppData\Local\Temp\vs4472.tmp\Debug\</IntermediateOutputPath>
     <Optimize>false</Optimize>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -68,7 +68,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
-    <IntermediateOutputPath>C:\Users\PC-3\AppData\Local\Temp\vsD06C.tmp\Release\</IntermediateOutputPath>
+    <IntermediateOutputPath>C:\Users\QIANQI~1\AppData\Local\Temp\vs4472.tmp\Release\</IntermediateOutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
