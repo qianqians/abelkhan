@@ -4,6 +4,7 @@
 #include "Imodule.h"
 #include <memory>
 #include <boost/signals2.hpp>
+#include <JsonParse.h>
 #include <string>
 
 namespace module
@@ -20,18 +21,18 @@ public:
     }
 
     boost::signals2::signal<void(std::string) > sig_client_connect;
-    void client_connect(std::shared_ptr<std::vector<boost::any> > _event){
+    void client_connect(Fossilizid::JsonParse::JsonArray _event){
         sig_client_connect(
-            boost::any_cast<std::string>((*_event)[0]));
+            std::any_cast<std::string>((*_event)[0]));
     }
 
-    boost::signals2::signal<void(std::string, std::string, std::string, std::shared_ptr<std::vector<boost::any> >) > sig_call_hub;
-    void call_hub(std::shared_ptr<std::vector<boost::any> > _event){
+    boost::signals2::signal<void(std::string, std::string, std::string, Fossilizid::JsonParse::JsonArray) > sig_call_hub;
+    void call_hub(Fossilizid::JsonParse::JsonArray _event){
         sig_call_hub(
-            boost::any_cast<std::string>((*_event)[0]), 
-            boost::any_cast<std::string>((*_event)[1]), 
-            boost::any_cast<std::string>((*_event)[2]), 
-            boost::any_cast<std::shared_ptr<std::vector<boost::any> >>((*_event)[3]));
+            std::any_cast<std::string>((*_event)[0]), 
+            std::any_cast<std::string>((*_event)[1]), 
+            std::any_cast<std::string>((*_event)[2]), 
+            std::any_cast<Fossilizid::JsonParse::JsonArray>((*_event)[3]));
     }
 
 };

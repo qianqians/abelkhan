@@ -4,6 +4,7 @@
 #include "Imodule.h"
 #include <memory>
 #include <boost/signals2.hpp>
+#include <JsonParse.h>
 #include <string>
 
 namespace module
@@ -25,47 +26,47 @@ public:
     }
 
     boost::signals2::signal<void() > sig_reg_hub_sucess;
-    void reg_hub_sucess(std::shared_ptr<std::vector<boost::any> > _event){
+    void reg_hub_sucess(Fossilizid::JsonParse::JsonArray _event){
         sig_reg_hub_sucess();
     }
 
     boost::signals2::signal<void(std::string, bool) > sig_ack_create_persisted_object;
-    void ack_create_persisted_object(std::shared_ptr<std::vector<boost::any> > _event){
+    void ack_create_persisted_object(Fossilizid::JsonParse::JsonArray _event){
         sig_ack_create_persisted_object(
-            boost::any_cast<std::string>((*_event)[0]), 
-            boost::any_cast<bool>((*_event)[1]));
+            std::any_cast<std::string>((*_event)[0]), 
+            std::any_cast<bool>((*_event)[1]));
     }
 
     boost::signals2::signal<void(std::string) > sig_ack_updata_persisted_object;
-    void ack_updata_persisted_object(std::shared_ptr<std::vector<boost::any> > _event){
+    void ack_updata_persisted_object(Fossilizid::JsonParse::JsonArray _event){
         sig_ack_updata_persisted_object(
-            boost::any_cast<std::string>((*_event)[0]));
+            std::any_cast<std::string>((*_event)[0]));
     }
 
     boost::signals2::signal<void(std::string, int64_t) > sig_ack_get_object_count;
-    void ack_get_object_count(std::shared_ptr<std::vector<boost::any> > _event){
+    void ack_get_object_count(Fossilizid::JsonParse::JsonArray _event){
         sig_ack_get_object_count(
-            boost::any_cast<std::string>((*_event)[0]), 
-            boost::any_cast<int64_t>((*_event)[1]));
+            std::any_cast<std::string>((*_event)[0]), 
+            std::any_cast<int64_t>((*_event)[1]));
     }
 
-    boost::signals2::signal<void(std::string, std::shared_ptr<std::vector<boost::any> >) > sig_ack_get_object_info;
-    void ack_get_object_info(std::shared_ptr<std::vector<boost::any> > _event){
+    boost::signals2::signal<void(std::string, Fossilizid::JsonParse::JsonArray) > sig_ack_get_object_info;
+    void ack_get_object_info(Fossilizid::JsonParse::JsonArray _event){
         sig_ack_get_object_info(
-            boost::any_cast<std::string>((*_event)[0]), 
-            boost::any_cast<std::shared_ptr<std::vector<boost::any> >>((*_event)[1]));
+            std::any_cast<std::string>((*_event)[0]), 
+            std::any_cast<Fossilizid::JsonParse::JsonArray>((*_event)[1]));
     }
 
     boost::signals2::signal<void(std::string) > sig_ack_get_object_info_end;
-    void ack_get_object_info_end(std::shared_ptr<std::vector<boost::any> > _event){
+    void ack_get_object_info_end(Fossilizid::JsonParse::JsonArray _event){
         sig_ack_get_object_info_end(
-            boost::any_cast<std::string>((*_event)[0]));
+            std::any_cast<std::string>((*_event)[0]));
     }
 
     boost::signals2::signal<void(std::string) > sig_ack_remove_object;
-    void ack_remove_object(std::shared_ptr<std::vector<boost::any> > _event){
+    void ack_remove_object(Fossilizid::JsonParse::JsonArray _event){
         sig_ack_remove_object(
-            boost::any_cast<std::string>((*_event)[0]));
+            std::any_cast<std::string>((*_event)[0]));
     }
 
 };

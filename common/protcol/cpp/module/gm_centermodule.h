@@ -4,6 +4,7 @@
 #include "Imodule.h"
 #include <memory>
 #include <boost/signals2.hpp>
+#include <JsonParse.h>
 #include <string>
 
 namespace module
@@ -22,29 +23,29 @@ public:
     }
 
     boost::signals2::signal<void(std::string) > sig_confirm_gm;
-    void confirm_gm(std::shared_ptr<std::vector<boost::any> > _event){
+    void confirm_gm(Fossilizid::JsonParse::JsonArray _event){
         sig_confirm_gm(
-            boost::any_cast<std::string>((*_event)[0]));
+            std::any_cast<std::string>((*_event)[0]));
     }
 
     boost::signals2::signal<void(std::string) > sig_close_clutter;
-    void close_clutter(std::shared_ptr<std::vector<boost::any> > _event){
+    void close_clutter(Fossilizid::JsonParse::JsonArray _event){
         sig_close_clutter(
-            boost::any_cast<std::string>((*_event)[0]));
+            std::any_cast<std::string>((*_event)[0]));
     }
 
     boost::signals2::signal<void(std::string, int64_t) > sig_close_zone;
-    void close_zone(std::shared_ptr<std::vector<boost::any> > _event){
+    void close_zone(Fossilizid::JsonParse::JsonArray _event){
         sig_close_zone(
-            boost::any_cast<std::string>((*_event)[0]), 
-            boost::any_cast<int64_t>((*_event)[1]));
+            std::any_cast<std::string>((*_event)[0]), 
+            std::any_cast<int64_t>((*_event)[1]));
     }
 
     boost::signals2::signal<void(std::string, std::string) > sig_reload;
-    void reload(std::shared_ptr<std::vector<boost::any> > _event){
+    void reload(Fossilizid::JsonParse::JsonArray _event){
         sig_reload(
-            boost::any_cast<std::string>((*_event)[0]), 
-            boost::any_cast<std::string>((*_event)[1]));
+            std::any_cast<std::string>((*_event)[0]), 
+            std::any_cast<std::string>((*_event)[1]));
     }
 
 };

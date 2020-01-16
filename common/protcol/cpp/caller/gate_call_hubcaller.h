@@ -6,7 +6,8 @@
 #include <string>
 #include "Icaller.h"
 #include "Ichannel.h"
-#include <boost/any.hpp>
+#include <any>
+#include <JsonParse.h>
 #include <memory>
 
 namespace caller
@@ -21,49 +22,49 @@ public:
     }
 
     void reg_hub_sucess(){
-        auto v = std::make_shared<std::vector<boost::any> >();
+        auto v = Fossilizid::JsonParse::Make_JsonArray();
         v->push_back("gate_call_hub");
         v->push_back("reg_hub_sucess");
-        v->push_back(std::make_shared<std::vector<boost::any> >());
+        v->push_back(Fossilizid::JsonParse::Make_JsonArray());
         ch->push(v);
     }
 
     void client_connect(std::string argv0){
-        auto v = std::make_shared<std::vector<boost::any> >();
+        auto v = Fossilizid::JsonParse::Make_JsonArray();
         v->push_back("gate_call_hub");
         v->push_back("client_connect");
-        v->push_back(std::make_shared<std::vector<boost::any> >());
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
+        v->push_back(Fossilizid::JsonParse::Make_JsonArray());
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv0);
         ch->push(v);
     }
 
     void client_disconnect(std::string argv0){
-        auto v = std::make_shared<std::vector<boost::any> >();
+        auto v = Fossilizid::JsonParse::Make_JsonArray();
         v->push_back("gate_call_hub");
         v->push_back("client_disconnect");
-        v->push_back(std::make_shared<std::vector<boost::any> >());
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
+        v->push_back(Fossilizid::JsonParse::Make_JsonArray());
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv0);
         ch->push(v);
     }
 
     void client_exception(std::string argv0){
-        auto v = std::make_shared<std::vector<boost::any> >();
+        auto v = Fossilizid::JsonParse::Make_JsonArray();
         v->push_back("gate_call_hub");
         v->push_back("client_exception");
-        v->push_back(std::make_shared<std::vector<boost::any> >());
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
+        v->push_back(Fossilizid::JsonParse::Make_JsonArray());
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv0);
         ch->push(v);
     }
 
-    void client_call_hub(std::string argv0,std::string argv1,std::string argv2,std::shared_ptr<std::vector<boost::any> > argv3){
-        auto v = std::make_shared<std::vector<boost::any> >();
+    void client_call_hub(std::string argv0,std::string argv1,std::string argv2,Fossilizid::JsonParse::JsonArray argv3){
+        auto v = Fossilizid::JsonParse::Make_JsonArray();
         v->push_back("gate_call_hub");
         v->push_back("client_call_hub");
-        v->push_back(std::make_shared<std::vector<boost::any> >());
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv1);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv2);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv3);
+        v->push_back(Fossilizid::JsonParse::Make_JsonArray());
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv0);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv1);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv2);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv3);
         ch->push(v);
     }
 

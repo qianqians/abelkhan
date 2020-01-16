@@ -4,6 +4,7 @@
 #include "Imodule.h"
 #include <memory>
 #include <boost/signals2.hpp>
+#include <JsonParse.h>
 #include <string>
 
 namespace module
@@ -21,22 +22,22 @@ public:
     }
 
     boost::signals2::signal<void(std::string) > sig_reg_hub;
-    void reg_hub(std::shared_ptr<std::vector<boost::any> > _event){
+    void reg_hub(Fossilizid::JsonParse::JsonArray _event){
         sig_reg_hub(
-            boost::any_cast<std::string>((*_event)[0]));
+            std::any_cast<std::string>((*_event)[0]));
     }
 
     boost::signals2::signal<void() > sig_reg_hub_sucess;
-    void reg_hub_sucess(std::shared_ptr<std::vector<boost::any> > _event){
+    void reg_hub_sucess(Fossilizid::JsonParse::JsonArray _event){
         sig_reg_hub_sucess();
     }
 
-    boost::signals2::signal<void(std::string, std::string, std::shared_ptr<std::vector<boost::any> >) > sig_hub_call_hub_mothed;
-    void hub_call_hub_mothed(std::shared_ptr<std::vector<boost::any> > _event){
+    boost::signals2::signal<void(std::string, std::string, Fossilizid::JsonParse::JsonArray) > sig_hub_call_hub_mothed;
+    void hub_call_hub_mothed(Fossilizid::JsonParse::JsonArray _event){
         sig_hub_call_hub_mothed(
-            boost::any_cast<std::string>((*_event)[0]), 
-            boost::any_cast<std::string>((*_event)[1]), 
-            boost::any_cast<std::shared_ptr<std::vector<boost::any> >>((*_event)[2]));
+            std::any_cast<std::string>((*_event)[0]), 
+            std::any_cast<std::string>((*_event)[1]), 
+            std::any_cast<Fossilizid::JsonParse::JsonArray>((*_event)[2]));
     }
 
 };

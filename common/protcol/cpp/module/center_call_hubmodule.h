@@ -4,6 +4,7 @@
 #include "Imodule.h"
 #include <memory>
 #include <boost/signals2.hpp>
+#include <JsonParse.h>
 #include <string>
 
 namespace module
@@ -20,18 +21,18 @@ public:
     }
 
     boost::signals2::signal<void(std::string, std::string, int64_t, std::string) > sig_distribute_server_address;
-    void distribute_server_address(std::shared_ptr<std::vector<boost::any> > _event){
+    void distribute_server_address(Fossilizid::JsonParse::JsonArray _event){
         sig_distribute_server_address(
-            boost::any_cast<std::string>((*_event)[0]), 
-            boost::any_cast<std::string>((*_event)[1]), 
-            boost::any_cast<int64_t>((*_event)[2]), 
-            boost::any_cast<std::string>((*_event)[3]));
+            std::any_cast<std::string>((*_event)[0]), 
+            std::any_cast<std::string>((*_event)[1]), 
+            std::any_cast<int64_t>((*_event)[2]), 
+            std::any_cast<std::string>((*_event)[3]));
     }
 
     boost::signals2::signal<void(std::string) > sig_reload;
-    void reload(std::shared_ptr<std::vector<boost::any> > _event){
+    void reload(Fossilizid::JsonParse::JsonArray _event){
         sig_reload(
-            boost::any_cast<std::string>((*_event)[0]));
+            std::any_cast<std::string>((*_event)[0]));
     }
 
 };

@@ -6,7 +6,8 @@
 #include <string>
 #include "Icaller.h"
 #include "Ichannel.h"
-#include <boost/any.hpp>
+#include <any>
+#include <JsonParse.h>
 #include <memory>
 
 namespace caller
@@ -21,72 +22,72 @@ public:
     }
 
     void reg_hub(std::string argv0){
-        auto v = std::make_shared<std::vector<boost::any> >();
+        auto v = Fossilizid::JsonParse::Make_JsonArray();
         v->push_back("hub_call_dbproxy");
         v->push_back("reg_hub");
-        v->push_back(std::make_shared<std::vector<boost::any> >());
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
+        v->push_back(Fossilizid::JsonParse::Make_JsonArray());
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv0);
         ch->push(v);
     }
 
-    void create_persisted_object(std::string argv0,std::string argv1,std::shared_ptr<std::unordered_map<std::string, boost::any> > argv2,std::string argv3){
-        auto v = std::make_shared<std::vector<boost::any> >();
+    void create_persisted_object(std::string argv0,std::string argv1,Fossilizid::JsonParse::JsonTable argv2,std::string argv3){
+        auto v = Fossilizid::JsonParse::Make_JsonArray();
         v->push_back("hub_call_dbproxy");
         v->push_back("create_persisted_object");
-        v->push_back(std::make_shared<std::vector<boost::any> >());
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv1);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv2);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv3);
+        v->push_back(Fossilizid::JsonParse::Make_JsonArray());
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv0);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv1);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv2);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv3);
         ch->push(v);
     }
 
-    void updata_persisted_object(std::string argv0,std::string argv1,std::shared_ptr<std::unordered_map<std::string, boost::any> > argv2,std::shared_ptr<std::unordered_map<std::string, boost::any> > argv3,std::string argv4){
-        auto v = std::make_shared<std::vector<boost::any> >();
+    void updata_persisted_object(std::string argv0,std::string argv1,Fossilizid::JsonParse::JsonTable argv2,Fossilizid::JsonParse::JsonTable argv3,std::string argv4){
+        auto v = Fossilizid::JsonParse::Make_JsonArray();
         v->push_back("hub_call_dbproxy");
         v->push_back("updata_persisted_object");
-        v->push_back(std::make_shared<std::vector<boost::any> >());
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv1);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv2);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv3);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv4);
+        v->push_back(Fossilizid::JsonParse::Make_JsonArray());
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv0);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv1);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv2);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv3);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv4);
         ch->push(v);
     }
 
-    void get_object_count(std::string argv0,std::string argv1,std::shared_ptr<std::unordered_map<std::string, boost::any> > argv2,std::string argv3){
-        auto v = std::make_shared<std::vector<boost::any> >();
+    void get_object_count(std::string argv0,std::string argv1,Fossilizid::JsonParse::JsonTable argv2,std::string argv3){
+        auto v = Fossilizid::JsonParse::Make_JsonArray();
         v->push_back("hub_call_dbproxy");
         v->push_back("get_object_count");
-        v->push_back(std::make_shared<std::vector<boost::any> >());
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv1);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv2);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv3);
+        v->push_back(Fossilizid::JsonParse::Make_JsonArray());
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv0);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv1);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv2);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv3);
         ch->push(v);
     }
 
-    void get_object_info(std::string argv0,std::string argv1,std::shared_ptr<std::unordered_map<std::string, boost::any> > argv2,std::string argv3){
-        auto v = std::make_shared<std::vector<boost::any> >();
+    void get_object_info(std::string argv0,std::string argv1,Fossilizid::JsonParse::JsonTable argv2,std::string argv3){
+        auto v = Fossilizid::JsonParse::Make_JsonArray();
         v->push_back("hub_call_dbproxy");
         v->push_back("get_object_info");
-        v->push_back(std::make_shared<std::vector<boost::any> >());
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv1);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv2);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv3);
+        v->push_back(Fossilizid::JsonParse::Make_JsonArray());
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv0);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv1);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv2);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv3);
         ch->push(v);
     }
 
-    void remove_object(std::string argv0,std::string argv1,std::shared_ptr<std::unordered_map<std::string, boost::any> > argv2,std::string argv3){
-        auto v = std::make_shared<std::vector<boost::any> >();
+    void remove_object(std::string argv0,std::string argv1,Fossilizid::JsonParse::JsonTable argv2,std::string argv3){
+        auto v = Fossilizid::JsonParse::Make_JsonArray();
         v->push_back("hub_call_dbproxy");
         v->push_back("remove_object");
-        v->push_back(std::make_shared<std::vector<boost::any> >());
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv0);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv1);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv2);
-        (boost::any_cast<std::shared_ptr<std::vector<boost::any> > >((*v)[2]))->push_back(argv3);
+        v->push_back(Fossilizid::JsonParse::Make_JsonArray());
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv0);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv1);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv2);
+        (std::any_cast<Fossilizid::JsonParse::JsonArray>((*v)[2]))->push_back(argv3);
         ch->push(v);
     }
 

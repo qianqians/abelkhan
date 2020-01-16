@@ -6,7 +6,8 @@
 #include <string>
 #include "Icaller.h"
 #include "Ichannel.h"
-#include <boost/any.hpp>
+#include <any>
+#include <JsonParse.h>
 #include <memory>
 
 namespace caller
@@ -21,10 +22,10 @@ public:
     }
 
     void closed(){
-        auto v = std::make_shared<std::vector<boost::any> >();
+        auto v = Fossilizid::JsonParse::Make_JsonArray();
         v->push_back("hub_call_center");
         v->push_back("closed");
-        v->push_back(std::make_shared<std::vector<boost::any> >());
+        v->push_back(Fossilizid::JsonParse::Make_JsonArray());
         ch->push(v);
     }
 

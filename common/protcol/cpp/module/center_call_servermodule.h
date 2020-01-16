@@ -4,6 +4,7 @@
 #include "Imodule.h"
 #include <memory>
 #include <boost/signals2.hpp>
+#include <JsonParse.h>
 #include <string>
 
 namespace module
@@ -20,12 +21,12 @@ public:
     }
 
     boost::signals2::signal<void() > sig_reg_server_sucess;
-    void reg_server_sucess(std::shared_ptr<std::vector<boost::any> > _event){
+    void reg_server_sucess(Fossilizid::JsonParse::JsonArray _event){
         sig_reg_server_sucess();
     }
 
     boost::signals2::signal<void() > sig_close_server;
-    void close_server(std::shared_ptr<std::vector<boost::any> > _event){
+    void close_server(Fossilizid::JsonParse::JsonArray _event){
         sig_close_server();
     }
 

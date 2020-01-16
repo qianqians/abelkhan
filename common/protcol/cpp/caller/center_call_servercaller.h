@@ -6,7 +6,8 @@
 #include <string>
 #include "Icaller.h"
 #include "Ichannel.h"
-#include <boost/any.hpp>
+#include <any>
+#include <JsonParse.h>
 #include <memory>
 
 namespace caller
@@ -21,18 +22,18 @@ public:
     }
 
     void reg_server_sucess(){
-        auto v = std::make_shared<std::vector<boost::any> >();
+        auto v = Fossilizid::JsonParse::Make_JsonArray();
         v->push_back("center_call_server");
         v->push_back("reg_server_sucess");
-        v->push_back(std::make_shared<std::vector<boost::any> >());
+        v->push_back(Fossilizid::JsonParse::Make_JsonArray());
         ch->push(v);
     }
 
     void close_server(){
-        auto v = std::make_shared<std::vector<boost::any> >();
+        auto v = Fossilizid::JsonParse::Make_JsonArray();
         v->push_back("center_call_server");
         v->push_back("close_server");
-        v->push_back(std::make_shared<std::vector<boost::any> >());
+        v->push_back(Fossilizid::JsonParse::Make_JsonArray());
         ch->push(v);
     }
 

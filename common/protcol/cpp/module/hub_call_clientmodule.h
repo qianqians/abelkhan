@@ -4,6 +4,7 @@
 #include "Imodule.h"
 #include <memory>
 #include <boost/signals2.hpp>
+#include <JsonParse.h>
 #include <string>
 
 namespace module
@@ -18,12 +19,12 @@ public:
     ~hub_call_client(){
     }
 
-    boost::signals2::signal<void(std::string, std::string, std::shared_ptr<std::vector<boost::any> >) > sig_call_client;
-    void call_client(std::shared_ptr<std::vector<boost::any> > _event){
+    boost::signals2::signal<void(std::string, std::string, Fossilizid::JsonParse::JsonArray) > sig_call_client;
+    void call_client(Fossilizid::JsonParse::JsonArray _event){
         sig_call_client(
-            boost::any_cast<std::string>((*_event)[0]), 
-            boost::any_cast<std::string>((*_event)[1]), 
-            boost::any_cast<std::shared_ptr<std::vector<boost::any> >>((*_event)[2]));
+            std::any_cast<std::string>((*_event)[0]), 
+            std::any_cast<std::string>((*_event)[1]), 
+            std::any_cast<Fossilizid::JsonParse::JsonArray>((*_event)[2]));
     }
 
 };

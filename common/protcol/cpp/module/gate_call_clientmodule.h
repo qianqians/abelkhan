@@ -4,6 +4,7 @@
 #include "Imodule.h"
 #include <memory>
 #include <boost/signals2.hpp>
+#include <JsonParse.h>
 #include <string>
 
 namespace module
@@ -23,33 +24,33 @@ public:
     }
 
     boost::signals2::signal<void(std::string) > sig_ntf_uuid;
-    void ntf_uuid(std::shared_ptr<std::vector<boost::any> > _event){
+    void ntf_uuid(Fossilizid::JsonParse::JsonArray _event){
         sig_ntf_uuid(
-            boost::any_cast<std::string>((*_event)[0]));
+            std::any_cast<std::string>((*_event)[0]));
     }
 
     boost::signals2::signal<void() > sig_connect_gate_sucess;
-    void connect_gate_sucess(std::shared_ptr<std::vector<boost::any> > _event){
+    void connect_gate_sucess(Fossilizid::JsonParse::JsonArray _event){
         sig_connect_gate_sucess();
     }
 
     boost::signals2::signal<void(std::string) > sig_connect_hub_sucess;
-    void connect_hub_sucess(std::shared_ptr<std::vector<boost::any> > _event){
+    void connect_hub_sucess(Fossilizid::JsonParse::JsonArray _event){
         sig_connect_hub_sucess(
-            boost::any_cast<std::string>((*_event)[0]));
+            std::any_cast<std::string>((*_event)[0]));
     }
 
     boost::signals2::signal<void() > sig_ack_heartbeats;
-    void ack_heartbeats(std::shared_ptr<std::vector<boost::any> > _event){
+    void ack_heartbeats(Fossilizid::JsonParse::JsonArray _event){
         sig_ack_heartbeats();
     }
 
-    boost::signals2::signal<void(std::string, std::string, std::shared_ptr<std::vector<boost::any> >) > sig_call_client;
-    void call_client(std::shared_ptr<std::vector<boost::any> > _event){
+    boost::signals2::signal<void(std::string, std::string, Fossilizid::JsonParse::JsonArray) > sig_call_client;
+    void call_client(Fossilizid::JsonParse::JsonArray _event){
         sig_call_client(
-            boost::any_cast<std::string>((*_event)[0]), 
-            boost::any_cast<std::string>((*_event)[1]), 
-            boost::any_cast<std::shared_ptr<std::vector<boost::any> >>((*_event)[2]));
+            std::any_cast<std::string>((*_event)[0]), 
+            std::any_cast<std::string>((*_event)[1]), 
+            std::any_cast<Fossilizid::JsonParse::JsonArray>((*_event)[2]));
     }
 
 };
