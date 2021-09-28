@@ -1,8 +1,3 @@
 [submodule "tools/juggle"]
-
-	path = tools/juggle
-
-	url = https://github.com/qianqians/juggle.git
-[submodule "tools/jsonparse"]
-	path = tools/jsonparse
-	url = https://github.com/qianqians/jsonparse.git
+        path = tools/juggle
+        url = git@github.com:qianqians/juggle.git
