@@ -1,3 +1,0 @@
-[submodule "tools/juggle"]
-        path = tools/juggle
-        url = git@github.com:qianqians/juggle.git
