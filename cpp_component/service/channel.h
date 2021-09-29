@@ -7,19 +7,18 @@
 #include <any>
 
 #include <boost/asio.hpp>
-#include <boost/signals2.hpp>
 #include <boost/thread.hpp>
+#include <msgpack11.hpp>
 
-#include <angmalloc.h>
+#include <signals.h>
+#include <abelkhan.h>
 
-#include "JsonParse.h"
-#include "Ichannel.h"
-#include "compress_and_encrypt.h"
+#include <log.h>
 
 namespace service
 {
 
-class channel : public juggle::Ichannel, public std::enable_shared_from_this<channel> {
+class channel : public abelkhan::Ichannel, public std::enable_shared_from_this<channel> {
 public:
 	channel(std::shared_ptr<boost::asio::ip::tcp::socket> _s)
 	{
@@ -27,11 +26,10 @@ public:
 
 		buff_size = 16 * 1024;
 		buff_offset = 0;
-		buff = (char*)angmalloc(buff_size);
+		buff = (char*)malloc(buff_size);
 		memset(buff, 0, buff_size);
 
 		is_close = false;
-		is_compress_and_encrypt = false;
 	}
 
 	void start()
@@ -40,14 +38,13 @@ public:
 		s->async_read_some(boost::asio::buffer(read_buff, 16 * 1024), std::bind(&channel::onRecv, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
 	}
 
-	~channel(){
-		angfree(buff);
+	virtual ~channel(){
+		free(buff);
 	}
 
-	boost::signals2::signal<void(std::shared_ptr<channel>)> sigondisconn;
-	boost::signals2::signal<void(std::shared_ptr<channel>)> sigdisconn;
+	concurrent::signals<void(std::shared_ptr<channel>)> sigondisconn;
+	concurrent::signals<void(std::shared_ptr<channel>)> sigdisconn;
 
-	bool is_compress_and_encrypt;
 	unsigned char xor_key;
 
 private:
@@ -58,23 +55,23 @@ private:
 
 		if (error){
 			ch->is_close = true;
-			ch->sigondisconn(ch);
+			ch->sigondisconn.emit(ch);
 			return;
 		}
 
 		if (bytes_transferred == 0){
 			ch->is_close = true;
-			ch->sigondisconn(ch);
+			ch->sigondisconn.emit(ch);
 			return;
 		}
 
 		while ((ch->buff_offset + bytes_transferred) > ch->buff_size)
 		{
 			ch->buff_size *= 2;
-			auto new_buff = (char*)angmalloc(ch->buff_size);
+			auto new_buff = (char*)malloc(ch->buff_size);
 			memset(new_buff, 0, ch->buff_size);
 			memcpy(new_buff, ch->buff, ch->buff_offset);
-			angfree(ch->buff);
+			free(ch->buff);
 			ch->buff = new_buff;
 		}
 		memcpy(ch->buff + ch->buff_offset, ch->read_buff, bytes_transferred);
@@ -97,31 +94,22 @@ private:
 				{
 					tmp_buff_offset += len + 4;
 
-					auto json_buff = &tmp_buff[4];
-					if (is_compress_and_encrypt)
-					{
-						std::lock_guard<std::mutex> l(compress_and_encrypt::e_and_c_mutex);
-						len = (uint32_t)compress_and_encrypt::encrypt_and_compress(json_buff, (size_t)len, xor_key);
-						auto tmp_json_buff = new unsigned char[len];
-						memcpy(tmp_json_buff, compress_and_encrypt::e_and_c_output_buff, len);
-						json_buff = tmp_json_buff;
-					}
-					std::string json_str((char*)(json_buff), len);
-					if (is_compress_and_encrypt)
-					{
-						delete[] json_buff;
+					auto proto_buff = &tmp_buff[4];
+					std::string err;
+					auto obj = msgpack11::MsgPack::parse((const char*)proto_buff, len, err);
+					if (!obj.is_array()) {
+						spdlog::error("channel recv parse MsgPack error");
+						disconnect();
+						return;
 					}
 					try
 					{
-						Fossilizid::JsonParse::JsonObject obj;
-						Fossilizid::JsonParse::unpacker(obj, json_str);
-						que.push_back(std::any_cast<Fossilizid::JsonParse::JsonArray>(obj));
+						
 					}
-					catch (Fossilizid::JsonParse::jsonformatexception e)
+					catch (std::exception e)
 					{
-						spdlog::error("channel recv jsonformatexception error:{0}", json_str);
+						spdlog::error("channel do rpc callback error");
 						disconnect();
-
 						return;
 					}
 				}
@@ -134,10 +122,10 @@ private:
 			buff_offset = tmp_buff_len - tmp_buff_offset;
 			if (tmp_buff_len > tmp_buff_offset)
 			{
-				auto new_buff = (char*)angmalloc(buff_size);
+				auto new_buff = (char*)malloc(buff_size);
 				memset(new_buff, 0, buff_size);
 				memcpy(new_buff, &buff[tmp_buff_offset], buff_offset);
-				angfree(buff);
+				free(buff);
 				buff = new_buff;
 			}
 
@@ -153,7 +141,7 @@ private:
 public:
 	void disconnect() {
 		is_close = true;
-		sigdisconn(shared_from_this());
+		sigdisconn.emit(shared_from_this());
 
 		try
 		{
@@ -162,19 +150,6 @@ public:
 		catch (std::exception e) {
 			spdlog::error("channel disconnect error:{0}", e.what());
 		}
-	}
-
-	bool pop(Fossilizid::JsonParse::JsonArray  & out)
-	{
-		if (que.empty())
-		{
-			return false;
-		}
-
-		out = que.front();
-		que.pop_front();
-
-		return true;
 	}
 
 	void push(Fossilizid::JsonParse::JsonArray in)
@@ -261,8 +236,6 @@ public:
 	}
 
 private:
-	std::list< Fossilizid::JsonParse::JsonArray > que;
-
 	std::shared_ptr<boost::asio::ip::tcp::socket> s;
 
 	char read_buff[16 * 1024];
