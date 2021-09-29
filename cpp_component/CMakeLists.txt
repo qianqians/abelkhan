@@ -34,4 +34,3 @@ INCLUDE_DIRECTORIES(${concurrent_INCLUDE_PATH})
 
 add_subdirectory(./component/hub)
 add_subdirectory(./component/gate)
-add_subdirectory(./component/websocketgate)
