@@ -1,31 +1,33 @@
 module center{
-	void reg_server(string type, string ip, int port, string uuid);
 
-}
-
-module gm_center{
-	void confirm_gm(string gm_name);
-
-	void close_clutter(string gmname);
-
-	void close_zone(string gmname, int zone_id);
-
-	void reload(string gmname, string argv);
+	reg_server req(string type, string ip, uint16 port, string uuid) rsp() err();
+	
+	heartbeat ntf();
+	
+	closed ntf();
+	
 }
 
 module center_call_server{
-	void reg_server_sucess();
 
-	void close_server();
-
+	close_server ntf();
+	
 }
 
 module center_call_hub{
-	void distribute_server_address(string type, string ip, int port, string uuid);
 
-	void reload(string argv);
+	distribute_server_address ntf(string type, string ip, uint16 port, string uuid);
+	
+	reload ntf(string argv);
+	
 }
 
-module hub_call_center{
-    	void closed();
+module gm_center{
+
+	confirm_gm ntf(string gm_name);
+	
+	close_clutter ntf(string gmname);
+	
+	reload ntf(string gmname, string argv);
+	
 }

@@ -1,3 +1,3 @@
 cd ./tools/juggle
-python genjs.py ../../common/protcol/ ../../common/protcol/ts
+python gents.py ../../protcol/ ../../protcol/ts
 pause

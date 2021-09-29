@@ -1,3 +1,3 @@
 cd ./tools/juggle
-python gencpp.py ../../common/protcol/ ../../common/protcol/cpp
+python gencpp.py ../../protcol/ ../../protcol/cpp
 pause

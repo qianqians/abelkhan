@@ -1,12 +1,9 @@
 module gate_call_client{
-	void ntf_uuid(string uuid);
+	
+	ntf_cuuid ntf(string cuuid);
 
-	void connect_gate_sucess();
+	heartbeats req(uint64 timetmp) rsp() err();
 
-	void connect_hub_sucess(string hub_name);
-
-	void ack_heartbeats();
-
-	void call_client(string module, string func, array argv);
+	call_client ntf(bin rpc_argv);
 
 }

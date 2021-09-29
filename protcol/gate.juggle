@@ -1,31 +1,26 @@
+struct hub_info{
+	string hub_name;
+	string hub_type;
+}
+
 module client_call_gate{
-	void connect_server(string client_uuid, int tick);
-
-	void cancle_server();
-
-	void connect_hub(string hub_name);
-
-	void enable_heartbeats();
-
-	void disable_heartbeats();
-
-	void forward_client_call_hub(string hub_name, string module, string func, array argv);
-
-	void heartbeats(int clockt);
+	
+	get_hub_info req() rsp(hub_info[] hub_info) err();
+	
+	forward_client_call_hub ntf(string hub_name, bin rpc_argv);
 
 }
 
 module hub_call_gate{
-	void reg_hub(string hub_uuid, string hub_name);
 
-	void connect_sucess(string client_uuid);
+	reg_hub req(string hub_name, string hub_type) rsp() err();
 
-	void disconnect_client(string client_uuid);
+	disconnect_client ntf(string client_uuid);
 
-	void forward_hub_call_client(string client_uuid, string module, string func, array argv);
+	forward_hub_call_client ntf(string client_uuid, bin rpc_argv);
 
-	void forward_hub_call_group_client(array client_uuids, string module, string func, array argv);
+	forward_hub_call_group_client ntf(string[] client_uuids, bin rpc_argv);
 
-	void forward_hub_call_global_client(string module, string func, array argv);
+	forward_hub_call_global_client ntf(bin rpc_argv);
 
 }

@@ -1,29 +1,27 @@
 module gate_call_hub{
-	void reg_hub_sucess();
 
-	void client_connect(string client_uuid);
-
-	void client_disconnect(string client_uuid);
-
-	void client_exception(string client_uuid);
-
-	void client_call_hub(string client_uuid, string module, string func, array argv);
+	client_call_hub ntf(string client_uuid, bin rpc_argv);
+	
 }
 
 module hub_call_hub{
-	void reg_hub(string hub_name);
 
-	void reg_hub_sucess();
-
-	void hub_call_hub_mothed(string module, string func, array argv);
+	reg_hub req(string hub_name, string hub_type) rsp() err();
+	
+	hub_call_hub_mothed ntf(string module, string func, bin argv);
+	
 }
 
 module hub_call_client{
-	void call_client(string module, string func, array argv);
+
+	call_client ntf(string module, string func, bin argv);
+	
 }
 
 module client_call_hub{
-	void client_connect(string client_uuid);
 
-	void call_hub(string client_uuid, string module, string func, array argv);
+	connect_hub ntf(string client_uuid);
+
+	call_hub ntf(string module, string func, bin argv);
+	
 }

@@ -1,31 +1,23 @@
 module hub_call_dbproxy{
-	void reg_hub(string hub_uuid);
+
+	reg_hub req(string hub_uuid) rsp() err();
 	
-	void create_persisted_object(string db, string collection, table object_info, string callbackid);
+	create_persisted_object req(string db, string collection, bin object_info) rsp() err();
+	
+	updata_persisted_object req(string db, string collection, bin query_json, bin object_info) rsp() err();
+	
+	remove_object req(string db, string collection, bin query_json) rsp() err();
+	
+	get_object_info ntf(string db, string collection, bin query_json, string callbackid);
 
-	void updata_persisted_object(string db, string collection, table query_json, table object_info, string callbackid);
-
-	void get_object_count(string db, string collection, table query_json, string callbackid);
-
-	void get_object_info(string db, string collection, table query_json, string callbackid);
-
-	void remove_object(string db, string collection, table query_json, string callbackid);
-
+	get_object_count req(string db, string collection, bin query_json) rsp(uint32 count) err();
+	
 }
 
 module dbproxy_call_hub{
-	void reg_hub_sucess();
+
+	ack_get_object_info ntf(string callbackid, bin object_info);
+
+	ack_get_object_info_end ntf(string callbackid);
 	
-	void ack_create_persisted_object(string callbackid, bool is_create_sucessed);
-
-	void ack_updata_persisted_object(string callbackid);
-
-	void ack_get_object_count(string callbackid, int count);
-
-	void ack_get_object_info(string callbackid, array object_info);
-
-	void ack_get_object_info_end(string callbackid);
-
-	void ack_remove_object(string callbackid);
-
 }
