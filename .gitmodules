@@ -1,3 +1,6 @@
 [submodule "tools/juggle"]
 	path = tools/juggle
 	url = git@github.com:qianqians/juggle.git
+[submodule "cpp_component/3rdparty/json11"]
+	path = cpp_component/3rdparty/json11
+	url = git@github.com:dropbox/json11.git
