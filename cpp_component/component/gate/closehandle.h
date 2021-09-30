@@ -15,7 +15,7 @@ public:
 		is_closed = false;
 	}
 
-	~closehandle(){
+	virtual ~closehandle(){
 	}
 
 public:

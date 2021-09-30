@@ -56,23 +56,19 @@ public:
 
 	void run() {
 		if (_is_ssl) {
-			while (1) {
-				try {
-					asio_tls_server->run();
-				}
-				catch (std::exception e) {
-					spdlog::error("err:{0}", e.what());
-				}
+			try {
+				asio_tls_server->run();
+			}
+			catch (std::exception e) {
+				spdlog::error("err:{0}", e.what());
 			}
 		}
 		else {
-			while (1) {
-				try {
-					asio_server->run();
-				}
-				catch (std::exception e) {
-					spdlog::error("err:{0}", e.what());
-				}
+			try {
+				asio_server->run();
+			}
+			catch (std::exception e) {
+				spdlog::error("err:{0}", e.what());
 			}
 		}
 	}

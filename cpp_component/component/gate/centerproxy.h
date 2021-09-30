@@ -7,6 +7,8 @@
 #ifndef _centerproxy_h
 #define _centerproxy_h
 
+#include <spdlog/spdlog.h>
+
 #include <abelkhan.h>
 #include <center.h>
 
@@ -20,11 +22,18 @@ public:
 		_center_caller = std::make_shared<abelkhan::center_caller>(_center_ch);
 	}
 
-	~centerproxy(){
+	virtual ~centerproxy(){
 	}
 
 	void reg_server(std::string ip, short port, std::string uuid) {
-		_center_caller->reg_server("gate", ip, port, uuid);
+		_center_caller->reg_server("gate", ip, port, uuid)->callBack([this](){
+			is_reg_sucess = true;
+			spdlog::trace("connect center server sucess!");
+		}, [](){
+			spdlog::trace("connect center server faild!");
+		})->timeout(1000, []() {
+			spdlog::trace("connect center server timeout!");
+		});
 	}
 
 public:

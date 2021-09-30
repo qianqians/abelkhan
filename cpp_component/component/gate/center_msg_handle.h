@@ -8,15 +8,30 @@
 #define _center_msg_handle_h
 
 #include "centerproxy.h"
+#include "closehandle.h"
 
-void reg_server_sucess(std::shared_ptr<gate::centerproxy> _centerproxy) {
-	_centerproxy->is_reg_sucess = true;
+namespace gate {
 
-	std::cout << "connect center server sucess" << std::endl;
-}
+class center_msg_handle
+{
+private:
+	std::shared_ptr<gate::closehandle> _closehandle;
+	std::shared_ptr<abelkhan::center_call_server_module> _center_call_server_module;
 
-void close_server(std::shared_ptr<gate::closehandle> _closehandle) {
-	_closehandle->is_closed = true;
+public:
+	center_msg_handle(std::shared_ptr<gate::closehandle> closehandle) {
+		_closehandle = closehandle;
+
+		_center_call_server_module = std::make_shared<abelkhan::center_call_server_module>();
+		_center_call_server_module->sig_close_server.connect(std::bind(&center_msg_handle::on_close_server, this));
+	}
+
+	void on_close_server() {
+		_closehandle->is_closed = true;
+	}
+
+};
+
 }
 
 #endif //_center_msg_handle_h
