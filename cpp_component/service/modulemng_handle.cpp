@@ -8,6 +8,6 @@
 
 namespace service {
 
-abelkhan::modulemng _modulemng;
+std::shared_ptr<abelkhan::modulemng> _modulemng = std::make_shared<abelkhan::modulemng>();
 
 }

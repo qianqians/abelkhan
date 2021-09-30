@@ -11,7 +11,7 @@
 
 namespace service {
 
-extern abelkhan::modulemng _modulemng;
+extern std::shared_ptr<abelkhan::modulemng> _modulemng;
 
 }
 

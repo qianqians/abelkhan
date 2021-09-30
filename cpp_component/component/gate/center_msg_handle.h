@@ -7,6 +7,8 @@
 #ifndef _center_msg_handle_h
 #define _center_msg_handle_h
 
+#include <modulemng_handle.h>
+
 #include "centerproxy.h"
 #include "closehandle.h"
 
@@ -23,6 +25,7 @@ public:
 		_closehandle = closehandle;
 
 		_center_call_server_module = std::make_shared<abelkhan::center_call_server_module>();
+		_center_call_server_module->Init(service::_modulemng);
 		_center_call_server_module->sig_close_server.connect(std::bind(&center_msg_handle::on_close_server, this));
 	}
 

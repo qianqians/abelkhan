@@ -194,6 +194,62 @@ namespace abelkhan
         }
 
     }
+    public class client_call_gate_heartbeats_cb
+    {
+        private UInt64 cb_uuid;
+        private client_call_gate_rsp_cb module_rsp_cb;
+
+        public client_call_gate_heartbeats_cb(UInt64 _cb_uuid, client_call_gate_rsp_cb _module_rsp_cb)
+        {
+            cb_uuid = _cb_uuid;
+            module_rsp_cb = _module_rsp_cb;
+        }
+
+        public event Action<UInt64> on_heartbeats_cb;
+        public event Action<> on_heartbeats_err;
+        public event Action on_heartbeats_timeout;
+
+        public client_call_gate_heartbeats_cb callBack(Action<UInt64> cb, Action<> err)
+        {
+            on_heartbeats_cb += cb;
+            on_heartbeats_err += err;
+            return this;
+        }
+
+        void timeout(Uint64 tick, Action timeout_cb)
+        {
+            TinyTimer.add_timer(tick, ()=>{
+                module_rsp_cb.heartbeats_timeout(cb_uuid);
+            });
+            on_heartbeats_timeout += timeout_cb;
+        }
+
+        public void call_cb(UInt64 timetmp)
+        {
+            if (on_heartbeats_cb != null)
+            {
+                on_heartbeats_cb(timetmp);
+            }
+        }
+
+        public void call_err()
+        {
+            if (on_heartbeats_err != null)
+            {
+                on_heartbeats_err();
+            }
+        }
+
+        public void call_timeout()
+        {
+            if (on_heartbeats_timeout != null)
+            {
+                on_heartbeats_timeout();
+            }
+        }
+
+    }
+
     public class client_call_gate_get_hub_info_cb
     {
         private UInt64 cb_uuid;
@@ -252,13 +308,51 @@ namespace abelkhan
 
 /*this cb code is codegen by abelkhan for c#*/
     public class client_call_gate_rsp_cb : abelkhan.Imodule {
+        public Dictionary<UInt64, client_call_gate_heartbeats_cb> map_heartbeats;
         public Dictionary<UInt64, client_call_gate_get_hub_info_cb> map_get_hub_info;
         public client_call_gate_rsp_cb(abelkhan.modulemng modules) : base("client_call_gate_rsp_cb")
         {
             modules.reg_module(this);
+            map_heartbeats = new Dictionary<UInt64, client_call_gate_heartbeats_cb>();
+            reg_method("heartbeats_rsp", heartbeats_rsp);
+            reg_method("heartbeats_err", heartbeats_err);
             map_get_hub_info = new Dictionary<UInt64, client_call_gate_get_hub_info_cb>();
             reg_method("get_hub_info_rsp", get_hub_info_rsp);
             reg_method("get_hub_info_err", get_hub_info_err);
+        }
+
+        public void heartbeats_rsp(ArrayList inArray){
+            var uuid = (UInt64)inArray[0];
+            var _timetmp = (UInt64)inArray[1];
+            var rsp = try_get_and_del_heartbeats_cb(uuid);
+            if (rsp != null)
+            {
+                rsp.call_cb(_timetmp);
+            }
+        }
+
+        public void heartbeats_err(ArrayList inArray){
+            var uuid = (UInt64)inArray[0];
+            var rsp = try_get_and_del_heartbeats_cb(uuid);
+            if (rsp != null)
+            {
+            rsp.call_err();
+            }
+        }
+
+        public void heartbeats_timeout(UInt64 cb_uuid){
+            var rsp = try_get_and_del_heartbeats_cb(cb_uuid);
+            if (rsp != null){
+                rsp.call_timeout();
+            }
+        }
+
+        private client_call_gate_heartbeats_cb try_get_and_del_heartbeats_cb(UInt64 uuid){
+            lock(map_heartbeats)
+            {                var rsp = map_heartbeats[uuid];
+                map_heartbeats.Remove(uuid);
+                return rsp;
+            }
         }
 
         public void get_hub_info_rsp(ArrayList inArray){
@@ -312,12 +406,26 @@ namespace abelkhan
             }
         }
 
-        public client_call_gate_get_hub_info_cb get_hub_info(){
+        public client_call_gate_heartbeats_cb heartbeats(){
+            Interlocked.Increment(ref uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2);
+            var uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = uuid;
+
+            var _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = new ArrayList();
+            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(uuid_a514ca5f_2c67_5668_aac0_354397bdce36);
+            call_module_method("heartbeats", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+
+            var cb_heartbeats_obj = new client_call_gate_heartbeats_cb();
+            rsp_cb_client_call_gate_handle.map_heartbeats.Add(uuid_a514ca5f_2c67_5668_aac0_354397bdce36, cb_heartbeats_obj);
+            return cb_heartbeats_obj;
+        }
+
+        public client_call_gate_get_hub_info_cb get_hub_info(string hub_type){
             Interlocked.Increment(ref uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2);
             var uuid_e9d2753f_7d38_512d_80ff_7aae13508048 = uuid;
 
             var _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24 = new ArrayList();
             _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.Add(uuid_e9d2753f_7d38_512d_80ff_7aae13508048);
+            _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.Add(hub_type);
             call_module_method("get_hub_info", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
 
             var cb_get_hub_info_obj = new client_call_gate_get_hub_info_cb();
@@ -419,6 +527,28 @@ namespace abelkhan
         }
 
     }
+    public class client_call_gate_heartbeats_rsp : abelkhan.Response {
+        private UInt64 uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56;
+        public client_call_gate_heartbeats_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("client_call_gate_rsp_cb", _ch)
+        {
+            uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56 = _uuid;
+        }
+
+        public void rsp(UInt64 timetmp){
+            var _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = new ArrayList();
+            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56);
+            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(timetmp);
+            call_module_method("heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+        }
+
+        public void err(){
+            var _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = new ArrayList();
+            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56);
+            call_module_method("heartbeats_err", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+        }
+
+    }
+
     public class client_call_gate_get_hub_info_rsp : abelkhan.Response {
         private UInt64 uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b;
         public client_call_gate_get_hub_info_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("client_call_gate_rsp_cb", _ch)
@@ -451,16 +581,28 @@ namespace abelkhan
             modules = _modules;
             modules.reg_module(this);
 
+            reg_method("heartbeats", heartbeats);
             reg_method("get_hub_info", get_hub_info);
             reg_method("forward_client_call_hub", forward_client_call_hub);
         }
 
-        public event Action<> on_get_hub_info;
+        public event Action<> on_heartbeats;
+        public void heartbeats(ArrayList inArray){
+            var _cb_uuid = (UInt64)inArray[0];
+            rsp = new client_call_gate_heartbeats_rsp(current_ch, _cb_uuid);
+            if (on_heartbeats != null){
+                on_heartbeats();
+            }
+            rsp = null;
+        }
+
+        public event Action<string> on_get_hub_info;
         public void get_hub_info(ArrayList inArray){
             var _cb_uuid = (UInt64)inArray[0];
+            var _hub_type = (string)inArray[1];
             rsp = new client_call_gate_get_hub_info_rsp(current_ch, _cb_uuid);
             if (on_get_hub_info != null){
-                on_get_hub_info();
+                on_get_hub_info(_hub_type);
             }
             rsp = null;
         }

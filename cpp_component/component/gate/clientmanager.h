@@ -6,154 +6,152 @@
  */
 #ifndef _clientmanager_h
 #define _clientmanager_h
-//
-//#include <map>
-//#include <set>
-//#include <boost/shared_ptr.hpp>
-//
-//#include <Ichannel.h>
-//
-//#include <gate_call_hubcaller.h>
-//
-//#include "hubsvrmanager.h"
-//#include "gc_poll.h"
-//
-//namespace gate {
-//
-//class clientmanager {
-//public:
-//	clientmanager(std::shared_ptr<hubsvrmanager> _hubsvrmanager_) {
-//		_hubsvrmanager = _hubsvrmanager_;
-//	}
-//
-//	~clientmanager() {
-//	}
-//
-//	void enable_heartbeats(std::shared_ptr<juggle::Ichannel> _client) {
-//		heartbeats_client.insert(_client);
-//	}
-//
-//	void disable_heartbeats(std::shared_ptr<juggle::Ichannel> _client) {
-//		heartbeats_client.erase(_client);
-//	}
-//
-//	void heartbeat_client(int64_t ticktime) {
-//		std::vector<std::shared_ptr<juggle::Ichannel> > remove_client;
-//		for (auto item : client_server_time) {
-//			if ((item.second + 60 * 60 * 1000) < ticktime) {
-//				remove_client.push_back(item.first);
-//				continue;
-//			}
-//
-//			if ((item.second + 20 * 1000) < ticktime) {
-//				if (heartbeats_client.find(item.first) != heartbeats_client.end()) {
-//					remove_client.push_back(item.first);
-//				}
-//			}
-//		}
-//
-//		for (auto _client : remove_client){
-//			auto client_uuid = client_uuid_map[_client];
-//			_hubsvrmanager->for_each_hub([client_uuid](std::string hub_name, std::shared_ptr<juggle::Ichannel> hub_ch) {
-//				auto _caller = std::make_shared<caller::gate_call_hub>(hub_ch);
-//				_caller->client_disconnect(client_uuid);
-//			});
-//		}
-//
-//		gate::gc_put([this, remove_client]() {
-//			for (auto _client : remove_client) {
-//				_client->disconnect();
-//			}
-//		});
-//	}
-//
-//	void refresh_and_check_client(std::shared_ptr<juggle::Ichannel> _client, int64_t servertick, int64_t clienttick) {
-//		if (((clienttick - client_time[_client]) - (servertick - client_server_time[_client])) > 10 * 1000) {
-//			std::cout << "clienttick_new:" << clienttick << " clienttick_old:" << client_time[_client] << std::endl;
-//			std::cout << "servertick_new:" << servertick << " servertick_old:" << client_server_time[_client] << std::endl;
-//
-//			auto client_uuid = client_uuid_map[_client];
-//			_hubsvrmanager->for_each_hub([client_uuid](std::string hub_name, std::shared_ptr<juggle::Ichannel> hub_ch) {
-//				auto _caller = std::make_shared<caller::gate_call_hub>(hub_ch);
-//				_caller->client_exception(client_uuid);
-//			});
-//		}
-//
-//		client_server_time[_client] = servertick;
-//		client_time[_client] = clienttick;
-//	}
-//
-//	void reg_client(std::string uuid, std::shared_ptr<juggle::Ichannel> _client, int64_t servertick, int64_t clienttick) {
-//		client_map.insert(std::make_pair(uuid, _client));
-//		client_uuid_map.insert(std::make_pair(_client, uuid));
-//		client_server_time.insert(std::make_pair(_client, servertick));
-//		client_time.insert(std::make_pair(_client, clienttick));
-//	}
-//
-//	void unreg_client(std::shared_ptr<juggle::Ichannel> _client){
-//		if (client_uuid_map.find(_client) == client_uuid_map.end()){
-//			return;
-//		}
-//
-//		auto _client_uuid = client_uuid_map[_client];
-//		std::cout << "unreg_client:" << _client_uuid << std::endl;
-//
-//		if (client_map.find(_client_uuid) != client_map.end())
-//		{
-//			client_map.erase(_client_uuid);
-//		}
-//		if (client_server_time.find(_client) != client_server_time.end())
-//		{
-//			client_server_time.erase(_client);
-//		}
-//		if (client_time.find(_client) != client_time.end())
-//		{
-//			client_time.erase(_client);
-//		}
-//		if (client_uuid_map.find(_client) != client_uuid_map.end())
-//		{
-//			client_uuid_map.erase(_client);
-//		}
-//		if (heartbeats_client.find(_client) != heartbeats_client.end()) {
-//			heartbeats_client.erase(_client);
-//		}
-//	}
-//
-//	bool has_client(std::shared_ptr<juggle::Ichannel> _client) {
-//		return client_uuid_map.find(_client) != client_uuid_map.end();
-//	}
-//
-//	bool has_client(std::string uuid) {
-//		return client_map.find(uuid) != client_map.end();
-//	} 
-//
-//	std::string get_client(std::shared_ptr<juggle::Ichannel> _client) {
-//		return client_uuid_map[_client];
-//	}
-//
-//	std::shared_ptr<juggle::Ichannel> get_client(std::string uuid) {
-//		return client_map[uuid];
-//	}
-//
-//	void for_each_client(std::function<void(std::string, std::shared_ptr<juggle::Ichannel>)> fn) {
-//		for (auto client : client_map){
-//			fn(client.first, client.second);
-//		}
-//	}
-//
-//private:
-//	std::set<std::shared_ptr<juggle::Ichannel> > heartbeats_client;
-//
-//	std::map<std::string, std::shared_ptr<juggle::Ichannel> > client_map;
-//	std::map<std::shared_ptr<juggle::Ichannel>, std::string> client_uuid_map;
-//
-//	std::map<std::shared_ptr<juggle::Ichannel>, int64_t > client_server_time;
-//	std::map<std::shared_ptr<juggle::Ichannel>, int64_t > client_time;
-//
-//	std::shared_ptr<hubsvrmanager> _hubsvrmanager;
-//
-//};
-//
-//}
+
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/lexical_cast.hpp>
+
+#include <spdlog/spdlog.h>
+
+#include <abelkhan.h>
+#include <client.h>
+
+#include "timerservice.h"
+#include "hubsvrmanager.h"
+#include "gc_poll.h"
+
+namespace gate {
+
+class clientproxy {
+private:
+	std::shared_ptr<abelkhan::gate_call_client_caller> _gate_call_client_caller;
+
+public:
+	uint64_t _timetmp;
+	std::string _cuuid;
+	std::shared_ptr<abelkhan::Ichannel> _ch;
+	std::vector<std::shared_ptr<hubproxy> > conn_hubproxys;
+
+public:
+	clientproxy(std::string& cuuid, std::shared_ptr<abelkhan::Ichannel> ch) {
+		_cuuid = cuuid;
+		_ch = ch;
+		_gate_call_client_caller = std::make_shared<abelkhan::gate_call_client_caller>(ch, service::_modulemng);
+	}
+
+	virtual ~clientproxy() {
+	}
+
+	void ntf_cuuid() {
+		_gate_call_client_caller->ntf_cuuid(_cuuid);
+	}
+
+	void call_client(std::vector<uint8_t>& data) {
+		_gate_call_client_caller->call_client(data);
+	}
+
+};
+
+class clientmanager {
+public:
+	clientmanager(std::shared_ptr<hubsvrmanager> _hubsvrmanager_) {
+		_hubsvrmanager = _hubsvrmanager_;
+	}
+
+	virtual ~clientmanager() {
+	}
+
+	void heartbeat_client(int64_t ticktime) {
+		std::vector<std::shared_ptr<clientproxy> > remove_client;
+		for (auto item : client_map) {
+			if ((item.second->_timetmp + 10 * 1000) < ticktime) {
+				remove_client.push_back(item.second);
+				continue;
+			}
+		}
+
+		for (auto _client : remove_client){
+			for (auto hubproxy_ : _client->conn_hubproxys) {
+				hubproxy_->client_disconnect(_client->_cuuid);
+			}
+			unreg_client(_client->_ch);
+		}
+
+		//service::gc_put([this, remove_client]() {
+		//});
+	}
+
+	std::shared_ptr<clientproxy> reg_client(std::shared_ptr<abelkhan::Ichannel> ch) {
+		std::string cuuid = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
+		auto _client = std::make_shared<clientproxy>(cuuid, ch);
+
+		client_map.insert(std::make_pair(cuuid, _client));
+		client_uuid_map.insert(std::make_pair(ch, cuuid));
+
+		return _client;
+	}
+
+	void unreg_client(std::shared_ptr<abelkhan::Ichannel> _ch){
+		if (client_uuid_map.find(_ch) == client_uuid_map.end()){
+			return;
+		}
+
+		auto _client_uuid = client_uuid_map[_ch];
+		spdlog::trace("unreg_client:{0}", _client_uuid);
+
+		if (client_map.find(_client_uuid) != client_map.end())
+		{
+			client_map.erase(_client_uuid);
+		}
+		if (client_uuid_map.find(_ch) != client_uuid_map.end())
+		{
+			client_uuid_map.erase(_ch);
+		}
+	}
+
+	bool has_client(std::shared_ptr<abelkhan::Ichannel> ch) {
+		return client_uuid_map.find(ch) != client_uuid_map.end();
+	}
+
+	bool has_client(std::string uuid) {
+		return client_map.find(uuid) != client_map.end();
+	} 
+
+	std::string get_client(std::shared_ptr<abelkhan::Ichannel> ch) {
+		auto it = client_uuid_map.find(ch);
+		if (it != client_uuid_map.end()) {
+			return it->second;
+		}
+		return "";
+	}
+
+	std::shared_ptr<clientproxy> get_client(std::string cuuid) {
+		auto it = client_map.find(cuuid);
+		if (it != client_map.end()) {
+			return it->second;
+		}
+		return nullptr;
+	}
+
+	void for_each_client(std::function<void(std::string, std::shared_ptr<clientproxy>)> fn) {
+		for (auto client : client_map){
+			fn(client.first, client.second);
+		}
+	}
+
+private:
+	std::unordered_map<std::string, std::shared_ptr<clientproxy> > client_map;
+	std::unordered_map<std::shared_ptr<abelkhan::Ichannel>, std::string> client_uuid_map;
+
+	std::shared_ptr<hubsvrmanager> _hubsvrmanager;
+
+};
+
+}
 
 #endif //_clientmanager_h

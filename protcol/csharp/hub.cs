@@ -169,6 +169,12 @@ namespace abelkhan
             }
         }
 
+        public void client_disconnect(string client_uuid){
+            var _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60 = new ArrayList();
+            _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60.Add(client_uuid);
+            call_module_method("client_disconnect", _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60);
+        }
+
         public void client_call_hub(string client_uuid, byte[] rpc_argv){
             var _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263 = new ArrayList();
             _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.Add(client_uuid);
@@ -306,7 +312,16 @@ namespace abelkhan
             modules = _modules;
             modules.reg_module(this);
 
+            reg_method("client_disconnect", client_disconnect);
             reg_method("client_call_hub", client_call_hub);
+        }
+
+        public event Action<string> on_client_disconnect;
+        public void client_disconnect(ArrayList inArray){
+            var _client_uuid = (string)inArray[0];
+            if (on_client_disconnect != null){
+                on_client_disconnect(_client_uuid);
+            }
         }
 
         public event Action<string, byte[]> on_client_call_hub;

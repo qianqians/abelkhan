@@ -6,8 +6,6 @@
 #include <map>
 #include <vector>
 
-#include <factory.h>
-
 #include "msec_time.h"
 
 namespace service

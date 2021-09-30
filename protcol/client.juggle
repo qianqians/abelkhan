@@ -2,8 +2,6 @@ module gate_call_client{
 	
 	ntf_cuuid ntf(string cuuid);
 
-	heartbeats req(uint64 timetmp) rsp() err();
-
 	call_client ntf(bin rpc_argv);
 
 }

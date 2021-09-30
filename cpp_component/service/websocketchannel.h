@@ -109,8 +109,6 @@ public:
 			else {
 				asio_server->send(hdl, _data, datasize, websocketpp::frame::opcode::binary);
 			}
-
-			spdlog::trace("push:{0}", data);
 		}
 		catch (std::exception e) {
 			spdlog::error("webchannel push error:{0}", e.what());

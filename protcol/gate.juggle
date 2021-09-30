@@ -5,7 +5,9 @@ struct hub_info{
 
 module client_call_gate{
 	
-	get_hub_info req() rsp(hub_info[] hub_info) err();
+	heartbeats req() rsp(uint64 timetmp) err();
+	
+	get_hub_info req(string hub_type) rsp(hub_info[] hub_info) err();
 	
 	forward_client_call_hub ntf(string hub_name, bin rpc_argv);
 
