@@ -27,7 +27,7 @@ public:
 	}
 
 private:
-	std::shared_ptr<boost::asio::io_service> _service
+	std::shared_ptr<boost::asio::io_service> _service;
 
 };
 
