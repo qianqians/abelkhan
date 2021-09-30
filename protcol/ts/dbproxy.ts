@@ -14,7 +14,7 @@ export class dbproxy_call_hub_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_dbproxy_call_hub_handle : dbproxy_call_hub_rsp_cb | null = null;
 export class dbproxy_call_hub_caller extends abelkhan.Icaller {
-    private uuid : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8 : number = Math.round(Math.random() * Number.MAX_VALUE);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("dbproxy_call_hub", _ch);
@@ -384,7 +384,7 @@ export class hub_call_dbproxy_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_hub_call_dbproxy_handle : hub_call_dbproxy_rsp_cb | null = null;
 export class hub_call_dbproxy_caller extends abelkhan.Icaller {
-    private uuid : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_e713438c_e791_3714_ad31_4ccbddee2554 : number = Math.round(Math.random() * Number.MAX_VALUE);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("hub_call_dbproxy", _ch);
@@ -394,7 +394,7 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
     }
 
     public reg_hub(hub_uuid:string){
-        let uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = this.uuid++;
+        let uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
 
         let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106];
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(hub_uuid);
@@ -408,7 +408,7 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
     }
 
     public create_persisted_object(db:string, collection:string, object_info:Uint8Array){
-        let uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb = this.uuid++;
+        let uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
 
         let _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607:any[] = [uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb];
         _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.push(db);
@@ -424,7 +424,7 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
     }
 
     public updata_persisted_object(db:string, collection:string, query_json:Uint8Array, object_info:Uint8Array){
-        let uuid_7864a402_2d75_5c02_b24b_50287a06732f = this.uuid++;
+        let uuid_7864a402_2d75_5c02_b24b_50287a06732f = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
 
         let _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425:any[] = [uuid_7864a402_2d75_5c02_b24b_50287a06732f];
         _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.push(db);
@@ -441,7 +441,7 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
     }
 
     public remove_object(db:string, collection:string, query_json:Uint8Array){
-        let uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f = this.uuid++;
+        let uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
 
         let _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da:any[] = [uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f];
         _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.push(db);
@@ -466,7 +466,7 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
     }
 
     public get_object_count(db:string, collection:string, query_json:Uint8Array){
-        let uuid_975425f5_8baf_5905_beeb_4454e78907f6 = this.uuid++;
+        let uuid_975425f5_8baf_5905_beeb_4454e78907f6 = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
 
         let _argv_2632cded_162c_3a9b_86ee_462b614cbeea:any[] = [uuid_975425f5_8baf_5905_beeb_4454e78907f6];
         _argv_2632cded_162c_3a9b_86ee_462b614cbeea.push(db);
@@ -519,96 +519,96 @@ export class dbproxy_call_hub_module extends abelkhan.Imodule {
 
 }
 export class hub_call_dbproxy_reg_hub_rsp extends abelkhan.Icaller {
-    private uuid : number;
+    private uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 : number;
     constructor(_ch:abelkhan.Ichannel, _uuid:number){
         super("hub_call_dbproxy_rsp_cb", _ch);
-        this.uuid = _uuid;
+        this.uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 = _uuid;
     }
 
     public rsp(){
-        let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [this.uuid];
+        let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [this.uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67];
         this.call_module_method("reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
     }
 
     public err(){
-        let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [this.uuid];
+        let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [this.uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67];
         this.call_module_method("reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
     }
 
 }
 
 export class hub_call_dbproxy_create_persisted_object_rsp extends abelkhan.Icaller {
-    private uuid : number;
+    private uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b : number;
     constructor(_ch:abelkhan.Ichannel, _uuid:number){
         super("hub_call_dbproxy_rsp_cb", _ch);
-        this.uuid = _uuid;
+        this.uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b = _uuid;
     }
 
     public rsp(){
-        let _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607:any[] = [this.uuid];
+        let _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607:any[] = [this.uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b];
         this.call_module_method("create_persisted_object_rsp", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
     }
 
     public err(){
-        let _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607:any[] = [this.uuid];
+        let _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607:any[] = [this.uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b];
         this.call_module_method("create_persisted_object_err", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
     }
 
 }
 
 export class hub_call_dbproxy_updata_persisted_object_rsp extends abelkhan.Icaller {
-    private uuid : number;
+    private uuid_16267d40_cddc_312f_87c0_185a55b79ad2 : number;
     constructor(_ch:abelkhan.Ichannel, _uuid:number){
         super("hub_call_dbproxy_rsp_cb", _ch);
-        this.uuid = _uuid;
+        this.uuid_16267d40_cddc_312f_87c0_185a55b79ad2 = _uuid;
     }
 
     public rsp(){
-        let _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425:any[] = [this.uuid];
+        let _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425:any[] = [this.uuid_16267d40_cddc_312f_87c0_185a55b79ad2];
         this.call_module_method("updata_persisted_object_rsp", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
     }
 
     public err(){
-        let _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425:any[] = [this.uuid];
+        let _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425:any[] = [this.uuid_16267d40_cddc_312f_87c0_185a55b79ad2];
         this.call_module_method("updata_persisted_object_err", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
     }
 
 }
 
 export class hub_call_dbproxy_remove_object_rsp extends abelkhan.Icaller {
-    private uuid : number;
+    private uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1 : number;
     constructor(_ch:abelkhan.Ichannel, _uuid:number){
         super("hub_call_dbproxy_rsp_cb", _ch);
-        this.uuid = _uuid;
+        this.uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1 = _uuid;
     }
 
     public rsp(){
-        let _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da:any[] = [this.uuid];
+        let _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da:any[] = [this.uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1];
         this.call_module_method("remove_object_rsp", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
     }
 
     public err(){
-        let _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da:any[] = [this.uuid];
+        let _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da:any[] = [this.uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1];
         this.call_module_method("remove_object_err", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
     }
 
 }
 
 export class hub_call_dbproxy_get_object_count_rsp extends abelkhan.Icaller {
-    private uuid : number;
+    private uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2 : number;
     constructor(_ch:abelkhan.Ichannel, _uuid:number){
         super("hub_call_dbproxy_rsp_cb", _ch);
-        this.uuid = _uuid;
+        this.uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2 = _uuid;
     }
 
     public rsp(count:number){
-        let _argv_2632cded_162c_3a9b_86ee_462b614cbeea:any[] = [this.uuid];
+        let _argv_2632cded_162c_3a9b_86ee_462b614cbeea:any[] = [this.uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2];
         _argv_2632cded_162c_3a9b_86ee_462b614cbeea.push(count);
         this.call_module_method("get_object_count_rsp", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
     }
 
     public err(){
-        let _argv_2632cded_162c_3a9b_86ee_462b614cbeea:any[] = [this.uuid];
+        let _argv_2632cded_162c_3a9b_86ee_462b614cbeea:any[] = [this.uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2];
         this.call_module_method("get_object_count_err", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
     }
 

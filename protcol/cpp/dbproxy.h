@@ -29,7 +29,7 @@ namespace abelkhan
         static std::shared_ptr<dbproxy_call_hub_rsp_cb> rsp_cb_dbproxy_call_hub_handle;
 
     private:
-        std::atomic<uint64_t> uuid;
+        std::atomic<uint64_t> uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8;
 
     public:
         dbproxy_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("dbproxy_call_hub", _ch)
@@ -38,7 +38,7 @@ namespace abelkhan
                 rsp_cb_dbproxy_call_hub_handle = std::make_shared<dbproxy_call_hub_rsp_cb>();
                 rsp_cb_dbproxy_call_hub_handle->Init(modules);
             }
-            uuid.store(random());
+            uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8.store(random());
         }
 
         void ack_get_object_info(std::string callbackid, std::vector<uint8_t> object_info){
@@ -410,7 +410,7 @@ namespace abelkhan
         static std::shared_ptr<hub_call_dbproxy_rsp_cb> rsp_cb_hub_call_dbproxy_handle;
 
     private:
-        std::atomic<uint64_t> uuid;
+        std::atomic<uint64_t> uuid_e713438c_e791_3714_ad31_4ccbddee2554;
 
     public:
         hub_call_dbproxy_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("hub_call_dbproxy", _ch)
@@ -419,11 +419,11 @@ namespace abelkhan
                 rsp_cb_hub_call_dbproxy_handle = std::make_shared<hub_call_dbproxy_rsp_cb>();
                 rsp_cb_hub_call_dbproxy_handle->Init(modules);
             }
-            uuid.store(random());
+            uuid_e713438c_e791_3714_ad31_4ccbddee2554.store(random());
         }
 
         std::shared_ptr<hub_call_dbproxy_reg_hub_cb> reg_hub(std::string hub_uuid){
-            auto uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = uuid++;
+            auto uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
             msgpack11::MsgPack::array _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
             _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67.push_back(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106);
             _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67.push_back(hub_uuid);
@@ -436,7 +436,7 @@ namespace abelkhan
         }
 
         std::shared_ptr<hub_call_dbproxy_create_persisted_object_cb> create_persisted_object(std::string db, std::string collection, std::vector<uint8_t> object_info){
-            auto uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb = uuid++;
+            auto uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb = uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
             msgpack11::MsgPack::array _argv_c5ae7137_dfe0_316b_9f1d_5dffa222d32b;
             _argv_c5ae7137_dfe0_316b_9f1d_5dffa222d32b.push_back(uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb);
             _argv_c5ae7137_dfe0_316b_9f1d_5dffa222d32b.push_back(db);
@@ -451,7 +451,7 @@ namespace abelkhan
         }
 
         std::shared_ptr<hub_call_dbproxy_updata_persisted_object_cb> updata_persisted_object(std::string db, std::string collection, std::vector<uint8_t> query_json, std::vector<uint8_t> object_info){
-            auto uuid_7864a402_2d75_5c02_b24b_50287a06732f = uuid++;
+            auto uuid_7864a402_2d75_5c02_b24b_50287a06732f = uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
             msgpack11::MsgPack::array _argv_16267d40_cddc_312f_87c0_185a55b79ad2;
             _argv_16267d40_cddc_312f_87c0_185a55b79ad2.push_back(uuid_7864a402_2d75_5c02_b24b_50287a06732f);
             _argv_16267d40_cddc_312f_87c0_185a55b79ad2.push_back(db);
@@ -467,7 +467,7 @@ namespace abelkhan
         }
 
         std::shared_ptr<hub_call_dbproxy_remove_object_cb> remove_object(std::string db, std::string collection, std::vector<uint8_t> query_json){
-            auto uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f = uuid++;
+            auto uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f = uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
             msgpack11::MsgPack::array _argv_f3bda2d9_d71c_307f_b727_d893a1cc0cd1;
             _argv_f3bda2d9_d71c_307f_b727_d893a1cc0cd1.push_back(uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f);
             _argv_f3bda2d9_d71c_307f_b727_d893a1cc0cd1.push_back(db);
@@ -491,7 +491,7 @@ namespace abelkhan
         }
 
         std::shared_ptr<hub_call_dbproxy_get_object_count_cb> get_object_count(std::string db, std::string collection, std::vector<uint8_t> query_json){
-            auto uuid_975425f5_8baf_5905_beeb_4454e78907f6 = uuid++;
+            auto uuid_975425f5_8baf_5905_beeb_4454e78907f6 = uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
             msgpack11::MsgPack::array _argv_175cd463_d9ac_3cde_804f_1c917ef2c7d2;
             _argv_175cd463_d9ac_3cde_804f_1c917ef2c7d2.push_back(uuid_975425f5_8baf_5905_beeb_4454e78907f6);
             _argv_175cd463_d9ac_3cde_804f_1c917ef2c7d2.push_back(db);
@@ -536,23 +536,23 @@ namespace abelkhan
     };
     class hub_call_dbproxy_reg_hub_rsp : Response {
     private:
-        uint64_t uuid;
+        uint64_t uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
 
     public:
         hub_call_dbproxy_reg_hub_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response("hub_call_dbproxy_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 = _uuid;
         }
 
         void rsp(){
             msgpack11::MsgPack::array _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7;
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push_back(uuid);
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push_back(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
             call_module_method("reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7;
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push_back(uuid);
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push_back(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
             call_module_method("reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 
@@ -560,23 +560,23 @@ namespace abelkhan
 
     class hub_call_dbproxy_create_persisted_object_rsp : Response {
     private:
-        uint64_t uuid;
+        uint64_t uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b;
 
     public:
         hub_call_dbproxy_create_persisted_object_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response("hub_call_dbproxy_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b = _uuid;
         }
 
         void rsp(){
             msgpack11::MsgPack::array _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607;
-            _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.push_back(uuid);
+            _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.push_back(uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b);
             call_module_method("create_persisted_object_rsp", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607;
-            _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.push_back(uuid);
+            _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.push_back(uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b);
             call_module_method("create_persisted_object_err", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
         }
 
@@ -584,23 +584,23 @@ namespace abelkhan
 
     class hub_call_dbproxy_updata_persisted_object_rsp : Response {
     private:
-        uint64_t uuid;
+        uint64_t uuid_16267d40_cddc_312f_87c0_185a55b79ad2;
 
     public:
         hub_call_dbproxy_updata_persisted_object_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response("hub_call_dbproxy_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_16267d40_cddc_312f_87c0_185a55b79ad2 = _uuid;
         }
 
         void rsp(){
             msgpack11::MsgPack::array _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425;
-            _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.push_back(uuid);
+            _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.push_back(uuid_16267d40_cddc_312f_87c0_185a55b79ad2);
             call_module_method("updata_persisted_object_rsp", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425;
-            _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.push_back(uuid);
+            _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.push_back(uuid_16267d40_cddc_312f_87c0_185a55b79ad2);
             call_module_method("updata_persisted_object_err", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
         }
 
@@ -608,23 +608,23 @@ namespace abelkhan
 
     class hub_call_dbproxy_remove_object_rsp : Response {
     private:
-        uint64_t uuid;
+        uint64_t uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1;
 
     public:
         hub_call_dbproxy_remove_object_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response("hub_call_dbproxy_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1 = _uuid;
         }
 
         void rsp(){
             msgpack11::MsgPack::array _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da;
-            _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.push_back(uuid);
+            _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.push_back(uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1);
             call_module_method("remove_object_rsp", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da;
-            _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.push_back(uuid);
+            _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.push_back(uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1);
             call_module_method("remove_object_err", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
         }
 
@@ -632,24 +632,24 @@ namespace abelkhan
 
     class hub_call_dbproxy_get_object_count_rsp : Response {
     private:
-        uint64_t uuid;
+        uint64_t uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2;
 
     public:
         hub_call_dbproxy_get_object_count_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response("hub_call_dbproxy_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2 = _uuid;
         }
 
         void rsp(uint32_t count){
             msgpack11::MsgPack::array _argv_2632cded_162c_3a9b_86ee_462b614cbeea;
-            _argv_2632cded_162c_3a9b_86ee_462b614cbeea.push_back(uuid);
+            _argv_2632cded_162c_3a9b_86ee_462b614cbeea.push_back(uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2);
             _argv_2632cded_162c_3a9b_86ee_462b614cbeea.push_back(count);
             call_module_method("get_object_count_rsp", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_2632cded_162c_3a9b_86ee_462b614cbeea;
-            _argv_2632cded_162c_3a9b_86ee_462b614cbeea.push_back(uuid);
+            _argv_2632cded_162c_3a9b_86ee_462b614cbeea.push_back(uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2);
             call_module_method("get_object_count_err", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
         }
 

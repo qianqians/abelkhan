@@ -21,7 +21,7 @@ namespace abelkhan
 
     public class dbproxy_call_hub_caller : abelkhan.Icaller {
         public static dbproxy_call_hub_rsp_cb rsp_cb_dbproxy_call_hub_handle = null;
-        private UInt64 uuid = RandomUUID.random();
+        private UInt64 uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8 = RandomUUID.random();
 
         public dbproxy_call_hub_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("dbproxy_call_hub", _ch)
         {
@@ -522,7 +522,7 @@ namespace abelkhan
 
     public class hub_call_dbproxy_caller : abelkhan.Icaller {
         public static hub_call_dbproxy_rsp_cb rsp_cb_hub_call_dbproxy_handle = null;
-        private UInt64 uuid = RandomUUID.random();
+        private UInt64 uuid_e713438c_e791_3714_ad31_4ccbddee2554 = RandomUUID.random();
 
         public hub_call_dbproxy_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("hub_call_dbproxy", _ch)
         {
@@ -533,7 +533,7 @@ namespace abelkhan
         }
 
         public hub_call_dbproxy_reg_hub_cb reg_hub(string hub_uuid){
-            Interlocked.Increment(ref uuid);
+            Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
             var uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = uuid;
 
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
@@ -547,7 +547,7 @@ namespace abelkhan
         }
 
         public hub_call_dbproxy_create_persisted_object_cb create_persisted_object(string db, string collection, byte[] object_info){
-            Interlocked.Increment(ref uuid);
+            Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
             var uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb = uuid;
 
             var _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607 = new ArrayList();
@@ -563,7 +563,7 @@ namespace abelkhan
         }
 
         public hub_call_dbproxy_updata_persisted_object_cb updata_persisted_object(string db, string collection, byte[] query_json, byte[] object_info){
-            Interlocked.Increment(ref uuid);
+            Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
             var uuid_7864a402_2d75_5c02_b24b_50287a06732f = uuid;
 
             var _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425 = new ArrayList();
@@ -580,7 +580,7 @@ namespace abelkhan
         }
 
         public hub_call_dbproxy_remove_object_cb remove_object(string db, string collection, byte[] query_json){
-            Interlocked.Increment(ref uuid);
+            Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
             var uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f = uuid;
 
             var _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da = new ArrayList();
@@ -605,7 +605,7 @@ namespace abelkhan
         }
 
         public hub_call_dbproxy_get_object_count_cb get_object_count(string db, string collection, byte[] query_json){
-            Interlocked.Increment(ref uuid);
+            Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
             var uuid_975425f5_8baf_5905_beeb_4454e78907f6 = uuid;
 
             var _argv_2632cded_162c_3a9b_86ee_462b614cbeea = new ArrayList();
@@ -652,106 +652,106 @@ namespace abelkhan
 
     }
     public class hub_call_dbproxy_reg_hub_rsp : abelkhan.Response {
-        private UInt64 uuid;
+        private UInt64 uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
         public hub_call_dbproxy_reg_hub_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 = _uuid;
         }
 
         public void rsp(){
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid);
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
             call_module_method("reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 
         public void err(){
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(this.uuid);
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
             call_module_method("reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 
     }
 
     public class hub_call_dbproxy_create_persisted_object_rsp : abelkhan.Response {
-        private UInt64 uuid;
+        private UInt64 uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b;
         public hub_call_dbproxy_create_persisted_object_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b = _uuid;
         }
 
         public void rsp(){
             var _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607 = new ArrayList();
-            _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.Add(uuid);
+            _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.Add(uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b);
             call_module_method("create_persisted_object_rsp", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
         }
 
         public void err(){
             var _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607 = new ArrayList();
-            _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.Add(this.uuid);
+            _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.Add(uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b);
             call_module_method("create_persisted_object_err", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
         }
 
     }
 
     public class hub_call_dbproxy_updata_persisted_object_rsp : abelkhan.Response {
-        private UInt64 uuid;
+        private UInt64 uuid_16267d40_cddc_312f_87c0_185a55b79ad2;
         public hub_call_dbproxy_updata_persisted_object_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_16267d40_cddc_312f_87c0_185a55b79ad2 = _uuid;
         }
 
         public void rsp(){
             var _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425 = new ArrayList();
-            _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(uuid);
+            _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(uuid_16267d40_cddc_312f_87c0_185a55b79ad2);
             call_module_method("updata_persisted_object_rsp", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
         }
 
         public void err(){
             var _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425 = new ArrayList();
-            _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(this.uuid);
+            _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(uuid_16267d40_cddc_312f_87c0_185a55b79ad2);
             call_module_method("updata_persisted_object_err", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
         }
 
     }
 
     public class hub_call_dbproxy_remove_object_rsp : abelkhan.Response {
-        private UInt64 uuid;
+        private UInt64 uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1;
         public hub_call_dbproxy_remove_object_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1 = _uuid;
         }
 
         public void rsp(){
             var _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da = new ArrayList();
-            _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.Add(uuid);
+            _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.Add(uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1);
             call_module_method("remove_object_rsp", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
         }
 
         public void err(){
             var _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da = new ArrayList();
-            _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.Add(this.uuid);
+            _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.Add(uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1);
             call_module_method("remove_object_err", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
         }
 
     }
 
     public class hub_call_dbproxy_get_object_count_rsp : abelkhan.Response {
-        private UInt64 uuid;
+        private UInt64 uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2;
         public hub_call_dbproxy_get_object_count_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2 = _uuid;
         }
 
         public void rsp(UInt32 count){
             var _argv_2632cded_162c_3a9b_86ee_462b614cbeea = new ArrayList();
-            _argv_2632cded_162c_3a9b_86ee_462b614cbeea.Add(uuid);
+            _argv_2632cded_162c_3a9b_86ee_462b614cbeea.Add(uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2);
             _argv_2632cded_162c_3a9b_86ee_462b614cbeea.Add(count);
             call_module_method("get_object_count_rsp", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
         }
 
         public void err(){
             var _argv_2632cded_162c_3a9b_86ee_462b614cbeea = new ArrayList();
-            _argv_2632cded_162c_3a9b_86ee_462b614cbeea.Add(this.uuid);
+            _argv_2632cded_162c_3a9b_86ee_462b614cbeea.Add(uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2);
             call_module_method("get_object_count_err", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
         }
 

@@ -21,7 +21,7 @@ namespace abelkhan
 
     public class center_call_hub_caller : abelkhan.Icaller {
         public static center_call_hub_rsp_cb rsp_cb_center_call_hub_handle = null;
-        private UInt64 uuid = RandomUUID.random();
+        private UInt64 uuid_adbd1e34_0c90_3426_aefa_4d734c07a706 = RandomUUID.random();
 
         public center_call_hub_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("center_call_hub", _ch)
         {
@@ -58,7 +58,7 @@ namespace abelkhan
 
     public class center_call_server_caller : abelkhan.Icaller {
         public static center_call_server_rsp_cb rsp_cb_center_call_server_handle = null;
-        private UInt64 uuid = RandomUUID.random();
+        private UInt64 uuid_8c11e5bb_e9ff_3a0b_a436_65a9922a8da5 = RandomUUID.random();
 
         public center_call_server_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("center_call_server", _ch)
         {
@@ -178,7 +178,7 @@ namespace abelkhan
 
     public class center_caller : abelkhan.Icaller {
         public static center_rsp_cb rsp_cb_center_handle = null;
-        private UInt64 uuid = RandomUUID.random();
+        private UInt64 uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066 = RandomUUID.random();
 
         public center_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("center", _ch)
         {
@@ -189,7 +189,7 @@ namespace abelkhan
         }
 
         public center_reg_server_cb reg_server(string type, string ip, UInt16 port, string uuid){
-            Interlocked.Increment(ref uuid);
+            Interlocked.Increment(ref uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066);
             var uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = uuid;
 
             var _argv_86ab8166_c1a7_3809_8c9b_df444f746076 = new ArrayList();
@@ -227,7 +227,7 @@ namespace abelkhan
 
     public class gm_center_caller : abelkhan.Icaller {
         public static gm_center_rsp_cb rsp_cb_gm_center_handle = null;
-        private UInt64 uuid = RandomUUID.random();
+        private UInt64 uuid_130fb971_5ae0_3446_b480_f9ee83dbeb28 = RandomUUID.random();
 
         public gm_center_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("gm_center", _ch)
         {
@@ -308,21 +308,21 @@ namespace abelkhan
 
     }
     public class center_reg_server_rsp : abelkhan.Response {
-        private UInt64 uuid;
+        private UInt64 uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda;
         public center_reg_server_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("center_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda = _uuid;
         }
 
         public void rsp(){
             var _argv_86ab8166_c1a7_3809_8c9b_df444f746076 = new ArrayList();
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(uuid);
+            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda);
             call_module_method("reg_server_rsp", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
         }
 
         public void err(){
             var _argv_86ab8166_c1a7_3809_8c9b_df444f746076 = new ArrayList();
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(this.uuid);
+            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda);
             call_module_method("reg_server_err", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
         }
 

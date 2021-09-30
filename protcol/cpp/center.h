@@ -29,7 +29,7 @@ namespace abelkhan
         static std::shared_ptr<center_call_hub_rsp_cb> rsp_cb_center_call_hub_handle;
 
     private:
-        std::atomic<uint64_t> uuid;
+        std::atomic<uint64_t> uuid_adbd1e34_0c90_3426_aefa_4d734c07a706;
 
     public:
         center_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("center_call_hub", _ch)
@@ -38,7 +38,7 @@ namespace abelkhan
                 rsp_cb_center_call_hub_handle = std::make_shared<center_call_hub_rsp_cb>();
                 rsp_cb_center_call_hub_handle->Init(modules);
             }
-            uuid.store(random());
+            uuid_adbd1e34_0c90_3426_aefa_4d734c07a706.store(random());
         }
 
         void distribute_server_address(std::string type, std::string ip, uint16_t port, std::string uuid){
@@ -76,7 +76,7 @@ namespace abelkhan
         static std::shared_ptr<center_call_server_rsp_cb> rsp_cb_center_call_server_handle;
 
     private:
-        std::atomic<uint64_t> uuid;
+        std::atomic<uint64_t> uuid_8c11e5bb_e9ff_3a0b_a436_65a9922a8da5;
 
     public:
         center_call_server_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("center_call_server", _ch)
@@ -85,7 +85,7 @@ namespace abelkhan
                 rsp_cb_center_call_server_handle = std::make_shared<center_call_server_rsp_cb>();
                 rsp_cb_center_call_server_handle->Init(modules);
             }
-            uuid.store(random());
+            uuid_8c11e5bb_e9ff_3a0b_a436_65a9922a8da5.store(random());
         }
 
         void close_server(){
@@ -180,7 +180,7 @@ namespace abelkhan
         static std::shared_ptr<center_rsp_cb> rsp_cb_center_handle;
 
     private:
-        std::atomic<uint64_t> uuid;
+        std::atomic<uint64_t> uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066;
 
     public:
         center_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("center", _ch)
@@ -189,11 +189,11 @@ namespace abelkhan
                 rsp_cb_center_handle = std::make_shared<center_rsp_cb>();
                 rsp_cb_center_handle->Init(modules);
             }
-            uuid.store(random());
+            uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066.store(random());
         }
 
         std::shared_ptr<center_reg_server_cb> reg_server(std::string type, std::string ip, uint16_t port, std::string uuid){
-            auto uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = uuid++;
+            auto uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066++;
             msgpack11::MsgPack::array _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda;
             _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255);
             _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(type);
@@ -238,7 +238,7 @@ namespace abelkhan
         static std::shared_ptr<gm_center_rsp_cb> rsp_cb_gm_center_handle;
 
     private:
-        std::atomic<uint64_t> uuid;
+        std::atomic<uint64_t> uuid_130fb971_5ae0_3446_b480_f9ee83dbeb28;
 
     public:
         gm_center_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("gm_center", _ch)
@@ -247,7 +247,7 @@ namespace abelkhan
                 rsp_cb_gm_center_handle = std::make_shared<gm_center_rsp_cb>();
                 rsp_cb_gm_center_handle->Init(modules);
             }
-            uuid.store(random());
+            uuid_130fb971_5ae0_3446_b480_f9ee83dbeb28.store(random());
         }
 
         void confirm_gm(std::string gm_name){
@@ -320,23 +320,23 @@ namespace abelkhan
     };
     class center_reg_server_rsp : Response {
     private:
-        uint64_t uuid;
+        uint64_t uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda;
 
     public:
         center_reg_server_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response("center_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda = _uuid;
         }
 
         void rsp(){
             msgpack11::MsgPack::array _argv_86ab8166_c1a7_3809_8c9b_df444f746076;
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push_back(uuid);
+            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push_back(uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda);
             call_module_method("reg_server_rsp", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_86ab8166_c1a7_3809_8c9b_df444f746076;
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push_back(uuid);
+            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push_back(uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda);
             call_module_method("reg_server_err", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
         }
 

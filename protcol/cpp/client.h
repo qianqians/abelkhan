@@ -96,7 +96,7 @@ namespace abelkhan
         static std::shared_ptr<gate_call_client_rsp_cb> rsp_cb_gate_call_client_handle;
 
     private:
-        std::atomic<uint64_t> uuid;
+        std::atomic<uint64_t> uuid_b84dd831_2e79_3280_a337_a69dd489e75f;
 
     public:
         gate_call_client_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("gate_call_client", _ch)
@@ -105,7 +105,7 @@ namespace abelkhan
                 rsp_cb_gate_call_client_handle = std::make_shared<gate_call_client_rsp_cb>();
                 rsp_cb_gate_call_client_handle->Init(modules);
             }
-            uuid.store(random());
+            uuid_b84dd831_2e79_3280_a337_a69dd489e75f.store(random());
         }
 
         void ntf_cuuid(std::string cuuid){
@@ -115,7 +115,7 @@ namespace abelkhan
         }
 
         std::shared_ptr<gate_call_client_heartbeats_cb> heartbeats(uint64_t timetmp){
-            auto uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = uuid++;
+            auto uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = uuid_b84dd831_2e79_3280_a337_a69dd489e75f++;
             msgpack11::MsgPack::array _argv_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56;
             _argv_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56.push_back(uuid_a514ca5f_2c67_5668_aac0_354397bdce36);
             _argv_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56.push_back(timetmp);
@@ -137,23 +137,23 @@ namespace abelkhan
 /*this module code is codegen by abelkhan codegen for cpp*/
     class gate_call_client_heartbeats_rsp : Response {
     private:
-        uint64_t uuid;
+        uint64_t uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56;
 
     public:
         gate_call_client_heartbeats_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response("gate_call_client_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56 = _uuid;
         }
 
         void rsp(){
             msgpack11::MsgPack::array _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4;
-            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.push_back(uuid);
+            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.push_back(uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56);
             call_module_method("heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4;
-            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.push_back(uuid);
+            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.push_back(uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56);
             call_module_method("heartbeats_err", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
         }
 

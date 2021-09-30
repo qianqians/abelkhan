@@ -9,7 +9,7 @@
 
 #include <abelkhan.h>
 
-namespace gate {
+namespace service {
 
 extern abelkhan::modulemng _modulemng;
 

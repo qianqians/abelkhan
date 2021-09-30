@@ -8,6 +8,4 @@
 
 namespace service {
 
-int webchannel::count = 0;
-
 }

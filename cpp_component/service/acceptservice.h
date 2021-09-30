@@ -55,8 +55,8 @@ public:
 			sigchanneldisconnect.emit(ch);
 		}
 
-		service::gc_put([this, ch]() {
-		});
+		//service::gc_put([this, ch]() {
+		//});
 	}
 
 	void ChannelDisconn(std::shared_ptr<channel> ch) {
@@ -64,8 +64,8 @@ public:
 			sigchanneldisconnect.emit(ch);
 		}
 
-		service::gc_put([this, ch]() {
-		});
+		//service::gc_put([this, ch]() {
+		//});
 	}
 
 private:

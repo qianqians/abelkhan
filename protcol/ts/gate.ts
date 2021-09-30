@@ -104,7 +104,7 @@ export class hub_call_gate_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_hub_call_gate_handle : hub_call_gate_rsp_cb | null = null;
 export class hub_call_gate_caller extends abelkhan.Icaller {
-    private uuid : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_9796175c_1119_3833_bf31_5ee139b40edc : number = Math.round(Math.random() * Number.MAX_VALUE);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("hub_call_gate", _ch);
@@ -114,7 +114,7 @@ export class hub_call_gate_caller extends abelkhan.Icaller {
     }
 
     public reg_hub(hub_name:string, hub_type:string){
-        let uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = this.uuid++;
+        let uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = this.uuid_9796175c_1119_3833_bf31_5ee139b40edc++;
 
         let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106];
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(hub_name);
@@ -241,7 +241,7 @@ export class client_call_gate_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_client_call_gate_handle : client_call_gate_rsp_cb | null = null;
 export class client_call_gate_caller extends abelkhan.Icaller {
-    private uuid : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2 : number = Math.round(Math.random() * Number.MAX_VALUE);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("client_call_gate", _ch);
@@ -251,7 +251,7 @@ export class client_call_gate_caller extends abelkhan.Icaller {
     }
 
     public get_hub_info(){
-        let uuid_e9d2753f_7d38_512d_80ff_7aae13508048 = this.uuid++;
+        let uuid_e9d2753f_7d38_512d_80ff_7aae13508048 = this.uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2++;
 
         let _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24:any[] = [uuid_e9d2753f_7d38_512d_80ff_7aae13508048];
         this.call_module_method("get_hub_info", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
@@ -273,19 +273,19 @@ export class client_call_gate_caller extends abelkhan.Icaller {
 }
 /*this module code is codegen by abelkhan codegen for typescript*/
 export class hub_call_gate_reg_hub_rsp extends abelkhan.Icaller {
-    private uuid : number;
+    private uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 : number;
     constructor(_ch:abelkhan.Ichannel, _uuid:number){
         super("hub_call_gate_rsp_cb", _ch);
-        this.uuid = _uuid;
+        this.uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 = _uuid;
     }
 
     public rsp(){
-        let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [this.uuid];
+        let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [this.uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67];
         this.call_module_method("reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
     }
 
     public err(){
-        let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [this.uuid];
+        let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [this.uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67];
         this.call_module_method("reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
     }
 
@@ -372,14 +372,14 @@ export class hub_call_gate_module extends abelkhan.Imodule {
 
 }
 export class client_call_gate_get_hub_info_rsp extends abelkhan.Icaller {
-    private uuid : number;
+    private uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b : number;
     constructor(_ch:abelkhan.Ichannel, _uuid:number){
         super("client_call_gate_rsp_cb", _ch);
-        this.uuid = _uuid;
+        this.uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b = _uuid;
     }
 
     public rsp(hub_info:hub_info[]){
-        let _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24:any[] = [this.uuid];
+        let _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24:any[] = [this.uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b];
         let _array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2:any[] = [];        for(let v_72192cc7_d049_3653_a25b_4eaf8d18d7e2 of hub_info){
             _array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2.push(hub_info_to_protcol(v_72192cc7_d049_3653_a25b_4eaf8d18d7e2));
         }
@@ -388,7 +388,7 @@ export class client_call_gate_get_hub_info_rsp extends abelkhan.Icaller {
     }
 
     public err(){
-        let _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24:any[] = [this.uuid];
+        let _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24:any[] = [this.uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b];
         this.call_module_method("get_hub_info_err", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
     }
 

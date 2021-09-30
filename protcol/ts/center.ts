@@ -14,7 +14,7 @@ export class center_call_hub_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_center_call_hub_handle : center_call_hub_rsp_cb | null = null;
 export class center_call_hub_caller extends abelkhan.Icaller {
-    private uuid : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_adbd1e34_0c90_3426_aefa_4d734c07a706 : number = Math.round(Math.random() * Number.MAX_VALUE);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("center_call_hub", _ch);
@@ -50,7 +50,7 @@ export class center_call_server_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_center_call_server_handle : center_call_server_rsp_cb | null = null;
 export class center_call_server_caller extends abelkhan.Icaller {
-    private uuid : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_8c11e5bb_e9ff_3a0b_a436_65a9922a8da5 : number = Math.round(Math.random() * Number.MAX_VALUE);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("center_call_server", _ch);
@@ -143,7 +143,7 @@ export class center_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_center_handle : center_rsp_cb | null = null;
 export class center_caller extends abelkhan.Icaller {
-    private uuid : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066 : number = Math.round(Math.random() * Number.MAX_VALUE);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("center", _ch);
@@ -153,7 +153,7 @@ export class center_caller extends abelkhan.Icaller {
     }
 
     public reg_server(type:string, ip:string, port:number, uuid:string){
-        let uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = this.uuid++;
+        let uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = this.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066++;
 
         let _argv_86ab8166_c1a7_3809_8c9b_df444f746076:any[] = [uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255];
         _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(type);
@@ -191,7 +191,7 @@ export class gm_center_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_gm_center_handle : gm_center_rsp_cb | null = null;
 export class gm_center_caller extends abelkhan.Icaller {
-    private uuid : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_130fb971_5ae0_3446_b480_f9ee83dbeb28 : number = Math.round(Math.random() * Number.MAX_VALUE);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("gm_center", _ch);
@@ -280,19 +280,19 @@ export class center_call_server_module extends abelkhan.Imodule {
 
 }
 export class center_reg_server_rsp extends abelkhan.Icaller {
-    private uuid : number;
+    private uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda : number;
     constructor(_ch:abelkhan.Ichannel, _uuid:number){
         super("center_rsp_cb", _ch);
-        this.uuid = _uuid;
+        this.uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda = _uuid;
     }
 
     public rsp(){
-        let _argv_86ab8166_c1a7_3809_8c9b_df444f746076:any[] = [this.uuid];
+        let _argv_86ab8166_c1a7_3809_8c9b_df444f746076:any[] = [this.uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda];
         this.call_module_method("reg_server_rsp", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
     }
 
     public err(){
-        let _argv_86ab8166_c1a7_3809_8c9b_df444f746076:any[] = [this.uuid];
+        let _argv_86ab8166_c1a7_3809_8c9b_df444f746076:any[] = [this.uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda];
         this.call_module_method("reg_server_err", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
     }
 

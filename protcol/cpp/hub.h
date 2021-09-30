@@ -96,7 +96,7 @@ namespace abelkhan
         static std::shared_ptr<hub_call_hub_rsp_cb> rsp_cb_hub_call_hub_handle;
 
     private:
-        std::atomic<uint64_t> uuid;
+        std::atomic<uint64_t> uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f;
 
     public:
         hub_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("hub_call_hub", _ch)
@@ -105,11 +105,11 @@ namespace abelkhan
                 rsp_cb_hub_call_hub_handle = std::make_shared<hub_call_hub_rsp_cb>();
                 rsp_cb_hub_call_hub_handle->Init(modules);
             }
-            uuid.store(random());
+            uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f.store(random());
         }
 
         std::shared_ptr<hub_call_hub_reg_hub_cb> reg_hub(std::string hub_name, std::string hub_type){
-            auto uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = uuid++;
+            auto uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f++;
             msgpack11::MsgPack::array _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
             _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67.push_back(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106);
             _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67.push_back(hub_name);
@@ -150,7 +150,7 @@ namespace abelkhan
         static std::shared_ptr<gate_call_hub_rsp_cb> rsp_cb_gate_call_hub_handle;
 
     private:
-        std::atomic<uint64_t> uuid;
+        std::atomic<uint64_t> uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1;
 
     public:
         gate_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("gate_call_hub", _ch)
@@ -159,7 +159,7 @@ namespace abelkhan
                 rsp_cb_gate_call_hub_handle = std::make_shared<gate_call_hub_rsp_cb>();
                 rsp_cb_gate_call_hub_handle->Init(modules);
             }
-            uuid.store(random());
+            uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1.store(random());
         }
 
         void client_call_hub(std::string client_uuid, std::vector<uint8_t> rpc_argv){
@@ -189,7 +189,7 @@ namespace abelkhan
         static std::shared_ptr<client_call_hub_rsp_cb> rsp_cb_client_call_hub_handle;
 
     private:
-        std::atomic<uint64_t> uuid;
+        std::atomic<uint64_t> uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263;
 
     public:
         client_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("client_call_hub", _ch)
@@ -198,7 +198,7 @@ namespace abelkhan
                 rsp_cb_client_call_hub_handle = std::make_shared<client_call_hub_rsp_cb>();
                 rsp_cb_client_call_hub_handle->Init(modules);
             }
-            uuid.store(random());
+            uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.store(random());
         }
 
         void connect_hub(std::string client_uuid){
@@ -235,7 +235,7 @@ namespace abelkhan
         static std::shared_ptr<hub_call_client_rsp_cb> rsp_cb_hub_call_client_handle;
 
     private:
-        std::atomic<uint64_t> uuid;
+        std::atomic<uint64_t> uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb;
 
     public:
         hub_call_client_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("hub_call_client", _ch)
@@ -244,7 +244,7 @@ namespace abelkhan
                 rsp_cb_hub_call_client_handle = std::make_shared<hub_call_client_rsp_cb>();
                 rsp_cb_hub_call_client_handle->Init(modules);
             }
-            uuid.store(random());
+            uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb.store(random());
         }
 
         void call_client(std::string module, std::string func, std::vector<uint8_t> argv){
@@ -259,23 +259,23 @@ namespace abelkhan
 /*this module code is codegen by abelkhan codegen for cpp*/
     class hub_call_hub_reg_hub_rsp : Response {
     private:
-        uint64_t uuid;
+        uint64_t uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
 
     public:
         hub_call_hub_reg_hub_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response("hub_call_hub_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 = _uuid;
         }
 
         void rsp(){
             msgpack11::MsgPack::array _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7;
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push_back(uuid);
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push_back(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
             call_module_method("reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7;
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push_back(uuid);
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push_back(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
             call_module_method("reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 

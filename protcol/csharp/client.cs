@@ -114,7 +114,7 @@ namespace abelkhan
 
     public class gate_call_client_caller : abelkhan.Icaller {
         public static gate_call_client_rsp_cb rsp_cb_gate_call_client_handle = null;
-        private UInt64 uuid = RandomUUID.random();
+        private UInt64 uuid_b84dd831_2e79_3280_a337_a69dd489e75f = RandomUUID.random();
 
         public gate_call_client_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("gate_call_client", _ch)
         {
@@ -131,7 +131,7 @@ namespace abelkhan
         }
 
         public gate_call_client_heartbeats_cb heartbeats(UInt64 timetmp){
-            Interlocked.Increment(ref uuid);
+            Interlocked.Increment(ref uuid_b84dd831_2e79_3280_a337_a69dd489e75f);
             var uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = uuid;
 
             var _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = new ArrayList();
@@ -153,21 +153,21 @@ namespace abelkhan
     }
 /*this module code is codegen by abelkhan codegen for c#*/
     public class gate_call_client_heartbeats_rsp : abelkhan.Response {
-        private UInt64 uuid;
+        private UInt64 uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56;
         public gate_call_client_heartbeats_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("gate_call_client_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56 = _uuid;
         }
 
         public void rsp(){
             var _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = new ArrayList();
-            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(uuid);
+            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56);
             call_module_method("heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
         }
 
         public void err(){
             var _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = new ArrayList();
-            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(this.uuid);
+            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56);
             call_module_method("heartbeats_err", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
         }
 

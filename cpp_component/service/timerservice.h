@@ -38,7 +38,7 @@ public:
 			_tick++;
 		}
 
-		auto timpl = Fossilizid::pool::factory::create<timerimpl>();
+		auto timpl = std::make_shared<timerimpl>();
 		timpl->cb = cb;
 		cbs.insert(std::make_pair(_tick, timpl));
 

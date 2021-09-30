@@ -1,9 +1,5 @@
-
 #ifndef _websocket_channel_h
 #define _websocket_channel_h
-
-#include <boost/any.hpp>
-#include <boost/signals2.hpp>
 
 #include <websocketpp/config/asio.hpp>
 #include <websocketpp/config/asio_no_tls.hpp>
@@ -12,19 +8,15 @@
 
 #include <spdlog/spdlog.h>
 
-#include <angmalloc.h>
+#include <signals.h>
+#include <abelkhan.h>
 
-#include "ringque.h"
-#include "JsonParse.h"
-#include "Ichannel.h"
+#include "channel_encrypt_decrypt_ondata.h"
 
 namespace service
 {
 
-class webchannel : public juggle::Ichannel, public std::enable_shared_from_this<webchannel> {
-private:
-	static int count;
-
+class webchannel : public abelkhan::Ichannel, public std::enable_shared_from_this<webchannel> {
 public:
 	webchannel(std::shared_ptr<websocketpp::server<websocketpp::config::asio_tls> > _server, websocketpp::connection_hdl _hdl)
 	{
@@ -32,14 +24,7 @@ public:
 		hdl = _hdl;
 		is_ssl = true;
 
-		buff_size = 16 * 1024;
-		buff_offset = 0;
-		buff = (char*)angmalloc(buff_size);
-		memset(buff, 0, buff_size);
-
 		is_close = false;
-
-		++count;
 	}
 
 	webchannel(std::shared_ptr<websocketpp::server<websocketpp::config::asio> > _server, websocketpp::connection_hdl _hdl)
@@ -48,22 +33,22 @@ public:
 		hdl = _hdl;
 		is_ssl = false;
 
-		buff_size = 16 * 1024;
-		buff_offset = 0;
-		buff = (char*)angmalloc(buff_size);
-		memset(buff, 0, buff_size);
-
 		is_close = false;
-
-		++count;
 	}
 
 	virtual ~webchannel() {
-		spdlog::trace("webchannel destruction obj count:{0}!", --count);
-		angfree(buff);
+		spdlog::trace("webchannel destruction obj!");
+		free(_data);
 	}
 
-	boost::signals2::signal<void(std::shared_ptr<webchannel>)> sigconnexception;
+	void Init() {
+		_data_size = 8 * 1024;
+		_data = (unsigned char*)malloc(_data_size);
+
+		ch_encrypt_decrypt_ondata = std::make_shared<channel_encrypt_decrypt_ondata>(shared_from_this());
+	}
+
+	concurrent::signals<void(std::shared_ptr<webchannel>)> sigconnexception;
 
 	void recv(std::string resv_data)
 	{
@@ -72,61 +57,7 @@ public:
 		}
 
 		try {
-			while ((buff_offset + resv_data.size()) > buff_size)
-			{
-				buff_size *= 2;
-				auto new_buff = (char*)angmalloc(buff_size);
-				memset(new_buff, 0, buff_size);
-				memcpy(new_buff, buff, buff_offset);
-				angfree(buff);
-				buff = new_buff;
-			}
-			memcpy(buff + buff_offset, resv_data.c_str(), resv_data.size());
-			buff_offset += (int32_t)resv_data.size();
-
-			int32_t tmp_buff_len = buff_offset;
-			int32_t tmp_buff_offset = 0;
-			while (tmp_buff_len > (tmp_buff_offset + 4))
-			{
-				auto tmp_buff = (unsigned char *)buff + tmp_buff_offset;
-				uint32_t len = (uint32_t)tmp_buff[0] | ((uint32_t)tmp_buff[1] << 8) | ((uint32_t)tmp_buff[2] << 16) | ((uint32_t)tmp_buff[3] << 24);
-
-				if ((len + tmp_buff_offset + 4) <= (uint32_t)tmp_buff_len)
-				{
-					tmp_buff_offset += len + 4;
-
-					auto json_buff = &tmp_buff[4];
-					std::string json_str((char*)(json_buff), len);
-					try
-					{
-						spdlog::trace("recv:{0}", json_str);
-						Fossilizid::JsonParse::JsonObject obj;
-						Fossilizid::JsonParse::unpacker(obj, json_str);
-						que.push(std::any_cast<Fossilizid::JsonParse::JsonArray>(obj));
-					}
-					catch (Fossilizid::JsonParse::jsonformatexception e)
-					{
-						spdlog::error("webchannel recv error:{0}", json_str);
-						sigconnexception(shared_from_this());
-
-						return;
-					}
-				}
-				else
-				{
-					break;
-				}
-			}
-
-			buff_offset = tmp_buff_len - tmp_buff_offset;
-			if (tmp_buff_len > tmp_buff_offset)
-			{
-				auto new_buff = new char[buff_size];
-				memset(new_buff, 0, buff_size);
-				memcpy(new_buff, &buff[tmp_buff_offset], buff_offset);
-				angfree(buff);
-				buff = new_buff;
-			}
+			ch_encrypt_decrypt_ondata->recv(resv_data.data(), resv_data.size());
 		}
 		catch (std::exception e) {
 			spdlog::error("webchannel recv exception error:{0}", e.what());
@@ -152,27 +83,19 @@ public:
 		}
 	}
 
-	bool pop(Fossilizid::JsonParse::JsonArray  & out)
-	{
-		if (que.empty())
-		{
-			return false;
-		}
-
-		return que.pop(out);
-	}
-
-	void push(Fossilizid::JsonParse::JsonArray in)
+	void send(std::string& data)
 	{
 		if (is_close) {
 			return;
 		}
 
 		try {
-			std::string data;
-			Fossilizid::JsonParse::pack(in, data);
 			size_t len = data.size();
-			unsigned char * _data = (unsigned char*)angmalloc(len + 4);
+			if (_data_size < (len + 4)) {
+				_data_size *= 2;
+				free(_data);
+				_data = (unsigned char*)malloc(_data_size);
+			}
 			_data[0] = len & 0xff;
 			_data[1] = len >> 8 & 0xff;
 			_data[2] = len >> 16 & 0xff;
@@ -187,8 +110,6 @@ public:
 				asio_server->send(hdl, _data, datasize, websocketpp::frame::opcode::binary);
 			}
 
-			angfree(_data);
-
 			spdlog::trace("push:{0}", data);
 		}
 		catch (std::exception e) {
@@ -196,29 +117,19 @@ public:
 			is_close = true;
 		}
 	}
-
-	void send(char* data, size_t data_size) {
-		if (is_ssl) {
-			asio_tls_server->send(hdl, data, data_size, websocketpp::frame::opcode::binary);
-		}
-		else {
-			asio_server->send(hdl, data, data_size, websocketpp::frame::opcode::binary);
-		}
-	}
 	
 public:
 	websocketpp::connection_hdl hdl;
 
 private:
-	concurrent::ringque< Fossilizid::JsonParse::JsonArray > que;
-
 	std::shared_ptr<websocketpp::server<websocketpp::config::asio_tls> > asio_tls_server;
 	std::shared_ptr<websocketpp::server<websocketpp::config::asio> > asio_server;
 	bool is_ssl;
 
-	char * buff;
-	int32_t buff_size;
-	int32_t buff_offset;
+	std::shared_ptr<channel_encrypt_decrypt_ondata> ch_encrypt_decrypt_ondata;
+
+	unsigned char* _data;
+	size_t _data_size;
 
 	bool is_close;
 

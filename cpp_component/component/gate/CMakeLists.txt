@@ -4,9 +4,10 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
-set(protcol_header_path ..//..//..//protcol//caller CACHE PATH "protcol include path")
+set(protcol_header_path ..//..//..//protcol//cpp CACHE PATH "protcol include path")
 INCLUDE_DIRECTORIES(${protcol_header_path})
-file(GLOB protcol_header_files ../../../protcol/caller/ ../../../protcol/caller/*.h)
+file(GLOB protcol_header_files ../../../protcol/cpp/ ../../../protcol/cpp/*.h)
+AUX_SOURCE_DIRECTORY(../../../protcol/cpp/ protcol_DIR_SRC)
 
 set(juggle_header_path ..//..//..//tools//juggle//cpp CACHE PATH "juggle include path")
 INCLUDE_DIRECTORIES(${juggle_header_path})
@@ -52,6 +53,7 @@ SET(SRC_LIST
     ${DIR_SRC}
     ${juggle_DIR_SRC}
 	${service_DIR_SRC}
+	${protcol_DIR_SRC}
 )
 
 ADD_EXECUTABLE(gate ${SRC_LIST} ${header_files})

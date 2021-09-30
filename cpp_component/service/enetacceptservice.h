@@ -1,24 +1,16 @@
-
 #ifndef _enetacceptservice_h
 #define _enetacceptservice_h
 
 #include <unordered_map>
 
-#include <absl/container/node_hash_map.h>
-
-#include <factory.h>
-
 #include "enetchannel.h"
-#include "process_.h"
 
 namespace service
 {
 
 class enetacceptservice {
 public:
-	enetacceptservice(std::string ip, short port, std::shared_ptr<juggle::process> process){
-		_process = process;
-
+	enetacceptservice(std::string ip, short port){
 		ENetAddress address;
 		if (enet_address_set_host_ip(&address, ip.c_str()) != 0) {
 			throw std::exception("enet_address_set_host_ip faild");
@@ -44,9 +36,8 @@ public:
 				auto it_ch = chs.find(peerHandle);
 				if (it_ch == chs.end()) {
 					uint64_t peerHandle = (uint64_t)_event.peer->address.host << 32 | _event.peer->address.port;
-					ch = Fossilizid::pool::factory::create<enetchannel>(_host, _event.peer);
+					ch = std::make_shared<enetchannel>(_host, _event.peer);
 					chs.insert(std::make_pair(peerHandle, ch));
-					_process->reg_channel(ch);
 				}
 				else {
 					ch = it_ch->second;
@@ -91,7 +82,7 @@ public:
 		}
 	}
 
-	void connect(std::string ip, short port, std::function<void(std::shared_ptr<juggle::Ichannel>)> cb)
+	void connect(std::string ip, short port, std::function<void(std::shared_ptr<abelkhan::Ichannel>)> cb)
 	{
 		ENetAddress address;
 		if (enet_address_set_host_ip(&address, ip.c_str()) != 0) {
@@ -110,10 +101,9 @@ public:
 
 private:
 	ENetHost * _host;
-	std::shared_ptr<juggle::process> _process;
 
-	absl::node_hash_map<std::string, std::function<void(std::shared_ptr<juggle::Ichannel>)> > cbs;
-	absl::node_hash_map<uint64_t, std::shared_ptr<enetchannel> > chs;
+	std::unordered_map<std::string, std::function<void(std::shared_ptr<abelkhan::Ichannel>)> > cbs;
+	std::unordered_map<uint64_t, std::shared_ptr<enetchannel> > chs;
 
 };
 

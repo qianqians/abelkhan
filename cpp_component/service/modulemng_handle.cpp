@@ -6,7 +6,7 @@
  */
 #include "modulemng_handle.h"
 
-namespace gate {
+namespace service {
 
 abelkhan::modulemng _modulemng;
 

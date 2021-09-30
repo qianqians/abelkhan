@@ -138,7 +138,7 @@ namespace abelkhan
 
     public class hub_call_gate_caller : abelkhan.Icaller {
         public static hub_call_gate_rsp_cb rsp_cb_hub_call_gate_handle = null;
-        private UInt64 uuid = RandomUUID.random();
+        private UInt64 uuid_9796175c_1119_3833_bf31_5ee139b40edc = RandomUUID.random();
 
         public hub_call_gate_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("hub_call_gate", _ch)
         {
@@ -149,7 +149,7 @@ namespace abelkhan
         }
 
         public hub_call_gate_reg_hub_cb reg_hub(string hub_name, string hub_type){
-            Interlocked.Increment(ref uuid);
+            Interlocked.Increment(ref uuid_9796175c_1119_3833_bf31_5ee139b40edc);
             var uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = uuid;
 
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
@@ -302,7 +302,7 @@ namespace abelkhan
 
     public class client_call_gate_caller : abelkhan.Icaller {
         public static client_call_gate_rsp_cb rsp_cb_client_call_gate_handle = null;
-        private UInt64 uuid = RandomUUID.random();
+        private UInt64 uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2 = RandomUUID.random();
 
         public client_call_gate_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("client_call_gate", _ch)
         {
@@ -313,7 +313,7 @@ namespace abelkhan
         }
 
         public client_call_gate_get_hub_info_cb get_hub_info(){
-            Interlocked.Increment(ref uuid);
+            Interlocked.Increment(ref uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2);
             var uuid_e9d2753f_7d38_512d_80ff_7aae13508048 = uuid;
 
             var _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24 = new ArrayList();
@@ -335,21 +335,21 @@ namespace abelkhan
     }
 /*this module code is codegen by abelkhan codegen for c#*/
     public class hub_call_gate_reg_hub_rsp : abelkhan.Response {
-        private UInt64 uuid;
+        private UInt64 uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
         public hub_call_gate_reg_hub_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_gate_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 = _uuid;
         }
 
         public void rsp(){
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid);
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
             call_module_method("reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 
         public void err(){
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(this.uuid);
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
             call_module_method("reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 
@@ -420,15 +420,15 @@ namespace abelkhan
 
     }
     public class client_call_gate_get_hub_info_rsp : abelkhan.Response {
-        private UInt64 uuid;
+        private UInt64 uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b;
         public client_call_gate_get_hub_info_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("client_call_gate_rsp_cb", _ch)
         {
-            uuid = _uuid;
+            uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b = _uuid;
         }
 
         public void rsp(List<hub_info> hub_info){
             var _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24 = new ArrayList();
-            _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.Add(uuid);
+            _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.Add(uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b);
             var _array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2 = new JArray();            foreach(var v_53b78086_1765_5879_87b4_63333838766a in hub_info){
                 _array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2.Add(hub_info.hub_info_to_protcol(v_53b78086_1765_5879_87b4_63333838766a));
             }
@@ -438,7 +438,7 @@ namespace abelkhan
 
         public void err(){
             var _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24 = new ArrayList();
-            _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.Add(this.uuid);
+            _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.Add(uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b);
             call_module_method("get_hub_info_err", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
         }
 
