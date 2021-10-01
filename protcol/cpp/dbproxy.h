@@ -199,7 +199,7 @@ namespace abelkhan
         }
 
     public:
-        concurrent::signals<void(uint32_t count)> sig_get_object_count_cb;
+        concurrent::signals<void(uint32_t)> sig_get_object_count_cb;
         concurrent::signals<void()> sig_get_object_count_err;
         concurrent::signals<void()> sig_get_object_count_timeout;
 
@@ -507,7 +507,7 @@ namespace abelkhan
 
     };
 /*this module code is codegen by abelkhan codegen for cpp*/
-    class dbproxy_call_hub_module : Imodule, public std::enable_shared_from_this<dbproxy_call_hub_module>{
+    class dbproxy_call_hub_module : public Imodule, public std::enable_shared_from_this<dbproxy_call_hub_module>{
     public:
         dbproxy_call_hub_module() : Imodule("dbproxy_call_hub")
         {
@@ -520,14 +520,14 @@ namespace abelkhan
             reg_method("ack_get_object_info_end", std::bind(&dbproxy_call_hub_module::ack_get_object_info_end, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string callbackid, std::vector<uint8_t> object_info)> sig_ack_get_object_info;
+        concurrent::signals<void(std::string, std::vector<uint8_t>)> sig_ack_get_object_info;
         void ack_get_object_info(const msgpack11::MsgPack::array& inArray){
             auto _callbackid = inArray[0].string_value();
             auto _object_info = inArray[1].binary_items();
             sig_ack_get_object_info.emit(_callbackid, _object_info);
         }
 
-        concurrent::signals<void(std::string callbackid)> sig_ack_get_object_info_end;
+        concurrent::signals<void(std::string)> sig_ack_get_object_info_end;
         void ack_get_object_info_end(const msgpack11::MsgPack::array& inArray){
             auto _callbackid = inArray[0].string_value();
             sig_ack_get_object_info_end.emit(_callbackid);
@@ -655,7 +655,7 @@ namespace abelkhan
 
     };
 
-    class hub_call_dbproxy_module : Imodule, public std::enable_shared_from_this<hub_call_dbproxy_module>{
+    class hub_call_dbproxy_module : public Imodule, public std::enable_shared_from_this<hub_call_dbproxy_module>{
     public:
         hub_call_dbproxy_module() : Imodule("hub_call_dbproxy")
         {
@@ -672,7 +672,7 @@ namespace abelkhan
             reg_method("get_object_count", std::bind(&hub_call_dbproxy_module::get_object_count, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string hub_uuid)> sig_reg_hub;
+        concurrent::signals<void(std::string)> sig_reg_hub;
         void reg_hub(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
             auto _hub_uuid = inArray[1].string_value();
@@ -681,7 +681,7 @@ namespace abelkhan
             rsp = nullptr;
         }
 
-        concurrent::signals<void(std::string db, std::string collection, std::vector<uint8_t> object_info)> sig_create_persisted_object;
+        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>)> sig_create_persisted_object;
         void create_persisted_object(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
             auto _db = inArray[1].string_value();
@@ -692,7 +692,7 @@ namespace abelkhan
             rsp = nullptr;
         }
 
-        concurrent::signals<void(std::string db, std::string collection, std::vector<uint8_t> query_json, std::vector<uint8_t> object_info)> sig_updata_persisted_object;
+        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>, std::vector<uint8_t>)> sig_updata_persisted_object;
         void updata_persisted_object(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
             auto _db = inArray[1].string_value();
@@ -704,7 +704,7 @@ namespace abelkhan
             rsp = nullptr;
         }
 
-        concurrent::signals<void(std::string db, std::string collection, std::vector<uint8_t> query_json)> sig_remove_object;
+        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>)> sig_remove_object;
         void remove_object(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
             auto _db = inArray[1].string_value();
@@ -715,7 +715,7 @@ namespace abelkhan
             rsp = nullptr;
         }
 
-        concurrent::signals<void(std::string db, std::string collection, std::vector<uint8_t> query_json, std::string callbackid)> sig_get_object_info;
+        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>, std::string)> sig_get_object_info;
         void get_object_info(const msgpack11::MsgPack::array& inArray){
             auto _db = inArray[0].string_value();
             auto _collection = inArray[1].string_value();
@@ -724,7 +724,7 @@ namespace abelkhan
             sig_get_object_info.emit(_db, _collection, _query_json, _callbackid);
         }
 
-        concurrent::signals<void(std::string db, std::string collection, std::vector<uint8_t> query_json)> sig_get_object_count;
+        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>)> sig_get_object_count;
         void get_object_count(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
             auto _db = inArray[1].string_value();

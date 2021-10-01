@@ -29,8 +29,9 @@ export class gate_call_client_caller extends abelkhan.Icaller {
         this.call_module_method("ntf_cuuid", _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1);
     }
 
-    public call_client(rpc_argv:Uint8Array){
+    public call_client(hub_name:string, rpc_argv:Uint8Array){
         let _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab:any[] = [];
+        _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push(hub_name);
         _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push(rpc_argv);
         this.call_module_method("call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
     }
@@ -61,10 +62,11 @@ export class gate_call_client_module extends abelkhan.Imodule {
         }
     }
 
-    public cb_call_client : (rpc_argv:Uint8Array)=>void | null;
+    public cb_call_client : (hub_name:string, rpc_argv:Uint8Array)=>void | null;
     call_client(inArray:any[]){
         let _argv_:any[] = [];
         _argv_.push(inArray[0]);
+        _argv_.push(inArray[1]);
         if (this.cb_call_client){
             this.cb_call_client.apply(null, _argv_);
         }

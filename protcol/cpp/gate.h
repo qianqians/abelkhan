@@ -196,7 +196,7 @@ namespace abelkhan
         }
 
     public:
-        concurrent::signals<void(uint64_t timetmp)> sig_heartbeats_cb;
+        concurrent::signals<void(uint64_t)> sig_heartbeats_cb;
         concurrent::signals<void()> sig_heartbeats_err;
         concurrent::signals<void()> sig_heartbeats_timeout;
 
@@ -229,7 +229,7 @@ namespace abelkhan
         }
 
     public:
-        concurrent::signals<void(std::vector<hub_info> hub_info)> sig_get_hub_info_cb;
+        concurrent::signals<void(std::vector<hub_info>)> sig_get_hub_info_cb;
         concurrent::signals<void()> sig_get_hub_info_err;
         concurrent::signals<void()> sig_get_hub_info_timeout;
 
@@ -413,7 +413,7 @@ namespace abelkhan
 
     };
 
-    class hub_call_gate_module : Imodule, public std::enable_shared_from_this<hub_call_gate_module>{
+    class hub_call_gate_module : public Imodule, public std::enable_shared_from_this<hub_call_gate_module>{
     public:
         hub_call_gate_module() : Imodule("hub_call_gate")
         {
@@ -429,7 +429,7 @@ namespace abelkhan
             reg_method("forward_hub_call_global_client", std::bind(&hub_call_gate_module::forward_hub_call_global_client, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string hub_name, std::string hub_type)> sig_reg_hub;
+        concurrent::signals<void(std::string, std::string)> sig_reg_hub;
         void reg_hub(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
             auto _hub_name = inArray[1].string_value();
@@ -439,31 +439,31 @@ namespace abelkhan
             rsp = nullptr;
         }
 
-        concurrent::signals<void(std::string client_uuid)> sig_disconnect_client;
+        concurrent::signals<void(std::string)> sig_disconnect_client;
         void disconnect_client(const msgpack11::MsgPack::array& inArray){
             auto _client_uuid = inArray[0].string_value();
             sig_disconnect_client.emit(_client_uuid);
         }
 
-        concurrent::signals<void(std::string client_uuid, std::vector<uint8_t> rpc_argv)> sig_forward_hub_call_client;
+        concurrent::signals<void(std::string, std::vector<uint8_t>)> sig_forward_hub_call_client;
         void forward_hub_call_client(const msgpack11::MsgPack::array& inArray){
             auto _client_uuid = inArray[0].string_value();
             auto _rpc_argv = inArray[1].binary_items();
             sig_forward_hub_call_client.emit(_client_uuid, _rpc_argv);
         }
 
-        concurrent::signals<void(std::vector<std::string> client_uuids, std::vector<uint8_t> rpc_argv)> sig_forward_hub_call_group_client;
+        concurrent::signals<void(std::vector<std::string>, std::vector<uint8_t>)> sig_forward_hub_call_group_client;
         void forward_hub_call_group_client(const msgpack11::MsgPack::array& inArray){
             std::vector<std::string> _client_uuids;
             auto _protocol_array = inArray[0].array_items();
             for(auto it_dfd11414_89c9_5adb_8977_69b93b30195b : _protocol_array){
-                _client_uuids.push_back(it_dfd11414_89c9_5adb_8977_69b93b30195b->string_value());
+                _client_uuids.push_back(it_dfd11414_89c9_5adb_8977_69b93b30195b.string_value());
             }
             auto _rpc_argv = inArray[1].binary_items();
             sig_forward_hub_call_group_client.emit(_client_uuids, _rpc_argv);
         }
 
-        concurrent::signals<void(std::vector<uint8_t> rpc_argv)> sig_forward_hub_call_global_client;
+        concurrent::signals<void(std::vector<uint8_t>)> sig_forward_hub_call_global_client;
         void forward_hub_call_global_client(const msgpack11::MsgPack::array& inArray){
             auto _rpc_argv = inArray[0].binary_items();
             sig_forward_hub_call_global_client.emit(_rpc_argv);
@@ -524,7 +524,7 @@ namespace abelkhan
 
     };
 
-    class client_call_gate_module : Imodule, public std::enable_shared_from_this<client_call_gate_module>{
+    class client_call_gate_module : public Imodule, public std::enable_shared_from_this<client_call_gate_module>{
     public:
         client_call_gate_module() : Imodule("client_call_gate")
         {
@@ -546,7 +546,7 @@ namespace abelkhan
             rsp = nullptr;
         }
 
-        concurrent::signals<void(std::string hub_type)> sig_get_hub_info;
+        concurrent::signals<void(std::string)> sig_get_hub_info;
         void get_hub_info(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
             auto _hub_type = inArray[1].string_value();
@@ -555,7 +555,7 @@ namespace abelkhan
             rsp = nullptr;
         }
 
-        concurrent::signals<void(std::string hub_name, std::vector<uint8_t> rpc_argv)> sig_forward_client_call_hub;
+        concurrent::signals<void(std::string, std::vector<uint8_t>)> sig_forward_client_call_hub;
         void forward_client_call_hub(const msgpack11::MsgPack::array& inArray){
             auto _hub_name = inArray[0].string_value();
             auto _rpc_argv = inArray[1].binary_items();

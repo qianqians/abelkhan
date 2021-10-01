@@ -115,7 +115,7 @@ namespace abelkhan
             var rsp = try_get_and_del_reg_hub_cb(uuid);
             if (rsp != null)
             {
-            rsp.call_err();
+                rsp.call_err();
             }
         }
 
@@ -128,7 +128,8 @@ namespace abelkhan
 
         private hub_call_gate_reg_hub_cb try_get_and_del_reg_hub_cb(UInt64 uuid){
             lock(map_reg_hub)
-            {                var rsp = map_reg_hub[uuid];
+            {
+                var rsp = map_reg_hub[uuid];
                 map_reg_hub.Remove(uuid);
                 return rsp;
             }
@@ -336,7 +337,7 @@ namespace abelkhan
             var rsp = try_get_and_del_heartbeats_cb(uuid);
             if (rsp != null)
             {
-            rsp.call_err();
+                rsp.call_err();
             }
         }
 
@@ -349,7 +350,8 @@ namespace abelkhan
 
         private client_call_gate_heartbeats_cb try_get_and_del_heartbeats_cb(UInt64 uuid){
             lock(map_heartbeats)
-            {                var rsp = map_heartbeats[uuid];
+            {
+                var rsp = map_heartbeats[uuid];
                 map_heartbeats.Remove(uuid);
                 return rsp;
             }
@@ -373,7 +375,7 @@ namespace abelkhan
             var rsp = try_get_and_del_get_hub_info_cb(uuid);
             if (rsp != null)
             {
-            rsp.call_err();
+                rsp.call_err();
             }
         }
 
@@ -386,7 +388,8 @@ namespace abelkhan
 
         private client_call_gate_get_hub_info_cb try_get_and_del_get_hub_info_cb(UInt64 uuid){
             lock(map_get_hub_info)
-            {                var rsp = map_get_hub_info[uuid];
+            {
+                var rsp = map_get_hub_info[uuid];
                 map_get_hub_info.Remove(uuid);
                 return rsp;
             }

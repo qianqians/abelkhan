@@ -27,9 +27,6 @@ public:
 	{
 		s = _s;
 		is_close = false;
-
-		_data_size = 8 * 1024;
-		_data = (unsigned char*)malloc(_data_size);
 	}
 
 	void start()
@@ -45,7 +42,6 @@ public:
 	}
 
 	virtual ~channel(){
-		free(_data);
 	}
 
 	concurrent::signals<void(std::shared_ptr<channel>)> sigondisconn;
@@ -91,7 +87,7 @@ public:
 		}
 	}
 
-	void send(std::string& data)
+	void send(char* data, size_t len)
 	{
 		if (is_close) {
 			return;
@@ -104,26 +100,13 @@ public:
 		try {
 			if (ch_encrypt_decrypt_ondata->is_compress_and_encrypt)
 			{
-				ch_encrypt_decrypt_ondata->xor_key_encrypt_decrypt(data.data(), data.size());
+				ch_encrypt_decrypt_ondata->xor_key_encrypt_decrypt(&data[4], len - 4);
 			}
 			
-			size_t len = data.size();
-			if (_data_size < (len + 4)) {
-				_data_size *= 2;
-				free(_data);
-				_data = (unsigned char*)malloc(_data_size);
-			}
-			_data[0] = len & 0xff;
-			_data[1] = len >> 8 & 0xff;
-			_data[2] = len >> 16 & 0xff;
-			_data[3] = len >> 24 & 0xff;
-			memcpy(&_data[4], data.c_str(), data.size());
-			size_t datasize = len + 4;
-
 			size_t offset = 0;
-			while (offset < datasize) {
+			while (offset < len) {
 				try {
-					offset += s->send(boost::asio::buffer(&_data[offset], datasize - offset));
+					offset += s->send(boost::asio::buffer(&data[offset], len - offset));
 				}
 				catch (boost::system::system_error e) {
 					if (e.code() == boost::asio::error::would_block) {
@@ -149,9 +132,6 @@ private:
 
 	std::shared_ptr<channel_encrypt_decrypt_ondata> ch_encrypt_decrypt_ondata;
 	char read_buff[8 * 1024];
-
-	unsigned char* _data;
-	size_t _data_size;
 
 	bool is_close;
 

@@ -271,7 +271,7 @@ namespace abelkhan
 
     };
 /*this module code is codegen by abelkhan codegen for cpp*/
-    class center_call_hub_module : Imodule, public std::enable_shared_from_this<center_call_hub_module>{
+    class center_call_hub_module : public Imodule, public std::enable_shared_from_this<center_call_hub_module>{
     public:
         center_call_hub_module() : Imodule("center_call_hub")
         {
@@ -284,7 +284,7 @@ namespace abelkhan
             reg_method("reload", std::bind(&center_call_hub_module::reload, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string type, std::string ip, uint16_t port, std::string uuid)> sig_distribute_server_address;
+        concurrent::signals<void(std::string, std::string, uint16_t, std::string)> sig_distribute_server_address;
         void distribute_server_address(const msgpack11::MsgPack::array& inArray){
             auto _type = inArray[0].string_value();
             auto _ip = inArray[1].string_value();
@@ -293,14 +293,14 @@ namespace abelkhan
             sig_distribute_server_address.emit(_type, _ip, _port, _uuid);
         }
 
-        concurrent::signals<void(std::string argv)> sig_reload;
+        concurrent::signals<void(std::string)> sig_reload;
         void reload(const msgpack11::MsgPack::array& inArray){
             auto _argv = inArray[0].string_value();
             sig_reload.emit(_argv);
         }
 
     };
-    class center_call_server_module : Imodule, public std::enable_shared_from_this<center_call_server_module>{
+    class center_call_server_module : public Imodule, public std::enable_shared_from_this<center_call_server_module>{
     public:
         center_call_server_module() : Imodule("center_call_server")
         {
@@ -342,7 +342,7 @@ namespace abelkhan
 
     };
 
-    class center_module : Imodule, public std::enable_shared_from_this<center_module>{
+    class center_module : public Imodule, public std::enable_shared_from_this<center_module>{
     public:
         center_module() : Imodule("center")
         {
@@ -356,7 +356,7 @@ namespace abelkhan
             reg_method("closed", std::bind(&center_module::closed, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string type, std::string ip, uint16_t port, std::string uuid)> sig_reg_server;
+        concurrent::signals<void(std::string, std::string, uint16_t, std::string)> sig_reg_server;
         void reg_server(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
             auto _type = inArray[1].string_value();
@@ -379,7 +379,7 @@ namespace abelkhan
         }
 
     };
-    class gm_center_module : Imodule, public std::enable_shared_from_this<gm_center_module>{
+    class gm_center_module : public Imodule, public std::enable_shared_from_this<gm_center_module>{
     public:
         gm_center_module() : Imodule("gm_center")
         {
@@ -393,19 +393,19 @@ namespace abelkhan
             reg_method("reload", std::bind(&gm_center_module::reload, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string gm_name)> sig_confirm_gm;
+        concurrent::signals<void(std::string)> sig_confirm_gm;
         void confirm_gm(const msgpack11::MsgPack::array& inArray){
             auto _gm_name = inArray[0].string_value();
             sig_confirm_gm.emit(_gm_name);
         }
 
-        concurrent::signals<void(std::string gmname)> sig_close_clutter;
+        concurrent::signals<void(std::string)> sig_close_clutter;
         void close_clutter(const msgpack11::MsgPack::array& inArray){
             auto _gmname = inArray[0].string_value();
             sig_close_clutter.emit(_gmname);
         }
 
-        concurrent::signals<void(std::string gmname, std::string argv)> sig_reload;
+        concurrent::signals<void(std::string, std::string)> sig_reload;
         void reload(const msgpack11::MsgPack::array& inArray){
             auto _gmname = inArray[0].string_value();
             auto _argv = inArray[1].string_value();

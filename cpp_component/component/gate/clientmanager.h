@@ -51,8 +51,8 @@ public:
 		_gate_call_client_caller->ntf_cuuid(_cuuid);
 	}
 
-	void call_client(std::vector<uint8_t>& data) {
-		_gate_call_client_caller->call_client(data);
+	void call_client(std::string hub_name, std::vector<uint8_t>& data) {
+		_gate_call_client_caller->call_client(hub_name, data);
 	}
 
 };
@@ -91,7 +91,7 @@ public:
 		auto _client = std::make_shared<clientproxy>(cuuid, ch);
 
 		client_map.insert(std::make_pair(cuuid, _client));
-		client_uuid_map.insert(std::make_pair(ch, cuuid));
+		client_uuid_map.insert(std::make_pair(ch, _client));
 
 		return _client;
 	}
@@ -101,12 +101,12 @@ public:
 			return;
 		}
 
-		auto _client_uuid = client_uuid_map[_ch];
-		spdlog::trace("unreg_client:{0}", _client_uuid);
+		auto _client = client_uuid_map[_ch];
+		spdlog::trace("unreg_client:{0}", _client->_cuuid);
 
-		if (client_map.find(_client_uuid) != client_map.end())
+		if (client_map.find(_client->_cuuid) != client_map.end())
 		{
-			client_map.erase(_client_uuid);
+			client_map.erase(_client->_cuuid);
 		}
 		if (client_uuid_map.find(_ch) != client_uuid_map.end())
 		{
@@ -122,12 +122,12 @@ public:
 		return client_map.find(uuid) != client_map.end();
 	} 
 
-	std::string get_client(std::shared_ptr<abelkhan::Ichannel> ch) {
+	std::shared_ptr<clientproxy> get_client(std::shared_ptr<abelkhan::Ichannel> ch) {
 		auto it = client_uuid_map.find(ch);
 		if (it != client_uuid_map.end()) {
 			return it->second;
 		}
-		return "";
+		return nullptr;
 	}
 
 	std::shared_ptr<clientproxy> get_client(std::string cuuid) {
@@ -146,7 +146,7 @@ public:
 
 private:
 	std::unordered_map<std::string, std::shared_ptr<clientproxy> > client_map;
-	std::unordered_map<std::shared_ptr<abelkhan::Ichannel>, std::string> client_uuid_map;
+	std::unordered_map<std::shared_ptr<abelkhan::Ichannel>, std::shared_ptr<clientproxy> > client_uuid_map;
 
 	std::shared_ptr<hubsvrmanager> _hubsvrmanager;
 

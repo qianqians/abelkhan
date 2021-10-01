@@ -366,7 +366,7 @@ namespace abelkhan
             var rsp = try_get_and_del_reg_hub_cb(uuid);
             if (rsp != null)
             {
-            rsp.call_err();
+                rsp.call_err();
             }
         }
 
@@ -379,7 +379,8 @@ namespace abelkhan
 
         private hub_call_dbproxy_reg_hub_cb try_get_and_del_reg_hub_cb(UInt64 uuid){
             lock(map_reg_hub)
-            {                var rsp = map_reg_hub[uuid];
+            {
+                var rsp = map_reg_hub[uuid];
                 map_reg_hub.Remove(uuid);
                 return rsp;
             }
@@ -399,7 +400,7 @@ namespace abelkhan
             var rsp = try_get_and_del_create_persisted_object_cb(uuid);
             if (rsp != null)
             {
-            rsp.call_err();
+                rsp.call_err();
             }
         }
 
@@ -412,7 +413,8 @@ namespace abelkhan
 
         private hub_call_dbproxy_create_persisted_object_cb try_get_and_del_create_persisted_object_cb(UInt64 uuid){
             lock(map_create_persisted_object)
-            {                var rsp = map_create_persisted_object[uuid];
+            {
+                var rsp = map_create_persisted_object[uuid];
                 map_create_persisted_object.Remove(uuid);
                 return rsp;
             }
@@ -432,7 +434,7 @@ namespace abelkhan
             var rsp = try_get_and_del_updata_persisted_object_cb(uuid);
             if (rsp != null)
             {
-            rsp.call_err();
+                rsp.call_err();
             }
         }
 
@@ -445,7 +447,8 @@ namespace abelkhan
 
         private hub_call_dbproxy_updata_persisted_object_cb try_get_and_del_updata_persisted_object_cb(UInt64 uuid){
             lock(map_updata_persisted_object)
-            {                var rsp = map_updata_persisted_object[uuid];
+            {
+                var rsp = map_updata_persisted_object[uuid];
                 map_updata_persisted_object.Remove(uuid);
                 return rsp;
             }
@@ -465,7 +468,7 @@ namespace abelkhan
             var rsp = try_get_and_del_remove_object_cb(uuid);
             if (rsp != null)
             {
-            rsp.call_err();
+                rsp.call_err();
             }
         }
 
@@ -478,7 +481,8 @@ namespace abelkhan
 
         private hub_call_dbproxy_remove_object_cb try_get_and_del_remove_object_cb(UInt64 uuid){
             lock(map_remove_object)
-            {                var rsp = map_remove_object[uuid];
+            {
+                var rsp = map_remove_object[uuid];
                 map_remove_object.Remove(uuid);
                 return rsp;
             }
@@ -499,7 +503,7 @@ namespace abelkhan
             var rsp = try_get_and_del_get_object_count_cb(uuid);
             if (rsp != null)
             {
-            rsp.call_err();
+                rsp.call_err();
             }
         }
 
@@ -512,7 +516,8 @@ namespace abelkhan
 
         private hub_call_dbproxy_get_object_count_cb try_get_and_del_get_object_count_cb(UInt64 uuid){
             lock(map_get_object_count)
-            {                var rsp = map_get_object_count[uuid];
+            {
+                var rsp = map_get_object_count[uuid];
                 map_get_object_count.Remove(uuid);
                 return rsp;
             }

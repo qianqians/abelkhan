@@ -88,7 +88,7 @@ public:
 					}
 					try
 					{
-						_modulemng.process_event(ch, obj.array_items());
+						_modulemng->process_event(ch, obj.array_items());
 					}
 					catch (std::exception e)
 					{

@@ -37,8 +37,9 @@ namespace abelkhan
             call_module_method("ntf_cuuid", _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1);
         }
 
-        public void call_client(byte[] rpc_argv){
+        public void call_client(string hub_name, byte[] rpc_argv){
             var _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab = new ArrayList();
+            _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.Add(hub_name);
             _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.Add(rpc_argv);
             call_module_method("call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
         }
@@ -64,11 +65,12 @@ namespace abelkhan
             }
         }
 
-        public event Action<byte[]> on_call_client;
+        public event Action<string, byte[]> on_call_client;
         public void call_client(ArrayList inArray){
-            var _rpc_argv = (byte[])inArray[0];
+            var _hub_name = (string)inArray[0];
+            var _rpc_argv = (byte[])inArray[1];
             if (on_call_client != null){
-                on_call_client(_rpc_argv);
+                on_call_client(_hub_name, _rpc_argv);
             }
         }
 

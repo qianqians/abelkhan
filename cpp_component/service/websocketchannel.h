@@ -38,13 +38,9 @@ public:
 
 	virtual ~webchannel() {
 		spdlog::trace("webchannel destruction obj!");
-		free(_data);
 	}
 
 	void Init() {
-		_data_size = 8 * 1024;
-		_data = (unsigned char*)malloc(_data_size);
-
 		ch_encrypt_decrypt_ondata = std::make_shared<channel_encrypt_decrypt_ondata>(shared_from_this());
 	}
 
@@ -83,31 +79,18 @@ public:
 		}
 	}
 
-	void send(std::string& data)
+	void send(char* data, size_t len)
 	{
 		if (is_close) {
 			return;
 		}
 
 		try {
-			size_t len = data.size();
-			if (_data_size < (len + 4)) {
-				_data_size *= 2;
-				free(_data);
-				_data = (unsigned char*)malloc(_data_size);
-			}
-			_data[0] = len & 0xff;
-			_data[1] = len >> 8 & 0xff;
-			_data[2] = len >> 16 & 0xff;
-			_data[3] = len >> 24 & 0xff;
-			memcpy(&_data[4], data.c_str(), data.size());
-			size_t datasize = len + 4;
-
 			if (is_ssl) {
-				asio_tls_server->send(hdl, _data, datasize, websocketpp::frame::opcode::binary);
+				asio_tls_server->send(hdl, data, len, websocketpp::frame::opcode::binary);
 			}
 			else {
-				asio_server->send(hdl, _data, datasize, websocketpp::frame::opcode::binary);
+				asio_server->send(hdl, data, len, websocketpp::frame::opcode::binary);
 			}
 		}
 		catch (std::exception e) {
@@ -125,9 +108,6 @@ private:
 	bool is_ssl;
 
 	std::shared_ptr<channel_encrypt_decrypt_ondata> ch_encrypt_decrypt_ondata;
-
-	unsigned char* _data;
-	size_t _data_size;
 
 	bool is_close;
 

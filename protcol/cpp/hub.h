@@ -287,7 +287,7 @@ namespace abelkhan
 
     };
 
-    class hub_call_hub_module : Imodule, public std::enable_shared_from_this<hub_call_hub_module>{
+    class hub_call_hub_module : public Imodule, public std::enable_shared_from_this<hub_call_hub_module>{
     public:
         hub_call_hub_module() : Imodule("hub_call_hub")
         {
@@ -300,7 +300,7 @@ namespace abelkhan
             reg_method("hub_call_hub_mothed", std::bind(&hub_call_hub_module::hub_call_hub_mothed, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string hub_name, std::string hub_type)> sig_reg_hub;
+        concurrent::signals<void(std::string, std::string)> sig_reg_hub;
         void reg_hub(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
             auto _hub_name = inArray[1].string_value();
@@ -310,7 +310,7 @@ namespace abelkhan
             rsp = nullptr;
         }
 
-        concurrent::signals<void(std::string module, std::string func, std::vector<uint8_t> argv)> sig_hub_call_hub_mothed;
+        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>)> sig_hub_call_hub_mothed;
         void hub_call_hub_mothed(const msgpack11::MsgPack::array& inArray){
             auto _module = inArray[0].string_value();
             auto _func = inArray[1].string_value();
@@ -319,7 +319,7 @@ namespace abelkhan
         }
 
     };
-    class gate_call_hub_module : Imodule, public std::enable_shared_from_this<gate_call_hub_module>{
+    class gate_call_hub_module : public Imodule, public std::enable_shared_from_this<gate_call_hub_module>{
     public:
         gate_call_hub_module() : Imodule("gate_call_hub")
         {
@@ -332,13 +332,13 @@ namespace abelkhan
             reg_method("client_call_hub", std::bind(&gate_call_hub_module::client_call_hub, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string client_uuid)> sig_client_disconnect;
+        concurrent::signals<void(std::string)> sig_client_disconnect;
         void client_disconnect(const msgpack11::MsgPack::array& inArray){
             auto _client_uuid = inArray[0].string_value();
             sig_client_disconnect.emit(_client_uuid);
         }
 
-        concurrent::signals<void(std::string client_uuid, std::vector<uint8_t> rpc_argv)> sig_client_call_hub;
+        concurrent::signals<void(std::string, std::vector<uint8_t>)> sig_client_call_hub;
         void client_call_hub(const msgpack11::MsgPack::array& inArray){
             auto _client_uuid = inArray[0].string_value();
             auto _rpc_argv = inArray[1].binary_items();
@@ -346,7 +346,7 @@ namespace abelkhan
         }
 
     };
-    class client_call_hub_module : Imodule, public std::enable_shared_from_this<client_call_hub_module>{
+    class client_call_hub_module : public Imodule, public std::enable_shared_from_this<client_call_hub_module>{
     public:
         client_call_hub_module() : Imodule("client_call_hub")
         {
@@ -359,13 +359,13 @@ namespace abelkhan
             reg_method("call_hub", std::bind(&client_call_hub_module::call_hub, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string client_uuid)> sig_connect_hub;
+        concurrent::signals<void(std::string)> sig_connect_hub;
         void connect_hub(const msgpack11::MsgPack::array& inArray){
             auto _client_uuid = inArray[0].string_value();
             sig_connect_hub.emit(_client_uuid);
         }
 
-        concurrent::signals<void(std::string module, std::string func, std::vector<uint8_t> argv)> sig_call_hub;
+        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>)> sig_call_hub;
         void call_hub(const msgpack11::MsgPack::array& inArray){
             auto _module = inArray[0].string_value();
             auto _func = inArray[1].string_value();
@@ -374,7 +374,7 @@ namespace abelkhan
         }
 
     };
-    class hub_call_client_module : Imodule, public std::enable_shared_from_this<hub_call_client_module>{
+    class hub_call_client_module : public Imodule, public std::enable_shared_from_this<hub_call_client_module>{
     public:
         hub_call_client_module() : Imodule("hub_call_client")
         {
@@ -386,7 +386,7 @@ namespace abelkhan
             reg_method("call_client", std::bind(&hub_call_client_module::call_client, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string module, std::string func, std::vector<uint8_t> argv)> sig_call_client;
+        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>)> sig_call_client;
         void call_client(const msgpack11::MsgPack::array& inArray){
             auto _module = inArray[0].string_value();
             auto _func = inArray[1].string_value();

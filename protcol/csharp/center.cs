@@ -155,7 +155,7 @@ namespace abelkhan
             var rsp = try_get_and_del_reg_server_cb(uuid);
             if (rsp != null)
             {
-            rsp.call_err();
+                rsp.call_err();
             }
         }
 
@@ -168,7 +168,8 @@ namespace abelkhan
 
         private center_reg_server_cb try_get_and_del_reg_server_cb(UInt64 uuid){
             lock(map_reg_server)
-            {                var rsp = map_reg_server[uuid];
+            {
+                var rsp = map_reg_server[uuid];
                 map_reg_server.Remove(uuid);
                 return rsp;
             }

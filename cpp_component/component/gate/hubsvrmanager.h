@@ -14,22 +14,23 @@
 #include <modulemng_handle.h>
 
 #include <hub.h>
+#include <gate.h>
 
 namespace gate {
 
 class hubproxy {
-private:
+public:
 	std::string _hub_name;
+	std::string _hub_type;
+
+private:
 	std::shared_ptr<abelkhan::gate_call_hub_caller> _gate_call_hub_caller;
 
 public:
-	hubproxy(std::string& hub_name, std::shared_ptr<abelkhan::Ichannel> ch) {
+	hubproxy(std::string& hub_name, std::string& hub_type, std::shared_ptr<abelkhan::Ichannel> ch) {
 		_hub_name = hub_name;
+		_hub_type = hub_type;
 		_gate_call_hub_caller = std::make_shared<abelkhan::gate_call_hub_caller>(ch, service::_modulemng);
-	}
-
-	const std::string hub_name() {
-		return _hub_name;
 	}
 
 	void client_disconnect(std::string& client_cuuid) {
@@ -49,8 +50,8 @@ public:
 	virtual ~hubsvrmanager(){
 	}
 
-	std::shared_ptr<hubproxy> reg_hub(std::string hub_name, std::shared_ptr<abelkhan::Ichannel> ch) {
-		auto _hubproxy = std::make_shared<hubproxy>(hub_name, ch);
+	std::shared_ptr<hubproxy> reg_hub(std::string hub_name, std::string& hub_type, std::shared_ptr<abelkhan::Ichannel> ch) {
+		auto _hubproxy = std::make_shared<hubproxy>(hub_name, hub_type, ch);
 
 		hub_name_proxy.insert(std::make_pair(hub_name, _hubproxy));
 		hub_channel_name.insert(std::make_pair(ch, hub_name));
@@ -65,11 +66,25 @@ public:
 		return hub_name_proxy[hub_name];
 	}
 
-	std::string get_hub(std::shared_ptr<abelkhan::Ichannel> hub_channel) {
+	std::shared_ptr<hubproxy> get_hub(std::shared_ptr<abelkhan::Ichannel> hub_channel) {
 		if (hub_channel_name.find(hub_channel) == hub_channel_name.end()) {
-			return "";
+			return nullptr;
 		}
-		return hub_channel_name[hub_channel];
+		return get_hub(hub_channel_name[hub_channel]);
+	}
+
+	std::vector<abelkhan::hub_info> get_hub_list(std::string hub_type) {
+		std::vector<abelkhan::hub_info> list;
+		for (auto it : hub_name_proxy) {
+			if (it.second->_hub_type != hub_type) {
+				continue;
+			}
+			abelkhan::hub_info _info;
+			_info.hub_name = it.second->_hub_name;
+			_info.hub_type = it.second->_hub_type;
+			list.push_back(_info);
+		}
+		return list;
 	}
 
 	void for_each_hub(std::function<void(std::string hub_name, std::shared_ptr<hubproxy> proxy)> fn){

@@ -91,7 +91,7 @@ namespace abelkhan
             var rsp = try_get_and_del_reg_hub_cb(uuid);
             if (rsp != null)
             {
-            rsp.call_err();
+                rsp.call_err();
             }
         }
 
@@ -104,7 +104,8 @@ namespace abelkhan
 
         private hub_call_hub_reg_hub_cb try_get_and_del_reg_hub_cb(UInt64 uuid){
             lock(map_reg_hub)
-            {                var rsp = map_reg_hub[uuid];
+            {
+                var rsp = map_reg_hub[uuid];
                 map_reg_hub.Remove(uuid);
                 return rsp;
             }
