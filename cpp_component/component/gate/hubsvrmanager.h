@@ -22,6 +22,7 @@ class hubproxy {
 public:
 	std::string _hub_name;
 	std::string _hub_type;
+	std::shared_ptr<abelkhan::Ichannel> _ch;
 
 private:
 	std::shared_ptr<abelkhan::gate_call_hub_caller> _gate_call_hub_caller;
@@ -30,6 +31,7 @@ public:
 	hubproxy(std::string& hub_name, std::string& hub_type, std::shared_ptr<abelkhan::Ichannel> ch) {
 		_hub_name = hub_name;
 		_hub_type = hub_type;
+		_ch = ch;
 		_gate_call_hub_caller = std::make_shared<abelkhan::gate_call_hub_caller>(ch, service::_modulemng);
 	}
 
@@ -57,6 +59,16 @@ public:
 		hub_channel_name.insert(std::make_pair(ch, hub_name));
 
 		return _hubproxy;
+	}
+
+	void unreg_hub(std::string hub_name) {
+		auto it = hub_name_proxy.find(hub_name);
+		if (it != hub_name_proxy.end()) {
+			spdlog::trace("hubsvrmanager unreg_hub:{0}!", hub_name);
+
+			hub_name_proxy.erase(it);
+			hub_channel_name.erase(it->second->_ch);
+		}
 	}
 
 	std::shared_ptr<hubproxy> get_hub(std::string hub_name) {

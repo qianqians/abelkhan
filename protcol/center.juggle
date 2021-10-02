@@ -1,6 +1,6 @@
 module center{
 
-	reg_server req(string type, string ip, uint16 port, string uuid) rsp() err();
+	reg_server req(string type, string ip, uint16 port, string svr_name) rsp() err();
 	
 	heartbeat ntf();
 	
@@ -11,6 +11,8 @@ module center{
 module center_call_server{
 
 	close_server ntf();
+	
+	svr_be_closed ntf(string svr_name);
 	
 }
 

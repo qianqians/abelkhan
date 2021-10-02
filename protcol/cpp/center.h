@@ -93,6 +93,12 @@ namespace abelkhan
             call_module_method("close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
         }
 
+        void svr_be_closed(std::string svr_name){
+            msgpack11::MsgPack::array _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac;
+            _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push_back(svr_name);
+            call_module_method("svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
+        }
+
     };
     class center_reg_server_cb : public std::enable_shared_from_this<center_reg_server_cb>{
     private:
@@ -192,14 +198,14 @@ namespace abelkhan
             uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066.store(random());
         }
 
-        std::shared_ptr<center_reg_server_cb> reg_server(std::string type, std::string ip, uint16_t port, std::string uuid){
+        std::shared_ptr<center_reg_server_cb> reg_server(std::string type, std::string ip, uint16_t port, std::string svr_name){
             auto uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066++;
             msgpack11::MsgPack::array _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda;
             _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255);
             _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(type);
             _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(ip);
             _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(port);
-            _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(uuid);
+            _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(svr_name);
             call_module_method("reg_server", _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda);
 
             auto cb_reg_server_obj = std::make_shared<center_reg_server_cb>(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255, rsp_cb_center_handle);
@@ -310,11 +316,18 @@ namespace abelkhan
             _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
 
             reg_method("close_server", std::bind(&center_call_server_module::close_server, this, std::placeholders::_1));
+            reg_method("svr_be_closed", std::bind(&center_call_server_module::svr_be_closed, this, std::placeholders::_1));
         }
 
         concurrent::signals<void()> sig_close_server;
         void close_server(const msgpack11::MsgPack::array& inArray){
             sig_close_server.emit();
+        }
+
+        concurrent::signals<void(std::string)> sig_svr_be_closed;
+        void svr_be_closed(const msgpack11::MsgPack::array& inArray){
+            auto _svr_name = inArray[0].string_value();
+            sig_svr_be_closed.emit(_svr_name);
         }
 
     };
@@ -362,9 +375,9 @@ namespace abelkhan
             auto _type = inArray[1].string_value();
             auto _ip = inArray[2].string_value();
             auto _port = inArray[3].uint16_value();
-            auto _uuid = inArray[4].string_value();
+            auto _svr_name = inArray[4].string_value();
             rsp = std::make_shared<center_reg_server_rsp>(current_ch, _cb_uuid);
-            sig_reg_server.emit(_type, _ip, _port, _uuid);
+            sig_reg_server.emit(_type, _ip, _port, _svr_name);
             rsp = nullptr;
         }
 

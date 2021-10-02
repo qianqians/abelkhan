@@ -64,6 +64,12 @@ export class center_call_server_caller extends abelkhan.Icaller {
         this.call_module_method("close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
     }
 
+    public svr_be_closed(svr_name:string){
+        let _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac:any[] = [];
+        _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push(svr_name);
+        this.call_module_method("svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
+    }
+
 }
 export class center_reg_server_cb{
     private cb_uuid : number;
@@ -152,14 +158,14 @@ export class center_caller extends abelkhan.Icaller {
         }
     }
 
-    public reg_server(type:string, ip:string, port:number, uuid:string){
+    public reg_server(type:string, ip:string, port:number, svr_name:string){
         let uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = this.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066++;
 
         let _argv_86ab8166_c1a7_3809_8c9b_df444f746076:any[] = [uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255];
         _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(type);
         _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(ip);
         _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(port);
-        _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(uuid);
+        _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(svr_name);
         this.call_module_method("reg_server", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
 
         let cb_reg_server_obj = new center_reg_server_cb(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255, rsp_cb_center_handle);
@@ -266,7 +272,10 @@ export class center_call_server_module extends abelkhan.Imodule {
         this.modules.reg_module(this);
 
         this.reg_method("close_server", this.close_server.bind(this));
+        this.reg_method("svr_be_closed", this.svr_be_closed.bind(this));
         this.cb_close_server = null;
+
+        this.cb_svr_be_closed = null;
 
     }
 
@@ -275,6 +284,15 @@ export class center_call_server_module extends abelkhan.Imodule {
         let _argv_:any[] = [];
         if (this.cb_close_server){
             this.cb_close_server.apply(null, _argv_);
+        }
+    }
+
+    public cb_svr_be_closed : (svr_name:string)=>void | null;
+    svr_be_closed(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        if (this.cb_svr_be_closed){
+            this.cb_svr_be_closed.apply(null, _argv_);
         }
     }
 
@@ -316,7 +334,7 @@ export class center_module extends abelkhan.Imodule {
 
     }
 
-    public cb_reg_server : (type:string, ip:string, port:number, uuid:string)=>void | null;
+    public cb_reg_server : (type:string, ip:string, port:number, svr_name:string)=>void | null;
     reg_server(inArray:any[]){
         let _cb_uuid = inArray[0];
         let _argv_:any[] = [];

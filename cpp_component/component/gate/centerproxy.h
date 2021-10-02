@@ -25,8 +25,8 @@ public:
 	virtual ~centerproxy(){
 	}
 
-	void reg_server(std::string ip, short port, std::string uuid) {
-		_center_caller->reg_server("gate", ip, port, uuid)->callBack([this](){
+	void reg_server(std::string ip, short port, std::string name) {
+		_center_caller->reg_server("gate", ip, port, name)->callBack([this](){
 			is_reg_sucess = true;
 			spdlog::trace("connect center server sucess!");
 		}, [](){

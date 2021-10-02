@@ -73,6 +73,12 @@ namespace abelkhan
             call_module_method("close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
         }
 
+        public void svr_be_closed(string svr_name){
+            var _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac = new ArrayList();
+            _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.Add(svr_name);
+            call_module_method("svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
+        }
+
     }
     public class center_reg_server_cb
     {
@@ -189,7 +195,7 @@ namespace abelkhan
             }
         }
 
-        public center_reg_server_cb reg_server(string type, string ip, UInt16 port, string uuid){
+        public center_reg_server_cb reg_server(string type, string ip, UInt16 port, string svr_name){
             Interlocked.Increment(ref uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066);
             var uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = uuid;
 
@@ -198,7 +204,7 @@ namespace abelkhan
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(type);
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(ip);
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(port);
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(uuid);
+            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(svr_name);
             call_module_method("reg_server", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
 
             var cb_reg_server_obj = new center_reg_server_cb();
@@ -298,12 +304,21 @@ namespace abelkhan
             modules.reg_module(this);
 
             reg_method("close_server", close_server);
+            reg_method("svr_be_closed", svr_be_closed);
         }
 
         public event Action<> on_close_server;
         public void close_server(ArrayList inArray){
             if (on_close_server != null){
                 on_close_server();
+            }
+        }
+
+        public event Action<string> on_svr_be_closed;
+        public void svr_be_closed(ArrayList inArray){
+            var _svr_name = (string)inArray[0];
+            if (on_svr_be_closed != null){
+                on_svr_be_closed(_svr_name);
             }
         }
 
@@ -347,10 +362,10 @@ namespace abelkhan
             var _type = (string)inArray[1];
             var _ip = (string)inArray[2];
             var _port = (UInt16)inArray[3];
-            var _uuid = (string)inArray[4];
+            var _svr_name = (string)inArray[4];
             rsp = new center_reg_server_rsp(current_ch, _cb_uuid);
             if (on_reg_server != null){
-                on_reg_server(_type, _ip, _port, _uuid);
+                on_reg_server(_type, _ip, _port, _svr_name);
             }
             rsp = null;
         }

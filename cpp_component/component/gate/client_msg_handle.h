@@ -22,10 +22,15 @@ private:
 	std::shared_ptr<clientmanager> _clientmanager;
 	std::shared_ptr<hubsvrmanager> _hubsvrmanager;
 	std::shared_ptr<service::timerservice> _timerservice;
+
 	std::shared_ptr<abelkhan::client_call_gate_module> _client_call_gate_module;
 
 public:
-	client_msg_handle() {
+	client_msg_handle(std::shared_ptr<clientmanager> clientmanager_, std::shared_ptr<hubsvrmanager> hubsvrmanager_, std::shared_ptr<service::timerservice> timerservice_) {
+		_clientmanager = clientmanager_;
+		_hubsvrmanager = hubsvrmanager_;
+		_timerservice = timerservice_;
+		
 		_client_call_gate_module = std::make_shared<abelkhan::client_call_gate_module>();
 		_client_call_gate_module->Init(service::_modulemng);
 		_client_call_gate_module->sig_heartbeats.connect(std::bind(&client_msg_handle::heartbeats, this));

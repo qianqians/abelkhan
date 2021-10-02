@@ -26,12 +26,16 @@ private:
 
 	std::shared_ptr<clientmanager> _clientmanager;
 	std::shared_ptr<hubsvrmanager> _hubsvrmanager;
+
 	std::shared_ptr<abelkhan::hub_call_gate_module> _hub_call_gate_module;
 
 public:
-	hub_svr_msg_handle() {
+	hub_svr_msg_handle(std::shared_ptr<clientmanager> clientmanager_, std::shared_ptr<hubsvrmanager> hubsvrmanager_) {
 		_data_size = 8 * 1024;
 		_data = (unsigned char*)malloc(_data_size);
+
+		_clientmanager = clientmanager_;
+		_hubsvrmanager = hubsvrmanager_;
 
 		_hub_call_gate_module = std::make_shared<abelkhan::hub_call_gate_module>();
 		_hub_call_gate_module->Init(service::_modulemng);
