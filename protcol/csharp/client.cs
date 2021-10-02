@@ -11,6 +11,34 @@ namespace abelkhan
 /*this struct code is codegen by abelkhan codegen for c#*/
 /*this caller code is codegen by abelkhan codegen for c#*/
 /*this cb code is codegen by abelkhan for c#*/
+    public class xor_key_rsp_cb : abelkhan.Imodule {
+        public xor_key_rsp_cb(abelkhan.modulemng modules) : base("xor_key_rsp_cb")
+        {
+            modules.reg_module(this);
+        }
+
+    }
+
+    public class xor_key_caller : abelkhan.Icaller {
+        public static xor_key_rsp_cb rsp_cb_xor_key_handle = null;
+        private UInt64 uuid_9149bc27_bc9f_3a38_a610_f82cdab0ef7c = RandomUUID.random();
+
+        public xor_key_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("xor_key", _ch)
+        {
+            if (rsp_cb_xor_key_handle == null)
+            {
+                rsp_cb_xor_key_handle = new rsp_cb_xor_key(modules);
+            }
+        }
+
+        public void ntf_xor_key(UInt64 xor_key){
+            var _argv_b46fcc76_0226_3a78_93ec_a3808152c387 = new ArrayList();
+            _argv_b46fcc76_0226_3a78_93ec_a3808152c387.Add(xor_key);
+            call_module_method("ntf_xor_key", _argv_b46fcc76_0226_3a78_93ec_a3808152c387);
+        }
+
+    }
+/*this cb code is codegen by abelkhan for c#*/
     public class gate_call_client_rsp_cb : abelkhan.Imodule {
         public gate_call_client_rsp_cb(abelkhan.modulemng modules) : base("gate_call_client_rsp_cb")
         {
@@ -46,6 +74,25 @@ namespace abelkhan
 
     }
 /*this module code is codegen by abelkhan codegen for c#*/
+    public class xor_key_module : abelkhan.Imodule {
+        private abelkhan.modulemng modules;
+        public xor_key_module(abelkhan.modulemng _modules) : base("xor_key")
+        {
+            modules = _modules;
+            modules.reg_module(this);
+
+            reg_method("ntf_xor_key", ntf_xor_key);
+        }
+
+        public event Action<UInt64> on_ntf_xor_key;
+        public void ntf_xor_key(ArrayList inArray){
+            var _xor_key = (UInt64)inArray[0];
+            if (on_ntf_xor_key != null){
+                on_ntf_xor_key(_xor_key);
+            }
+        }
+
+    }
     public class gate_call_client_module : abelkhan.Imodule {
         private abelkhan.modulemng modules;
         public gate_call_client_module(abelkhan.modulemng _modules) : base("gate_call_client")

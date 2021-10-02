@@ -8,13 +8,17 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include <abelkhan.h>
+
 #include <acceptservice.h>
 #include <connectservice.h>
-#include <abelkhan.h>
+#include <enetacceptservice.h>
+#include <websocketacceptservice.h>
 #include <timerservice.h>
 #include <modulemng_handle.h>
-
 #include <config.h>
+#include <log.h>
+#include <gc_poll.h>
 
 #include "centerproxy.h"
 #include "closehandle.h"
@@ -24,11 +28,12 @@
 #include "center_msg_handle.h"
 #include "hub_svr_msg_handle.h"
 #include "client_msg_handle.h"
-#include "gc_poll.h"
+
+namespace _log {
+std::shared_ptr<spdlog::logger> file_logger = nullptr;
+}
 
 void main(int argc, char * argv[]) {
-	auto svr_uuid = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
-	
 	if (argc <= 1) {
 		std::cout << "non input start argv" << std::endl;
 		return;
@@ -41,74 +46,104 @@ void main(int argc, char * argv[]) {
 		_config = _config->get_value_dict(argv[2]);
 	}
 
-	std::shared_ptr<service::timerservice> _timerservice = std::make_shared<service::timerservice>();
+	auto file_path = _config->get_value_string("log_dir") + _config->get_value_string("log_file");
+	auto log_level = _config->get_value_string("log_level");
+	if (log_level == "trace") {
+		_log::InitLog(file_path, spdlog::level::level_enum::trace);
+	}
+	else if (log_level == "debug") {
+		_log::InitLog(file_path, spdlog::level::level_enum::debug);
+	}
+	else if (log_level == "info") {
+		_log::InitLog(file_path, spdlog::level::level_enum::info);
+	}
+	else if (log_level == "warn") {
+		_log::InitLog(file_path, spdlog::level::level_enum::warn);
+	}
+	else if (log_level == "error") {
+		_log::InitLog(file_path, spdlog::level::level_enum::err);
+	}
+
+	auto gate_name = _config->get_value_string("gate_name");
+
+	auto _timerservice = std::make_shared<service::timerservice>();
+	auto _hubsvrmanager = std::make_shared<gate::hubsvrmanager>();
+	auto _clientmanager = std::make_shared<gate::clientmanager>(_hubsvrmanager);
+	auto _closehandle = std::make_shared<gate::closehandle>();
+
+	auto _center_msg_handle = std::make_shared<gate::center_msg_handle>(_closehandle, _hubsvrmanager);
+	auto _hub_svr_msg_handle = std::make_shared<gate::hub_svr_msg_handle>(_clientmanager, _hubsvrmanager);
+	auto _client_msg_handle = std::make_shared<gate::client_msg_handle>(_clientmanager, _hubsvrmanager, _timerservice);
 
 	auto inside_ip = _config->get_value_string("inside_ip");
 	auto inside_port = (short)_config->get_value_int("inside_port");
-	auto _hub_process = std::make_shared<juggle::process>();
-	auto _hub_call_gate = std::make_shared<module::hub_call_gate>();
-	auto _hubsvrmanager = std::make_shared<gate::hubsvrmanager>();
-	auto _clientmanager = std::make_shared<gate::clientmanager>(_hubsvrmanager);
-	_hub_call_gate->sig_reg_hub.connect(boost::bind(&reg_hub, _hubsvrmanager, _1, _2));
-	_hub_call_gate->sig_connect_sucess.connect(boost::bind(&connect_sucess, _clientmanager, _hubsvrmanager, _1));
-	_hub_call_gate->sig_disconnect_client.connect(boost::bind(&disconnect_client, _clientmanager, _1));
-	_hub_call_gate->sig_forward_hub_call_client.connect(boost::bind(&forward_hub_call_client, _clientmanager, _1, _2, _3, _4));
-	_hub_call_gate->sig_forward_hub_call_group_client.connect(boost::bind(&forward_hub_call_group_client, _clientmanager, _1, _2, _3, _4));
-	_hub_call_gate->sig_forward_hub_call_global_client.connect(boost::bind(&forward_hub_call_global_client, _clientmanager, _1, _2, _3));
-	_hub_process->reg_module(_hub_call_gate);
-	auto _hub_service = std::make_shared<service::acceptservice>(inside_ip, inside_port, _hub_process);
+	auto _hub_service = std::make_shared<service::enetacceptservice>(inside_ip, inside_port);
 
-	auto _client_process = std::make_shared<juggle::process>();
-	auto _client_call_gate = std::make_shared<module::client_call_gate>();
-	_client_call_gate->sig_connect_server.connect(boost::bind(&connect_server, _hubsvrmanager, _clientmanager, _timerservice, _1, _2));
-	_client_call_gate->sig_cancle_server.connect(boost::bind(&cancle_server, _clientmanager));
-	_client_call_gate->sig_enable_heartbeats.connect(boost::bind(&enable_heartbeats, _clientmanager));
-	_client_call_gate->sig_disable_heartbeats.connect(boost::bind(&disable_heartbeats, _clientmanager));
-	_client_call_gate->sig_heartbeats.connect(boost::bind(&heartbeats, _clientmanager, _timerservice, _1));
-	_client_call_gate->sig_forward_client_call_hub.connect(boost::bind(&forward_client_call_hub, _clientmanager, _hubsvrmanager, _1, _2, _3, _4));
-	_client_process->reg_module(_client_call_gate);
-	auto outside_ip = _config->get_value_string("outside_ip");
-	auto outside_port = (short)_config->get_value_int("outside_port");
-	auto _client_service = std::make_shared<service::acceptservice>(outside_ip, outside_port, _client_process);
-	_client_service->sigchannelconnect.connect([xor_key](std::shared_ptr<juggle::Ichannel> ch) {
-		auto _ch = std::static_pointer_cast<service::channel>(ch);
-		_ch->is_compress_and_encrypt = true;
-		_ch->xor_key = xor_key;
-	});
-	_client_service->sigchanneldisconnect.connect([_clientmanager](std::shared_ptr<juggle::Ichannel> ch) {
-		gate::gc_put([_clientmanager, ch]() {
-			_clientmanager->unreg_client(ch);
-		});
-	});
-
-	std::shared_ptr<juggle::process> _center_process = std::make_shared<juggle::process>();
-	auto _connectnetworkservice = std::make_shared<service::connectservice>(_center_process);
+	auto io_service = std::make_shared<boost::asio::io_service>();
+	auto _connectnetworkservice = std::make_shared<service::connectservice>(io_service);
 	auto center_ip = _center_config->get_value_string("ip");
 	auto center_port = (short)_center_config->get_value_int("port");
 	auto _center_ch = _connectnetworkservice->connect(center_ip, center_port);
 	auto _centerproxy = std::make_shared<gate::centerproxy>(_center_ch);
-	std::shared_ptr<gate::closehandle> _closehandle = std::make_shared<gate::closehandle>();
-	auto _center_call_server = std::make_shared<module::center_call_server>();
-	_center_call_server->sig_reg_server_sucess.connect(std::bind(&reg_server_sucess, _centerproxy));
-	_center_call_server->sig_close_server.connect(std::bind(&close_server, _closehandle));
-	_center_process->reg_module(_center_call_server);
-	_centerproxy->reg_server(inside_ip, inside_port, svr_uuid);
+	_centerproxy->reg_server(inside_ip, inside_port, gate_name);
 
-	std::shared_ptr<service::juggleservice> _juggleservice = std::make_shared<service::juggleservice>();
-	_juggleservice->add_process(_center_process);
-	_juggleservice->add_process(_hub_process);
-	_juggleservice->add_process(_client_process);
+	if (_config->has_key("tcp_listen")) {
+		auto is_tcp_listen = _config->get_value_bool("tcp_listen");
+		if (is_tcp_listen) {
+			auto tcp_outside_ip = _config->get_value_string("tcp_outside_ip");
+			auto tcp_outside_port = (short)_config->get_value_int("tcp_outside_port");
+			auto _client_service = std::make_shared<service::acceptservice>(tcp_outside_ip, tcp_outside_port, io_service);
+			_client_service->sigchannelconnect.connect([_clientmanager](std::shared_ptr<abelkhan::Ichannel> ch) {
+				auto _xor_key_caller = std::make_shared<abelkhan::xor_key_caller>(ch);
+				auto _key = abelkhan::random();
+				_xor_key_caller->ntf_xor_key(_key);
+				std::static_pointer_cast<service::channel>(ch)->set_xor_key(_key);
+
+				auto _client = _clientmanager->reg_client(ch);
+				_client->ntf_cuuid();
+			});
+			_client_service->sigchanneldisconnect.connect([_clientmanager](std::shared_ptr<abelkhan::Ichannel> ch) {
+				service::gc_put([_clientmanager, ch]() {
+					_clientmanager->unreg_client(ch);
+				});
+			});
+		}
+	}
+
+	std::shared_ptr<service::webacceptservice> _websocket_service = nullptr;
+	if (_config->has_key("websocket_listen")) {
+		auto is_websocket_listen = _config->get_value_bool("websocket_listen");
+		if (is_websocket_listen) {
+			auto websocket_outside_ip = _config->get_value_string("websocket_outside_ip");
+			auto websocket_outside_port = (short)_config->get_value_int("websocket_outside_port");
+			auto is_ssl = _config->get_value_bool("is_ssl");
+			auto certificate = _config->get_value_string("certificate");
+			auto private_key = _config->get_value_string("private_key");
+			auto tmp_dh = _config->get_value_string("tmp_dh");
+			_websocket_service = std::make_shared<service::webacceptservice>(websocket_outside_ip, websocket_outside_port, is_ssl, certificate, private_key, tmp_dh);
+			_websocket_service->sigchannelconnect.connect([_clientmanager](std::shared_ptr<abelkhan::Ichannel> ch) {
+				auto _client = _clientmanager->reg_client(ch);
+				_client->ntf_cuuid();
+			});
+			_websocket_service->sigchanneldisconnect.connect([_clientmanager](std::shared_ptr<abelkhan::Ichannel> ch) {
+				service::gc_put([_clientmanager, ch]() {
+					_clientmanager->unreg_client(ch);
+				});
+			});
+		}
+	}
 
 	_timerservice->addticktimer(5 * 1000, std::bind(&heartbeat_handle, _clientmanager, _timerservice, std::placeholders::_1));
 
 	while (true){
 		clock_t begin = clock();
 		try {
-			_connectnetworkservice->poll();
+			io_service->poll();
 			_hub_service->poll();
-			_client_service->poll();
 
-			_juggleservice->poll();
+			if (_websocket_service != nullptr) {
+				_websocket_service->poll();
+			}
 
 			_timerservice->poll();
 
@@ -118,16 +153,14 @@ void main(int argc, char * argv[]) {
 		}
 
 		try {
-			_client_service->gc_poll();
-
-			gate::gc_poll();
+			service::gc_poll();
 		}
 		catch (std::exception e) {
 			std::cout << e.what() << std::endl;
 		}
 
 		if (_closehandle->is_closed) {
-			std::cout << "server closed, gate server " << svr_uuid << std::endl;
+			std::cout << "server closed, gate server " << gate_name << std::endl;
 			break;
 		}
 		

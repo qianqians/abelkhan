@@ -4,6 +4,33 @@ import abelkhan = require("abelkhan");
 /*this struct code is codegen by abelkhan codegen for typescript*/
 /*this caller code is codegen by abelkhan codegen for typescript*/
 /*this cb code is codegen by abelkhan for ts*/
+export class xor_key_rsp_cb extends abelkhan.Imodule {
+    constructor(modules:abelkhan.modulemng){
+        super("xor_key_rsp_cb");
+        modules.reg_module(this);
+
+    }
+}
+
+export let rsp_cb_xor_key_handle : xor_key_rsp_cb | null = null;
+export class xor_key_caller extends abelkhan.Icaller {
+    private uuid_9149bc27_bc9f_3a38_a610_f82cdab0ef7c : number = Math.round(Math.random() * Number.MAX_VALUE);
+
+    constructor(_ch:any, modules:abelkhan.modulemng){
+        super("xor_key", _ch);
+        if (rsp_cb_xor_key_handle == null){
+            rsp_cb_xor_key_handle = new xor_key_rsp_cb(modules);
+        }
+    }
+
+    public ntf_xor_key(xor_key:number){
+        let _argv_b46fcc76_0226_3a78_93ec_a3808152c387:any[] = [];
+        _argv_b46fcc76_0226_3a78_93ec_a3808152c387.push(xor_key);
+        this.call_module_method("ntf_xor_key", _argv_b46fcc76_0226_3a78_93ec_a3808152c387);
+    }
+
+}
+/*this cb code is codegen by abelkhan for ts*/
 export class gate_call_client_rsp_cb extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("gate_call_client_rsp_cb");
@@ -38,6 +65,28 @@ export class gate_call_client_caller extends abelkhan.Icaller {
 
 }
 /*this module code is codegen by abelkhan codegen for typescript*/
+export class xor_key_module extends abelkhan.Imodule {
+    private modules:abelkhan.modulemng;
+    constructor(modules:abelkhan.modulemng){
+        super("xor_key");
+        this.modules = modules;
+        this.modules.reg_module(this);
+
+        this.reg_method("ntf_xor_key", this.ntf_xor_key.bind(this));
+        this.cb_ntf_xor_key = null;
+
+    }
+
+    public cb_ntf_xor_key : (xor_key:number)=>void | null;
+    ntf_xor_key(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        if (this.cb_ntf_xor_key){
+            this.cb_ntf_xor_key.apply(null, _argv_);
+        }
+    }
+
+}
 export class gate_call_client_module extends abelkhan.Imodule {
     private modules:abelkhan.modulemng;
     constructor(modules:abelkhan.modulemng){

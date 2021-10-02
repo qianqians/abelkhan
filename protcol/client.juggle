@@ -1,3 +1,9 @@
+module xor_key{
+	
+	ntf_xor_key ntf(uint64 xor_key);
+	
+}
+
 module gate_call_client{
 	
 	ntf_cuuid ntf(string cuuid);

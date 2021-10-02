@@ -44,8 +44,6 @@ public:
 		ch_encrypt_decrypt_ondata = std::make_shared<channel_encrypt_decrypt_ondata>(shared_from_this());
 	}
 
-	concurrent::signals<void(std::shared_ptr<webchannel>)> sigconnexception;
-
 	void recv(std::string resv_data)
 	{
 		if (is_close) {
