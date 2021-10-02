@@ -220,6 +220,8 @@ main()
     ptime t27 = from_iso_extended_string(ts10);
     check("parse iso extended time w/ frac sec (dec only): " + ts10,
           t27 == ptime(date(1900,12,31),time_duration(23,0,0,0)));
+
+
 #else
     std::string ts3("20020120T235859.123456");
     ptime t20 = from_iso_string(ts3);
@@ -260,6 +262,35 @@ main()
     ptime t27 = from_iso_extended_string(ts10);
     check("parse iso extended time w/ frac sec (dec only): " + ts10,
           t27 == ptime(date(1900,12,31),time_duration(23,0,0,0)));
+
+    //the following test cases are for this issue:
+    //https://github.com/boostorg/date_time/issues/187
+    try {
+      std::string ts11("1900-12-31"); //date only string
+      ptime t28 = from_iso_extended_string(ts11);
+      check("parse iso extended time date only): " + ts11,
+            t28 == ptime(date(1900,12,31),time_duration(0,0,0,0)));
+    }
+    catch( std::exception& e )
+    {
+      std::cout << e.what() << std::endl;
+      check("parse iso extended time date only): 1900-12-32", false);
+    }
+
+    try {
+      //expect a date-time exception here
+      std::string ts12("1900-1"); //completely bogus string
+      ptime t29 = from_iso_extended_string(ts12);
+      check("parse iso extended time bad string: " + ts12, false);
+      (void) t29; //supress unused compiler warning, this is never reached
+    }
+    catch( std::exception& e )
+    {
+      //Day of month value is out of range 1..31
+      // std::cout << e.what() << std::endl;
+      check("parse iso extended time date only): 1900-1", true);
+    }
+
 #endif // BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG
   }
 

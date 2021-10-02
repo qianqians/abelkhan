@@ -55,169 +55,89 @@ namespace abelkhan
         }
 
     };
+    class hub_call_dbproxy_rsp_cb;
     class hub_call_dbproxy_reg_hub_cb : public std::enable_shared_from_this<hub_call_dbproxy_reg_hub_cb>{
     private:
         uint64_t cb_uuid;
         std::shared_ptr<hub_call_dbproxy_rsp_cb> module_rsp_cb;
 
     public:
-        hub_call_dbproxy_reg_hub_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_dbproxy_rsp_cb> _module_rsp_cb){
-            cb_uuid = _cb_uuid;
-            module_rsp_cb = _module_rsp_cb;
-        }
-
+        hub_call_dbproxy_reg_hub_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_dbproxy_rsp_cb> _module_rsp_cb);
     public:
         concurrent::signals<void()> sig_reg_hub_cb;
         concurrent::signals<void()> sig_reg_hub_err;
         concurrent::signals<void()> sig_reg_hub_timeout;
 
-        std::shared_ptr<hub_call_dbproxy_reg_hub_cb> callBack(std::function<void()> cb, std::function<void()> err)
-        {
-            sig_reg_hub_cb.connect(cb);
-            sig_reg_hub_err.connect(err);
-            return shared_from_this();
-        }
-
-        void timeout(uint64_t tick, std::function<void()> timeout_cb)
-        {
-            TinyTimer::add_timer(tick, [this](){
-                module_rsp_cb->reg_hub_timeout(cb_uuid);
-            });
-            sig_reg_hub_timeout.connect(timeout_cb);
-        }
-
+        std::shared_ptr<hub_call_dbproxy_reg_hub_cb> callBack(std::function<void()> cb, std::function<void()> err);
+        void timeout(uint64_t tick, std::function<void()> timeout_cb);
     };
 
+    class hub_call_dbproxy_rsp_cb;
     class hub_call_dbproxy_create_persisted_object_cb : public std::enable_shared_from_this<hub_call_dbproxy_create_persisted_object_cb>{
     private:
         uint64_t cb_uuid;
         std::shared_ptr<hub_call_dbproxy_rsp_cb> module_rsp_cb;
 
     public:
-        hub_call_dbproxy_create_persisted_object_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_dbproxy_rsp_cb> _module_rsp_cb){
-            cb_uuid = _cb_uuid;
-            module_rsp_cb = _module_rsp_cb;
-        }
-
+        hub_call_dbproxy_create_persisted_object_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_dbproxy_rsp_cb> _module_rsp_cb);
     public:
         concurrent::signals<void()> sig_create_persisted_object_cb;
         concurrent::signals<void()> sig_create_persisted_object_err;
         concurrent::signals<void()> sig_create_persisted_object_timeout;
 
-        std::shared_ptr<hub_call_dbproxy_create_persisted_object_cb> callBack(std::function<void()> cb, std::function<void()> err)
-        {
-            sig_create_persisted_object_cb.connect(cb);
-            sig_create_persisted_object_err.connect(err);
-            return shared_from_this();
-        }
-
-        void timeout(uint64_t tick, std::function<void()> timeout_cb)
-        {
-            TinyTimer::add_timer(tick, [this](){
-                module_rsp_cb->create_persisted_object_timeout(cb_uuid);
-            });
-            sig_create_persisted_object_timeout.connect(timeout_cb);
-        }
-
+        std::shared_ptr<hub_call_dbproxy_create_persisted_object_cb> callBack(std::function<void()> cb, std::function<void()> err);
+        void timeout(uint64_t tick, std::function<void()> timeout_cb);
     };
 
+    class hub_call_dbproxy_rsp_cb;
     class hub_call_dbproxy_updata_persisted_object_cb : public std::enable_shared_from_this<hub_call_dbproxy_updata_persisted_object_cb>{
     private:
         uint64_t cb_uuid;
         std::shared_ptr<hub_call_dbproxy_rsp_cb> module_rsp_cb;
 
     public:
-        hub_call_dbproxy_updata_persisted_object_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_dbproxy_rsp_cb> _module_rsp_cb){
-            cb_uuid = _cb_uuid;
-            module_rsp_cb = _module_rsp_cb;
-        }
-
+        hub_call_dbproxy_updata_persisted_object_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_dbproxy_rsp_cb> _module_rsp_cb);
     public:
         concurrent::signals<void()> sig_updata_persisted_object_cb;
         concurrent::signals<void()> sig_updata_persisted_object_err;
         concurrent::signals<void()> sig_updata_persisted_object_timeout;
 
-        std::shared_ptr<hub_call_dbproxy_updata_persisted_object_cb> callBack(std::function<void()> cb, std::function<void()> err)
-        {
-            sig_updata_persisted_object_cb.connect(cb);
-            sig_updata_persisted_object_err.connect(err);
-            return shared_from_this();
-        }
-
-        void timeout(uint64_t tick, std::function<void()> timeout_cb)
-        {
-            TinyTimer::add_timer(tick, [this](){
-                module_rsp_cb->updata_persisted_object_timeout(cb_uuid);
-            });
-            sig_updata_persisted_object_timeout.connect(timeout_cb);
-        }
-
+        std::shared_ptr<hub_call_dbproxy_updata_persisted_object_cb> callBack(std::function<void()> cb, std::function<void()> err);
+        void timeout(uint64_t tick, std::function<void()> timeout_cb);
     };
 
+    class hub_call_dbproxy_rsp_cb;
     class hub_call_dbproxy_remove_object_cb : public std::enable_shared_from_this<hub_call_dbproxy_remove_object_cb>{
     private:
         uint64_t cb_uuid;
         std::shared_ptr<hub_call_dbproxy_rsp_cb> module_rsp_cb;
 
     public:
-        hub_call_dbproxy_remove_object_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_dbproxy_rsp_cb> _module_rsp_cb){
-            cb_uuid = _cb_uuid;
-            module_rsp_cb = _module_rsp_cb;
-        }
-
+        hub_call_dbproxy_remove_object_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_dbproxy_rsp_cb> _module_rsp_cb);
     public:
         concurrent::signals<void()> sig_remove_object_cb;
         concurrent::signals<void()> sig_remove_object_err;
         concurrent::signals<void()> sig_remove_object_timeout;
 
-        std::shared_ptr<hub_call_dbproxy_remove_object_cb> callBack(std::function<void()> cb, std::function<void()> err)
-        {
-            sig_remove_object_cb.connect(cb);
-            sig_remove_object_err.connect(err);
-            return shared_from_this();
-        }
-
-        void timeout(uint64_t tick, std::function<void()> timeout_cb)
-        {
-            TinyTimer::add_timer(tick, [this](){
-                module_rsp_cb->remove_object_timeout(cb_uuid);
-            });
-            sig_remove_object_timeout.connect(timeout_cb);
-        }
-
+        std::shared_ptr<hub_call_dbproxy_remove_object_cb> callBack(std::function<void()> cb, std::function<void()> err);
+        void timeout(uint64_t tick, std::function<void()> timeout_cb);
     };
 
+    class hub_call_dbproxy_rsp_cb;
     class hub_call_dbproxy_get_object_count_cb : public std::enable_shared_from_this<hub_call_dbproxy_get_object_count_cb>{
     private:
         uint64_t cb_uuid;
         std::shared_ptr<hub_call_dbproxy_rsp_cb> module_rsp_cb;
 
     public:
-        hub_call_dbproxy_get_object_count_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_dbproxy_rsp_cb> _module_rsp_cb){
-            cb_uuid = _cb_uuid;
-            module_rsp_cb = _module_rsp_cb;
-        }
-
+        hub_call_dbproxy_get_object_count_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_dbproxy_rsp_cb> _module_rsp_cb);
     public:
         concurrent::signals<void(uint32_t)> sig_get_object_count_cb;
         concurrent::signals<void()> sig_get_object_count_err;
         concurrent::signals<void()> sig_get_object_count_timeout;
 
-        std::shared_ptr<hub_call_dbproxy_get_object_count_cb> callBack(std::function<void(uint32_t count)> cb, std::function<void()> err)
-        {
-            sig_get_object_count_cb.connect(cb);
-            sig_get_object_count_err.connect(err);
-            return shared_from_this();
-        }
-
-        void timeout(uint64_t tick, std::function<void()> timeout_cb)
-        {
-            TinyTimer::add_timer(tick, [this](){
-                module_rsp_cb->get_object_count_timeout(cb_uuid);
-            });
-            sig_get_object_count_timeout.connect(timeout_cb);
-        }
-
+        std::shared_ptr<hub_call_dbproxy_get_object_count_cb> callBack(std::function<void(uint32_t count)> cb, std::function<void()> err);
+        void timeout(uint64_t tick, std::function<void()> timeout_cb);
     };
 
 /*this cb code is codegen by abelkhan for cpp*/
@@ -534,7 +454,7 @@ namespace abelkhan
         }
 
     };
-    class hub_call_dbproxy_reg_hub_rsp : Response {
+    class hub_call_dbproxy_reg_hub_rsp : public Response {
     private:
         uint64_t uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
 
@@ -558,7 +478,7 @@ namespace abelkhan
 
     };
 
-    class hub_call_dbproxy_create_persisted_object_rsp : Response {
+    class hub_call_dbproxy_create_persisted_object_rsp : public Response {
     private:
         uint64_t uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b;
 
@@ -582,7 +502,7 @@ namespace abelkhan
 
     };
 
-    class hub_call_dbproxy_updata_persisted_object_rsp : Response {
+    class hub_call_dbproxy_updata_persisted_object_rsp : public Response {
     private:
         uint64_t uuid_16267d40_cddc_312f_87c0_185a55b79ad2;
 
@@ -606,7 +526,7 @@ namespace abelkhan
 
     };
 
-    class hub_call_dbproxy_remove_object_rsp : Response {
+    class hub_call_dbproxy_remove_object_rsp : public Response {
     private:
         uint64_t uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1;
 
@@ -630,7 +550,7 @@ namespace abelkhan
 
     };
 
-    class hub_call_dbproxy_get_object_count_rsp : Response {
+    class hub_call_dbproxy_get_object_count_rsp : public Response {
     private:
         uint64_t uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2;
 

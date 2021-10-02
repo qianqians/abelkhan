@@ -5,9 +5,9 @@
 #include <list>
 #include <iostream>
 #include <functional>
+#include <thread>
 
 #include <boost/asio.hpp>
-#include <boost/thread.hpp>
 #include <msgpack11.hpp>
 
 #include <signals.h>
@@ -110,7 +110,7 @@ public:
 				}
 				catch (boost::system::system_error e) {
 					if (e.code() == boost::asio::error::would_block) {
-						boost::this_thread::sleep(boost::get_system_time() + boost::posix_time::microseconds(1));
+						std::this_thread::yield();
 						continue;
 					}
 					else {

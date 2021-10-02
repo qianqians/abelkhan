@@ -100,37 +100,21 @@ namespace abelkhan
         }
 
     };
+    class center_rsp_cb;
     class center_reg_server_cb : public std::enable_shared_from_this<center_reg_server_cb>{
     private:
         uint64_t cb_uuid;
         std::shared_ptr<center_rsp_cb> module_rsp_cb;
 
     public:
-        center_reg_server_cb(uint64_t _cb_uuid, std::shared_ptr<center_rsp_cb> _module_rsp_cb){
-            cb_uuid = _cb_uuid;
-            module_rsp_cb = _module_rsp_cb;
-        }
-
+        center_reg_server_cb(uint64_t _cb_uuid, std::shared_ptr<center_rsp_cb> _module_rsp_cb);
     public:
         concurrent::signals<void()> sig_reg_server_cb;
         concurrent::signals<void()> sig_reg_server_err;
         concurrent::signals<void()> sig_reg_server_timeout;
 
-        std::shared_ptr<center_reg_server_cb> callBack(std::function<void()> cb, std::function<void()> err)
-        {
-            sig_reg_server_cb.connect(cb);
-            sig_reg_server_err.connect(err);
-            return shared_from_this();
-        }
-
-        void timeout(uint64_t tick, std::function<void()> timeout_cb)
-        {
-            TinyTimer::add_timer(tick, [this](){
-                module_rsp_cb->reg_server_timeout(cb_uuid);
-            });
-            sig_reg_server_timeout.connect(timeout_cb);
-        }
-
+        std::shared_ptr<center_reg_server_cb> callBack(std::function<void()> cb, std::function<void()> err);
+        void timeout(uint64_t tick, std::function<void()> timeout_cb);
     };
 
 /*this cb code is codegen by abelkhan for cpp*/
@@ -331,7 +315,7 @@ namespace abelkhan
         }
 
     };
-    class center_reg_server_rsp : Response {
+    class center_reg_server_rsp : public Response {
     private:
         uint64_t uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda;
 

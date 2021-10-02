@@ -12,5 +12,6 @@
     "maintainers": [
         "Andy Tompkins <atompkins -at- fastmail.fm>",
         "James E. King III <jking -at- apache.org>"
-    ]
+    ],
+    "cxxstd": "03"
 }

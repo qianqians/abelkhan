@@ -141,9 +141,6 @@ public:
 		ch->recv(str_msg);
 	}
 
-	void poll(){
-	}
-
 private:
 	std::shared_ptr<websocketpp::server<websocketpp::config::asio_tls> > asio_tls_server;
 	std::shared_ptr<websocketpp::server<websocketpp::config::asio> > asio_server;

@@ -40,7 +40,6 @@ public:
 	virtual ~config() {
 	}
 
-private:
 	config(json11::Json _handle) {
 		handle = _handle;
 	}

@@ -7,7 +7,7 @@ Distributed under the [Boost Software License, Version 1.0](http://www.boost.org
 ### Properties
 
 * C++03
-* Requires Linking
+* Header only
 
 ### Build Status
 
@@ -18,16 +18,18 @@ Branch          | Travis | Appveyor | Coverity Scan | codecov.io | Deps | Docs |
 
 ### Directories
 
+Note that the built library is only for build backward compatibility and contains no symbols.  date_time is now header only.
+
 | Name      | Purpose                        |
 | --------- | ------------------------------ |
-| `build`   | build script for link library  |
+| `build`   | build script for optional lib build  |
 | `data`    | timezone database              |
 | `doc`     | documentation                  |
 | `example` | use case examples              |
 | `include` | headers                        |
-| `src`     | source code for link library   |
+| `src`     | source code for optional link library   |
 | `test`    | unit tests                     |
-| `xmldoc`  | additional documentation       |
+| `xmldoc`  | documentation source      |
 
 ### More information
 

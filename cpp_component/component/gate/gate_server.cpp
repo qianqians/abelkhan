@@ -33,10 +33,10 @@ namespace _log {
 std::shared_ptr<spdlog::logger> file_logger = nullptr;
 }
 
-void main(int argc, char * argv[]) {
+int main(int argc, char * argv[]) {
 	if (argc <= 1) {
 		std::cout << "non input start argv" << std::endl;
-		return;
+		return -1;
 	}
 
 	std::string config_file_path = argv[1];
@@ -94,7 +94,7 @@ void main(int argc, char * argv[]) {
 			auto tcp_outside_port = (short)_config->get_value_int("tcp_outside_port");
 			auto _client_service = std::make_shared<service::acceptservice>(tcp_outside_ip, tcp_outside_port, io_service);
 			_client_service->sigchannelconnect.connect([_clientmanager](std::shared_ptr<abelkhan::Ichannel> ch) {
-				auto _xor_key_caller = std::make_shared<abelkhan::xor_key_caller>(ch);
+				auto _xor_key_caller = std::make_shared<abelkhan::xor_key_caller>(ch, service::_modulemng);
 				auto _key = abelkhan::random();
 				_xor_key_caller->ntf_xor_key(_key);
 				std::static_pointer_cast<service::channel>(ch)->set_xor_key(_key);
@@ -165,7 +165,9 @@ void main(int argc, char * argv[]) {
 		}
 		
 		if ((clock() - begin) < 50){
-			boost::this_thread::sleep(boost::get_system_time() + boost::posix_time::microseconds(5));
+			std::this_thread::yield();
 		}
 	}
+
+	return 0;
 }

@@ -10,37 +10,21 @@ namespace abelkhan
 
 /*this struct code is codegen by abelkhan codegen for cpp*/
 /*this caller code is codegen by abelkhan codegen for cpp*/
+    class hub_call_hub_rsp_cb;
     class hub_call_hub_reg_hub_cb : public std::enable_shared_from_this<hub_call_hub_reg_hub_cb>{
     private:
         uint64_t cb_uuid;
         std::shared_ptr<hub_call_hub_rsp_cb> module_rsp_cb;
 
     public:
-        hub_call_hub_reg_hub_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_hub_rsp_cb> _module_rsp_cb){
-            cb_uuid = _cb_uuid;
-            module_rsp_cb = _module_rsp_cb;
-        }
-
+        hub_call_hub_reg_hub_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_hub_rsp_cb> _module_rsp_cb);
     public:
         concurrent::signals<void()> sig_reg_hub_cb;
         concurrent::signals<void()> sig_reg_hub_err;
         concurrent::signals<void()> sig_reg_hub_timeout;
 
-        std::shared_ptr<hub_call_hub_reg_hub_cb> callBack(std::function<void()> cb, std::function<void()> err)
-        {
-            sig_reg_hub_cb.connect(cb);
-            sig_reg_hub_err.connect(err);
-            return shared_from_this();
-        }
-
-        void timeout(uint64_t tick, std::function<void()> timeout_cb)
-        {
-            TinyTimer::add_timer(tick, [this](){
-                module_rsp_cb->reg_hub_timeout(cb_uuid);
-            });
-            sig_reg_hub_timeout.connect(timeout_cb);
-        }
-
+        std::shared_ptr<hub_call_hub_reg_hub_cb> callBack(std::function<void()> cb, std::function<void()> err);
+        void timeout(uint64_t tick, std::function<void()> timeout_cb);
     };
 
 /*this cb code is codegen by abelkhan for cpp*/
@@ -263,7 +247,7 @@ namespace abelkhan
 
     };
 /*this module code is codegen by abelkhan codegen for cpp*/
-    class hub_call_hub_reg_hub_rsp : Response {
+    class hub_call_hub_reg_hub_rsp : public Response {
     private:
         uint64_t uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
 

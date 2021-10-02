@@ -15,10 +15,6 @@ namespace abelkhan
         std::string hub_type;
 
     public:
-        hub_info() = default;
-        hub_info(hub_info& value) = default;
-
-    public:
         static msgpack11::MsgPack::object hub_info_to_protcol(hub_info _struct){
             msgpack11::MsgPack::object _protocol;
             _protocol.insert(std::make_pair("hub_name", _struct.hub_name));
@@ -41,37 +37,21 @@ namespace abelkhan
     };
 
 /*this caller code is codegen by abelkhan codegen for cpp*/
+    class hub_call_gate_rsp_cb;
     class hub_call_gate_reg_hub_cb : public std::enable_shared_from_this<hub_call_gate_reg_hub_cb>{
     private:
         uint64_t cb_uuid;
         std::shared_ptr<hub_call_gate_rsp_cb> module_rsp_cb;
 
     public:
-        hub_call_gate_reg_hub_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_gate_rsp_cb> _module_rsp_cb){
-            cb_uuid = _cb_uuid;
-            module_rsp_cb = _module_rsp_cb;
-        }
-
+        hub_call_gate_reg_hub_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_gate_rsp_cb> _module_rsp_cb);
     public:
         concurrent::signals<void()> sig_reg_hub_cb;
         concurrent::signals<void()> sig_reg_hub_err;
         concurrent::signals<void()> sig_reg_hub_timeout;
 
-        std::shared_ptr<hub_call_gate_reg_hub_cb> callBack(std::function<void()> cb, std::function<void()> err)
-        {
-            sig_reg_hub_cb.connect(cb);
-            sig_reg_hub_err.connect(err);
-            return shared_from_this();
-        }
-
-        void timeout(uint64_t tick, std::function<void()> timeout_cb)
-        {
-            TinyTimer::add_timer(tick, [this](){
-                module_rsp_cb->reg_hub_timeout(cb_uuid);
-            });
-            sig_reg_hub_timeout.connect(timeout_cb);
-        }
-
+        std::shared_ptr<hub_call_gate_reg_hub_cb> callBack(std::function<void()> cb, std::function<void()> err);
+        void timeout(uint64_t tick, std::function<void()> timeout_cb);
     };
 
 /*this cb code is codegen by abelkhan for cpp*/
@@ -184,70 +164,38 @@ namespace abelkhan
         }
 
     };
+    class client_call_gate_rsp_cb;
     class client_call_gate_heartbeats_cb : public std::enable_shared_from_this<client_call_gate_heartbeats_cb>{
     private:
         uint64_t cb_uuid;
         std::shared_ptr<client_call_gate_rsp_cb> module_rsp_cb;
 
     public:
-        client_call_gate_heartbeats_cb(uint64_t _cb_uuid, std::shared_ptr<client_call_gate_rsp_cb> _module_rsp_cb){
-            cb_uuid = _cb_uuid;
-            module_rsp_cb = _module_rsp_cb;
-        }
-
+        client_call_gate_heartbeats_cb(uint64_t _cb_uuid, std::shared_ptr<client_call_gate_rsp_cb> _module_rsp_cb);
     public:
         concurrent::signals<void(uint64_t)> sig_heartbeats_cb;
         concurrent::signals<void()> sig_heartbeats_err;
         concurrent::signals<void()> sig_heartbeats_timeout;
 
-        std::shared_ptr<client_call_gate_heartbeats_cb> callBack(std::function<void(uint64_t timetmp)> cb, std::function<void()> err)
-        {
-            sig_heartbeats_cb.connect(cb);
-            sig_heartbeats_err.connect(err);
-            return shared_from_this();
-        }
-
-        void timeout(uint64_t tick, std::function<void()> timeout_cb)
-        {
-            TinyTimer::add_timer(tick, [this](){
-                module_rsp_cb->heartbeats_timeout(cb_uuid);
-            });
-            sig_heartbeats_timeout.connect(timeout_cb);
-        }
-
+        std::shared_ptr<client_call_gate_heartbeats_cb> callBack(std::function<void(uint64_t timetmp)> cb, std::function<void()> err);
+        void timeout(uint64_t tick, std::function<void()> timeout_cb);
     };
 
+    class client_call_gate_rsp_cb;
     class client_call_gate_get_hub_info_cb : public std::enable_shared_from_this<client_call_gate_get_hub_info_cb>{
     private:
         uint64_t cb_uuid;
         std::shared_ptr<client_call_gate_rsp_cb> module_rsp_cb;
 
     public:
-        client_call_gate_get_hub_info_cb(uint64_t _cb_uuid, std::shared_ptr<client_call_gate_rsp_cb> _module_rsp_cb){
-            cb_uuid = _cb_uuid;
-            module_rsp_cb = _module_rsp_cb;
-        }
-
+        client_call_gate_get_hub_info_cb(uint64_t _cb_uuid, std::shared_ptr<client_call_gate_rsp_cb> _module_rsp_cb);
     public:
         concurrent::signals<void(std::vector<hub_info>)> sig_get_hub_info_cb;
         concurrent::signals<void()> sig_get_hub_info_err;
         concurrent::signals<void()> sig_get_hub_info_timeout;
 
-        std::shared_ptr<client_call_gate_get_hub_info_cb> callBack(std::function<void(std::vector<hub_info> hub_info)> cb, std::function<void()> err)
-        {
-            sig_get_hub_info_cb.connect(cb);
-            sig_get_hub_info_err.connect(err);
-            return shared_from_this();
-        }
-
-        void timeout(uint64_t tick, std::function<void()> timeout_cb)
-        {
-            TinyTimer::add_timer(tick, [this](){
-                module_rsp_cb->get_hub_info_timeout(cb_uuid);
-            });
-            sig_get_hub_info_timeout.connect(timeout_cb);
-        }
-
+        std::shared_ptr<client_call_gate_get_hub_info_cb> callBack(std::function<void(std::vector<hub_info> hub_info)> cb, std::function<void()> err);
+        void timeout(uint64_t tick, std::function<void()> timeout_cb);
     };
 
 /*this cb code is codegen by abelkhan for cpp*/
@@ -389,7 +337,7 @@ namespace abelkhan
 
     };
 /*this module code is codegen by abelkhan codegen for cpp*/
-    class hub_call_gate_reg_hub_rsp : Response {
+    class hub_call_gate_reg_hub_rsp : public Response {
     private:
         uint64_t uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
 
@@ -470,7 +418,7 @@ namespace abelkhan
         }
 
     };
-    class client_call_gate_heartbeats_rsp : Response {
+    class client_call_gate_heartbeats_rsp : public Response {
     private:
         uint64_t uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56;
 
@@ -495,7 +443,7 @@ namespace abelkhan
 
     };
 
-    class client_call_gate_get_hub_info_rsp : Response {
+    class client_call_gate_get_hub_info_rsp : public Response {
     private:
         uint64_t uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b;
 

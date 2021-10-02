@@ -62,6 +62,7 @@
         <ul>
             <li><a href="#Synopsis_io">Synopsis</a></li>
             <li><a href="#Stream_operators">Stream Operators</a></li>
+            <li><a href="#to_chars">To Chars</a></li>
             <li><a href="#to_string">To String</a></li>
         </ul>
         <li><a href="#boost/uuid/uuid_serialize.hpp">boost/uuid/uuid_serialize.hpp</a></li>
@@ -722,6 +723,11 @@ template &lt;typename ch, typename char_traits&gt;
 template &lt;typename ch, typename char_traits&gt;
     std::basic_istream&lt;ch, char_traits&gt;&amp; operator&gt;&gt;(std::basic_istream&lt;ch, char_traits&gt; &amp;is, uuid &amp;u);
 
+template&lt;class OutputIterator&gt;
+    OutputIterator to_chars(uuid const&amp; u, OutputIterator out);
+
+bool to_chars(uuid const&amp; u, char* first, char* last);
+
 std::string to_string(uuid const&amp; u);
 std::wstring to_wstring(uuid const&amp; u);
 
@@ -755,6 +761,21 @@ std::string s = boost::lexical_cast&lt;std::string&gt;(u);
 boost::uuids::uuid u2 = boost::lexical_cast&lt;boost::uuids::uuid&gt;(s);
 
 assert(u1 == u2);
+</pre>
+
+<h4><a name="to_chars">To Chars</a></h4>
+<p>
+The function <tt>to_chars</tt> is a fast non-allocating (and non-throwing if the
+iterator does not throw) function to write a <b>uuid</b> to a string buffer.
+It writes exactly 36 characters to the iterator on success (not null-terminated).
+<pre>
+boost::uuids::uuid u; // initialize uuid
+
+char buf[36];
+boost::uuids::to_chars(u, buf);
+// OR
+bool ret = boost::uuids::to_chars(u, std::begin(buf), std::end(buf));
+assert(ret);
 </pre>
 
 <h4><a name="to_string">To String</a></h4>
@@ -845,8 +866,8 @@ mailing list provided useful comments and greatly helped to shape the library.
 <p>Revised November 8, 2017</p>
 
 <hr>
-<p>© Copyright Andy Tompkins, 2006</p>
-<p>© Copyright 2017 James E. King III</p>
+<p>Â© Copyright Andy Tompkins, 2006</p>
+<p>Â© Copyright 2017 James E. King III</p>
 <p> Distributed under the Boost Software
 License, Version 1.0. (See accompanying file <a href="../../../LICENSE_1_0.txt">LICENSE_1_0.txt</a> or copy at <a href="https://www.boost.org/LICENSE_1_0.txt">
 www.boost.org/LICENSE_1_0.txt</a>)</p>
