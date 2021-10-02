@@ -140,10 +140,11 @@ int main(int argc, char * argv[]) {
 		try {
 			io_service->poll();
 			_hub_service->poll();
-
 			if (_websocket_service != nullptr) {
 				_websocket_service->poll();
 			}
+
+			abelkhan::TinyTimer::poll();
 
 			_timerservice->poll();
 

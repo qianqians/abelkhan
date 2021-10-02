@@ -38,6 +38,9 @@ file(GLOB log_header_files ../../log/ ../../log/*.h)
 AUX_SOURCE_DIRECTORY(. DIR_SRC)
 file(GLOB header_client_files ./ ./*.h)
 
+set(LIBS_DEBUG_PATH ${PROJECT_SOURCE_DIR}//3rdparty//lib_debug CACHE PATH "lib debug path")
+set(LIBS_RELEASE_PATH ${PROJECT_SOURCE_DIR}//3rdparty//lib CACHE PATH "lib release path")
+
 SET(header_files
     ${header_client_files}
     ${module_header_files}
@@ -57,3 +60,12 @@ SET(SRC_LIST
 )
 
 ADD_EXECUTABLE(gate ${SRC_LIST} ${header_files})
+target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/libssl64MDd optimized ${LIBS_RELEASE_PATH}/libssl64MD)
+target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/libcrypto64MDd optimized ${LIBS_RELEASE_PATH}/libcrypto64MD)
+target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/spdlogd optimized ${LIBS_RELEASE_PATH}/spdlog)
+target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/enet optimized ${LIBS_RELEASE_PATH}/enet)
+target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/msgpack11 optimized ${LIBS_RELEASE_PATH}/msgpack11)
+target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/json11 optimized ${LIBS_RELEASE_PATH}/json11)
+target_link_libraries(gate Crypt32 )
+target_link_libraries(gate ws2_32)
+target_link_libraries(gate winmm)

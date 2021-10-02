@@ -32,7 +32,7 @@ private:
 	std::shared_ptr<abelkhan::gate_call_client_caller> _gate_call_client_caller;
 
 public:
-	uint64_t _timetmp;
+	int64_t _timetmp;
 	std::string _cuuid;
 	std::shared_ptr<abelkhan::Ichannel> _ch;
 	std::vector<std::shared_ptr<hubproxy> > conn_hubproxys;
