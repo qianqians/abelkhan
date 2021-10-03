@@ -151,21 +151,21 @@ int main(int argc, char * argv[]) {
 
 		}
 		catch(std::exception e) {
-			std::cout << e.what() << std::endl;
+			spdlog::info("poll error:{0}!", e.what());
 		}
 
 		try {
 			service::gc_poll();
 		}
 		catch (std::exception e) {
-			std::cout << e.what() << std::endl;
+			spdlog::info("gc_poll, error:{0}!", e.what());
 		}
 
 		if (_closehandle->is_closed) {
-			std::cout << "server closed, gate server " << gate_name << std::endl;
+			spdlog::info("server closed, gate server name:{0}!", gate_name);
 			break;
 		}
-		
+
 		if ((clock() - begin) < 50){
 			std::this_thread::yield();
 		}
