@@ -7,46 +7,52 @@
 #ifndef _centerproxy_h
 #define _centerproxy_h
 
-#include <iostream>
-
-#include <Ichannel.h>
-#include <factory.h>
-
-#include <centercaller.h>
-#include <hub_call_centercaller.h>
-
 #include <spdlog/spdlog.h>
+
+#include <abelkhan.h>
+
+#include <center.h>
 
 namespace hub{
 
 class centerproxy {
 public:
-	centerproxy(std::shared_ptr<juggle::Ichannel> ch) {
+	centerproxy(std::shared_ptr<abelkhan::Ichannel> ch) {
 		is_reg_sucess = false;
+
 		_center_ch = ch;
-		_center_caller = Fossilizid::pool::factory::create<caller::center>(_center_ch);
-		_hub_call_center_caller = Fossilizid::pool::factory::create<caller::hub_call_center>(_center_ch);
+		_center_caller = std::make_shared<abelkhan::center_caller>(_center_ch);
 	}
 
 	~centerproxy(){
 	}
 
-	void reg_server(std::string ip, short port, std::string uuid) {
-		spdlog::trace("begin connect center server");
-		_center_caller->reg_server("hub", ip, port, uuid);
+	void reg_server(std::string ip, short port, std::string hub_name) {
+		spdlog::trace("begin connect center server!");
+		_center_caller->reg_server("hub", ip, port, hub_name)->callBack([this]() {
+			spdlog::trace("connect center sucessed!");
+			is_reg_sucess = true;
+		}, []() {
+			spdlog::trace("connect center failed!");
+		})->timeout(5 * 1000, []() {
+			spdlog::trace("connect center timeout!");
+		});
+	}
+	
+	void heartbeat() {
+		_center_caller->heartbeat();
 	}
 
 	void closed() {
-		_hub_call_center_caller->closed();
+		_center_caller->closed();
 	}
 
 public:
 	bool is_reg_sucess;
 
 private:
-	std::shared_ptr<juggle::Ichannel> _center_ch;
-	std::shared_ptr<caller::center> _center_caller;
-	std::shared_ptr<caller::hub_call_center> _hub_call_center_caller;
+	std::shared_ptr<abelkhan::Ichannel> _center_ch;
+	std::shared_ptr<abelkhan::center_caller> _center_caller;
 
 };
 

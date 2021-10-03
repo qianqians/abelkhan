@@ -7,24 +7,15 @@
 #ifndef _hub_h
 #define _hub_h
 
-#include <boost/signals2.hpp>
-
-#include <process_.h>
-#include <Ichannel.h>
-#include <Imodule.h>
-#include <channel.h>
-#include <juggleservice.h>
-#include <timerservice.h>
 #include <memory>
+
+#include <abelkhan.h>
+#include <timerservice.h>
 
 #include <log.h>
 #include <config.h>
 #include <module.h>
 #include <modulemanager.h>
-
-#include <hub_call_gatemodule.h>
-#include <client_call_gatemodule.h>
-#include <center_call_servermodule.h>
 
 #include "closehandle.h"
 #include "hubsvrmanager.h"
@@ -33,8 +24,8 @@
 namespace service {
 
 class enetacceptservice;
-class enetconnectservice;
 class connectservice;
+class acceptservice;
 class webacceptservice;
 
 }
@@ -55,22 +46,24 @@ public:
 
 	void reg_hub(std::string hub_ip, uint16_t hub_port);
 
-	void try_connect_db(std::string dbproxy_ip, uint16_t dbproxy_port);
+	void try_connect_db(std::string dbproxy_name, std::string dbproxy_ip, uint16_t dbproxy_port);
 
 	void poll();
 
 public:
-	std::string uuid;
-	std::string name;
+	std::string hub_name;
 	bool is_busy;
 
-	boost::signals2::signal<void(std::string) > sig_client_connect;
-	boost::signals2::signal<void(std::string) > sig_direct_client_connect;
-	boost::signals2::signal<void(std::string) > sig_client_disconnect;
-	boost::signals2::signal<void(std::string) > sig_client_exception;
-	boost::signals2::signal<void(std::string) > sig_hub_connect;
+	concurrent::signals<void(std::string) > sig_reload;
+	concurrent::signals<void(std::string) > sig_client_disconnect;
+	concurrent::signals<void(std::string) > sig_hub_connect;
+	concurrent::signals<void(std::string) > sig_svr_be_closed;
+	concurrent::signals<void() > sig_close_server;
 
 	common::modulemanager modules;
+	std::shared_ptr<dbproxyproxy> _dbproxyproxy;
+	std::shared_ptr<dbproxyproxy> _extend_dbproxyproxy;
+
 	std::shared_ptr<closehandle> close_handle;
 	std::shared_ptr<gatemanager> gates;
 	std::shared_ptr<hubsvrmanager> hubs;
@@ -82,17 +75,11 @@ public:
 
 private:
 	std::shared_ptr<service::enetacceptservice> _hub_service;
-	std::shared_ptr<service::enetconnectservice> _gate_service;
 	std::shared_ptr<service::connectservice> _center_service;
 	std::shared_ptr<service::connectservice> _dbproxy_service;
 	std::shared_ptr<service::webacceptservice> _client_service;
 
-	std::shared_ptr<service::juggleservice> _juggleservice;
-
-	std::shared_ptr<juggle::process> _center_process;
-
 	std::shared_ptr<centerproxy> _centerproxy;
-	std::shared_ptr<dbproxyproxy> _dbproxyproxy;
 
 };
 

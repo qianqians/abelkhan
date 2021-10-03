@@ -57,6 +57,10 @@ public:
 		auto proxy = _clientmanager->get_client(ch);
 		if (proxy != nullptr) {
 			auto hubproxy_ = _hubsvrmanager->get_hub(hub_name);
+			if (std::find(proxy->conn_hubproxys.begin(), proxy->conn_hubproxys.end(), hubproxy_) == proxy->conn_hubproxys.end()) {
+				proxy->conn_hubproxys.push_back(hubproxy_);
+			}
+
 			hubproxy_->client_call_hub(proxy->_cuuid, rpc_argv);
 		}
 	}
