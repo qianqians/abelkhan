@@ -60,6 +60,24 @@ void hub_call_dbproxy_updata_persisted_object_cb::timeout(uint64_t tick, std::fu
     sig_updata_persisted_object_timeout.connect(timeout_cb);
 }
 
+hub_call_dbproxy_find_and_modify_cb::hub_call_dbproxy_find_and_modify_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_dbproxy_rsp_cb> _module_rsp_cb) {
+    cb_uuid = _cb_uuid;
+    module_rsp_cb = _module_rsp_cb;
+}
+
+std::shared_ptr<hub_call_dbproxy_find_and_modify_cb> hub_call_dbproxy_find_and_modify_cb::callBack(std::function<void(std::vector<uint8_t> object_info)> cb, std::function<void()> err) {
+    sig_find_and_modify_cb.connect(cb);
+    sig_find_and_modify_err.connect(err);
+    return shared_from_this();
+}
+
+void hub_call_dbproxy_find_and_modify_cb::timeout(uint64_t tick, std::function<void()> timeout_cb) {
+    TinyTimer::add_timer(tick, [this](){
+        module_rsp_cb->find_and_modify_timeout(cb_uuid);
+    });
+    sig_find_and_modify_timeout.connect(timeout_cb);
+}
+
 hub_call_dbproxy_remove_object_cb::hub_call_dbproxy_remove_object_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_dbproxy_rsp_cb> _module_rsp_cb) {
     cb_uuid = _cb_uuid;
     module_rsp_cb = _module_rsp_cb;

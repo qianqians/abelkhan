@@ -53,7 +53,7 @@ SET(SRC_LIST
     ${DIR_SRC}
     ${juggle_DIR_SRC}
     ${service_DIR_SRC}
-	${protcol_DIR_SRC}
+    ${protcol_DIR_SRC}
 )
 
 ADD_LIBRARY(hub ${SRC_LIST} ${header_files})

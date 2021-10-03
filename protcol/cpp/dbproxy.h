@@ -107,6 +107,23 @@ namespace abelkhan
     };
 
     class hub_call_dbproxy_rsp_cb;
+    class hub_call_dbproxy_find_and_modify_cb : public std::enable_shared_from_this<hub_call_dbproxy_find_and_modify_cb>{
+    private:
+        uint64_t cb_uuid;
+        std::shared_ptr<hub_call_dbproxy_rsp_cb> module_rsp_cb;
+
+    public:
+        hub_call_dbproxy_find_and_modify_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_dbproxy_rsp_cb> _module_rsp_cb);
+    public:
+        concurrent::signals<void(std::vector<uint8_t>)> sig_find_and_modify_cb;
+        concurrent::signals<void()> sig_find_and_modify_err;
+        concurrent::signals<void()> sig_find_and_modify_timeout;
+
+        std::shared_ptr<hub_call_dbproxy_find_and_modify_cb> callBack(std::function<void(std::vector<uint8_t> object_info)> cb, std::function<void()> err);
+        void timeout(uint64_t tick, std::function<void()> timeout_cb);
+    };
+
+    class hub_call_dbproxy_rsp_cb;
     class hub_call_dbproxy_remove_object_cb : public std::enable_shared_from_this<hub_call_dbproxy_remove_object_cb>{
     private:
         uint64_t cb_uuid;
@@ -149,6 +166,8 @@ namespace abelkhan
         std::map<uint64_t, std::shared_ptr<hub_call_dbproxy_create_persisted_object_cb> > map_create_persisted_object;
         std::mutex mutex_map_updata_persisted_object;
         std::map<uint64_t, std::shared_ptr<hub_call_dbproxy_updata_persisted_object_cb> > map_updata_persisted_object;
+        std::mutex mutex_map_find_and_modify;
+        std::map<uint64_t, std::shared_ptr<hub_call_dbproxy_find_and_modify_cb> > map_find_and_modify;
         std::mutex mutex_map_remove_object;
         std::map<uint64_t, std::shared_ptr<hub_call_dbproxy_remove_object_cb> > map_remove_object;
         std::mutex mutex_map_get_object_count;
@@ -166,6 +185,8 @@ namespace abelkhan
             reg_method("create_persisted_object_err", std::bind(&hub_call_dbproxy_rsp_cb::create_persisted_object_err, this, std::placeholders::_1));
             reg_method("updata_persisted_object_rsp", std::bind(&hub_call_dbproxy_rsp_cb::updata_persisted_object_rsp, this, std::placeholders::_1));
             reg_method("updata_persisted_object_err", std::bind(&hub_call_dbproxy_rsp_cb::updata_persisted_object_err, this, std::placeholders::_1));
+            reg_method("find_and_modify_rsp", std::bind(&hub_call_dbproxy_rsp_cb::find_and_modify_rsp, this, std::placeholders::_1));
+            reg_method("find_and_modify_err", std::bind(&hub_call_dbproxy_rsp_cb::find_and_modify_err, this, std::placeholders::_1));
             reg_method("remove_object_rsp", std::bind(&hub_call_dbproxy_rsp_cb::remove_object_rsp, this, std::placeholders::_1));
             reg_method("remove_object_err", std::bind(&hub_call_dbproxy_rsp_cb::remove_object_err, this, std::placeholders::_1));
             reg_method("get_object_count_rsp", std::bind(&hub_call_dbproxy_rsp_cb::get_object_count_rsp, this, std::placeholders::_1));
@@ -259,6 +280,37 @@ namespace abelkhan
             std::lock_guard<std::mutex> l(mutex_map_updata_persisted_object);
             auto rsp = map_updata_persisted_object[uuid];
             map_updata_persisted_object.erase(uuid);
+            return rsp;
+        }
+
+        void find_and_modify_rsp(const msgpack11::MsgPack::array& inArray){
+            auto uuid = inArray[0].uint64_value();
+            auto _object_info = inArray[1].binary_items();
+            auto rsp = try_get_and_del_find_and_modify_cb(uuid);
+            if (rsp != nullptr){
+                rsp->sig_find_and_modify_cb.emit(_object_info);
+            }
+        }
+
+        void find_and_modify_err(const msgpack11::MsgPack::array& inArray){
+            auto uuid = inArray[0].uint64_value();
+            auto rsp = try_get_and_del_find_and_modify_cb(uuid);
+            if (rsp != nullptr){
+                rsp->sig_find_and_modify_err.emit();
+            }
+        }
+
+        void find_and_modify_timeout(uint64_t cb_uuid){
+            auto rsp = try_get_and_del_find_and_modify_cb(cb_uuid);
+            if (rsp != nullptr){
+                rsp->sig_find_and_modify_timeout.emit();
+            }
+        }
+
+        std::shared_ptr<hub_call_dbproxy_find_and_modify_cb> try_get_and_del_find_and_modify_cb(uint64_t uuid){
+            std::lock_guard<std::mutex> l(mutex_map_find_and_modify);
+            auto rsp = map_find_and_modify[uuid];
+            map_find_and_modify.erase(uuid);
             return rsp;
         }
 
@@ -370,20 +422,37 @@ namespace abelkhan
             return cb_create_persisted_object_obj;
         }
 
-        std::shared_ptr<hub_call_dbproxy_updata_persisted_object_cb> updata_persisted_object(std::string db, std::string collection, std::vector<uint8_t> query_json, std::vector<uint8_t> object_info){
+        std::shared_ptr<hub_call_dbproxy_updata_persisted_object_cb> updata_persisted_object(std::string db, std::string collection, std::vector<uint8_t> query_json, std::vector<uint8_t> updata_info){
             auto uuid_7864a402_2d75_5c02_b24b_50287a06732f = uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
             msgpack11::MsgPack::array _argv_16267d40_cddc_312f_87c0_185a55b79ad2;
             _argv_16267d40_cddc_312f_87c0_185a55b79ad2.push_back(uuid_7864a402_2d75_5c02_b24b_50287a06732f);
             _argv_16267d40_cddc_312f_87c0_185a55b79ad2.push_back(db);
             _argv_16267d40_cddc_312f_87c0_185a55b79ad2.push_back(collection);
             _argv_16267d40_cddc_312f_87c0_185a55b79ad2.push_back(query_json);
-            _argv_16267d40_cddc_312f_87c0_185a55b79ad2.push_back(object_info);
+            _argv_16267d40_cddc_312f_87c0_185a55b79ad2.push_back(updata_info);
             call_module_method("updata_persisted_object", _argv_16267d40_cddc_312f_87c0_185a55b79ad2);
 
             auto cb_updata_persisted_object_obj = std::make_shared<hub_call_dbproxy_updata_persisted_object_cb>(uuid_7864a402_2d75_5c02_b24b_50287a06732f, rsp_cb_hub_call_dbproxy_handle);
             std::lock_guard<std::mutex> l(rsp_cb_hub_call_dbproxy_handle->mutex_map_updata_persisted_object);
             rsp_cb_hub_call_dbproxy_handle->map_updata_persisted_object.insert(std::make_pair(uuid_7864a402_2d75_5c02_b24b_50287a06732f, cb_updata_persisted_object_obj));
             return cb_updata_persisted_object_obj;
+        }
+
+        std::shared_ptr<hub_call_dbproxy_find_and_modify_cb> find_and_modify(std::string db, std::string collection, std::vector<uint8_t> query_json, std::vector<uint8_t> updata_info, bool _new){
+            auto uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a = uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
+            msgpack11::MsgPack::array _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae;
+            _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae.push_back(uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a);
+            _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae.push_back(db);
+            _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae.push_back(collection);
+            _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae.push_back(query_json);
+            _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae.push_back(updata_info);
+            _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae.push_back(_new);
+            call_module_method("find_and_modify", _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae);
+
+            auto cb_find_and_modify_obj = std::make_shared<hub_call_dbproxy_find_and_modify_cb>(uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a, rsp_cb_hub_call_dbproxy_handle);
+            std::lock_guard<std::mutex> l(rsp_cb_hub_call_dbproxy_handle->mutex_map_find_and_modify);
+            rsp_cb_hub_call_dbproxy_handle->map_find_and_modify.insert(std::make_pair(uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a, cb_find_and_modify_obj));
+            return cb_find_and_modify_obj;
         }
 
         std::shared_ptr<hub_call_dbproxy_remove_object_cb> remove_object(std::string db, std::string collection, std::vector<uint8_t> query_json){
@@ -526,6 +595,31 @@ namespace abelkhan
 
     };
 
+    class hub_call_dbproxy_find_and_modify_rsp : public Response {
+    private:
+        uint64_t uuid_c7725286_bd2c_331b_8ba9_90ffcefab6ae;
+
+    public:
+        hub_call_dbproxy_find_and_modify_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response("hub_call_dbproxy_rsp_cb", _ch)
+        {
+            uuid_c7725286_bd2c_331b_8ba9_90ffcefab6ae = _uuid;
+        }
+
+        void rsp(std::vector<uint8_t> object_info){
+            msgpack11::MsgPack::array _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58;
+            _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.push_back(uuid_c7725286_bd2c_331b_8ba9_90ffcefab6ae);
+            _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.push_back(object_info);
+            call_module_method("find_and_modify_rsp", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
+        }
+
+        void err(){
+            msgpack11::MsgPack::array _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58;
+            _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.push_back(uuid_c7725286_bd2c_331b_8ba9_90ffcefab6ae);
+            call_module_method("find_and_modify_err", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
+        }
+
+    };
+
     class hub_call_dbproxy_remove_object_rsp : public Response {
     private:
         uint64_t uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1;
@@ -587,6 +681,7 @@ namespace abelkhan
             reg_method("reg_hub", std::bind(&hub_call_dbproxy_module::reg_hub, this, std::placeholders::_1));
             reg_method("create_persisted_object", std::bind(&hub_call_dbproxy_module::create_persisted_object, this, std::placeholders::_1));
             reg_method("updata_persisted_object", std::bind(&hub_call_dbproxy_module::updata_persisted_object, this, std::placeholders::_1));
+            reg_method("find_and_modify", std::bind(&hub_call_dbproxy_module::find_and_modify, this, std::placeholders::_1));
             reg_method("remove_object", std::bind(&hub_call_dbproxy_module::remove_object, this, std::placeholders::_1));
             reg_method("get_object_info", std::bind(&hub_call_dbproxy_module::get_object_info, this, std::placeholders::_1));
             reg_method("get_object_count", std::bind(&hub_call_dbproxy_module::get_object_count, this, std::placeholders::_1));
@@ -618,9 +713,22 @@ namespace abelkhan
             auto _db = inArray[1].string_value();
             auto _collection = inArray[2].string_value();
             auto _query_json = inArray[3].binary_items();
-            auto _object_info = inArray[4].binary_items();
+            auto _updata_info = inArray[4].binary_items();
             rsp = std::make_shared<hub_call_dbproxy_updata_persisted_object_rsp>(current_ch, _cb_uuid);
-            sig_updata_persisted_object.emit(_db, _collection, _query_json, _object_info);
+            sig_updata_persisted_object.emit(_db, _collection, _query_json, _updata_info);
+            rsp = nullptr;
+        }
+
+        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>, std::vector<uint8_t>, bool)> sig_find_and_modify;
+        void find_and_modify(const msgpack11::MsgPack::array& inArray){
+            auto _cb_uuid = inArray[0].uint64_value();
+            auto _db = inArray[1].string_value();
+            auto _collection = inArray[2].string_value();
+            auto _query_json = inArray[3].binary_items();
+            auto _updata_info = inArray[4].binary_items();
+            auto __new = inArray[5].bool_value();
+            rsp = std::make_shared<hub_call_dbproxy_find_and_modify_rsp>(current_ch, _cb_uuid);
+            sig_find_and_modify.emit(_db, _collection, _query_json, _updata_info, __new);
             rsp = nullptr;
         }
 

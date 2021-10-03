@@ -29,6 +29,9 @@ INCLUDE_DIRECTORIES(${openssl_INCLUDE_PATH})
 set(json11_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//3rdparty//json11 CACHE PATH "json11 include path")
 INCLUDE_DIRECTORIES(${json11_INCLUDE_PATH})
 
+set(minibson_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//3rdparty//minibson CACHE PATH "minibson include path")
+INCLUDE_DIRECTORIES(${minibson_INCLUDE_PATH})
+
 set(msgpack11_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//tools//juggle//cpp//3rdparty//msgpack11 CACHE PATH "msgpack11 include path")
 INCLUDE_DIRECTORIES(${msgpack11_INCLUDE_PATH})
 

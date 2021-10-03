@@ -213,6 +213,62 @@ namespace abelkhan
 
     }
 
+    public class hub_call_dbproxy_find_and_modify_cb
+    {
+        private UInt64 cb_uuid;
+        private hub_call_dbproxy_rsp_cb module_rsp_cb;
+
+        public hub_call_dbproxy_find_and_modify_cb(UInt64 _cb_uuid, hub_call_dbproxy_rsp_cb _module_rsp_cb)
+        {
+            cb_uuid = _cb_uuid;
+            module_rsp_cb = _module_rsp_cb;
+        }
+
+        public event Action<byte[]> on_find_and_modify_cb;
+        public event Action<> on_find_and_modify_err;
+        public event Action on_find_and_modify_timeout;
+
+        public hub_call_dbproxy_find_and_modify_cb callBack(Action<byte[]> cb, Action<> err)
+        {
+            on_find_and_modify_cb += cb;
+            on_find_and_modify_err += err;
+            return this;
+        }
+
+        void timeout(Uint64 tick, Action timeout_cb)
+        {
+            TinyTimer.add_timer(tick, ()=>{
+                module_rsp_cb.find_and_modify_timeout(cb_uuid);
+            });
+            on_find_and_modify_timeout += timeout_cb;
+        }
+
+        public void call_cb(byte[] object_info)
+        {
+            if (on_find_and_modify_cb != null)
+            {
+                on_find_and_modify_cb(object_info);
+            }
+        }
+
+        public void call_err()
+        {
+            if (on_find_and_modify_err != null)
+            {
+                on_find_and_modify_err();
+            }
+        }
+
+        public void call_timeout()
+        {
+            if (on_find_and_modify_timeout != null)
+            {
+                on_find_and_modify_timeout();
+            }
+        }
+
+    }
+
     public class hub_call_dbproxy_remove_object_cb
     {
         private UInt64 cb_uuid;
@@ -330,6 +386,7 @@ namespace abelkhan
         public Dictionary<UInt64, hub_call_dbproxy_reg_hub_cb> map_reg_hub;
         public Dictionary<UInt64, hub_call_dbproxy_create_persisted_object_cb> map_create_persisted_object;
         public Dictionary<UInt64, hub_call_dbproxy_updata_persisted_object_cb> map_updata_persisted_object;
+        public Dictionary<UInt64, hub_call_dbproxy_find_and_modify_cb> map_find_and_modify;
         public Dictionary<UInt64, hub_call_dbproxy_remove_object_cb> map_remove_object;
         public Dictionary<UInt64, hub_call_dbproxy_get_object_count_cb> map_get_object_count;
         public hub_call_dbproxy_rsp_cb(abelkhan.modulemng modules) : base("hub_call_dbproxy_rsp_cb")
@@ -344,6 +401,9 @@ namespace abelkhan
             map_updata_persisted_object = new Dictionary<UInt64, hub_call_dbproxy_updata_persisted_object_cb>();
             reg_method("updata_persisted_object_rsp", updata_persisted_object_rsp);
             reg_method("updata_persisted_object_err", updata_persisted_object_err);
+            map_find_and_modify = new Dictionary<UInt64, hub_call_dbproxy_find_and_modify_cb>();
+            reg_method("find_and_modify_rsp", find_and_modify_rsp);
+            reg_method("find_and_modify_err", find_and_modify_err);
             map_remove_object = new Dictionary<UInt64, hub_call_dbproxy_remove_object_cb>();
             reg_method("remove_object_rsp", remove_object_rsp);
             reg_method("remove_object_err", remove_object_err);
@@ -450,6 +510,41 @@ namespace abelkhan
             {
                 var rsp = map_updata_persisted_object[uuid];
                 map_updata_persisted_object.Remove(uuid);
+                return rsp;
+            }
+        }
+
+        public void find_and_modify_rsp(ArrayList inArray){
+            var uuid = (UInt64)inArray[0];
+            var _object_info = (byte[])inArray[1];
+            var rsp = try_get_and_del_find_and_modify_cb(uuid);
+            if (rsp != null)
+            {
+                rsp.call_cb(_object_info);
+            }
+        }
+
+        public void find_and_modify_err(ArrayList inArray){
+            var uuid = (UInt64)inArray[0];
+            var rsp = try_get_and_del_find_and_modify_cb(uuid);
+            if (rsp != null)
+            {
+                rsp.call_err();
+            }
+        }
+
+        public void find_and_modify_timeout(UInt64 cb_uuid){
+            var rsp = try_get_and_del_find_and_modify_cb(cb_uuid);
+            if (rsp != null){
+                rsp.call_timeout();
+            }
+        }
+
+        private hub_call_dbproxy_find_and_modify_cb try_get_and_del_find_and_modify_cb(UInt64 uuid){
+            lock(map_find_and_modify)
+            {
+                var rsp = map_find_and_modify[uuid];
+                map_find_and_modify.Remove(uuid);
                 return rsp;
             }
         }
@@ -567,7 +662,7 @@ namespace abelkhan
             return cb_create_persisted_object_obj;
         }
 
-        public hub_call_dbproxy_updata_persisted_object_cb updata_persisted_object(string db, string collection, byte[] query_json, byte[] object_info){
+        public hub_call_dbproxy_updata_persisted_object_cb updata_persisted_object(string db, string collection, byte[] query_json, byte[] updata_info){
             Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
             var uuid_7864a402_2d75_5c02_b24b_50287a06732f = uuid;
 
@@ -576,12 +671,30 @@ namespace abelkhan
             _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(db);
             _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(collection);
             _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(query_json);
-            _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(object_info);
+            _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(updata_info);
             call_module_method("updata_persisted_object", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
 
             var cb_updata_persisted_object_obj = new hub_call_dbproxy_updata_persisted_object_cb();
             rsp_cb_hub_call_dbproxy_handle.map_updata_persisted_object.Add(uuid_7864a402_2d75_5c02_b24b_50287a06732f, cb_updata_persisted_object_obj);
             return cb_updata_persisted_object_obj;
+        }
+
+        public hub_call_dbproxy_find_and_modify_cb find_and_modify(string db, string collection, byte[] query_json, byte[] updata_info, bool _new){
+            Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
+            var uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a = uuid;
+
+            var _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58 = new ArrayList();
+            _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a);
+            _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(db);
+            _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(collection);
+            _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(query_json);
+            _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(updata_info);
+            _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(_new);
+            call_module_method("find_and_modify", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
+
+            var cb_find_and_modify_obj = new hub_call_dbproxy_find_and_modify_cb();
+            rsp_cb_hub_call_dbproxy_handle.map_find_and_modify.Add(uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a, cb_find_and_modify_obj);
+            return cb_find_and_modify_obj;
         }
 
         public hub_call_dbproxy_remove_object_cb remove_object(string db, string collection, byte[] query_json){
@@ -719,6 +832,28 @@ namespace abelkhan
 
     }
 
+    public class hub_call_dbproxy_find_and_modify_rsp : abelkhan.Response {
+        private UInt64 uuid_c7725286_bd2c_331b_8ba9_90ffcefab6ae;
+        public hub_call_dbproxy_find_and_modify_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
+        {
+            uuid_c7725286_bd2c_331b_8ba9_90ffcefab6ae = _uuid;
+        }
+
+        public void rsp(byte[] object_info){
+            var _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58 = new ArrayList();
+            _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(uuid_c7725286_bd2c_331b_8ba9_90ffcefab6ae);
+            _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(object_info);
+            call_module_method("find_and_modify_rsp", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
+        }
+
+        public void err(){
+            var _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58 = new ArrayList();
+            _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(uuid_c7725286_bd2c_331b_8ba9_90ffcefab6ae);
+            call_module_method("find_and_modify_err", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
+        }
+
+    }
+
     public class hub_call_dbproxy_remove_object_rsp : abelkhan.Response {
         private UInt64 uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1;
         public hub_call_dbproxy_remove_object_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
@@ -772,6 +907,7 @@ namespace abelkhan
             reg_method("reg_hub", reg_hub);
             reg_method("create_persisted_object", create_persisted_object);
             reg_method("updata_persisted_object", updata_persisted_object);
+            reg_method("find_and_modify", find_and_modify);
             reg_method("remove_object", remove_object);
             reg_method("get_object_info", get_object_info);
             reg_method("get_object_count", get_object_count);
@@ -807,10 +943,25 @@ namespace abelkhan
             var _db = (string)inArray[1];
             var _collection = (string)inArray[2];
             var _query_json = (byte[])inArray[3];
-            var _object_info = (byte[])inArray[4];
+            var _updata_info = (byte[])inArray[4];
             rsp = new hub_call_dbproxy_updata_persisted_object_rsp(current_ch, _cb_uuid);
             if (on_updata_persisted_object != null){
-                on_updata_persisted_object(_db, _collection, _query_json, _object_info);
+                on_updata_persisted_object(_db, _collection, _query_json, _updata_info);
+            }
+            rsp = null;
+        }
+
+        public event Action<string, string, byte[], byte[], bool> on_find_and_modify;
+        public void find_and_modify(ArrayList inArray){
+            var _cb_uuid = (UInt64)inArray[0];
+            var _db = (string)inArray[1];
+            var _collection = (string)inArray[2];
+            var _query_json = (byte[])inArray[3];
+            var _updata_info = (byte[])inArray[4];
+            var __new = (bool)inArray[5];
+            rsp = new hub_call_dbproxy_find_and_modify_rsp(current_ch, _cb_uuid);
+            if (on_find_and_modify != null){
+                on_find_and_modify(_db, _collection, _query_json, _updata_info, __new);
             }
             rsp = null;
         }
