@@ -203,11 +203,9 @@ export class hub_call_client_caller extends abelkhan.Icaller {
         }
     }
 
-    public call_client(module:string, func:string, argv:Uint8Array){
+    public call_client(rpc_argv:Uint8Array){
         let _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab:any[] = [];
-        _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push(module);
-        _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push(func);
-        _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push(argv);
+        _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push(rpc_argv);
         this.call_module_method("call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
     }
 
@@ -355,12 +353,10 @@ export class hub_call_client_module extends abelkhan.Imodule {
 
     }
 
-    public cb_call_client : (module:string, func:string, argv:Uint8Array)=>void | null;
+    public cb_call_client : (rpc_argv:Uint8Array)=>void | null;
     call_client(inArray:any[]){
         let _argv_:any[] = [];
         _argv_.push(inArray[0]);
-        _argv_.push(inArray[1]);
-        _argv_.push(inArray[2]);
         if (this.cb_call_client){
             this.cb_call_client.apply(null, _argv_);
         }

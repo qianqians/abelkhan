@@ -16,7 +16,7 @@ module hub_call_hub{
 
 module hub_call_client{
 
-	call_client ntf(string module, string func, bin argv);
+	call_client ntf(bin rpc_argv);
 	
 }
 

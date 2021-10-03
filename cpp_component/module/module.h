@@ -8,6 +8,7 @@
 #include <map>
 #include <functional>
 
+#include <spdlog/spdlog.h>
 #include <msgpack11.hpp>
 
 namespace common
@@ -23,14 +24,22 @@ protected:
 	}
 
 public:
-	void invoke(std::string cb_name, msgpack11::MsgPack::array InArray)
+	void invoke(std::string cliient_cuuid, std::string cb_name, msgpack11::MsgPack::array InArray)
 	{
 		auto cb = cbs.find(cb_name);
 		if (cb != cbs.end())
 		{
+			current_client_uuid = cliient_cuuid;
 			(cb->second)(InArray);
+			current_client_uuid = "";
+		}
+		else {
+			spdlog::error("imodule.invoke unreg func name:{0}", cb_name);
 		}
 	}
+
+public:
+	std::string current_client_uuid;
 
 };
 

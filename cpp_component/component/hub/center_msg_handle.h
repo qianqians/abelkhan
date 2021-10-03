@@ -12,7 +12,7 @@
 
 #include "centerproxy.h"
 #include "closehandle.h"
-#include "hub.h"
+#include "hub_service.h"
 
 namespace hub {
 

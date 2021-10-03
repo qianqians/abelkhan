@@ -7,10 +7,9 @@
 #ifndef _client_msg_handle_h
 #define _client_msg_handle_h
 
-#include <iostream>
 #include <string>
 
-#include <Imodule.h>
+#include <module.h>
 
 #include "hub.h"
 #include "gatemanager.h"

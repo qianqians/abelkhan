@@ -237,11 +237,9 @@ namespace abelkhan
             uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb.store(random());
         }
 
-        void call_client(std::string module, std::string func, std::vector<uint8_t> argv){
+        void call_client(std::vector<uint8_t> rpc_argv){
             msgpack11::MsgPack::array _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab;
-            _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push_back(module);
-            _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push_back(func);
-            _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push_back(argv);
+            _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push_back(rpc_argv);
             call_module_method("call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
         }
 
@@ -370,12 +368,10 @@ namespace abelkhan
             reg_method("call_client", std::bind(&hub_call_client_module::call_client, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>)> sig_call_client;
+        concurrent::signals<void(std::vector<uint8_t>)> sig_call_client;
         void call_client(const msgpack11::MsgPack::array& inArray){
-            auto _module = inArray[0].string_value();
-            auto _func = inArray[1].string_value();
-            auto _argv = inArray[2].binary_items();
-            sig_call_client.emit(_module, _func, _argv);
+            auto _rpc_argv = inArray[0].binary_items();
+            sig_call_client.emit(_rpc_argv);
         }
 
     };

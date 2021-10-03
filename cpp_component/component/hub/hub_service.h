@@ -52,13 +52,17 @@ public:
 
 public:
 	std::string hub_name;
+	std::string hub_type;
 	bool is_busy;
 
 	concurrent::signals<void(std::string) > sig_reload;
-	concurrent::signals<void(std::string) > sig_client_disconnect;
-	concurrent::signals<void(std::string) > sig_hub_connect;
 	concurrent::signals<void(std::string) > sig_svr_be_closed;
 	concurrent::signals<void() > sig_close_server;
+
+	concurrent::signals<void(std::string) > sig_client_disconnect;
+	concurrent::signals<void(std::string) > sig_hub_connect;
+	concurrent::signals<void() > sig_dbproxy_init;
+	concurrent::signals<void() > sig_extend_dbproxy_init;
 
 	common::modulemanager modules;
 	std::shared_ptr<dbproxyproxy> _dbproxyproxy;

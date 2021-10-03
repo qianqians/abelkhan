@@ -9,50 +9,54 @@
 
 #include <spdlog/spdlog.h>
 
+#include <modulemng_handle.h>
+
 #include "dbproxyproxy.h"
 
-namespace db_msg {
+namespace hub {
 
-void reg_hub_sucess() {
-	spdlog::trace("connect db sucess");
-	//this.hub.onConnectDB_event();
-}
+class dbproxy_msg_handle {
+private:
+	std::shared_ptr<abelkhan::dbproxy_call_hub_module> _dbproxy_call_hub_module;
 
-void ack_create_persisted_object(std::shared_ptr<hub::dbproxyproxy> proxy, std::string callbackid, bool is_create_sucess) {
-	auto cb = proxy->create_persisted_object_callback[callbackid];
-	cb(is_create_sucess);
-	proxy->create_persisted_object_callback.erase(callbackid);
-}
+public:
+	dbproxy_msg_handle() {
+		_dbproxy_call_hub_module = std::make_shared<abelkhan::dbproxy_call_hub_module>();
+		_dbproxy_call_hub_module->Init(service::_modulemng);
+		_dbproxy_call_hub_module->sig_ack_get_object_info.connect(std::bind(&dbproxy_msg_handle::ack_get_object_info, this, std::placeholders::_1, std::placeholders::_2));
+	}
 
-void ack_updata_persisted_objec(std::shared_ptr<hub::dbproxyproxy> proxy, std::string callbackid) {
-	auto cb = proxy->updata_persisted_object_callback[callbackid];
-	cb();
-	proxy->updata_persisted_object_callback.erase(callbackid);
-}
+	void ack_get_object_info(std::string callbackid, std::vector<uint8_t> bin_obejct_array) {
+		std::string err;
+		auto doc = msgpack11::MsgPack::parse((const char*)bin_obejct_array.data(), bin_obejct_array.size(), err);
+		if (doc.is_array()) {
+			auto cb = dbproxyproxy::get_object_info_callback.find(callbackid);
+			if (cb != dbproxyproxy::get_object_info_callback.end()) {
+				cb->second(doc.array_items());
+			}
+			else {
+				spdlog::error("unreg getObjectInfo callback id:{0}!", callbackid);
+			}
+		}
+		else {
+			spdlog::error("getObjectInfo return is not array!");
+		}
+	}
 
-void ack_get_object_count(std::shared_ptr<hub::dbproxyproxy> proxy, std::string callbackid, uint64_t count) {
-	auto cb = proxy->get_object_count_callback[callbackid];
-	cb(count);
-	proxy->get_object_count_callback.erase(callbackid);
-}
+	void ack_get_object_info_end(std::string callbackid) {
+		auto cb = dbproxyproxy::get_object_info_end_callback.find(callbackid);
+		if (cb != dbproxyproxy::get_object_info_end_callback.end()) {
+			cb->second();
+			dbproxyproxy::get_object_info_callback.erase(callbackid);
+			dbproxyproxy::get_object_info_end_callback.erase(callbackid);
+		}
+		else {
+			spdlog::error("unreg getObjectInfo end callback id:{0}!", callbackid);
+		}
+	}
+};
 
-void ack_get_object_info(std::shared_ptr<hub::dbproxyproxy> proxy, std::string callbackid, Fossilizid::JsonParse::JsonArray json_obejct_array) {
-	auto cb = proxy->get_object_info_callback[callbackid];
-	cb(json_obejct_array);
-}
 
-void ack_get_object_info_end(std::shared_ptr<hub::dbproxyproxy> proxy, std::string callbackid) {
-	auto cb = proxy->get_object_info_end_callback[callbackid];
-	cb();
-	proxy->get_object_info_callback.erase(callbackid);
-	proxy->get_object_info_end_callback.erase(callbackid);
-}
-
-void ack_remove_object(std::shared_ptr<hub::dbproxyproxy> proxy, std::string callbackid) {
-	auto cb = proxy->remove_object_callback[callbackid];
-	cb();
-	proxy->remove_object_callback.erase(callbackid);
-}
 
 }
 

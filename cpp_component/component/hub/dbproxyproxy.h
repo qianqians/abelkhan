@@ -15,7 +15,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <spdlog/spdlog.h>
-#include <minibson.hpp>
+#include <msgpack11.hpp>
 
 #include <abelkhan.h>
 
@@ -28,6 +28,8 @@ namespace hub{
 class dbproxyproxy : public std::enable_shared_from_this<dbproxyproxy> {
 public:
 	dbproxyproxy(std::shared_ptr<abelkhan::Ichannel> ch) {
+		_Collection = nullptr;
+
 		_dbproxy_ch = ch;
 		_dbproxy_caller = std::make_shared<abelkhan::hub_call_dbproxy_caller>(_dbproxy_ch, service::_modulemng);
 	}
@@ -55,16 +57,17 @@ public:
 			_dbproxy = proxy_;
 		}
 
-		void createPersistedObject(minibson::document& object_info, std::function<void(EM_DB_RESULT)> cb) {
-			auto len = object_info.get_serialized_size();
+		void createPersistedObject(msgpack11::MsgPack& object_info, std::function<void(EM_DB_RESULT)> cb) {
+			auto _data_str = object_info.dump();
 			std::vector<uint8_t> data;
+			auto len = _data_str.size();
 			data.resize(len);
-			object_info.serialize(data.data(), len);
+			memcpy(data.data(), _data_str.data(), len);
 			_dbproxy->_dbproxy_caller->create_persisted_object(_db, _collection, data)->callBack([cb]() {
 				spdlog::trace("createPersistedObject sucessed!");
 				cb(EM_DB_RESULT::EM_DB_SUCESSED);
 			}, [cb]() {
-				spdlog::trace("createPersistedObject failed!");
+				spdlog::trace("createPersistedObject faild!");
 				cb(EM_DB_RESULT::EM_DB_FAILD);
 			})->timeout(5 * 1000, [cb]() {
 				spdlog::trace("createPersistedObject timeout!");
@@ -72,22 +75,24 @@ public:
 			});
 		}
 
-		void updataPersistedObject(minibson::document& query_info, minibson::document& updata_info, std::function<void(EM_DB_RESULT)> cb) {
-			auto len = query_info.get_serialized_size();
+		void updataPersistedObject(msgpack11::MsgPack& query_info, msgpack11::MsgPack& updata_info, std::function<void(EM_DB_RESULT)> cb) {
+			auto _query_str = query_info.dump();
 			std::vector<uint8_t> query;
+			auto len = _query_str.size();
 			query.resize(len);
-			query_info.serialize(query.data(), len);
-			
-			len = updata_info.get_serialized_size();
+			memcpy(query.data(), _query_str.data(), len);
+
+			auto _updata_str = updata_info.dump();
 			std::vector<uint8_t> updata;
+			len = _updata_str.size();
 			updata.resize(len);
-			updata_info.serialize(updata.data(), len);
+			memcpy(updata.data(), _updata_str.data(), len);
 
 			_dbproxy->_dbproxy_caller->updata_persisted_object(_db, _collection, query, updata)->callBack([cb]() {
 				spdlog::trace("updataPersistedObject sucessed!");
 				cb(EM_DB_RESULT::EM_DB_SUCESSED);
 			}, [cb]() {
-				spdlog::trace("updataPersistedObject failed!");
+				spdlog::trace("updataPersistedObject faild!");
 				cb(EM_DB_RESULT::EM_DB_FAILD);
 			})->timeout(5 * 1000, [cb]() {
 				spdlog::trace("updataPersistedObject timeout!");
@@ -95,41 +100,51 @@ public:
 			});
 		}
 
-		void findAndModify(minibson::document& query_info, minibson::document& updata_info, bool _new, std::function<void(EM_DB_RESULT, minibson::document)> cb) {
-			auto len = query_info.get_serialized_size();
+		void findAndModify(msgpack11::MsgPack& query_info, msgpack11::MsgPack& updata_info, bool _new, std::function<void(EM_DB_RESULT, msgpack11::MsgPack)> cb) {
+			auto _query_str = query_info.dump();
 			std::vector<uint8_t> query;
+			auto len = _query_str.size();
 			query.resize(len);
-			query_info.serialize(query.data(), len);
+			memcpy(query.data(), _query_str.data(), len);
 
-			len = updata_info.get_serialized_size();
+			auto _updata_str = updata_info.dump();
 			std::vector<uint8_t> updata;
+			len = _updata_str.size();
 			updata.resize(len);
-			updata_info.serialize(updata.data(), len);
+			memcpy(updata.data(), _updata_str.data(), len);
 
 			_dbproxy->_dbproxy_caller->find_and_modify(_db, _collection, query, updata, _new)->callBack([cb](std::vector<uint8_t> object_info) {
-				spdlog::trace("findAndModify sucessed!");
-				minibson::document doc(object_info.data(), object_info.size());
-				cb(EM_DB_RESULT::EM_DB_SUCESSED, doc);
+				std::string err;
+				auto doc = msgpack11::MsgPack::parse((const char*)object_info.data(), object_info.size(), err);
+				if (doc.is_object()) {
+					spdlog::trace("findAndModify sucessed!");
+					cb(EM_DB_RESULT::EM_DB_SUCESSED, doc);
+				}
+				else {
+					spdlog::trace("findAndModify rsp parse faild:{0}!", err);
+					cb(EM_DB_RESULT::EM_DB_FAILD, msgpack11::MsgPack());
+				}
 			}, [cb]() {
-				spdlog::trace("findAndModify failed!");
-				cb(EM_DB_RESULT::EM_DB_FAILD, minibson::document());
+				spdlog::trace("findAndModify faild!");
+				cb(EM_DB_RESULT::EM_DB_FAILD, msgpack11::MsgPack());
 			})->timeout(5 * 1000, [cb]() {
 				spdlog::trace("findAndModify timeout!");
-				cb(EM_DB_RESULT::EM_DB_TIMEOUT, minibson::document());
+				cb(EM_DB_RESULT::EM_DB_FAILD, msgpack11::MsgPack());
 			});
 		}
 
-		void getObjectCount(minibson::document& query_info, std::function<void(EM_DB_RESULT, uint32_t)> cb) {
-			auto len = query_info.get_serialized_size();
+		void getObjectCount(msgpack11::MsgPack& query_info, std::function<void(EM_DB_RESULT, uint32_t)> cb) {
+			auto _query_str = query_info.dump();
 			std::vector<uint8_t> query;
+			auto len = _query_str.size();
 			query.resize(len);
-			query_info.serialize(query.data(), len);
+			memcpy(query.data(), _query_str.data(), len);
 			
 			_dbproxy->_dbproxy_caller->get_object_count(_db, _collection, query)->callBack([cb](uint32_t count) {
 				spdlog::trace("getObjectCount sucessed!");
 				cb(EM_DB_RESULT::EM_DB_SUCESSED, count);
 			}, [cb]() {
-				spdlog::trace("getObjectCount failed!");
+				spdlog::trace("getObjectCount faild!");
 				cb(EM_DB_RESULT::EM_DB_FAILD, 0);
 			})->timeout(5 * 1000, [cb]() {
 				spdlog::trace("getObjectCount timeout!");
@@ -137,17 +152,36 @@ public:
 			});
 		}
 
-		void getObjectInfo(minibson::document& query_json, std::function<void(Fossilizid::JsonParse::JsonArray)> cb, std::function<void()> end) {
+		void getObjectInfo(msgpack11::MsgPack& query_info, std::function<void(msgpack11::MsgPack::array)> cb, std::function<void()> end) {
+			auto _query_str = query_info.dump();
+			std::vector<uint8_t> query;
+			auto len = _query_str.size();
+			query.resize(len);
+			memcpy(query.data(), _query_str.data(), len);
+
 			auto callbackid = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
-			dbproxy->_dbproxy_caller->get_object_info(db, collection, query_json, callbackid);
-			dbproxy->get_object_info_callback[callbackid] = cb;
-			dbproxy->get_object_info_end_callback[callbackid] = end;
+			_dbproxy->_dbproxy_caller->get_object_info(_db, _collection, query, callbackid);
+			dbproxyproxy::get_object_info_callback[callbackid] = cb;
+			dbproxyproxy::get_object_info_end_callback[callbackid] = end;
 		}
 
-		void removeObject(Fossilizid::JsonParse::JsonTable query_json, std::function<void()> cb) {
-			auto callbackid = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
-			dbproxy->_dbproxy_caller->remove_object(db, collection, query_json, callbackid);
-			dbproxy->remove_object_callback[callbackid] = cb;
+		void removeObject(msgpack11::MsgPack& query_info, std::function<void(EM_DB_RESULT)> cb) {
+			auto _query_str = query_info.dump();
+			std::vector<uint8_t> query;
+			auto len = _query_str.size();
+			query.resize(len);
+			memcpy(query.data(), _query_str.data(), len);
+
+			_dbproxy->_dbproxy_caller->remove_object(_db, _collection, query)->callBack([cb]() {
+				spdlog::trace("removeObject sucessed!");
+				cb(EM_DB_RESULT::EM_DB_SUCESSED);
+			}, [cb]() {
+				spdlog::trace("removeObject faild!");
+				cb(EM_DB_RESULT::EM_DB_FAILD);
+			})->timeout(5 * 1000, [cb]() {
+				spdlog::trace("removeObject timeout!");
+				cb(EM_DB_RESULT::EM_DB_TIMEOUT);
+			});
 		}
 
 	private:
@@ -156,22 +190,33 @@ public:
 		std::shared_ptr<dbproxyproxy> _dbproxy;
 	};
 
-	void reg_server(std::string uuid) {
-		spdlog::trace("begin connect center server");
-		_dbproxy_caller->reg_hub(uuid);
+	concurrent::signals<void()> sig_dbproxy_init;
+	void reg_server(std::string hub_name) {
+		spdlog::trace("begin connect dbproxy server");
+		_dbproxy_caller->reg_hub(hub_name)->callBack([this]() {
+			spdlog::trace("connect dbproxy server sucessed!");
+			_Collection = std::make_shared<Collection>(shared_from_this());
+		}, []() {
+			spdlog::trace("connect dbproxy server faild!");
+		})->timeout(5 * 1000, []() {
+			spdlog::trace("connect dbproxy server timeout!");
+		});
 	}
 
 	std::shared_ptr<Collection> getCollection(std::string db, std::string collection) {
-		return Fossilizid::pool::factory::create<Collection>(db, collection, shared_from_this());
+		_Collection->set_db_collection(db, collection);
+		return _Collection;
 	}
 
-	absl::node_hash_map<std::string, std::function<void(bool)> > create_persisted_object_callback;
-	absl::node_hash_map<std::string, std::function<void()> > updata_persisted_object_callback;
-	absl::node_hash_map<std::string, std::function<void(uint64_t)> > get_object_count_callback;
-	absl::node_hash_map<std::string, std::function<void(Fossilizid::JsonParse::JsonArray)> > get_object_info_callback;
-	absl::node_hash_map<std::string, std::function<void()> > get_object_info_end_callback;
-	absl::node_hash_map<std::string, std::function<void()> > remove_object_callback;
+public:
+	static std::unordered_map<std::string, std::function<void(msgpack11::MsgPack::array)> > get_object_info_callback;
+	static std::unordered_map<std::string, std::function<void()> > get_object_info_end_callback;
 
+private:
+	friend class Collection;
+
+	std::shared_ptr<Collection> _Collection;
+	
 	std::shared_ptr<abelkhan::Ichannel> _dbproxy_ch;
 	std::shared_ptr<abelkhan::hub_call_dbproxy_caller> _dbproxy_caller;
 

@@ -241,11 +241,9 @@ namespace abelkhan
             }
         }
 
-        public void call_client(string module, string func, byte[] argv){
+        public void call_client(byte[] rpc_argv){
             var _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab = new ArrayList();
-            _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.Add(module);
-            _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.Add(func);
-            _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.Add(argv);
+            _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.Add(rpc_argv);
             call_module_method("call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
         }
 
@@ -375,13 +373,11 @@ namespace abelkhan
             reg_method("call_client", call_client);
         }
 
-        public event Action<string, string, byte[]> on_call_client;
+        public event Action<byte[]> on_call_client;
         public void call_client(ArrayList inArray){
-            var _module = (string)inArray[0];
-            var _func = (string)inArray[1];
-            var _argv = (byte[])inArray[2];
+            var _rpc_argv = (byte[])inArray[0];
             if (on_call_client != null){
-                on_call_client(_module, _func, _argv);
+                on_call_client(_rpc_argv);
             }
         }
 
