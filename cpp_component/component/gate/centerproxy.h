@@ -38,6 +38,14 @@ public:
 		});
 	}
 
+	void heartbeat() {
+		_center_caller->heartbeat();
+	}
+
+	void closed() {
+		_center_caller->closed();
+	}
+
 public:
 	bool is_reg_sucess;
 

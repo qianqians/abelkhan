@@ -71,7 +71,7 @@ int main(int argc, char * argv[]) {
 	auto _clientmanager = std::make_shared<gate::clientmanager>(_hubsvrmanager);
 	auto _closehandle = std::make_shared<gate::closehandle>();
 
-	auto _center_msg_handle = std::make_shared<gate::center_msg_handle>(_closehandle, _hubsvrmanager);
+	auto _center_msg_handle = std::make_shared<gate::center_msg_handle>(_closehandle, _hubsvrmanager, _timerservice);
 	auto _hub_svr_msg_handle = std::make_shared<gate::hub_svr_msg_handle>(_clientmanager, _hubsvrmanager);
 	auto _client_msg_handle = std::make_shared<gate::client_msg_handle>(_clientmanager, _hubsvrmanager, _timerservice);
 
@@ -133,7 +133,8 @@ int main(int argc, char * argv[]) {
 		}
 	}
 
-	_timerservice->addticktimer(5 * 1000, std::bind(&heartbeat_handle, _clientmanager, _timerservice, std::placeholders::_1));
+	_timerservice->addticktimer(5 * 1000, std::bind(&heartbeat_client, _clientmanager, _timerservice, std::placeholders::_1));
+	_timerservice->addticktimer(10 * 1000, std::bind(&heartbeat_center, _centerproxy, _timerservice, std::placeholders::_1));
 
 	while (true){
 		clock_t begin = clock();
