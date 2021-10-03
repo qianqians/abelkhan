@@ -393,11 +393,11 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
         }
     }
 
-    public reg_hub(hub_uuid:string){
+    public reg_hub(hub_name:string){
         let uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
 
         let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106];
-        _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(hub_uuid);
+        _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(hub_name);
         this.call_module_method("reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
 
         let cb_reg_hub_obj = new hub_call_dbproxy_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_dbproxy_handle);
@@ -641,7 +641,7 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
 
     }
 
-    public cb_reg_hub : (hub_uuid:string)=>void | null;
+    public cb_reg_hub : (hub_name:string)=>void | null;
     reg_hub(inArray:any[]){
         let _cb_uuid = inArray[0];
         let _argv_:any[] = [];

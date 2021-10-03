@@ -342,11 +342,11 @@ namespace abelkhan
             uuid_e713438c_e791_3714_ad31_4ccbddee2554.store(random());
         }
 
-        std::shared_ptr<hub_call_dbproxy_reg_hub_cb> reg_hub(std::string hub_uuid){
+        std::shared_ptr<hub_call_dbproxy_reg_hub_cb> reg_hub(std::string hub_name){
             auto uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
             msgpack11::MsgPack::array _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
             _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67.push_back(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106);
-            _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67.push_back(hub_uuid);
+            _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67.push_back(hub_name);
             call_module_method("reg_hub", _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
 
             auto cb_reg_hub_obj = std::make_shared<hub_call_dbproxy_reg_hub_cb>(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_dbproxy_handle);
@@ -595,9 +595,9 @@ namespace abelkhan
         concurrent::signals<void(std::string)> sig_reg_hub;
         void reg_hub(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
-            auto _hub_uuid = inArray[1].string_value();
+            auto _hub_name = inArray[1].string_value();
             rsp = std::make_shared<hub_call_dbproxy_reg_hub_rsp>(current_ch, _cb_uuid);
-            sig_reg_hub.emit(_hub_uuid);
+            sig_reg_hub.emit(_hub_name);
             rsp = nullptr;
         }
 

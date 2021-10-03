@@ -537,13 +537,13 @@ namespace abelkhan
             }
         }
 
-        public hub_call_dbproxy_reg_hub_cb reg_hub(string hub_uuid){
+        public hub_call_dbproxy_reg_hub_cb reg_hub(string hub_name){
             Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
             var uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = uuid;
 
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106);
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(hub_uuid);
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(hub_name);
             call_module_method("reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
 
             var cb_reg_hub_obj = new hub_call_dbproxy_reg_hub_cb();
@@ -780,10 +780,10 @@ namespace abelkhan
         public event Action<string> on_reg_hub;
         public void reg_hub(ArrayList inArray){
             var _cb_uuid = (UInt64)inArray[0];
-            var _hub_uuid = (string)inArray[1];
+            var _hub_name = (string)inArray[1];
             rsp = new hub_call_dbproxy_reg_hub_rsp(current_ch, _cb_uuid);
             if (on_reg_hub != null){
-                on_reg_hub(_hub_uuid);
+                on_reg_hub(_hub_name);
             }
             rsp = null;
         }
