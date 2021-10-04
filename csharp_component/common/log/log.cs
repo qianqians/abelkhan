@@ -4,7 +4,7 @@ using System;
 namespace log
 {
     public class log
-	{
+    {
         public enum enLogMode
         {
             Debug = 0,
@@ -30,7 +30,7 @@ namespace log
         {
             log = string.Format(log, agrvs);
 
-            System.DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1));
+            System.DateTime startTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             System.DateTime time = startTime.AddMilliseconds((double)tmptime);
 
             string strlog = string.Format("[{0}] [{1}] [{2}] [{3}]:{4}", time, level, sf.GetMethod().DeclaringType.FullName, sf.GetMethod().Name, log);
@@ -46,7 +46,7 @@ namespace log
                         tmp.Close();
                     }
                     System.IO.FileInfo finfo = new System.IO.FileInfo(realLogFile);
-                    if (finfo.Length > 1024 * 1024 * 32) 
+                    if (finfo.Length > 1024 * 1024 * 32)
                     {
                         string tmpfile = realLogFile + string.Format(".{0}", time.ToString("yyyy_MM_dd_h_m_s"));
                         finfo.MoveTo(tmpfile);

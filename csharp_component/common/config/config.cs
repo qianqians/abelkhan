@@ -1,13 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Collections;
 
-namespace config
+namespace abelkhan
 {
-    public class config
+	public class config
 	{
-        public config(String file_path)
-        {
+		public config(String file_path)
+		{
 			FileStream fs = File.OpenRead(file_path);
 			byte[] data = new byte[fs.Length];
 			int offset = 0;
@@ -23,92 +22,98 @@ namespace config
 				offset += read;
 			}
 
-			handle = Json.Jsonparser.unpack(System.Text.Encoding.Default.GetString(data));
-        }
+			handle = Newtonsoft.Json.Linq.JToken.Parse(System.Text.Encoding.Default.GetString(data));
+		}
 
-		private config(object sub_handle)
+		private config(Newtonsoft.Json.Linq.JToken sub_handle)
 		{
 			handle = sub_handle;
 		}
 
 		public bool has_key(String key)
 		{
-			return ((Hashtable)handle).ContainsKey(key);
+			return ((Newtonsoft.Json.Linq.JObject)handle).ContainsKey(key);
 		}
 
 		public bool get_value_bool(String key)
 		{
-			return (bool)((Hashtable)handle)[key];
+			return (bool)(handle[key]);
 		}
 
-		public Int64 get_value_int(String key)
+		public int get_value_int(String key)
 		{
-			return (Int64)((Hashtable)handle)[key];
+			return (int)(handle[key]);
 		}
 
-		public double get_value_float(String key)
+		public uint get_value_uint(String key)
 		{
-			return (double)((Hashtable)handle)[key];
+			return (uint)(handle[key]);
 		}
 
-		public String get_value_string(String key)
+		public float get_value_float(String key)
 		{
-			return (String)((Hashtable)handle)[key];
+			return (float)(handle[key]);
+		}
+
+		public string get_value_string(String key)
+		{
+			return (string)(handle[key]);
 		}
 
 		public config get_value_dict(String key)
 		{
-			var _handle = ((Hashtable)handle)[key];
-
+			var _handle = (Newtonsoft.Json.Linq.JToken)(handle[key]);
 			return new config(_handle);
 		}
 
 		public config get_value_list(String key)
 		{
-			var _handle = ((Hashtable)handle)[key];
-
+			var _handle = (handle[key]);
 			return new config(_handle);
 		}
 
-		public Int64 get_list_size()
+		public int get_list_size()
 		{
-			return ((ArrayList)handle).Count;
+			return ((Newtonsoft.Json.Linq.JArray)handle).Count;
 		}
 
 		public bool get_list_bool(int index)
 		{
-			return (bool)(((ArrayList)handle)[index]);
+			return (bool)(((Newtonsoft.Json.Linq.JArray)handle)[index]);
 		}
 
-		public Int64 get_list_int(int index)
+		public int get_list_int(int index)
 		{
-			return (Int64)(((ArrayList)handle)[index]);
+			return (int)(((Newtonsoft.Json.Linq.JArray)handle)[index]);
 		}
 
-		public double get_list_float(int index)
+		public uint get_list_uint(int index)
 		{
-			return (double)(((ArrayList)handle)[index]);
+			return (uint)(((Newtonsoft.Json.Linq.JArray)handle)[index]);
 		}
 
-		public String get_list_string(int index)
+		public float get_list_float(int index)
 		{
-			return (String)(((ArrayList)handle)[index]);
+			return (float)(((Newtonsoft.Json.Linq.JArray)handle)[index]);
 		}
 
-        public config get_list_list(int index)
-        {
-            var _handle = (((ArrayList)handle)[index]);
-
-            return new config(_handle);
-        }
-
-		public config get_list_dict(int index)
+		public string get_list_string(int index)
 		{
-			var _handle = (((ArrayList)handle)[index]);
+			return (string)(((Newtonsoft.Json.Linq.JArray)handle)[index]);
+		}
 
+		public config get_list_list(int index)
+		{
+			var _handle = (Newtonsoft.Json.Linq.JToken)(((Newtonsoft.Json.Linq.JArray)handle)[index]);
 			return new config(_handle);
 		}
 
-		private object handle;
-    }
+		public config get_list_dict(int index)
+		{
+			var _handle = (((Newtonsoft.Json.Linq.JArray)handle)[index]);
+			return new config(_handle);
+		}
+
+		private Newtonsoft.Json.Linq.JToken handle;
+	}
 }
