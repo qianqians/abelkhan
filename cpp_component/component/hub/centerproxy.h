@@ -11,6 +11,8 @@
 
 #include <abelkhan.h>
 
+#include <modulemng_handle.h>
+
 #include <center.h>
 
 namespace hub{
@@ -21,7 +23,7 @@ public:
 		is_reg_sucess = false;
 
 		_center_ch = ch;
-		_center_caller = std::make_shared<abelkhan::center_caller>(_center_ch);
+		_center_caller = std::make_shared<abelkhan::center_caller>(_center_ch, service::_modulemng);
 	}
 
 	~centerproxy(){

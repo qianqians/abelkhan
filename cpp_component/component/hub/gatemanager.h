@@ -30,7 +30,9 @@ class gateproxy {
 public:
 	std::string _gate_name;
 
+	std::shared_ptr<abelkhan::Ichannel> _ch;
 	std::shared_ptr<abelkhan::hub_call_gate_caller> _hub_call_gate_caller;
+
 	std::shared_ptr<hub_service> _hub;
 
 	concurrent::signals<void()> sig_reg_hub_sucessed;
@@ -46,7 +48,7 @@ public:
 
 	void forward_hub_call_group_client(const std::vector<std::string>& cuuids, const std::vector<uint8_t>& rpc_argv);
 
-	void forward_hub_call_global_client(const const std::vector<uint8_t>& rpc_argv);
+	void forward_hub_call_global_client(const std::vector<uint8_t>& rpc_argv);
 
 };
 

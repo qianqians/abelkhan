@@ -4,23 +4,10 @@
 
 #include <exception>
 
-#include <string_tools.h>
-
 #include "module.h"
 
 namespace common
 {
-
-class moduleException : public std::exception{
-public:
-	moduleException(std::string err_) : std::exception(err_.c_str()){
-		_err = err_;
-	}
-
-public:
-	std::string _err;
-
-};
 
 class modulemanager {
 public:

@@ -196,6 +196,8 @@ public:
 		_dbproxy_caller->reg_hub(hub_name)->callBack([this]() {
 			spdlog::trace("connect dbproxy server sucessed!");
 			_Collection = std::make_shared<Collection>(shared_from_this());
+
+			sig_dbproxy_init.emit();
 		}, []() {
 			spdlog::trace("connect dbproxy server faild!");
 		})->timeout(5 * 1000, []() {

@@ -14,6 +14,7 @@ hubproxy::hubproxy(std::string hub_name, std::string hub_type, std::shared_ptr<a
 	_hub_name = hub_name;
 	_hub_type = hub_type;
 
+	_hub_ch = hub_ch;
 	_hub_call_hub_caller = std::make_shared<abelkhan::hub_call_hub_caller>(hub_ch, service::_modulemng);
 }
 
@@ -28,6 +29,18 @@ void hubproxy::call_hub(const std::string& module_name, const std::string& func_
 
 hubsvrmanager::hubsvrmanager(std::shared_ptr<hub_service> _hub_) {
 	_hub = _hub_;
+
+	_hub->sig_svr_be_closed.connect([this](std::string hub_name) {
+		auto it = hubproxys.find(hub_name);
+		if (it != hubproxys.end()) {
+			auto _proxy = it->second;
+
+			ch_hubproxys.erase(_proxy->_hub_ch);
+			hubproxys.erase(it);
+			
+			_hub->sig_hub_closed.emit(_proxy->_hub_name, _proxy->_hub_type);
+		}
+	});
 }
 
 void hubsvrmanager::reg_hub(std::string hub_name, std::string hub_type, std::shared_ptr<abelkhan::Ichannel> ch) {

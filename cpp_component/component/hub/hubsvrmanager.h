@@ -28,6 +28,8 @@ public:
 	std::string _hub_name;
 	std::string _hub_type;
 
+	std::shared_ptr<abelkhan::Ichannel> _hub_ch;
+
 private:
 	std::shared_ptr<abelkhan::hub_call_hub_caller> _hub_call_hub_caller;
 

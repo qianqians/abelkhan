@@ -12,6 +12,7 @@
 namespace hub {
 	
 gateproxy::gateproxy(std::shared_ptr<abelkhan::Ichannel> ch, std::shared_ptr<hub_service> hub, std::string gate_name) {
+	_ch = ch;
 	_hub_call_gate_caller = std::make_shared<abelkhan::hub_call_gate_caller>(ch, service::_modulemng);
 	_hub = hub;
 	_gate_name = gate_name;
@@ -57,6 +58,23 @@ void directproxy::call_client(const std::vector<uint8_t>& rpc_argv) {
 gatemanager::gatemanager(std::shared_ptr<service::enetacceptservice> conn_, std::shared_ptr<hub_service> hub_) {
 	_conn = conn_;
 	_hub = hub_;
+
+	_hub->sig_svr_be_closed.connect([this](std::string svr_name) {
+		for (auto it = clients.begin(); it != clients.end(); it++) {
+			if (it->second->_gate_name == svr_name) {
+				clients.erase(it);
+				break;
+			}
+		}
+		
+		auto it = gates.find(svr_name);
+		if (it != gates.end()) {
+			ch_gates.erase(it->second->_ch);
+			gates.erase(it);
+
+			_hub->sig_gate_closed.emit(svr_name);
+		}
+	});
 
 	_data_size = 8 * 1024;
 	_data = (unsigned char*)malloc(_data_size);
