@@ -3,12 +3,27 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{65DF6C23-5C3D-48DE-A924-CD778E46024E}</ProjectGuid>
+    <ProjectGuid>{F24797AD-75C0-45BF-AA80-EFCCA3320DDC}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>gate</RootNamespace>
-    <AssemblyName>gate</AssemblyName>
+    <RootNamespace>center</RootNamespace>
+    <AssemblyName>center</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -18,8 +33,9 @@
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+    <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
+    <IntermediateOutputPath>C:\Users\QIANQI~1\AppData\Local\Temp\vs4472.tmp\x86\Debug\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>full</DebugType>
@@ -27,8 +43,9 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+    <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
+    <IntermediateOutputPath>C:\Users\QIANQI~1\AppData\Local\Temp\vs4472.tmp\x86\Release\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -39,6 +56,9 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <IntermediateOutputPath>C:\Users\QIANQI~1\AppData\Local\Temp\vs4472.tmp\Debug\</IntermediateOutputPath>
+    <Optimize>false</Optimize>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\bin\</OutputPath>
@@ -48,20 +68,13 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
+    <IntermediateOutputPath>C:\Users\QIANQI~1\AppData\Local\Temp\vs4472.tmp\Release\</IntermediateOutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net" />
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\common\compress_and_encrypt\compress_and_encrypt.cs">
-      <Link>compress_and_encrypt.cs</Link>
-    </Compile>
     <Compile Include="..\..\common\config\config.cs">
       <Link>config.cs</Link>
     </Compile>
@@ -71,20 +84,20 @@
     <Compile Include="..\..\common\protcol\c#\caller\centercaller.cs">
       <Link>centercaller.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\protcol\c#\caller\gate_call_clientcaller.cs">
-      <Link>gate_call_clientcaller.cs</Link>
+    <Compile Include="..\..\common\protcol\c#\caller\center_call_hubcaller.cs">
+      <Link>center_call_hubcaller.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\protcol\c#\caller\gate_call_hubcaller.cs">
-      <Link>gate_call_hubcaller.cs</Link>
+    <Compile Include="..\..\common\protcol\c#\caller\center_call_servercaller.cs">
+      <Link>center_call_servercaller.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\protcol\c#\module\center_call_servermodule.cs">
-      <Link>center_call_servermodule.cs</Link>
+    <Compile Include="..\..\common\protcol\c#\module\centermodule.cs">
+      <Link>centermodule.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\protcol\c#\module\client_call_gatemodule.cs">
-      <Link>client_call_gatemodule.cs</Link>
+    <Compile Include="..\..\common\protcol\c#\module\gm_centermodule.cs">
+      <Link>gm_centermodule.cs</Link>
     </Compile>
-    <Compile Include="..\..\common\protcol\c#\module\hub_call_gatemodule.cs">
-      <Link>hub_call_gatemodule.cs</Link>
+    <Compile Include="..\..\common\protcol\c#\module\hub_call_centermodule.cs">
+      <Link>hub_call_centermodule.cs</Link>
     </Compile>
     <Compile Include="..\..\common\service\acceptnetworkservice.cs">
       <Link>acceptnetworkservice.cs</Link>
@@ -122,18 +135,30 @@
     <Compile Include="..\..\tools\juggle\csharp\process.cs">
       <Link>process.cs</Link>
     </Compile>
-    <Compile Include="center_msg_handle.cs" />
-    <Compile Include="centerproxy.cs" />
-    <Compile Include="client_msg_handle.cs" />
-    <Compile Include="clientmanager.cs" />
-    <Compile Include="clientproxy.cs" />
+    <Compile Include="center.cs" />
     <Compile Include="closehandle.cs" />
-    <Compile Include="gate.cs" />
     <Compile Include="hub_msg_handle.cs" />
+    <Compile Include="svr_msg_handle.cs" />
+    <Compile Include="svrmanager.cs" />
+    <Compile Include="svrproxy.cs" />
+    <Compile Include="gm_msg_handle.cs" />
     <Compile Include="hubmanager.cs" />
+    <Compile Include="dbproxy.cs" />
     <Compile Include="hubproxy.cs" />
+    <Compile Include="gmmanager.cs" />
+    <Compile Include="zone.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 和 x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

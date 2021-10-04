@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{F24797AD-75C0-45BF-AA80-EFCCA3320DDC}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>center</RootNamespace>
+    <AssemblyName>center</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+    <PlatformTarget>x86</PlatformTarget>
+    <IntermediateOutputPath>C:\Users\QIANQI~1\AppData\Local\Temp\vs4472.tmp\x86\Debug\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+    <PlatformTarget>x86</PlatformTarget>
+    <IntermediateOutputPath>C:\Users\QIANQI~1\AppData\Local\Temp\vs4472.tmp\x86\Release\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <IntermediateOutputPath>C:\Users\QIANQI~1\AppData\Local\Temp\vs4472.tmp\Debug\</IntermediateOutputPath>
+    <Optimize>false</Optimize>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>..\..\bin\</OutputPath>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <IntermediateOutputPath>C:\Users\QIANQI~1\AppData\Local\Temp\vs4472.tmp\Release\</IntermediateOutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\common\config\config.cs">
+      <Link>config.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\log\log.cs">
+      <Link>log.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\caller\centercaller.cs">
+      <Link>centercaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\caller\center_call_hubcaller.cs">
+      <Link>center_call_hubcaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\caller\center_call_servercaller.cs">
+      <Link>center_call_servercaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\module\centermodule.cs">
+      <Link>centermodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\module\gm_centermodule.cs">
+      <Link>gm_centermodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\protcol\c#\module\hub_call_centermodule.cs">
+      <Link>hub_call_centermodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\acceptnetworkservice.cs">
+      <Link>acceptnetworkservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\channel.cs">
+      <Link>channel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\connectnetworkservice.cs">
+      <Link>connectnetworkservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\juggleservice.cs">
+      <Link>juggleservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\service.cs">
+      <Link>service.cs</Link>
+    </Compile>
+    <Compile Include="..\..\common\service\timerservice.cs">
+      <Link>timerservice.cs</Link>
+    </Compile>
+    <Compile Include="..\..\tools\jsonparse\JsonParser.cs">
+      <Link>JsonParser.cs</Link>
+    </Compile>
+    <Compile Include="..\..\tools\juggle\csharp\Exception.cs">
+      <Link>Exception.cs</Link>
+    </Compile>
+    <Compile Include="..\..\tools\juggle\csharp\Icaller.cs">
+      <Link>Icaller.cs</Link>
+    </Compile>
+    <Compile Include="..\..\tools\juggle\csharp\Ichannel.cs">
+      <Link>Ichannel.cs</Link>
+    </Compile>
+    <Compile Include="..\..\tools\juggle\csharp\Imodule.cs">
+      <Link>Imodule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\tools\juggle\csharp\process.cs">
+      <Link>process.cs</Link>
+    </Compile>
+    <Compile Include="center.cs" />
+    <Compile Include="closehandle.cs" />
+    <Compile Include="hub_msg_handle.cs" />
+    <Compile Include="svr_msg_handle.cs" />
+    <Compile Include="svrmanager.cs" />
+    <Compile Include="svrproxy.cs" />
+    <Compile Include="gm_msg_handle.cs" />
+    <Compile Include="hubmanager.cs" />
+    <Compile Include="dbproxy.cs" />
+    <Compile Include="hubproxy.cs" />
+    <Compile Include="gmmanager.cs" />
+    <Compile Include="zone.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 和 x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>
