@@ -21,13 +21,13 @@ namespace abelkhan
 
     public class xor_key_caller : abelkhan.Icaller {
         public static xor_key_rsp_cb rsp_cb_xor_key_handle = null;
-        private UInt64 uuid_9149bc27_bc9f_3a38_a610_f82cdab0ef7c = RandomUUID.random();
+        private Int64 uuid_9149bc27_bc9f_3a38_a610_f82cdab0ef7c = (Int64)RandomUUID.random();
 
         public xor_key_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("xor_key", _ch)
         {
             if (rsp_cb_xor_key_handle == null)
             {
-                rsp_cb_xor_key_handle = new rsp_cb_xor_key(modules);
+                rsp_cb_xor_key_handle = new xor_key_rsp_cb(modules);
             }
         }
 
@@ -49,13 +49,13 @@ namespace abelkhan
 
     public class gate_call_client_caller : abelkhan.Icaller {
         public static gate_call_client_rsp_cb rsp_cb_gate_call_client_handle = null;
-        private UInt64 uuid_b84dd831_2e79_3280_a337_a69dd489e75f = RandomUUID.random();
+        private Int64 uuid_b84dd831_2e79_3280_a337_a69dd489e75f = (Int64)RandomUUID.random();
 
         public gate_call_client_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("gate_call_client", _ch)
         {
             if (rsp_cb_gate_call_client_handle == null)
             {
-                rsp_cb_gate_call_client_handle = new rsp_cb_gate_call_client(modules);
+                rsp_cb_gate_call_client_handle = new gate_call_client_rsp_cb(modules);
             }
         }
 

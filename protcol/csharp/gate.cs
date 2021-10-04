@@ -21,15 +21,15 @@ namespace abelkhan
         }
         public static hub_info protcol_to_hub_info(Hashtable _protocol){
             var _struct4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2 = new hub_info();
-            foreach(var i in _protocol){
-                if (i.Key == "hub_name"){
+            foreach(DictionaryEntry i in _protocol){
+                if ((string)i.Key == "hub_name"){
                     _struct4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2.hub_name = (string)i.Value;
                 }
-                else if (i.Key == "hub_type"){
+                else if ((string)i.Key == "hub_type"){
                     _struct4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2.hub_type = (string)i.Value;
                 }
             }
-            return _struct;
+            return _struct4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2;
         }
     }
 
@@ -45,18 +45,18 @@ namespace abelkhan
             module_rsp_cb = _module_rsp_cb;
         }
 
-        public event Action<> on_reg_hub_cb;
-        public event Action<> on_reg_hub_err;
+        public event Action on_reg_hub_cb;
+        public event Action on_reg_hub_err;
         public event Action on_reg_hub_timeout;
 
-        public hub_call_gate_reg_hub_cb callBack(Action<> cb, Action<> err)
+        public hub_call_gate_reg_hub_cb callBack(Action cb, Action err)
         {
             on_reg_hub_cb += cb;
             on_reg_hub_err += err;
             return this;
         }
 
-        void timeout(Uint64 tick, Action timeout_cb)
+        void timeout(UInt64 tick, Action timeout_cb)
         {
             TinyTimer.add_timer(tick, ()=>{
                 module_rsp_cb.reg_hub_timeout(cb_uuid);
@@ -139,19 +139,19 @@ namespace abelkhan
 
     public class hub_call_gate_caller : abelkhan.Icaller {
         public static hub_call_gate_rsp_cb rsp_cb_hub_call_gate_handle = null;
-        private UInt64 uuid_9796175c_1119_3833_bf31_5ee139b40edc = RandomUUID.random();
+        private Int64 uuid_9796175c_1119_3833_bf31_5ee139b40edc = (Int64)RandomUUID.random();
 
         public hub_call_gate_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("hub_call_gate", _ch)
         {
             if (rsp_cb_hub_call_gate_handle == null)
             {
-                rsp_cb_hub_call_gate_handle = new rsp_cb_hub_call_gate(modules);
+                rsp_cb_hub_call_gate_handle = new hub_call_gate_rsp_cb(modules);
             }
         }
 
         public hub_call_gate_reg_hub_cb reg_hub(string hub_name, string hub_type){
             Interlocked.Increment(ref uuid_9796175c_1119_3833_bf31_5ee139b40edc);
-            var uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = uuid;
+            var uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = (UInt64)uuid_9796175c_1119_3833_bf31_5ee139b40edc;
 
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106);
@@ -159,7 +159,7 @@ namespace abelkhan
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(hub_type);
             call_module_method("reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
 
-            var cb_reg_hub_obj = new hub_call_gate_reg_hub_cb();
+            var cb_reg_hub_obj = new hub_call_gate_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_gate_handle);
             rsp_cb_hub_call_gate_handle.map_reg_hub.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, cb_reg_hub_obj);
             return cb_reg_hub_obj;
         }
@@ -207,17 +207,17 @@ namespace abelkhan
         }
 
         public event Action<UInt64> on_heartbeats_cb;
-        public event Action<> on_heartbeats_err;
+        public event Action on_heartbeats_err;
         public event Action on_heartbeats_timeout;
 
-        public client_call_gate_heartbeats_cb callBack(Action<UInt64> cb, Action<> err)
+        public client_call_gate_heartbeats_cb callBack(Action<UInt64> cb, Action err)
         {
             on_heartbeats_cb += cb;
             on_heartbeats_err += err;
             return this;
         }
 
-        void timeout(Uint64 tick, Action timeout_cb)
+        void timeout(UInt64 tick, Action timeout_cb)
         {
             TinyTimer.add_timer(tick, ()=>{
                 module_rsp_cb.heartbeats_timeout(cb_uuid);
@@ -263,17 +263,17 @@ namespace abelkhan
         }
 
         public event Action<List<hub_info>> on_get_hub_info_cb;
-        public event Action<> on_get_hub_info_err;
+        public event Action on_get_hub_info_err;
         public event Action on_get_hub_info_timeout;
 
-        public client_call_gate_get_hub_info_cb callBack(Action<List<hub_info>> cb, Action<> err)
+        public client_call_gate_get_hub_info_cb callBack(Action<List<hub_info>> cb, Action err)
         {
             on_get_hub_info_cb += cb;
             on_get_hub_info_err += err;
             return this;
         }
 
-        void timeout(Uint64 tick, Action timeout_cb)
+        void timeout(UInt64 tick, Action timeout_cb)
         {
             TinyTimer.add_timer(tick, ()=>{
                 module_rsp_cb.get_hub_info_timeout(cb_uuid);
@@ -360,8 +360,8 @@ namespace abelkhan
         public void get_hub_info_rsp(ArrayList inArray){
             var uuid = (UInt64)inArray[0];
             var _hub_info = new List<hub_info>();
-            foreach(var v_53b78086_1765_5879_87b4_63333838766a in inArray[1]){
-                _hub_info.Add(hub_info.protcol_to_hub_info(v_53b78086_1765_5879_87b4_63333838766a));
+            foreach(var v_53b78086_1765_5879_87b4_63333838766a in (ArrayList)inArray[1]){
+                _hub_info.Add(hub_info.protcol_to_hub_info((Hashtable)v_53b78086_1765_5879_87b4_63333838766a));
             }
             var rsp = try_get_and_del_get_hub_info_cb(uuid);
             if (rsp != null)
@@ -399,39 +399,39 @@ namespace abelkhan
 
     public class client_call_gate_caller : abelkhan.Icaller {
         public static client_call_gate_rsp_cb rsp_cb_client_call_gate_handle = null;
-        private UInt64 uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2 = RandomUUID.random();
+        private Int64 uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2 = (Int64)RandomUUID.random();
 
         public client_call_gate_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("client_call_gate", _ch)
         {
             if (rsp_cb_client_call_gate_handle == null)
             {
-                rsp_cb_client_call_gate_handle = new rsp_cb_client_call_gate(modules);
+                rsp_cb_client_call_gate_handle = new client_call_gate_rsp_cb(modules);
             }
         }
 
         public client_call_gate_heartbeats_cb heartbeats(){
             Interlocked.Increment(ref uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2);
-            var uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = uuid;
+            var uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = (UInt64)uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2;
 
             var _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = new ArrayList();
             _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(uuid_a514ca5f_2c67_5668_aac0_354397bdce36);
             call_module_method("heartbeats", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
 
-            var cb_heartbeats_obj = new client_call_gate_heartbeats_cb();
+            var cb_heartbeats_obj = new client_call_gate_heartbeats_cb(uuid_a514ca5f_2c67_5668_aac0_354397bdce36, rsp_cb_client_call_gate_handle);
             rsp_cb_client_call_gate_handle.map_heartbeats.Add(uuid_a514ca5f_2c67_5668_aac0_354397bdce36, cb_heartbeats_obj);
             return cb_heartbeats_obj;
         }
 
         public client_call_gate_get_hub_info_cb get_hub_info(string hub_type){
             Interlocked.Increment(ref uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2);
-            var uuid_e9d2753f_7d38_512d_80ff_7aae13508048 = uuid;
+            var uuid_e9d2753f_7d38_512d_80ff_7aae13508048 = (UInt64)uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2;
 
             var _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24 = new ArrayList();
             _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.Add(uuid_e9d2753f_7d38_512d_80ff_7aae13508048);
             _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.Add(hub_type);
             call_module_method("get_hub_info", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
 
-            var cb_get_hub_info_obj = new client_call_gate_get_hub_info_cb();
+            var cb_get_hub_info_obj = new client_call_gate_get_hub_info_cb(uuid_e9d2753f_7d38_512d_80ff_7aae13508048, rsp_cb_client_call_gate_handle);
             rsp_cb_client_call_gate_handle.map_get_hub_info.Add(uuid_e9d2753f_7d38_512d_80ff_7aae13508048, cb_get_hub_info_obj);
             return cb_get_hub_info_obj;
         }
@@ -537,10 +537,10 @@ namespace abelkhan
             uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56 = _uuid;
         }
 
-        public void rsp(UInt64 timetmp){
+        public void rsp(UInt64 timetmp_3c36cb1d_ce2b_3926_8169_233374fa19ac){
             var _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = new ArrayList();
             _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56);
-            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(timetmp);
+            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(timetmp_3c36cb1d_ce2b_3926_8169_233374fa19ac);
             call_module_method("heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
         }
 
@@ -559,10 +559,11 @@ namespace abelkhan
             uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b = _uuid;
         }
 
-        public void rsp(List<hub_info> hub_info){
+        public void rsp(List<hub_info> hub_info_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2){
             var _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24 = new ArrayList();
             _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.Add(uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b);
-            var _array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2 = new JArray();            foreach(var v_53b78086_1765_5879_87b4_63333838766a in hub_info){
+            var _array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2 = new ArrayList();
+            foreach(var v_53b78086_1765_5879_87b4_63333838766a in hub_info_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2){
                 _array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2.Add(hub_info.hub_info_to_protcol(v_53b78086_1765_5879_87b4_63333838766a));
             }
             _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.Add(_array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2);
@@ -589,7 +590,7 @@ namespace abelkhan
             reg_method("forward_client_call_hub", forward_client_call_hub);
         }
 
-        public event Action<> on_heartbeats;
+        public event Action on_heartbeats;
         public void heartbeats(ArrayList inArray){
             var _cb_uuid = (UInt64)inArray[0];
             rsp = new client_call_gate_heartbeats_rsp(current_ch, _cb_uuid);
