@@ -34,6 +34,8 @@ std::shared_ptr<spdlog::logger> file_logger = nullptr;
 }
 
 int main(int argc, char * argv[]) {
+	enet_initialize();
+
 	if (argc <= 1) {
 		std::cout << "non input start argv" << std::endl;
 		return -1;
@@ -148,6 +150,8 @@ int main(int argc, char * argv[]) {
 			abelkhan::TinyTimer::poll();
 
 			_timerservice->poll();
+
+			_log::file_logger->flush();
 
 		}
 		catch(std::exception e) {

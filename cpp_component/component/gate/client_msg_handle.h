@@ -42,6 +42,12 @@ public:
 		auto ch = _client_call_gate_module->current_ch;
 		auto proxy = _clientmanager->get_client(ch);
 		if (proxy != nullptr) {
+			if (proxy->_theory_timetmp == 0) {
+				proxy->_theory_timetmp = _timerservice->Tick;
+			}
+			else {
+				proxy->_theory_timetmp += 5 * 1000;
+			}
 			proxy->_timetmp = _timerservice->Tick;
 		}
 	}

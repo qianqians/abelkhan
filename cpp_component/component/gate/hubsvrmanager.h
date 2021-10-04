@@ -39,6 +39,10 @@ public:
 		_gate_call_hub_caller->client_disconnect(client_cuuid);
 	}
 
+	void client_exception(std::string& client_cuuid) {
+		_gate_call_hub_caller->client_exception(client_cuuid);
+	}
+
 	void client_call_hub(std::string& client_cuuid, std::vector<uint8_t>& data) {
 		_gate_call_hub_caller->client_call_hub(client_cuuid, data);
 	}
