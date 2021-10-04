@@ -1,6 +1,8 @@
 module gate_call_hub{
 
 	client_disconnect ntf(string client_uuid);
+	
+	client_exception ntf(string client_uuid);
 
 	client_call_hub ntf(string client_uuid, bin rpc_argv);
 	

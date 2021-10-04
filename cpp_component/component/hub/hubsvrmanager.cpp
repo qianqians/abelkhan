@@ -3,45 +3,58 @@
  * 2016-7-12
  * hubsvrmanager.cpp
  */
-#include <factory.h>
+#include <modulemng_handle.h>
 
 #include "hubsvrmanager.h"
-#include "hub.h"
+#include "hub_service.h"
 
 namespace hub {
 	
-hubproxy::hubproxy(std::string hub_name, std::shared_ptr<juggle::Ichannel> hub_ch) {
-	name = hub_name;
-	caller = Fossilizid::pool::factory::create<caller::hub_call_hub>(hub_ch);
+hubproxy::hubproxy(std::string hub_name, std::string hub_type, std::shared_ptr<abelkhan::Ichannel> hub_ch) {
+	_hub_name = hub_name;
+	_hub_type = hub_type;
+
+	_hub_call_hub_caller = std::make_shared<abelkhan::hub_call_hub_caller>(hub_ch, service::_modulemng);
 }
 
-void hubproxy::reg_hub_sucess() {
-	caller->reg_hub_sucess();
-}
-
-void hubproxy::call_hub(std::string module_name, std::string func_name, Fossilizid::JsonParse::JsonArray argvs) {
-	caller->hub_call_hub_mothed(module_name, func_name, argvs);
+void hubproxy::call_hub(const std::string& module_name, const std::string& func_name, const msgpack11::MsgPack::array& argvs) {
+	msgpack11::MsgPack _pack(argvs);
+	auto _pack_str = _pack.dump();
+	std::vector<uint8_t> _argvs_bin;
+	_argvs_bin.resize(_pack_str.size());
+	memcpy(_argvs_bin.data(), _pack_str.data(), _pack_str.size());
+	_hub_call_hub_caller->hub_call_hub_mothed(module_name, func_name, _argvs_bin);
 }
 
 hubsvrmanager::hubsvrmanager(std::shared_ptr<hub_service> _hub_) {
 	_hub = _hub_;
 }
 
-std::shared_ptr<hubproxy> hubsvrmanager::reg_hub(std::string hub_name, std::shared_ptr<juggle::Ichannel> ch) {
-	auto _proxy = Fossilizid::pool::factory::create<hubproxy>(hub_name, ch);
+void hubsvrmanager::reg_hub(std::string hub_name, std::string hub_type, std::shared_ptr<abelkhan::Ichannel> ch) {
+	auto _proxy = std::make_shared<hubproxy>(hub_name, hub_type, ch);
 	hubproxys[hub_name] = _proxy;
+	ch_hubproxys[ch] = _proxy;
 
-	_hub->sig_hub_connect(hub_name);
-
-	return _proxy;
+	_hub->sig_hub_connect.emit(_proxy);
 }
 
-void hubsvrmanager::call_hub(std::string hub_name, std::string module_name, std::string func_name, Fossilizid::JsonParse::JsonArray argvs) {
-	if (hubproxys.find(hub_name) == hubproxys.end()) {
+void hubsvrmanager::call_hub(const std::string& hub_name, const std::string& module_name, const std::string& func_name, const msgpack11::MsgPack::array& argvs) {
+	auto it_hubproxy = hubproxys.find(hub_name);
+	if (it_hubproxy == hubproxys.end()) {
+		spdlog::error("unreg hub:{0}!", hub_name);
 		return;
 	}
 
-	hubproxys[hub_name]->call_hub(module_name, func_name, argvs);
+	it_hubproxy->second->call_hub(module_name, func_name, argvs);
+}
+
+std::shared_ptr<hubproxy> hubsvrmanager::get_hub(std::shared_ptr<abelkhan::Ichannel> ch) {
+	auto it_hubproxy = ch_hubproxys.find(ch);
+	if (it_hubproxy != ch_hubproxys.end()) {
+		return it_hubproxy->second;
+	}
+
+	return nullptr;
 }
 
 }

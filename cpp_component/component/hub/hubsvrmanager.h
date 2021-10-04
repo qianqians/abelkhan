@@ -12,25 +12,24 @@
 #include <unordered_map>
 #include <memory>
 
-#include <absl/container/node_hash_map.h>
+#include <abelkhan.h>
 
-#include <Ichannel.h>
-
-#include "hub_call_hubcaller.h"
+#include "hub.h"
 
 namespace hub {
 
 class hubproxy {
 public:
-	hubproxy(std::string hub_name, std::shared_ptr<juggle::Ichannel> hub_ch);
+	hubproxy(std::string hub_name, std::string hub_type, std::shared_ptr<abelkhan::Ichannel> hub_ch);
 
-	void reg_hub_sucess();
+	void call_hub(const std::string& module_name, const std::string& func_name, const msgpack11::MsgPack::array& argvs);
 
-	void call_hub(std::string module_name, std::string func_name, Fossilizid::JsonParse::JsonArray argvs);
+public:
+	std::string _hub_name;
+	std::string _hub_type;
 
 private:
-	std::string name;
-	std::shared_ptr<caller::hub_call_hub> caller;
+	std::shared_ptr<abelkhan::hub_call_hub_caller> _hub_call_hub_caller;
 
 };
 
@@ -39,12 +38,19 @@ class hubsvrmanager {
 public:
 	hubsvrmanager(std::shared_ptr<hub_service> _hub_);
 
-	std::shared_ptr<hubproxy> reg_hub(std::string hub_name, std::shared_ptr<juggle::Ichannel> ch);
+	void reg_hub(std::string hub_name, std::string hub_type, std::shared_ptr<abelkhan::Ichannel> ch);
 
-	void call_hub(std::string hub_name, std::string module_name, std::string func_name, Fossilizid::JsonParse::JsonArray argvs);
+	void call_hub(const std::string& hub_name, const std::string& module_name, const std::string& func_name, const msgpack11::MsgPack::array& argvs);
+
+	std::shared_ptr<hubproxy> get_hub(std::shared_ptr<abelkhan::Ichannel> ch);
+
+public:
+	std::shared_ptr<hubproxy> current_hubproxy = nullptr;
 
 private:
-	absl::node_hash_map<std::string, std::shared_ptr<hubproxy> > hubproxys;
+	std::unordered_map<std::string, std::shared_ptr<hubproxy> > hubproxys;
+	std::unordered_map<std::shared_ptr<abelkhan::Ichannel>, std::shared_ptr<hubproxy> > ch_hubproxys;
+
 	std::shared_ptr<hub_service> _hub;
 
 };

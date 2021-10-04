@@ -9,29 +9,59 @@
 
 #include <string>
 
+#include <modulemng_handle.h>
+
 #include <module.h>
+#include <log.h>
 
-#include "hub.h"
+#include "hub_service.h"
 #include "gatemanager.h"
-#include "log.h"
 
-namespace client_msg{
+namespace hub{
 
-void client_connect(std::shared_ptr<hub::gatemanager> gates, std::string uuid) {
-	gates->client_direct_connect(uuid, std::static_pointer_cast<service::webchannel>(juggle::current_ch));
-}
+class direct_client_msg_handle {
+private:
+	std::shared_ptr<abelkhan::client_call_hub_module> _client_call_hub_module;
+	
+	std::shared_ptr<hub::gatemanager> _gates;
+	std::shared_ptr<hub::hub_service> _hub;
 
-void call_hub(std::shared_ptr<hub::hub_service> _hub, std::string uuid, std::string _module, std::string func, Fossilizid::JsonParse::JsonArray argv) {
-	hub::current_client_uuid = uuid;
-	try {
-		_hub->modules.process_module_mothed(_module, func, argv);
+public:
+	direct_client_msg_handle(std::shared_ptr<hub::gatemanager> gates_, std::shared_ptr<hub::hub_service> hub_) {
+		_gates = gates_;
+		_hub = hub_;
+
+		_client_call_hub_module = std::make_shared<abelkhan::client_call_hub_module>();
+		_client_call_hub_module->Init(service::_modulemng);
+		_client_call_hub_module->sig_connect_hub.connect(std::bind(&direct_client_msg_handle::client_connect, this, std::placeholders::_1));
+		_client_call_hub_module->sig_call_hub;
 	}
-	catch (std::exception e) {
-		spdlog::trace("call_hub exception:{0}", e.what());
-		_hub->sig_client_exception(uuid);
+
+	void client_connect(std::string cuuid) {
+		_gates->client_direct_connect(cuuid, _client_call_hub_module->current_ch);
 	}
-	hub::current_client_uuid = "";
-}
+
+	void call_hub(std::string _module, std::string func, std::vector<uint8_t> argv) {
+		auto _proxy = _gates->get_direct_client(_client_call_hub_module->current_ch);
+		if (_proxy == nullptr) {
+			spdlog::trace("call_hub _proxy is nullptr!");
+			return;
+		}
+
+		try {
+			_gates->current_client_cuuid = _proxy->_cuuid;
+			_hub->modules.process_module_mothed(_module, func, argv);
+			_gates->current_client_cuuid = "";
+		}
+		catch (std::exception e) {
+			spdlog::trace("call_hub exception:{0}", e.what());
+			_hub->sig_client_exception.emit(_proxy->_cuuid);
+		}
+	}
+
+};
+
+
 
 }
 

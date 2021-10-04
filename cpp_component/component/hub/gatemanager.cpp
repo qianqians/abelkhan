@@ -77,10 +77,7 @@ void gatemanager::connect_gate(std::string gate_name, std::string ip, uint16_t p
 
 void gatemanager::client_connect(std::string client_uuid, std::shared_ptr<abelkhan::Ichannel> gate_ch) {
 	if (ch_gates.find(gate_ch) == ch_gates.end()) {
-		return;
-	}
-
-	if (clients.find(client_uuid) != clients.end()) {
+		spdlog::trace("unreg gate channel!");
 		return;
 	}
 
@@ -121,6 +118,15 @@ void gatemanager::client_direct_disconnect(std::shared_ptr<abelkhan::Ichannel> d
 	ch_direct_clients.erase(it);
 
 	spdlog::trace("client_direct_disconnect direct_clients.size:{0}, ch_direct_clients.size:{1}!", direct_clients.size(), ch_direct_clients.size());
+}
+
+std::shared_ptr<directproxy> gatemanager::get_direct_client(std::shared_ptr<abelkhan::Ichannel> direct_ch) {
+	auto it = ch_direct_clients.find(direct_ch);
+	if (it == ch_direct_clients.end()) {
+		return nullptr;
+	}
+
+	return it->second;
 }
 
 void gatemanager::disconnect_client(std::string uuid) {

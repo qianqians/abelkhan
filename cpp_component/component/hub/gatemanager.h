@@ -79,6 +79,8 @@ public:
 
 	void client_direct_disconnect(std::shared_ptr<abelkhan::Ichannel> direct_ch);
 
+	std::shared_ptr<directproxy> get_direct_client(std::shared_ptr<abelkhan::Ichannel> direct_ch);
+
 	void disconnect_client(std::string uuid);
 
 	void call_client(const std::string& uuid, const std::string& _module, const std::string& func, const msgpack11::MsgPack::array& argvs);
@@ -86,6 +88,9 @@ public:
 	void call_group_client(const std::vector<std::string>& uuids, const std::string& _module, const std::string& func, const msgpack11::MsgPack::array& argvs);
 
 	void call_global_client(const std::string& _module, const std::string& func, const msgpack11::MsgPack::array& argvs);
+
+public:
+	std::string current_client_cuuid;
 
 private:
 	size_t _data_size;

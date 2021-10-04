@@ -60,7 +60,10 @@ public:
 	concurrent::signals<void() > sig_close_server;
 
 	concurrent::signals<void(std::string) > sig_client_disconnect;
-	concurrent::signals<void(std::string) > sig_hub_connect;
+	concurrent::signals<void(std::string) > sig_client_exception;
+
+	concurrent::signals<void(std::shared_ptr<hubproxy>) > sig_hub_connect;
+	
 	concurrent::signals<void() > sig_dbproxy_init;
 	concurrent::signals<void() > sig_extend_dbproxy_init;
 

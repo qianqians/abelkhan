@@ -140,6 +140,12 @@ export class gate_call_hub_caller extends abelkhan.Icaller {
         this.call_module_method("client_disconnect", _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60);
     }
 
+    public client_exception(client_uuid:string){
+        let _argv_706b1331_3629_3681_9d39_d2ef3b6675ed:any[] = [];
+        _argv_706b1331_3629_3681_9d39_d2ef3b6675ed.push(client_uuid);
+        this.call_module_method("client_exception", _argv_706b1331_3629_3681_9d39_d2ef3b6675ed);
+    }
+
     public client_call_hub(client_uuid:string, rpc_argv:Uint8Array){
         let _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263:any[] = [];
         _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.push(client_uuid);
@@ -278,8 +284,11 @@ export class gate_call_hub_module extends abelkhan.Imodule {
         this.modules.reg_module(this);
 
         this.reg_method("client_disconnect", this.client_disconnect.bind(this));
+        this.reg_method("client_exception", this.client_exception.bind(this));
         this.reg_method("client_call_hub", this.client_call_hub.bind(this));
         this.cb_client_disconnect = null;
+
+        this.cb_client_exception = null;
 
         this.cb_client_call_hub = null;
 
@@ -291,6 +300,15 @@ export class gate_call_hub_module extends abelkhan.Imodule {
         _argv_.push(inArray[0]);
         if (this.cb_client_disconnect){
             this.cb_client_disconnect.apply(null, _argv_);
+        }
+    }
+
+    public cb_client_exception : (client_uuid:string)=>void | null;
+    client_exception(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        if (this.cb_client_exception){
+            this.cb_client_exception.apply(null, _argv_);
         }
     }
 

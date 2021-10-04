@@ -176,6 +176,12 @@ namespace abelkhan
             call_module_method("client_disconnect", _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60);
         }
 
+        public void client_exception(string client_uuid){
+            var _argv_706b1331_3629_3681_9d39_d2ef3b6675ed = new ArrayList();
+            _argv_706b1331_3629_3681_9d39_d2ef3b6675ed.Add(client_uuid);
+            call_module_method("client_exception", _argv_706b1331_3629_3681_9d39_d2ef3b6675ed);
+        }
+
         public void client_call_hub(string client_uuid, byte[] rpc_argv){
             var _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263 = new ArrayList();
             _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.Add(client_uuid);
@@ -312,6 +318,7 @@ namespace abelkhan
             modules.reg_module(this);
 
             reg_method("client_disconnect", client_disconnect);
+            reg_method("client_exception", client_exception);
             reg_method("client_call_hub", client_call_hub);
         }
 
@@ -320,6 +327,14 @@ namespace abelkhan
             var _client_uuid = (string)inArray[0];
             if (on_client_disconnect != null){
                 on_client_disconnect(_client_uuid);
+            }
+        }
+
+        public event Action<string> on_client_exception;
+        public void client_exception(ArrayList inArray){
+            var _client_uuid = (string)inArray[0];
+            if (on_client_exception != null){
+                on_client_exception(_client_uuid);
             }
         }
 

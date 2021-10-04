@@ -152,6 +152,12 @@ namespace abelkhan
             call_module_method("client_disconnect", _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60);
         }
 
+        void client_exception(std::string client_uuid){
+            msgpack11::MsgPack::array _argv_706b1331_3629_3681_9d39_d2ef3b6675ed;
+            _argv_706b1331_3629_3681_9d39_d2ef3b6675ed.push_back(client_uuid);
+            call_module_method("client_exception", _argv_706b1331_3629_3681_9d39_d2ef3b6675ed);
+        }
+
         void client_call_hub(std::string client_uuid, std::vector<uint8_t> rpc_argv){
             msgpack11::MsgPack::array _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263;
             _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.push_back(client_uuid);
@@ -311,6 +317,7 @@ namespace abelkhan
             _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
 
             reg_method("client_disconnect", std::bind(&gate_call_hub_module::client_disconnect, this, std::placeholders::_1));
+            reg_method("client_exception", std::bind(&gate_call_hub_module::client_exception, this, std::placeholders::_1));
             reg_method("client_call_hub", std::bind(&gate_call_hub_module::client_call_hub, this, std::placeholders::_1));
         }
 
@@ -318,6 +325,12 @@ namespace abelkhan
         void client_disconnect(const msgpack11::MsgPack::array& inArray){
             auto _client_uuid = inArray[0].string_value();
             sig_client_disconnect.emit(_client_uuid);
+        }
+
+        concurrent::signals<void(std::string)> sig_client_exception;
+        void client_exception(const msgpack11::MsgPack::array& inArray){
+            auto _client_uuid = inArray[0].string_value();
+            sig_client_exception.emit(_client_uuid);
         }
 
         concurrent::signals<void(std::string, std::vector<uint8_t>)> sig_client_call_hub;
