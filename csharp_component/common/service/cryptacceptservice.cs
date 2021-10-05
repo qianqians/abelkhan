@@ -50,10 +50,7 @@ namespace abelkhan
             {
                 log.log.err("channel_onrecv.on_recv error:{0}!", e);
                 ch.disconnect();
-                if (on_channel_exception != null)
-                {
-                    on_channel_exception(ch);
-                }
+                on_channel_exception?.Invoke(ch);
             }
         }
 
@@ -62,15 +59,15 @@ namespace abelkhan
             context.Flush();
         }
 
-        public event Action<cryptchannel> on_disconnect;
+        //public event Action<cryptchannel> on_disconnect;
         public override void ExceptionCaught(IChannelHandlerContext context, System.Exception exception)
         {
             context.CloseAsync();
             
-            if (on_disconnect != null)
-            {
-                on_disconnect(ch);
-            }
+            //if (on_disconnect != null)
+            //{
+            //    on_disconnect(ch);
+            //}
         }
     }
 
@@ -125,7 +122,6 @@ namespace abelkhan
                     {
                         var _handle = new cryptAcceptServerHandler(xor_key);
                         _handle.on_connect += onConnect;
-                        _handle.on_disconnect += onDisconnect;
                         _handle.on_channel_exception += (cryptchannel ch) => {
                             if (on_channel_exception != null)
                             {

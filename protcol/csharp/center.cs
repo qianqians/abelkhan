@@ -31,12 +31,12 @@ namespace abelkhan
             }
         }
 
-        public void distribute_server_address(string type, string ip, UInt16 port, string uuid){
+        public void distribute_server_address(string svr_type, string svr_name, string ip, UInt16 port){
             var _argv_b71bf35c_d65b_3682_98d1_b934f5276558 = new ArrayList();
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(type);
+            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(svr_type);
+            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(svr_name);
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(ip);
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(port);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(uuid);
             call_module_method("distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
         }
 
@@ -277,14 +277,14 @@ namespace abelkhan
             reg_method("reload", reload);
         }
 
-        public event Action<string, string, UInt16, string> on_distribute_server_address;
+        public event Action<string, string, string, UInt16> on_distribute_server_address;
         public void distribute_server_address(ArrayList inArray){
-            var _type = (string)inArray[0];
-            var _ip = (string)inArray[1];
-            var _port = (UInt16)inArray[2];
-            var _uuid = (string)inArray[3];
+            var _svr_type = (string)inArray[0];
+            var _svr_name = (string)inArray[1];
+            var _ip = (string)inArray[2];
+            var _port = (UInt16)inArray[3];
             if (on_distribute_server_address != null){
-                on_distribute_server_address(_type, _ip, _port, _uuid);
+                on_distribute_server_address(_svr_type, _svr_name, _ip, _port);
             }
         }
 

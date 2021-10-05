@@ -1,31 +1,35 @@
-﻿using System;
-using System.Collections;
+﻿/*
+ * gmmanager
+ * 2020/6/2
+ * qianqians
+ */
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
-namespace center
+namespace abelkhan
 {
-	class gmmanager
-	{
+	public class gmmanager
+    {
+		private Dictionary<abelkhan.Ichannel, string> gms;
+
 		public gmmanager()
-		{
-			gms = new Dictionary<juggle.Ichannel, String>();
-		}
+        {
+			gms = new Dictionary<abelkhan.Ichannel, string>();
+        }
 
-		public void reg_gm(String gmname, juggle.Ichannel ch)
-		{
-			gms.Add(ch, gmname);
-		}
+		public void reg_gm(string gm_name, abelkhan.Ichannel ch)
+        {
+			gms.Add(ch, gm_name);
+        }
 
-		public bool check_gm(String gmname, juggle.Ichannel ch)
-		{
-			if (!gms.ContainsKey (ch)) 
-			{
+		public bool check_gm(string gm_name, abelkhan.Ichannel ch)
+        {
+			if (!gms.TryGetValue(ch, out string _gm_name))
+            {
 				return false;
-			}
+            }
 
-			return gms[ch] == gmname;
+			return _gm_name == gm_name;
 		}
-			
-		private Dictionary<juggle.Ichannel, String> gms;
-	}
+    }
 }

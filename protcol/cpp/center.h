@@ -41,12 +41,12 @@ namespace abelkhan
             uuid_adbd1e34_0c90_3426_aefa_4d734c07a706.store(random());
         }
 
-        void distribute_server_address(std::string type, std::string ip, uint16_t port, std::string uuid){
+        void distribute_server_address(std::string svr_type, std::string svr_name, std::string ip, uint16_t port){
             msgpack11::MsgPack::array _argv_b71bf35c_d65b_3682_98d1_b934f5276558;
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(type);
+            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(svr_type);
+            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(svr_name);
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(ip);
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(port);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(uuid);
             call_module_method("distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
         }
 
@@ -275,13 +275,13 @@ namespace abelkhan
             reg_method("reload", std::bind(&center_call_hub_module::reload, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string, std::string, uint16_t, std::string)> sig_distribute_server_address;
+        concurrent::signals<void(std::string, std::string, std::string, uint16_t)> sig_distribute_server_address;
         void distribute_server_address(const msgpack11::MsgPack::array& inArray){
-            auto _type = inArray[0].string_value();
-            auto _ip = inArray[1].string_value();
-            auto _port = inArray[2].uint16_value();
-            auto _uuid = inArray[3].string_value();
-            sig_distribute_server_address.emit(_type, _ip, _port, _uuid);
+            auto _svr_type = inArray[0].string_value();
+            auto _svr_name = inArray[1].string_value();
+            auto _ip = inArray[2].string_value();
+            auto _port = inArray[3].uint16_value();
+            sig_distribute_server_address.emit(_svr_type, _svr_name, _ip, _port);
         }
 
         concurrent::signals<void(std::string)> sig_reload;

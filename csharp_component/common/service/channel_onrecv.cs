@@ -16,7 +16,7 @@ namespace abelkhan
         private byte[] tmpbuf = null;
         private int tmpbufoffset = 0;
 
-        private readonly Queue<ArrayList> que = new Queue<ArrayList>();
+        public readonly Queue<ArrayList> que = new Queue<ArrayList>();
 
         private MessagePackSerializer<ArrayList> serializer = MessagePackSerializer.Get<ArrayList>();
 

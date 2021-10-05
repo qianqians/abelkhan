@@ -43,16 +43,16 @@ namespace abelkhan
             context.Flush();
         }
 
-        public event Action<channel> on_disconnect;
+        //public event Action<channel> on_disconnect;
         public override void ExceptionCaught(IChannelHandlerContext context, System.Exception exception)
         {
             log.log.trace("ExceptionCaught connection!");
 
             context.CloseAsync();
-            if (on_disconnect != null)
-            {
-                on_disconnect(ch);
-            }
+            //if (on_disconnect != null)
+            //{
+            //    on_disconnect(ch);
+            //}
         }
     }
 
@@ -69,19 +69,7 @@ namespace abelkhan
         public event Action<channel> on_connect;
         private void onConnect(channel ch)
         {
-            if (on_connect != null)
-            {
-                on_connect(ch);
-            }
-        }
-
-        public event Action<channel> on_disconnect;
-        private void onDisconnect(channel ch)
-        {
-            if (on_disconnect != null)
-            {
-                on_disconnect(ch);
-            }
+            on_connect?.Invoke(ch);
         }
 
         private async Task RunServerAsync()
@@ -104,7 +92,6 @@ namespace abelkhan
                     {
                         var _handle = new AcceptServerHandler();
                         _handle.on_connect += onConnect;
-                        _handle.on_disconnect += onDisconnect;
 
                         IChannelPipeline pipeline = channel.Pipeline;
                         pipeline.AddLast("accept", _handle);

@@ -1,87 +1,65 @@
-﻿using System;
+﻿/*
+ * gm_msg_handle
+ * 2020/6/2
+ * qianqians
+ */
 
-namespace center
+namespace abelkhan
 {
-	class gm_msg_handle
-	{
-		public gm_msg_handle(gmmanager _gmmanager_, svrmanager _svrmanager_, hubmanager _hubmanager_, clutter _clutter_)
-		{
-			_gmmanager = _gmmanager_;
-			_svrmanager = _svrmanager_;
-            _hubmanager = _hubmanager_;
-            _clutter = _clutter_;
+    public class gm_msg_handle
+    {
+        private abelkhan.gm_center_module gm_center_module;
+        private svrmanager svrmng;
+        private gmmanager gmmng;
+        private closehandle closeHandle;
+
+        public gm_msg_handle(svrmanager svrs, gmmanager gms, closehandle _closeHandle)
+        {
+            svrmng = svrs;
+            gmmng = gms;
+            closeHandle = _closeHandle;
+
+            gm_center_module = new abelkhan.gm_center_module(abelkhan.modulemng_handle._modulemng);
+            gm_center_module.on_confirm_gm += confirm_gm;
+            gm_center_module.on_close_clutter += close_clutter;
+            gm_center_module.on_reload += reload;
         }
 
-		public void confirm_gm(String gm_name)
-		{
-			_gmmanager.reg_gm(gm_name, juggle.Imodule.current_ch);
-		}
-
-		public void close_clutter(String gmname)
-		{
-			if (_gmmanager.check_gm (gmname, juggle.Imodule.current_ch)) 
-			{
-				_svrmanager.for_each_svr(
-					(svrproxy _svrproxy) => {
-                        if (_svrproxy.type != "dbproxy") {
-                            _svrproxy.close_server();
-                        }
-					}
-				);
-
-                if (_hubmanager.checkAllHubClosed()) {
-                    _svrmanager.close_db();
-                    center.closeHandle.is_close = true;
-                }
-
-                log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "close clutter!");
-			}
-		}
-
-        public void close_zone(String gmname, Int64 zone_id)
+        private void confirm_gm(string gm_name)
         {
-            if (_gmmanager.check_gm(gmname, juggle.Imodule.current_ch))
+            gmmng.reg_gm(gm_name, gm_center_module.current_ch);
+        }
+
+        private void close_clutter(string gmname)
+        {
+            if (gmmng.check_gm(gmname, gm_center_module.current_ch))
             {
-                var _zone = _clutter.get_zone((int)zone_id);
+                log.log.trace("close_clutter {0}", gmname);
 
-                _zone.is_closed = true;
-
-                _zone.for_each_svr(
-                    (svrimpl _svrimpl) => {
-                        if (_svrimpl.type != "dbproxy")
-                        {
-                            _svrimpl.close_server();
-                        }
+                closeHandle.is_closing = true;
+                svrmng.for_each_svr((svrproxy _svrproxy) => {
+                    if (_svrproxy.type != "dbproxy")
+                    {
+                        _svrproxy.close_server();
                     }
-                );
+                });
 
-                if (_zone.checkAllHubClosed())
+                if (svrmng.check_all_hub_closed())
                 {
-                    _zone.close_db();
+                    svrmng.close_db();
+                    closeHandle.is_close = true;
                 }
-
-                log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "close clutter!");
             }
         }
 
-        public void reload(String gmname, String argv)
+        private void reload(string gmname, string argvs)
         {
-            if (_gmmanager.check_gm(gmname, juggle.Imodule.current_ch))
+            if (gmmng.check_gm(gmname, gm_center_module.current_ch))
             {
-                _hubmanager.for_each_hub(
-                    (hubproxy _proxy) => {
-                        _proxy.reload(argv);
-                    }
-                );
-
-                log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "reload!");
+                svrmng.for_each_hub((hubproxy _proxy) => {
+                    _proxy.reload(argvs);
+                });
             }
         }
-
-		private gmmanager _gmmanager;
-		private svrmanager _svrmanager;
-        private hubmanager _hubmanager;
-        private clutter _clutter;
-
     }
 }

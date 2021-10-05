@@ -18,7 +18,7 @@ module center_call_server{
 
 module center_call_hub{
 
-	distribute_server_address ntf(string type, string ip, uint16 port, string uuid);
+	distribute_server_address ntf(string svr_type, string svr_name, string ip, uint16 port);
 	
 	reload ntf(string argv);
 	

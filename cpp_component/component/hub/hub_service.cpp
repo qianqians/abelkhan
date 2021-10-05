@@ -110,6 +110,11 @@ void hub_service::init() {
 	}
 }
 
+void hub_service::heartbeat(int64_t tick) {
+	_centerproxy->heartbeat();
+	_timerservice->addticktimer(5 * 1000, std::bind(&hub_service::heartbeat, this, std::placeholders::_1));
+}
+
 void hub_service::connect_center() {
 	spdlog::trace("begin on connect center");
 
@@ -118,8 +123,9 @@ void hub_service::connect_center() {
 	auto center_ch = _center_service->connect(ip, port);
 
 	_centerproxy = std::make_shared<centerproxy>(center_ch);
-
 	_centerproxy->reg_server(_config->get_value_string("ip"), (short)_config->get_value_int("port"), hub_name);
+
+	heartbeat(_timerservice->Tick);
 
 	spdlog::trace("end on connect center");
 }
@@ -178,6 +184,10 @@ void hub_service::try_connect_db(std::string dbproxy_name, std::string dbproxy_i
 		_extend_dbproxyproxy->reg_server(hub_name);
 	}
 	
+}
+
+void hub_service::close_svr() {
+	_close_handle->is_closed = true;
 }
 
 void hub_service::poll() {

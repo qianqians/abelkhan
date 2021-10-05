@@ -47,7 +47,7 @@ private:
 		_hub->sig_svr_be_closed.emit(svr_type, svr_name);
 	}
 
-	void distribute_server_address(std::string type, std::string ip, int64_t port, std::string name) {
+	void distribute_server_address(std::string type, std::string name, std::string ip, int64_t port) {
 		if (type == "gate") {
 			_hub->connect_gate(name, ip, (uint16_t)port);
 		}

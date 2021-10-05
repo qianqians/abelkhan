@@ -6,7 +6,7 @@
 
 namespace abelkhan
 {
-    class modulemng_handle
+    public class modulemng_handle
     {
         public static abelkhan.modulemng _modulemng = new modulemng();
     }

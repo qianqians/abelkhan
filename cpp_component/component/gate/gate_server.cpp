@@ -132,8 +132,8 @@ int main(int argc, char * argv[]) {
 		}
 	}
 
-	_timerservice->addticktimer(5 * 1000, std::bind(&heartbeat_client, _clientmanager, _timerservice, std::placeholders::_1));
-	_timerservice->addticktimer(10 * 1000, std::bind(&heartbeat_center, _centerproxy, _timerservice, std::placeholders::_1));
+	_timerservice->addticktimer(10 * 1000, std::bind(&heartbeat_client, _clientmanager, _timerservice, std::placeholders::_1));
+	heartbeat_center(_centerproxy, _timerservice, _timerservice->Tick);
 
 	while (true){
 		clock_t begin = clock();

@@ -23,12 +23,12 @@ export class center_call_hub_caller extends abelkhan.Icaller {
         }
     }
 
-    public distribute_server_address(type:string, ip:string, port:number, uuid:string){
+    public distribute_server_address(svr_type:string, svr_name:string, ip:string, port:number){
         let _argv_b71bf35c_d65b_3682_98d1_b934f5276558:any[] = [];
-        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(type);
+        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(svr_type);
+        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(svr_name);
         _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(ip);
         _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(port);
-        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(uuid);
         this.call_module_method("distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
     }
 
@@ -243,7 +243,7 @@ export class center_call_hub_module extends abelkhan.Imodule {
 
     }
 
-    public cb_distribute_server_address : (type:string, ip:string, port:number, uuid:string)=>void | null;
+    public cb_distribute_server_address : (svr_type:string, svr_name:string, ip:string, port:number)=>void | null;
     distribute_server_address(inArray:any[]){
         let _argv_:any[] = [];
         _argv_.push(inArray[0]);

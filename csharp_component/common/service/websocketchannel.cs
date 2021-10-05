@@ -18,7 +18,7 @@ namespace abelkhan
         public channel_onrecv _channel_onrecv;
 
         public event Action<websocketchannel> on_connect;
-        public event Action<websocketchannel> on_disconnect;
+        //public event Action<websocketchannel> on_disconnect;
         public websocketchannel(IWebSocketConnection socket)
         {
             _channel_onrecv = new channel_onrecv();
@@ -28,7 +28,7 @@ namespace abelkhan
                 on_connect?.Invoke(this);
             };
             _socket.OnClose = () => {
-                on_disconnect?.Invoke(this);
+                //on_disconnect?.Invoke(this);
             };
             _socket.OnBinary = (byte[] data) => {
                 _channel_onrecv.on_recv(data);

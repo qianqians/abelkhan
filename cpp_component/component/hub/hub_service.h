@@ -68,6 +68,9 @@ public:
 
 	void poll();
 
+private:
+	void heartbeat(int64_t tick);
+
 public:
 	std::string hub_name;
 	std::string hub_type;

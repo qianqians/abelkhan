@@ -1,84 +1,79 @@
-﻿using System;
+﻿/*
+ * svr_msg_handle
+ * 2020/6/2
+ * qianqians
+ */
 
-namespace center
+namespace abelkhan
 {
-	class svr_msg_handle
-	{
-		public svr_msg_handle(svrmanager _svrmanager_, hubmanager _hubmanager_, clutter _clutter_)
-		{
-			_svrmanager = _svrmanager_;
-			_hubmanager = _hubmanager_;
-            _clutter = _clutter_;
+    public class svr_msg_handle
+    {
+        private center_module _center_module;
+        private svrmanager _svrmng;
+        private closehandle _closehandle;
 
+        public svr_msg_handle(svrmanager svrs, closehandle closehandle)
+        {
+            _svrmng = svrs;
+            _closehandle = closehandle;
+
+            _center_module = new center_module(abelkhan.modulemng_handle._modulemng);
+            _center_module.on_reg_server += reg_server;
+            _center_module.on_heartbeat += heartbeat;
+            _center_module.on_closed += closed;
         }
 
-		public void reg_server(String type, String ip, Int64 port, String uuid)
+        private void reg_server(string type, string ip, ushort port, string name)
         {
-            Int64 zone_id = 0;
+            var rsp = (abelkhan.center_reg_server_rsp)_center_module.rsp;
 
-            if (type != "dbproxy")
+            _svrmng.for_each_hub((hubproxy _proxy) =>{
+                _proxy.distribute_server_address(type, name, ip, (ushort)port);
+            });
+
+            if (type == "hub")
             {
-                if (zone_id != 0)
-                {
-                    var _tmp_zone = _clutter.get_zone((int)zone_id);
-                    _tmp_zone.for_each_hub_ch(
-                        (juggle.Ichannel ch) =>
-                        {
-                            _hubmanager.get_hub(ch).distribute_server_address(type, ip, port, uuid);
-                        }
-                    );
-                }
-                else
-                {
-                    _hubmanager.for_each_hub(
-                        (hubproxy _hubproxy) =>
-                        {
-                            _hubproxy.distribute_server_address(type, ip, port, uuid);
-                        }
-                    );
-                }
+                var _hubproxy = _svrmng.reg_hub(_center_module.current_ch, type, name);
+
+                _svrmng.for_each_svr((svrproxy _proxy) =>{
+                    _hubproxy.distribute_server_address(_proxy.type, _proxy.name, _proxy.ip, _proxy.port);
+                });
             }
 
-			if (type == "hub") {
-				hubproxy _hubproxy = _hubmanager.reg_hub (juggle.Imodule.current_ch, type, ip, port, uuid, (int)zone_id);
+            _svrmng.reg_svr(_center_module.current_ch, type, name, ip, (ushort)port);
 
-                if (zone_id != 0)
-                {
-                    var _tmp_zone = _clutter.get_zone((int)zone_id);
-                    _tmp_zone.for_each_svr_ch(
-                        (juggle.Ichannel ch) =>
-                        {
-                            var tmp_svr_info = _svrmanager.get_svr(ch);
-                            _hubproxy.distribute_server_address(tmp_svr_info.Item1, tmp_svr_info.Item2, tmp_svr_info.Item3, tmp_svr_info.Item4);
-                        }
-                    );
-                }
-                else
-                {
-                    _svrmanager.for_each_svr_info(
-                        (String _type, String _ip, Int64 _port, String _uuid) =>
-                        {
-                            _hubproxy.distribute_server_address(_type, _ip, _port, _uuid);
-                        }
-                    );
-                }
-			}
+            rsp.rsp();
+        }
 
-			if (type == "dbproxy") {
-			}
-			
-			svrproxy _svrproxy = _svrmanager.reg_svr(juggle.Imodule.current_ch, type, ip, port, uuid);
-			_svrproxy.reg_server_sucess();
+        private void heartbeat()
+        {
+            var _svr_proxy = _svrmng.get_svr(_center_module.current_ch);
+            if (_svr_proxy != null)
+            {
+                _svr_proxy.timetmp = service.timerservice.Tick;
+            }
+        }
 
-            var _zone = _clutter.get_zone((int)zone_id);
-            _zone.reg_svr(juggle.Imodule.current_ch, type);
+        private void closed()
+        {
+            var _svr_proxy = _svrmng.get_svr(_center_module.current_ch);
+            if (_svr_proxy != null)
+            {
+                _svr_proxy.is_closed = true;
+                _svr_proxy.closed_svr();
+            }
 
-            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "{0} server {1} connected", type, uuid);
-		}
+            var _hub_proxy = _svrmng.get_hub(_center_module.current_ch);
+            if (_hub_proxy != null)
+            {
+                _hub_proxy.is_closed = true;
+            }
 
-		private svrmanager _svrmanager;
-		private hubmanager _hubmanager;
-        private clutter _clutter;
-
+            if (_closehandle.is_closing && _svrmng.check_all_hub_closed())
+            {
+                _svrmng.close_db();
+                _closehandle.is_close = true;
+            }
+        }
     }
 }

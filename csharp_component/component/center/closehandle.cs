@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/*
+ * closehandle
+ * 2020/6/2
+ * qianqians
+ */
 
-namespace center
+namespace abelkhan
 {
-    class closehandle
+    public class closehandle
     {
-        public closehandle()
-        {
-            is_close = false;
-        }
-
-        public bool is_close;
+        public bool is_closing = false;
+        public bool is_close = false;
     }
 }
