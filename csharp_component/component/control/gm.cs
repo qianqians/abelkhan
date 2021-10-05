@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace gm
 {
     class center_proxy
     {
-        public center_proxy(juggle.Ichannel ch)
+        public center_proxy(abelkhan.Ichannel ch)
         {
-            center_caller = new caller.gm_center(ch);
+            center_caller = new abelkhan.gm_center_caller(ch, abelkhan.modulemng_handle._modulemng);
         }
 
         public void confirm_gm(string gm_name)
@@ -20,17 +21,12 @@ namespace gm
             center_caller.close_clutter(gm_name);
         }
 
-        public void close_zone(string gm_name, Int64 zone_id)
-        {
-            center_caller.close_zone(gm_name, zone_id);
-        }
-
         public void reload(string gm_name, string argv)
         {
             center_caller.reload(gm_name, argv);
         }
 
-        private caller.gm_center center_caller;
+        private abelkhan.gm_center_caller center_caller;
     }
 
     class gm
@@ -39,24 +35,20 @@ namespace gm
         {
             gm_name = _gm_name;
 
-            config.config _config = new config.config(args[0]);
+            abelkhan.config _config = new abelkhan.config(args[0]);
             if (args.Length > 1)
             {
                 _config = _config.get_value_dict(args[1]);
             }
 
-            juggle.process _gm_process = new juggle.process();
-            _conn_center = new service.connectnetworkservice(_gm_process);
-
             var gm_ip = _config.get_value_string("gm_ip");
             var gm_port = (short)_config.get_value_int("gm_port");
-            _center_proxy= new center_proxy(_conn_center.connect(gm_ip, gm_port));
+            var _socket = abelkhan.connectservice.connect(System.Net.IPAddress.Parse(gm_ip), gm_port);
+            ch = new abelkhan.rawchannel(_socket);
+            _center_proxy = new center_proxy(ch);
             _center_proxy.confirm_gm(gm_name);
 
             timer = new service.timerservice();
-
-            _juggle_service = new service.juggleservice();
-            _juggle_service.add_process(_gm_process);
         }
 
         public Int64 poll()
@@ -65,18 +57,28 @@ namespace gm
 
             try
             {
-                _juggle_service.poll(tick_begin);
+                while (true)
+                {
+                    ArrayList _event = null;
+                    lock (ch._channel_onrecv.que)
+                    {
+                        _event = ch._channel_onrecv.que.Dequeue();
+                    }
+                    if (_event == null)
+                    {
+                        break;
+                    }
+                    abelkhan.modulemng_handle._modulemng.process_event(ch, _event);
+                }
             }
-            catch (juggle.Exception e)
+            catch (abelkhan.Exception e)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, e.Message);
+                log.log.err(e.Message);
             }
             catch (System.Exception e)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, "{0}", e);
+                log.log.err("{0}", e);
             }
-
-            //System.GC.Collect();
 
             Int64 tick_end = timer.refresh();
 
@@ -96,7 +98,7 @@ namespace gm
         {
             if (args.Length <= 0)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "non input start argv");
+                log.log.err("non input start argv");
                 return;
             }
 
@@ -124,9 +126,6 @@ namespace gm
             Dictionary<String, handle> cmd_callback = new Dictionary<string, handle>();
             cmd_callback.Add("close", (string[] cmds) => {
                 _gm._center_proxy.close_clutter(_gm.gm_name);
-            });
-            cmd_callback.Add("close_zone", (string[] cmds) => {
-                _gm._center_proxy.close_zone(_gm.gm_name, Int64.Parse(cmds[1]));
             });
             cmd_callback.Add("reload", (string[] cmds) => {
                 _gm._center_proxy.reload(_gm.gm_name, cmds[1]);
@@ -174,11 +173,8 @@ namespace gm
         }
 
         private string gm_name;
-
-        private service.connectnetworkservice _conn_center;
-        private service.juggleservice _juggle_service;
+        private abelkhan.rawchannel ch;
         private service.timerservice timer;
-
         private center_proxy _center_proxy;
     }
 }
