@@ -8,18 +8,15 @@ namespace abelkhan
 {
     public class rawchannel : abelkhan.Ichannel
     {
-        public delegate void onDisconnectHandle(rawchannel ch);
-        public event onDisconnectHandle onDisconnect;
-
-        public delegate void DisconnectHandle(rawchannel ch);
-        public event DisconnectHandle Disconnect;
+        public event Action<rawchannel> onDisconnect;
+        public event Action<rawchannel> Disconnect;
 
         public channel_onrecv _channel_onrecv;
 
         public rawchannel(Socket _s)
         {
             s = _s;
-            _channel_onrecv = new channel_onrecv(this);
+            _channel_onrecv = new channel_onrecv();
 
             recvbuflength = 8 * 1024;
             recvbuf = new byte[recvbuflength];

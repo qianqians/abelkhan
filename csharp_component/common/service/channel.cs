@@ -21,7 +21,7 @@ namespace abelkhan
         public channel(IChannelHandlerContext _context)
         {
             context = _context;
-            _channel_onrecv = new channel_onrecv(this);
+            _channel_onrecv = new channel_onrecv();
         }
 
         public void disconnect()

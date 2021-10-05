@@ -17,8 +17,7 @@ namespace abelkhan
     {
         private channel ch = null;
 
-        public delegate void cb_connect(channel ch);
-        public event cb_connect on_connect;
+        public event Action<channel> on_connect;
         public override void ChannelActive(IChannelHandlerContext context)
         {
             log.log.trace("new connection!");
@@ -44,8 +43,7 @@ namespace abelkhan
             context.Flush();
         }
 
-        public delegate void cb_disconnect(channel ch);
-        public event cb_disconnect on_disconnect;
+        public event Action<channel> on_disconnect;
         public override void ExceptionCaught(IChannelHandlerContext context, System.Exception exception)
         {
             log.log.trace("ExceptionCaught connection!");
@@ -68,8 +66,7 @@ namespace abelkhan
             port = _port;
         }
 
-        public delegate void cb_connect(channel ch);
-        public event cb_connect on_connect;
+        public event Action<channel> on_connect;
         private void onConnect(channel ch)
         {
             if (on_connect != null)
@@ -78,8 +75,7 @@ namespace abelkhan
             }
         }
 
-        public delegate void cb_disconnect(channel ch);
-        public event cb_disconnect on_disconnect;
+        public event Action<channel> on_disconnect;
         private void onDisconnect(channel ch)
         {
             if (on_disconnect != null)

@@ -20,7 +20,7 @@ namespace abelkhan
             host = _host;
             peer = _peer;
 
-            _channel_onrecv = new channel_onrecv(this);
+            _channel_onrecv = new channel_onrecv();
         }
 
         public void onrecv(ENet.Packet packet)
