@@ -59,7 +59,11 @@ gatemanager::gatemanager(std::shared_ptr<service::enetacceptservice> conn_, std:
 	_conn = conn_;
 	_hub = hub_;
 
-	_hub->sig_svr_be_closed.connect([this](std::string svr_name) {
+	_hub->sig_svr_be_closed.connect([this](std::string svr_type, std::string svr_name) {
+		if (svr_type != "gate") {
+			return;
+		}
+
 		for (auto it = clients.begin(); it != clients.end(); it++) {
 			if (it->second->_gate_name == svr_name) {
 				clients.erase(it);

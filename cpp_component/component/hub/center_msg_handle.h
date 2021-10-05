@@ -30,7 +30,7 @@ public:
 		_center_call_server_module = std::make_shared<abelkhan::center_call_server_module>();
 		_center_call_server_module->Init(service::_modulemng);
 		_center_call_server_module->sig_close_server.connect(std::bind(&center_msg_handle::close_server, this));
-		_center_call_server_module->sig_svr_be_closed.connect(std::bind(&center_msg_handle::svr_be_closed, this, std::placeholders::_1));
+		_center_call_server_module->sig_svr_be_closed.connect(std::bind(&center_msg_handle::svr_be_closed, this, std::placeholders::_1, std::placeholders::_2));
 
 		_center_call_hub_module = std::make_shared<abelkhan::center_call_hub_module>();
 		_center_call_hub_module->Init(service::_modulemng);
@@ -43,8 +43,8 @@ private:
 		_hub->sig_close_server.emit();
 	}
 
-	void svr_be_closed(std::string svr_name) {
-		_hub->sig_svr_be_closed.emit(svr_name);
+	void svr_be_closed(std::string svr_type, std::string svr_name) {
+		_hub->sig_svr_be_closed.emit(svr_type, svr_name);
 	}
 
 	void distribute_server_address(std::string type, std::string ip, int64_t port, std::string name) {

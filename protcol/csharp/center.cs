@@ -73,8 +73,9 @@ namespace abelkhan
             call_module_method("close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
         }
 
-        public void svr_be_closed(string svr_name){
+        public void svr_be_closed(string svr_type, string svr_name){
             var _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac = new ArrayList();
+            _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.Add(svr_type);
             _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.Add(svr_name);
             call_module_method("svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
         }
@@ -314,11 +315,12 @@ namespace abelkhan
             }
         }
 
-        public event Action<string> on_svr_be_closed;
+        public event Action<string, string> on_svr_be_closed;
         public void svr_be_closed(ArrayList inArray){
-            var _svr_name = (string)inArray[0];
+            var _svr_type = (string)inArray[0];
+            var _svr_name = (string)inArray[1];
             if (on_svr_be_closed != null){
-                on_svr_be_closed(_svr_name);
+                on_svr_be_closed(_svr_type, _svr_name);
             }
         }
 

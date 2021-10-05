@@ -30,7 +30,11 @@ void hubproxy::call_hub(const std::string& module_name, const std::string& func_
 hubsvrmanager::hubsvrmanager(std::shared_ptr<hub_service> _hub_) {
 	_hub = _hub_;
 
-	_hub->sig_svr_be_closed.connect([this](std::string hub_name) {
+	_hub->sig_svr_be_closed.connect([this](std::string svr_type, std::string hub_name) {
+		if (svr_type != "hub") {
+			return;
+		}
+
 		auto it = hubproxys.find(hub_name);
 		if (it != hubproxys.end()) {
 			auto _proxy = it->second;

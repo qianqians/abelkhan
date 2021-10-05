@@ -12,7 +12,7 @@ module center_call_server{
 
 	close_server ntf();
 	
-	svr_be_closed ntf(string svr_name);
+	svr_be_closed ntf(string svr_type, string svr_name);
 	
 }
 

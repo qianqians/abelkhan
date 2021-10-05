@@ -106,7 +106,7 @@ private:
 	friend class center_msg_handle;
 	friend class gatemanager;
 	friend class hubsvrmanager;
-	concurrent::signals<void(std::string) > sig_svr_be_closed;
+	concurrent::signals<void(std::string, std::string) > sig_svr_be_closed;
 
 	std::shared_ptr<service::enetacceptservice> _hub_service;
 
