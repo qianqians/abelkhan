@@ -23,22 +23,18 @@ public:
 		is_compress_and_encrypt = false;
 	}
 
-	void set_xor_key(uint64_t _xor_key) {
+	void set_xor_key_crypt() {
 		is_compress_and_encrypt = true;
-
-		xor_key[0] = (uint8_t)(_xor_key & 0xff);
-		xor_key[1] = (uint8_t)((_xor_key >> 8) & 0xff);
-		xor_key[2] = (uint8_t)((_xor_key >> 16) & 0xff);
-		xor_key[3] = (uint8_t)((_xor_key >> 24) & 0xff);
-		xor_key[4] = (uint8_t)((_xor_key >> 32) & 0xff);
-		xor_key[5] = (uint8_t)((_xor_key >> 40) & 0xff);
-		xor_key[6] = (uint8_t)((_xor_key >> 48) & 0xff);
-		xor_key[7] = (uint8_t)((_xor_key >> 56) & 0xff);
 	}
 
 	void xor_key_encrypt_decrypt(char* data, size_t len) {
+		uint8_t xor_key[4] = { 0 };
+		xor_key[0] = len & 0xff;
+		xor_key[1] = len >> 8 & 0xff;
+		xor_key[2] = len >> 16 & 0xff;
+		xor_key[3] = len >> 24 & 0xff;
 		for (size_t i = 0; i < len; i++) {
-			data[i] ^= xor_key[i & 0x07];
+			data[i] ^= xor_key[i & 0x03];
 		}
 	}
 
@@ -125,8 +121,6 @@ private:
 	char * buff;
 	int32_t buff_size;
 	int32_t buff_offset;
-
-	uint8_t xor_key[8] = { 0 };
 
 };
 

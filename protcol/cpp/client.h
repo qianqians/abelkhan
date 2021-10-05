@@ -11,44 +11,6 @@ namespace abelkhan
 /*this struct code is codegen by abelkhan codegen for cpp*/
 /*this caller code is codegen by abelkhan codegen for cpp*/
 /*this cb code is codegen by abelkhan for cpp*/
-    class xor_key_rsp_cb : public Imodule, public std::enable_shared_from_this<xor_key_rsp_cb>{
-    public:
-        xor_key_rsp_cb() : Imodule("xor_key_rsp_cb")
-        {
-        }
-
-        void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-        }
-
-    };
-
-    class xor_key_caller : Icaller {
-    private:
-        static std::shared_ptr<xor_key_rsp_cb> rsp_cb_xor_key_handle;
-
-    private:
-        std::atomic<uint64_t> uuid_9149bc27_bc9f_3a38_a610_f82cdab0ef7c;
-
-    public:
-        xor_key_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("xor_key", _ch)
-        {
-            if (rsp_cb_xor_key_handle == nullptr){
-                rsp_cb_xor_key_handle = std::make_shared<xor_key_rsp_cb>();
-                rsp_cb_xor_key_handle->Init(modules);
-            }
-            uuid_9149bc27_bc9f_3a38_a610_f82cdab0ef7c.store(random());
-        }
-
-        void ntf_xor_key(uint64_t xor_key){
-            msgpack11::MsgPack::array _argv_b46fcc76_0226_3a78_93ec_a3808152c387;
-            _argv_b46fcc76_0226_3a78_93ec_a3808152c387.push_back(xor_key);
-            call_module_method("ntf_xor_key", _argv_b46fcc76_0226_3a78_93ec_a3808152c387);
-        }
-
-    };
-/*this cb code is codegen by abelkhan for cpp*/
     class gate_call_client_rsp_cb : public Imodule, public std::enable_shared_from_this<gate_call_client_rsp_cb>{
     public:
         gate_call_client_rsp_cb() : Imodule("gate_call_client_rsp_cb")
@@ -94,25 +56,6 @@ namespace abelkhan
 
     };
 /*this module code is codegen by abelkhan codegen for cpp*/
-    class xor_key_module : public Imodule, public std::enable_shared_from_this<xor_key_module>{
-    public:
-        xor_key_module() : Imodule("xor_key")
-        {
-        }
-
-        void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-            reg_method("ntf_xor_key", std::bind(&xor_key_module::ntf_xor_key, this, std::placeholders::_1));
-        }
-
-        concurrent::signals<void(uint64_t)> sig_ntf_xor_key;
-        void ntf_xor_key(const msgpack11::MsgPack::array& inArray){
-            auto _xor_key = inArray[0].uint64_value();
-            sig_ntf_xor_key.emit(_xor_key);
-        }
-
-    };
     class gate_call_client_module : public Imodule, public std::enable_shared_from_this<gate_call_client_module>{
     public:
         gate_call_client_module() : Imodule("gate_call_client")

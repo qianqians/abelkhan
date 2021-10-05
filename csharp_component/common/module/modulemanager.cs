@@ -23,7 +23,7 @@ namespace common
 			}
 			else
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "do not have a module name:{0}", module_name);
+                log.log.err("do not have a module name:{0}", module_name);
 				throw new moduleException(String.Format("modulemanager.process_module_mothed unreg module_name:%s!", module_name));
 			}
 		}

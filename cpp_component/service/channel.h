@@ -37,8 +37,8 @@ public:
 		s->async_read_some(boost::asio::buffer(read_buff, 16 * 1024), std::bind(&channel::onRecv, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
 	}
 
-	void set_xor_key(uint64_t _xor_key) {
-		ch_encrypt_decrypt_ondata->set_xor_key(_xor_key);
+	void set_xor_key_crypt() {
+		ch_encrypt_decrypt_ondata->set_xor_key_crypt();
 	}
 
 	virtual ~channel(){

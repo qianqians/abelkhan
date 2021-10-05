@@ -16,6 +16,7 @@ namespace common
 	public class imodule
 	{
 		private Dictionary<string, Action<ArrayList> > cbs = new Dictionary<string, Action<ArrayList> >();
+		private MessagePackSerializer<ArrayList> serializer = MessagePackSerializer.Get<ArrayList>();
 
 		public void reg_cb(string cb_name, Action<ArrayList> cb)
 		{
@@ -29,15 +30,14 @@ namespace common
 				var st = new MemoryStream();
 				st.Write(data);
 				st.Position = 0;
-
-				var serializer = MessagePackSerializer.Get<ArrayList>();
+				
 				var InArray = serializer.Unpack(st);
 
 				cb(InArray);
 			}
 			else
 			{
-				log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "imodule.invoke unreg func name:{0}", cb_name);
+				log.log.err("imodule.invoke unreg func name:{0}", cb_name);
 				throw new moduleException(String.Format("imodule.invoke unreg func name:%s!", cb_name));
 			}
 		}

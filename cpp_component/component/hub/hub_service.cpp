@@ -79,10 +79,7 @@ void hub_service::init() {
 			auto tcp_outside_port = (short)_config->get_value_int("tcp_outside_port");
 			_client_tcp_service = std::make_shared<service::acceptservice>(tcp_outside_ip, tcp_outside_port, _io_service);
 			_client_tcp_service->sigchannelconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
-				auto _xor_key_caller = std::make_shared<abelkhan::xor_key_caller>(ch, service::_modulemng);
-				auto _key = abelkhan::random();
-				_xor_key_caller->ntf_xor_key(_key);
-				std::static_pointer_cast<service::channel>(ch)->set_xor_key(_key);
+				std::static_pointer_cast<service::channel>(ch)->set_xor_key_crypt();
 			});
 			_client_tcp_service->sigchanneldisconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
 				service::gc_put([this, ch]() {

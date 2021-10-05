@@ -7,27 +7,57 @@ namespace log
     {
         public enum enLogMode
         {
-            Debug = 0,
-            Release = 1,
+            trace = 0,
+            debug = 1,
+            info = 2,
+            warn = 3,
+            err = 4,
         }
 
-        static public void trace(StackFrame st, Int64 tmptime, string log, params object[] agrvs)
+        static public void trace(string log, params object[] agrvs)
         {
-            output(st, tmptime, "trace", log, agrvs);
+            output(new System.Diagnostics.StackFrame(1), service.timerservice.Tick, "trace", log, agrvs);
         }
 
-        static public void error(StackFrame st, Int64 tmptime, string log, params object[] agrvs)
+        static public void debug(string log, params object[] agrvs)
         {
-            output(st, tmptime, "error", log, agrvs);
+            output(new System.Diagnostics.StackFrame(1), service.timerservice.Tick, "debug", log, agrvs);
         }
 
-        static public void operation(StackFrame st, Int64 tmptime, string log, params object[] agrvs)
+        static public void info(string log, params object[] agrvs)
         {
-            output(st, tmptime, "operation", log, agrvs);
+            output(new System.Diagnostics.StackFrame(1), service.timerservice.Tick, "info", log, agrvs);
+        }
+
+        static public void warn(string log, params object[] agrvs)
+        {
+            output(new System.Diagnostics.StackFrame(1), service.timerservice.Tick, "warn", log, agrvs);
+        }
+
+        static public void err(string log, params object[] agrvs)
+        {
+            output(new System.Diagnostics.StackFrame(1), service.timerservice.Tick, "err", log, agrvs);
         }
 
         static void output(StackFrame sf, Int64 tmptime, string level, string log, params object[] agrvs)
         {
+            if (level == "trace" && logMode > enLogMode.trace)
+            {
+                return;
+            }
+            else if (level == "debug" && logMode > enLogMode.debug)
+            {
+                return;
+            }
+            else if (level == "info" && logMode > enLogMode.info)
+            {
+                return;
+            }
+            else if (level == "warn" && logMode > enLogMode.warn)
+            {
+                return;
+            }
+            
             log = string.Format(log, agrvs);
 
             System.DateTime startTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -55,16 +85,7 @@ namespace log
                     }
                 }
 
-                do
-                {
-                    if (level == "trace" && logMode > enLogMode.Debug)
-                    {
-                        break;
-                    }
-
-                    Console.WriteLine(strlog);
-
-                } while (false);
+                Console.WriteLine(strlog);
 
                 System.IO.StreamWriter fs = new System.IO.StreamWriter(realLogFile, true);
                 fs.WriteLine(strlog);
@@ -74,6 +95,6 @@ namespace log
 
         static public string logPath = System.Environment.CurrentDirectory;
         static public string logFile = "log.txt";
-        static public enLogMode logMode = enLogMode.Debug;
+        static public enLogMode logMode = enLogMode.debug;
     }
 }
