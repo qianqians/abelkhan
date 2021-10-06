@@ -1,6 +1,8 @@
-﻿using System;
+﻿using MsgPack.Serialization;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 
 namespace dbproxy
@@ -8,118 +10,181 @@ namespace dbproxy
     /*write event*/
     public class create_event
     {
-        public create_event(hubproxy _hubproxy_, string _db, string _collection, Hashtable _object_info, string _callbackid)
+        public create_event(hubproxy _hubproxy_, string _db, string _collection, byte[] _msgpack_object_data, abelkhan.hub_call_dbproxy_create_persisted_object_rsp _rsp)
         {
             _hubproxy = _hubproxy_;
             db = _db;
             collection = _collection;
-            object_info = _object_info;
-            callbackid = _callbackid;
+            msgpack_object_data = _msgpack_object_data;
+            rsp = _rsp;
         }
 
-        public void do_event()
+        public async void do_event()
         {
-            var is_create_sucess = dbproxy._mongodbproxy.save(db, collection, object_info);
-            _hubproxy.ack_create_persisted_object(callbackid, is_create_sucess);
-
+            var is_create_sucess = await dbproxy._mongodbproxy.save(db, collection, msgpack_object_data);
+            if (is_create_sucess)
+            {
+                rsp.rsp();
+            }
+            else
+            {
+                rsp.err();
+            }
         }
 
         public hubproxy _hubproxy;
         public string db;
         public string collection;
-        public Hashtable object_info;
-        public string callbackid;
+        public byte[] msgpack_object_data;
+        public abelkhan.hub_call_dbproxy_create_persisted_object_rsp rsp;
     }
 
     public class update_event
     {
-        public update_event(hubproxy _hubproxy_, string _db, string _collection, Hashtable _query_json, Hashtable _object_info, string _callbackid)
+        public update_event(hubproxy _hubproxy_, string _db, string _collection, byte[] _query_data, byte[] _object_data, bool _upsert, abelkhan.hub_call_dbproxy_updata_persisted_object_rsp _rsp)
         {
             _hubproxy = _hubproxy_;
             db = _db;
             collection = _collection;
-            query_json = _query_json;
-            object_info = _object_info;
-            callbackid = _callbackid;
+            query_data = _query_data;
+            object_data = _object_data;
+            upsert = _upsert;
+            rsp = _rsp;
         }
 
-        public void do_event()
+        public async void do_event()
         {
-            dbproxy._mongodbproxy.update(db, collection, query_json, object_info);
-            _hubproxy.ack_updata_persisted_object(callbackid);
+            var is_update_sucessed = await dbproxy._mongodbproxy.update(db, collection, query_data, object_data, upsert);
+            if (is_update_sucessed)
+            {
+                rsp.rsp();
+            }
+            else
+            {
+                rsp.err();
+            }
         }
 
         public hubproxy _hubproxy;
         public string db;
         public string collection;
-        public Hashtable query_json;
-        public Hashtable object_info;
-        public string callbackid;
+        public byte[] query_data; 
+        public byte[] object_data;
+        public bool upsert;
+        public abelkhan.hub_call_dbproxy_updata_persisted_object_rsp rsp;
+    }
+
+    public class find_and_modify_event
+    {
+        public find_and_modify_event(hubproxy _hubproxy_, string _db, string _collection, byte[] _query_data, byte[] _object_data, bool _is_new, bool _upsert, abelkhan.hub_call_dbproxy_find_and_modify_rsp _rsp)
+        {
+            _hubproxy = _hubproxy_;
+            db = _db;
+            collection = _collection;
+            query_data = _query_data;
+            object_data = _object_data;
+            is_new = _is_new;
+            upsert = _upsert;
+            rsp = _rsp;
+        }
+
+        public async void do_event()
+        {
+            var obj = await dbproxy._mongodbproxy.find_and_modify(db, collection, query_data, object_data, is_new, upsert);
+            if (obj != null)
+            {
+                var serializer = MessagePackSerializer.Get<Hashtable>();
+
+                var _tmp = new MemoryStream();
+                serializer.Pack(_tmp, obj);
+                rsp.rsp(_tmp.ToArray());
+            }
+            else
+            {
+                rsp.err();
+            }
+        }
+
+        public hubproxy _hubproxy;
+        public string db;
+        public string collection;
+        public byte[] query_data;
+        public byte[] object_data;
+        public bool is_new;
+        public bool upsert;
+        public abelkhan.hub_call_dbproxy_find_and_modify_rsp rsp;
     }
 
     public class remove_event
     {
-        public remove_event(hubproxy _hubproxy_, string _db, string _collection, Hashtable _query_json, string _callbackid)
+        public remove_event(hubproxy _hubproxy_, string _db, string _collection, byte[] _query_data, abelkhan.hub_call_dbproxy_remove_object_rsp _rsp)
         {
             _hubproxy = _hubproxy_;
             db = _db;
             collection = _collection;
-            query_json = _query_json;
-            callbackid = _callbackid;
+            query_data = _query_data;
+            rsp = _rsp;
         }
 
-        public void do_event()
+        public async void do_event()
         {
-            dbproxy._mongodbproxy.remove(db, collection, query_json);
-            _hubproxy.ack_remove_object(callbackid);
+            var is_remove_sucessed = await dbproxy._mongodbproxy.remove(db, collection, query_data);
+            if (is_remove_sucessed)
+            {
+                rsp.rsp();
+            }
+            else
+            {
+                rsp.err();
+            }
         }
 
         public hubproxy _hubproxy;
         public string db;
         public string collection;
-        public Hashtable query_json;
-        public string callbackid;
+        public byte[] query_data; 
+        public abelkhan.hub_call_dbproxy_remove_object_rsp rsp;
     }
 
     /*read event*/
     public class count_event
     {
-        public count_event(hubproxy _hubproxy_, string _db, string _collection, Hashtable _query_json, string _callbackid)
+        public count_event(hubproxy _hubproxy_, string _db, string _collection, byte[] _query_data, abelkhan.hub_call_dbproxy_get_object_count_rsp _rsp)
         {
             _hubproxy = _hubproxy_;
             db = _db;
             collection = _collection;
-            query_json = _query_json;
-            callbackid = _callbackid;
+            query_data = _query_data;
+            rsp = _rsp;
         }
 
-        public void do_event()
+        public async void do_event()
         {
-            ArrayList _list = dbproxy._mongodbproxy.find(db, collection, query_json);
-            _hubproxy.ack_get_object_count(callbackid, _list.Count);
+            var count = await dbproxy._mongodbproxy.count(db, collection, query_data);
+            rsp.rsp((uint)count);
         }
 
         public hubproxy _hubproxy;
         public string db;
         public string collection;
-        public Hashtable query_json;
-        public string callbackid;
+        public byte[] query_data;
+        public abelkhan.hub_call_dbproxy_get_object_count_rsp rsp;
     }
 
     public class find_event
     {
-        public find_event(hubproxy _hubproxy_, string _db, string _collection, Hashtable _query_json, string _callbackid)
+        public find_event(hubproxy _hubproxy_, string _db, string _collection, byte[] _query_data, string _callbackid)
         {
             _hubproxy = _hubproxy_;
             db = _db;
             collection = _collection;
-            query_json = _query_json;
+            query_data = _query_data;
             callbackid = _callbackid;
         }
 
-        public void do_event()
+        public async void do_event()
         {
-            ArrayList _list = dbproxy._mongodbproxy.find(db, collection, query_json);
+            ArrayList _list = await dbproxy._mongodbproxy.find(db, collection, query_data);
 
             int count = 0;
             ArrayList _datalist = new ArrayList();
@@ -154,7 +219,7 @@ namespace dbproxy
         public hubproxy _hubproxy;
         public string db;
         public string collection;
-        public Hashtable query_json;
+        public byte[] query_data;
         public string callbackid;
     }
     
@@ -162,6 +227,7 @@ namespace dbproxy
     {
         private Queue<create_event> create_event_list = new Queue<create_event>();
         private Queue<update_event> updata_event_list = new Queue<update_event>();
+        private Queue<find_and_modify_event> find_and_modify_event_list = new Queue<find_and_modify_event>();
         private Queue<remove_event> remove_event_list = new Queue<remove_event>();
 
         public void push_create_event(create_event _event)
@@ -180,6 +246,14 @@ namespace dbproxy
             }
         }
 
+        public void push_find_and_modify_event(find_and_modify_event _event)
+        {
+            lock (find_and_modify_event_list)
+            {
+                find_and_modify_event_list.Enqueue(_event);
+            }
+        }
+
         public void push_remove_event(remove_event _event)
         {
             lock (remove_event_list)
@@ -192,7 +266,7 @@ namespace dbproxy
         {
             Thread t = new Thread(() =>
             {
-                while (!dbproxy.closeHandle.is_close())
+                while (!dbproxy._closeHandle.is_close())
                 {
                     bool do_nothing = true;
                     lock (create_event_list)
@@ -209,6 +283,15 @@ namespace dbproxy
                         if (updata_event_list.Count > 0)
                         {
                             var _event = updata_event_list.Dequeue();
+                            _event.do_event();
+                            do_nothing = false;
+                        }
+                    }
+                    lock (find_and_modify_event_list)
+                    {
+                        if (find_and_modify_event_list.Count > 0)
+                        {
+                            var _event = find_and_modify_event_list.Dequeue();
                             _event.do_event();
                             do_nothing = false;
                         }
@@ -271,7 +354,7 @@ namespace dbproxy
             {
                 Thread t = new Thread(() =>
                 {
-                    while (!dbproxy.closeHandle.is_close())
+                    while (!dbproxy._closeHandle.is_close())
                     {
                         bool do_nothing = true;
                         lock (count_event_list)
@@ -322,6 +405,16 @@ namespace dbproxy
             }
 
             collection_write_event_list[_event.collection].push_updata_event(_event);
+        }
+
+        public void push_find_and_modify_event(find_and_modify_event _event)
+        {
+            if (!collection_write_event_list.ContainsKey(_event.collection))
+            {
+                start_write(_event.collection);
+            }
+
+            collection_write_event_list[_event.collection].push_find_and_modify_event(_event);
         }
 
         public void push_remove_event(remove_event _event)

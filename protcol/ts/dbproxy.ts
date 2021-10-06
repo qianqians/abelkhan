@@ -491,14 +491,15 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
         return cb_create_persisted_object_obj;
     }
 
-    public updata_persisted_object(db:string, collection:string, query_json:Uint8Array, updata_info:Uint8Array){
+    public updata_persisted_object(db:string, collection:string, query_info:Uint8Array, updata_info:Uint8Array, _upsert:boolean){
         let uuid_7864a402_2d75_5c02_b24b_50287a06732f = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
 
         let _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425:any[] = [uuid_7864a402_2d75_5c02_b24b_50287a06732f];
         _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.push(db);
         _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.push(collection);
-        _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.push(query_json);
+        _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.push(query_info);
         _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.push(updata_info);
+        _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.push(_upsert);
         this.call_module_method("updata_persisted_object", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
 
         let cb_updata_persisted_object_obj = new hub_call_dbproxy_updata_persisted_object_cb(uuid_7864a402_2d75_5c02_b24b_50287a06732f, rsp_cb_hub_call_dbproxy_handle);
@@ -508,15 +509,16 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
         return cb_updata_persisted_object_obj;
     }
 
-    public find_and_modify(db:string, collection:string, query_json:Uint8Array, updata_info:Uint8Array, _new:boolean){
+    public find_and_modify(db:string, collection:string, query_info:Uint8Array, updata_info:Uint8Array, _new:boolean, _upsert:boolean){
         let uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
 
         let _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58:any[] = [uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a];
         _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.push(db);
         _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.push(collection);
-        _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.push(query_json);
+        _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.push(query_info);
         _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.push(updata_info);
         _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.push(_new);
+        _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.push(_upsert);
         this.call_module_method("find_and_modify", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
 
         let cb_find_and_modify_obj = new hub_call_dbproxy_find_and_modify_cb(uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a, rsp_cb_hub_call_dbproxy_handle);
@@ -526,13 +528,13 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
         return cb_find_and_modify_obj;
     }
 
-    public remove_object(db:string, collection:string, query_json:Uint8Array){
+    public remove_object(db:string, collection:string, query_info:Uint8Array){
         let uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
 
         let _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da:any[] = [uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f];
         _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.push(db);
         _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.push(collection);
-        _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.push(query_json);
+        _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.push(query_info);
         this.call_module_method("remove_object", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
 
         let cb_remove_object_obj = new hub_call_dbproxy_remove_object_cb(uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f, rsp_cb_hub_call_dbproxy_handle);
@@ -542,22 +544,22 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
         return cb_remove_object_obj;
     }
 
-    public get_object_info(db:string, collection:string, query_json:Uint8Array, callbackid:string){
+    public get_object_info(db:string, collection:string, query_info:Uint8Array, callbackid:string){
         let _argv_1f17e6de_d423_391b_a599_7268e665a53f:any[] = [];
         _argv_1f17e6de_d423_391b_a599_7268e665a53f.push(db);
         _argv_1f17e6de_d423_391b_a599_7268e665a53f.push(collection);
-        _argv_1f17e6de_d423_391b_a599_7268e665a53f.push(query_json);
+        _argv_1f17e6de_d423_391b_a599_7268e665a53f.push(query_info);
         _argv_1f17e6de_d423_391b_a599_7268e665a53f.push(callbackid);
         this.call_module_method("get_object_info", _argv_1f17e6de_d423_391b_a599_7268e665a53f);
     }
 
-    public get_object_count(db:string, collection:string, query_json:Uint8Array){
+    public get_object_count(db:string, collection:string, query_info:Uint8Array){
         let uuid_975425f5_8baf_5905_beeb_4454e78907f6 = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
 
         let _argv_2632cded_162c_3a9b_86ee_462b614cbeea:any[] = [uuid_975425f5_8baf_5905_beeb_4454e78907f6];
         _argv_2632cded_162c_3a9b_86ee_462b614cbeea.push(db);
         _argv_2632cded_162c_3a9b_86ee_462b614cbeea.push(collection);
-        _argv_2632cded_162c_3a9b_86ee_462b614cbeea.push(query_json);
+        _argv_2632cded_162c_3a9b_86ee_462b614cbeea.push(query_info);
         this.call_module_method("get_object_count", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
 
         let cb_get_object_count_obj = new hub_call_dbproxy_get_object_count_cb(uuid_975425f5_8baf_5905_beeb_4454e78907f6, rsp_cb_hub_call_dbproxy_handle);
@@ -776,7 +778,7 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
         this.rsp = null;
     }
 
-    public cb_updata_persisted_object : (db:string, collection:string, query_json:Uint8Array, updata_info:Uint8Array)=>void | null;
+    public cb_updata_persisted_object : (db:string, collection:string, query_info:Uint8Array, updata_info:Uint8Array, _upsert:boolean)=>void | null;
     updata_persisted_object(inArray:any[]){
         let _cb_uuid = inArray[0];
         let _argv_:any[] = [];
@@ -784,6 +786,7 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
         _argv_.push(inArray[2]);
         _argv_.push(inArray[3]);
         _argv_.push(inArray[4]);
+        _argv_.push(inArray[5]);
         this.rsp = new hub_call_dbproxy_updata_persisted_object_rsp(this.current_ch, _cb_uuid);
         if (this.cb_updata_persisted_object){
             this.cb_updata_persisted_object.apply(null, _argv_);
@@ -791,7 +794,7 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
         this.rsp = null;
     }
 
-    public cb_find_and_modify : (db:string, collection:string, query_json:Uint8Array, updata_info:Uint8Array, _new:boolean)=>void | null;
+    public cb_find_and_modify : (db:string, collection:string, query_info:Uint8Array, updata_info:Uint8Array, _new:boolean, _upsert:boolean)=>void | null;
     find_and_modify(inArray:any[]){
         let _cb_uuid = inArray[0];
         let _argv_:any[] = [];
@@ -800,6 +803,7 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
         _argv_.push(inArray[3]);
         _argv_.push(inArray[4]);
         _argv_.push(inArray[5]);
+        _argv_.push(inArray[6]);
         this.rsp = new hub_call_dbproxy_find_and_modify_rsp(this.current_ch, _cb_uuid);
         if (this.cb_find_and_modify){
             this.cb_find_and_modify.apply(null, _argv_);
@@ -807,7 +811,7 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
         this.rsp = null;
     }
 
-    public cb_remove_object : (db:string, collection:string, query_json:Uint8Array)=>void | null;
+    public cb_remove_object : (db:string, collection:string, query_info:Uint8Array)=>void | null;
     remove_object(inArray:any[]){
         let _cb_uuid = inArray[0];
         let _argv_:any[] = [];
@@ -821,7 +825,7 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
         this.rsp = null;
     }
 
-    public cb_get_object_info : (db:string, collection:string, query_json:Uint8Array, callbackid:string)=>void | null;
+    public cb_get_object_info : (db:string, collection:string, query_info:Uint8Array, callbackid:string)=>void | null;
     get_object_info(inArray:any[]){
         let _argv_:any[] = [];
         _argv_.push(inArray[0]);
@@ -833,7 +837,7 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
         }
     }
 
-    public cb_get_object_count : (db:string, collection:string, query_json:Uint8Array)=>void | null;
+    public cb_get_object_count : (db:string, collection:string, query_info:Uint8Array)=>void | null;
     get_object_count(inArray:any[]){
         let _cb_uuid = inArray[0];
         let _argv_:any[] = [];

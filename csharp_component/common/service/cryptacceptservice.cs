@@ -84,7 +84,7 @@ namespace abelkhan
             xor_key = _xor_key;
         }
 
-        public event Action<cryptchannel> on_connect;
+        public event Action<abelkhan.Ichannel> on_connect;
         private void onConnect(cryptchannel ch)
         {
             if (on_connect != null)

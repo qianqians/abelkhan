@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace dbproxy
@@ -9,23 +11,33 @@ namespace dbproxy
 		{
 			is_busy = false;
 
-			uuid = System.Guid.NewGuid().ToString();
-
-			config.config _config = new config.config(args[0]);
-			config.config _center_config = _config.get_value_dict("center");
+            abelkhan.config _config = new abelkhan.config(args[0]);
+            abelkhan.config _center_config = _config.get_value_dict("center");
 			if (args.Length > 1)
 			{
 				_config = _config.get_value_dict(args[1]);
 			}
 
             var log_level = _config.get_value_string("log_level");
-            if (log_level == "debug")
+            if (log_level == "trace")
             {
-                log.log.logMode = log.log.enLogMode.Debug;
+                log.log.logMode = log.log.enLogMode.trace;
             }
-            else if (log_level == "release")
+            else if (log_level == "debug")
             {
-                log.log.logMode = log.log.enLogMode.Release;
+                log.log.logMode = log.log.enLogMode.debug;
+            }
+            else if (log_level == "info")
+            {
+                log.log.logMode = log.log.enLogMode.info;
+            }
+            else if (log_level == "warn")
+            {
+                log.log.logMode = log.log.enLogMode.warn;
+            }
+            else if (log_level == "err")
+            {
+                log.log.logMode = log.log.enLogMode.err;
             }
             var log_file = _config.get_value_string("log_file");
             log.log.logFile = log_file;
@@ -37,11 +49,6 @@ namespace dbproxy
                     System.IO.Directory.CreateDirectory(log_dir);
                 }
             }
-
-            closeHandle = new closehandle();
-
-            _dbevent = new dbevent();
-            _dbevent.start();
 
             if (_config.has_key("db_ip") && _config.has_key("db_port"))
             {
@@ -69,64 +76,104 @@ namespace dbproxy
                 }
             }
 
-            var ip = _config.get_value_string("ip");
-			var port = (short)_config.get_value_int("port");
+            name = _config.get_value_string("svr_name");
             
-			_hub_call_dbproxy = new module.hub_call_dbproxy();
-			_process = new juggle.process();
-			_process.reg_module(_hub_call_dbproxy);
-			_acceptnetworkservice = new service.acceptnetworkservice(ip, port, _process);
+            _timer = new service.timerservice();
+            _timer.refresh();
 
-			_hubmanager = new hubmanager ();
-			_hub_msg_handle = new hub_msg_handle(_hubmanager, _mongodbproxy);
-			_hub_call_dbproxy.onreg_hub += _hub_msg_handle.reg_hub;
-			_hub_call_dbproxy.oncreate_persisted_object += _hub_msg_handle.create_persisted_object;
-			_hub_call_dbproxy.onupdata_persisted_object += _hub_msg_handle.updata_persisted_object;
-            _hub_call_dbproxy.onget_object_count += _hub_msg_handle.get_object_count;
-            _hub_call_dbproxy.onget_object_info += _hub_msg_handle.get_object_info;
-            _hub_call_dbproxy.onremove_object += _hub_msg_handle.remove_object;
+            chs = new List<abelkhan.Ichannel>();
+            add_chs = new List<abelkhan.Ichannel>();
+            remove_chs = new List<abelkhan.Ichannel>();
+            
+            _closeHandle = new closehandle();
+            _hubmanager = new hubmanager();
+            _dbevent = new dbevent();
+            _dbevent.start();
+
+            var ip = _config.get_value_string("ip");
+            var port = (ushort)_config.get_value_int("port");
+			_acceptservice = new abelkhan.acceptservice(port);
+            _acceptservice.on_connect += (abelkhan.Ichannel ch) => {
+                lock (add_chs)
+                {
+                    add_chs.Add(ch);
+                }
+            };
+            _acceptservice.start();
+            _hub_msg_handle = new hub_msg_handle(_hubmanager, _closeHandle);
 
             var center_ip = _center_config.get_value_string("ip");
 			var center_port = (short)_center_config.get_value_int("port");
-			_center_call_server = new module.center_call_server();
-			_center_process = new juggle.process();
-			_center_process.reg_module(_center_call_server);
-			_center_connectnetworkservice = new service.connectnetworkservice(_center_process);
-			var _center_ch = _center_connectnetworkservice.connect(center_ip, center_port);
-			_centerproxy = new centerproxy(_center_ch);
-			_center_msg_handle = new center_msg_handle(closeHandle, _centerproxy);
-			_center_call_server.onclose_server += _center_msg_handle.close_server;
-			_center_call_server.onreg_server_sucess += _center_msg_handle.reg_server_sucess;
+            var _socket = abelkhan.connectservice.connect(System.Net.IPAddress.Parse(center_ip), center_port);
+            var _center_ch = new abelkhan.rawchannel(_socket);
+            lock (add_chs)
+            {
+                add_chs.Add(_center_ch);
+            }
+            _centerproxy = new centerproxy(_center_ch);
+            _center_msg_handle = new center_msg_handle(_closeHandle, _hubmanager);
+            _centerproxy.reg_dbproxy(ip, (short)port, name);
 
-			_juggle_service = new service.juggleservice();
-			_juggle_service.add_process(_process);
-			_juggle_service.add_process(_center_process);
+            heartbeath_center(service.timerservice.Tick);
+        }
 
-			timer = new service.timerservice();
-
-			_centerproxy.reg_dbproxy(ip, port, uuid);
-		}
+        private void heartbeath_center(Int64 tick)
+        {
+            _centerproxy.heartbeath();
+            _timer.addticktime(5 * 1000, heartbeath_center);
+        }
 
 		public Int64 poll()
         {
-            Int64 tick_begin = timer.poll();
+            Int64 tick_begin = _timer.poll();
 
             try
             {
-                _juggle_service.poll(tick_begin);
+                lock (add_chs)
+                {
+                    foreach (var ch in add_chs)
+                    {
+                        chs.Add(ch);
+                    }
+                    add_chs.Clear();
+                }
+
+                foreach (var ch in chs)
+                {
+                    while (true)
+                    {
+                        ArrayList ev = null;
+                        lock (ch)
+                        {
+                            ev = ch.pop();
+                        }
+                        if (ev == null)
+                        {
+                            break;
+                        }
+                        abelkhan.modulemng_handle._modulemng.process_event(ch, ev);
+                    }
+                }
+
+                lock (remove_chs)
+                {
+                    foreach (var ch in remove_chs)
+                    {
+                        chs.Remove(ch);
+                    }
+                    remove_chs.Clear();
+                }
             }
-            catch(juggle.Exception e)
+            catch (abelkhan.Exception e)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, e.Message);
+                log.log.err(e.Message);
             }
             catch (System.Exception e)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, "{0}", e);
+                log.log.err("{0}", e);
             }
 
-            //System.GC.Collect();
-
-            Int64 tick_end = timer.refresh();
+            Int64 tick_end = _timer.refresh();
 
             return tick_end - tick_begin;
         }
@@ -135,7 +182,7 @@ namespace dbproxy
 		{
 			if (args.Length <= 0)
 			{
-                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "non input start argv");
+                log.log.err("non input start argv");
 				return;
 			}
 
@@ -145,9 +192,9 @@ namespace dbproxy
 			{
                 var ticktime = _dbproxy.poll();
 
-				if (closeHandle.is_close())
+				if (_closeHandle.is_close())
                 {
-                    log.log.operation(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "server closed, dbproxy server:{0}", dbproxy.uuid);
+                    log.log.info("server closed, dbproxy server:{0}", dbproxy.name);
 					break;
 				}
                 
@@ -169,30 +216,24 @@ namespace dbproxy
             dbproxy._dbevent.join_all();
         }
 
-		public static String uuid;
+		public static String name;
 		public static bool is_busy;
-
-		public static closehandle closeHandle;
-
+		public static closehandle _closeHandle;
         public static dbevent _dbevent;
-
+        public static hubmanager _hubmanager;
+        public static service.timerservice _timer;
         public static mongodbproxy _mongodbproxy;
 
-        public static hubmanager _hubmanager;
-		private hub_msg_handle _hub_msg_handle;
-		private module.hub_call_dbproxy _hub_call_dbproxy;
+        private List<abelkhan.Ichannel> chs;
+        private List<abelkhan.Ichannel> add_chs;
+        public static List<abelkhan.Ichannel> remove_chs;
 
-		private juggle.process _process;
-		private service.acceptnetworkservice _acceptnetworkservice;
+        private hub_msg_handle _hub_msg_handle;
+        private center_msg_handle _center_msg_handle;
 
+        private abelkhan.acceptservice _acceptservice;
 		private centerproxy _centerproxy;
-		private module.center_call_server _center_call_server;
-		private juggle.process _center_process;
-		private center_msg_handle _center_msg_handle;
-		private service.connectnetworkservice _center_connectnetworkservice;
 
-		private service.juggleservice _juggle_service;
-		public static service.timerservice timer;
 	}
 }
 

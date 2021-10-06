@@ -4,22 +4,35 @@ namespace dbproxy
 {
 	public class centerproxy
 	{
-		public centerproxy(juggle.Ichannel ch)
+		public centerproxy(abelkhan.Ichannel ch)
 		{
 			is_reg_sucess = false;
-			_logic_call_center = new caller.center(ch);
+			_center_caller = new abelkhan.center_caller(ch, abelkhan.modulemng_handle._modulemng);
 		}
 
-		public void reg_dbproxy(String ip, short port, String uuid)
+		public void reg_dbproxy(String ip, short port, String name)
 		{
-            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin connect center server");
+            log.log.trace("begin connect center server");
 
-			_logic_call_center.reg_server("dbproxy", ip, port, uuid);
+			_center_caller.reg_server("dbproxy", ip, (ushort)port, name).callBack(()=>{
+				log.log.trace("connect center server sucessed");
+			}, ()=> {
+				log.log.err("connect center server faild");
+			}).timeout(5*1000, ()=> {
+				log.log.err("connect center server timeout");
+			});
+		}
+
+		public void heartbeath()
+        {
+			_center_caller.heartbeat();
+
+			log.log.trace("begin heartbeath center server tick:{0}!", service.timerservice.Tick);
 		}
 
 		public bool is_reg_sucess;
 
-		private caller.center _logic_call_center;
+		private abelkhan.center_caller _center_caller;
 	}
 }
 

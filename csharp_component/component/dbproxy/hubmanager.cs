@@ -8,20 +8,34 @@ namespace dbproxy
 	{
 		public hubmanager()
 		{
-			hubproxys_uuid = new Dictionary<string, hubproxy> ();
-			hubproxys = new Dictionary<juggle.Ichannel, hubproxy> ();
+			hubproxys_name = new Dictionary<string, hubproxy> ();
+			hubproxys = new Dictionary<abelkhan.Ichannel, hubproxy> ();
 		}
 
-		public hubproxy reg_hub(juggle.Ichannel ch, String uuid)
+		public hubproxy reg_hub(abelkhan.Ichannel ch, String name)
 		{
 			hubproxy _hubproxy = new hubproxy (ch);
-			hubproxys_uuid.Add (uuid, _hubproxy);
+			hubproxys_name.Add (name, _hubproxy);
 			hubproxys.Add (ch, _hubproxy);
 
 			return _hubproxy;
 		}
 
-		public hubproxy get_hub(juggle.Ichannel ch)
+		public void on_hub_closed(string name)
+		{
+			if (hubproxys_name.TryGetValue(name, out hubproxy _proxy))
+			{
+				hubproxys_name.Remove(name);
+				hubproxys.Remove(_proxy._ch);
+
+                lock (dbproxy.remove_chs)
+                {
+					dbproxy.remove_chs.Add(_proxy._ch);
+				}
+			}
+		}
+
+		public hubproxy get_hub(abelkhan.Ichannel ch)
 		{
 			if (hubproxys.ContainsKey (ch)) 
 			{
@@ -31,8 +45,8 @@ namespace dbproxy
 			return null;
 		}
 
-		private Dictionary<String, hubproxy> hubproxys_uuid;
-		private Dictionary<juggle.Ichannel, hubproxy> hubproxys;
+		private Dictionary<String, hubproxy> hubproxys_name;
+		private Dictionary<abelkhan.Ichannel, hubproxy> hubproxys;
 
 	}
 }

@@ -35,6 +35,15 @@ namespace abelkhan
             };
         }
 
+        public ArrayList pop()
+        {
+            if (_channel_onrecv.que.Count > 0)
+            {
+                return _channel_onrecv.que.Dequeue();
+            }
+            return null;
+        }
+
         public void disconnect()
         {
             _socket.Close();

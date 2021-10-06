@@ -16,7 +16,7 @@ namespace abelkhan
         private Dictionary<string, enetchannel> conns;
         private Dictionary<string, Action<enetchannel> > conn_cbs;
 
-        public event Action<enetchannel> on_connect;
+        public event Action<abelkhan.Ichannel> on_connect;
 
         public enetservice(string ip, ushort port)
         {

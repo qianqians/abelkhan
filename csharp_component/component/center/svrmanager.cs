@@ -79,13 +79,17 @@ namespace abelkhan
         private List<svrproxy> dbproxys;
         public Dictionary<abelkhan.Ichannel, svrproxy> svrproxys;
         private Dictionary<abelkhan.Ichannel, hubproxy> hubproxys;
+        private service.timerservice _timer;
 
-        public svrmanager()
+        public svrmanager(service.timerservice timer)
         {
             dbproxys = new List<svrproxy>();
             svrproxys = new Dictionary<abelkhan.Ichannel, svrproxy>();
             hubproxys = new Dictionary<Ichannel, hubproxy>();
+            _timer = timer;
             closed_svr_list = new List<svrproxy>();
+
+            heartbeat_svr(service.timerservice.Tick);
         }
 
         public void reg_svr(abelkhan.Ichannel ch, string type, string name, string ip, ushort port)
@@ -129,7 +133,7 @@ namespace abelkhan
             closed_svr_list.Clear();
         }
         
-        public void heartbeat_svr()
+        public void heartbeat_svr(Int64 tick)
         {
             foreach (var _proxy in svrproxys)
             {
@@ -139,6 +143,7 @@ namespace abelkhan
                     closed_svr_list.Add(_proxy.Value);
                 }
             }
+            _timer.addticktime(10 * 1000, heartbeat_svr);
         }
 
         public void on_svr_close(svrproxy _proxy)

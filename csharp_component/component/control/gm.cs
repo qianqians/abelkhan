@@ -60,9 +60,9 @@ namespace gm
                 while (true)
                 {
                     ArrayList _event = null;
-                    lock (ch._channel_onrecv.que)
+                    lock (ch)
                     {
-                        _event = ch._channel_onrecv.que.Dequeue();
+                        _event = ch.pop();
                     }
                     if (_event == null)
                     {

@@ -422,14 +422,15 @@ namespace abelkhan
             return cb_create_persisted_object_obj;
         }
 
-        std::shared_ptr<hub_call_dbproxy_updata_persisted_object_cb> updata_persisted_object(std::string db, std::string collection, std::vector<uint8_t> query_json, std::vector<uint8_t> updata_info){
+        std::shared_ptr<hub_call_dbproxy_updata_persisted_object_cb> updata_persisted_object(std::string db, std::string collection, std::vector<uint8_t> query_info, std::vector<uint8_t> updata_info, bool _upsert){
             auto uuid_7864a402_2d75_5c02_b24b_50287a06732f = uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
             msgpack11::MsgPack::array _argv_16267d40_cddc_312f_87c0_185a55b79ad2;
             _argv_16267d40_cddc_312f_87c0_185a55b79ad2.push_back(uuid_7864a402_2d75_5c02_b24b_50287a06732f);
             _argv_16267d40_cddc_312f_87c0_185a55b79ad2.push_back(db);
             _argv_16267d40_cddc_312f_87c0_185a55b79ad2.push_back(collection);
-            _argv_16267d40_cddc_312f_87c0_185a55b79ad2.push_back(query_json);
+            _argv_16267d40_cddc_312f_87c0_185a55b79ad2.push_back(query_info);
             _argv_16267d40_cddc_312f_87c0_185a55b79ad2.push_back(updata_info);
+            _argv_16267d40_cddc_312f_87c0_185a55b79ad2.push_back(_upsert);
             call_module_method("updata_persisted_object", _argv_16267d40_cddc_312f_87c0_185a55b79ad2);
 
             auto cb_updata_persisted_object_obj = std::make_shared<hub_call_dbproxy_updata_persisted_object_cb>(uuid_7864a402_2d75_5c02_b24b_50287a06732f, rsp_cb_hub_call_dbproxy_handle);
@@ -438,15 +439,16 @@ namespace abelkhan
             return cb_updata_persisted_object_obj;
         }
 
-        std::shared_ptr<hub_call_dbproxy_find_and_modify_cb> find_and_modify(std::string db, std::string collection, std::vector<uint8_t> query_json, std::vector<uint8_t> updata_info, bool _new){
+        std::shared_ptr<hub_call_dbproxy_find_and_modify_cb> find_and_modify(std::string db, std::string collection, std::vector<uint8_t> query_info, std::vector<uint8_t> updata_info, bool _new, bool _upsert){
             auto uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a = uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
             msgpack11::MsgPack::array _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae;
             _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae.push_back(uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a);
             _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae.push_back(db);
             _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae.push_back(collection);
-            _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae.push_back(query_json);
+            _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae.push_back(query_info);
             _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae.push_back(updata_info);
             _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae.push_back(_new);
+            _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae.push_back(_upsert);
             call_module_method("find_and_modify", _argv_c7725286_bd2c_331b_8ba9_90ffcefab6ae);
 
             auto cb_find_and_modify_obj = std::make_shared<hub_call_dbproxy_find_and_modify_cb>(uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a, rsp_cb_hub_call_dbproxy_handle);
@@ -455,13 +457,13 @@ namespace abelkhan
             return cb_find_and_modify_obj;
         }
 
-        std::shared_ptr<hub_call_dbproxy_remove_object_cb> remove_object(std::string db, std::string collection, std::vector<uint8_t> query_json){
+        std::shared_ptr<hub_call_dbproxy_remove_object_cb> remove_object(std::string db, std::string collection, std::vector<uint8_t> query_info){
             auto uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f = uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
             msgpack11::MsgPack::array _argv_f3bda2d9_d71c_307f_b727_d893a1cc0cd1;
             _argv_f3bda2d9_d71c_307f_b727_d893a1cc0cd1.push_back(uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f);
             _argv_f3bda2d9_d71c_307f_b727_d893a1cc0cd1.push_back(db);
             _argv_f3bda2d9_d71c_307f_b727_d893a1cc0cd1.push_back(collection);
-            _argv_f3bda2d9_d71c_307f_b727_d893a1cc0cd1.push_back(query_json);
+            _argv_f3bda2d9_d71c_307f_b727_d893a1cc0cd1.push_back(query_info);
             call_module_method("remove_object", _argv_f3bda2d9_d71c_307f_b727_d893a1cc0cd1);
 
             auto cb_remove_object_obj = std::make_shared<hub_call_dbproxy_remove_object_cb>(uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f, rsp_cb_hub_call_dbproxy_handle);
@@ -470,22 +472,22 @@ namespace abelkhan
             return cb_remove_object_obj;
         }
 
-        void get_object_info(std::string db, std::string collection, std::vector<uint8_t> query_json, std::string callbackid){
+        void get_object_info(std::string db, std::string collection, std::vector<uint8_t> query_info, std::string callbackid){
             msgpack11::MsgPack::array _argv_1f17e6de_d423_391b_a599_7268e665a53f;
             _argv_1f17e6de_d423_391b_a599_7268e665a53f.push_back(db);
             _argv_1f17e6de_d423_391b_a599_7268e665a53f.push_back(collection);
-            _argv_1f17e6de_d423_391b_a599_7268e665a53f.push_back(query_json);
+            _argv_1f17e6de_d423_391b_a599_7268e665a53f.push_back(query_info);
             _argv_1f17e6de_d423_391b_a599_7268e665a53f.push_back(callbackid);
             call_module_method("get_object_info", _argv_1f17e6de_d423_391b_a599_7268e665a53f);
         }
 
-        std::shared_ptr<hub_call_dbproxy_get_object_count_cb> get_object_count(std::string db, std::string collection, std::vector<uint8_t> query_json){
+        std::shared_ptr<hub_call_dbproxy_get_object_count_cb> get_object_count(std::string db, std::string collection, std::vector<uint8_t> query_info){
             auto uuid_975425f5_8baf_5905_beeb_4454e78907f6 = uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
             msgpack11::MsgPack::array _argv_175cd463_d9ac_3cde_804f_1c917ef2c7d2;
             _argv_175cd463_d9ac_3cde_804f_1c917ef2c7d2.push_back(uuid_975425f5_8baf_5905_beeb_4454e78907f6);
             _argv_175cd463_d9ac_3cde_804f_1c917ef2c7d2.push_back(db);
             _argv_175cd463_d9ac_3cde_804f_1c917ef2c7d2.push_back(collection);
-            _argv_175cd463_d9ac_3cde_804f_1c917ef2c7d2.push_back(query_json);
+            _argv_175cd463_d9ac_3cde_804f_1c917ef2c7d2.push_back(query_info);
             call_module_method("get_object_count", _argv_175cd463_d9ac_3cde_804f_1c917ef2c7d2);
 
             auto cb_get_object_count_obj = std::make_shared<hub_call_dbproxy_get_object_count_cb>(uuid_975425f5_8baf_5905_beeb_4454e78907f6, rsp_cb_hub_call_dbproxy_handle);
@@ -707,28 +709,30 @@ namespace abelkhan
             rsp = nullptr;
         }
 
-        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>, std::vector<uint8_t>)> sig_updata_persisted_object;
+        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>, std::vector<uint8_t>, bool)> sig_updata_persisted_object;
         void updata_persisted_object(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
             auto _db = inArray[1].string_value();
             auto _collection = inArray[2].string_value();
-            auto _query_json = inArray[3].binary_items();
+            auto _query_info = inArray[3].binary_items();
             auto _updata_info = inArray[4].binary_items();
+            auto __upsert = inArray[5].bool_value();
             rsp = std::make_shared<hub_call_dbproxy_updata_persisted_object_rsp>(current_ch, _cb_uuid);
-            sig_updata_persisted_object.emit(_db, _collection, _query_json, _updata_info);
+            sig_updata_persisted_object.emit(_db, _collection, _query_info, _updata_info, __upsert);
             rsp = nullptr;
         }
 
-        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>, std::vector<uint8_t>, bool)> sig_find_and_modify;
+        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>, std::vector<uint8_t>, bool, bool)> sig_find_and_modify;
         void find_and_modify(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
             auto _db = inArray[1].string_value();
             auto _collection = inArray[2].string_value();
-            auto _query_json = inArray[3].binary_items();
+            auto _query_info = inArray[3].binary_items();
             auto _updata_info = inArray[4].binary_items();
             auto __new = inArray[5].bool_value();
+            auto __upsert = inArray[6].bool_value();
             rsp = std::make_shared<hub_call_dbproxy_find_and_modify_rsp>(current_ch, _cb_uuid);
-            sig_find_and_modify.emit(_db, _collection, _query_json, _updata_info, __new);
+            sig_find_and_modify.emit(_db, _collection, _query_info, _updata_info, __new, __upsert);
             rsp = nullptr;
         }
 
@@ -737,9 +741,9 @@ namespace abelkhan
             auto _cb_uuid = inArray[0].uint64_value();
             auto _db = inArray[1].string_value();
             auto _collection = inArray[2].string_value();
-            auto _query_json = inArray[3].binary_items();
+            auto _query_info = inArray[3].binary_items();
             rsp = std::make_shared<hub_call_dbproxy_remove_object_rsp>(current_ch, _cb_uuid);
-            sig_remove_object.emit(_db, _collection, _query_json);
+            sig_remove_object.emit(_db, _collection, _query_info);
             rsp = nullptr;
         }
 
@@ -747,9 +751,9 @@ namespace abelkhan
         void get_object_info(const msgpack11::MsgPack::array& inArray){
             auto _db = inArray[0].string_value();
             auto _collection = inArray[1].string_value();
-            auto _query_json = inArray[2].binary_items();
+            auto _query_info = inArray[2].binary_items();
             auto _callbackid = inArray[3].string_value();
-            sig_get_object_info.emit(_db, _collection, _query_json, _callbackid);
+            sig_get_object_info.emit(_db, _collection, _query_info, _callbackid);
         }
 
         concurrent::signals<void(std::string, std::string, std::vector<uint8_t>)> sig_get_object_count;
@@ -757,9 +761,9 @@ namespace abelkhan
             auto _cb_uuid = inArray[0].uint64_value();
             auto _db = inArray[1].string_value();
             auto _collection = inArray[2].string_value();
-            auto _query_json = inArray[3].binary_items();
+            auto _query_info = inArray[3].binary_items();
             rsp = std::make_shared<hub_call_dbproxy_get_object_count_rsp>(current_ch, _cb_uuid);
-            sig_get_object_count.emit(_db, _collection, _query_json);
+            sig_get_object_count.emit(_db, _collection, _query_info);
             rsp = nullptr;
         }
 

@@ -4,15 +4,15 @@ module hub_call_dbproxy{
 	
 	create_persisted_object req(string db, string collection, bin object_info) rsp() err();
 	
-	updata_persisted_object req(string db, string collection, bin query_json, bin updata_info) rsp() err();
+	updata_persisted_object req(string db, string collection, bin query_info, bin updata_info, bool _upsert) rsp() err();
 	
-	find_and_modify req(string db, string collection, bin query_json, bin updata_info, bool _new) rsp(bin object_info) err();
+	find_and_modify req(string db, string collection, bin query_info, bin updata_info, bool _new, bool _upsert) rsp(bin object_info) err();
 	
-	remove_object req(string db, string collection, bin query_json) rsp() err();
+	remove_object req(string db, string collection, bin query_info) rsp() err();
 	
-	get_object_info ntf(string db, string collection, bin query_json, string callbackid);
+	get_object_info ntf(string db, string collection, bin query_info, string callbackid);
 
-	get_object_count req(string db, string collection, bin query_json) rsp(uint32 count) err();
+	get_object_count req(string db, string collection, bin query_info) rsp(uint32 count) err();
 	
 }
 

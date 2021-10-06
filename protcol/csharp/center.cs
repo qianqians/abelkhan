@@ -103,7 +103,7 @@ namespace abelkhan
             return this;
         }
 
-        void timeout(UInt64 tick, Action timeout_cb)
+        public void timeout(UInt64 tick, Action timeout_cb)
         {
             TinyTimer.add_timer(tick, ()=>{
                 module_rsp_cb.reg_server_timeout(cb_uuid);

@@ -18,8 +18,8 @@ namespace abelkhan
         private acceptservice _accept_gm_service;
         private gm_msg_handle _gm_msg_handle;
         private gmmanager _gmmanager;
-        private List<channel> chs;
-        private List<channel> add_chs;
+        private List<abelkhan.Ichannel> chs;
+        private List<abelkhan.Ichannel> add_chs;
         private Int64 _timetmp;
 
         public closehandle _closeHandle;
@@ -62,17 +62,19 @@ namespace abelkhan
                 }
             }
 
-            chs = new List<channel>();
-            add_chs = new List<channel>();
-            _closeHandle = new closehandle();
             _timer = new service.timerservice();
+            _timetmp = _timer.refresh();
 
-            _svrmanager = new svrmanager();
+            chs = new List<abelkhan.Ichannel>();
+            add_chs = new List<abelkhan.Ichannel>();
+            _closeHandle = new closehandle();
+
+            _svrmanager = new svrmanager(_timer);
             _svr_msg_handle = new svr_msg_handle(_svrmanager, _closeHandle);
             var ip = _config.get_value_string("ip");
             var port = _config.get_value_int("port");
             _accept_svr_service = new acceptservice((ushort)port);
-            _accept_svr_service.on_connect += (channel ch) => {
+            _accept_svr_service.on_connect += (abelkhan.Ichannel ch) => {
                 lock (add_chs)
                 {
                     add_chs.Add(ch);
@@ -85,16 +87,13 @@ namespace abelkhan
             var gm_ip = _config.get_value_string("gm_ip");
             var gm_port = _config.get_value_int("gm_port");
             _accept_gm_service = new acceptservice((ushort)gm_port);
-            _accept_gm_service.on_connect += (channel ch) =>{
+            _accept_gm_service.on_connect += (abelkhan.Ichannel ch) =>{
                 lock (add_chs)
                 {
                     add_chs.Add(ch);
                 }
             };
             _accept_gm_service.start();
-
-            _timetmp = _timer.refresh();
-            
         }
 
         public Int64 poll()
@@ -118,9 +117,9 @@ namespace abelkhan
                     while (true)
                     {
                         ArrayList ev = null;
-                        lock (ch._channel_onrecv.que)
+                        lock (ch)
                         {
-                            ch._channel_onrecv.que.Dequeue();
+                            ev = ch.pop();
                         }
                         if (ev == null)
                         {
@@ -134,7 +133,7 @@ namespace abelkhan
                 {
                     foreach (var _proxy in _svrmanager.closed_svr_list)
                     {
-                        chs.Remove((channel)_proxy.ch);
+                        chs.Remove(_proxy.ch);
                     }
                 }
 

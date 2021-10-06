@@ -1,38 +1,28 @@
-﻿using System;
+﻿using MsgPack.Serialization;
+using System;
 using System.Collections;
+using System.IO;
 
 namespace dbproxy
 {
 	public class hubproxy
 	{
-		public hubproxy(juggle.Ichannel ch)
+		public abelkhan.Ichannel _ch;
+		public hubproxy(abelkhan.Ichannel ch)
 		{
-			_caller = new caller.dbproxy_call_hub(ch);
-		}
+			_serializer = MessagePackSerializer.Get<ArrayList>();
 
-		public void reg_hub_sucess()
-		{
-			_caller.reg_hub_sucess();
+			_ch = ch;
+			_caller = new abelkhan.dbproxy_call_hub_caller(ch, abelkhan.modulemng_handle._modulemng);
 		}
-
-		public void ack_create_persisted_object(String callbackid, bool is_create_sucess)
-		{
-			_caller.ack_create_persisted_object(callbackid, is_create_sucess);
-		}
-
-		public void ack_updata_persisted_object(String callbackid)
-		{
-			_caller.ack_updata_persisted_object(callbackid);
-		}
-
-        public void ack_get_object_count(string callbackid, Int64 count)
-        {
-            _caller.ack_get_object_count(callbackid, count);
-        }
 
 		public void ack_get_object_info(string callbackid, ArrayList object_info)
 		{
-			_caller.ack_get_object_info(callbackid, object_info);
+			using (var stream = new MemoryStream()) {
+				_serializer.Pack(stream, object_info);
+				stream.Position = 0;
+				_caller.ack_get_object_info(callbackid, stream.ToArray());
+			}
 		}
 
 		public void ack_get_object_info_end(string callbackid)
@@ -40,12 +30,8 @@ namespace dbproxy
 			_caller.ack_get_object_info_end(callbackid);
 		}
 
-        public void ack_remove_object(string callbackid)
-        {
-            _caller.ack_remove_object(callbackid);
-        }
-
-        private caller.dbproxy_call_hub _caller;
+        private abelkhan.dbproxy_call_hub_caller _caller;
+		private MessagePackSerializer<ArrayList> _serializer;
 	}
 }
 

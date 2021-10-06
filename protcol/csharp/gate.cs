@@ -56,7 +56,7 @@ namespace abelkhan
             return this;
         }
 
-        void timeout(UInt64 tick, Action timeout_cb)
+        public void timeout(UInt64 tick, Action timeout_cb)
         {
             TinyTimer.add_timer(tick, ()=>{
                 module_rsp_cb.reg_hub_timeout(cb_uuid);
@@ -217,7 +217,7 @@ namespace abelkhan
             return this;
         }
 
-        void timeout(UInt64 tick, Action timeout_cb)
+        public void timeout(UInt64 tick, Action timeout_cb)
         {
             TinyTimer.add_timer(tick, ()=>{
                 module_rsp_cb.heartbeats_timeout(cb_uuid);
@@ -273,7 +273,7 @@ namespace abelkhan
             return this;
         }
 
-        void timeout(UInt64 tick, Action timeout_cb)
+        public void timeout(UInt64 tick, Action timeout_cb)
         {
             TinyTimer.add_timer(tick, ()=>{
                 module_rsp_cb.get_hub_info_timeout(cb_uuid);

@@ -66,7 +66,7 @@ namespace abelkhan
             port = _port;
         }
 
-        public event Action<channel> on_connect;
+        public event Action<abelkhan.Ichannel> on_connect;
         private void onConnect(channel ch)
         {
             on_connect?.Invoke(ch);

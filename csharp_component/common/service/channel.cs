@@ -24,6 +24,15 @@ namespace abelkhan
             _channel_onrecv = new channel_onrecv();
         }
 
+        public ArrayList pop()
+        {
+            if (_channel_onrecv.que.Count > 0)
+            {
+                return _channel_onrecv.que.Dequeue();
+            }
+            return null;
+        }
+
         public void disconnect()
         {
             context.CloseAsync();
