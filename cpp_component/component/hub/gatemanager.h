@@ -57,6 +57,9 @@ private:
 	std::shared_ptr<abelkhan::hub_call_client_caller> _hub_call_client_caller;
 
 public:
+	int64_t _timetmp = 0;
+	int64_t _theory_timetmp = 0;
+
 	std::string _cuuid;
 	std::shared_ptr<abelkhan::Ichannel> _direct_ch;
 
@@ -84,6 +87,8 @@ public:
 	std::shared_ptr<directproxy> get_direct_client(std::shared_ptr<abelkhan::Ichannel> direct_ch);
 
 	void disconnect_client(std::string uuid);
+
+	void heartbeat_client(int64_t ticktime);
 
 	void call_client(const std::string& uuid, const std::string& _module, const std::string& func, const msgpack11::MsgPack::array& argvs);
 

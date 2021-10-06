@@ -171,6 +171,28 @@ void gatemanager::disconnect_client(std::string uuid) {
 	}
 }
 
+void gatemanager::heartbeat_client(int64_t ticktime) {
+	std::vector<std::shared_ptr<directproxy> > remove_client;
+	std::vector<std::shared_ptr<directproxy> > exception_client;
+	for (auto item : direct_clients) {
+		auto proxy = item.second;
+		if (proxy->_timetmp > 0 && (proxy->_timetmp + 10 * 1000) < ticktime) {
+			remove_client.push_back(proxy);
+		}
+		if (proxy->_timetmp > 0 && proxy->_theory_timetmp > 0 && (proxy->_theory_timetmp - proxy->_timetmp) > 10 * 1000) {
+			exception_client.push_back(proxy);
+		}
+	}
+
+	for (auto _client : remove_client) {
+		client_direct_disconnect(_client->_direct_ch);
+	}
+
+	for (auto _client : exception_client) {
+		_hub->sig_client_exception.emit(_client->_cuuid);
+	}
+}
+
 void gatemanager::call_client(const std::string& cuuid, const std::string& _module, const std::string& func, const msgpack11::MsgPack::array& argvs) {
 	msgpack11::MsgPack::array event_;
 	event_.push_back(_module);
