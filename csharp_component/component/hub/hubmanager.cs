@@ -20,7 +20,8 @@ namespace hub
             hubproxy _proxy = new hubproxy(hub_name, hub_type, ch);
             hubproxys[hub_name] = _proxy;
             ch_hubproxys[ch] = _proxy;
-            
+            on_hubproxy?.Invoke(_proxy);
+
             lock (hub.add_chs)
             {
                 hub.add_chs.Add(ch);

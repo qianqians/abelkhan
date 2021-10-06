@@ -69,9 +69,14 @@ public:
 
 	void heartbeat_client(int64_t ticktime) {
 		std::vector<std::shared_ptr<clientproxy> > remove_client;
+		std::vector<std::shared_ptr<clientproxy> > exception_client;
 		for (auto item : client_map) {
-			if (item.second->_timetmp > 0 && (item.second->_timetmp + 10 * 1000) < ticktime) {
-				remove_client.push_back(item.second);
+			auto proxy = item.second;
+			if (proxy->_timetmp > 0 && (proxy->_timetmp + 10 * 1000) < ticktime) {
+				remove_client.push_back(proxy);
+			}
+			if (proxy->_timetmp > 0 && proxy->_theory_timetmp > 0 && (proxy->_theory_timetmp - proxy->_timetmp) > 10 * 1000) {
+				exception_client.push_back(proxy);
 			}
 		}
 
@@ -82,19 +87,10 @@ public:
 			unreg_client(_client->_ch);
 		}
 
-		std::vector<std::shared_ptr<clientproxy> > exception_client;
-		for (auto item : client_map) {
-			auto proxy = item.second;
-			if (proxy->_timetmp > 0 && proxy->_theory_timetmp > 0 && (proxy->_theory_timetmp - proxy->_timetmp) > 10 * 1000) {
-				exception_client.push_back(proxy);
-			}
-		}
-
 		for (auto proxy : exception_client) {
 			for (auto hubproxy_ : proxy->conn_hubproxys) {
 				hubproxy_->client_exception(proxy->_cuuid);
 			}
-			unreg_client(proxy->_ch);
 		}
 	}
 

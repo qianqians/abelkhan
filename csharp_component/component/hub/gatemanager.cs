@@ -1,15 +1,20 @@
-﻿using System;
+﻿using MsgPack.Serialization;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 namespace hub
 {
-    class directproxy
+    public class directproxy
     {
         private abelkhan.hub_call_client_caller _hub_call_client_caller;
 
         public string _cuuid;
         public abelkhan.Ichannel _direct_ch;
+
+        public long _timetmp = 0;
+        public long _theory_timetmp = 0;
 
         public directproxy(string cuuid_, abelkhan.Ichannel direct_ch)
         {
@@ -19,7 +24,7 @@ namespace hub
             _hub_call_client_caller = new abelkhan.hub_call_client_caller(_direct_ch, abelkhan.modulemng_handle._modulemng);
         }
 
-        void call_client(byte[] rpc_argv)
+        public void call_client(byte[] rpc_argv)
         {
             _hub_call_client_caller.call_client(rpc_argv);
         }
@@ -50,6 +55,8 @@ namespace hub
 
             direct_clients = new Dictionary<string, directproxy>();
             ch_direct_clients = new Dictionary<abelkhan.Ichannel, directproxy>();
+
+            hub._timer.addticktime(10 * 1000, heartbeat_client);
         }
 
 		public void connect_gate(String name, String ip, ushort port)
@@ -160,6 +167,47 @@ namespace hub
             }
         }
 
+        void heartbeat_client(long ticktime)
+        {
+            List<directproxy> remove_client = new List<directproxy>();
+            List<directproxy> exception_client = new List<directproxy>();
+            foreach (var item in direct_clients)
+            {
+                var proxy = item.Value;
+                if (proxy._timetmp > 0 && (proxy._timetmp + 10 * 1000) < ticktime)
+                {
+                    remove_client.Add(proxy);
+                }
+                if (proxy._timetmp > 0 && proxy._theory_timetmp > 0 && (proxy._theory_timetmp - proxy._timetmp) > 10 * 1000)
+                {
+                    exception_client.Add(proxy);
+                }
+            }
+
+            foreach (var _client in remove_client)
+            {
+                lock (hub.remove_chs)
+                {
+                    hub.remove_chs.Add(_client._direct_ch);
+                }
+                direct_client_disconnect(_client._direct_ch);
+            }
+
+            foreach (var _client in exception_client)
+            {
+                direct_client_exception(_client._direct_ch);
+            }
+        }
+
+        public directproxy get_directproxy(abelkhan.Ichannel direct_ch)
+        {
+            if (ch_direct_clients.TryGetValue(direct_ch, out directproxy _proxy))
+            {
+                return _proxy;
+            }
+            return null;
+        }
+
         public void disconnect_client(String uuid)
         {
             if (clients.Remove(uuid, out gateproxy _proxy))
@@ -174,14 +222,30 @@ namespace hub
 
         public void call_client(String uuid, String module, String func, params object[] _argvs)
 		{
-			if (clients.ContainsKey(uuid))
-			{
-                ArrayList _argvs_list = new ArrayList();
-                foreach (var o in _argvs)
-                {
-                    _argvs_list.Add(o);
-                }
+            ArrayList _argvs_list = new ArrayList();
+            foreach (var o in _argvs)
+            {
+                _argvs_list.Add(o);
+            }
 
+            if (direct_clients.TryGetValue(uuid, out directproxy _client))
+            {
+                using (var st = new MemoryStream())
+                {
+                    var _serializer = MessagePackSerializer.Get<ArrayList>();
+
+                    ArrayList _event = new ArrayList();
+                    _event.Add(module);
+                    _event.Add(func);
+                    _event.Add(_argvs_list);
+                    _serializer.Pack(st, _event);
+
+                    _client.call_client(st.ToArray());
+                }
+            }
+
+            if (clients.ContainsKey(uuid))
+			{
                 clients[uuid].forward_hub_call_client(uuid, module, func, _argvs_list);
             }
             else
@@ -198,9 +262,16 @@ namespace hub
                 _argvs_list.Add(o);
             }
 
+            var _direct_clients = new List<directproxy>();
             var tmp_gates = new Dictionary<gateproxy, List<string> >();
             foreach (var _uuid in uuids)
             {
+                if (direct_clients.TryGetValue(_uuid, out directproxy _client))
+                {
+                    _direct_clients.Add(_client);
+                    continue;
+                }
+
                 if (clients.TryGetValue(_uuid, out gateproxy _proxy))
                 {
                     if (!tmp_gates.ContainsKey(_proxy))
@@ -208,6 +279,22 @@ namespace hub
                         tmp_gates.Add(_proxy, new List<string>());
                     }
                     tmp_gates[_proxy].Add(_uuid);
+                }
+            }
+
+            foreach (var _client in _direct_clients)
+            {
+                using (var st = new MemoryStream())
+                {
+                    var _serializer = MessagePackSerializer.Get<ArrayList>();
+
+                    ArrayList _event = new ArrayList();
+                    _event.Add(module);
+                    _event.Add(func);
+                    _event.Add(_argvs_list);
+                    _serializer.Pack(st, _event);
+
+                    _client.call_client(st.ToArray());
                 }
             }
 
