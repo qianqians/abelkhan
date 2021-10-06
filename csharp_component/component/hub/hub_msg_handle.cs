@@ -22,7 +22,7 @@ namespace hub
             log.log.trace("hub:{0},{1} registered!", hub_name, hub_type);
 
             var rsp = (abelkhan.hub_call_hub_reg_hub_rsp)_hub_call_hub_module.rsp;
-            var _proxy = _hubmanager.reg_hub(hub_name, hub_type, _hub_call_hub_module.current_ch);
+            _hubmanager.reg_hub(hub_name, hub_type, _hub_call_hub_module.current_ch);
             rsp.rsp();
         }
 

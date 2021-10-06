@@ -82,6 +82,8 @@ public:
 	concurrent::signals<void(std::string) > sig_client_disconnect;
 	concurrent::signals<void(std::string) > sig_client_exception;
 
+	concurrent::signals<void(std::string) > sig_direct_client_disconnect;
+
 	concurrent::signals<void(std::shared_ptr<hubproxy>) > sig_hub_connect;
 
 	concurrent::signals<void(std::string, std::string)> sig_hub_closed;

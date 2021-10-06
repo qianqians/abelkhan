@@ -14,7 +14,8 @@ namespace hub
             ch_hubproxys = new Dictionary<abelkhan.Ichannel, hubproxy>();
         }
 
-        public hubproxy reg_hub(string hub_name, string hub_type, abelkhan.Ichannel ch)
+        public event Action<hubproxy> on_hubproxy;
+        public void reg_hub(string hub_name, string hub_type, abelkhan.Ichannel ch)
         {
             hubproxy _proxy = new hubproxy(hub_name, hub_type, ch);
             hubproxys[hub_name] = _proxy;
@@ -24,8 +25,6 @@ namespace hub
             {
                 hub.add_chs.Add(ch);
             }
-
-            return _proxy;
         }
 
         public hubproxy get_hub(abelkhan.Ichannel ch)

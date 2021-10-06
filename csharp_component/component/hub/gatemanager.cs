@@ -4,6 +4,27 @@ using System.Collections.Generic;
 
 namespace hub
 {
+    class directproxy
+    {
+        private abelkhan.hub_call_client_caller _hub_call_client_caller;
+
+        public string _cuuid;
+        public abelkhan.Ichannel _direct_ch;
+
+        public directproxy(string cuuid_, abelkhan.Ichannel direct_ch)
+        {
+            _cuuid = cuuid_;
+            _direct_ch = direct_ch;
+
+            _hub_call_client_caller = new abelkhan.hub_call_client_caller(_direct_ch, abelkhan.modulemng_handle._modulemng);
+        }
+
+        void call_client(byte[] rpc_argv)
+        {
+            _hub_call_client_caller.call_client(rpc_argv);
+        }
+    }
+
     public class gatemanager
 	{
         public String current_client_uuid;
@@ -12,6 +33,9 @@ namespace hub
 
         private Dictionary<abelkhan.Ichannel, gateproxy> ch_gateproxys;
         private Dictionary<String, gateproxy> gates;
+
+        private Dictionary<string, directproxy> direct_clients;
+        private Dictionary<abelkhan.Ichannel, directproxy> ch_direct_clients;
 
         private abelkhan.enetservice _gate_conn;
 
@@ -23,7 +47,10 @@ namespace hub
 			clients = new Dictionary<string, gateproxy>();
 			ch_gateproxys = new Dictionary<abelkhan.Ichannel, gateproxy>();
 			gates = new Dictionary<string, gateproxy>();
-		}
+
+            direct_clients = new Dictionary<string, directproxy>();
+            ch_direct_clients = new Dictionary<abelkhan.Ichannel, directproxy>();
+        }
 
 		public void connect_gate(String name, String ip, ushort port)
 		{
@@ -100,11 +127,48 @@ namespace hub
             clientException?.Invoke(client_uuid);
         }
 
+        public void direct_client_connect(String client_uuid, abelkhan.Ichannel direct_ch)
+        {
+            if (direct_clients.Remove(client_uuid, out directproxy _directproxy))
+            {
+                ch_direct_clients.Remove(_directproxy._direct_ch);
+            }
+
+            log.log.trace("reg direct client:{0}", client_uuid);
+
+            var _directproxy_new = new directproxy(client_uuid, direct_ch);
+            direct_clients.Add(client_uuid, _directproxy_new);
+
+            ch_direct_clients.Add(direct_ch, _directproxy_new);
+        }
+
+        public event Action<string> directClientDisconnect;
+        public void direct_client_disconnect(abelkhan.Ichannel direct_ch)
+        {
+            if (ch_direct_clients.Remove(direct_ch, out directproxy _proxy))
+            {
+                direct_clients.Remove(_proxy._cuuid);
+                directClientDisconnect?.Invoke(_proxy._cuuid);
+            }
+        }
+
+        public void direct_client_exception(abelkhan.Ichannel direct_ch)
+        {
+            if (ch_direct_clients.TryGetValue(direct_ch, out directproxy _proxy))
+            {
+                clientException?.Invoke(_proxy._cuuid);
+            }
+        }
+
         public void disconnect_client(String uuid)
         {
             if (clients.Remove(uuid, out gateproxy _proxy))
             {
                 _proxy.disconnect_client(uuid);
+            }
+
+            if (direct_clients.Remove(uuid, out directproxy _directproxy)) {
+                ch_direct_clients.Remove(_directproxy._direct_ch);
             }
         }
 

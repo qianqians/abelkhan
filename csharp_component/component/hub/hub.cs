@@ -67,6 +67,28 @@ namespace hub
             _hubs = new hubmanager();
             _gates = new gatemanager(_enetservice);
 
+            _hubs.on_hubproxy += (_proxy) =>
+            {
+                on_hubproxy?.Invoke(_proxy);
+            };
+            _hubs.on_hub_closed += (string name, string type) =>
+            {
+                on_hub_closed?.Invoke(name, type);
+            };
+
+            _gates.clientDisconnect += (client_cuuid) =>
+            {
+                on_client_disconnect?.Invoke(client_cuuid);
+            };
+            _gates.clientException += (client_cuuid) =>
+            {
+                on_client_exception?.Invoke(client_cuuid);
+            };
+            _gates.directClientDisconnect += (client_cuuid) =>
+            {
+                on_direct_client_disconnect?.Invoke(client_cuuid);
+            };
+
             var center_ip = _center_config.get_value_string("ip");
 			var center_port = (short)_center_config.get_value_int("port");
 			var _socket = abelkhan.connectservice.connect(System.Net.IPAddress.Parse(center_ip), center_port);
@@ -346,6 +368,14 @@ namespace hub
         private dbproxy_msg_handle _dbproxy_msg_handle;
         private hub_msg_handle _hub_msg_handle;
         private gate_msg_handle _gate_msg_handle;
-	}
+
+        public event Action<hubproxy> on_hubproxy;
+        public event Action<string, string> on_hub_closed;
+
+        public event Action<string> on_client_disconnect;
+        public event Action<string> on_client_exception;
+
+        public event Action<string> on_direct_client_disconnect;
+    }
 }
 

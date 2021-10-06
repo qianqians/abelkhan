@@ -118,7 +118,10 @@ void gatemanager::client_disconnect(std::string client_uuid) {
 }
 
 void gatemanager::client_direct_connect(std::string client_uuid, std::shared_ptr<abelkhan::Ichannel> direct_ch) {
-	if (direct_clients.find(client_uuid) != direct_clients.end()) {
+	auto it = direct_clients.find(client_uuid);
+	if (it != direct_clients.end()) {
+		ch_direct_clients.erase(it->second->_direct_ch);
+		direct_clients.erase(it);
 		return;
 	}
 
@@ -138,6 +141,8 @@ void gatemanager::client_direct_disconnect(std::shared_ptr<abelkhan::Ichannel> d
 
 	direct_clients.erase(it->second->_cuuid);
 	ch_direct_clients.erase(it);
+
+	_hub->sig_direct_client_disconnect.emit(it->second->_cuuid);
 
 	spdlog::trace("client_direct_disconnect direct_clients.size:{0}, ch_direct_clients.size:{1}!", direct_clients.size(), ch_direct_clients.size());
 }
