@@ -15,10 +15,8 @@ namespace abelkhan
 {
     class cryptAcceptServerHandler : ChannelHandlerAdapter
     {
-        private uint xor_key;
-        public cryptAcceptServerHandler(uint _xor_key)
+        public cryptAcceptServerHandler()
         {
-            xor_key = _xor_key;
         }
 
         private cryptchannel ch = null;
@@ -74,14 +72,12 @@ namespace abelkhan
     public class cryptacceptservice
     {
         private ushort port;
-        private uint xor_key;
         private IChannel boundChannel;
 
         public event Action<cryptchannel> on_channel_exception;
-        public cryptacceptservice(uint _xor_key, ushort _port)
+        public cryptacceptservice(ushort _port)
         {
             port = _port;
-            xor_key = _xor_key;
         }
 
         public event Action<abelkhan.Ichannel> on_connect;
@@ -120,7 +116,7 @@ namespace abelkhan
                     .Option(ChannelOption.SoBacklog, 100)
                     .ChildHandler(new ActionChannelInitializer<IChannel>(channel =>
                     {
-                        var _handle = new cryptAcceptServerHandler(xor_key);
+                        var _handle = new cryptAcceptServerHandler();
                         _handle.on_connect += onConnect;
                         _handle.on_channel_exception += (cryptchannel ch) => {
                             if (on_channel_exception != null)

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace hub
@@ -7,27 +9,39 @@ namespace hub
 	{
 		public hub(String[] args)
 		{
-			uuid = System.Guid.NewGuid().ToString();
-
-            config = new config.config(args[0]);
-			config.config _center_config = config.get_value_dict("center");
+            _config = new abelkhan.config(args[0]);
+			_center_config = _config.get_value_dict("center");
 			if (args.Length > 1)
 			{
-                config = config.get_value_dict(args[1]);
+                _root_config = _config;
+                _config = _config.get_value_dict(args[1]);
 			}
+            name = args[1];
 
-            var log_level = config.get_value_string("log_level");
-            if (log_level == "debug")
+            var log_level = _config.get_value_string("log_level");
+            if (log_level == "trace")
             {
-                log.log.logMode = log.log.enLogMode.Debug;
+                log.log.logMode = log.log.enLogMode.trace;
             }
-            else if (log_level == "release")
+            else if (log_level == "debug")
             {
-                log.log.logMode = log.log.enLogMode.Release;
+                log.log.logMode = log.log.enLogMode.debug;
             }
-            var log_file = config.get_value_string("log_file");
+            else if (log_level == "info")
+            {
+                log.log.logMode = log.log.enLogMode.info;
+            }
+            else if (log_level == "warn")
+            {
+                log.log.logMode = log.log.enLogMode.warn;
+            }
+            else if (log_level == "err")
+            {
+                log.log.logMode = log.log.enLogMode.err;
+            }
+            var log_file = _config.get_value_string("log_file");
             log.log.logFile = log_file;
-            var log_dir = config.get_value_string("log_dir");
+            var log_dir = _config.get_value_string("log_dir");
             log.log.logPath = log_dir;
             {
                 if (!System.IO.Directory.Exists(log_dir))
@@ -35,157 +49,242 @@ namespace hub
                     System.IO.Directory.CreateDirectory(log_dir);
                 }
             }
+            
+            _timer = new service.timerservice();
+            _timer.refresh();
 
-            name = config.get_value_string("hub_name");
+            _modules = new common.modulemanager();
 
-			closeHandle = new closehandle();
-			modules = new common.modulemanager();
+            add_chs = new List<abelkhan.Ichannel>();
+            chs = new List<abelkhan.Ichannel>();
+            remove_chs = new List<abelkhan.Ichannel>();
 
-            var _hub_logic_process = new juggle.process();
-            _connect_hub_service = new service.connectnetworkservice(_hub_logic_process);
+            var ip = _config.get_value_string("ip");
+            var port = (ushort)_config.get_value_int("port");
+            _enetservice = new abelkhan.enetservice(ip, port);
 
-            hubs = new hubmanager();
+            _closeHandle = new closehandle();
+            _hubs = new hubmanager();
+            _gates = new gatemanager(_enetservice);
 
-            _hub_msg_handle = new hub_msg_handle(modules, hubs);
-            _hub_call_hub = new module.hub_call_hub();
-            _hub_call_hub.onreg_hub += _hub_msg_handle.reg_hub;
-            _hub_call_hub.onreg_hub_sucess += _hub_msg_handle.reg_hub_sucess;
-            _hub_call_hub.onhub_call_hub_mothed += _hub_msg_handle.hub_call_hub_mothed;
-            _hub_logic_process.reg_module(_hub_call_hub);
-
-            var ip = config.get_value_string("ip");
-            var port = (short)config.get_value_int("port");
-            _accept_logic_service = new service.acceptnetworkservice(ip, port, _hub_logic_process);
-
-			var center_ip = _center_config.get_value_string("ip");
+            var center_ip = _center_config.get_value_string("ip");
 			var center_port = (short)_center_config.get_value_int("port");
-			_center_call_hub = new module.center_call_hub();
-			_center_call_server = new module.center_call_server();
-			var _center_process = new juggle.process();
-			_center_process.reg_module(_center_call_hub);
-			_center_process.reg_module(_center_call_server);
-			_connect_center_service = new service.connectnetworkservice(_center_process);
-			var center_ch = _connect_center_service.connect(center_ip, center_port);
-			_centerproxy = new centerproxy(center_ch);
-			_center_msg_handle = new center_msg_handle(this, closeHandle, _centerproxy);
-			_center_call_server.onreg_server_sucess += _center_msg_handle.reg_server_sucess;
-			_center_call_server.onclose_server += _center_msg_handle.close_server;
-			_center_call_hub.ondistribute_server_address += _center_msg_handle.distribute_server_address;
-            _center_call_hub.onreload += onReload_event;
+			var _socket = abelkhan.connectservice.connect(System.Net.IPAddress.Parse(center_ip), center_port);
+            var center_ch = new abelkhan.rawchannel(_socket);
+            _centerproxy = new centerproxy(center_ch);
+            lock (add_chs)
+            {
+                add_chs.Add(center_ch);
+            }
 
-            var _dbproxy_process = new juggle.process();
-			_connect_dbproxy_service = new service.connectnetworkservice(_dbproxy_process);
-			_dbproxy_msg_handle = new dbproxy_msg_handle(this);
-			_dbproxy_call_hub = new module.dbproxy_call_hub();
-			_dbproxy_call_hub.onreg_hub_sucess += _dbproxy_msg_handle.reg_hub_sucess;
-			_dbproxy_call_hub.onack_create_persisted_object += _dbproxy_msg_handle.ack_create_persisted_object;
-			_dbproxy_call_hub.onack_updata_persisted_object += _dbproxy_msg_handle.ack_updata_persisted_object;
-            _dbproxy_call_hub.onack_get_object_count += _dbproxy_msg_handle.ack_get_object_count;
-            _dbproxy_call_hub.onack_get_object_info += _dbproxy_msg_handle.ack_get_object_info;
-			_dbproxy_call_hub.onack_get_object_info_end += _dbproxy_msg_handle.ack_get_object_info_end;
-            _dbproxy_call_hub.onack_remove_object += _dbproxy_msg_handle.ack_remove_object;
+            if (_config.has_key("tcp_listen"))
+            {
+                var tcp_listen = _config.get_value_bool("tcp_listen");
+                if (tcp_listen)
+                {
+                    var tcp_outside_ip = _config.get_value_string("tcp_outside_ip");
+                    var tcp_outside_port = (ushort)_config.get_value_int("tcp_outside_port");
+                    _cryptacceptservice = new abelkhan.cryptacceptservice(tcp_outside_port);
+                    _cryptacceptservice.on_connect += (ch) => {
+                        lock (add_chs)
+                        {
+                            add_chs.Add(ch);
+                        }
+                    };
+                    _cryptacceptservice.start();
+                }
+            }
 
-            _dbproxy_process.reg_module(_dbproxy_call_hub);
+            if (_config.has_key("websocket_listen"))
+            {
+                var is_websocket_listen = _config.get_value_bool("websocket_listen");
+                if (is_websocket_listen)
+                {
+                    var websocket_outside_ip = _config.get_value_string("websocket_outside_ip");
+                    var websocket_outside_port = (ushort)_config.get_value_int("websocket_outside_port");
+                    var is_ssl = _config.get_value_bool("is_ssl");
+                    string pfx = "";
+                    if (is_ssl) {
+                        pfx = _config.get_value_string("pfx");
+                    }
+                    _websocketacceptservice = new abelkhan.websocketacceptservice(websocket_outside_port, is_ssl, pfx);
+                    _websocketacceptservice.on_connect += (ch) =>
+                    {
+                        lock (add_chs)
+                        {
+                            add_chs.Add(ch);
+                        }
+                    };
+                }
+            }
 
-			juggle.process _gate_process = new juggle.process();
-			_gate_msg_handle = new gate_msg_handle(modules);
-			_gate_call_hub = new module.gate_call_hub();
-			_gate_call_hub.onreg_hub_sucess += _gate_msg_handle.reg_hub_sucess;
-            _gate_call_hub.onclient_connect += _gate_msg_handle.client_connect;
-            _gate_call_hub.onclient_disconnect += _gate_msg_handle.client_disconnect;
-            _gate_call_hub.onclient_exception += _gate_msg_handle.client_exception;
-            _gate_call_hub.onclient_call_hub += _gate_msg_handle.client_call_hub;
-			_gate_process.reg_module (_gate_call_hub);
-			_connect_gate_servcie = new service.connectnetworkservice (_gate_process);
-			gates = new gatemanager (_connect_gate_servcie);
+            _hub_msg_handle = new hub_msg_handle(_hubs);
+            _center_msg_handle = new center_msg_handle(this, _closeHandle, _centerproxy);
+            _dbproxy_msg_handle = new dbproxy_msg_handle();
+            _gate_msg_handle = new gate_msg_handle();
 
-			_juggle_service = new service.juggleservice();
-			_juggle_service.add_process(_hub_logic_process);
-			_juggle_service.add_process(_center_process);
-			_juggle_service.add_process(_dbproxy_process);
-			_juggle_service.add_process (_gate_process);
+            _centerproxy.reg_hub(ip, port, name);
+        }
 
-			timer = new service.timerservice();
-
-			_centerproxy.reg_hub(ip, port, uuid);
-		}
-
-        public delegate void onConnectDBHandle();
-        public event onConnectDBHandle onConnectDB;
+        public event Action onConnectDB;
         public void onConnectDB_event()
         {
-            if (onConnectDB != null)
-            {
-                onConnectDB();
-            }
+            onConnectDB?.Invoke();
         }
 
-        public delegate void onCloseServerHandle();
-        public event onCloseServerHandle onCloseServer;
+        public event Action onConnectExtendDB;
+        public void onConnectExtendDB_event()
+        {
+            onConnectExtendDB?.Invoke();
+        }
+
+        public event Action onCloseServer;
         public void onCloseServer_event()
         {
-            if (onCloseServer != null)
-            {
-                onCloseServer();
-            }
+            onCloseServer?.Invoke();
+        }
+
+        public void closeSvr()
+        {
             _centerproxy.closed();
 
-            closeHandle.is_close = true;
+            _timer.addticktime(3 * 1000, (tick) =>
+            {
+                _closeHandle.is_close = true;
+            });
         }
 
-        public delegate void onReloadHandle(string argv);
-        public event onReloadHandle onReload;
+        public event Action<string> onReload;
         public void onReload_event(string argv)
         {
-            if (onReload != null)
+            onReload?.Invoke(argv);
+        }
+
+        public void connect_dbproxy(string dbproxy_name, string db_ip, short db_port)
+		{
+            if (_config.has_key("dbproxy") && _config.get_value_string("dbproxy") == dbproxy_name)
             {
-                onReload(argv);
+                var dbproxy_cfg = _root_config.get_value_dict(dbproxy_name);
+                var _db_ip = dbproxy_cfg.get_value_string("ip");
+                var _db_port = (short)dbproxy_cfg.get_value_int("port");
+                if (db_ip != _db_ip || db_port != _db_port)
+                {
+                    log.log.err("dbproxy:{0}, wrong ip:{1}, port:{2}!", dbproxy_name, db_ip, db_port);
+                    return;
+                }
+
+                var _socket = abelkhan.connectservice.connect(System.Net.IPAddress.Parse(db_ip), db_port);
+                var _db_ch = new abelkhan.rawchannel(_socket);
+                _dbproxy = new dbproxyproxy(_db_ch);
+                lock (add_chs)
+                {
+                    add_chs.Add(_db_ch);
+                }
+                _dbproxy.reg_hub(name);
+                _dbproxy.on_connect_dbproxy_sucessed += onConnectDBProxySucessed;
+            }
+            else if (_config.has_key("extend_dbproxy") && _config.get_value_string("extend_dbproxy") == dbproxy_name)
+            {
+                var dbproxy_cfg = _root_config.get_value_dict(dbproxy_name);
+                var _db_ip = dbproxy_cfg.get_value_string("ip");
+                var _db_port = (short)dbproxy_cfg.get_value_int("port");
+                if (db_ip != _db_ip || db_port != _db_port)
+                {
+                    log.log.err("dbproxy:{0}, wrong ip:{1}, port:{2}!", dbproxy_name, db_ip, db_port);
+                    return;
+                }
+
+                var _socket = abelkhan.connectservice.connect(System.Net.IPAddress.Parse(db_ip), db_port);
+                var _db_ch = new abelkhan.rawchannel(_socket);
+                lock (add_chs)
+                {
+                    add_chs.Add(_db_ch);
+                }
+                _extend_dbproxy = new dbproxyproxy(_db_ch);
+                _extend_dbproxy.reg_hub(name);
+                _extend_dbproxy.on_connect_dbproxy_sucessed += onConnectExtendDBProxySucessed;
             }
         }
 
-        public void connect_dbproxy(String db_ip, short db_port)
-		{
-			var _db_ch = _connect_dbproxy_service.connect(db_ip, db_port);
-			dbproxy = new dbproxyproxy(_db_ch);
-			dbproxy.reg_hub(uuid);
-		}
+        public event Action onDBProxyInit;
+        public void onConnectDBProxySucessed()
+        {
+            onDBProxyInit?.Invoke();
+        }
+
+        public event Action onExtendDBProxyInit;
+        public void onConnectExtendDBProxySucessed()
+        {
+            onExtendDBProxyInit?.Invoke();
+        }
 
         public void reg_hub(String hub_ip, short hub_port)
         {
-            var ch = _connect_hub_service.connect(hub_ip, hub_port);
-            caller.hub_call_hub _caller = new caller.hub_call_hub(ch);
-            _caller.reg_hub(name);
+            _enetservice.connect(hub_ip, (ushort)hub_port, (ch)=> {
+                var _caller = new abelkhan.hub_call_hub_caller(ch, abelkhan.modulemng_handle._modulemng);
+                _caller.reg_hub(name, type);
+            });
         }
 
 		public Int64 poll()
         {
-            Int64 tick_begin = timer.poll();
-            Int64 tmp = timer.refresh();
+            
+            Int64 tick_begin = _timer.refresh();
 
             try
             {
-                _juggle_service.poll(tick_begin);
+                _timer.poll();
+
+                lock (add_chs)
+                {
+                    foreach (var ch in add_chs)
+                    {
+                        chs.Add(ch);
+                    }
+                    add_chs.Clear();
+                }
+
+                foreach (var ch in chs)
+                {
+                    while (true)
+                    {
+                        ArrayList ev = null;
+                        lock (ch)
+                        {
+                            ev = ch.pop();
+                        }
+                        if (ev == null)
+                        {
+                            break;
+                        }
+                        abelkhan.modulemng_handle._modulemng.process_event(ch, ev);
+                    }
+                }
+
+                lock (remove_chs)
+                {
+                    foreach (var ch in remove_chs)
+                    {
+                        chs.Remove(ch);
+                    }
+                    remove_chs.Clear();
+                }
             }
-            catch(juggle.Exception e)
+            catch(abelkhan.Exception e)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, e.Message);
+                log.log.err(e.Message);
             }
             catch (System.Exception e)
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, "{0}", e);
+                log.log.err("{0}", e);
             }
 
-            //System.GC.Collect();
-
-            Int64 tick_end = timer.refresh();
+            Int64 tick_end = _timer.refresh();
             Int64 poll_tick = tick_end - tick_begin;
 
             if (poll_tick > 50)
             {
-                Int64 timer_poll_tick = tmp - tick_begin;
-                Int64 juggle_service_poll_tick = tick_end - tmp;
-
-                log.log.trace(new System.Diagnostics.StackFrame(true), tick_end, "timer_tick:{0}, juggle_service_poll:{1}", timer_poll_tick, juggle_service_poll_tick);
+                log.log.trace("poll_tick:{0}", poll_tick);
             }
 
             return poll_tick;
@@ -204,9 +303,9 @@ namespace hub
             {
                 var ticktime = _hub.poll();
 
-				if (closeHandle.is_close)
+				if (_closeHandle.is_close)
                 {
-                    log.log.operation(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "server closed, hub server:{0}", hub.uuid);
+                    log.log.info("server closed, hub server:{0}", hub.name);
 					break;
 				}
                 
@@ -217,39 +316,36 @@ namespace hub
 			}
 		}
 
-		public static String name;
+		public static string name;
+		public static string type;
 
-		public static String uuid;
+        public static abelkhan.config _config;
+        public static abelkhan.config _root_config;
+        public static abelkhan.config _center_config;
 
-		public static closehandle closeHandle;
+        public static common.modulemanager _modules;
 
-        public static config.config config;
+        public static List<abelkhan.Ichannel> add_chs;
+        public static List<abelkhan.Ichannel> chs;
+        public static List<abelkhan.Ichannel> remove_chs;
 
-		private service.acceptnetworkservice _accept_logic_service;
-        private service.connectnetworkservice _connect_hub_service;
-        private module.hub_call_hub _hub_call_hub;
+        private abelkhan.enetservice _enetservice;
+        private abelkhan.cryptacceptservice _cryptacceptservice;
+        private abelkhan.websocketacceptservice _websocketacceptservice;
+
+        public static closehandle _closeHandle;
+        public static hubmanager _hubs;
+        public static gatemanager _gates;
+        public static dbproxyproxy _dbproxy;
+        public static dbproxyproxy _extend_dbproxy;
+        public static service.timerservice _timer;
+
+        private centerproxy _centerproxy;
+
+        private center_msg_handle _center_msg_handle;
+        private dbproxy_msg_handle _dbproxy_msg_handle;
         private hub_msg_handle _hub_msg_handle;
-        public static common.modulemanager modules;
-        public static hubmanager hubs;
-
-		private service.connectnetworkservice _connect_center_service;
-		private module.center_call_hub _center_call_hub;
-		private module.center_call_server _center_call_server;
-		private centerproxy _centerproxy;
-		private center_msg_handle _center_msg_handle;
-
-		private service.connectnetworkservice _connect_dbproxy_service;
-		private module.dbproxy_call_hub _dbproxy_call_hub;
-		public static dbproxyproxy dbproxy;
-		private dbproxy_msg_handle _dbproxy_msg_handle;
-
-		private service.connectnetworkservice _connect_gate_servcie;
-		private module.gate_call_hub _gate_call_hub;
-		public static gatemanager gates;
-		private gate_msg_handle _gate_msg_handle;
-
-		private service.juggleservice _juggle_service;
-		public static service.timerservice timer;
+        private gate_msg_handle _gate_msg_handle;
 	}
 }
 

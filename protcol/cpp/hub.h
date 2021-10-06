@@ -203,6 +203,11 @@ namespace abelkhan
             call_module_method("connect_hub", _argv_dc2ee339_bef5_3af9_a492_592ba4f08559);
         }
 
+        void heartbeats(){
+            msgpack11::MsgPack::array _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4;
+            call_module_method("heartbeats", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+        }
+
         void call_hub(std::string module, std::string func, std::vector<uint8_t> argv){
             msgpack11::MsgPack::array _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3;
             _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.push_back(module);
@@ -351,6 +356,7 @@ namespace abelkhan
             _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
 
             reg_method("connect_hub", std::bind(&client_call_hub_module::connect_hub, this, std::placeholders::_1));
+            reg_method("heartbeats", std::bind(&client_call_hub_module::heartbeats, this, std::placeholders::_1));
             reg_method("call_hub", std::bind(&client_call_hub_module::call_hub, this, std::placeholders::_1));
         }
 
@@ -358,6 +364,11 @@ namespace abelkhan
         void connect_hub(const msgpack11::MsgPack::array& inArray){
             auto _client_uuid = inArray[0].string_value();
             sig_connect_hub.emit(_client_uuid);
+        }
+
+        concurrent::signals<void()> sig_heartbeats;
+        void heartbeats(const msgpack11::MsgPack::array& inArray){
+            sig_heartbeats.emit();
         }
 
         concurrent::signals<void(std::string, std::string, std::vector<uint8_t>)> sig_call_hub;

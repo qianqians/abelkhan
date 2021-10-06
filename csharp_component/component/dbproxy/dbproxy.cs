@@ -15,8 +15,10 @@ namespace dbproxy
             abelkhan.config _center_config = _config.get_value_dict("center");
 			if (args.Length > 1)
 			{
-				_config = _config.get_value_dict(args[1]);
-			}
+                _config = _config.get_value_dict(args[1]);
+            }
+
+            name = args[1];
 
             var log_level = _config.get_value_string("log_level");
             if (log_level == "trace")
@@ -75,8 +77,6 @@ namespace dbproxy
                     _mongodbproxy.create_index(db, collection, key, is_unique);
                 }
             }
-
-            name = _config.get_value_string("svr_name");
             
             _timer = new service.timerservice();
             _timer.refresh();
@@ -125,10 +125,12 @@ namespace dbproxy
 
 		public Int64 poll()
         {
-            Int64 tick_begin = _timer.poll();
+            Int64 tick_begin = _timer.refresh();
 
             try
             {
+                _timer.poll();
+
                 lock (add_chs)
                 {
                     foreach (var ch in add_chs)

@@ -3,31 +3,43 @@
 namespace hub
 {
 	public class centerproxy
-	{
-		public centerproxy(juggle.Ichannel ch)
+    {
+        private abelkhan.center_caller _center_caller;
+
+        public centerproxy(abelkhan.Ichannel ch)
 		{
 			is_reg_center_sucess = false;
-            _center = new caller.center(ch);
-            _hub_call_center = new caller.hub_call_center(ch);
 
+            _center_caller = new abelkhan.center_caller(ch, abelkhan.modulemng_handle._modulemng);
         }
 
-		public void reg_hub(String ip, short port, String uuid)
+		public void reg_hub(String ip, ushort port, String name)
         {
-            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin connect center server");
+            log.log.trace("begin connect center server");
 
-            _center.reg_server("hub", ip, port, uuid);
+            _center_caller.reg_server("hub", ip, port, name).callBack(() =>
+            {
+                log.log.trace("connect center server sucessed");
+            }, () =>
+            {
+                log.log.trace("connect center server faild");
+            }).timeout(5 * 1000, () =>
+            {
+                log.log.trace("connect center server timeout");
+            });
 		}
+
+        public void heartbeat()
+        {
+            _center_caller.heartbeat();
+        }
 
         public void closed()
         {
-            _hub_call_center.closed();
+            _center_caller.closed();
         }
 
 		public bool is_reg_center_sucess;
-
-		private caller.center _center;
-        private caller.hub_call_center _hub_call_center;
 
     }
 }

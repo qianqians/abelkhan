@@ -1,45 +1,48 @@
-﻿using System;
+﻿using MsgPack.Serialization;
+using System;
 using System.Collections;
+using System.IO;
 
 namespace hub
 {
 	public class gate_msg_handle
 	{
-		public gate_msg_handle(common.modulemanager _modulemanager_)
+        public abelkhan.gate_call_hub_module _gate_call_hub_module;
+
+        public gate_msg_handle()
 		{
-			_modulemanager = _modulemanager_;
-		}
-
-		public void reg_hub_sucess()
-        {
-            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "connect gate server sucess");
-		}
-
-        public void client_connect(String client_uuid)
-        {
-            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "client {0} connected", client_uuid);
-
-            hub.gates.client_connect(client_uuid, juggle.Imodule.current_ch);
+            _gate_call_hub_module = new abelkhan.gate_call_hub_module(abelkhan.modulemng_handle._modulemng);
+            _gate_call_hub_module.on_client_disconnect += client_disconnect;
+            _gate_call_hub_module.on_client_exception += client_exception;
+            _gate_call_hub_module.on_client_call_hub += client_call_hub;
         }
 
         public void client_disconnect(String client_uuid)
         {
-            hub.gates.client_disconnect(client_uuid);
+            hub._gates.client_disconnect(client_uuid);
         }
 
         public void client_exception(String client_uuid)
         {
-            hub.gates.client_exception(client_uuid);
+            hub._gates.client_exception(client_uuid);
         }
 
-        public void client_call_hub(String uuid, String module, String func, ArrayList argv)
+        public void client_call_hub(String uuid, byte[] rpc_argv)
 		{
-			hub.gates.current_client_uuid = uuid;
-            hub.modules.process_module_mothed(module, func, argv);
-			hub.gates.current_client_uuid = "";
+            var _serializer = MessagePackSerializer.Get<ArrayList>();
+            using (var st = new MemoryStream())
+            {
+                st.Write(rpc_argv);
+                st.Position = 0;
+                var _event = _serializer.Unpack(st);
+                var module = (string)_event[0];
+                var func = (string)_event[1];
+                var argv = (byte[])_event[2];
+                hub._gates.current_client_uuid = uuid;
+                hub._modules.process_module_mothed(module, func, argv);
+                hub._gates.current_client_uuid = "";
+            }
 		}
-
-		private common.modulemanager _modulemanager;
 	}
 }
 

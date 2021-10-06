@@ -47,6 +47,7 @@ int main(int argc, char * argv[]) {
 	if (argc >= 3) {
 		_config = _config->get_value_dict(argv[2]);
 	}
+	auto gate_name = argv[2];
 
 	auto file_path = _config->get_value_string("log_dir") + _config->get_value_string("log_file");
 	auto log_level = _config->get_value_string("log_level");
@@ -65,8 +66,6 @@ int main(int argc, char * argv[]) {
 	else if (log_level == "error") {
 		_log::InitLog(file_path, spdlog::level::level_enum::err);
 	}
-
-	auto gate_name = _config->get_value_string("gate_name");
 
 	auto _timerservice = std::make_shared<service::timerservice>();
 	auto _hubsvrmanager = std::make_shared<gate::hubsvrmanager>();

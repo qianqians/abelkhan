@@ -180,6 +180,11 @@ export class client_call_hub_caller extends abelkhan.Icaller {
         this.call_module_method("connect_hub", _argv_dc2ee339_bef5_3af9_a492_592ba4f08559);
     }
 
+    public heartbeats(){
+        let _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4:any[] = [];
+        this.call_module_method("heartbeats", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+    }
+
     public call_hub(module:string, func:string, argv:Uint8Array){
         let _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3:any[] = [];
         _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.push(module);
@@ -331,8 +336,11 @@ export class client_call_hub_module extends abelkhan.Imodule {
         this.modules.reg_module(this);
 
         this.reg_method("connect_hub", this.connect_hub.bind(this));
+        this.reg_method("heartbeats", this.heartbeats.bind(this));
         this.reg_method("call_hub", this.call_hub.bind(this));
         this.cb_connect_hub = null;
+
+        this.cb_heartbeats = null;
 
         this.cb_call_hub = null;
 
@@ -344,6 +352,14 @@ export class client_call_hub_module extends abelkhan.Imodule {
         _argv_.push(inArray[0]);
         if (this.cb_connect_hub){
             this.cb_connect_hub.apply(null, _argv_);
+        }
+    }
+
+    public cb_heartbeats : ()=>void | null;
+    heartbeats(inArray:any[]){
+        let _argv_:any[] = [];
+        if (this.cb_heartbeats){
+            this.cb_heartbeats.apply(null, _argv_);
         }
     }
 

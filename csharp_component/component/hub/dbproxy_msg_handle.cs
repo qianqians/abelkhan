@@ -1,61 +1,44 @@
 ﻿using System;
 using System.Collections;
+using System.IO;
 
 namespace hub
 {
 	public class dbproxy_msg_handle
 	{
-		public dbproxy_msg_handle(hub _hub)
+		private abelkhan.dbproxy_call_hub_module _dbproxy_call_hub_module;
+
+		public dbproxy_msg_handle()
 		{
-            _hub_ = _hub;
-        }
-
-		public void reg_hub_sucess()
-        {
-            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "connect dbproxy server sucess");
-
-            _hub_.onConnectDB_event();
+			_dbproxy_call_hub_module = new abelkhan.dbproxy_call_hub_module(abelkhan.modulemng_handle._modulemng);
+			_dbproxy_call_hub_module.on_ack_get_object_info += ack_get_object_info;
+			_dbproxy_call_hub_module.on_ack_get_object_info_end += ack_get_object_info_end;
 		}
 
-		public void ack_create_persisted_object(String callbackid, bool is_create_sucess)
+		public void ack_get_object_info(String callbackid, byte[] obejct_array)
 		{
-			dbproxyproxy.onCreatePersistedObjectHandle _handle = (dbproxyproxy.onCreatePersistedObjectHandle)hub.dbproxy.begin_callback(callbackid);
-			_handle(is_create_sucess);
-			hub.dbproxy.end_callback(callbackid);
-		}
+			if (dbproxyproxy.onGetObjectInfo_callback_set.TryGetValue(callbackid, out Action<ArrayList> cb))
+            {
+				var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+				using (var st = new MemoryStream())
+                {
+					st.Write(obejct_array);
+					st.Position = 0;
 
-		public void ack_updata_persisted_object(String callbackid)
-		{
-			dbproxyproxy.onUpdataPersistedObjectHandle _handle = (dbproxyproxy.onUpdataPersistedObjectHandle)hub.dbproxy.begin_callback(callbackid);
-			_handle();
-            hub.dbproxy.end_callback(callbackid);
-		}
-
-        public void ack_get_object_count(String callbackid, Int64 count)
-        {
-            dbproxyproxy.onGetObjectCountHandle _handle = (dbproxyproxy.onGetObjectCountHandle)hub.dbproxy.begin_callback(callbackid);
-            _handle(count);
-        }
-
-		public void ack_get_object_info(String callbackid, ArrayList json_obejct_array)
-		{
-			dbproxyproxy.onGetObjectInfoHandle _handle = (dbproxyproxy.onGetObjectInfoHandle)hub.dbproxy.begin_callback(callbackid);
-			_handle(json_obejct_array);
+					var objs = _serialization.Unpack(st);
+					cb(objs);
+				}
+            }
 		}
 
 		public void ack_get_object_info_end(String callbackid)
 		{
-            dbproxyproxy.onGetObjectInfoEnd _end = (dbproxyproxy.onGetObjectInfoEnd)hub.dbproxy.end_get_object_info_callback(callbackid);
-            _end();
+			if (dbproxyproxy.onGetObjectInfo_end_cb_set.Remove(callbackid, out Action _end))
+			{
+				_end();
+				dbproxyproxy.onGetObjectInfo_callback_set.Remove(callbackid);
+			}
         }
-
-        public void ack_remove_object(String callbackid)
-        {
-            dbproxyproxy.onRemoveObjectHandle _handle = (dbproxyproxy.onRemoveObjectHandle)hub.dbproxy.begin_callback(callbackid);
-            _handle();
-        }
-
-        private hub _hub_;
 	}
 }
 

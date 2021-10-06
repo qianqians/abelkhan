@@ -75,7 +75,7 @@ public:
 			});
 		}
 
-		void updataPersistedObject(msgpack11::MsgPack& query_info, msgpack11::MsgPack& updata_info, std::function<void(EM_DB_RESULT)> cb) {
+		void updataPersistedObject(msgpack11::MsgPack& query_info, msgpack11::MsgPack& updata_info, bool is_upsert, std::function<void(EM_DB_RESULT)> cb) {
 			auto _query_str = query_info.dump();
 			std::vector<uint8_t> query;
 			auto len = _query_str.size();
@@ -88,7 +88,7 @@ public:
 			updata.resize(len);
 			memcpy(updata.data(), _updata_str.data(), len);
 
-			_dbproxy->_dbproxy_caller->updata_persisted_object(_db, _collection, query, updata)->callBack([cb]() {
+			_dbproxy->_dbproxy_caller->updata_persisted_object(_db, _collection, query, updata, is_upsert)->callBack([cb]() {
 				spdlog::trace("updataPersistedObject sucessed!");
 				cb(EM_DB_RESULT::EM_DB_SUCESSED);
 			}, [cb]() {
@@ -100,7 +100,7 @@ public:
 			});
 		}
 
-		void findAndModify(msgpack11::MsgPack& query_info, msgpack11::MsgPack& updata_info, bool _new, std::function<void(EM_DB_RESULT, msgpack11::MsgPack)> cb) {
+		void findAndModify(msgpack11::MsgPack& query_info, msgpack11::MsgPack& updata_info, bool _new, bool is_upsert, std::function<void(EM_DB_RESULT, msgpack11::MsgPack)> cb) {
 			auto _query_str = query_info.dump();
 			std::vector<uint8_t> query;
 			auto len = _query_str.size();
@@ -113,7 +113,7 @@ public:
 			updata.resize(len);
 			memcpy(updata.data(), _updata_str.data(), len);
 
-			_dbproxy->_dbproxy_caller->find_and_modify(_db, _collection, query, updata, _new)->callBack([cb](std::vector<uint8_t> object_info) {
+			_dbproxy->_dbproxy_caller->find_and_modify(_db, _collection, query, updata, _new, is_upsert)->callBack([cb](std::vector<uint8_t> object_info) {
 				std::string err;
 				auto doc = msgpack11::MsgPack::parse((const char*)object_info.data(), object_info.size(), err);
 				if (doc.is_object()) {

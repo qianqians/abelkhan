@@ -35,7 +35,7 @@ hub_service::hub_service(std::string config_file_path, std::string config_name, 
 	_root_config = _config;
 	_config = _config->get_value_dict(config_name);
 
-	hub_name = _config->get_value_string("hub_name");
+	hub_name = config_name;
 	hub_type = hub_type_;
 	is_busy = false;
 }
@@ -149,11 +149,7 @@ void hub_service::reg_hub(std::string hub_ip, uint16_t hub_port) {
 }
 
 void hub_service::try_connect_db(std::string dbproxy_name, std::string dbproxy_ip, uint16_t dbproxy_port) {
-	if (!_config->has_key("dbproxy")) {
-		return;
-	}
-
-	if (_config->get_value_string("dbproxy") == dbproxy_name) {
+	if (_config->has_key("dbproxy") && _config->get_value_string("dbproxy") == dbproxy_name) {
 		auto dbproxy_cfg = _root_config->get_value_dict(dbproxy_name);
 		auto _db_ip = dbproxy_cfg->get_value_string("ip");
 		auto _db_port = (short)dbproxy_cfg->get_value_int("port");
@@ -168,7 +164,7 @@ void hub_service::try_connect_db(std::string dbproxy_name, std::string dbproxy_i
 		});
 		_dbproxyproxy->reg_server(hub_name);
 	}
-	else if (_config->get_value_string("extend_dbproxy") == dbproxy_name) {
+	else if (_config->has_key("extend_dbproxy") && _config->get_value_string("extend_dbproxy") == dbproxy_name) {
 		auto dbproxy_cfg = _root_config->get_value_dict(dbproxy_name);
 		auto _db_ip = dbproxy_cfg->get_value_string("ip");
 		auto _db_port = (short)dbproxy_cfg->get_value_int("port");

@@ -217,6 +217,11 @@ namespace abelkhan
             call_module_method("connect_hub", _argv_dc2ee339_bef5_3af9_a492_592ba4f08559);
         }
 
+        public void heartbeats(){
+            var _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = new ArrayList();
+            call_module_method("heartbeats", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+        }
+
         public void call_hub(string module, string func, byte[] argv){
             var _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3 = new ArrayList();
             _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.Add(module);
@@ -356,6 +361,7 @@ namespace abelkhan
             modules.reg_module(this);
 
             reg_method("connect_hub", connect_hub);
+            reg_method("heartbeats", heartbeats);
             reg_method("call_hub", call_hub);
         }
 
@@ -364,6 +370,13 @@ namespace abelkhan
             var _client_uuid = (string)inArray[0];
             if (on_connect_hub != null){
                 on_connect_hub(_client_uuid);
+            }
+        }
+
+        public event Action on_heartbeats;
+        public void heartbeats(ArrayList inArray){
+            if (on_heartbeats != null){
+                on_heartbeats();
             }
         }
 

@@ -1,147 +1,211 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 namespace hub
 {
 	public class dbproxyproxy
 	{
-		public dbproxyproxy(juggle.Ichannel ch)
+        public static Dictionary<String, Action<ArrayList> > onGetObjectInfo_callback_set;
+        public static Dictionary<String, Action> onGetObjectInfo_end_cb_set;
+
+        private abelkhan.hub_call_dbproxy_caller _hub_call_dbproxy_caller;
+
+        private Collection _Collection;
+
+        public enum EM_DB_RESULT
+        {
+            EM_DB_SUCESSED = 0,
+		    EM_DB_FAILD = 1,
+		    EM_DB_TIMEOUT = 2,
+	    }
+
+        public dbproxyproxy(abelkhan.Ichannel ch)
 		{
-			_hub_call_dbproxy = new caller.hub_call_dbproxy(ch);
-			callback_set = new Dictionary<string, object>();
-            end_cb_set = new Dictionary<string, object>();
+            _hub_call_dbproxy_caller = new abelkhan.hub_call_dbproxy_caller(ch, abelkhan.modulemng_handle._modulemng);
+
+            onGetObjectInfo_callback_set = new Dictionary<String, Action<ArrayList>>();
+            onGetObjectInfo_end_cb_set = new Dictionary<String, Action>();
         }
 
-		public void reg_hub(String uuid)
+        public event Action on_connect_dbproxy_sucessed;
+		public void reg_hub(String name)
         {
-            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "begin connect dbproxy server");
+            log.log.trace("begin connect dbproxy server");
 
-			_hub_call_dbproxy.reg_hub(uuid);
+            _hub_call_dbproxy_caller.reg_hub(name).callBack(()=> {
+                log.log.trace("connect dbproxy server sucessed");
+                _Collection = new Collection(this);
+                on_connect_dbproxy_sucessed?.Invoke();
+            }, ()=> {
+                log.log.trace("connect dbproxy server faild");
+            }).timeout(5 * 1000, ()=> {
+                log.log.trace("connect dbproxy server timeout");
+            });
 		}
 
         public Collection getCollection(string db, string collection)
         {
-           return new Collection(db, collection, this);
+            _Collection.set_db_collection(db, collection);
+           return _Collection;
         }
 
         public class Collection
         {
-            public Collection(string db, string collection, dbproxyproxy proxy)
+            public Collection(dbproxyproxy proxy)
             {
-                _db = db;
-                _collection = collection;
-
                 _dbproxy = proxy;
             }
 
-            public void createPersistedObject(Hashtable object_info, onCreatePersistedObjectHandle _handle)
+            public void set_db_collection(string db, string collection)
             {
-                var callbackid = System.Guid.NewGuid().ToString();
-                create_persisted_object(object_info, callbackid);
-                _dbproxy.callback_set.Add(callbackid, (object)_handle);
+                _db = db;
+                _collection = collection;
             }
 
-            public void updataPersistedObject(Hashtable query_json, Hashtable updata_info, onUpdataPersistedObjectHandle _handle)
+            public void createPersistedObject(Hashtable object_info, Action<EM_DB_RESULT> _handle)
             {
-                var callbackid = System.Guid.NewGuid().ToString();
-                updata_persisted_object(query_json, updata_info, callbackid);
-                _dbproxy.callback_set.Add(callbackid, (object)_handle);
+                using (var st = new MemoryStream())
+                {
+                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<Hashtable>();
+                    _serialization.Pack(st, object_info);
+                    st.Position = 0;
+                    _dbproxy._hub_call_dbproxy_caller.create_persisted_object(_db, _collection, st.ToArray()).callBack(()=> {
+                        log.log.trace("createPersistedObject sucessed!");
+                        _handle(EM_DB_RESULT.EM_DB_SUCESSED);
+                    }, ()=> {
+                        log.log.err("createPersistedObject faild");
+                        _handle(EM_DB_RESULT.EM_DB_FAILD);
+                    }).timeout(5 * 1000, ()=> {
+                        log.log.err("createPersistedObject timeout");
+                        _handle(EM_DB_RESULT.EM_DB_TIMEOUT);
+                    });
+                }
             }
 
-            public void getObjectCount(Hashtable query_json, onGetObjectCountHandle _handle)
+            public void updataPersistedObject(Hashtable query_info, Hashtable updata_info, bool is_upsert, Action<EM_DB_RESULT> _handle)
             {
-                var callbackid = System.Guid.NewGuid().ToString();
-                get_object_count(query_json, callbackid);
-                _dbproxy.callback_set.Add(callbackid, (object)_handle);
+                using (MemoryStream st_query = new MemoryStream(), st_update = new MemoryStream())
+                {
+                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<Hashtable>();
+                    
+                    _serialization.Pack(st_query, query_info);
+                    st_query.Position = 0;
+
+                    _serialization.Pack(st_update, updata_info);
+                    st_update.Position = 0;
+
+                    _dbproxy._hub_call_dbproxy_caller.updata_persisted_object(_db, _collection, st_query.ToArray(), st_update.ToArray(), is_upsert).callBack(() =>
+                    {
+                        log.log.trace("updataPersistedObject sucessed!");
+                        _handle(EM_DB_RESULT.EM_DB_SUCESSED);
+                    }, () =>
+                    {
+                        log.log.trace("updataPersistedObject faild!");
+                        _handle(EM_DB_RESULT.EM_DB_FAILD);
+                    }).timeout(5 * 1000, () =>
+                    {
+                        log.log.trace("updataPersistedObject timeout!");
+                        _handle(EM_DB_RESULT.EM_DB_TIMEOUT);
+                    });
+                }
             }
 
-            public void getObjectInfo(Hashtable query_json, onGetObjectInfoHandle _handle, onGetObjectInfoEnd _end)
+            public void findAndModifyObject(Hashtable query_info, Hashtable updata_info, bool _new, bool is_upsert, Action<EM_DB_RESULT, Hashtable> _handle)
             {
-                var callbackid = System.Guid.NewGuid().ToString();
-                get_object_info(query_json, callbackid);
-                _dbproxy.callback_set.Add(callbackid, (object)_handle);
-                _dbproxy.end_cb_set.Add(callbackid, (object)_end);
+                using (MemoryStream st_query = new MemoryStream(), st_update = new MemoryStream())
+                {
+                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<Hashtable>();
+
+                    _serialization.Pack(st_query, query_info);
+                    st_query.Position = 0;
+
+                    _serialization.Pack(st_update, updata_info);
+                    st_update.Position = 0;
+
+                    _dbproxy._hub_call_dbproxy_caller.find_and_modify(_db, _collection, st_query.ToArray(), st_update.ToArray(), _new, is_upsert).callBack((byte[] obj) =>
+                    {
+                        log.log.trace("findAndModifyObject sucessed!");
+
+                        var st_obj = new MemoryStream();
+                        st_obj.Write(obj);
+                        st_obj.Position = 0;
+                        var obj_table = _serialization.Unpack(st_obj);
+                        _handle(EM_DB_RESULT.EM_DB_SUCESSED, obj_table);
+                    }, () =>
+                    {
+                        log.log.trace("findAndModifyObject faild!");
+                        _handle(EM_DB_RESULT.EM_DB_FAILD, null);
+                    }).timeout(5 * 1000, () =>
+                    {
+                        log.log.trace("findAndModifyObject timeout!");
+                        _handle(EM_DB_RESULT.EM_DB_TIMEOUT, null);
+                    });
+                }
             }
 
-            public void removeObject(Hashtable query_json, onRemoveObjectHandle _handle)
+            public void getObjectCount(Hashtable query_json, Action<EM_DB_RESULT, uint> _handle)
             {
-                var callbackid = System.Guid.NewGuid().ToString();
-                remove_object(query_json, callbackid);
-                _dbproxy.callback_set.Add(callbackid, (object)_handle);
+                using (var st = new MemoryStream())
+                {
+                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<Hashtable>();
+                    _serialization.Pack(st, query_json);
+                    st.Position = 0;
+                    _dbproxy._hub_call_dbproxy_caller.get_object_count(_db, _collection, st.ToArray()).callBack((count)=> {
+                        log.log.trace("getObjectCount sucessed!");
+                        _handle(EM_DB_RESULT.EM_DB_SUCESSED, count);
+                    }, ()=> {
+                        log.log.trace("getObjectCount faild!");
+                        _handle(EM_DB_RESULT.EM_DB_FAILD, 0);
+                    }).timeout(5 * 1000, ()=> {
+                        log.log.trace("getObjectCount timeout!");
+                        _handle(EM_DB_RESULT.EM_DB_TIMEOUT, 0);
+                    });
+                }
             }
 
-            private void create_persisted_object(Hashtable object_info, String callbackid)
+            public void getObjectInfo(Hashtable query_obj, Action<ArrayList> _handle, Action _end)
             {
-                _dbproxy._hub_call_dbproxy.create_persisted_object(_db, _collection, object_info, callbackid);
+                using (var st = new MemoryStream())
+                {
+                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<Hashtable>();
+                    _serialization.Pack(st, query_obj);
+                    st.Position = 0;
+
+                    var callbackid = System.Guid.NewGuid().ToString();
+
+                    _dbproxy._hub_call_dbproxy_caller.get_object_info(_db, _collection, st.ToArray(), callbackid);
+                    dbproxyproxy.onGetObjectInfo_callback_set.Add(callbackid, _handle);
+                    dbproxyproxy.onGetObjectInfo_end_cb_set.Add(callbackid, _end);
+                }
             }
 
-            private void updata_persisted_object(Hashtable query_object, Hashtable updata_info, String callbackid)
+            public void removeObject(Hashtable query_obj, Action<EM_DB_RESULT> _handle)
             {
-                _dbproxy._hub_call_dbproxy.updata_persisted_object(_db, _collection, query_object, updata_info, callbackid);
-            }
+                using (var st = new MemoryStream())
+                {
+                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<Hashtable>();
+                    _serialization.Pack(st, query_obj);
+                    st.Position = 0;
 
-            private void get_object_count(Hashtable query_object, String callbackid)
-            {
-                _dbproxy._hub_call_dbproxy.get_object_count(_db, _collection, query_object, callbackid);
-            }
-
-            private void get_object_info(Hashtable query_object, String callbackid)
-            {
-                _dbproxy._hub_call_dbproxy.get_object_info(_db, _collection, query_object, callbackid);
-            }
-
-            private void remove_object(Hashtable query_object, String callbackid)
-            {
-                _dbproxy._hub_call_dbproxy.remove_object(_db, _collection, query_object, callbackid);
+                    _dbproxy._hub_call_dbproxy_caller.remove_object(_db, _collection, st.ToArray()).callBack(()=> {
+                        log.log.trace("removeObject sucessed!");
+                        _handle(EM_DB_RESULT.EM_DB_SUCESSED);
+                    },()=> {
+                        log.log.trace("removeObject faild!");
+                        _handle(EM_DB_RESULT.EM_DB_FAILD);
+                    }).timeout(5 * 1000, ()=>{
+                        log.log.trace("removeObject timeout!");
+                        _handle(EM_DB_RESULT.EM_DB_TIMEOUT);
+                    });
+                }
             }
 
             private string _db;
             private string _collection;
             private dbproxyproxy _dbproxy;
         }
-
-		public object begin_callback(String callbackid)
-		{
-			if (callback_set.ContainsKey(callbackid))
-			{
-				return callback_set[callbackid];
-			}
-
-			return null;
-		}
-
-		public void end_callback(String callbackid)
-		{
-			if (callback_set.ContainsKey(callbackid))
-			{
-				callback_set.Remove(callbackid);
-			}
-		}
-
-        public object end_get_object_info_callback(String callbackid)
-        {
-            end_callback(callbackid);
-
-            if (end_cb_set.ContainsKey(callbackid))
-            {
-                return end_cb_set[callbackid];
-            }
-
-            return null;
-        }
-
-        public delegate void onCreatePersistedObjectHandle(bool is_create_sucess);
-		public delegate void onUpdataPersistedObjectHandle();
-        public delegate void onGetObjectCountHandle(Int64 count);
-		public delegate void onGetObjectInfoHandle(ArrayList obejctinfoarray);
-        public delegate void onGetObjectInfoEnd();
-        public delegate void onRemoveObjectHandle();
-
-        private Dictionary<String, object> callback_set;
-        private Dictionary<String, object> end_cb_set;
-
-		private caller.hub_call_dbproxy _hub_call_dbproxy;
 	}
 }
 

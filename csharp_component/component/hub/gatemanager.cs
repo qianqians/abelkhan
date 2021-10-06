@@ -4,95 +4,107 @@ using System.Collections.Generic;
 
 namespace hub
 {
-	public class gatemanager
+    public class gatemanager
 	{
-		public gatemanager(service.connectnetworkservice _conn)
+        public String current_client_uuid;
+
+        private Dictionary<String, gateproxy> clients;
+
+        private Dictionary<abelkhan.Ichannel, gateproxy> ch_gateproxys;
+        private Dictionary<String, gateproxy> gates;
+
+        private abelkhan.enetservice _gate_conn;
+
+        public gatemanager(abelkhan.enetservice _conn)
 		{
 			_gate_conn = _conn;
 			current_client_uuid = "";
 
 			clients = new Dictionary<string, gateproxy>();
-			ch_gateproxys = new Dictionary<juggle.Ichannel, gateproxy>();
+			ch_gateproxys = new Dictionary<abelkhan.Ichannel, gateproxy>();
 			gates = new Dictionary<string, gateproxy>();
 		}
 
-		public void connect_gate(String uuid, String ip, short port)
+		public void connect_gate(String name, String ip, ushort port)
 		{
-			var ch = _gate_conn.connect(ip, port);
-			gates.Add(uuid, new gateproxy(ch));
-			ch_gateproxys.Add(ch, gates[uuid]);
-			gates[uuid].reg_hub();
+			_gate_conn.connect(ip, port, (ch)=> {
+                var _proxy = new gateproxy(ch);
+                gates.Add(name, _proxy);
+                ch_gateproxys.Add(ch, _proxy);
+                lock (hub.add_chs)
+                {
+                    hub.add_chs.Add(ch);
+                }
+                _proxy.reg_hub();
+            });
 		}
 
-		public gateproxy get_gateproxy(juggle.Ichannel gate_ch)
+		public gateproxy get_gateproxy(abelkhan.Ichannel gate_ch)
 		{
 			if (ch_gateproxys.ContainsKey(gate_ch))
 			{
 				return ch_gateproxys[gate_ch];
 			}
-
 			return null;
 		}
 
-        public delegate void clientConnecthandle(String client_uuid);
-        public event clientConnecthandle clientConnect;
-        public void client_connect(String client_uuid, juggle.Ichannel gate_ch)
+        public event Action<string> on_gate_closed;
+        public void gate_be_closed(string svr_name)
+        {
+            if (gates.Remove(svr_name, out gateproxy _proxy))
+            {
+                foreach (var it in clients)
+                {
+                    if (it.Value == _proxy)
+                    {
+                        clients.Remove(it.Key);
+                        break;
+                    }
+                }
+                ch_gateproxys.Remove(_proxy._ch);
+
+                lock (hub.remove_chs)
+                {
+                    hub.remove_chs.Add(_proxy._ch);
+                }
+
+                on_gate_closed?.Invoke(svr_name);
+            }
+        }
+
+        public void client_connect(String client_uuid, abelkhan.Ichannel gate_ch)
         {
             if (!ch_gateproxys.ContainsKey(gate_ch))
             {
-                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "invaild gate");
+                log.log.err("invaild gate");
                 return;
             }
+            clients[client_uuid] = ch_gateproxys[gate_ch];
 
-            if (clients.ContainsKey(client_uuid))
-            {
-                log.log.error(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "repeated client");
-                return;
-            }
-
-            var _proxy = ch_gateproxys[gate_ch];
-            clients.Add(client_uuid, _proxy);
-            _proxy.connect_sucess(client_uuid);
-
-            if (clientConnect != null)
-            {
-                clientConnect(client_uuid);
-            }
-
-            log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "client {0} connected", client_uuid);
+            log.log.trace("client {0} connected", client_uuid);
         }
 
-        public delegate void clientDisconnecthandle(String client_uuid);
-        public event clientDisconnecthandle clientDisconnect;
+        public event Action<string> clientDisconnect;
         public void client_disconnect(String client_uuid)
         {
             if (clients.ContainsKey(client_uuid))
             {
-                if (clientDisconnect != null)
-                {
-                    clientDisconnect(client_uuid);
-                }
-
                 clients.Remove(client_uuid);
+                clientDisconnect?.Invoke(client_uuid);
             }
         }
 
-        public delegate void clientExceptionhandle(String client_uuid);
-        public event clientExceptionhandle clientException;
+        public event Action<string> clientException;
         public void client_exception(String client_uuid)
         {
-            if (clientException != null)
-            {
-                clientException(client_uuid);
-            }
+            clientException?.Invoke(client_uuid);
         }
 
         public void disconnect_client(String uuid)
         {
-            if (clients.ContainsKey(uuid))
+            if (clients.Remove(uuid, out gateproxy _proxy))
             {
-                clients[uuid].disconnect_client(uuid);
-                clients.Remove(uuid);
+                _proxy.disconnect_client(uuid);
             }
         }
 
@@ -110,11 +122,11 @@ namespace hub
             }
             else
             {
-                log.log.trace(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "no-exist client:", uuid);
+                log.log.trace("no-exist client:", uuid);
             }
         }
 
-        public void call_group_client(ArrayList uuids, String module, String func, params object[] _argvs)
+        public void call_group_client(List<string> uuids, String module, String func, params object[] _argvs)
         {
             ArrayList _argvs_list = new ArrayList();
             foreach (var o in _argvs)
@@ -122,24 +134,22 @@ namespace hub
                 _argvs_list.Add(o);
             }
 
-            var tmp_gates = new List<gateproxy>();
-            foreach (var uuid in uuids)
+            var tmp_gates = new Dictionary<gateproxy, List<string> >();
+            foreach (var _uuid in uuids)
             {
-                var _uuid = uuid as string;
-                if (clients.ContainsKey(_uuid))
+                if (clients.TryGetValue(_uuid, out gateproxy _proxy))
                 {
-                    var _proxy = clients[_uuid];
-
-                    if (!tmp_gates.Contains(_proxy))
+                    if (!tmp_gates.ContainsKey(_proxy))
                     {
-                        tmp_gates.Add(_proxy);
+                        tmp_gates.Add(_proxy, new List<string>());
                     }
+                    tmp_gates[_proxy].Add(_uuid);
                 }
             }
 
             foreach (var _proxy in tmp_gates)
 			{
-				_proxy.forward_hub_call_group_client(uuids, module, func, _argvs_list);
+				_proxy.Key.forward_hub_call_group_client(_proxy.Value, module, func, _argvs_list);
 			}
 		}
 
@@ -156,14 +166,6 @@ namespace hub
 				_proxy.Value.forward_hub_call_global_client(module, func, _argvs_list);
 			}
 		}
-
-        public String current_client_uuid;
-
-		private Dictionary<String, gateproxy> clients;
-
-		private Dictionary<juggle.Ichannel, gateproxy> ch_gateproxys;
-		private Dictionary<String, gateproxy> gates;
-		private service.connectnetworkservice _gate_conn;
 	}
 }
 
