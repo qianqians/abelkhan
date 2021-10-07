@@ -239,6 +239,7 @@ namespace hub
                     _event.Add(func);
                     _event.Add(_argvs_list);
                     _serializer.Pack(st, _event);
+                    st.Position = 0;
 
                     _client.call_client(st.ToArray());
                 }
@@ -284,17 +285,25 @@ namespace hub
 
             foreach (var _client in _direct_clients)
             {
-                using (var st = new MemoryStream())
+                using (MemoryStream st = new MemoryStream(), st_send = new MemoryStream())
                 {
                     var _serializer = MessagePackSerializer.Get<ArrayList>();
 
-                    ArrayList _event = new ArrayList();
-                    _event.Add(module);
-                    _event.Add(func);
-                    _event.Add(_argvs_list);
-                    _serializer.Pack(st, _event);
+                    ArrayList _rpc_argv = new ArrayList();
+                    _rpc_argv.Add(module);
+                    _rpc_argv.Add(func);
+                    _rpc_argv.Add(_argvs_list);
+                    _serializer.Pack(st, _rpc_argv);
+                    st.Position = 0;
 
-                    _client.call_client(st.ToArray());
+                    ArrayList _event = new ArrayList();
+                    _event.Add("hub_call_client");
+                    _event.Add("call_client");
+                    _event.Add(st.ToArray());
+                    _serializer.Pack(st_send, _rpc_argv);
+                    st_send.Position = 0;
+
+                    _client._direct_ch.send(st_send.ToArray());
                 }
             }
 
