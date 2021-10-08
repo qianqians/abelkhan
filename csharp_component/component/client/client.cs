@@ -254,6 +254,8 @@ namespace client
                         {
                             remove_chs.Add(ch);
                         }
+                        _gateproxy = null;
+
                         onGateDisConnect.Invoke();
                     };
                     _gateproxy.onGateTime += onGateTime;
@@ -279,6 +281,12 @@ namespace client
                         {
                             remove_chs.Add(ch);
                         }
+
+                        if (_ch_hubproxy_set.Remove(ch, out hubproxy _proxy))
+                        {
+                            _hubproxy_set.Remove(_proxy._hub_name);
+                        }
+
                         onHubDisConnect?.Invoke(hub_name);
                     };
                     _hubproxy.onHubTime += onHubTime;
