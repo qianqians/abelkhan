@@ -37,7 +37,7 @@ namespace hub
                 var _event = _serializer.Unpack(st);
                 var module = (string)_event[0];
                 var func = (string)_event[1];
-                var argv = (byte[])_event[2];
+                var argv = (ArrayList)_event[2];
                 hub._gates.current_client_uuid = uuid;
                 hub._modules.process_module_mothed(module, func, argv);
                 hub._gates.current_client_uuid = "";

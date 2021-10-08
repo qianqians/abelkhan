@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.IO;
 
 namespace hub
 {
@@ -26,11 +27,22 @@ namespace hub
             rsp.rsp();
         }
 
-        public void hub_call_hub_mothed(string module_name, string func_name, byte[] argvs)
+        public void hub_call_hub_mothed(byte[] rpc_argvs)
         {
-            _hubmanager.current_hubproxy = _hubmanager.get_hub(_hub_call_hub_module.current_ch);
-            hub._modules.process_module_mothed(module_name, func_name, argvs);
-            _hubmanager.current_hubproxy = null;
+            using (var st = new MemoryStream()) {
+                st.Write(rpc_argvs);
+                st.Position = 0;
+
+                var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+                var _event = _serialization.Unpack(st);
+                var module_name = (string)_event[0];
+                var func_name = (string)_event[1];
+                var _argvs = (ArrayList)_event[2];
+
+                _hubmanager.current_hubproxy = _hubmanager.get_hub(_hub_call_hub_module.current_ch);
+                hub._modules.process_module_mothed(module_name, func_name, _argvs);
+                _hubmanager.current_hubproxy = null;
+            }
         }
 
     }

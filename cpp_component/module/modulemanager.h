@@ -16,7 +16,7 @@ public:
 		modules.insert(std::make_pair(module_name, module));
 	}
 
-	void process_module_mothed(std::string& module_name, std::string& cb_name, std::vector<uint8_t>& InArray)
+	void process_module_mothed(std::string& module_name, std::string& cb_name, msgpack11::MsgPack::array& InArray)
 	{
 		auto module = modules.find(module_name);
 		if (module != modules.end())

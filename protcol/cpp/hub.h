@@ -106,11 +106,9 @@ namespace abelkhan
             return cb_reg_hub_obj;
         }
 
-        void hub_call_hub_mothed(std::string module, std::string func, std::vector<uint8_t> argv){
+        void hub_call_hub_mothed(std::vector<uint8_t> rpc_argv){
             msgpack11::MsgPack::array _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e;
-            _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e.push_back(module);
-            _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e.push_back(func);
-            _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e.push_back(argv);
+            _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e.push_back(rpc_argv);
             call_module_method("hub_call_hub_mothed", _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e);
         }
 
@@ -267,11 +265,9 @@ namespace abelkhan
             return cb_heartbeats_obj;
         }
 
-        void call_hub(std::string module, std::string func, std::vector<uint8_t> argv){
+        void call_hub(std::vector<uint8_t> rpc_argv){
             msgpack11::MsgPack::array _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3;
-            _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.push_back(module);
-            _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.push_back(func);
-            _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.push_back(argv);
+            _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.push_back(rpc_argv);
             call_module_method("call_hub", _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3);
         }
 
@@ -362,12 +358,10 @@ namespace abelkhan
             rsp = nullptr;
         }
 
-        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>)> sig_hub_call_hub_mothed;
+        concurrent::signals<void(std::vector<uint8_t>)> sig_hub_call_hub_mothed;
         void hub_call_hub_mothed(const msgpack11::MsgPack::array& inArray){
-            auto _module = inArray[0].string_value();
-            auto _func = inArray[1].string_value();
-            auto _argv = inArray[2].binary_items();
-            sig_hub_call_hub_mothed.emit(_module, _func, _argv);
+            auto _rpc_argv = inArray[0].binary_items();
+            sig_hub_call_hub_mothed.emit(_rpc_argv);
         }
 
     };
@@ -458,12 +452,10 @@ namespace abelkhan
             rsp = nullptr;
         }
 
-        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>)> sig_call_hub;
+        concurrent::signals<void(std::vector<uint8_t>)> sig_call_hub;
         void call_hub(const msgpack11::MsgPack::array& inArray){
-            auto _module = inArray[0].string_value();
-            auto _func = inArray[1].string_value();
-            auto _argv = inArray[2].binary_items();
-            sig_call_hub.emit(_module, _func, _argv);
+            auto _rpc_argv = inArray[0].binary_items();
+            sig_call_hub.emit(_rpc_argv);
         }
 
     };

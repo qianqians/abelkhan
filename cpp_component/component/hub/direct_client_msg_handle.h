@@ -35,7 +35,7 @@ public:
 		_client_call_hub_module->Init(service::_modulemng);
 		_client_call_hub_module->sig_connect_hub.connect(std::bind(&direct_client_msg_handle::client_connect, this, std::placeholders::_1));
 		_client_call_hub_module->sig_heartbeats.connect(std::bind(&direct_client_msg_handle::heartbeats, this));
-		_client_call_hub_module->sig_call_hub.connect(std::bind(&direct_client_msg_handle::call_hub, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+		_client_call_hub_module->sig_call_hub.connect(std::bind(&direct_client_msg_handle::call_hub, this, std::placeholders::_1));
 	}
 
 	void client_connect(std::string cuuid) {
@@ -62,7 +62,7 @@ public:
 		rsp->rsp(_hub->_timerservice->Tick);
 	}
 
-	void call_hub(std::string _module, std::string func, std::vector<uint8_t> argv) {
+	void call_hub(std::vector<uint8_t> rpc_argvs) {
 		auto _proxy = _gates->get_direct_client(_client_call_hub_module->current_ch);
 		if (_proxy == nullptr) {
 			spdlog::trace("call_hub _proxy is nullptr!");
@@ -70,8 +70,19 @@ public:
 		}
 
 		try {
+			std::string err;
+			auto InArray = msgpack11::MsgPack::parse((char*)rpc_argvs.data(), rpc_argvs.size(), err);
+			if (!InArray.is_array()) {
+				spdlog::trace("hub_svr_msg_handle hub_call_hub_mothed argv is not match!!");
+				return;
+			}
+
+			auto _module = InArray[0].string_value();
+			auto func = InArray[1].string_value();
+			auto argvs = InArray[2].array_items();
+
 			_gates->current_client_cuuid = _proxy->_cuuid;
-			_hub->modules.process_module_mothed(_module, func, argv);
+			_hub->modules.process_module_mothed(_module, func, argvs);
 			_gates->current_client_cuuid = "";
 		}
 		catch (std::exception e) {

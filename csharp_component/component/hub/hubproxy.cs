@@ -23,8 +23,15 @@ namespace hub
             var _serializer = MessagePackSerializer.Get<ArrayList>();
             using (var st = new MemoryStream())
             {
-                _serializer.Pack(st, argvs);
-                _hub_call_hub_caller.hub_call_hub_mothed(module_name, func_name, st.ToArray());
+                var _event = new ArrayList();
+                _event.Add(module_name);
+                _event.Add(func_name);
+                _event.Add(argvs);
+
+                _serializer.Pack(st, _event);
+                st.Position = 0;
+
+                _hub_call_hub_caller.hub_call_hub_mothed(st.ToArray());
             }
         }
 

@@ -140,11 +140,9 @@ namespace abelkhan
             return cb_reg_hub_obj;
         }
 
-        public void hub_call_hub_mothed(string module, string func, byte[] argv){
+        public void hub_call_hub_mothed(byte[] rpc_argv){
             var _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e = new ArrayList();
-            _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e.Add(module);
-            _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e.Add(func);
-            _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e.Add(argv);
+            _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e.Add(rpc_argv);
             call_module_method("hub_call_hub_mothed", _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e);
         }
 
@@ -325,11 +323,9 @@ namespace abelkhan
             return cb_heartbeats_obj;
         }
 
-        public void call_hub(string module, string func, byte[] argv){
+        public void call_hub(byte[] rpc_argv){
             var _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3 = new ArrayList();
-            _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.Add(module);
-            _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.Add(func);
-            _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.Add(argv);
+            _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.Add(rpc_argv);
             call_module_method("call_hub", _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3);
         }
 
@@ -407,13 +403,11 @@ namespace abelkhan
             rsp = null;
         }
 
-        public event Action<string, string, byte[]> on_hub_call_hub_mothed;
+        public event Action<byte[]> on_hub_call_hub_mothed;
         public void hub_call_hub_mothed(ArrayList inArray){
-            var _module = (string)inArray[0];
-            var _func = (string)inArray[1];
-            var _argv = (byte[])inArray[2];
+            var _rpc_argv = (byte[])inArray[0];
             if (on_hub_call_hub_mothed != null){
-                on_hub_call_hub_mothed(_module, _func, _argv);
+                on_hub_call_hub_mothed(_rpc_argv);
             }
         }
 
@@ -508,13 +502,11 @@ namespace abelkhan
             rsp = null;
         }
 
-        public event Action<string, string, byte[]> on_call_hub;
+        public event Action<byte[]> on_call_hub;
         public void call_hub(ArrayList inArray){
-            var _module = (string)inArray[0];
-            var _func = (string)inArray[1];
-            var _argv = (byte[])inArray[2];
+            var _rpc_argv = (byte[])inArray[0];
             if (on_call_hub != null){
-                on_call_hub(_module, _func, _argv);
+                on_call_hub(_rpc_argv);
             }
         }
 

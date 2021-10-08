@@ -12,7 +12,7 @@ module hub_call_hub{
 
 	reg_hub req(string hub_name, string hub_type) rsp() err();
 	
-	hub_call_hub_mothed ntf(string module, string func, bin argv);
+	hub_call_hub_mothed ntf(bin rpc_argv);
 	
 }
 
@@ -28,6 +28,6 @@ module client_call_hub{
 	
 	heartbeats req() rsp(uint64 timetmp) err();
 
-	call_hub ntf(string module, string func, bin argv);
+	call_hub ntf(bin rpc_argv);
 	
 }

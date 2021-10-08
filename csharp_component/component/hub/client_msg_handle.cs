@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.IO;
 
 namespace hub
 {
@@ -38,16 +40,29 @@ namespace hub
 			rsp.rsp((ulong)service.timerservice.Tick);
 		}
 
-		public void call_hub(string module, string func, byte[] argv)
+		public void call_hub(byte[] arpc_rgv)
 		{
 			var _proxy = hub._gates.get_directproxy(_client_call_hub_module.current_ch);
 			if (_proxy != null)
 			{
 				try
 				{
-					hub._gates.current_client_uuid = _proxy._cuuid;
-					hub._modules.process_module_mothed(module, func, argv);
-					hub._gates.current_client_uuid = "";
+					using (var st = new MemoryStream())
+					{
+						st.Write(arpc_rgv);
+						st.Position = 0;
+
+						var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+						var _event = _serialization.Unpack(st);
+
+						var module = (string)_event[0];
+						var func = (string)_event[1];
+						var argv = (ArrayList)_event[2];
+
+						hub._gates.current_client_uuid = _proxy._cuuid;
+						hub._modules.process_module_mothed(module, func, argv);
+						hub._gates.current_client_uuid = "";
+					}
 				}
 				catch (Exception e)
 				{

@@ -105,11 +105,9 @@ export class hub_call_hub_caller extends abelkhan.Icaller {
         return cb_reg_hub_obj;
     }
 
-    public hub_call_hub_mothed(module:string, func:string, argv:Uint8Array){
+    public hub_call_hub_mothed(rpc_argv:Uint8Array){
         let _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e:any[] = [];
-        _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e.push(module);
-        _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e.push(func);
-        _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e.push(argv);
+        _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e.push(rpc_argv);
         this.call_module_method("hub_call_hub_mothed", _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e);
     }
 
@@ -261,11 +259,9 @@ export class client_call_hub_caller extends abelkhan.Icaller {
         return cb_heartbeats_obj;
     }
 
-    public call_hub(module:string, func:string, argv:Uint8Array){
+    public call_hub(rpc_argv:Uint8Array){
         let _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3:any[] = [];
-        _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.push(module);
-        _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.push(func);
-        _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.push(argv);
+        _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.push(rpc_argv);
         this.call_module_method("call_hub", _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3);
     }
 
@@ -345,12 +341,10 @@ export class hub_call_hub_module extends abelkhan.Imodule {
         this.rsp = null;
     }
 
-    public cb_hub_call_hub_mothed : (module:string, func:string, argv:Uint8Array)=>void | null;
+    public cb_hub_call_hub_mothed : (rpc_argv:Uint8Array)=>void | null;
     hub_call_hub_mothed(inArray:any[]){
         let _argv_:any[] = [];
         _argv_.push(inArray[0]);
-        _argv_.push(inArray[1]);
-        _argv_.push(inArray[2]);
         if (this.cb_hub_call_hub_mothed){
             this.cb_hub_call_hub_mothed.apply(null, _argv_);
         }
@@ -462,12 +456,10 @@ export class client_call_hub_module extends abelkhan.Imodule {
         this.rsp = null;
     }
 
-    public cb_call_hub : (module:string, func:string, argv:Uint8Array)=>void | null;
+    public cb_call_hub : (rpc_argv:Uint8Array)=>void | null;
     call_hub(inArray:any[]){
         let _argv_:any[] = [];
         _argv_.push(inArray[0]);
-        _argv_.push(inArray[1]);
-        _argv_.push(inArray[2]);
         if (this.cb_call_hub){
             this.cb_call_hub.apply(null, _argv_);
         }

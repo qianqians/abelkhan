@@ -64,10 +64,10 @@ public:
 		try {
 			auto module_name = _event[0].string_value();
 			auto func_name = _event[1].string_value();
-			auto bin_argv = _event[2].binary_items();
+			auto argvs = _event[2].array_items();
 			_gates->client_connect(cuuid, _gate_call_hub_module->current_ch);
 			_gates->current_client_cuuid = cuuid;
-			_hub->modules.process_module_mothed(module_name, func_name, bin_argv);
+			_hub->modules.process_module_mothed(module_name, func_name, argvs);
 			_gates->current_client_cuuid = "";
 		}
 		catch (std::exception e) {

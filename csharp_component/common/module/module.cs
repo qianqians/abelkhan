@@ -23,16 +23,10 @@ namespace common
 			cbs.Add(cb_name, cb);
 		}
 
-		public void invoke(string cb_name, byte[] data)
+		public void invoke(string cb_name, ArrayList InArray)
         {
 			if (cbs.TryGetValue(cb_name, out Action<ArrayList> cb))
 			{
-				var st = new MemoryStream();
-				st.Write(data);
-				st.Position = 0;
-				
-				var InArray = serializer.Unpack(st);
-
 				cb(InArray);
 			}
 			else

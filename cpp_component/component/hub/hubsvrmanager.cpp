@@ -19,12 +19,17 @@ hubproxy::hubproxy(std::string hub_name, std::string hub_type, std::shared_ptr<a
 }
 
 void hubproxy::call_hub(const std::string& module_name, const std::string& func_name, const msgpack11::MsgPack::array& argvs) {
-	msgpack11::MsgPack _pack(argvs);
-	auto _pack_str = _pack.dump();
-	std::vector<uint8_t> _argvs_bin;
-	_argvs_bin.resize(_pack_str.size());
-	memcpy(_argvs_bin.data(), _pack_str.data(), _pack_str.size());
-	_hub_call_hub_caller->hub_call_hub_mothed(module_name, func_name, _argvs_bin);
+	msgpack11::MsgPack::array event_;
+	event_.push_back(module_name);
+	event_.push_back(func_name);
+	event_.push_back(argvs);
+	msgpack11::MsgPack _pack(event_);
+	auto data = _pack.dump();
+	std::vector<uint8_t> _data_bin;
+	_data_bin.resize(data.size());
+	memcpy(_data_bin.data(), data.data(), data.size());
+
+	_hub_call_hub_caller->hub_call_hub_mothed(_data_bin);
 }
 
 hubsvrmanager::hubsvrmanager(std::shared_ptr<hub_service> _hub_) {

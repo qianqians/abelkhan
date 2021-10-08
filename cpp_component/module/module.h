@@ -37,19 +37,12 @@ protected:
 	}
 
 public:
-	void invoke(std::string& cb_name, std::vector<uint8_t>& data)
+	void invoke(std::string& cb_name, msgpack11::MsgPack::array& InArray)
 	{
 		auto cb = cbs.find(cb_name);
 		if (cb != cbs.end())
 		{
-			std::string err;
-			auto InArray = msgpack11::MsgPack::parse((char*)data.data(), data.size(), err);
-			if (!InArray.is_array()) {
-				spdlog::trace("call_hub argv is not match!!");
-				throw moduleException(concurrent::format("call_hub argv is not match:%s!", cb_name));
-			}
-
-			(cb->second)(InArray.array_items());
+			(cb->second)(InArray);
 		}
 		else {
 			spdlog::error("imodule.invoke unreg func name:{0}", cb_name);
