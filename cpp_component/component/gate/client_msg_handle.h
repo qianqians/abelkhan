@@ -39,6 +39,7 @@ public:
 	}
 
 	void heartbeats() {
+		auto rsp = std::static_pointer_cast<abelkhan::client_call_gate_heartbeats_rsp>(_client_call_gate_module->rsp);
 		auto ch = _client_call_gate_module->current_ch;
 		auto proxy = _clientmanager->get_client(ch);
 		if (proxy != nullptr) {
@@ -50,6 +51,7 @@ public:
 			}
 			proxy->_timetmp = _timerservice->Tick;
 		}
+		rsp->rsp(_timerservice->Tick);
 	}
 
 	void get_hub_info(std::string hub_type) {

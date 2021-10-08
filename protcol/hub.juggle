@@ -26,7 +26,7 @@ module client_call_hub{
 
 	connect_hub ntf(string client_uuid);
 	
-	heartbeats ntf();
+	heartbeats req() rsp(uint64 timetmp) err();
 
 	call_hub ntf(string module, string func, bin argv);
 	

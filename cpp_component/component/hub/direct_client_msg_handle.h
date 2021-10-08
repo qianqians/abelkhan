@@ -43,6 +43,7 @@ public:
 	}
 
 	void heartbeats() {
+		auto rsp = std::static_pointer_cast<abelkhan::client_call_hub_heartbeats_rsp>(_client_call_hub_module->rsp);
 		auto _proxy = _gates->get_direct_client(_client_call_hub_module->current_ch);
 		if (_proxy == nullptr) {
 			spdlog::trace("heartbeats _proxy is nullptr!");
@@ -58,6 +59,7 @@ public:
 			}
 			_proxy->_timetmp = _hub->_timerservice->Tick;
 		}
+		rsp->rsp(_hub->_timerservice->Tick);
 	}
 
 	void call_hub(std::string _module, std::string func, std::vector<uint8_t> argv) {

@@ -21,6 +21,7 @@ namespace hub
 
 		public void heartbeats()
         {
+			var rsp = (abelkhan.client_call_hub_heartbeats_rsp)_client_call_hub_module.rsp;
 			var _proxy = hub._gates.get_directproxy(_client_call_hub_module.current_ch);
 			if (_proxy != null)
             {
@@ -34,7 +35,8 @@ namespace hub
 				}
 				_proxy._timetmp = service.timerservice.Tick;
 			}
-        }
+			rsp.rsp((ulong)service.timerservice.Tick);
+		}
 
 		public void call_hub(string module, string func, byte[] argv)
 		{

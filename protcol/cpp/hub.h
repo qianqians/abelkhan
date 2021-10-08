@@ -166,9 +166,28 @@ namespace abelkhan
         }
 
     };
+    class client_call_hub_rsp_cb;
+    class client_call_hub_heartbeats_cb : public std::enable_shared_from_this<client_call_hub_heartbeats_cb>{
+    private:
+        uint64_t cb_uuid;
+        std::shared_ptr<client_call_hub_rsp_cb> module_rsp_cb;
+
+    public:
+        client_call_hub_heartbeats_cb(uint64_t _cb_uuid, std::shared_ptr<client_call_hub_rsp_cb> _module_rsp_cb);
+    public:
+        concurrent::signals<void(uint64_t)> sig_heartbeats_cb;
+        concurrent::signals<void()> sig_heartbeats_err;
+        concurrent::signals<void()> sig_heartbeats_timeout;
+
+        std::shared_ptr<client_call_hub_heartbeats_cb> callBack(std::function<void(uint64_t timetmp)> cb, std::function<void()> err);
+        void timeout(uint64_t tick, std::function<void()> timeout_cb);
+    };
+
 /*this cb code is codegen by abelkhan for cpp*/
     class client_call_hub_rsp_cb : public Imodule, public std::enable_shared_from_this<client_call_hub_rsp_cb>{
     public:
+        std::mutex mutex_map_heartbeats;
+        std::map<uint64_t, std::shared_ptr<client_call_hub_heartbeats_cb> > map_heartbeats;
         client_call_hub_rsp_cb() : Imodule("client_call_hub_rsp_cb")
         {
         }
@@ -176,6 +195,39 @@ namespace abelkhan
         void Init(std::shared_ptr<modulemng> modules){
             modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
 
+            reg_method("heartbeats_rsp", std::bind(&client_call_hub_rsp_cb::heartbeats_rsp, this, std::placeholders::_1));
+            reg_method("heartbeats_err", std::bind(&client_call_hub_rsp_cb::heartbeats_err, this, std::placeholders::_1));
+        }
+
+        void heartbeats_rsp(const msgpack11::MsgPack::array& inArray){
+            auto uuid = inArray[0].uint64_value();
+            auto _timetmp = inArray[1].uint64_value();
+            auto rsp = try_get_and_del_heartbeats_cb(uuid);
+            if (rsp != nullptr){
+                rsp->sig_heartbeats_cb.emit(_timetmp);
+            }
+        }
+
+        void heartbeats_err(const msgpack11::MsgPack::array& inArray){
+            auto uuid = inArray[0].uint64_value();
+            auto rsp = try_get_and_del_heartbeats_cb(uuid);
+            if (rsp != nullptr){
+                rsp->sig_heartbeats_err.emit();
+            }
+        }
+
+        void heartbeats_timeout(uint64_t cb_uuid){
+            auto rsp = try_get_and_del_heartbeats_cb(cb_uuid);
+            if (rsp != nullptr){
+                rsp->sig_heartbeats_timeout.emit();
+            }
+        }
+
+        std::shared_ptr<client_call_hub_heartbeats_cb> try_get_and_del_heartbeats_cb(uint64_t uuid){
+            std::lock_guard<std::mutex> l(mutex_map_heartbeats);
+            auto rsp = map_heartbeats[uuid];
+            map_heartbeats.erase(uuid);
+            return rsp;
         }
 
     };
@@ -203,9 +255,16 @@ namespace abelkhan
             call_module_method("connect_hub", _argv_dc2ee339_bef5_3af9_a492_592ba4f08559);
         }
 
-        void heartbeats(){
-            msgpack11::MsgPack::array _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4;
-            call_module_method("heartbeats", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+        std::shared_ptr<client_call_hub_heartbeats_cb> heartbeats(){
+            auto uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263++;
+            msgpack11::MsgPack::array _argv_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56;
+            _argv_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56.push_back(uuid_a514ca5f_2c67_5668_aac0_354397bdce36);
+            call_module_method("heartbeats", _argv_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56);
+
+            auto cb_heartbeats_obj = std::make_shared<client_call_hub_heartbeats_cb>(uuid_a514ca5f_2c67_5668_aac0_354397bdce36, rsp_cb_client_call_hub_handle);
+            std::lock_guard<std::mutex> l(rsp_cb_client_call_hub_handle->mutex_map_heartbeats);
+            rsp_cb_client_call_hub_handle->map_heartbeats.insert(std::make_pair(uuid_a514ca5f_2c67_5668_aac0_354397bdce36, cb_heartbeats_obj));
+            return cb_heartbeats_obj;
         }
 
         void call_hub(std::string module, std::string func, std::vector<uint8_t> argv){
@@ -346,6 +405,31 @@ namespace abelkhan
         }
 
     };
+    class client_call_hub_heartbeats_rsp : public Response {
+    private:
+        uint64_t uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56;
+
+    public:
+        client_call_hub_heartbeats_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response("client_call_hub_rsp_cb", _ch)
+        {
+            uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56 = _uuid;
+        }
+
+        void rsp(uint64_t timetmp){
+            msgpack11::MsgPack::array _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4;
+            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.push_back(uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56);
+            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.push_back(timetmp);
+            call_module_method("heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+        }
+
+        void err(){
+            msgpack11::MsgPack::array _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4;
+            _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.push_back(uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56);
+            call_module_method("heartbeats_err", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+        }
+
+    };
+
     class client_call_hub_module : public Imodule, public std::enable_shared_from_this<client_call_hub_module>{
     public:
         client_call_hub_module() : Imodule("client_call_hub")
@@ -368,7 +452,10 @@ namespace abelkhan
 
         concurrent::signals<void()> sig_heartbeats;
         void heartbeats(const msgpack11::MsgPack::array& inArray){
+            auto _cb_uuid = inArray[0].uint64_value();
+            rsp = std::make_shared<client_call_hub_heartbeats_rsp>(current_ch, _cb_uuid);
             sig_heartbeats.emit();
+            rsp = nullptr;
         }
 
         concurrent::signals<void(std::string, std::string, std::vector<uint8_t>)> sig_call_hub;
