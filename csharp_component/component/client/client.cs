@@ -2,27 +2,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 
 namespace client
 {
     class gateproxy
     {
+        private abelkhan.Ichannel _ch;
         private abelkhan.client_call_gate_caller _client_call_gate_caller;
 
         public gateproxy(abelkhan.Ichannel ch)
         {
+            _ch = ch;
             _client_call_gate_caller = new abelkhan.client_call_gate_caller(ch, abelkhan.modulemng_handle._modulemng);
         }
 
         public Action<ulong> onGateTime;
-        public Action onGateDisconnect;
+        public Action<abelkhan.Ichannel> onGateDisconnect;
         public void heartbeats()
         {
             _client_call_gate_caller.heartbeats().callBack((ulong _svr_timetmp)=> {
                 onGateTime?.Invoke(_svr_timetmp);
             }, ()=> {}).timeout(5 * 1000, ()=> {
-                onGateDisconnect?.Invoke();
+                onGateDisconnect?.Invoke(_ch);
             });
         }
 
@@ -31,7 +35,7 @@ namespace client
             _client_call_gate_caller.get_hub_info(hub_type).callBack((hub_info) => {
                 cb(hub_info);
             }, () => { }).timeout(5 * 1000, ()=> {
-                onGateDisconnect?.Invoke();
+                onGateDisconnect?.Invoke(_ch);
             });
         }
 
@@ -52,9 +56,63 @@ namespace client
         }
     }
 
+    class hubproxy
+    {
+        public string _hub_name;
+        public string _hub_type;
+
+        private abelkhan.Ichannel _ch;
+        private abelkhan.client_call_hub_caller _client_call_hub_caller;
+
+        public hubproxy(string hub_name, string hub_type, abelkhan.Ichannel ch)
+        {
+            _hub_name = hub_name;
+            _hub_type = hub_type;
+
+            _ch = ch;
+            _client_call_hub_caller = new abelkhan.client_call_hub_caller(ch, abelkhan.modulemng_handle._modulemng);
+        }
+
+        public void connect_hub(string cuuid)
+        {
+            _client_call_hub_caller.connect_hub(cuuid);
+        }
+
+        public Action<string, ulong> onHubTime;
+        public Action<abelkhan.Ichannel> onHubDisconnect;
+        public void heartbeats()
+        {
+            _client_call_hub_caller.heartbeats().callBack((ulong _hub_timetmp) =>
+            {
+                onHubTime?.Invoke(_hub_name, _hub_timetmp);
+            }, () => { }).timeout(5 * 1000, () =>
+            {
+                onHubDisconnect?.Invoke(_ch);
+            });
+        }
+
+        public void call_hub(string module, string func, ArrayList argv)
+        {
+            var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+            using (MemoryStream st = new MemoryStream())
+            {
+                var _event = new ArrayList();
+                _event.Add(module);
+                _event.Add(func);
+                _event.Add(argv);
+                _serialization.Pack(st, _event);
+                st.Position = 0;
+
+                _client_call_hub_caller.call_hub(st.ToArray());
+            }
+        }
+    }
+
 	public class client
 	{
-        public event Action<abelkhan.Ichannel> onDisConnect;
+        public event Action onGateDisConnect;
+        public event Action<string> onHubDisConnect;
+
         public event Action<ulong> onGateTime;
         public event Action<string, ulong> onHubTime;
 
@@ -62,210 +120,286 @@ namespace client
         public service.timerservice timer;
         public common.modulemanager modulemanager;
 
+        public string current_hub;
+
         private Int64 _heartbeats;
 
-        private Dictionary<string, abelkhan.client_call_hub_caller> _client_call_hub_caller_set;
+        private gateproxy _gateproxy;
+        private Dictionary<string, hubproxy> _hubproxy_set;
+        private Dictionary<abelkhan.Ichannel, hubproxy> _ch_hubproxy_set;
+
+        private List<abelkhan.Ichannel> add_chs;
+        private List<abelkhan.Ichannel> chs;
+        private List<abelkhan.Ichannel> remove_chs;
+
+        private abelkhan.gate_call_client_module _gate_call_client_module;
+        private abelkhan.hub_call_client_module _hub_call_client_module;
 
         public client()
 		{
-            uuid = System.Guid.NewGuid().ToString();
 			timer = new service.timerservice();
 			modulemanager = new common.modulemanager();
 
             _heartbeats = timer.refresh();
 
+            _hubproxy_set = new Dictionary<string, hubproxy>();
+            _ch_hubproxy_set = new Dictionary<abelkhan.Ichannel, hubproxy>();
 
+            add_chs = new List<abelkhan.Ichannel>();
+            chs = new List<abelkhan.Ichannel>();
+            remove_chs = new List<abelkhan.Ichannel>();
+
+            timer.addticktime(5 * 1000, heartbeats);
+
+            _gate_call_client_module = new abelkhan.gate_call_client_module(abelkhan.modulemng_handle._modulemng);
+            _gate_call_client_module.on_ntf_cuuid += ntf_cuuid;
+            _gate_call_client_module.on_call_client += gate_call_client;
+
+            _hub_call_client_module = new abelkhan.hub_call_client_module(abelkhan.modulemng_handle._modulemng);
+            _hub_call_client_module.on_call_client += hub_call_client;
         }
 
-        private void heartbeats()
+        private void ntf_cuuid(string _uuid)
         {
+            uuid = _uuid;
 
+            onGateConnect?.Invoke();
         }
 
-  //      private void on_disconnect(juggle.Ichannel ch)
-  //      {
-  //          if (ch != tcp_ch)
-  //          {
-  //              return;
-  //          }
+        private void gate_call_client(string hub_name, byte[] rpc_argv)
+        {
+            using (var st = new MemoryStream())
+            {
+                st.Write(rpc_argv);
+                st.Position = 0;
 
-  //          if (!connect_state)
-  //          {
-  //              return;
-  //          }
+                var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+                var _event = _serialization.Unpack(st);
 
-  //          log.log.error(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "on_disconnect");
+                var module = (string)_event[0];
+                var func = (string)_event[1];
+                var argvs = (ArrayList)_event[2];
 
-  //          connect_state = false;
+                current_hub = hub_name;
+                modulemanager.process_module_mothed(module, func, argvs);
+                current_hub = "";
+            }
+        }
 
-  //          if (onDisConnect != null)
-  //          {
-  //              onDisConnect();
-  //          }
-  //      }
+        private void hub_call_client(byte[] rpc_argv)
+        {
+            using (var st = new MemoryStream())
+            {
+                st.Write(rpc_argv);
+                st.Position = 0;
 
-  //      private void heartbeats(Int64 tick)
-  //      {
-  //          do
-  //          {
-  //              if (!connect_state)
-  //              {
-  //                  break;
-  //              }
+                var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+                var _event = _serialization.Unpack(st);
 
-  //              if (_is_enable_heartbeats && (_heartbeats < (tick - 20 * 1000)))
-  //              {
-  //                  log.log.error(new System.Diagnostics.StackFrame(), tick, "heartbeats:{0}", _heartbeats);
+                var module = (string)_event[0];
+                var func = (string)_event[1];
+                var argvs = (ArrayList)_event[2];
 
-  //                  connect_state = false;
+                var _hubproxy = _ch_hubproxy_set[_hub_call_client_module.current_ch];
 
-  //                  if (onDisConnect != null)
-  //                  {
-  //                      onDisConnect();
-  //                  }
+                current_hub = _hubproxy._hub_name;
+                modulemanager.process_module_mothed(module, func, argvs);
+                current_hub = "";
+            }
+        }
 
-  //                  break;
-  //              }
+        private void heartbeats(long tick)
+        {
+            if (_gateproxy != null)
+            {
+                _gateproxy.heartbeats();
+            }
 
-  //              _client_call_gate.heartbeats(tick);
+            foreach (var _hubproxy in _hubproxy_set)
+            {
+                _hubproxy.Value.heartbeats();
+            }
+        }
 
-  //          } while (false);
+        public void get_hub_info(string hub_type, Action<List<abelkhan.hub_info> > cb)
+        {
+            _gateproxy?.get_hub_info(hub_type, cb);
+        }
 
-  //          timer.addticktime(5 * 1000, heartbeats);
-  //      }
+        public void call_hub(string hub_name, string module, string func, ArrayList argv)
+        {
+            if (_hubproxy_set.TryGetValue(hub_name, out hubproxy _hubproxy))
+            {
+                _hubproxy.call_hub(module, func, argv);
+                return;
+            }
 
-  //      private void on_ack_heartbeats()
-  //      {
-  //          _heartbeats = service.timerservice.Tick;
-  //      }
+            if (_gateproxy != null)
+            {
+                _gateproxy.call_hub(hub_name, module, func, argv);
+            }
+        }
 
-  //      public delegate void onConnectServerHandle();
-		//public event onConnectServerHandle onConnectServer;
-		//private void on_ack_connect_server()
-		//{
-  //          _heartbeats = service.timerservice.Tick;
-  //          _client_call_gate.heartbeats(service.timerservice.Tick);
+        public event Action onGateConnect;
+        public event Action onGateConnectFaild;
+        public void connect_gate(string ip, short port, long timeout)
+        {
+            connect(ip, port, timeout, (is_conn, ch) => {
+                if (is_conn && ch != null)
+                {
+                    _gateproxy = new gateproxy(ch);
+                    _gateproxy.onGateDisconnect += (ch) =>
+                    {
+                        lock (remove_chs)
+                        {
+                            remove_chs.Add(ch);
+                        }
+                        onGateDisConnect.Invoke();
+                    };
+                    _gateproxy.onGateTime += onGateTime;
+                }
+                else
+                {
+                    onGateConnectFaild?.Invoke();
+                }
+            });
+        }
 
-  //          if (!is_reconnect)
-  //          {
-  //              timer.addticktime(5 * 1000, heartbeats);
-  //          }
+        public event Action<string> onHubConnect;
+        public event Action<string> onHubConnectFaild;
+        private void connect_hub(string hub_name, string hub_type, string ip, short port, long timeout)
+        {
+            connect(ip, port, timeout, (is_conn, ch) => { 
+                if (is_conn && ch != null)
+                {
+                    var _hubproxy = new hubproxy(hub_name, hub_type, ch);
+                    _hubproxy.onHubDisconnect += (ch) =>
+                    {
+                        lock (remove_chs)
+                        {
+                            remove_chs.Add(ch);
+                        }
+                        onHubDisConnect?.Invoke(hub_name);
+                    };
+                    _hubproxy.onHubTime += onHubTime;
+                    _hubproxy.connect_hub(uuid);
 
-  //          if (onConnectServer != null)
-		//	{
-  //              onConnectServer();
-  //          }
+                    _hubproxy_set.Add(hub_name, _hubproxy);
+                    _ch_hubproxy_set.Add(ch, _hubproxy);
 
-  //          connect_state = true;
-  //      }
+                    onHubConnect?.Invoke(hub_name);
+                }
+                else
+                {
+                    onHubConnectFaild?.Invoke(hub_name);
+                }
+            });
+        }
 
-  //      public delegate void onConnectHubHandle(string _hub_name);
-  //      public event onConnectHubHandle onConnectHub;
-  //      private void on_ack_connect_hub(string _hub_name)
-  //      {
-  //          if (onConnectHub != null)
-  //          {
-  //              onConnectHub(_hub_name);
-  //          }
-  //      }
+        private class socketConnectTmp
+        {
+            public Socket s;
+            public string timeid;
+            public Action<bool, abelkhan.Ichannel> cb;
+        }
 
-  //      private void on_call_client(String module_name, String func_name, ArrayList argvs)
-		//{
-		//	modulemanager.process_module_mothed(module_name, func_name, argvs);
-		//}
+        private void connect(string ip, short port, long timeout, Action<bool, abelkhan.Ichannel> cb)
+        {
+            IPAddress address = IPAddress.Parse(ip);
 
-  //      public juggle.Ichannel onConnect(juggle.Ichannel ch)
-  //      {
-  //          service.channel _ch = ch as service.channel;
-  //          _ch.compress_and_encrypt = (byte[] input) => { return common.compress_and_encrypt.CompressAndEncrypt(input, xor_key); };
-  //          _ch.unencrypt_and_uncompress = (byte[] input) => { return common.compress_and_encrypt.UnEncryptAndUnCompress(input, xor_key); };
+            Socket s;
+            if (address.AddressFamily == AddressFamily.InterNetwork)
+            {
+                s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            }
+            else
+            {
+                s = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+            }
 
-  //          return _ch;
-  //      }
+            socketConnectTmp s_cli = new socketConnectTmp();
+            s_cli.s = s;
+            s_cli.cb = cb;
+            s_cli.timeid = timer.addticktime(timeout, (_) => {
+                s.Close();
+                onGateConnectFaild?.Invoke();
+            });
 
-  //      public bool reconnect_server(String tcp_ip, short tcp_port)
-  //      {
-  //          try
-  //          {
-  //              tcp_ch.disconnect();
 
-  //              log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "uuid:{0}", uuid);
-  //              uuid = System.Guid.NewGuid().ToString();
-  //              log.log.operation(new System.Diagnostics.StackFrame(), service.timerservice.Tick, "uuid:{0}", uuid);
-  //              is_reconnect = true;
+            s.BeginConnect(address, port, new AsyncCallback(end_connect), s_cli);
+        }
 
-  //              tcp_ch = onConnect(_conn.connect(tcp_ip, tcp_port));
-  //              _client_call_gate = new caller.client_call_gate(tcp_ch);
-  //              _client_call_gate.connect_server(uuid, service.timerservice.Tick);
-  //          }
-  //          catch (Exception)
-  //          {
-  //              return false;
-  //          }
+        private void end_connect(IAsyncResult ar)
+        {
+            var _s_cli = ar.AsyncState as socketConnectTmp;
+            try
+            {
+                if (_s_cli != null && _s_cli.s != null)
+                {
+                    _s_cli.s.EndConnect(ar);
 
-  //          return true;
-  //      }
+                    var ch = new abelkhan.rawchannel(_s_cli.s);
+                    lock (add_chs)
+                    {
+                        add_chs.Add(ch);
+                    }
 
-		//public bool connect_server(String tcp_ip, short tcp_port)
-		//{
-		//	try
-		//	{
-  //              is_reconnect = false;
+                    _s_cli.cb(true, ch);
+                }
+            }
+            catch (Exception)
+            {
+                _s_cli.cb(false, null);
+            }
+            finally
+            {
+                timer.deltimer(_s_cli.timeid);
+            }
+        }
 
-  //              tcp_ch = onConnect(_conn.connect(tcp_ip, tcp_port));
-		//		_client_call_gate = new caller.client_call_gate(tcp_ch);
-		//		_client_call_gate.connect_server(uuid, service.timerservice.Tick);
-  //          }
-		//	catch (Exception)
-		//	{
-		//		return false;
-		//	}
+        public Int64 poll()
+        {
+            Int64 tick_begin = timer.poll();
 
-		//	return true;
-		//}
+            lock (add_chs)
+            {
+                foreach (var ch in add_chs)
+                {
+                    chs.Add(ch);
+                }
+                add_chs.Clear();
+            }
 
-		//public void cancle_server()
-		//{
-		//	_client_call_gate.cancle_server();
-		//}
+            foreach (var ch in chs)
+            {
+                while (true)
+                {
+                    ArrayList ev = null;
+                    lock (ch)
+                    {
+                        ev = ch.pop();
+                    }
+                    if (ev == null)
+                    {
+                        break;
+                    }
+                    abelkhan.modulemng_handle._modulemng.process_event(ch, ev);
+                }
+            }
 
-  //      public void enable_heartbeats()
-  //      {
-  //          _client_call_gate.enable_heartbeats();
+            lock (remove_chs)
+            {
+                foreach (var ch in remove_chs)
+                {
+                    chs.Remove(ch);
+                }
+                remove_chs.Clear();
+            }
 
-  //          _is_enable_heartbeats = true;
-  //          _heartbeats = service.timerservice.Tick;
-  //      }
+            Int64 tick_end = timer.refresh();
 
-  //      public void disable_heartbeats()
-  //      {
-  //          _client_call_gate.disable_heartbeats();
-
-  //          _is_enable_heartbeats = false;
-  //      }
-
-  //      public void call_hub(String hub_name, String module_name, String func_name, params object[] _argvs)
-  //      {
-  //          ArrayList _argvs_list = new ArrayList();
-  //          foreach (var o in _argvs)
-  //          {
-  //              _argvs_list.Add(o);
-  //          }
-
-  //          _client_call_gate.forward_client_call_hub(hub_name, module_name, func_name, _argvs_list);
-  //      }
-
-  //      public Int64 poll()
-  //      {
-  //          Int64 tick_begin = timer.poll();
-  //          _juggleservice.poll(tick_begin);
-
-  //          //System.GC.Collect();
-
-  //          Int64 tick_end = timer.refresh();
-
-  //          return tick_end - tick_begin;
-  //      }
+            return tick_end - tick_begin;
+        }
 
     }
 }
