@@ -107,7 +107,7 @@ namespace robot
         }
     }
 
-    public class robotproxy
+    public class client
     {
         public string uuid;
         public string current_hub;
@@ -122,7 +122,7 @@ namespace robot
         private Dictionary<string, hubproxy> _hubproxy_set;
         private Dictionary<abelkhan.Ichannel, hubproxy> _ch_hubproxy_set;
 
-        public robotproxy()
+        public client()
         {
             _hubproxy_set = new Dictionary<string, hubproxy>();
             _ch_hubproxy_set = new Dictionary<abelkhan.Ichannel, hubproxy>();
@@ -314,14 +314,14 @@ namespace robot
         public static List<abelkhan.Ichannel> remove_chs;
 
         public static string current_hub;
-        public static robotproxy current_robot;
+        public static client current_robot;
 
         private int robot_num;
 
         private common.modulemanager modulemanager;
 
-        private Dictionary<string, robotproxy> robotproxys;
-        private Dictionary<abelkhan.Ichannel, robotproxy> ch_robotproxys;
+        private Dictionary<string, client> robotproxys;
+        private Dictionary<abelkhan.Ichannel, client> ch_robotproxys;
 
         private abelkhan.gate_call_client_module _gate_call_client_module;
         private abelkhan.hub_call_client_module _hub_call_client_module;
@@ -339,8 +339,8 @@ namespace robot
 
             modulemanager = new common.modulemanager();
 
-            robotproxys = new Dictionary<string, robotproxy>();
-            ch_robotproxys = new Dictionary<abelkhan.Ichannel, robotproxy>();
+            robotproxys = new Dictionary<string, client>();
+            ch_robotproxys = new Dictionary<abelkhan.Ichannel, client>();
 
             _gate_call_client_module = new abelkhan.gate_call_client_module(abelkhan.modulemng_handle._modulemng);
             _gate_call_client_module.on_ntf_cuuid += ntf_cuuid;
@@ -354,7 +354,7 @@ namespace robot
         {
             for (int i = 0; i < robot_num; i++)
             {
-                var _proxy = new robotproxy();
+                var _proxy = new client();
                 _proxy.connect_gate(ip, port, timeout);
                 _proxy.onGateConnect += (ch) => {
                     ch_robotproxys.Add(ch, _proxy);
@@ -362,8 +362,8 @@ namespace robot
             }
         }
 
-        public event Action<robotproxy, string> onHubConnect;
-        public void connect_hub(robotproxy _proxy, string hub_name, string hub_type, string ip, short port, long timeout)
+        public event Action<client, string> onHubConnect;
+        public void connect_hub(client _proxy, string hub_name, string hub_type, string ip, short port, long timeout)
         {
             _proxy.connect_hub(hub_name, hub_type, ip, port, timeout);
             _proxy.onHubConnect += (hub_name, ch) => {
@@ -372,7 +372,7 @@ namespace robot
             onHubConnect?.Invoke(_proxy, hub_name);
         }
 
-        public event Action<robotproxy> onGateConnect;
+        public event Action<client> onGateConnect;
         private void ntf_cuuid(string _uuid)
         {
             robotproxys.Add(_uuid, current_robot);

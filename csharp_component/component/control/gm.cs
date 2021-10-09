@@ -173,7 +173,7 @@ namespace gm
         }
 
         private string gm_name;
-        private abelkhan.rawchannel ch;
+        private abelkhan.Ichannel ch;
         private service.timerservice timer;
         private center_proxy _center_proxy;
     }
