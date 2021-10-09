@@ -5,7 +5,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 
-namespace robot
+namespace client
 {
     class gateproxy
     {
