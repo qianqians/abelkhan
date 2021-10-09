@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 
 namespace client
 {
@@ -269,7 +268,7 @@ namespace client
 
         public event Action<string> onHubConnect;
         public event Action<string> onHubConnectFaild;
-        private void connect_hub(string hub_name, string hub_type, string ip, short port, long timeout)
+        public void connect_hub(string hub_name, string hub_type, string ip, short port, long timeout)
         {
             connect(ip, port, timeout, (is_conn, ch) => { 
                 if (is_conn && ch != null)

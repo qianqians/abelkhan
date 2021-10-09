@@ -1,215 +1,472 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
 
 namespace robot
 {
-    public class client_proxy
+    class gateproxy
     {
-        public client_proxy(juggle.Ichannel ch)
+        private abelkhan.Ichannel _ch;
+        private abelkhan.client_call_gate_caller _client_call_gate_caller;
+
+        public gateproxy(abelkhan.Ichannel ch)
         {
-            uuid = System.Guid.NewGuid().ToString();
-            _client_call_gate = new caller.client_call_gate(ch);
+            _ch = ch;
+            _client_call_gate_caller = new abelkhan.client_call_gate_caller(ch, abelkhan.modulemng_handle._modulemng);
         }
 
-        public void heartbeats(Int64 tick)
+        public Action<ulong> onGateTime;
+        public Action<abelkhan.Ichannel> onGateDisconnect;
+        public void heartbeats()
         {
-            _client_call_gate.heartbeats(tick);
+            _client_call_gate_caller.heartbeats().callBack((ulong _svr_timetmp) => {
+                onGateTime?.Invoke(_svr_timetmp);
+            }, () => { }).timeout(5 * 1000, () => {
+                onGateDisconnect?.Invoke(_ch);
+            });
+        }
+
+        public void get_hub_info(string hub_type, Action<List<abelkhan.hub_info>> cb)
+        {
+            _client_call_gate_caller.get_hub_info(hub_type).callBack((hub_info) => {
+                cb(hub_info);
+            }, () => { }).timeout(5 * 1000, () => {
+                onGateDisconnect?.Invoke(_ch);
+            });
+        }
+
+        public void call_hub(string hub, string module, string func, ArrayList argv)
+        {
+            var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+            using (MemoryStream st = new MemoryStream())
+            {
+                var _event = new ArrayList();
+                _event.Add(module);
+                _event.Add(func);
+                _event.Add(argv);
+                _serialization.Pack(st, _event);
+                st.Position = 0;
+
+                _client_call_gate_caller.forward_client_call_hub(hub, st.ToArray());
+            }
+        }
+    }
+
+    class hubproxy
+    {
+        public string _hub_name;
+        public string _hub_type;
+
+        private abelkhan.Ichannel _ch;
+        private abelkhan.client_call_hub_caller _client_call_hub_caller;
+
+        public hubproxy(string hub_name, string hub_type, abelkhan.Ichannel ch)
+        {
+            _hub_name = hub_name;
+            _hub_type = hub_type;
+
+            _ch = ch;
+            _client_call_hub_caller = new abelkhan.client_call_hub_caller(ch, abelkhan.modulemng_handle._modulemng);
+        }
+
+        public void connect_hub(string cuuid)
+        {
+            _client_call_hub_caller.connect_hub(cuuid);
+        }
+
+        public Action<string, ulong> onHubTime;
+        public Action<abelkhan.Ichannel> onHubDisconnect;
+        public void heartbeats()
+        {
+            _client_call_hub_caller.heartbeats().callBack((ulong _hub_timetmp) =>
+            {
+                onHubTime?.Invoke(_hub_name, _hub_timetmp);
+            }, () => { }).timeout(5 * 1000, () =>
+            {
+                onHubDisconnect?.Invoke(_ch);
+            });
+        }
+
+        public void call_hub(string module, string func, ArrayList argv)
+        {
+            var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+            using (MemoryStream st = new MemoryStream())
+            {
+                var _event = new ArrayList();
+                _event.Add(module);
+                _event.Add(func);
+                _event.Add(argv);
+                _serialization.Pack(st, _event);
+                st.Position = 0;
+
+                _client_call_hub_caller.call_hub(st.ToArray());
+            }
+        }
+    }
+
+    public class robotproxy
+    {
+        public string uuid;
+        public string current_hub;
+
+        public event Action onGateDisConnect;
+        public event Action<string> onHubDisConnect;
+
+        public event Action<ulong> onGateTime;
+        public event Action<string, ulong> onHubTime;
+
+        private gateproxy _gateproxy;
+        private Dictionary<string, hubproxy> _hubproxy_set;
+        private Dictionary<abelkhan.Ichannel, hubproxy> _ch_hubproxy_set;
+
+        public robotproxy()
+        {
+            _hubproxy_set = new Dictionary<string, hubproxy>();
+            _ch_hubproxy_set = new Dictionary<abelkhan.Ichannel, hubproxy>();
 
             robot.timer.addticktime(5 * 1000, heartbeats);
         }
 
-        public void connect_server(Int64 tick)
+        public string get_current_hubproxy(abelkhan.Ichannel current_ch)
         {
-            _client_call_gate.connect_server(uuid, tick);
+            if (_ch_hubproxy_set.TryGetValue(current_ch, out hubproxy _proxy))
+            {
+                return _proxy._hub_name;
+            }
+            return "";
         }
 
-        public void cancle_server()
+        private void heartbeats(long tick)
         {
-            _client_call_gate.cancle_server();
+            if (_gateproxy != null)
+            {
+                _gateproxy.heartbeats();
+            }
+
+            foreach (var _hubproxy in _hubproxy_set)
+            {
+                _hubproxy.Value.heartbeats();
+            }
         }
 
-        public void call_hub(String hub_name, String module_name, String func_name, params object[] _argvs)
+        public void get_hub_info(string hub_type, Action<List<abelkhan.hub_info>> cb)
         {
-            ArrayList _argvs_list = new ArrayList();
-            foreach (var o in _argvs)
-            {
-                _argvs_list.Add(o);
-            }
-
-            _client_call_gate.forward_client_call_hub(hub_name, module_name, func_name, _argvs_list);
+            _gateproxy?.get_hub_info(hub_type, cb);
         }
 
-        public String uuid;
-        public caller.client_call_gate _client_call_gate;
-    }
-
-    public class robot
-    {
-        public robot(String[] args)
+        public void call_hub(string hub_name, string module, string func, ArrayList argv)
         {
-            config.config _config = new config.config(args[0]);
-            if (args.Length > 1)
+            if (_hubproxy_set.TryGetValue(hub_name, out hubproxy _hubproxy))
             {
-                _config = _config.get_value_dict(args[1]);
+                _hubproxy.call_hub(module, func, argv);
+                return;
             }
 
-            var log_level = _config.get_value_string("log_level");
-            if (log_level == "debug")
+            if (_gateproxy != null)
             {
-                log.log.logMode = log.log.enLogMode.Debug;
+                _gateproxy.call_hub(hub_name, module, func, argv);
             }
-            else if (log_level == "release")
-            {
-                log.log.logMode = log.log.enLogMode.Release;
-            }
-            var log_file = _config.get_value_string("log_file");
-            log.log.logFile = log_file;
-            var log_dir = _config.get_value_string("log_dir");
-            log.log.logPath = log_dir;
-            {
-                if (!System.IO.Directory.Exists(log_dir))
+        }
+
+        public void on_gate_connect()
+        {
+            onGateConnectDone?.Invoke();
+        }
+
+        public event Action<abelkhan.Ichannel> onGateConnect;
+        public event Action onGateConnectDone;
+        public event Action onGateConnectFaild;
+        public void connect_gate(string ip, short port, long timeout)
+        {
+            connect(ip, port, timeout, (is_conn, ch) => {
+                if (is_conn && ch != null)
                 {
-                    System.IO.Directory.CreateDirectory(log_dir);
+                    _gateproxy = new gateproxy(ch);
+                    _gateproxy.onGateDisconnect += (ch) =>
+                    {
+                        lock (robot.remove_chs)
+                        {
+                            robot.remove_chs.Add(ch);
+                        }
+                        _gateproxy = null;
+
+                        onGateDisConnect.Invoke();
+                    };
+                    _gateproxy.onGateTime += onGateTime;
+
+                    onGateConnect?.Invoke(ch);
                 }
-            }
-
-            Int64 robot_num = _config.get_value_int("robot_num");
-            xor_key = (byte)_config.get_value_int("key");
-
-            _ip = _config.get_value_string("ip");
-            _port = (short)_config.get_value_int("port");
-
-            timer = new service.timerservice();
-            modulemanager = new common.modulemanager();
-
-            _tcp_process = new juggle.process();
-            _gate_call_client = new module.gate_call_client();
-            _gate_call_client.onconnect_server_sucess += on_ack_connect_server;
-            _gate_call_client.oncall_client += on_call_client;
-            _gate_call_client.onack_heartbeats += on_ack_heartbeats;
-            _tcp_process.reg_module(_gate_call_client);
-            _conn = new service.connectnetworkservice(_tcp_process);
-
-            _juggleservice = new service.juggleservice();
-            _juggleservice.add_process(_tcp_process);
-
-            proxys = new Dictionary<juggle.Ichannel, client_proxy>();
-
-            _max_robot_num = robot_num;
-            _robot_num = 0;
+                else
+                {
+                    onGateConnectFaild?.Invoke();
+                }
+            });
         }
 
-        public delegate void onConnectServerHandle();
-        public event onConnectServerHandle onConnectServer;
-        private void on_ack_connect_server()
+        public event Action<string, abelkhan.Ichannel> onHubConnect;
+        public event Action<string> onHubConnectFaild;
+        public void connect_hub(string hub_name, string hub_type, string ip, short port, long timeout)
         {
-            var _pre_proxy = proxys[juggle.Imodule.current_ch];
-            timer.addticktime(5 * 1000, _pre_proxy.heartbeats);
+            connect(ip, port, timeout, (is_conn, ch) => {
+                if (is_conn && ch != null)
+                {
+                    var _hubproxy = new hubproxy(hub_name, hub_type, ch);
+                    _hubproxy.onHubDisconnect += (ch) =>
+                    {
+                        lock (robot.remove_chs)
+                        {
+                            robot.remove_chs.Add(ch);
+                        }
 
-            if ( (++_robot_num) < _max_robot_num )
+                        if (_ch_hubproxy_set.Remove(ch, out hubproxy _proxy))
+                        {
+                            _hubproxy_set.Remove(_proxy._hub_name);
+                        }
+
+                        onHubDisConnect?.Invoke(hub_name);
+                    };
+                    _hubproxy.onHubTime += onHubTime;
+                    _hubproxy.connect_hub(uuid);
+
+                    _hubproxy_set.Add(hub_name, _hubproxy);
+                    _ch_hubproxy_set.Add(ch, _hubproxy);
+
+                    onHubConnect?.Invoke(hub_name, ch);
+                }
+                else
+                {
+                    onHubConnectFaild?.Invoke(hub_name);
+                }
+            });
+        }
+
+        private class socketConnectTmp
+        {
+            public Socket s;
+            public string timeid;
+            public Action<bool, abelkhan.Ichannel> cb;
+        }
+
+        private void connect(string ip, short port, long timeout, Action<bool, abelkhan.Ichannel> cb)
+        {
+            IPAddress address = IPAddress.Parse(ip);
+
+            Socket s;
+            if (address.AddressFamily == AddressFamily.InterNetwork)
             {
-                var ch = _conn.connect(_ip, _port);
-                var proxy = new client_proxy(ch);
-                proxys.Add(ch, proxy);
-                proxy.connect_server(service.timerservice.Tick);
+                s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             }
             else
             {
-                log.log.operation(new System.Diagnostics.StackFrame(true), service.timerservice.Tick, "all robots connected");
+                s = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
             }
 
-            if (onConnectServer != null)
-            {
-                onConnectServer();
-            }
+            socketConnectTmp s_cli = new socketConnectTmp();
+            s_cli.s = s;
+            s_cli.cb = cb;
+            s_cli.timeid = robot.timer.addticktime(timeout, (_) => {
+                s.Close();
+                onGateConnectFaild?.Invoke();
+            });
+
+
+            s.BeginConnect(address, port, new AsyncCallback(end_connect), s_cli);
         }
 
-        private void on_ack_heartbeats()
+        private void end_connect(IAsyncResult ar)
         {
-        }
-
-        private void on_call_client(String module_name, String func_name, ArrayList argvs)
-        {
-            modulemanager.process_module_mothed(module_name, func_name, argvs);
-        }
-
-        public juggle.Ichannel onConnect(juggle.Ichannel ch)
-        {
-            service.channel _ch = ch as service.channel;
-            _ch.compress_and_encrypt = (byte[] input) => { return common.compress_and_encrypt.CompressAndEncrypt(input, xor_key); };
-            _ch.unencrypt_and_uncompress = (byte[] input) => { return common.compress_and_encrypt.UnEncryptAndUnCompress(input, xor_key); };
-
-            return _ch;
-        }
-
-        public bool connect_server(Int64 tick)
-        {
+            var _s_cli = ar.AsyncState as socketConnectTmp;
             try
             {
-                var ch = onConnect(_conn.connect(_ip, _port));
-                var proxy = new client_proxy(ch);
-                proxys.Add(ch, proxy);
-                proxy.connect_server(tick);
+                if (_s_cli != null && _s_cli.s != null)
+                {
+                    _s_cli.s.EndConnect(ar);
+
+                    var ch = new abelkhan.rawchannel(_s_cli.s);
+                    lock (robot.add_chs)
+                    {
+                        robot.add_chs.Add(ch);
+                    }
+
+                    _s_cli.cb(true, ch);
+                }
             }
             catch (Exception)
             {
-                return false;
+                _s_cli.cb(false, null);
             }
-
-            return true;
+            finally
+            {
+                robot.timer.deltimer(_s_cli.timeid);
+            }
         }
-        
+    }
+
+    class robot
+    {
+        public static service.timerservice timer;
+
+        public static List<abelkhan.Ichannel> add_chs;
+        public static List<abelkhan.Ichannel> chs;
+        public static List<abelkhan.Ichannel> remove_chs;
+
+        public static string current_hub;
+        public static robotproxy current_robot;
+
+        private int robot_num;
+
+        private common.modulemanager modulemanager;
+
+        private Dictionary<string, robotproxy> robotproxys;
+        private Dictionary<abelkhan.Ichannel, robotproxy> ch_robotproxys;
+
+        private abelkhan.gate_call_client_module _gate_call_client_module;
+        private abelkhan.hub_call_client_module _hub_call_client_module;
+
+        public robot(int _robot_num)
+        {
+            robot_num = _robot_num;
+
+            timer = new service.timerservice();
+            timer.refresh();
+
+            add_chs = new List<abelkhan.Ichannel>();
+            chs = new List<abelkhan.Ichannel>();
+            remove_chs = new List<abelkhan.Ichannel>();
+
+            modulemanager = new common.modulemanager();
+
+            robotproxys = new Dictionary<string, robotproxy>();
+            ch_robotproxys = new Dictionary<abelkhan.Ichannel, robotproxy>();
+
+            _gate_call_client_module = new abelkhan.gate_call_client_module(abelkhan.modulemng_handle._modulemng);
+            _gate_call_client_module.on_ntf_cuuid += ntf_cuuid;
+            _gate_call_client_module.on_call_client += gate_call_client;
+
+            _hub_call_client_module = new abelkhan.hub_call_client_module(abelkhan.modulemng_handle._modulemng);
+            _hub_call_client_module.on_call_client += hub_call_client;
+        }
+
+        public void connect_gate(string ip, short port, long timeout)
+        {
+            for (int i = 0; i < robot_num; i++)
+            {
+                var _proxy = new robotproxy();
+                _proxy.connect_gate(ip, port, timeout);
+                _proxy.onGateConnect += (ch) => {
+                    ch_robotproxys.Add(ch, _proxy);
+                };
+            }
+        }
+
+        public event Action<robotproxy, string> onHubConnect;
+        public void connect_hub(robotproxy _proxy, string hub_name, string hub_type, string ip, short port, long timeout)
+        {
+            _proxy.connect_hub(hub_name, hub_type, ip, port, timeout);
+            _proxy.onHubConnect += (hub_name, ch) => {
+                ch_robotproxys.Add(ch, _proxy);
+            };
+            onHubConnect?.Invoke(_proxy, hub_name);
+        }
+
+        public event Action<robotproxy> onGateConnect;
+        private void ntf_cuuid(string _uuid)
+        {
+            robotproxys.Add(_uuid, current_robot);
+
+            current_robot.uuid = _uuid;
+            current_robot.on_gate_connect();
+
+            onGateConnect?.Invoke(current_robot);
+        }
+
+        private void gate_call_client(string hub_name, byte[] rpc_argv)
+        {
+            using (var st = new MemoryStream())
+            {
+                st.Write(rpc_argv);
+                st.Position = 0;
+
+                var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+                var _event = _serialization.Unpack(st);
+
+                var module = (string)_event[0];
+                var func = (string)_event[1];
+                var argvs = (ArrayList)_event[2];
+
+                current_hub = hub_name;
+                modulemanager.process_module_mothed(module, func, argvs);
+                current_hub = "";
+            }
+        }
+
+        private void hub_call_client(byte[] rpc_argv)
+        {
+            using (var st = new MemoryStream())
+            {
+                st.Write(rpc_argv);
+                st.Position = 0;
+
+                var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+                var _event = _serialization.Unpack(st);
+
+                var module = (string)_event[0];
+                var func = (string)_event[1];
+                var argvs = (ArrayList)_event[2];
+
+                current_hub = current_robot.get_current_hubproxy(_hub_call_client_module.current_ch);
+                modulemanager.process_module_mothed(module, func, argvs);
+                current_hub = "";
+            }
+        }
+
         public Int64 poll()
         {
             Int64 tick_begin = timer.poll();
 
-            try
+            lock (add_chs)
             {
-                _juggleservice.poll(tick_begin);
-            }
-            catch (juggle.Exception e)
-            {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, e.Message);
-            }
-            catch (System.Exception e)
-            {
-                log.log.error(new System.Diagnostics.StackFrame(true), tick_begin, "{0}", e);
+                foreach (var ch in add_chs)
+                {
+                    chs.Add(ch);
+                }
+                add_chs.Clear();
             }
 
-            //System.GC.Collect();
+            foreach (var ch in chs)
+            {
+                while (true)
+                {
+                    ArrayList ev = null;
+                    lock (ch)
+                    {
+                        ev = ch.pop();
+                    }
+                    if (ev == null)
+                    {
+                        break;
+                    }
+                    current_robot = ch_robotproxys[ch];
+                    abelkhan.modulemng_handle._modulemng.process_event(ch, ev);
+                    current_robot = null;
+                }
+            }
+
+            lock (remove_chs)
+            {
+                foreach (var ch in remove_chs)
+                {
+                    chs.Remove(ch);
+                }
+                remove_chs.Clear();
+            }
 
             Int64 tick_end = timer.refresh();
 
             return tick_end - tick_begin;
         }
-
-        public client_proxy get_client_proxy(juggle.Ichannel ch)
-        {
-            if (proxys.ContainsKey(ch))
-            {
-                return proxys[ch];
-            }
-
-            return null;
-        }
-
-        public static service.timerservice timer;
-        public common.modulemanager modulemanager;
-
-        public byte xor_key;
-
-        private service.connectnetworkservice _conn;
-        private juggle.process _tcp_process;
-        private module.gate_call_client _gate_call_client;
-
-        private service.juggleservice _juggleservice;
-
-        private Dictionary<juggle.Ichannel, client_proxy> proxys;
-
-        private string _ip;
-        private short _port;
-        private Int64 _robot_num;
-        private Int64 _max_robot_num;
     }
 }
