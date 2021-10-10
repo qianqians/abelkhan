@@ -1,24 +1,46 @@
+#coding:utf-8
 # 2016-6-10
 # build by qianqians
 # parser
+import os
+import statemachine
+import deletenote
+import postprocess
 
 text = """
-module name(client_call_hub){
-   func_test req(int, array , bool) rsp(int) err(int);
+module name{
+    func2 req(kv a) rsp(kv a) err(int i);
+    func3 ntf(int i, string str);
+    func4 ntf(int i, array a, bool b, float f, string s);
 }
-module test(hub_call_hub){
-    test1 ntf(string);
+
+struct kv{
+    int k1;
 }
 """
 
-import statemachine
-import deletenote
-
-def parser(str):
+def parser(_str):
     machine = statemachine.statemachine()
+    machine.syntaxanalysis(deletenote.deletenote(_str))
+    return machine.getimport(), machine.getmodule(), machine.getenum(), machine.getstruct()
 
-    machine.syntaxanalysis(deletenote.deletenote(str))
+def batch(inputdir):
+    pretreatmentdata = []
+    for filename in os.listdir(inputdir):
+        fname = os.path.splitext(filename)[0]
+        fex = os.path.splitext(filename)[1]
+        if fex == '.juggle':
+            file = open(inputdir + '//' + filename, 'r')
+            genfilestr = file.readlines()
 
-    return machine.getmodule(), machine.getenum()
-
-#print(parser(text))
+            _import, module, enum, struct = parser(genfilestr)
+            pretreatmentdata.append(postprocess.pretreatment(fname, _import, module, enum, struct))
+            
+    postprocess.process(pretreatmentdata)
+    return pretreatmentdata
+    
+#_import, module, enum, struct = parser(text)
+#print(_import)
+#print(module)
+#print(enum)
+#print(struct)

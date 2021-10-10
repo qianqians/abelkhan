@@ -1,3 +1,4 @@
+#coding:utf-8
 # 2014-12-17
 # build by qianqians
 # deletenote
@@ -8,33 +9,33 @@ def deletenote(filestr):
     errornote = ""
 
     for i in range(len(filestr)):
-        str = filestr[i]
+        _str = filestr[i]
 
         while(1):
             if count == 1:
-                indexafter = str.find("*/")
+                indexafter = _str.find("*/")
                 if indexafter is not -1:
-                    str = str[indexafter+2:]
+                    _str = _str[indexafter+2:]
                     count = 0
                 else:
                     break
 
-            index = str.find('//')
+            index = _str.find('//')
             if index is not -1:
-                str = str[0:index]
+                _str = _str[0:index]
             else:
-                indexbegin = str.find("/*")
+                indexbegin = _str.find("/*")
                 if indexbegin is not -1:
-                    errornote = str
-                    indexafter = str.find("*/")
+                    errornote = _str
+                    indexafter = _str.find("*/")
                     if indexafter is not -1:
-                        str = str[0:indexbegin] + str[indexafter+2:]
+                        _str = _str[0:indexbegin] + _str[indexafter+2:]
                     else:
                         count = 1
                         break
 
-            if str is not "":
-                genfilestr.append(str)
+            if _str is not "":
+                genfilestr.append(_str)
 
             break
 
