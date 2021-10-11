@@ -239,3 +239,8 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+
+/rpc/parser/*.pyc
+/rpc/tools/cpp/*.pyc
+/rpc/gen/cpp/*.pyc
+*.pyc
