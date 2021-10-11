@@ -120,7 +120,7 @@ namespace dbproxy
         private void heartbeath_center(Int64 tick)
         {
             _centerproxy.heartbeath();
-            _timer.addticktime(5 * 1000, heartbeath_center);
+            _timer.addticktime(3 * 1000, heartbeath_center);
         }
 
 		public Int64 poll()

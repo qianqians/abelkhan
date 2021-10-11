@@ -137,13 +137,13 @@ namespace abelkhan
         {
             foreach (var _proxy in svrproxys)
             {
-                if ((service.timerservice.Tick - _proxy.Value.timetmp) > 9 * 1000)
+                if ((service.timerservice.Tick - _proxy.Value.timetmp) > 6 * 1000)
                 {
                     on_svr_close(_proxy.Value);
                     closed_svr_list.Add(_proxy.Value);
                 }
             }
-            _timer.addticktime(10 * 1000, heartbeat_svr);
+            _timer.addticktime(6 * 1000, heartbeat_svr);
         }
 
         public void on_svr_close(svrproxy _proxy)

@@ -98,6 +98,7 @@ namespace hub
             {
                 add_chs.Add(center_ch);
             }
+            heartbeat(service.timerservice.Tick);
 
             if (_config.has_key("tcp_listen"))
             {
@@ -146,6 +147,12 @@ namespace hub
             _gate_msg_handle = new gate_msg_handle();
 
             _centerproxy.reg_hub(ip, port, name);
+        }
+
+        public void heartbeat(long _)
+        {
+            _centerproxy.heartbeat();
+            _timer.addticktime(3 * 1000, heartbeat);
         }
 
         public event Action onConnectDB;

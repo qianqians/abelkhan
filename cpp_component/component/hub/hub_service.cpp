@@ -112,7 +112,7 @@ void hub_service::init() {
 
 void hub_service::heartbeat(int64_t tick) {
 	_centerproxy->heartbeat();
-	_timerservice->addticktimer(5 * 1000, std::bind(&hub_service::heartbeat, this, std::placeholders::_1));
+	_timerservice->addticktimer(3 * 1000, std::bind(&hub_service::heartbeat, this, std::placeholders::_1));
 }
 
 void hub_service::connect_center() {
