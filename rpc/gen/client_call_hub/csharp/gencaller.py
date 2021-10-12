@@ -21,7 +21,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "        private " + module_name + "_hubproxy _hubproxy;\n"
     _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
     code += "        private Int64 uuid_" + _uuid + " = (Int64)RandomUUID.random();\n\n"
-    code += "        public " + module_name + "_caller(client.client _client_handle) : base(\"" + module_name + "\", _ch)\n"
+    code += "        public " + module_name + "_caller(client.client _client_handle) \n"
     code += "        {\n"
     code += "            if (rsp_cb_" + module_name + "_handle == null)\n            {\n"
     code += "                rsp_cb_" + module_name + "_handle = new " + module_name + "_rsp_cb(_client_handle.modulemanager);\n"
@@ -36,7 +36,8 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "    }\n\n"
 
     code += "    public class" + module_name + "_hubproxy\n{\n"
-    code += "        public string hub_name;\n"
+    _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
+    code += "        public string hub_name_" + _hub_uuid + ";\n"
     code += "        public client.client _client_handle;\n"
     code += "        public " + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle;\n"
     code += "        public " + module_name + "_hubproxy(client.client client_handle_, " + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle_)\n"
@@ -83,7 +84,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     code += "            }\n"                                                     
                     code += "            _argv_" + _argv_uuid + ".Add(_array_" + _array_uuid + ");\n"
-            code += "            _client_handle.call_hub(hub_name, \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n"
+            code += "            _client_handle.call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n"
             code += "        }\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
             cb_func += "    public class " + module_name + "_" + func_name + "_cb\n    {\n"
@@ -344,7 +345,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     code += "            }\n"                                                     
                     code += "            _argv_" + _argv_uuid + ".Add(_array_" + _array_uuid + ");\n"
-            code += "            _client_handle.call_hub(hub_name, \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n\n"
+            code += "            _client_handle.call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n\n"
             code += "            var cb_" + func_name + "_obj = new " + module_name + "_" + func_name + "_cb(uuid_" + _cb_uuid_uuid + ", rsp_cb_" + module_name + "_handle);\n"
             code += "            rsp_cb_" + module_name + "_handle.map_" + func_name + ".Add(uuid_" + _cb_uuid_uuid + ", cb_" + func_name + "_obj);\n"
             code += "            return cb_" + func_name + "_obj;\n"

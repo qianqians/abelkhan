@@ -8,11 +8,9 @@ import tools
 
 def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum):
     code_constructor = "    public class " + module_name + "_module : common.imodule {\n"
-    code_constructor += "        private hub.hub _hub;\n"
-    code_constructor += "        public " + module_name + "_module(hub.hub hub_)\n"
+    code_constructor += "        public " + module_name + "_module()\n"
     code_constructor += "        {\n"
-    code_constructor += "            _hub = hub_;\n"
-    code_constructor += "            _hub._modules.add_module(\"" + module_name + "\", this);\n\n"
+    code_constructor += "            hub.hub._modules.add_module(\"" + module_name + "\", this);\n\n"
         
     code_constructor_cb = ""
     rsp_code = ""
@@ -114,7 +112,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                     code_func += "            }\n"                                                     
                 count += 1
 
-            code_func += "            rsp = new " + module_name + "_" + func_name + "_rsp(_hub, _hub._gates.current_client_uuid, _cb_uuid);\n"
+            code_func += "            rsp = new " + module_name + "_" + func_name + "_rsp(_hub._gates.current_client_uuid, _cb_uuid);\n"
             code_func += "            if (on_" + func_name + " != null){\n"
             code_func += "                on_" + func_name + "("
             count = 0
@@ -129,14 +127,13 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
             code_func += "        }\n\n"
 
             rsp_code += "    public class " + module_name + "_" + func_name + "_rsp : common.Response {\n"
+            _client_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
+            rsp_code += "        private string _client_uuid_" + _client_uuid + ";\n"
             _rsp_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_X500, func_name)).split('-'))
-            rsp_code += "        private hub.hub _hub;\n"
-            rsp_code += "        private string _client_uuid;\n"
             rsp_code += "        private UInt64 uuid_" + _rsp_uuid + ";\n"
-            rsp_code += "        public " + module_name + "_" + func_name + "_rsp(hub.hub hub_, string client_uuid, UInt64 _uuid)\n"
+            rsp_code += "        public " + module_name + "_" + func_name + "_rsp(string client_uuid, UInt64 _uuid)\n"
             rsp_code += "        {\n"
-            rsp_code += "            _hub = hub_;\n"
-            rsp_code += "            _client_uuid = client_uuid;\n"
+            rsp_code += "            _client_uuid_" + _client_uuid + " = client_uuid;\n"
             rsp_code += "            uuid_" + _rsp_uuid + " = _uuid;\n"
             rsp_code += "        }\n\n"
 
@@ -177,7 +174,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     rsp_code += "            }\n"                                                     
                     rsp_code += "            _argv_" + _argv_uuid + ".Add(_array_" + _array_uuid + ");\n"
-            rsp_code += "            _hub._gates.call_client(_client_uuid, \"" + module_name + "_rsp_cb\", \"" + func_name + "_rsp\", _argv_" + _argv_uuid + ");\n"
+            rsp_code += "            hub.hub._gates.call_client(_client_uuid_" + _client_uuid + ", \"" + module_name + "_rsp_cb\", \"" + func_name + "_rsp\", _argv_" + _argv_uuid + ");\n"
             rsp_code += "        }\n\n"
 
             rsp_code += "        public void err("
@@ -217,7 +214,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     rsp_code += "            }\n"                                                     
                     rsp_code += "            _argv_" + _argv_uuid + ".Add(_array_" + _array_uuid + ");\n"
-            rsp_code += "            _hub._gates.call_client(_client_uuid, \"" + module_name + "_rsp_cb\", \"" + func_name + "_err\", _argv_" + _argv_uuid + ");\n"
+            rsp_code += "            hub.hub._gates.call_client(_client_uuid_" + _client_uuid + ", \"" + module_name + "_rsp_cb\", \"" + func_name + "_err\", _argv_" + _argv_uuid + ");\n"
             rsp_code += "        }\n\n"
             rsp_code += "    }\n\n"
 

@@ -7,13 +7,16 @@ import uuid
 import tools
 
 def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum):
-    code_constructor = "    class " + module_name + "_module : public Imodule, public std::enable_shared_from_this<" + module_name + "_module>{\n"
+    code_constructor = "    class " + module_name + "_module : public common::imodule, public std::enable_shared_from_this<" + module_name + "_module>{\n"
+    code_constructor += "    private:\n"
+    code_constructor += "        std::shared_ptr<hub::hub_service> hub_handle;\n\n"
     code_constructor += "    public:\n"
-    code_constructor += "        " + module_name + "_module() : Imodule(\"" + module_name + "\")\n"
+    code_constructor += "        " + module_name + "_module()\n"
     code_constructor += "        {\n"
     code_constructor += "        }\n\n"
-    code_constructor += "        void Init(std::shared_ptr<modulemng> _modules){\n"
-    code_constructor += "            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));\n\n"
+    code_constructor += "        void Init(std::shared_ptr<hub::hub_service> _hub_service){\n"
+    code_constructor += "            hub_handle = _hub_service;\n"
+    code_constructor += "            _hub_service->modules.add_module(\"" + module_name + "\", std::static_pointer_cast<common::imodule>(shared_from_this()));\n\n"
         
     code_constructor_cb = ""
     rsp_code = ""
@@ -22,7 +25,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
         func_name = i[0]
 
         if i[1] == "ntf":
-            code_constructor += "            reg_method(\"" + func_name + "\", std::bind(&" + module_name + "_module::" + func_name + ", this, std::placeholders::_1));\n"
+            code_constructor += "            reg_cb(\"" + func_name + "\", std::bind(&" + module_name + "_module::" + func_name + ", this, std::placeholders::_1));\n"
                 
             code_func += "        concurrent::signals<void("
             count = 0
@@ -121,7 +124,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
             code_func += ");\n"
             code_func += "        }\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
-            code_constructor += "            reg_method(\"" + func_name + "\", std::bind(&" + module_name + "_module::" + func_name + ", this, std::placeholders::_1));\n"
+            code_constructor += "            reg_cb(\"" + func_name + "\", std::bind(&" + module_name + "_module::" + func_name + ", this, std::placeholders::_1));\n"
             
             code_func += "        concurrent::signals<void("
             count = 0
@@ -211,7 +214,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                     code_func += "            }\n"
                 count += 1
 
-            code_func += "            rsp = std::make_shared<" + module_name + "_" + func_name + "_rsp>(current_ch, _cb_uuid);\n"
+            code_func += "            rsp = std::make_shared<" + module_name + "_" + func_name + "_rsp>(hub_handle, hub_handle->_hubmng->current_hubproxy->_hub_name, _cb_uuid);\n"
             code_func += "            sig_" + func_name + ".emit("
             count = 0
             for _type, _name, _parameter in i[2]:
@@ -223,13 +226,18 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
             code_func += "            rsp = nullptr;\n"
             code_func += "        }\n\n"
 
-            rsp_code += "    class " + module_name + "_"  + func_name + "_rsp : public Response {\n"
+            rsp_code += "    class " + module_name + "_"  + func_name + "_rsp : public common::Response {\n"
             rsp_code += "    private:\n"
+            rsp_code += "        std::shared_ptr<hub::hub_service> _hub_handle;\n"
+            _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
+            rsp_code += "        std::string _hub_name_" + _hub_uuid + ";\n"
             _rsp_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_X500, func_name)).split('-'))
             rsp_code += "        uint64_t uuid_" + _rsp_uuid + ";\n\n"
             rsp_code += "    public:\n"
-            rsp_code += "        " + module_name + "_"  + func_name + "_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response(\"" + module_name + "_rsp_cb\", _ch)\n"
+            rsp_code += "        " + module_name + "_"  + func_name + "_rsp(std::shared_ptr<hub::hub_service> _hub, std::string hub_name, uint64_t _uuid)\n"
             rsp_code += "        {\n"
+            rsp_code += "            _hub_handle = _hub;\n"
+            rsp_code += "            _hub_name_" + _hub_uuid + " = hub_name;\n"
             rsp_code += "            uuid_" + _rsp_uuid + " = _uuid;\n"
             rsp_code += "        }\n\n"
 
@@ -272,7 +280,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     rsp_code += "            }\n"                                                     
                     rsp_code += "            _argv_" + _argv_uuid + ".push_back(_array_" + _array_uuid + ");\n"
-            rsp_code += "            call_module_method(\"" + func_name + "_rsp\", _argv_" + _argv_uuid + ");\n"
+            rsp_code += "            _hub_handle->_hubmng->call_hub(_hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb\", \"" + func_name + "_rsp\", _argv_" + _argv_uuid + ");\n"
             rsp_code += "        }\n\n"
 
             rsp_code += "        void err("
@@ -314,7 +322,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     rsp_code += "            }\n"                                                     
                     rsp_code += "            _argv_" + _argv_uuid + ".push_back(_array_" + _array_uuid + ");\n"
-            rsp_code += "            call_module_method(\"" + func_name + "_err\", _argv_" + _argv_uuid + ");\n"
+            rsp_code += "            _hub_handle->_hubmng->call_hub(_hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb\", \"" + func_name + "_err\", _argv_" + _argv_uuid + ");\n"
             rsp_code += "        }\n\n"
             rsp_code += "    };\n\n"
 

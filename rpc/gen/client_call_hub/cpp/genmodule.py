@@ -9,7 +9,6 @@ import tools
 def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum):
     code_constructor = "    class " + module_name + "_module : public common::imodule, public std::enable_shared_from_this<" + module_name + "_module>{\n"
     code_constructor += "    private:\n"
-    code_constructor += "        std::string module_name;\n"
     code_constructor += "        std::shared_ptr<hub::hub_service> hub_handle;\n\n"
     code_constructor += "    public:\n"
     code_constructor += "        " + module_name + "_module()\n"
@@ -17,7 +16,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
     code_constructor += "        }\n\n"
     code_constructor += "        void Init(std::shared_ptr<hub::hub_service> _hub_service){\n"
     code_constructor += "            hub_handle = _hub_service;\n"
-    code_constructor += "            _hub_service->modules->add_module(\"" + module_name + "\", std::static_pointer_cast<common::imodule>(shared_from_this()));\n\n"
+    code_constructor += "            _hub_service->modules.add_module(\"" + module_name + "\", std::static_pointer_cast<common::imodule>(shared_from_this()));\n\n"
         
     code_constructor_cb = ""
     rsp_code = ""
@@ -230,14 +229,15 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
             rsp_code += "    class " + module_name + "_"  + func_name + "_rsp : public common::Response {\n"
             rsp_code += "    private:\n"
             rsp_code += "        std::shared_ptr<hub::hub_service> _hub_handle;\n"
-            rsp_code += "        std::string _client_cuuid;\n"
+            _client_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
+            rsp_code += "        std::string _client_cuuid_" + _client_uuid + ";\n"
             _rsp_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_X500, func_name)).split('-'))
             rsp_code += "        uint64_t uuid_" + _rsp_uuid + ";\n\n"
             rsp_code += "    public:\n"
             rsp_code += "        " + module_name + "_"  + func_name + "_rsp(std::shared_ptr<hub::hub_service> _hub, std::string client_cuuid, uint64_t _uuid)\n"
             rsp_code += "        {\n"
             rsp_code += "            _hub_handle = _hub;\n"
-            rsp_code += "            _client_cuuid = client_cuuid;\n"
+            rsp_code += "            _client_cuuid_" + _client_uuid + " = client_cuuid;\n"
             rsp_code += "            uuid_" + _rsp_uuid + " = _uuid;\n"
             rsp_code += "        }\n\n"
 
@@ -280,7 +280,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     rsp_code += "            }\n"                                                     
                     rsp_code += "            _argv_" + _argv_uuid + ".push_back(_array_" + _array_uuid + ");\n"
-            rsp_code += "            _hub_handle->_gatemng->call_client(_client_cuuid, \"" + module_name + "_rsp_cb\", \"" + func_name + "_rsp\", _argv_" + _argv_uuid + ");\n"
+            rsp_code += "            _hub_handle->_gatemng->call_client(_client_cuuid_" + _client_uuid + ", \"" + module_name + "_rsp_cb\", \"" + func_name + "_rsp\", _argv_" + _argv_uuid + ");\n"
             rsp_code += "        }\n\n"
 
             rsp_code += "        void err("
@@ -322,7 +322,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     rsp_code += "            }\n"                                                     
                     rsp_code += "            _argv_" + _argv_uuid + ".push_back(_array_" + _array_uuid + ");\n"
-            rsp_code += "            _hub_handle->_gatemng->call_client(_client_cuuid, \"" + module_name + "_rsp_cb\", \"" + func_name + "_err\", _argv_" + _argv_uuid + ");\n"
+            rsp_code += "            _hub_handle->_gatemng->call_client(_client_cuuid_" + _client_uuid + ", \"" + module_name + "_rsp_cb\", \"" + func_name + "_err\", _argv_" + _argv_uuid + ");\n"
             rsp_code += "        }\n\n"
             rsp_code += "    };\n\n"
 

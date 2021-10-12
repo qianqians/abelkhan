@@ -10,31 +10,51 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     cb_func = ""
 
     cb_code = "/*this cb code is codegen by abelkhan for cpp*/\n"
-    cb_code += "    class " + module_name + "_rsp_cb : public Imodule, public std::enable_shared_from_this<" + module_name + "_rsp_cb>{\n"
+    cb_code += "    class " + module_name + "_rsp_cb : public common::imodule, public std::enable_shared_from_this<" + module_name + "_rsp_cb>{\n"
     cb_code += "    public:\n"
-    cb_code_constructor = "        " + module_name + "_rsp_cb() : Imodule(\"" + module_name + "_rsp_cb\")\n"
+    cb_code_constructor = "        " + module_name + "_rsp_cb() \n"
     cb_code_constructor += "        {\n"
     cb_code_constructor += "        }\n\n"
-    cb_code_constructor += "        void Init(std::shared_ptr<modulemng> modules){\n"
-    cb_code_constructor += "            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));\n\n"
+    cb_code_constructor += "        void Init(std::shared_ptr<hub::hub_service> _hub_service){\n"
+    cb_code_constructor += "            _hub_service->modules.add_module(\"" + module_name + "_rsp_cb\", std::static_pointer_cast<common::imodule>(shared_from_this()));\n\n"
     cb_code_section = ""
 
-    code = "    class " + module_name + "_caller : Icaller {\n"
+    code = "    class " + module_name + "_caller {\n"
     code += "    private:\n"
     code += "        static std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle;\n\n"
     code += "    private:\n"
     _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
-    code += "        std::atomic<uint64_t> uuid_" + _uuid + ";\n\n"
+    code += "        std::atomic<uint64_t> uuid_" + _uuid + ";\n"
+    code += "        std::shared_ptr<" + module_name + "_hubproxy> _hubproxy;\n\n"
     code += "    public:\n"
-    code += "        " + module_name + "_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller(\"" + module_name + "\", _ch)\n"
+    code += "        " + module_name + "_caller(std::shared_ptr<hub::hub_service> _hub_service)\n"
     code += "        {\n"
     code += "            if (rsp_cb_" + module_name + "_handle == nullptr){\n"
     code += "                rsp_cb_" + module_name + "_handle = std::make_shared<" + module_name + "_rsp_cb>();\n"
-    code += "                rsp_cb_" + module_name + "_handle->Init(modules);\n"
+    code += "                rsp_cb_" + module_name + "_handle->Init(_hub_service);\n"
     code += "            }\n"
     code += "            uuid_" + _uuid + ".store(random());\n"
+    code += "            _hubproxy = std::make_shared<" + module_name + "_hubproxy>(_hub_service, rsp_cb_" + module_name + "_handle);\n"
+    code += "        }\n\n"
+    code += "        std::shared_ptr<" + module_name + "_hubproxy> get_hub(std::string hub_name) {\n"
+    _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
+    code += "            _hubproxy->hub_name_" + _hub_uuid + " = hub_name;\n"
+    code += "            return _hubproxy;\n"
     code += "        }\n\n"
     cpp_code = "std::shared_ptr<" + module_name + "_rsp_cb> " + module_name + "_caller::rsp_cb_" + module_name + "_handle = nullptr;\n"
+
+    code += "    class " + module_name + "_hubproxy {\n"
+    code += "    public:\n"
+    code += "        std::string hub_name_" + _hub_uuid + ";\n\n"
+    code += "    private:\n"
+    code += "        std::shared_ptr<hub::hub_service> _hub_service;\n"
+    code += "        std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle;\n\n"
+    code += "    public:\n"
+    code += "        " + module_name + "_hubproxy(std::shared_ptr<hub::hub_service> hub_service_, std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle_)\n"
+    code += "        {\n"
+    code += "            _hub_service = hub_service_;\n"
+    code += "            rsp_cb_" + module_name + "_handle = rsp_cb_" + module_name + "_handle_;\n"
+    code += "        }\n\n"
 
     for i in funcs:
         func_name = i[0]
@@ -78,7 +98,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     code += "            }\n"                                                     
                     code += "            _argv_" + _argv_uuid + ".push_back(_array_" + _array_uuid + ");\n"
-            code += "            call_module_method(\"" + func_name + "\", _argv_" + _argv_uuid + ");\n"
+            code += "            _hub_service->_hubmng->call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n"
             code += "        }\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
             cb_func += "    class " + module_name + "_rsp_cb;\n"
@@ -162,8 +182,8 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
 
             cb_code += "        std::mutex mutex_map_" + func_name + ";\n"
             cb_code += "        std::map<uint64_t, std::shared_ptr<" + module_name + "_"  + func_name + "_cb> > map_" + func_name + ";\n"
-            cb_code_constructor += "            reg_method(\"" + func_name + "_rsp\", std::bind(&" + module_name + "_rsp_cb::" + func_name + "_rsp, this, std::placeholders::_1));\n"
-            cb_code_constructor += "            reg_method(\"" + func_name + "_err\", std::bind(&" + module_name + "_rsp_cb::" + func_name + "_err, this, std::placeholders::_1));\n"
+            cb_code_constructor += "            reg_cb(\"" + func_name + "_rsp\", std::bind(&" + module_name + "_rsp_cb::" + func_name + "_rsp, this, std::placeholders::_1));\n"
+            cb_code_constructor += "            reg_cb(\"" + func_name + "_err\", std::bind(&" + module_name + "_rsp_cb::" + func_name + "_err, this, std::placeholders::_1));\n"
 
             cb_code_section += "        void " + func_name + "_rsp(const msgpack11::MsgPack::array& inArray){\n"
             cb_code_section += "            auto uuid = inArray[0].uint64_value();\n"
@@ -402,7 +422,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     code += "            }\n"                                                     
                     code += "            _argv_" + _argv_uuid + ".push_back(_array_" + _array_uuid + ");\n"
-            code += "            call_module_method(\"" + func_name + "\", _argv_" + _argv_uuid + ");\n\n"
+            code += "            _hub_service->_hubmng->call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n\n"
             code += "            auto cb_" + func_name + "_obj = std::make_shared<" + module_name + "_"  + func_name + "_cb>(uuid_" + _cb_uuid_uuid + ", rsp_cb_" + module_name + "_handle);\n"
             code += "            std::lock_guard<std::mutex> l(rsp_cb_" + module_name + "_handle->mutex_map_" + func_name + ");\n"
             code += "            rsp_cb_" + module_name + "_handle->map_" + func_name + ".insert(std::make_pair(uuid_" + _cb_uuid_uuid + ", cb_" + func_name + "_obj));\n"
