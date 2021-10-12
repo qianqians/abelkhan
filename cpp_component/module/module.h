@@ -27,6 +27,10 @@ public:
 
 };
 
+class Response
+{
+};
+
 class imodule {
 protected:
 	std::map<std::string, std::function< void(msgpack11::MsgPack::array) > > cbs;
@@ -50,6 +54,8 @@ public:
 		}
 	}
 
+public:
+    std::shared_ptr<Response> rsp;
 };
 
 }

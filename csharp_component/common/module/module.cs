@@ -13,6 +13,10 @@ namespace common
 		}
 	}
 
+	public class Response
+	{
+	}
+
 	public class imodule
 	{
 		private Dictionary<string, Action<ArrayList> > cbs = new Dictionary<string, Action<ArrayList> >();

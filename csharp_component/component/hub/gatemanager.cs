@@ -220,14 +220,8 @@ namespace hub
             }
         }
 
-        public void call_client(String uuid, String module, String func, params object[] _argvs)
+        public void call_client(String uuid, String module, String func, ArrayList _argvs_list)
 		{
-            ArrayList _argvs_list = new ArrayList();
-            foreach (var o in _argvs)
-            {
-                _argvs_list.Add(o);
-            }
-
             if (direct_clients.TryGetValue(uuid, out directproxy _client))
             {
                 using (var st = new MemoryStream())
@@ -255,14 +249,8 @@ namespace hub
             }
         }
 
-        public void call_group_client(List<string> uuids, String module, String func, params object[] _argvs)
+        public void call_group_client(List<string> uuids, String module, String func, ArrayList _argvs_list)
         {
-            ArrayList _argvs_list = new ArrayList();
-            foreach (var o in _argvs)
-            {
-                _argvs_list.Add(o);
-            }
-
             var _direct_clients = new List<directproxy>();
             var tmp_gates = new Dictionary<gateproxy, List<string> >();
             foreach (var _uuid in uuids)
@@ -313,14 +301,8 @@ namespace hub
 			}
 		}
 
-		public void call_global_client(String module, String func, params object[] _argvs)
+		public void call_global_client(String module, String func, ArrayList _argvs_list)
 		{
-            ArrayList _argvs_list = new ArrayList();
-            foreach (var o in _argvs)
-            {
-                _argvs_list.Add(o);
-            }
-
             foreach (var _proxy in ch_gateproxys)
 			{
 				_proxy.Value.forward_hub_call_global_client(module, func, _argvs_list);
