@@ -41,6 +41,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "            _hubproxy->hub_name_" + _hub_uuid + " = hub_name;\n"
     code += "            return _hubproxy;\n"
     code += "        }\n\n"
+    code += "    };\n\n"
     cpp_code = "std::shared_ptr<" + module_name + "_rsp_cb> " + module_name + "_caller::rsp_cb_" + module_name + "_handle = nullptr;\n"
 
     code += "    class " + module_name + "_hubproxy {\n"
