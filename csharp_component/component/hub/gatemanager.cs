@@ -273,7 +273,7 @@ namespace hub
 
             foreach (var _client in _direct_clients)
             {
-                using (MemoryStream st = new MemoryStream(), st_send = new MemoryStream())
+                using (MemoryStream st = new MemoryStream(), st_event = new MemoryStream(), st_send = new MemoryStream())
                 {
                     var _serializer = MessagePackSerializer.Get<ArrayList>();
 
@@ -288,7 +288,16 @@ namespace hub
                     _event.Add("hub_call_client");
                     _event.Add("call_client");
                     _event.Add(st.ToArray());
-                    _serializer.Pack(st_send, _rpc_argv);
+                    _serializer.Pack(st_event, _rpc_argv);
+                    st_event.Position = 0;
+                    var data = st_event.ToArray();
+
+                    var _tmplenght = data.Length;
+                    st_send.WriteByte((byte)(_tmplenght & 0xff));
+                    st_send.WriteByte((byte)((_tmplenght >> 8) & 0xff));
+                    st_send.WriteByte((byte)((_tmplenght >> 16) & 0xff));
+                    st_send.WriteByte((byte)((_tmplenght >> 24) & 0xff));
+                    st_send.Write(data, 0, _tmplenght);
                     st_send.Position = 0;
 
                     _client._direct_ch.send(st_send.ToArray());
