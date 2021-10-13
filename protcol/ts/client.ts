@@ -47,10 +47,9 @@ export class gate_call_client_module extends abelkhan.Imodule {
 
         this.reg_method("ntf_cuuid", this.ntf_cuuid.bind(this));
         this.reg_method("call_client", this.call_client.bind(this));
+
         this.cb_ntf_cuuid = null;
-
         this.cb_call_client = null;
-
     }
 
     public cb_ntf_cuuid : (cuuid:string)=>void | null;

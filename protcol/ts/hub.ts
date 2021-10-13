@@ -322,10 +322,9 @@ export class hub_call_hub_module extends abelkhan.Imodule {
 
         this.reg_method("reg_hub", this.reg_hub.bind(this));
         this.reg_method("hub_call_hub_mothed", this.hub_call_hub_mothed.bind(this));
+
         this.cb_reg_hub = null;
-
         this.cb_hub_call_hub_mothed = null;
-
     }
 
     public cb_reg_hub : (hub_name:string, hub_type:string)=>void | null;
@@ -361,12 +360,10 @@ export class gate_call_hub_module extends abelkhan.Imodule {
         this.reg_method("client_disconnect", this.client_disconnect.bind(this));
         this.reg_method("client_exception", this.client_exception.bind(this));
         this.reg_method("client_call_hub", this.client_call_hub.bind(this));
+
         this.cb_client_disconnect = null;
-
         this.cb_client_exception = null;
-
         this.cb_client_call_hub = null;
-
     }
 
     public cb_client_disconnect : (client_uuid:string)=>void | null;
@@ -428,12 +425,10 @@ export class client_call_hub_module extends abelkhan.Imodule {
         this.reg_method("connect_hub", this.connect_hub.bind(this));
         this.reg_method("heartbeats", this.heartbeats.bind(this));
         this.reg_method("call_hub", this.call_hub.bind(this));
+
         this.cb_connect_hub = null;
-
         this.cb_heartbeats = null;
-
         this.cb_call_hub = null;
-
     }
 
     public cb_connect_hub : (client_uuid:string)=>void | null;
@@ -474,8 +469,8 @@ export class hub_call_client_module extends abelkhan.Imodule {
         this.modules.reg_module(this);
 
         this.reg_method("call_client", this.call_client.bind(this));
-        this.cb_call_client = null;
 
+        this.cb_call_client = null;
     }
 
     public cb_call_client : (rpc_argv:Uint8Array)=>void | null;

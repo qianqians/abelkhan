@@ -580,10 +580,9 @@ export class dbproxy_call_hub_module extends abelkhan.Imodule {
 
         this.reg_method("ack_get_object_info", this.ack_get_object_info.bind(this));
         this.reg_method("ack_get_object_info_end", this.ack_get_object_info_end.bind(this));
+
         this.cb_ack_get_object_info = null;
-
         this.cb_ack_get_object_info_end = null;
-
     }
 
     public cb_ack_get_object_info : (callbackid:string, object_info:Uint8Array)=>void | null;
@@ -736,20 +735,14 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
         this.reg_method("remove_object", this.remove_object.bind(this));
         this.reg_method("get_object_info", this.get_object_info.bind(this));
         this.reg_method("get_object_count", this.get_object_count.bind(this));
+
         this.cb_reg_hub = null;
-
         this.cb_create_persisted_object = null;
-
         this.cb_updata_persisted_object = null;
-
         this.cb_find_and_modify = null;
-
         this.cb_remove_object = null;
-
         this.cb_get_object_info = null;
-
         this.cb_get_object_count = null;
-
     }
 
     public cb_reg_hub : (hub_name:string)=>void | null;

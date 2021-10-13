@@ -237,10 +237,9 @@ export class center_call_hub_module extends abelkhan.Imodule {
 
         this.reg_method("distribute_server_address", this.distribute_server_address.bind(this));
         this.reg_method("reload", this.reload.bind(this));
+
         this.cb_distribute_server_address = null;
-
         this.cb_reload = null;
-
     }
 
     public cb_distribute_server_address : (svr_type:string, svr_name:string, ip:string, port:number)=>void | null;
@@ -274,10 +273,9 @@ export class center_call_server_module extends abelkhan.Imodule {
 
         this.reg_method("close_server", this.close_server.bind(this));
         this.reg_method("svr_be_closed", this.svr_be_closed.bind(this));
+
         this.cb_close_server = null;
-
         this.cb_svr_be_closed = null;
-
     }
 
     public cb_close_server : ()=>void | null;
@@ -328,12 +326,10 @@ export class center_module extends abelkhan.Imodule {
         this.reg_method("reg_server", this.reg_server.bind(this));
         this.reg_method("heartbeat", this.heartbeat.bind(this));
         this.reg_method("closed", this.closed.bind(this));
+
         this.cb_reg_server = null;
-
         this.cb_heartbeat = null;
-
         this.cb_closed = null;
-
     }
 
     public cb_reg_server : (type:string, ip:string, port:number, svr_name:string)=>void | null;
@@ -378,12 +374,10 @@ export class gm_center_module extends abelkhan.Imodule {
         this.reg_method("confirm_gm", this.confirm_gm.bind(this));
         this.reg_method("close_clutter", this.close_clutter.bind(this));
         this.reg_method("reload", this.reload.bind(this));
+
         this.cb_confirm_gm = null;
-
         this.cb_close_clutter = null;
-
         this.cb_reload = null;
-
     }
 
     public cb_confirm_gm : (gm_name:string)=>void | null;

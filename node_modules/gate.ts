@@ -385,16 +385,12 @@ export class hub_call_gate_module extends abelkhan.Imodule {
         this.reg_method("forward_hub_call_client", this.forward_hub_call_client.bind(this));
         this.reg_method("forward_hub_call_group_client", this.forward_hub_call_group_client.bind(this));
         this.reg_method("forward_hub_call_global_client", this.forward_hub_call_global_client.bind(this));
+
         this.cb_reg_hub = null;
-
         this.cb_disconnect_client = null;
-
         this.cb_forward_hub_call_client = null;
-
         this.cb_forward_hub_call_group_client = null;
-
         this.cb_forward_hub_call_global_client = null;
-
     }
 
     public cb_reg_hub : (hub_name:string, hub_type:string)=>void | null;
@@ -506,12 +502,10 @@ export class client_call_gate_module extends abelkhan.Imodule {
         this.reg_method("heartbeats", this.heartbeats.bind(this));
         this.reg_method("get_hub_info", this.get_hub_info.bind(this));
         this.reg_method("forward_client_call_hub", this.forward_client_call_hub.bind(this));
+
         this.cb_heartbeats = null;
-
         this.cb_get_hub_info = null;
-
         this.cb_forward_client_call_hub = null;
-
     }
 
     public cb_heartbeats : ()=>void | null;
