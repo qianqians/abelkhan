@@ -22,6 +22,8 @@ namespace common
 		private Dictionary<string, Action<ArrayList> > cbs = new Dictionary<string, Action<ArrayList> >();
 		private MessagePackSerializer<ArrayList> serializer = MessagePackSerializer.Get<ArrayList>();
 
+		public Response rsp;
+
 		public void reg_cb(string cb_name, Action<ArrayList> cb)
 		{
 			cbs.Add(cb_name, cb);

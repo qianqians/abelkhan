@@ -218,6 +218,8 @@ namespace client
             {
                 _hubproxy.Value.heartbeats();
             }
+
+            timer.addticktime(5 * 1000, heartbeats);
         }
 
         public void get_hub_info(string hub_type, Action<List<abelkhan.hub_info> > cb)
@@ -257,7 +259,10 @@ namespace client
 
                         onGateDisConnect.Invoke();
                     };
-                    _gateproxy.onGateTime += onGateTime;
+                    _gateproxy.onGateTime += (tick) =>
+                    {
+                        onGateTime?.Invoke(tick);
+                    };
                 }
                 else
                 {
@@ -288,7 +293,10 @@ namespace client
 
                         onHubDisConnect?.Invoke(hub_name);
                     };
-                    _hubproxy.onHubTime += onHubTime;
+                    _hubproxy.onHubTime += (hub_name, tick) =>
+                    {
+                        onHubTime?.Invoke(hub_name, tick);
+                    };
                     _hubproxy.connect_hub(uuid);
 
                     _hubproxy_set.Add(hub_name, _hubproxy);
