@@ -19,7 +19,10 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     cb_code_constructor += "            _hub_service->modules.add_module(\"" + module_name + "_rsp_cb\", std::static_pointer_cast<common::imodule>(shared_from_this()));\n\n"
     cb_code_section = ""
 
-    code = "    class " + module_name + "_caller {\n"
+    code = "    class " + module_name + "_clientproxy;\n"
+    code += "    class " + module_name + "_multicast;\n"
+    code += "    class " + module_name + "_broadcast;\n"
+    code += "    class " + module_name + "_caller {\n"
     code += "    private:\n"
     code += "        static std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle;\n\n"
     code += "    private:\n"

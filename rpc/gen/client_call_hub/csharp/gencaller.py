@@ -30,7 +30,8 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "        }\n\n"
     code += "        public " + module_name + "_hubproxy get_hub(string hub_name)\n"
     code += "        {\n"
-    code += "            _hubproxy.hub_name = hub_name;\n"
+    _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
+    code += "            _hubproxy.hub_name_" + _hub_uuid + " = hub_name;\n"
     code += "            return _hubproxy;\n"
     code += "        }\n\n"
     code += "    }\n\n"
@@ -39,7 +40,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
     code += "        public string hub_name_" + _hub_uuid + ";\n"
     code += "        public client.client _client_handle;\n"
-    code += "        public " + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle;\n"
+    code += "        public " + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle;\n\n"
     code += "        public " + module_name + "_hubproxy(client.client client_handle_, " + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle_)\n"
     code += "        {\n"
     code += "            _client_handle = client_handle_;\n"

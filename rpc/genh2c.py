@@ -10,7 +10,7 @@ import os
 import jparser
 
 def gen_cpp_import(_import):
-    code = "#include <abelkhan.h>\n"
+    code = "#include <hub_service.h>\n"
     code += "#include <signals.h>\n\n"
     for _i in _import:
         code += "#include \"" + _i + ".h\"\n"
@@ -27,7 +27,7 @@ def gen_csharp_import(_import):
     return code
 
 def gen_ts_import(_import):
-    code = "import abelkhan = require(\"abelkhan\");\n"
+    code = "import client_handle = require(\"client_handle\");\n"
     for _i in _import:
         code += "import " + _i + " = require(\"./" + _i + "\");\n"
     return code

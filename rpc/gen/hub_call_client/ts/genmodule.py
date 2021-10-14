@@ -7,12 +7,12 @@ import uuid
 import tools
 
 def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum):
-    code_constructor = "export class " + module_name + "_module extends abelkhan.Imodule {\n"
-    code_constructor += "    private modules:abelkhan.modulemng;\n"
-    code_constructor += "    constructor(modules:abelkhan.modulemng){\n"
-    code_constructor += "        super(\"" + module_name + "\");\n"
-    code_constructor += "        this.modules = modules;\n"
-    code_constructor += "        this.modules.reg_module(this);\n\n"
+    code_constructor = "export class " + module_name + "_module extends client_handle.imodule {\n"
+    code_constructor += "    public _client_handle:client_handle.client;\n"
+    code_constructor += "    constructor(_client_handle_:client_handle.client){\n"
+    code_constructor += "        super();\n"
+    code_constructor += "        this._client_handle = _client_handle_;\n"
+    code_constructor += "        this._client_handle._modulemng.add_module(\"" + module_name + "\", this);\n\n"
         
     code_constructor_cb = ""
     rsp_code = ""
@@ -21,8 +21,8 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
         func_name = i[0]
 
         if i[1] == "ntf":
-            code_constructor += "        this.reg_method(\"" + func_name + "\", this." + func_name + ".bind(this));\n"
-            code_constructor_cb += "        this.cb_" + func_name + " = null;\n\n"
+            code_constructor += "        this.reg_cb(\"" + func_name + "\", this." + func_name + ".bind(this));\n"
+            code_constructor_cb += "        this.cb_" + func_name + " = null;\n"
                 
             code_func += "    public cb_" + func_name + " : ("
             count = 0
@@ -69,7 +69,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
             code_func += "        }\n"
             code_func += "    }\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
-            code_constructor += "        this.reg_method(\"" + func_name + "\", this." + func_name + ".bind(this));\n"
+            code_constructor += "        this.reg_cb(\"" + func_name + "\", this." + func_name + ".bind(this));\n"
             code_constructor_cb += "        this.cb_" + func_name + " = null;\n\n"
 
             code_func += "    public cb_" + func_name + " : ("
@@ -113,18 +113,22 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                     code_func += "        }\n"                                                     
                     code_func += "        _argv_.push(_array_);\n"
                 count += 1
-            code_func += "        this.rsp = new " + module_name + "_" + func_name + "_rsp(this.current_ch, _cb_uuid);\n"
+            code_func += "        this.rsp = new " + module_name + "_" + func_name + "_rsp(this._client_handle, this._client_handle.current_hub, _cb_uuid);\n"
             code_func += "        if (this.cb_" + func_name + "){\n"
             code_func += "            this.cb_" + func_name + ".apply(null, _argv_);\n"
             code_func += "        }\n"
             code_func += "        this.rsp = null;\n"
             code_func += "    }\n\n"
 
-            rsp_code += "export class " + module_name + "_" + func_name + "_rsp extends abelkhan.Icaller {\n"
+            rsp_code += "export class " + module_name + "_" + func_name + "_rsp {\n"
             _rsp_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_X500, func_name)).split('-'))
             rsp_code += "    private uuid_" + _rsp_uuid + " : number;\n"
-            rsp_code += "    constructor(_ch:abelkhan.Ichannel, _uuid:number){\n"
-            rsp_code += "        super(\"" + module_name + "_rsp_cb\", _ch);\n"
+            _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
+            rsp_code += "    private hub_name_" + _hub_uuid + ":string;\n"
+            rsp_code += "    private _client_handle:client_handle.client ;\n\n"
+            rsp_code += "    constructor(_client_handle_:client_handle.client, current_hub:string, _uuid:number){\n"
+            rsp_code += "        this._client_handle = client_handle_;\n"
+            rsp_code += "        this.hub_name_" + _hub_uuid + " = current_hub;\n"
             rsp_code += "        this.uuid_" + _rsp_uuid + " = _uuid;\n"
             rsp_code += "    }\n\n"
 
@@ -170,7 +174,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     rsp_code += "        }\n"                                                     
                     rsp_code += "        _argv_" + _argv_uuid + ".push(_array_" + _array_uuid + ");\n"
-            rsp_code += "        this.call_module_method(\"" + func_name + "_rsp\", _argv_" + _argv_uuid + ");\n"
+            rsp_code += "        this._client_handle.call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb\", \"" + func_name + "_rsp\", _argv_" + _argv_uuid + ");\n"
             rsp_code += "    }\n\n"
 
             rsp_code += "    public err("
@@ -215,13 +219,14 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     rsp_code += "        }\n"                                                     
                     rsp_code += "        _argv_" + _argv_uuid + ".push(_array_" + _array_uuid + ");\n"
-            rsp_code += "        this.call_module_method(\"" + func_name + "_err\", _argv_" + _argv_uuid + ");\n"
+            rsp_code += "        this._client_handle.call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb\", \"" + func_name + "_err\", _argv_" + _argv_uuid + ");\n"
             rsp_code += "    }\n\n"
             rsp_code += "}\n\n"
 
         else:
             raise Exception("func:%s wrong rpc type:%s must req or ntf" % (func_name, str(i[1])))
 
+    code_constructor += "\n"
     code_constructor_end = "    }\n\n"
     code = "}\n"
         

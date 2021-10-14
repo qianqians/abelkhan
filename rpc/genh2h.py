@@ -10,7 +10,7 @@ import os
 import jparser
 
 def gen_cpp_import(_import):
-    code = "#include <abelkhan.h>\n"
+    code = "#include <hub_service.h>\n"
     code += "#include <signals.h>\n\n"
     for _i in _import:
         code += "#include \"" + _i + ".h\"\n"

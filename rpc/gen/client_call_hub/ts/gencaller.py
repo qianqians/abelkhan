@@ -10,21 +10,37 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     cb_func = ""
 
     cb_code = "/*this cb code is codegen by abelkhan for ts*/\n"
-    cb_code += "export class " + module_name + "_rsp_cb extends abelkhan.Imodule {\n"
-    cb_code_constructor = "    constructor(modules:abelkhan.modulemng){\n"
-    cb_code_constructor += "        super(\"" + module_name + "_rsp_cb\");\n"
-    cb_code_constructor += "        modules.reg_module(this);\n\n"
+    cb_code += "export class " + module_name + "_rsp_cb extends client_handle.imodule {\n"
+    cb_code_constructor = "    constructor(modules:client_handle.modulemng){\n"
+    cb_code_constructor += "        super();\n"
+    cb_code_constructor += "        modules.add_module(\"" + module_name + "_rsp_cb\", this);\n\n"
     cb_code_section = ""
 
-    code = "export let rsp_cb_" + module_name + "_handle : " + module_name + "_rsp_cb | null = null;\n"
-    code += "export class " + module_name + "_caller extends abelkhan.Icaller {\n"
+    code = "let rsp_cb_" + module_name + "_handle : " + module_name + "_rsp_cb | null = null;\n"
+    code += "export class " + module_name + "_caller {\n"
     _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
     code += "    private uuid_" + _uuid + " : number = Math.round(Math.random() * Number.MAX_VALUE);\n\n"
-    code += "    constructor(_ch:any, modules:abelkhan.modulemng){\n"
-    code += "        super(\"" + module_name + "\", _ch);\n"
+    code += "    private _hubproxy:" + module_name + "_hubproxy;\n"
+    code += "    constructor(_client:client_handle.client){\n"
     code += "        if (rsp_cb_" + module_name + "_handle == null){\n"
-    code += "            rsp_cb_" + module_name + "_handle = new " + module_name + "_rsp_cb(modules);\n"
+    code += "            rsp_cb_" + module_name + "_handle = new " + module_name + "_rsp_cb(_client._modulemng);\n"
     code += "        }\n"
+    code += "        this._hubproxy = new " + module_name + "_hubproxy(_client);\n"
+    code += "    }\n\n"
+    code += "    public " + module_name + "_hubproxy get_hub(string hub_name)\n"
+    code += "    {\n"
+    _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
+    code += "        this._hubproxy.hub_namee_" + _hub_uuid + " = hub_name;\n"
+    code += "        return _hubproxy;\n"
+    code += "    }\n\n"
+    code += "}\n\n"
+
+    code += "export class" + module_name + "_hubproxy\n{\n"
+    code += "    public string hub_name_" + _hub_uuid + ";\n"
+    code += "    private _client_handle:client_handle.client;\n\n"
+    code += "    constructor(client_handle_:client_handle.client)\n"
+    code += "    {\n"
+    code += "        this._client_handle = client_handle_;\n"
     code += "    }\n\n"
 
     for i in funcs:
@@ -73,7 +89,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     code += "        }\n"                                                     
                     code += "        _argv_" + _argv_uuid + ".push(_array_" + _array_uuid + ");\n"
-            code += "        this.call_module_method(\"" + func_name + "\", _argv_" + _argv_uuid + ");\n"
+            code += "        this._client_handle.call_hub(this.hub_name_" + _hub_uuid + ", \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n"
             code += "    }\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
             rsp_fn = "("
@@ -123,8 +139,8 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
 
             cb_code += "    public map_" + func_name + ":Map<number, " + module_name + "_" + func_name + "_cb>;\n"
             cb_code_constructor += "        this.map_" + func_name + " = new Map<number, " + module_name + "_" + func_name + "_cb>();\n"
-            cb_code_constructor += "        this.reg_method(\"" + func_name + "_rsp\", this." + func_name + "_rsp.bind(this));\n"
-            cb_code_constructor += "        this.reg_method(\"" + func_name + "_err\", this." + func_name + "_err.bind(this));\n"
+            cb_code_constructor += "        this.reg_cb(\"" + func_name + "_rsp\", this." + func_name + "_rsp.bind(this));\n"
+            cb_code_constructor += "        this.reg_cb(\"" + func_name + "_err\", this." + func_name + "_err.bind(this));\n"
 
             cb_code_section += "    public " + func_name + "_rsp(inArray:any[]){\n"
             cb_code_section += "        let uuid = inArray[0];\n"
@@ -267,7 +283,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     code += "        }\n"                                                     
                     code += "        _argv_" + _argv_uuid + ".push(_array_" + _array_uuid + ");\n"
-            code += "        this.call_module_method(\"" + func_name + "\", _argv_" + _argv_uuid + ");\n\n"
+            code += "        this._client_handle.call_hub(this.hub_name_" + _hub_uuid + ", \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n"
             code += "        let cb_" + func_name + "_obj = new " + module_name + "_" + func_name + "_cb(uuid_" + _cb_uuid_uuid + ", rsp_cb_" + module_name + "_handle);\n"
             code += "        if (rsp_cb_" + module_name + "_handle){\n"
             code += "            rsp_cb_" + module_name + "_handle.map_" + func_name + ".set(uuid_" + _cb_uuid_uuid + ", cb_" + func_name + "_obj);\n"
