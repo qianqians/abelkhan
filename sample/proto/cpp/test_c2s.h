@@ -25,7 +25,7 @@ namespace abelkhan
             uuid_f8b1c4e0_ccd3_3a81_80ee_02001b676fd3 = _uuid;
         }
 
-        void rsp(std::string ip, uint8_t port){
+        void rsp(std::string ip, uint16_t port){
             msgpack11::MsgPack::array _argv_abbb842f_52d0_34e7_9d8d_642d072db165;
             _argv_abbb842f_52d0_34e7_9d8d_642d072db165.push_back(uuid_f8b1c4e0_ccd3_3a81_80ee_02001b676fd3);
             _argv_abbb842f_52d0_34e7_9d8d_642d072db165.push_back(ip);
@@ -54,7 +54,13 @@ namespace abelkhan
             hub_handle = _hub_service;
             _hub_service->modules.add_module("test_c2s", std::static_pointer_cast<common::imodule>(shared_from_this()));
 
+            reg_cb("login", std::bind(&test_c2s_module::login, this, std::placeholders::_1));
             reg_cb("get_svr_host", std::bind(&test_c2s_module::get_svr_host, this, std::placeholders::_1));
+        }
+
+        concurrent::signals<void()> sig_login;
+        void login(const msgpack11::MsgPack::array& inArray){
+            sig_login.emit();
         }
 
         concurrent::signals<void()> sig_get_svr_host;

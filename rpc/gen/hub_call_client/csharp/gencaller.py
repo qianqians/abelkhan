@@ -41,7 +41,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "            _multicast.client_uuids_" + _client_uuid + " = client_uuids;\n"
     code += "            return _multicast;\n"
     code += "        }\n\n"
-    code += "        public " + module_name + "_broadcast get_multicast() {\n"
+    code += "        public " + module_name + "_broadcast get_broadcast() {\n"
     code += "            return _broadcast;\n"
     code += "        }\n"
     code += "    }\n\n"

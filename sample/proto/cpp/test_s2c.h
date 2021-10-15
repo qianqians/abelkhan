@@ -127,7 +127,7 @@ namespace abelkhan
         std::shared_ptr<hub::hub_service> _hub_handle;
         std::shared_ptr<test_s2c_rsp_cb> rsp_cb_test_s2c_handle;
 
-        test_s2c_multicast(std::shared_ptr<hub::hub_service> hub_service_, std::shared_ptr<test_s2c_rsp_cb> rsp_cb_test_s2c_handle_)
+        test_s2c_broadcast(std::shared_ptr<hub::hub_service> hub_service_, std::shared_ptr<test_s2c_rsp_cb> rsp_cb_test_s2c_handle_)
         {
             _hub_handle = hub_service_;
             rsp_cb_test_s2c_handle = rsp_cb_test_s2c_handle_;
@@ -164,12 +164,12 @@ namespace abelkhan
             return _clientproxy;
         }
 
-        std::shared_ptr<test_s2c_multicast> get_multicast(std::vector<string> client_uuids) {
+        std::shared_ptr<test_s2c_multicast> get_multicast(std::vector<std::string> client_uuids) {
             _multicast->client_uuids_a1cf7490_107a_3422_8f39_e02b73ef3c43 = client_uuids;
             return _multicast;
         }
 
-        std::shared_ptr<test_s2c_broadcast> get_multicast() {
+        std::shared_ptr<test_s2c_broadcast> get_broadcast() {
             return _broadcast;
         }
 

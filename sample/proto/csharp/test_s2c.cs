@@ -189,7 +189,7 @@ namespace abelkhan
             return _multicast;
         }
 
-        public test_s2c_broadcast get_multicast() {
+        public test_s2c_broadcast get_broadcast() {
             return _broadcast;
         }
     }
