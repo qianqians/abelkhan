@@ -1,0 +1,3 @@
+module test_c2s {
+	get_svr_host req() rsp(string ip, uint8 port) err();
+}
