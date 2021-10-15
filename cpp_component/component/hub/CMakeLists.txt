@@ -4,10 +4,10 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
-set(protcol_header_path ..//..//..//protcol//cpp CACHE PATH "protcol include path")
-INCLUDE_DIRECTORIES(${protcol_header_path})
-file(GLOB protcol_header_files ../../../protcol/cpp/ ../../../protcol/cpp/*.h)
-AUX_SOURCE_DIRECTORY(../../../protcol/cpp/ protcol_DIR_SRC)
+set(protocol_header_path ..//..//..//protocol//cpp CACHE PATH "protocol include path")
+INCLUDE_DIRECTORIES(${protocol_header_path})
+file(GLOB protocol_header_files ../../../protocol/cpp/ ../../../protocol/cpp/*.h)
+AUX_SOURCE_DIRECTORY(../../../protocol/cpp/ protocol_DIR_SRC)
 
 set(juggle_header_path ..//..//..//tools//juggle//cpp CACHE PATH "juggle include path")
 INCLUDE_DIRECTORIES(${juggle_header_path})
@@ -43,7 +43,7 @@ SET(header_files
     ${module_header_files}
     ${service_header_files}
     ${juggle_header_files}
-    ${protcol_header_files}
+    ${protocol_header_files}
     ${config_header_files}
     ${time_header_files}
     ${log_header_files}
@@ -53,7 +53,7 @@ SET(SRC_LIST
     ${DIR_SRC}
     ${juggle_DIR_SRC}
     ${service_DIR_SRC}
-    ${protcol_DIR_SRC}
+    ${protocol_DIR_SRC}
 )
 
 ADD_LIBRARY(hub ${SRC_LIST} ${header_files})

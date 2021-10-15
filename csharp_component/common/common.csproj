@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\protcol\csharp\protcol.csproj" />
+    <ProjectReference Include="..\..\protocol\csharp\protocol.csproj" />
   </ItemGroup>
 
 </Project>
