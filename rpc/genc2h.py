@@ -33,26 +33,26 @@ def gen_ts_import(_import):
     return code
 
 def gen(inputdir, lang, outputdir):
-    syspath = "./client_call_hub/"
+    syspath = "./gen/client_call_hub/"
     if lang == 'cpp':
         sys.path.append("./gen_common/cpp")
+        sys.path.append("./tools/cpp")
         syspath += "cpp/"
         sys.path.append(syspath)
         import genmodule
-        sys.path.remove(syspath)
     elif lang == 'csharp':
         sys.path.append("./gen_common/csharp")
+        sys.path.append("./tools/csharp")
         syspath += "csharp/"
         sys.path.append(syspath)
         import gencaller
         import genmodule
-        sys.path.remove(syspath)
     elif lang == 'ts':
         sys.path.append("./gen_common/ts")
+        sys.path.append("./tools/ts")
         syspath += "ts/"
         sys.path.append(syspath)
         import gencaller
-        sys.path.remove(syspath)
     import genenum
     import genstruct
 

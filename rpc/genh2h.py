@@ -27,9 +27,10 @@ def gen_csharp_import(_import):
     return code
 
 def gen(inputdir, lang, outputdir):
-    syspath = "./hub_call_hub/"
+    syspath = "./gen/hub_call_hub/"
     if lang == 'cpp':
         sys.path.append("./gen_common/cpp")
+        sys.path.append("./tools/cpp")
         syspath += "cpp/"
         sys.path.append(syspath)
         import gencaller
@@ -37,6 +38,7 @@ def gen(inputdir, lang, outputdir):
         sys.path.remove(syspath)
     elif lang == 'csharp':
         sys.path.append("./gen_common/csharp")
+        sys.path.append("./tools/csharp")
         syspath += "csharp/"
         sys.path.append(syspath)
         import gencaller
@@ -57,13 +59,15 @@ def gen(inputdir, lang, outputdir):
             code += gen_cpp_import(pretreatment._import)
             code += genenum.genenum(pretreatment)
             code += genstruct.genstruct(pretreatment)
-            code += gencaller.gencaller(pretreatment)
+            h_code_tmp, cpp_code_tmp = gencaller.gencaller(pretreatment)
+            code += h_code_tmp
             code += genmodule.genmodule(pretreatment)
             code += "\n}\n\n"
             code += "#endif //_h_" + pretreatment.name + "_" + _uuid + "_\n"
 
             cpp_code = "#include \"" + pretreatment.name + ".h\"\n\n"
             cpp_code += "namespace abelkhan\n{\n\n"
+            cpp_code += cpp_code_tmp
             cpp_code += "\n}\n"
 
             file = open(outputdir + '//' + pretreatment.name + ".h", 'w')
