@@ -105,7 +105,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                         code_func += "                _" + _name + ".push_back(it_" + _v_uuid + ".bool_value());\n"
                     elif array_type_ == tools.TypeType.String:
                         code_func += "                _" + _name + ".push_back(it_" + _v_uuid + ".string_value());\n"
-                    elif array_type_ == tools.TypeType.String:
+                    elif array_type_ == tools.TypeType.Bin:
                         code_func += "                _" + _name + ".push_back(it_" + _v_uuid + ".binary_items());\n"
                     elif array_type_ == tools.TypeType.Custom:
                         code_func += "                _" + _name + ".push_back(" + array_type + "::protcol_to_" + array_type + "(it_" + _v_uuid + ".object_items()));\n"
@@ -205,7 +205,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                         code_func += "                _" + _name + ".push_back(it_" + _v_uuid + ".bool_value());\n"
                     elif array_type_ == tools.TypeType.String:
                         code_func += "                _" + _name + ".push_back(it_" + _v_uuid + ".string_value());\n"
-                    elif array_type_ == tools.TypeType.String:
+                    elif array_type_ == tools.TypeType.Bin:
                         code_func += "                _" + _name + ".push_back(it_" + _v_uuid + ".binary_items());\n"
                     elif array_type_ == tools.TypeType.Custom:
                         code_func += "                _" + _name + ".push_back(" + array_type + "::protcol_to_" + array_type + "(it_" + _v_uuid + ".object_items()));\n"

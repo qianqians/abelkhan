@@ -29,8 +29,6 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "        std::shared_ptr<" + module_name + "_clientproxy> _clientproxy;\n"
     code += "        std::shared_ptr<" + module_name + "_multicast> _multicast;\n"
     code += "        std::shared_ptr<" + module_name + "_broadcast> _broadcast;\n\n"
-    _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
-    code += "        std::atomic<uint64_t> uuid_" + _uuid + ";\n\n"
     code += "    public:\n"
     code += "        " + module_name + "_caller(std::shared_ptr<hub::hub_service> hub_service_) \n"
     code += "        {\n"
@@ -38,7 +36,6 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "                rsp_cb_" + module_name + "_handle = std::make_shared<" + module_name + "_rsp_cb>();\n"
     code += "                rsp_cb_" + module_name + "_handle->Init(hub_service_);\n"
     code += "            }\n"
-    code += "            uuid_" + _uuid + ".store(random());\n\n"
     code += "            _clientproxy = std::make_shared<" + module_name + "_clientproxy>(hub_service_, rsp_cb_" + module_name + "_handle);\n"
     code += "            _multicast = std::make_shared<" + module_name + "_multicast>(hub_service_, rsp_cb_" + module_name + "_handle);\n"
     code += "            _broadcast = std::make_shared<" + module_name + "_broadcast>(hub_service_, rsp_cb_" + module_name + "_handle);\n"
@@ -61,17 +58,20 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     cp_code = "    class " + module_name + "_clientproxy\n{\n"
     cp_code += "    public:\n"
     cp_code += "        std::string client_uuid_" + _client_uuid + ";\n"
+    _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
+    cp_code += "        std::atomic<uint64_t> uuid_" + _uuid + ";\n\n"
     cp_code += "        std::shared_ptr<hub::hub_service> _hub_handle;\n"
     cp_code += "        std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle;\n\n"
     cp_code += "        " + module_name + "_clientproxy(std::shared_ptr<hub::hub_service> hub_service_, std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle_)\n"
     cp_code += "        {\n"
     cp_code += "            _hub_handle = hub_service_;\n"
     cp_code += "            rsp_cb_" + module_name + "_handle = rsp_cb_" + module_name + "_handle_;\n"
+    cp_code += "            uuid_" + _uuid + ".store(random());\n\n"
     cp_code += "        }\n\n"
 
     cm_code = "    class " + module_name + "_multicast\n{\n"
     cm_code += "    public:\n"
-    cm_code += "        std::vector<string> client_uuids_" + _client_uuid + ";\n"
+    cm_code += "        std::vector<std::string> client_uuids_" + _client_uuid + ";\n"
     cm_code += "        std::shared_ptr<hub::hub_service> _hub_handle;\n"
     cm_code += "        std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle;\n\n"
     cm_code += "        " + module_name + "_multicast(std::shared_ptr<hub::hub_service> hub_service_, std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle_)\n"
@@ -299,7 +299,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         cb_code_section += "                _" + _name + ".push_back(it_" + _v_uuid + ".bool_value());\n"
                     elif array_type_ == tools.TypeType.String:
                         cb_code_section += "                _" + _name + ".push_back(it_" + _v_uuid + ".string_value());\n"
-                    elif array_type_ == tools.TypeType.String:
+                    elif array_type_ == tools.TypeType.Bin:
                         cb_code_section += "                _" + _name + ".push_back(it_" + _v_uuid + ".binary_items());\n"
                     elif array_type_ == tools.TypeType.Custom:
                         cb_code_section += "                _" + _name + ".push_back(" + array_type + "::protcol_to_" + array_type + "(it_" + _v_uuid + ".object_items()));\n"
@@ -390,7 +390,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         cb_code_section += "                _" + _name + ".push_back(it_" + _v_uuid + ".bool_value());\n"
                     elif array_type_ == tools.TypeType.String:
                         cb_code_section += "                _" + _name + ".push_back(it_" + _v_uuid + ".string_value());\n"
-                    elif array_type_ == tools.TypeType.String:
+                    elif array_type_ == tools.TypeType.Bin:
                         cb_code_section += "                _" + _name + ".push_back(it_" + _v_uuid + ".binary_items());\n"
                     elif array_type_ == tools.TypeType.Custom:
                         cb_code_section += "                _" + _name + ".push_back(" + array_type + "::protcol_to_" + array_type + "(it_" + _v_uuid + ".object_items()));\n"

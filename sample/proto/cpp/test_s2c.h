@@ -80,6 +80,8 @@ namespace abelkhan
 {
     public:
         std::string client_uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43;
+        std::atomic<uint64_t> uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43;
+
         std::shared_ptr<hub::hub_service> _hub_handle;
         std::shared_ptr<test_s2c_rsp_cb> rsp_cb_test_s2c_handle;
 
@@ -87,6 +89,8 @@ namespace abelkhan
         {
             _hub_handle = hub_service_;
             rsp_cb_test_s2c_handle = rsp_cb_test_s2c_handle_;
+            uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43.store(random());
+
         }
 
         std::shared_ptr<test_s2c_ping_cb> ping(){
@@ -105,7 +109,7 @@ namespace abelkhan
     class test_s2c_multicast
 {
     public:
-        std::vector<string> client_uuids_a1cf7490_107a_3422_8f39_e02b73ef3c43;
+        std::vector<std::string> client_uuids_a1cf7490_107a_3422_8f39_e02b73ef3c43;
         std::shared_ptr<hub::hub_service> _hub_handle;
         std::shared_ptr<test_s2c_rsp_cb> rsp_cb_test_s2c_handle;
 
@@ -143,8 +147,6 @@ namespace abelkhan
         std::shared_ptr<test_s2c_multicast> _multicast;
         std::shared_ptr<test_s2c_broadcast> _broadcast;
 
-        std::atomic<uint64_t> uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43;
-
     public:
         test_s2c_caller(std::shared_ptr<hub::hub_service> hub_service_) 
         {
@@ -152,8 +154,6 @@ namespace abelkhan
                 rsp_cb_test_s2c_handle = std::make_shared<test_s2c_rsp_cb>();
                 rsp_cb_test_s2c_handle->Init(hub_service_);
             }
-            uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43.store(random());
-
             _clientproxy = std::make_shared<test_s2c_clientproxy>(hub_service_, rsp_cb_test_s2c_handle);
             _multicast = std::make_shared<test_s2c_multicast>(hub_service_, rsp_cb_test_s2c_handle);
             _broadcast = std::make_shared<test_s2c_broadcast>(hub_service_, rsp_cb_test_s2c_handle);

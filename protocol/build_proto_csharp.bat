@@ -1,3 +1,3 @@
 cd ../tools/juggle
-python gencsharp.py ../../protcol/protcol/ ../../protcol/csharp
+python gencsharp.py ../../protocol/protocol/ ../../protocol/csharp
 pause

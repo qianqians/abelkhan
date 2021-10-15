@@ -24,8 +24,6 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "    private:\n"
     code += "        static std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle;\n\n"
     code += "    private:\n"
-    _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
-    code += "        std::atomic<uint64_t> uuid_" + _uuid + ";\n"
     code += "        std::shared_ptr<" + module_name + "_hubproxy> _hubproxy;\n\n"
     code += "    public:\n"
     code += "        " + module_name + "_caller(std::shared_ptr<hub::hub_service> _hub_service)\n"
@@ -34,7 +32,6 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "                rsp_cb_" + module_name + "_handle = std::make_shared<" + module_name + "_rsp_cb>();\n"
     code += "                rsp_cb_" + module_name + "_handle->Init(_hub_service);\n"
     code += "            }\n"
-    code += "            uuid_" + _uuid + ".store(random());\n"
     code += "            _hubproxy = std::make_shared<" + module_name + "_hubproxy>(_hub_service, rsp_cb_" + module_name + "_handle);\n"
     code += "        }\n\n"
     code += "        std::shared_ptr<" + module_name + "_hubproxy> get_hub(std::string hub_name) {\n"
@@ -49,13 +46,16 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "    public:\n"
     code += "        std::string hub_name_" + _hub_uuid + ";\n\n"
     code += "    private:\n"
+    _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
+    code += "        std::atomic<uint64_t> uuid_" + _uuid + ";\n"
     code += "        std::shared_ptr<hub::hub_service> _hub_service;\n"
     code += "        std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle;\n\n"
     code += "    public:\n"
     code += "        " + module_name + "_hubproxy(std::shared_ptr<hub::hub_service> hub_service_, std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle_)\n"
     code += "        {\n"
     code += "            _hub_service = hub_service_;\n"
-    code += "            rsp_cb_" + module_name + "_handle = rsp_cb_" + module_name + "_handle_;\n"
+    code += "            rsp_cb_" + module_name + "_handle = rsp_cb_" + module_name + "_handle_;\n\n"
+    code += "            uuid_" + _uuid + ".store(random());\n"
     code += "        }\n\n"
 
     for i in funcs:
@@ -257,7 +257,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         cb_code_section += "                _" + _name + ".push_back(it_" + _v_uuid + ".bool_value());\n"
                     elif array_type_ == tools.TypeType.String:
                         cb_code_section += "                _" + _name + ".push_back(it_" + _v_uuid + ".string_value());\n"
-                    elif array_type_ == tools.TypeType.String:
+                    elif array_type_ == tools.TypeType.Bin:
                         cb_code_section += "                _" + _name + ".push_back(it_" + _v_uuid + ".binary_items());\n"
                     elif array_type_ == tools.TypeType.Custom:
                         cb_code_section += "                _" + _name + ".push_back(" + array_type + "::protcol_to_" + array_type + "(it_" + _v_uuid + ".object_items()));\n"
@@ -348,7 +348,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         cb_code_section += "                _" + _name + ".push_back(it_" + _v_uuid + ".bool_value());\n"
                     elif array_type_ == tools.TypeType.String:
                         cb_code_section += "                _" + _name + ".push_back(it_" + _v_uuid + ".string_value());\n"
-                    elif array_type_ == tools.TypeType.String:
+                    elif array_type_ == tools.TypeType.Bin:
                         cb_code_section += "                _" + _name + ".push_back(it_" + _v_uuid + ".binary_items());\n"
                     elif array_type_ == tools.TypeType.Custom:
                         cb_code_section += "                _" + _name + ".push_back(" + array_type + "::protcol_to_" + array_type + "(it_" + _v_uuid + ".object_items()));\n"

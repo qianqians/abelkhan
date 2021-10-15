@@ -1,3 +1,3 @@
 cd ../tools/juggle
-python gents.py ../../protcol/protcol/ ../../protcol/ts
+python gents.py ../../protocol/protocol/ ../../protocol/ts
 pause

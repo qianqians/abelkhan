@@ -17,6 +17,7 @@ AUX_SOURCE_DIRECTORY(../../../tools/juggle/cpp/ juggle_DIR_SRC)
 set(time_header_path ..//..//time CACHE PATH "time include path")
 INCLUDE_DIRECTORIES(${time_header_path})
 file(GLOB time_header_files ../../time/ ../../time/*.h)
+AUX_SOURCE_DIRECTORY(../../time/ time_DIR_SRC)
 
 set(config_header_path ..//..//config CACHE PATH "config include path")
 INCLUDE_DIRECTORIES(${config_header_path})
@@ -36,13 +37,13 @@ INCLUDE_DIRECTORIES(${log_header_path})
 file(GLOB log_header_files ../../log/ ../../log/*.h)
 
 AUX_SOURCE_DIRECTORY(. DIR_SRC)
-file(GLOB header_client_files ./ ./*.h)
+file(GLOB header_gate_files ./ ./*.h)
 
 set(LIBS_DEBUG_PATH ${PROJECT_SOURCE_DIR}//..//..//lib_debug CACHE PATH "lib debug path")
 set(LIBS_RELEASE_PATH ${PROJECT_SOURCE_DIR}//..//..//lib CACHE PATH "lib release path")
 
 SET(header_files
-    ${header_client_files}
+    ${header_gate_files}
     ${module_header_files}
     ${service_header_files}
     ${juggle_header_files}
@@ -57,6 +58,7 @@ SET(SRC_LIST
     ${juggle_DIR_SRC}
     ${service_DIR_SRC}
     ${protocol_DIR_SRC}
+    ${time_DIR_SRC}
 )
 
 ADD_EXECUTABLE(gate ${SRC_LIST} ${header_files})
