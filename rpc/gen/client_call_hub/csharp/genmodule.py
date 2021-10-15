@@ -112,7 +112,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                     code_func += "            }\n"                                                     
                 count += 1
 
-            code_func += "            rsp = new " + module_name + "_" + func_name + "_rsp(_hub._gates.current_client_uuid, _cb_uuid);\n"
+            code_func += "            rsp = new " + module_name + "_" + func_name + "_rsp(hub.hub._gates.current_client_uuid, _cb_uuid);\n"
             code_func += "            if (on_" + func_name + " != null){\n"
             code_func += "                on_" + func_name + "("
             count = 0

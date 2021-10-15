@@ -19,8 +19,6 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code = "    public class " + module_name + "_caller {\n"
     code += "        public static " + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle = null;\n"
     code += "        private " + module_name + "_hubproxy _hubproxy;\n"
-    _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
-    code += "        private Int64 uuid_" + _uuid + " = (Int64)RandomUUID.random();\n\n"
     code += "        public " + module_name + "_caller(client.client _client_handle) \n"
     code += "        {\n"
     code += "            if (rsp_cb_" + module_name + "_handle == null)\n            {\n"
@@ -36,9 +34,11 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "        }\n\n"
     code += "    }\n\n"
 
-    code += "    public class" + module_name + "_hubproxy\n{\n"
+    code += "    public class " + module_name + "_hubproxy {\n"
     _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
     code += "        public string hub_name_" + _hub_uuid + ";\n"
+    _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
+    code += "        private Int64 uuid_" + _uuid + " = (Int64)RandomUUID.random();\n\n"
     code += "        public client.client _client_handle;\n"
     code += "        public " + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle;\n\n"
     code += "        public " + module_name + "_hubproxy(client.client client_handle_, " + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle_)\n"

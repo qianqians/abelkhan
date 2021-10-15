@@ -87,12 +87,15 @@ def gen(inputdir, lang, outputdir):
             code = gen_csharp_import(pretreatment._import)
             code += genenum.genenum(pretreatment)
             code += genstruct.genstruct(pretreatment)
-            code += gencaller.gencaller(pretreatment)
-            code += genmodule.genmodule(pretreatment)
-            code += "\n}\n"
+            c_code = code + gencaller.gencaller(pretreatment) + "\n}\n"
+            s_code = code + genmodule.genmodule(pretreatment) + "\n}\n"
 
-            file = open(outputdir + '//' + pretreatment.name + ".cs", 'w')
-            file.write(code)
+            file = open(outputdir + '//' + pretreatment.name + "_cli.cs", 'w')
+            file.write(c_code)
+            file.close()
+
+            file = open(outputdir + '//' + pretreatment.name + "_svr.cs", 'w')
+            file.write(s_code)
             file.close()
         elif lang == "ts":
             code = gen_ts_import(pretreatment._import)

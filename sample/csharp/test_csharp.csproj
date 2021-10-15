@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\proto\csharp\test_c2s_svr.cs" Link="test_c2s_svr.cs" />
+    <Compile Include="..\proto\csharp\test_s2c_svr.cs" Link="test_s2c_svr.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MsgPack.Cli" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="common">
+      <HintPath>..\lib\common.dll</HintPath>
+    </Reference>
+    <Reference Include="hub">
+      <HintPath>..\lib\hub.dll</HintPath>
+    </Reference>
+    <Reference Include="protocol">
+      <HintPath>..\lib\protocol.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
