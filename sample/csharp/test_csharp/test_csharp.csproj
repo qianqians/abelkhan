@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\proto\csharp\test_c2s_svr.cs" Link="test_c2s_svr.cs" />
-    <Compile Include="..\proto\csharp\test_s2c_svr.cs" Link="test_s2c_svr.cs" />
+    <Compile Include="..\..\proto\csharp\test_c2s_svr.cs" Link="test_c2s_svr.cs" />
+    <Compile Include="..\..\proto\csharp\test_s2c_svr.cs" Link="test_s2c_svr.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,13 +16,13 @@
 
   <ItemGroup>
     <Reference Include="common">
-      <HintPath>..\lib\common.dll</HintPath>
+      <HintPath>..\..\lib\common.dll</HintPath>
     </Reference>
     <Reference Include="hub">
-      <HintPath>..\lib\hub.dll</HintPath>
+      <HintPath>..\..\lib\hub.dll</HintPath>
     </Reference>
     <Reference Include="protocol">
-      <HintPath>..\lib\protocol.dll</HintPath>
+      <HintPath>..\..\lib\protocol.dll</HintPath>
     </Reference>
   </ItemGroup>
 

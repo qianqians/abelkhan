@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="center">
+      <HintPath>..\..\lib\center.dll</HintPath>
+    </Reference>
+    <Reference Include="common">
+      <HintPath>..\..\lib\common.dll</HintPath>
+    </Reference>
+    <Reference Include="protocol">
+      <HintPath>..\..\lib\protocol.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

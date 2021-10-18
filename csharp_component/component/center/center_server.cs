@@ -96,6 +96,7 @@ namespace abelkhan
             _accept_gm_service.start();
         }
 
+        public event Action<svrproxy> on_svr_disconnect;
         public Int64 poll()
         {
             var tick_begin = _timer.refresh();
@@ -134,6 +135,7 @@ namespace abelkhan
                     foreach (var _proxy in _svrmanager.closed_svr_list)
                     {
                         chs.Remove(_proxy.ch);
+                        on_svr_disconnect?.Invoke(_proxy);
                     }
                 }
 
