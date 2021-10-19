@@ -17,8 +17,10 @@ std::shared_ptr<hub_call_gate_reg_hub_cb> hub_call_gate_reg_hub_cb::callBack(std
 }
 
 void hub_call_gate_reg_hub_cb::timeout(uint64_t tick, std::function<void()> timeout_cb) {
-    TinyTimer::add_timer(tick, [this](){
-        module_rsp_cb->reg_hub_timeout(cb_uuid);
+    auto _module_rsp_cb = module_rsp_cb;
+    auto _cb_uuid = cb_uuid;
+    TinyTimer::add_timer(tick, [_module_rsp_cb, _cb_uuid](){
+        _module_rsp_cb->reg_hub_timeout(_cb_uuid);
     });
     sig_reg_hub_timeout.connect(timeout_cb);
 }
@@ -36,8 +38,10 @@ std::shared_ptr<client_call_gate_heartbeats_cb> client_call_gate_heartbeats_cb::
 }
 
 void client_call_gate_heartbeats_cb::timeout(uint64_t tick, std::function<void()> timeout_cb) {
-    TinyTimer::add_timer(tick, [this](){
-        module_rsp_cb->heartbeats_timeout(cb_uuid);
+    auto _module_rsp_cb = module_rsp_cb;
+    auto _cb_uuid = cb_uuid;
+    TinyTimer::add_timer(tick, [_module_rsp_cb, _cb_uuid](){
+        _module_rsp_cb->heartbeats_timeout(_cb_uuid);
     });
     sig_heartbeats_timeout.connect(timeout_cb);
 }
@@ -54,8 +58,10 @@ std::shared_ptr<client_call_gate_get_hub_info_cb> client_call_gate_get_hub_info_
 }
 
 void client_call_gate_get_hub_info_cb::timeout(uint64_t tick, std::function<void()> timeout_cb) {
-    TinyTimer::add_timer(tick, [this](){
-        module_rsp_cb->get_hub_info_timeout(cb_uuid);
+    auto _module_rsp_cb = module_rsp_cb;
+    auto _cb_uuid = cb_uuid;
+    TinyTimer::add_timer(tick, [_module_rsp_cb, _cb_uuid](){
+        _module_rsp_cb->get_hub_info_timeout(_cb_uuid);
     });
     sig_get_hub_info_timeout.connect(timeout_cb);
 }

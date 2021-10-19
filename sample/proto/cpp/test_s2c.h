@@ -69,9 +69,12 @@ namespace abelkhan
 
         std::shared_ptr<test_s2c_ping_cb> try_get_and_del_ping_cb(uint64_t uuid){
             std::lock_guard<std::mutex> l(mutex_map_ping);
-            auto rsp = map_ping[uuid];
-            map_ping.erase(uuid);
-            return rsp;
+            if (map_ping.find(uuid) != map_ping.end()) {
+                auto rsp = map_ping[uuid];
+                map_ping.erase(uuid);
+                return rsp;
+            }
+            return nullptr;
         }
 
     };

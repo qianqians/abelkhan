@@ -92,12 +92,13 @@ int main(int argc, char * argv[]) {
 	auto _centerproxy = std::make_shared<gate::centerproxy>(_center_ch);
 	_centerproxy->reg_server(inside_ip, inside_port, gate_name);
 
+	std::shared_ptr<service::acceptservice> _client_service = nullptr;
 	if (_config->has_key("tcp_listen")) {
 		auto is_tcp_listen = _config->get_value_bool("tcp_listen");
 		if (is_tcp_listen) {
 			auto tcp_outside_ip = _config->get_value_string("tcp_outside_ip");
 			auto tcp_outside_port = (short)_config->get_value_int("tcp_outside_port");
-			auto _client_service = std::make_shared<service::acceptservice>(tcp_outside_ip, tcp_outside_port, io_service);
+			_client_service = std::make_shared<service::acceptservice>(tcp_outside_ip, tcp_outside_port, io_service);
 			_client_service->sigchannelconnect.connect([_clientmanager](std::shared_ptr<abelkhan::Ichannel> ch) {
 				std::static_pointer_cast<service::channel>(ch)->set_xor_key_crypt();
 
@@ -138,14 +139,17 @@ int main(int argc, char * argv[]) {
 		}
 	}
 
-	_timerservice->addticktimer(10 * 1000, std::bind(&heartbeat_client, _clientmanager, _timerservice, std::placeholders::_1));
+	_timerservice->addticktimer(10 * 1000, std::bind(heartbeat_client, _clientmanager, _timerservice, std::placeholders::_1));
 	heartbeat_center(_centerproxy, _timerservice, _timerservice->Tick);
 
 	while (true){
 		clock_t begin = clock();
 		try {
+
 			io_service->poll();
+
 			_hub_service->poll();
+			
 			if (_websocket_service != nullptr) {
 				_websocket_service->poll();
 			}

@@ -65,5 +65,5 @@
 		"log_level":"trace",
 		"log_file":"test_csharp.txt",
 		"log_dir":"./log/"
-	},
+	}
 }

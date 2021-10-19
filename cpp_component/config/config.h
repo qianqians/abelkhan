@@ -12,6 +12,7 @@
 #include <fstream>
 #include <exception>
 #include <memory>
+#include <iostream>
 
 #include <json11.hpp>
 
@@ -32,8 +33,8 @@ public:
 
 		std::string err;
 		handle = json11::Json::parse(buff, err);
-		if (handle.is_object() || handle.is_array()) {
-			spdlog::error(buff);
+		if (!handle.is_object() && !handle.is_array()) {
+			spdlog::error(err + ":" + buff);
 		}
 	}
 	

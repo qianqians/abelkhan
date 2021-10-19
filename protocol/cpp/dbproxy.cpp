@@ -18,8 +18,10 @@ std::shared_ptr<hub_call_dbproxy_reg_hub_cb> hub_call_dbproxy_reg_hub_cb::callBa
 }
 
 void hub_call_dbproxy_reg_hub_cb::timeout(uint64_t tick, std::function<void()> timeout_cb) {
-    TinyTimer::add_timer(tick, [this](){
-        module_rsp_cb->reg_hub_timeout(cb_uuid);
+    auto _module_rsp_cb = module_rsp_cb;
+    auto _cb_uuid = cb_uuid;
+    TinyTimer::add_timer(tick, [_module_rsp_cb, _cb_uuid](){
+        _module_rsp_cb->reg_hub_timeout(_cb_uuid);
     });
     sig_reg_hub_timeout.connect(timeout_cb);
 }
@@ -36,8 +38,10 @@ std::shared_ptr<hub_call_dbproxy_create_persisted_object_cb> hub_call_dbproxy_cr
 }
 
 void hub_call_dbproxy_create_persisted_object_cb::timeout(uint64_t tick, std::function<void()> timeout_cb) {
-    TinyTimer::add_timer(tick, [this](){
-        module_rsp_cb->create_persisted_object_timeout(cb_uuid);
+    auto _module_rsp_cb = module_rsp_cb;
+    auto _cb_uuid = cb_uuid;
+    TinyTimer::add_timer(tick, [_module_rsp_cb, _cb_uuid](){
+        _module_rsp_cb->create_persisted_object_timeout(_cb_uuid);
     });
     sig_create_persisted_object_timeout.connect(timeout_cb);
 }
@@ -54,8 +58,10 @@ std::shared_ptr<hub_call_dbproxy_updata_persisted_object_cb> hub_call_dbproxy_up
 }
 
 void hub_call_dbproxy_updata_persisted_object_cb::timeout(uint64_t tick, std::function<void()> timeout_cb) {
-    TinyTimer::add_timer(tick, [this](){
-        module_rsp_cb->updata_persisted_object_timeout(cb_uuid);
+    auto _module_rsp_cb = module_rsp_cb;
+    auto _cb_uuid = cb_uuid;
+    TinyTimer::add_timer(tick, [_module_rsp_cb, _cb_uuid](){
+        _module_rsp_cb->updata_persisted_object_timeout(_cb_uuid);
     });
     sig_updata_persisted_object_timeout.connect(timeout_cb);
 }
@@ -72,8 +78,10 @@ std::shared_ptr<hub_call_dbproxy_find_and_modify_cb> hub_call_dbproxy_find_and_m
 }
 
 void hub_call_dbproxy_find_and_modify_cb::timeout(uint64_t tick, std::function<void()> timeout_cb) {
-    TinyTimer::add_timer(tick, [this](){
-        module_rsp_cb->find_and_modify_timeout(cb_uuid);
+    auto _module_rsp_cb = module_rsp_cb;
+    auto _cb_uuid = cb_uuid;
+    TinyTimer::add_timer(tick, [_module_rsp_cb, _cb_uuid](){
+        _module_rsp_cb->find_and_modify_timeout(_cb_uuid);
     });
     sig_find_and_modify_timeout.connect(timeout_cb);
 }
@@ -90,8 +98,10 @@ std::shared_ptr<hub_call_dbproxy_remove_object_cb> hub_call_dbproxy_remove_objec
 }
 
 void hub_call_dbproxy_remove_object_cb::timeout(uint64_t tick, std::function<void()> timeout_cb) {
-    TinyTimer::add_timer(tick, [this](){
-        module_rsp_cb->remove_object_timeout(cb_uuid);
+    auto _module_rsp_cb = module_rsp_cb;
+    auto _cb_uuid = cb_uuid;
+    TinyTimer::add_timer(tick, [_module_rsp_cb, _cb_uuid](){
+        _module_rsp_cb->remove_object_timeout(_cb_uuid);
     });
     sig_remove_object_timeout.connect(timeout_cb);
 }
@@ -108,8 +118,10 @@ std::shared_ptr<hub_call_dbproxy_get_object_count_cb> hub_call_dbproxy_get_objec
 }
 
 void hub_call_dbproxy_get_object_count_cb::timeout(uint64_t tick, std::function<void()> timeout_cb) {
-    TinyTimer::add_timer(tick, [this](){
-        module_rsp_cb->get_object_count_timeout(cb_uuid);
+    auto _module_rsp_cb = module_rsp_cb;
+    auto _cb_uuid = cb_uuid;
+    TinyTimer::add_timer(tick, [_module_rsp_cb, _cb_uuid](){
+        _module_rsp_cb->get_object_count_timeout(_cb_uuid);
     });
     sig_get_object_count_timeout.connect(timeout_cb);
 }

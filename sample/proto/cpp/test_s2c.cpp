@@ -17,8 +17,10 @@ std::shared_ptr<test_s2c_ping_cb> test_s2c_ping_cb::callBack(std::function<void(
 }
 
 void test_s2c_ping_cb::timeout(uint64_t tick, std::function<void()> timeout_cb) {
-    TinyTimer::add_timer(tick, [this](){
-        module_rsp_cb->ping_timeout(cb_uuid);
+    auto _module_rsp_cb = module_rsp_cb;
+    auto _cb_uuid = cb_uuid;
+    TinyTimer::add_timer(tick, [_module_rsp_cb, _cb_uuid](){
+        _module_rsp_cb->ping_timeout(_cb_uuid);
     });
     sig_ping_timeout.connect(timeout_cb);
 }

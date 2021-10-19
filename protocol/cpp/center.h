@@ -160,9 +160,12 @@ namespace abelkhan
 
         std::shared_ptr<center_reg_server_cb> try_get_and_del_reg_server_cb(uint64_t uuid){
             std::lock_guard<std::mutex> l(mutex_map_reg_server);
-            auto rsp = map_reg_server[uuid];
-            map_reg_server.erase(uuid);
-            return rsp;
+            if (map_reg_server.find(uuid) != map_reg_server.end()) {
+                auto rsp = map_reg_server[uuid];
+                map_reg_server.erase(uuid);
+                return rsp;
+            }
+            return nullptr;
         }
 
     };

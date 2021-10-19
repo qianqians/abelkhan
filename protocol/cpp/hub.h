@@ -69,9 +69,12 @@ namespace abelkhan
 
         std::shared_ptr<hub_call_hub_reg_hub_cb> try_get_and_del_reg_hub_cb(uint64_t uuid){
             std::lock_guard<std::mutex> l(mutex_map_reg_hub);
-            auto rsp = map_reg_hub[uuid];
-            map_reg_hub.erase(uuid);
-            return rsp;
+            if (map_reg_hub.find(uuid) != map_reg_hub.end()) {
+                auto rsp = map_reg_hub[uuid];
+                map_reg_hub.erase(uuid);
+                return rsp;
+            }
+            return nullptr;
         }
 
     };
@@ -224,9 +227,12 @@ namespace abelkhan
 
         std::shared_ptr<client_call_hub_heartbeats_cb> try_get_and_del_heartbeats_cb(uint64_t uuid){
             std::lock_guard<std::mutex> l(mutex_map_heartbeats);
-            auto rsp = map_heartbeats[uuid];
-            map_heartbeats.erase(uuid);
-            return rsp;
+            if (map_heartbeats.find(uuid) != map_heartbeats.end()) {
+                auto rsp = map_heartbeats[uuid];
+                map_heartbeats.erase(uuid);
+                return rsp;
+            }
+            return nullptr;
         }
 
     };

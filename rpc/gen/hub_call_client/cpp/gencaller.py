@@ -217,8 +217,10 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
             cb_func += "    };\n\n"
 
             cpp_code += "void " + module_name + "_" + func_name + "_cb::timeout(uint64_t tick, std::function<void()> timeout_cb) {\n"
-            cpp_code += "    TinyTimer::add_timer(tick, [this](){\n"
-            cpp_code += "        module_rsp_cb->" + func_name + "_timeout(cb_uuid);\n"
+            cpp_code += "    auto _module_rsp_cb = module_rsp_cb;\n"
+            cpp_code += "    auto _cb_uuid = cb_uuid;\n"
+            cpp_code += "    TinyTimer::add_timer(tick, [_module_rsp_cb, _cb_uuid](){\n"
+            cpp_code += "        _module_rsp_cb->" + func_name + "_timeout(_cb_uuid);\n"
             cpp_code += "    });\n"
             cpp_code += "    sig_" + func_name + "_timeout.connect(timeout_cb);\n"
             cpp_code += "}\n\n"
@@ -420,9 +422,12 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
 
             cb_code_section += "        std::shared_ptr<" + module_name + "_"  + func_name + "_cb> try_get_and_del_" + func_name + "_cb(uint64_t uuid){\n"
             cb_code_section += "            std::lock_guard<std::mutex> l(mutex_map_" + func_name + ");\n"
-            cb_code_section += "            auto rsp = map_" + func_name + "[uuid];\n"
-            cb_code_section += "            map_" + func_name + ".erase(uuid);\n"
-            cb_code_section += "            return rsp;\n"
+            cb_code_section += "            if (map_" + func_name + ".find(uuid) != map_" + func_name + ".end()) {\n"
+            cb_code_section += "                auto rsp = map_" + func_name + "[uuid];\n"
+            cb_code_section += "                map_" + func_name + ".erase(uuid);\n"
+            cb_code_section += "                return rsp;\n"
+            cb_code_section += "            }\n"
+            cb_code_section += "            return nullptr;\n"
             cb_code_section += "        }\n\n"
 
             cp_code += "        std::shared_ptr<" + module_name + "_"  + func_name + "_cb> " + func_name + "("

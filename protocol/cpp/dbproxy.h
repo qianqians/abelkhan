@@ -219,9 +219,12 @@ namespace abelkhan
 
         std::shared_ptr<hub_call_dbproxy_reg_hub_cb> try_get_and_del_reg_hub_cb(uint64_t uuid){
             std::lock_guard<std::mutex> l(mutex_map_reg_hub);
-            auto rsp = map_reg_hub[uuid];
-            map_reg_hub.erase(uuid);
-            return rsp;
+            if (map_reg_hub.find(uuid) != map_reg_hub.end()) {
+                auto rsp = map_reg_hub[uuid];
+                map_reg_hub.erase(uuid);
+                return rsp;
+            }
+            return nullptr;
         }
 
         void create_persisted_object_rsp(const msgpack11::MsgPack::array& inArray){
@@ -249,9 +252,12 @@ namespace abelkhan
 
         std::shared_ptr<hub_call_dbproxy_create_persisted_object_cb> try_get_and_del_create_persisted_object_cb(uint64_t uuid){
             std::lock_guard<std::mutex> l(mutex_map_create_persisted_object);
-            auto rsp = map_create_persisted_object[uuid];
-            map_create_persisted_object.erase(uuid);
-            return rsp;
+            if (map_create_persisted_object.find(uuid) != map_create_persisted_object.end()) {
+                auto rsp = map_create_persisted_object[uuid];
+                map_create_persisted_object.erase(uuid);
+                return rsp;
+            }
+            return nullptr;
         }
 
         void updata_persisted_object_rsp(const msgpack11::MsgPack::array& inArray){
@@ -279,9 +285,12 @@ namespace abelkhan
 
         std::shared_ptr<hub_call_dbproxy_updata_persisted_object_cb> try_get_and_del_updata_persisted_object_cb(uint64_t uuid){
             std::lock_guard<std::mutex> l(mutex_map_updata_persisted_object);
-            auto rsp = map_updata_persisted_object[uuid];
-            map_updata_persisted_object.erase(uuid);
-            return rsp;
+            if (map_updata_persisted_object.find(uuid) != map_updata_persisted_object.end()) {
+                auto rsp = map_updata_persisted_object[uuid];
+                map_updata_persisted_object.erase(uuid);
+                return rsp;
+            }
+            return nullptr;
         }
 
         void find_and_modify_rsp(const msgpack11::MsgPack::array& inArray){
@@ -310,9 +319,12 @@ namespace abelkhan
 
         std::shared_ptr<hub_call_dbproxy_find_and_modify_cb> try_get_and_del_find_and_modify_cb(uint64_t uuid){
             std::lock_guard<std::mutex> l(mutex_map_find_and_modify);
-            auto rsp = map_find_and_modify[uuid];
-            map_find_and_modify.erase(uuid);
-            return rsp;
+            if (map_find_and_modify.find(uuid) != map_find_and_modify.end()) {
+                auto rsp = map_find_and_modify[uuid];
+                map_find_and_modify.erase(uuid);
+                return rsp;
+            }
+            return nullptr;
         }
 
         void remove_object_rsp(const msgpack11::MsgPack::array& inArray){
@@ -340,9 +352,12 @@ namespace abelkhan
 
         std::shared_ptr<hub_call_dbproxy_remove_object_cb> try_get_and_del_remove_object_cb(uint64_t uuid){
             std::lock_guard<std::mutex> l(mutex_map_remove_object);
-            auto rsp = map_remove_object[uuid];
-            map_remove_object.erase(uuid);
-            return rsp;
+            if (map_remove_object.find(uuid) != map_remove_object.end()) {
+                auto rsp = map_remove_object[uuid];
+                map_remove_object.erase(uuid);
+                return rsp;
+            }
+            return nullptr;
         }
 
         void get_object_count_rsp(const msgpack11::MsgPack::array& inArray){
@@ -371,9 +386,12 @@ namespace abelkhan
 
         std::shared_ptr<hub_call_dbproxy_get_object_count_cb> try_get_and_del_get_object_count_cb(uint64_t uuid){
             std::lock_guard<std::mutex> l(mutex_map_get_object_count);
-            auto rsp = map_get_object_count[uuid];
-            map_get_object_count.erase(uuid);
-            return rsp;
+            if (map_get_object_count.find(uuid) != map_get_object_count.end()) {
+                auto rsp = map_get_object_count[uuid];
+                map_get_object_count.erase(uuid);
+                return rsp;
+            }
+            return nullptr;
         }
 
     };

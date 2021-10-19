@@ -14,21 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetty.Transport.Libuv" Version="0.7.0" />
-    <PackageReference Include="MsgPack.Cli" Version="1.0.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="center">
-      <HintPath>..\..\lib\center.dll</HintPath>
-    </Reference>
-    <Reference Include="common">
-      <HintPath>..\..\lib\common.dll</HintPath>
-    </Reference>
-    <Reference Include="protocol">
-      <HintPath>..\..\lib\protocol.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\..\csharp_component\component\center\center.csproj" />
   </ItemGroup>
 
 </Project>
