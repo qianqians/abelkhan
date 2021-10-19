@@ -13,20 +13,20 @@ namespace abelkhan
     {
         public string hub_name;
         public string hub_type;
-        public static Hashtable hub_info_to_protcol(hub_info _struct){
-            var _protocol = new Hashtable();
+        public static MsgPack.MessagePackObjectDictionary hub_info_to_protcol(hub_info _struct){
+            var _protocol = new MsgPack.MessagePackObjectDictionary();
             _protocol.Add("hub_name", _struct.hub_name);
             _protocol.Add("hub_type", _struct.hub_type);
             return _protocol;
         }
-        public static hub_info protcol_to_hub_info(Hashtable _protocol){
+        public static hub_info protcol_to_hub_info(MsgPack.MessagePackObjectDictionary _protocol){
             var _struct4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2 = new hub_info();
-            foreach(DictionaryEntry i in _protocol){
-                if ((string)i.Key == "hub_name"){
-                    _struct4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2.hub_name = (string)i.Value;
+            foreach (var i in _protocol){
+                if (((MsgPack.MessagePackObject)i.Key).AsString() == "hub_name"){
+                    _struct4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2.hub_name = ((MsgPack.MessagePackObject)i.Value).AsString();
                 }
-                else if ((string)i.Key == "hub_type"){
-                    _struct4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2.hub_type = (string)i.Value;
+                else if (((MsgPack.MessagePackObject)i.Key).AsString() == "hub_type"){
+                    _struct4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2.hub_type = ((MsgPack.MessagePackObject)i.Value).AsString();
                 }
             }
             return _struct4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2;
@@ -101,8 +101,8 @@ namespace abelkhan
             reg_method("reg_hub_err", reg_hub_err);
         }
 
-        public void reg_hub_rsp(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void reg_hub_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_reg_hub_cb(uuid);
             if (rsp != null)
             {
@@ -110,8 +110,8 @@ namespace abelkhan
             }
         }
 
-        public void reg_hub_err(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void reg_hub_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_reg_hub_cb(uuid);
             if (rsp != null)
             {
@@ -129,8 +129,10 @@ namespace abelkhan
         private hub_call_gate_reg_hub_cb try_get_and_del_reg_hub_cb(UInt64 uuid){
             lock(map_reg_hub)
             {
-                var rsp = map_reg_hub[uuid];
-                map_reg_hub.Remove(uuid);
+                if (map_reg_hub.TryGetValue(uuid, out hub_call_gate_reg_hub_cb rsp))
+                {
+                    map_reg_hub.Remove(uuid);
+                }
                 return rsp;
             }
         }
@@ -322,9 +324,9 @@ namespace abelkhan
             reg_method("get_hub_info_err", get_hub_info_err);
         }
 
-        public void heartbeats_rsp(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
-            var _timetmp = (UInt64)inArray[1];
+        public void heartbeats_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _timetmp = ((MsgPack.MessagePackObject)inArray[1]).AsUInt64();
             var rsp = try_get_and_del_heartbeats_cb(uuid);
             if (rsp != null)
             {
@@ -332,8 +334,8 @@ namespace abelkhan
             }
         }
 
-        public void heartbeats_err(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void heartbeats_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_heartbeats_cb(uuid);
             if (rsp != null)
             {
@@ -351,17 +353,20 @@ namespace abelkhan
         private client_call_gate_heartbeats_cb try_get_and_del_heartbeats_cb(UInt64 uuid){
             lock(map_heartbeats)
             {
-                var rsp = map_heartbeats[uuid];
-                map_heartbeats.Remove(uuid);
+                if (map_heartbeats.TryGetValue(uuid, out client_call_gate_heartbeats_cb rsp))
+                {
+                    map_heartbeats.Remove(uuid);
+                }
                 return rsp;
             }
         }
 
-        public void get_hub_info_rsp(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void get_hub_info_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var _hub_info = new List<hub_info>();
-            foreach(var v_53b78086_1765_5879_87b4_63333838766a in (ArrayList)inArray[1]){
-                _hub_info.Add(hub_info.protcol_to_hub_info((Hashtable)v_53b78086_1765_5879_87b4_63333838766a));
+            var _protocol_array = ((MsgPack.MessagePackObject)inArray[1]).AsList();
+            foreach (var v_53b78086_1765_5879_87b4_63333838766a in _protocol_array){
+                _hub_info.Add(hub_info.protcol_to_hub_info(((MsgPack.MessagePackObject)v_53b78086_1765_5879_87b4_63333838766a).AsDictionary()));
             }
             var rsp = try_get_and_del_get_hub_info_cb(uuid);
             if (rsp != null)
@@ -370,8 +375,8 @@ namespace abelkhan
             }
         }
 
-        public void get_hub_info_err(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void get_hub_info_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_get_hub_info_cb(uuid);
             if (rsp != null)
             {
@@ -389,8 +394,10 @@ namespace abelkhan
         private client_call_gate_get_hub_info_cb try_get_and_del_get_hub_info_cb(UInt64 uuid){
             lock(map_get_hub_info)
             {
-                var rsp = map_get_hub_info[uuid];
-                map_get_hub_info.Remove(uuid);
+                if (map_get_hub_info.TryGetValue(uuid, out client_call_gate_get_hub_info_cb rsp))
+                {
+                    map_get_hub_info.Remove(uuid);
+                }
                 return rsp;
             }
         }
@@ -481,10 +488,10 @@ namespace abelkhan
         }
 
         public event Action<string, string> on_reg_hub;
-        public void reg_hub(ArrayList inArray){
-            var _cb_uuid = (UInt64)inArray[0];
-            var _hub_name = (string)inArray[1];
-            var _hub_type = (string)inArray[2];
+        public void reg_hub(IList<MsgPack.MessagePackObject> inArray){
+            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _hub_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _hub_type = ((MsgPack.MessagePackObject)inArray[2]).AsString();
             rsp = new hub_call_gate_reg_hub_rsp(current_ch, _cb_uuid);
             if (on_reg_hub != null){
                 on_reg_hub(_hub_name, _hub_type);
@@ -493,37 +500,38 @@ namespace abelkhan
         }
 
         public event Action<string> on_disconnect_client;
-        public void disconnect_client(ArrayList inArray){
-            var _client_uuid = (string)inArray[0];
+        public void disconnect_client(IList<MsgPack.MessagePackObject> inArray){
+            var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
             if (on_disconnect_client != null){
                 on_disconnect_client(_client_uuid);
             }
         }
 
         public event Action<string, byte[]> on_forward_hub_call_client;
-        public void forward_hub_call_client(ArrayList inArray){
-            var _client_uuid = (string)inArray[0];
-            var _rpc_argv = (byte[])inArray[1];
+        public void forward_hub_call_client(IList<MsgPack.MessagePackObject> inArray){
+            var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _rpc_argv = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
             if (on_forward_hub_call_client != null){
                 on_forward_hub_call_client(_client_uuid, _rpc_argv);
             }
         }
 
         public event Action<List<string>, byte[]> on_forward_hub_call_group_client;
-        public void forward_hub_call_group_client(ArrayList inArray){
+        public void forward_hub_call_group_client(IList<MsgPack.MessagePackObject> inArray){
             var _client_uuids = new List<string>();
-            foreach(var v_dfd11414_89c9_5adb_8977_69b93b30195b in (ArrayList)inArray[0]){
-                _client_uuids.Add((string)v_dfd11414_89c9_5adb_8977_69b93b30195b);
+            var _protocol_array = ((MsgPack.MessagePackObject)inArray[0]).AsList();
+            foreach (var v_dfd11414_89c9_5adb_8977_69b93b30195b in _protocol_array){
+                _client_uuids.Add(((MsgPack.MessagePackObject)v_dfd11414_89c9_5adb_8977_69b93b30195b).AsString());
             }
-            var _rpc_argv = (byte[])inArray[1];
+            var _rpc_argv = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
             if (on_forward_hub_call_group_client != null){
                 on_forward_hub_call_group_client(_client_uuids, _rpc_argv);
             }
         }
 
         public event Action<byte[]> on_forward_hub_call_global_client;
-        public void forward_hub_call_global_client(ArrayList inArray){
-            var _rpc_argv = (byte[])inArray[0];
+        public void forward_hub_call_global_client(IList<MsgPack.MessagePackObject> inArray){
+            var _rpc_argv = ((MsgPack.MessagePackObject)inArray[0]).AsBinary();
             if (on_forward_hub_call_global_client != null){
                 on_forward_hub_call_global_client(_rpc_argv);
             }
@@ -591,8 +599,8 @@ namespace abelkhan
         }
 
         public event Action on_heartbeats;
-        public void heartbeats(ArrayList inArray){
-            var _cb_uuid = (UInt64)inArray[0];
+        public void heartbeats(IList<MsgPack.MessagePackObject> inArray){
+            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             rsp = new client_call_gate_heartbeats_rsp(current_ch, _cb_uuid);
             if (on_heartbeats != null){
                 on_heartbeats();
@@ -601,9 +609,9 @@ namespace abelkhan
         }
 
         public event Action<string> on_get_hub_info;
-        public void get_hub_info(ArrayList inArray){
-            var _cb_uuid = (UInt64)inArray[0];
-            var _hub_type = (string)inArray[1];
+        public void get_hub_info(IList<MsgPack.MessagePackObject> inArray){
+            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _hub_type = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             rsp = new client_call_gate_get_hub_info_rsp(current_ch, _cb_uuid);
             if (on_get_hub_info != null){
                 on_get_hub_info(_hub_type);
@@ -612,9 +620,9 @@ namespace abelkhan
         }
 
         public event Action<string, byte[]> on_forward_client_call_hub;
-        public void forward_client_call_hub(ArrayList inArray){
-            var _hub_name = (string)inArray[0];
-            var _rpc_argv = (byte[])inArray[1];
+        public void forward_client_call_hub(IList<MsgPack.MessagePackObject> inArray){
+            var _hub_name = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _rpc_argv = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
             if (on_forward_client_call_hub != null){
                 on_forward_client_call_hub(_hub_name, _rpc_argv);
             }

@@ -45,15 +45,15 @@ namespace abelkhan
         }
 
         public event Action on_login;
-        public void login(ArrayList inArray){
+        public void login(IList<MsgPack.MessagePackObject> inArray){
             if (on_login != null){
                 on_login();
             }
         }
 
         public event Action on_get_svr_host;
-        public void get_svr_host(ArrayList inArray){
-            var _cb_uuid = (UInt64)inArray[0];
+        public void get_svr_host(IList<MsgPack.MessagePackObject> inArray){
+            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             rsp = new test_c2s_get_svr_host_rsp(hub.hub._gates.current_client_uuid, _cb_uuid);
             if (on_get_svr_host != null){
                 on_get_svr_host();

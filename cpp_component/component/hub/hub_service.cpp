@@ -48,12 +48,25 @@ void hub_service::init() {
 	if (log_level == "trace") {
 		_log::InitLog(file_path, spdlog::level::level_enum::trace);
 	}
+	else if (log_level == "debug") {
+		_log::InitLog(file_path, spdlog::level::level_enum::debug);
+	}
+	else if (log_level == "info") {
+		_log::InitLog(file_path, spdlog::level::level_enum::info);
+	}
+	else if (log_level == "warn") {
+		_log::InitLog(file_path, spdlog::level::level_enum::warn);
+	}
 	else if (log_level == "error") {
 		_log::InitLog(file_path, spdlog::level::level_enum::err);
 	}
 
 	_io_service = std::make_shared<boost::asio::io_service>();
 
+	if (enet_initialize() != 0)
+	{
+		spdlog::error("An error occurred while initializing ENet!");
+	}
 	auto ip = _config->get_value_string("ip");
 	auto port = _config->get_value_int("port");
 	_hub_service = std::make_shared<service::enetacceptservice>(ip, (short)port);
@@ -95,9 +108,12 @@ void hub_service::init() {
 			auto websocket_outside_ip = _config->get_value_string("websocket_outside_ip");
 			auto websocket_outside_port = (short)_config->get_value_int("websocket_outside_port");
 			auto is_ssl = _config->get_value_bool("is_ssl");
-			auto certificate = _config->get_value_string("certificate");
-			auto private_key = _config->get_value_string("private_key");
-			auto tmp_dh = _config->get_value_string("tmp_dh");
+			std::string certificate, private_key, tmp_dh;
+			if (is_ssl) {
+				auto certificate = _config->get_value_string("certificate");
+				auto private_key = _config->get_value_string("private_key");
+				auto tmp_dh = _config->get_value_string("tmp_dh");
+			}
 			_client_websocket_service = std::make_shared<service::webacceptservice>(websocket_outside_ip, websocket_outside_port, is_ssl, certificate, private_key, tmp_dh);
 			_client_websocket_service->sigchannelconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
 			});
@@ -184,49 +200,36 @@ void hub_service::try_connect_db(std::string dbproxy_name, std::string dbproxy_i
 
 void hub_service::close_svr() {
 	_close_handle->is_closed = true;
+	enet_deinitialize();
+	spdlog::shutdown();
 }
 
-void hub_service::poll() {
+int hub_service::poll() {
 	auto time_now = msec_time();
-	while (1) {
-		try {
-			_io_service->poll();
-			_hub_service->poll();
-			if (_client_websocket_service != nullptr) {
-				_client_websocket_service->poll();
-			}
 
-			abelkhan::TinyTimer::poll();
-			_timerservice->poll();
-
-			service::gc_poll();
-
-			_log::file_logger->flush();
-		}
-		catch (std::exception err) {
-			spdlog::error("hub_service::poll error:{0}", err.what());
+	try {
+		_io_service->poll();
+		_hub_service->poll();
+		if (_client_websocket_service != nullptr) {
+			_client_websocket_service->poll();
 		}
 
-		if (_close_handle->is_closed) {
-			_centerproxy->closed();
-			_timerservice->addticktimer(2000, [](uint64_t timetmp) {
-				spdlog::shutdown();
-				exit(0);
-			});
-		}
-		else {
-			auto _tmp_now = msec_time();
-			auto _tmp_time = _tmp_now - time_now;
-			time_now = _tmp_now;
-			if (_tmp_time < 15) {
-				Sleep(0);
-				is_busy = false;
-			}
-			else {
-				is_busy = true;
-			}
-		}
+		abelkhan::TinyTimer::poll();
+		_timerservice->poll();
+
+		service::gc_poll();
+
+		_log::file_logger->flush();
 	}
+	catch (std::exception err) {
+		spdlog::error("hub_service::poll error:{0}", err.what());
+	}
+
+	auto _tmp_now = msec_time();
+	auto _tmp_time = _tmp_now - time_now;
+	time_now = _tmp_now;
+
+	return (int)_tmp_time;
 }
 
 }

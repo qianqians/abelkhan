@@ -412,8 +412,8 @@ namespace abelkhan
             reg_method("get_object_count_err", get_object_count_err);
         }
 
-        public void reg_hub_rsp(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void reg_hub_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_reg_hub_cb(uuid);
             if (rsp != null)
             {
@@ -421,8 +421,8 @@ namespace abelkhan
             }
         }
 
-        public void reg_hub_err(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void reg_hub_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_reg_hub_cb(uuid);
             if (rsp != null)
             {
@@ -440,14 +440,16 @@ namespace abelkhan
         private hub_call_dbproxy_reg_hub_cb try_get_and_del_reg_hub_cb(UInt64 uuid){
             lock(map_reg_hub)
             {
-                var rsp = map_reg_hub[uuid];
-                map_reg_hub.Remove(uuid);
+                if (map_reg_hub.TryGetValue(uuid, out hub_call_dbproxy_reg_hub_cb rsp))
+                {
+                    map_reg_hub.Remove(uuid);
+                }
                 return rsp;
             }
         }
 
-        public void create_persisted_object_rsp(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void create_persisted_object_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_create_persisted_object_cb(uuid);
             if (rsp != null)
             {
@@ -455,8 +457,8 @@ namespace abelkhan
             }
         }
 
-        public void create_persisted_object_err(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void create_persisted_object_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_create_persisted_object_cb(uuid);
             if (rsp != null)
             {
@@ -474,14 +476,16 @@ namespace abelkhan
         private hub_call_dbproxy_create_persisted_object_cb try_get_and_del_create_persisted_object_cb(UInt64 uuid){
             lock(map_create_persisted_object)
             {
-                var rsp = map_create_persisted_object[uuid];
-                map_create_persisted_object.Remove(uuid);
+                if (map_create_persisted_object.TryGetValue(uuid, out hub_call_dbproxy_create_persisted_object_cb rsp))
+                {
+                    map_create_persisted_object.Remove(uuid);
+                }
                 return rsp;
             }
         }
 
-        public void updata_persisted_object_rsp(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void updata_persisted_object_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_updata_persisted_object_cb(uuid);
             if (rsp != null)
             {
@@ -489,8 +493,8 @@ namespace abelkhan
             }
         }
 
-        public void updata_persisted_object_err(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void updata_persisted_object_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_updata_persisted_object_cb(uuid);
             if (rsp != null)
             {
@@ -508,15 +512,17 @@ namespace abelkhan
         private hub_call_dbproxy_updata_persisted_object_cb try_get_and_del_updata_persisted_object_cb(UInt64 uuid){
             lock(map_updata_persisted_object)
             {
-                var rsp = map_updata_persisted_object[uuid];
-                map_updata_persisted_object.Remove(uuid);
+                if (map_updata_persisted_object.TryGetValue(uuid, out hub_call_dbproxy_updata_persisted_object_cb rsp))
+                {
+                    map_updata_persisted_object.Remove(uuid);
+                }
                 return rsp;
             }
         }
 
-        public void find_and_modify_rsp(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
-            var _object_info = (byte[])inArray[1];
+        public void find_and_modify_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _object_info = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
             var rsp = try_get_and_del_find_and_modify_cb(uuid);
             if (rsp != null)
             {
@@ -524,8 +530,8 @@ namespace abelkhan
             }
         }
 
-        public void find_and_modify_err(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void find_and_modify_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_find_and_modify_cb(uuid);
             if (rsp != null)
             {
@@ -543,14 +549,16 @@ namespace abelkhan
         private hub_call_dbproxy_find_and_modify_cb try_get_and_del_find_and_modify_cb(UInt64 uuid){
             lock(map_find_and_modify)
             {
-                var rsp = map_find_and_modify[uuid];
-                map_find_and_modify.Remove(uuid);
+                if (map_find_and_modify.TryGetValue(uuid, out hub_call_dbproxy_find_and_modify_cb rsp))
+                {
+                    map_find_and_modify.Remove(uuid);
+                }
                 return rsp;
             }
         }
 
-        public void remove_object_rsp(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void remove_object_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_remove_object_cb(uuid);
             if (rsp != null)
             {
@@ -558,8 +566,8 @@ namespace abelkhan
             }
         }
 
-        public void remove_object_err(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void remove_object_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_remove_object_cb(uuid);
             if (rsp != null)
             {
@@ -577,15 +585,17 @@ namespace abelkhan
         private hub_call_dbproxy_remove_object_cb try_get_and_del_remove_object_cb(UInt64 uuid){
             lock(map_remove_object)
             {
-                var rsp = map_remove_object[uuid];
-                map_remove_object.Remove(uuid);
+                if (map_remove_object.TryGetValue(uuid, out hub_call_dbproxy_remove_object_cb rsp))
+                {
+                    map_remove_object.Remove(uuid);
+                }
                 return rsp;
             }
         }
 
-        public void get_object_count_rsp(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
-            var _count = (UInt32)inArray[1];
+        public void get_object_count_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _count = ((MsgPack.MessagePackObject)inArray[1]).AsUInt32();
             var rsp = try_get_and_del_get_object_count_cb(uuid);
             if (rsp != null)
             {
@@ -593,8 +603,8 @@ namespace abelkhan
             }
         }
 
-        public void get_object_count_err(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void get_object_count_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_get_object_count_cb(uuid);
             if (rsp != null)
             {
@@ -612,8 +622,10 @@ namespace abelkhan
         private hub_call_dbproxy_get_object_count_cb try_get_and_del_get_object_count_cb(UInt64 uuid){
             lock(map_get_object_count)
             {
-                var rsp = map_get_object_count[uuid];
-                map_get_object_count.Remove(uuid);
+                if (map_get_object_count.TryGetValue(uuid, out hub_call_dbproxy_get_object_count_cb rsp))
+                {
+                    map_get_object_count.Remove(uuid);
+                }
                 return rsp;
             }
         }
@@ -754,17 +766,17 @@ namespace abelkhan
         }
 
         public event Action<string, byte[]> on_ack_get_object_info;
-        public void ack_get_object_info(ArrayList inArray){
-            var _callbackid = (string)inArray[0];
-            var _object_info = (byte[])inArray[1];
+        public void ack_get_object_info(IList<MsgPack.MessagePackObject> inArray){
+            var _callbackid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _object_info = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
             if (on_ack_get_object_info != null){
                 on_ack_get_object_info(_callbackid, _object_info);
             }
         }
 
         public event Action<string> on_ack_get_object_info_end;
-        public void ack_get_object_info_end(ArrayList inArray){
-            var _callbackid = (string)inArray[0];
+        public void ack_get_object_info_end(IList<MsgPack.MessagePackObject> inArray){
+            var _callbackid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
             if (on_ack_get_object_info_end != null){
                 on_ack_get_object_info_end(_callbackid);
             }
@@ -916,9 +928,9 @@ namespace abelkhan
         }
 
         public event Action<string> on_reg_hub;
-        public void reg_hub(ArrayList inArray){
-            var _cb_uuid = (UInt64)inArray[0];
-            var _hub_name = (string)inArray[1];
+        public void reg_hub(IList<MsgPack.MessagePackObject> inArray){
+            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _hub_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             rsp = new hub_call_dbproxy_reg_hub_rsp(current_ch, _cb_uuid);
             if (on_reg_hub != null){
                 on_reg_hub(_hub_name);
@@ -927,11 +939,11 @@ namespace abelkhan
         }
 
         public event Action<string, string, byte[]> on_create_persisted_object;
-        public void create_persisted_object(ArrayList inArray){
-            var _cb_uuid = (UInt64)inArray[0];
-            var _db = (string)inArray[1];
-            var _collection = (string)inArray[2];
-            var _object_info = (byte[])inArray[3];
+        public void create_persisted_object(IList<MsgPack.MessagePackObject> inArray){
+            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _db = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _collection = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            var _object_info = ((MsgPack.MessagePackObject)inArray[3]).AsBinary();
             rsp = new hub_call_dbproxy_create_persisted_object_rsp(current_ch, _cb_uuid);
             if (on_create_persisted_object != null){
                 on_create_persisted_object(_db, _collection, _object_info);
@@ -940,13 +952,13 @@ namespace abelkhan
         }
 
         public event Action<string, string, byte[], byte[], bool> on_updata_persisted_object;
-        public void updata_persisted_object(ArrayList inArray){
-            var _cb_uuid = (UInt64)inArray[0];
-            var _db = (string)inArray[1];
-            var _collection = (string)inArray[2];
-            var _query_info = (byte[])inArray[3];
-            var _updata_info = (byte[])inArray[4];
-            var __upsert = (bool)inArray[5];
+        public void updata_persisted_object(IList<MsgPack.MessagePackObject> inArray){
+            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _db = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _collection = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            var _query_info = ((MsgPack.MessagePackObject)inArray[3]).AsBinary();
+            var _updata_info = ((MsgPack.MessagePackObject)inArray[4]).AsBinary();
+            var __upsert = ((MsgPack.MessagePackObject)inArray[5]).AsBoolean();
             rsp = new hub_call_dbproxy_updata_persisted_object_rsp(current_ch, _cb_uuid);
             if (on_updata_persisted_object != null){
                 on_updata_persisted_object(_db, _collection, _query_info, _updata_info, __upsert);
@@ -955,14 +967,14 @@ namespace abelkhan
         }
 
         public event Action<string, string, byte[], byte[], bool, bool> on_find_and_modify;
-        public void find_and_modify(ArrayList inArray){
-            var _cb_uuid = (UInt64)inArray[0];
-            var _db = (string)inArray[1];
-            var _collection = (string)inArray[2];
-            var _query_info = (byte[])inArray[3];
-            var _updata_info = (byte[])inArray[4];
-            var __new = (bool)inArray[5];
-            var __upsert = (bool)inArray[6];
+        public void find_and_modify(IList<MsgPack.MessagePackObject> inArray){
+            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _db = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _collection = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            var _query_info = ((MsgPack.MessagePackObject)inArray[3]).AsBinary();
+            var _updata_info = ((MsgPack.MessagePackObject)inArray[4]).AsBinary();
+            var __new = ((MsgPack.MessagePackObject)inArray[5]).AsBoolean();
+            var __upsert = ((MsgPack.MessagePackObject)inArray[6]).AsBoolean();
             rsp = new hub_call_dbproxy_find_and_modify_rsp(current_ch, _cb_uuid);
             if (on_find_and_modify != null){
                 on_find_and_modify(_db, _collection, _query_info, _updata_info, __new, __upsert);
@@ -971,11 +983,11 @@ namespace abelkhan
         }
 
         public event Action<string, string, byte[]> on_remove_object;
-        public void remove_object(ArrayList inArray){
-            var _cb_uuid = (UInt64)inArray[0];
-            var _db = (string)inArray[1];
-            var _collection = (string)inArray[2];
-            var _query_info = (byte[])inArray[3];
+        public void remove_object(IList<MsgPack.MessagePackObject> inArray){
+            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _db = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _collection = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            var _query_info = ((MsgPack.MessagePackObject)inArray[3]).AsBinary();
             rsp = new hub_call_dbproxy_remove_object_rsp(current_ch, _cb_uuid);
             if (on_remove_object != null){
                 on_remove_object(_db, _collection, _query_info);
@@ -984,22 +996,22 @@ namespace abelkhan
         }
 
         public event Action<string, string, byte[], string> on_get_object_info;
-        public void get_object_info(ArrayList inArray){
-            var _db = (string)inArray[0];
-            var _collection = (string)inArray[1];
-            var _query_info = (byte[])inArray[2];
-            var _callbackid = (string)inArray[3];
+        public void get_object_info(IList<MsgPack.MessagePackObject> inArray){
+            var _db = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _collection = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _query_info = ((MsgPack.MessagePackObject)inArray[2]).AsBinary();
+            var _callbackid = ((MsgPack.MessagePackObject)inArray[3]).AsString();
             if (on_get_object_info != null){
                 on_get_object_info(_db, _collection, _query_info, _callbackid);
             }
         }
 
         public event Action<string, string, byte[]> on_get_object_count;
-        public void get_object_count(ArrayList inArray){
-            var _cb_uuid = (UInt64)inArray[0];
-            var _db = (string)inArray[1];
-            var _collection = (string)inArray[2];
-            var _query_info = (byte[])inArray[3];
+        public void get_object_count(IList<MsgPack.MessagePackObject> inArray){
+            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _db = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _collection = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            var _query_info = ((MsgPack.MessagePackObject)inArray[3]).AsBinary();
             rsp = new hub_call_dbproxy_get_object_count_rsp(current_ch, _cb_uuid);
             if (on_get_object_count != null){
                 on_get_object_count(_db, _collection, _query_info);

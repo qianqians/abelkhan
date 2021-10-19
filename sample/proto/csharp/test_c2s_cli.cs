@@ -77,10 +77,10 @@ namespace abelkhan
             reg_cb("get_svr_host_err", get_svr_host_err);
         }
 
-        public void get_svr_host_rsp(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
-            var _ip = (string)inArray[1];
-            var _port = (UInt16)inArray[2];
+        public void get_svr_host_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _ip = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _port = ((MsgPack.MessagePackObject)inArray[2]).AsUInt16();
             var rsp = try_get_and_del_get_svr_host_cb(uuid);
             if (rsp != null)
             {
@@ -88,8 +88,8 @@ namespace abelkhan
             }
         }
 
-        public void get_svr_host_err(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void get_svr_host_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_get_svr_host_cb(uuid);
             if (rsp != null)
             {
@@ -107,8 +107,10 @@ namespace abelkhan
         private test_c2s_get_svr_host_cb try_get_and_del_get_svr_host_cb(UInt64 uuid){
             lock(map_get_svr_host)
             {
-                var rsp = map_get_svr_host[uuid];
-                map_get_svr_host.Remove(uuid);
+                if (map_get_svr_host.TryGetValue(uuid, out test_c2s_get_svr_host_cb rsp))
+                {
+                    map_get_svr_host.Remove(uuid);
+                }
                 return rsp;
             }
         }

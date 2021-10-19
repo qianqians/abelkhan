@@ -35,12 +35,13 @@ namespace hub
 
                 var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
                 var _event = _serialization.Unpack(st);
-                var module_name = (string)_event[0];
-                var func_name = (string)_event[1];
-                var _argvs = (ArrayList)_event[2];
+
+                var module = ((MsgPack.MessagePackObject)_event[0]).AsString();
+                var func = ((MsgPack.MessagePackObject)_event[1]).AsString();
+                var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
                 _hubmanager.current_hubproxy = _hubmanager.get_hub(_hub_call_hub_module.current_ch);
-                hub._modules.process_module_mothed(module_name, func_name, _argvs);
+                hub._modules.process_module_mothed(module, func, argvs);
                 _hubmanager.current_hubproxy = null;
             }
         }

@@ -393,9 +393,9 @@ namespace client
                 var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
                 var _event = _serialization.Unpack(st);
 
-                var module = (string)_event[0];
-                var func = (string)_event[1];
-                var argvs = (ArrayList)_event[2];
+                var module = ((MsgPack.MessagePackObject)_event[0]).AsString();
+                var func = ((MsgPack.MessagePackObject)_event[1]).AsString();
+                var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
                 current_hub = hub_name;
                 modulemanager.process_module_mothed(module, func, argvs);
@@ -413,9 +413,9 @@ namespace client
                 var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
                 var _event = _serialization.Unpack(st);
 
-                var module = (string)_event[0];
-                var func = (string)_event[1];
-                var argvs = (ArrayList)_event[2];
+                var module = ((MsgPack.MessagePackObject)_event[0]).AsString();
+                var func = ((MsgPack.MessagePackObject)_event[1]).AsString();
+                var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
                 current_hub = current_robot.get_current_hubproxy(_hub_call_client_module.current_ch);
                 modulemanager.process_module_mothed(module, func, argvs);

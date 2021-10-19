@@ -148,8 +148,8 @@ namespace abelkhan
             reg_method("reg_server_err", reg_server_err);
         }
 
-        public void reg_server_rsp(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void reg_server_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_reg_server_cb(uuid);
             if (rsp != null)
             {
@@ -157,8 +157,8 @@ namespace abelkhan
             }
         }
 
-        public void reg_server_err(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void reg_server_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_reg_server_cb(uuid);
             if (rsp != null)
             {
@@ -176,8 +176,10 @@ namespace abelkhan
         private center_reg_server_cb try_get_and_del_reg_server_cb(UInt64 uuid){
             lock(map_reg_server)
             {
-                var rsp = map_reg_server[uuid];
-                map_reg_server.Remove(uuid);
+                if (map_reg_server.TryGetValue(uuid, out center_reg_server_cb rsp))
+                {
+                    map_reg_server.Remove(uuid);
+                }
                 return rsp;
             }
         }
@@ -278,19 +280,19 @@ namespace abelkhan
         }
 
         public event Action<string, string, string, UInt16> on_distribute_server_address;
-        public void distribute_server_address(ArrayList inArray){
-            var _svr_type = (string)inArray[0];
-            var _svr_name = (string)inArray[1];
-            var _ip = (string)inArray[2];
-            var _port = (UInt16)inArray[3];
+        public void distribute_server_address(IList<MsgPack.MessagePackObject> inArray){
+            var _svr_type = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _svr_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _ip = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            var _port = ((MsgPack.MessagePackObject)inArray[3]).AsUInt16();
             if (on_distribute_server_address != null){
                 on_distribute_server_address(_svr_type, _svr_name, _ip, _port);
             }
         }
 
         public event Action<string> on_reload;
-        public void reload(ArrayList inArray){
-            var _argv = (string)inArray[0];
+        public void reload(IList<MsgPack.MessagePackObject> inArray){
+            var _argv = ((MsgPack.MessagePackObject)inArray[0]).AsString();
             if (on_reload != null){
                 on_reload(_argv);
             }
@@ -309,16 +311,16 @@ namespace abelkhan
         }
 
         public event Action on_close_server;
-        public void close_server(ArrayList inArray){
+        public void close_server(IList<MsgPack.MessagePackObject> inArray){
             if (on_close_server != null){
                 on_close_server();
             }
         }
 
         public event Action<string, string> on_svr_be_closed;
-        public void svr_be_closed(ArrayList inArray){
-            var _svr_type = (string)inArray[0];
-            var _svr_name = (string)inArray[1];
+        public void svr_be_closed(IList<MsgPack.MessagePackObject> inArray){
+            var _svr_type = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _svr_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             if (on_svr_be_closed != null){
                 on_svr_be_closed(_svr_type, _svr_name);
             }
@@ -359,12 +361,12 @@ namespace abelkhan
         }
 
         public event Action<string, string, UInt16, string> on_reg_server;
-        public void reg_server(ArrayList inArray){
-            var _cb_uuid = (UInt64)inArray[0];
-            var _type = (string)inArray[1];
-            var _ip = (string)inArray[2];
-            var _port = (UInt16)inArray[3];
-            var _svr_name = (string)inArray[4];
+        public void reg_server(IList<MsgPack.MessagePackObject> inArray){
+            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _type = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _ip = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            var _port = ((MsgPack.MessagePackObject)inArray[3]).AsUInt16();
+            var _svr_name = ((MsgPack.MessagePackObject)inArray[4]).AsString();
             rsp = new center_reg_server_rsp(current_ch, _cb_uuid);
             if (on_reg_server != null){
                 on_reg_server(_type, _ip, _port, _svr_name);
@@ -373,14 +375,14 @@ namespace abelkhan
         }
 
         public event Action on_heartbeat;
-        public void heartbeat(ArrayList inArray){
+        public void heartbeat(IList<MsgPack.MessagePackObject> inArray){
             if (on_heartbeat != null){
                 on_heartbeat();
             }
         }
 
         public event Action on_closed;
-        public void closed(ArrayList inArray){
+        public void closed(IList<MsgPack.MessagePackObject> inArray){
             if (on_closed != null){
                 on_closed();
             }
@@ -400,25 +402,25 @@ namespace abelkhan
         }
 
         public event Action<string> on_confirm_gm;
-        public void confirm_gm(ArrayList inArray){
-            var _gm_name = (string)inArray[0];
+        public void confirm_gm(IList<MsgPack.MessagePackObject> inArray){
+            var _gm_name = ((MsgPack.MessagePackObject)inArray[0]).AsString();
             if (on_confirm_gm != null){
                 on_confirm_gm(_gm_name);
             }
         }
 
         public event Action<string> on_close_clutter;
-        public void close_clutter(ArrayList inArray){
-            var _gmname = (string)inArray[0];
+        public void close_clutter(IList<MsgPack.MessagePackObject> inArray){
+            var _gmname = ((MsgPack.MessagePackObject)inArray[0]).AsString();
             if (on_close_clutter != null){
                 on_close_clutter(_gmname);
             }
         }
 
         public event Action<string, string> on_reload;
-        public void reload(ArrayList inArray){
-            var _gmname = (string)inArray[0];
-            var _argv = (string)inArray[1];
+        public void reload(IList<MsgPack.MessagePackObject> inArray){
+            var _gmname = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _argv = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             if (on_reload != null){
                 on_reload(_gmname, _argv);
             }

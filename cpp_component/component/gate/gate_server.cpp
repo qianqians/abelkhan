@@ -76,6 +76,10 @@ int main(int argc, char * argv[]) {
 	auto _hub_svr_msg_handle = std::make_shared<gate::hub_svr_msg_handle>(_clientmanager, _hubsvrmanager);
 	auto _client_msg_handle = std::make_shared<gate::client_msg_handle>(_clientmanager, _hubsvrmanager, _timerservice);
 
+	if (enet_initialize() != 0)
+	{
+		spdlog::error("An error occurred while initializing ENet!");
+	}
 	auto inside_ip = _config->get_value_string("inside_ip");
 	auto inside_port = (short)_config->get_value_int("inside_port");
 	auto _hub_service = std::make_shared<service::enetacceptservice>(inside_ip, inside_port);
@@ -115,9 +119,12 @@ int main(int argc, char * argv[]) {
 			auto websocket_outside_ip = _config->get_value_string("websocket_outside_ip");
 			auto websocket_outside_port = (short)_config->get_value_int("websocket_outside_port");
 			auto is_ssl = _config->get_value_bool("is_ssl");
-			auto certificate = _config->get_value_string("certificate");
-			auto private_key = _config->get_value_string("private_key");
-			auto tmp_dh = _config->get_value_string("tmp_dh");
+			std::string certificate, private_key, tmp_dh;
+			if (is_ssl) {
+				auto certificate = _config->get_value_string("certificate");
+				auto private_key = _config->get_value_string("private_key");
+				auto tmp_dh = _config->get_value_string("tmp_dh");
+			}
 			_websocket_service = std::make_shared<service::webacceptservice>(websocket_outside_ip, websocket_outside_port, is_ssl, certificate, private_key, tmp_dh);
 			_websocket_service->sigchannelconnect.connect([_clientmanager](std::shared_ptr<abelkhan::Ichannel> ch) {
 				auto _client = _clientmanager->reg_client(ch);
@@ -162,7 +169,9 @@ int main(int argc, char * argv[]) {
 		}
 
 		if (_closehandle->is_closed) {
+			enet_deinitialize();
 			spdlog::info("server closed, gate server name:{0}!", gate_name);
+			spdlog::shutdown();
 			break;
 		}
 

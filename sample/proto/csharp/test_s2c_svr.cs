@@ -77,8 +77,8 @@ namespace abelkhan
             reg_cb("ping_err", ping_err);
         }
 
-        public void ping_rsp(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void ping_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_ping_cb(uuid);
             if (rsp != null)
             {
@@ -86,8 +86,8 @@ namespace abelkhan
             }
         }
 
-        public void ping_err(ArrayList inArray){
-            var uuid = (UInt64)inArray[0];
+        public void ping_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var rsp = try_get_and_del_ping_cb(uuid);
             if (rsp != null)
             {
@@ -105,8 +105,10 @@ namespace abelkhan
         private test_s2c_ping_cb try_get_and_del_ping_cb(UInt64 uuid){
             lock(map_ping)
             {
-                var rsp = map_ping[uuid];
-                map_ping.Remove(uuid);
+                if (map_ping.TryGetValue(uuid, out test_s2c_ping_cb rsp))
+                {
+                    map_ping.Remove(uuid);
+                }
                 return rsp;
             }
         }

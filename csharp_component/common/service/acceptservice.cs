@@ -88,6 +88,7 @@ namespace abelkhan
                 bootstrap.Channel<TcpServerChannel>();
                 bootstrap
                     .Option(ChannelOption.SoBacklog, 100)
+                    .Option(ChannelOption.Allocator, UnpooledByteBufferAllocator.Default)
                     .ChildHandler(new ActionChannelInitializer<IChannel>(channel =>
                     {
                         var _handle = new AcceptServerHandler();

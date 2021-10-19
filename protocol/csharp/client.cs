@@ -58,17 +58,17 @@ namespace abelkhan
         }
 
         public event Action<string> on_ntf_cuuid;
-        public void ntf_cuuid(ArrayList inArray){
-            var _cuuid = (string)inArray[0];
+        public void ntf_cuuid(IList<MsgPack.MessagePackObject> inArray){
+            var _cuuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
             if (on_ntf_cuuid != null){
                 on_ntf_cuuid(_cuuid);
             }
         }
 
         public event Action<string, byte[]> on_call_client;
-        public void call_client(ArrayList inArray){
-            var _hub_name = (string)inArray[0];
-            var _rpc_argv = (byte[])inArray[1];
+        public void call_client(IList<MsgPack.MessagePackObject> inArray){
+            var _hub_name = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _rpc_argv = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
             if (on_call_client != null){
                 on_call_client(_hub_name, _rpc_argv);
             }

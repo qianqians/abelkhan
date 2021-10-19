@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
     });
     _test_c2s_module->sig_get_svr_host.connect([_test_c2s_module]() {
         auto rsp = std::static_pointer_cast<abelkhan::test_c2s_get_svr_host_rsp>(_test_c2s_module->rsp);
-        rsp->rsp("127.0.0.1", (uint16_t)3001);
+        rsp->rsp("127.0.0.1", (uint16_t)4001);
     });
 
     auto _test_s2c_caller = std::make_shared<abelkhan::test_s2c_caller>(_hub);
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
 
     try {
         while (1) {
-            _hub->poll();
+            auto tick_time = _hub->poll();
 
             if (_hub->_close_handle->is_closed) {
                 break;

@@ -26,7 +26,6 @@ namespace dbproxy
 		public void heartbeath()
         {
 			_center_caller.heartbeat();
-
 			log.log.trace("begin heartbeath center server tick:{0}!", service.timerservice.Tick);
 		}
 

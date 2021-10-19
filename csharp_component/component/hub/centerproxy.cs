@@ -32,6 +32,7 @@ namespace hub
         public void heartbeat()
         {
             _center_caller.heartbeat();
+            log.log.trace("begin heartbeath center server tick:{0}!", service.timerservice.Tick);
         }
 
         public void closed()

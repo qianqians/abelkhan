@@ -34,26 +34,79 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                 code_func += ">"
             code_func += " on_" + func_name + ";\n"
 
-            code_func += "        public void " + func_name + "(ArrayList inArray){\n"
+            code_func += "        public void " + func_name + "(IList<MsgPack.MessagePackObject> inArray){\n"
             count = 0 
             for _type, _name, _parameter in i[2]:
                 type_ = tools.check_type(_type, dependent_struct, dependent_enum)
                 _type_ = tools.convert_type(_type, dependent_struct, dependent_enum)
-                if type_ in tools.OriginalTypeList:
-                    code_func += "            var _" + _name + " = (" + _type_ + ")inArray[" + str(count) + "];\n"
+                if type_ == tools.TypeType.Int8:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsSByte();\n"
+                elif type_ == tools.TypeType.Int16:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt16();\n"
+                elif type_ == tools.TypeType.Int32:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt32();\n"
+                elif type_ == tools.TypeType.Int64:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt64();\n"
+                elif type_ == tools.TypeType.Uint8:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsByte();\n"
+                elif type_ == tools.TypeType.Uint16:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsUInt16();\n"
+                elif type_ == tools.TypeType.Uint32:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsUInt32();\n"
+                elif type_ == tools.TypeType.Uint64:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsUInt64();\n"
+                elif type_ == tools.TypeType.Enum:
+                    code_func += "            var _" + _name + " = (" + _type_ + ")((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt32();\n"
+                elif type_ == tools.TypeType.Float:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsSingle();\n"
+                elif type_ == tools.TypeType.Double:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsDouble();\n"
+                elif type_ == tools.TypeType.Bool:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsBoolean();\n"
+                elif type_ == tools.TypeType.String:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsString();\n"
+                elif type_ == tools.TypeType.Bin:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsBinary();\n"
                 elif type_ == tools.TypeType.Custom:
-                    code_func += "            var _" + _name + " = " + _type + ".protcol_to_" + _type + "((Hashtable)inArray[" + str(count) + "]);\n"
+                    code_func += "            var _" + _name + " = " + _type + ".protcol_to_" + _type + "(((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsDictionary());\n"
                 elif type_ == tools.TypeType.Array:
                     array_type = _type[:-2]
                     array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
                     _array_type = tools.convert_type(array_type, dependent_struct, dependent_enum)
                     code_func += "            var _" + _name + " = new List<" + _array_type + ">();\n"
+                    code_func += "            var _protocol_array = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsList();\n"
                     _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    code_func += "            foreach(var v_" + _v_uuid + " in (ArrayList)inArray[" + str(count) + "]){\n"
-                    if array_type_ in tools.OriginalTypeList:
-                        code_func += "                _" + _name + ".Add((" + _array_type + ")v_" + _v_uuid + ");\n"
+                    code_func += "            foreach (var v_" + _v_uuid + " in _protocol_array){\n"
+                    if array_type_ == tools.TypeType.Int8:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsSByte());\n"
+                    elif array_type_ == tools.TypeType.Int16:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt16());\n"
+                    elif array_type_ == tools.TypeType.Int32:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt32());\n"
+                    elif array_type_ == tools.TypeType.Int64:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt64());\n"
+                    elif array_type_ == tools.TypeType.Uint8:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsByte());\n"
+                    elif array_type_ == tools.TypeType.Uint16:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsUInt16());\n"
+                    elif array_type_ == tools.TypeType.Uint32:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsUInt32());\n"
+                    elif array_type_ == tools.TypeType.Uint64:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsUInt64());\n"
+                    elif array_type_ == tools.TypeType.Enum:
+                        code_func += "                _" + _name + ".Add((" + _array_type + ")((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt32());\n"
+                    elif array_type_ == tools.TypeType.Float:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsSingle());\n"
+                    elif array_type_ == tools.TypeType.Double:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsDouble());\n"
+                    elif array_type_ == tools.TypeType.Bool:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsBoolean());\n"
+                    elif array_type_ == tools.TypeType.String:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsString());\n"
+                    elif array_type_ == tools.TypeType.Bin:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsBinary());\n"
                     elif array_type_ == tools.TypeType.Custom:
-                        code_func += "                _" + _name + ".Add(" + array_type + ".protcol_to_" + array_type + "((Hashtable)v_" + _v_uuid + "));\n"
+                        code_func += "                _" + _name + ".Add(" + array_type + ".protcol_to_" + array_type + "(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsDictionary()));\n"
                     elif array_type_ == tools.TypeType.Array:
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     code_func += "            }\n"                                                     
@@ -86,27 +139,80 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                 code_func += ">"
             code_func += " on_" + func_name + ";\n"
             
-            code_func += "        public void " + func_name + "(ArrayList inArray){\n"
-            code_func += "            var _cb_uuid = (UInt64)inArray[0];\n"
+            code_func += "        public void " + func_name + "(IList<MsgPack.MessagePackObject> inArray){\n"
+            code_func += "            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();\n"
             count = 1 
             for _type, _name, _parameter in i[2]:
                 type_ = tools.check_type(_type, dependent_struct, dependent_enum)
                 _type_ = tools.convert_type(_type, dependent_struct, dependent_enum)
-                if type_ in tools.OriginalTypeList:
-                    code_func += "            var _" + _name + " = (" + _type_ + ")inArray[" + str(count) + "];\n"
+                if type_ == tools.TypeType.Int8:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsSByte();\n"
+                elif type_ == tools.TypeType.Int16:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt16();\n"
+                elif type_ == tools.TypeType.Int32:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt32();\n"
+                elif type_ == tools.TypeType.Int64:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt64();\n"
+                elif type_ == tools.TypeType.Uint8:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsByte();\n"
+                elif type_ == tools.TypeType.Uint16:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsUInt16();\n"
+                elif type_ == tools.TypeType.Uint32:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsUInt32();\n"
+                elif type_ == tools.TypeType.Uint64:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsUInt64();\n"
+                elif type_ == tools.TypeType.Enum:
+                    code_func += "            var _" + _name + " = (" + _type_ + ")((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt32();\n"
+                elif type_ == tools.TypeType.Float:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsSingle();\n"
+                elif type_ == tools.TypeType.Double:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsDouble();\n"
+                elif type_ == tools.TypeType.Bool:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsBoolean();\n"
+                elif type_ == tools.TypeType.String:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsString();\n"
+                elif type_ == tools.TypeType.Bin:
+                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsBinary();\n"
                 elif type_ == tools.TypeType.Custom:
-                    code_func += "            var _" + _name + " = " + _type + ".protcol_to_" + _type + "((Hashtable)inArray[" + str(count) + "]);\n"
+                    code_func += "            var _" + _name + " = " + _type + ".protcol_to_" + _type + "(((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsDictionary());\n"
                 elif type_ == tools.TypeType.Array:
                     array_type = _type[:-2]
                     array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
                     _array_type = tools.convert_type(array_type, dependent_struct, dependent_enum)
                     code_func += "            var _" + _name + " = new List<" + _array_type + ">();\n"
+                    code_func += "            var _protocol_array = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsList();\n"
                     _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    code_func += "            foreach(var v_" + _v_uuid + " in (ArrayList)inArray[" + str(count) + "]){\n"
-                    if array_type_ in tools.OriginalTypeList:
-                        code_func += "                _" + _name + ".Add((" + _array_type + ")v_" + _v_uuid + ");\n"
+                    code_func += "            foreach (var v_" + _v_uuid + " in _protocol_array){\n"
+                    if array_type_ == tools.TypeType.Int8:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsSByte());\n"
+                    elif array_type_ == tools.TypeType.Int16:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt16());\n"
+                    elif array_type_ == tools.TypeType.Int32:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt32());\n"
+                    elif array_type_ == tools.TypeType.Int64:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt64());\n"
+                    elif array_type_ == tools.TypeType.Uint8:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsByte());\n"
+                    elif array_type_ == tools.TypeType.Uint16:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsUInt16());\n"
+                    elif array_type_ == tools.TypeType.Uint32:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsUInt32());\n"
+                    elif array_type_ == tools.TypeType.Uint64:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsUInt64());\n"
+                    elif array_type_ == tools.TypeType.Enum:
+                        code_func += "                _" + _name + ".Add((" + _array_type + ")((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt32());\n"
+                    elif array_type_ == tools.TypeType.Float:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsSingle());\n"
+                    elif array_type_ == tools.TypeType.Double:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsDouble());\n"
+                    elif array_type_ == tools.TypeType.Bool:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsBoolean());\n"
+                    elif array_type_ == tools.TypeType.String:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsString());\n"
+                    elif array_type_ == tools.TypeType.Bin:
+                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsBinary());\n"
                     elif array_type_ == tools.TypeType.Custom:
-                        code_func += "                _" + _name + ".Add(" + array_type + ".protcol_to_" + array_type + "((Hashtable)v_" + _v_uuid + "));\n"
+                        code_func += "                _" + _name + ".Add(" + array_type + ".protcol_to_" + array_type + "(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsDictionary()));\n"
                     elif array_type_ == tools.TypeType.Array:
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     code_func += "            }\n"                                                     

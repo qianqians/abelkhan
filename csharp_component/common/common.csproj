@@ -4,6 +4,14 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\bin\debug</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\bin\release</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="DotNetty.Transport.Libuv" Version="0.7.0" />
     <PackageReference Include="ENet-CSharp" Version="2.4.7" />

@@ -36,7 +36,7 @@ namespace test_csharp
             };
             _test_c2s_module.on_get_svr_host += () => {
                 var rsp = (abelkhan.test_c2s_get_svr_host_rsp)_test_c2s_module.rsp;
-                rsp.rsp("127.0.0.1", 3002);
+                rsp.rsp("127.0.0.1", 4002);
             };
 
             _test_s2c_caller = new abelkhan.test_s2c_caller();

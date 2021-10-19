@@ -16,7 +16,7 @@ namespace common
 			modules.Add(module_name, _module);
 		}
 
-		public void process_module_mothed(String module_name, String func_name, ArrayList argvs)
+		public void process_module_mothed(String module_name, String func_name, IList<MsgPack.MessagePackObject> argvs)
 		{
             if (modules.TryGetValue(module_name, out imodule _module))
 			{

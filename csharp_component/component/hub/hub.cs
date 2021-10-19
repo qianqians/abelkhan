@@ -59,6 +59,7 @@ namespace hub
             chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<abelkhan.Ichannel>();
 
+            ENet.Library.Initialize();
             var ip = _config.get_value_string("ip");
             var port = (ushort)_config.get_value_int("port");
             _enetservice = new abelkhan.enetservice(ip, port);
@@ -180,6 +181,7 @@ namespace hub
             _timer.addticktime(3 * 1000, (tick) =>
             {
                 _closeHandle.is_close = true;
+                ENet.Library.Deinitialize();
             });
         }
 
@@ -298,8 +300,10 @@ namespace hub
                     }
                     remove_chs.Clear();
                 }
+
+                abelkhan.TinyTimer.poll();
             }
-            catch(abelkhan.Exception e)
+            catch (abelkhan.Exception e)
             {
                 log.log.err(e.Message);
             }

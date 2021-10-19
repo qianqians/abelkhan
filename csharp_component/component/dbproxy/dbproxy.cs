@@ -165,6 +165,8 @@ namespace dbproxy
                     }
                     remove_chs.Clear();
                 }
+
+                abelkhan.TinyTimer.poll();
             }
             catch (abelkhan.Exception e)
             {

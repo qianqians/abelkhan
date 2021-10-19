@@ -66,7 +66,7 @@ public:
 
 	void close_svr();
 
-	void poll();
+	int poll();
 
 private:
 	void heartbeat(int64_t tick);

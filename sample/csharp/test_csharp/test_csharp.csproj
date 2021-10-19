@@ -5,13 +5,25 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\bin</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\bin</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\..\proto\csharp\test_c2s_svr.cs" Link="test_c2s_svr.cs" />
     <Compile Include="..\..\proto\csharp\test_s2c_svr.cs" Link="test_s2c_svr.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetty.Transport.Libuv" Version="0.7.0" />
+    <PackageReference Include="ENet-CSharp" Version="2.4.7" />
+    <PackageReference Include="Fleck" Version="1.2.0" />
     <PackageReference Include="MsgPack.Cli" Version="1.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>

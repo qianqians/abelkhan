@@ -35,11 +35,13 @@ namespace hub
                 st.Write(rpc_argv);
                 st.Position = 0;
                 var _event = _serializer.Unpack(st);
-                var module = (string)_event[0];
-                var func = (string)_event[1];
-                var argv = (ArrayList)_event[2];
+
+                var module = ((MsgPack.MessagePackObject)_event[0]).AsString();
+                var func = ((MsgPack.MessagePackObject)_event[1]).AsString();
+                var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
+
                 hub._gates.current_client_uuid = uuid;
-                hub._modules.process_module_mothed(module, func, argv);
+                hub._modules.process_module_mothed(module, func, argvs);
                 hub._gates.current_client_uuid = "";
             }
 		}
