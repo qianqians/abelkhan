@@ -244,3 +244,5 @@ ModelManifest.xml
 /rpc/tools/cpp/*.pyc
 /rpc/gen/cpp/*.pyc
 *.pyc
+
+vc_build/

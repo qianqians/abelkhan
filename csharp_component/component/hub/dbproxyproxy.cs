@@ -64,11 +64,11 @@ namespace hub
                 _collection = collection;
             }
 
-            public void createPersistedObject(Hashtable object_info, Action<EM_DB_RESULT> _handle)
+            public void createPersistedObject(MsgPack.MessagePackObjectDictionary object_info, Action<EM_DB_RESULT> _handle)
             {
                 using (var st = new MemoryStream())
                 {
-                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<Hashtable>();
+                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<MsgPack.MessagePackObjectDictionary>();
                     _serialization.Pack(st, object_info);
                     st.Position = 0;
                     _dbproxy._hub_call_dbproxy_caller.create_persisted_object(_db, _collection, st.ToArray()).callBack(()=> {
@@ -84,11 +84,11 @@ namespace hub
                 }
             }
 
-            public void updataPersistedObject(Hashtable query_info, Hashtable updata_info, bool is_upsert, Action<EM_DB_RESULT> _handle)
+            public void updataPersistedObject(MsgPack.MessagePackObjectDictionary query_info, MsgPack.MessagePackObjectDictionary updata_info, bool is_upsert, Action<EM_DB_RESULT> _handle)
             {
                 using (MemoryStream st_query = new MemoryStream(), st_update = new MemoryStream())
                 {
-                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<Hashtable>();
+                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<MsgPack.MessagePackObjectDictionary>();
                     
                     _serialization.Pack(st_query, query_info);
                     st_query.Position = 0;
@@ -112,11 +112,11 @@ namespace hub
                 }
             }
 
-            public void findAndModifyObject(Hashtable query_info, Hashtable updata_info, bool _new, bool is_upsert, Action<EM_DB_RESULT, Hashtable> _handle)
+            public void findAndModifyObject(MsgPack.MessagePackObjectDictionary query_info, MsgPack.MessagePackObjectDictionary updata_info, bool _new, bool is_upsert, Action<EM_DB_RESULT, MsgPack.MessagePackObjectDictionary> _handle)
             {
                 using (MemoryStream st_query = new MemoryStream(), st_update = new MemoryStream())
                 {
-                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<Hashtable>();
+                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<MsgPack.MessagePackObjectDictionary>();
 
                     _serialization.Pack(st_query, query_info);
                     st_query.Position = 0;
@@ -145,11 +145,11 @@ namespace hub
                 }
             }
 
-            public void getObjectCount(Hashtable query_json, Action<EM_DB_RESULT, uint> _handle)
+            public void getObjectCount(MsgPack.MessagePackObjectDictionary query_json, Action<EM_DB_RESULT, uint> _handle)
             {
                 using (var st = new MemoryStream())
                 {
-                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<Hashtable>();
+                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<MsgPack.MessagePackObjectDictionary>();
                     _serialization.Pack(st, query_json);
                     st.Position = 0;
                     _dbproxy._hub_call_dbproxy_caller.get_object_count(_db, _collection, st.ToArray()).callBack((count)=> {
@@ -165,11 +165,11 @@ namespace hub
                 }
             }
 
-            public void getObjectInfo(Hashtable query_obj, Action<ArrayList> _handle, Action _end)
+            public void getObjectInfo(MsgPack.MessagePackObjectDictionary query_obj, Action<ArrayList> _handle, Action _end)
             {
                 using (var st = new MemoryStream())
                 {
-                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<Hashtable>();
+                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<MsgPack.MessagePackObjectDictionary>();
                     _serialization.Pack(st, query_obj);
                     st.Position = 0;
 
@@ -181,11 +181,11 @@ namespace hub
                 }
             }
 
-            public void removeObject(Hashtable query_obj, Action<EM_DB_RESULT> _handle)
+            public void removeObject(MsgPack.MessagePackObjectDictionary query_obj, Action<EM_DB_RESULT> _handle)
             {
                 using (var st = new MemoryStream())
                 {
-                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<Hashtable>();
+                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<MsgPack.MessagePackObjectDictionary>();
                     _serialization.Pack(st, query_obj);
                     st.Position = 0;
 
