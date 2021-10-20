@@ -209,12 +209,15 @@ int hub_service::poll() {
 
 	try {
 		_io_service->poll();
+
 		_hub_service->poll();
+
 		if (_client_websocket_service != nullptr) {
 			_client_websocket_service->poll();
 		}
 
 		abelkhan::TinyTimer::poll();
+
 		_timerservice->poll();
 
 		service::gc_poll();

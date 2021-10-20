@@ -42,7 +42,9 @@ int main(int argc, char* argv[]) {
     });
 
     auto _test_s2c_caller = std::make_shared<abelkhan::test_s2c_caller>(_hub);
-    _hub->_timerservice->addticktimer(3000, std::bind(&heartbeat, _test_s2c_caller, client_list, std::placeholders::_1));
+    _hub->_timerservice->addticktimer(3000, std::bind(heartbeat, _test_s2c_caller, client_list, std::placeholders::_1));
+
+    _hub->connect_center();
 
     try {
         while (1) {

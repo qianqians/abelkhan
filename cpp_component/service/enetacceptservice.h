@@ -37,6 +37,7 @@ public:
 				if (it_ch == chs.end()) {
 					uint64_t peerHandle = (uint64_t)_event.peer->address.host << 32 | _event.peer->address.port;
 					ch = std::make_shared<enetchannel>(_host, _event.peer);
+					ch->Init();
 					chs.insert(std::make_pair(peerHandle, ch));
 				}
 				else {

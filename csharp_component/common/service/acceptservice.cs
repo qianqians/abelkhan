@@ -34,8 +34,8 @@ namespace abelkhan
             var buffer = message as IByteBuffer;
             Span<byte> spby = ((Span<byte>)buffer.Array).Slice(buffer.ArrayOffset, buffer.ReadableBytes);
             byte[] recv_data = spby.ToArray();
-
             ch._channel_onrecv.on_recv(recv_data);
+            buffer.Release();
         }
 
         public override void ChannelReadComplete(IChannelHandlerContext context)
@@ -43,16 +43,10 @@ namespace abelkhan
             context.Flush();
         }
 
-        //public event Action<channel> on_disconnect;
         public override void ExceptionCaught(IChannelHandlerContext context, System.Exception exception)
         {
             log.log.trace("ExceptionCaught connection!");
-
             context.CloseAsync();
-            //if (on_disconnect != null)
-            //{
-            //    on_disconnect(ch);
-            //}
         }
     }
 

@@ -52,15 +52,18 @@ namespace hub
 
 			if (type == "dbproxy") 
 			{
+				log.log.trace("recv distribute server address connect_dbproxy ip:{0}, port:{1}", ip, port);
 				_hub.connect_dbproxy (name, ip, (short)port);
 			}
-			if (type == "gate") 
+			if (type == "gate")
 			{
+				log.log.trace("recv distribute server address gate ip:{0}, port:{1}", ip, port);
 				hub._gates.connect_gate(name, ip, (ushort)port);
 			}
             if (type == "hub")
-            {
-                _hub.reg_hub(ip, (short)port);
+			{
+				log.log.trace("recv distribute server address hub ip:{0}, port:{1}", ip, port);
+				_hub.reg_hub(ip, (short)port);
             }
 		}
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ENet.Managed;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -59,10 +60,16 @@ namespace hub
             chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<abelkhan.Ichannel>();
 
-            ENet.Library.Initialize();
+            ManagedENet.Startup();
             var ip = _config.get_value_string("ip");
             var port = (ushort)_config.get_value_int("port");
             _enetservice = new abelkhan.enetservice(ip, port);
+            _enetservice.on_connect += (ch) => {
+                lock (add_chs)
+                {
+                    add_chs.Add(ch);
+                }
+            };
 
             _closeHandle = new closehandle();
             _hubs = new hubmanager();
@@ -181,7 +188,6 @@ namespace hub
             _timer.addticktime(3 * 1000, (tick) =>
             {
                 _closeHandle.is_close = true;
-                ENet.Library.Deinitialize();
             });
         }
 
@@ -265,6 +271,8 @@ namespace hub
             try
             {
                 _timer.poll();
+
+                _enetservice.poll();
 
                 lock (add_chs)
                 {

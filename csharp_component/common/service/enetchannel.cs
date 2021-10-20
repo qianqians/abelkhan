@@ -6,16 +6,17 @@
 using System;
 using System.IO;
 using System.Collections;
+using ENet.Managed;
 
 namespace abelkhan
 {
     public class enetchannel : abelkhan.Ichannel
     {
-        private ENet.Host host;
-        private ENet.Peer peer;
+        private ENetHost host;
+        private ENetPeer peer;
         public channel_onrecv _channel_onrecv;
 
-        public enetchannel(ENet.Host _host, ENet.Peer _peer)
+        public enetchannel(ENetHost _host, ENetPeer _peer)
         {
             host = _host;
             peer = _peer;
@@ -23,12 +24,9 @@ namespace abelkhan
             _channel_onrecv = new channel_onrecv();
         }
 
-        public void onrecv(ENet.Packet packet)
+        public void onrecv(ENetPacket packet)
         {
-            byte[] data = new byte[packet.Length];
-            packet.CopyTo(data);
-
-            _channel_onrecv.on_recv(data);
+            _channel_onrecv.on_recv(packet.Data.ToArray());
         }
 
         public ArrayList pop()
@@ -47,11 +45,7 @@ namespace abelkhan
 
         public void send(byte[] data)
         {
-            ENet.Packet packet = default(ENet.Packet);
-            packet.Create(data);
-
-            peer.Send(0, ref packet);
-            host.Flush();
+            peer.Send(0, data, ENetPacketFlags.Reliable);
         }
     }
 }

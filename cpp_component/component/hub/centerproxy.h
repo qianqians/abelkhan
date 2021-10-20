@@ -42,6 +42,7 @@ public:
 	}
 	
 	void heartbeat() {
+		spdlog::trace("heartbeat center!");
 		_center_caller->heartbeat();
 	}
 

@@ -70,8 +70,8 @@ public:
 		if (it != hub_name_proxy.end()) {
 			spdlog::trace("hubsvrmanager unreg_hub:{0}!", hub_name);
 
-			hub_name_proxy.erase(it);
 			hub_channel_name.erase(it->second->_ch);
+			hub_name_proxy.erase(it);
 		}
 	}
 
