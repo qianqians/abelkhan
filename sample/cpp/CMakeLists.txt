@@ -51,8 +51,8 @@ INCLUDE_DIRECTORIES(${hub_header_path})
 AUX_SOURCE_DIRECTORY(. DIR_SRC)
 file(GLOB header_test_files ./ ./*.h)
 
-set(LIBS_DEBUG_PATH ${PROJECT_SOURCE_DIR}//..//..//lib_debug CACHE PATH "lib debug path")
-set(LIBS_RELEASE_PATH ${PROJECT_SOURCE_DIR}//..//..//lib CACHE PATH "lib release path")
+set(LIBS_DEBUG_PATH ${PROJECT_SOURCE_DIR}//..//..//cpp_component//lib_debug CACHE PATH "lib debug path")
+set(LIBS_RELEASE_PATH ${PROJECT_SOURCE_DIR}//..//..//cpp_component//lib CACHE PATH "lib release path")
 
 SET(header_files
     ${header_test_files}
