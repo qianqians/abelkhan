@@ -79,7 +79,7 @@ namespace dbproxy
             }
         }
 
-        public async Task<bool> save(string db, string collection, byte[] msgpack_data) 
+        public async Task<bool> save(string db, string collection, byte[] bson_data) 
 		{
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
@@ -87,14 +87,7 @@ namespace dbproxy
 
             try
             {
-                var serializer = MessagePackSerializer.Get<Hashtable>();
-
-                var _tmp = new MemoryStream();
-                _tmp.Write(msgpack_data, 0, msgpack_data.Length);
-                _tmp.Position = 0;
-                var table = serializer.Unpack(_tmp);
-
-                MongoDB.Bson.BsonDocument _d = new MongoDB.Bson.BsonDocument(table);
+                var _d = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_data);
                 await _collection.InsertOneAsync(_d);
             }
             catch(System.Exception e)
@@ -110,7 +103,7 @@ namespace dbproxy
             return true;
 		}
 
-        public async Task<bool> update(string db, string collection, byte[] msgpack_query, byte[] msgpack_update, bool upsert)
+        public async Task<bool> update(string db, string collection, byte[] bson_query, byte[] bson_update, bool upsert)
         {
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
@@ -118,19 +111,8 @@ namespace dbproxy
 
             try
             {
-                var serializer = MessagePackSerializer.Get<Hashtable>();
-
-                var _tmp = new MemoryStream();
-                _tmp.Write(msgpack_query, 0, msgpack_query.Length);
-                _tmp.Position = 0;
-                var table_query = serializer.Unpack(_tmp);
-                var _bson_query = new MongoDB.Bson.BsonDocument(table_query);
-
-                _tmp = new MemoryStream();
-                _tmp.Write(msgpack_update, 0, msgpack_update.Length);
-                _tmp.Position = 0;
-                var table_update = serializer.Unpack(_tmp);
-                var _bson_update = new MongoDB.Bson.BsonDocument(table_update);
+                var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
+                var _bson_update = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_update);
 
                 var _query = new MongoDB.Driver.BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
                 var _bson_update_impl = new MongoDB.Bson.BsonDocument { { "$set", _bson_update } };
@@ -152,7 +134,7 @@ namespace dbproxy
             return true;
 		}
 
-        public async Task<Hashtable> find_and_modify(string db, string collection, byte[] msgpack_query, byte[] msgpack_update, bool _new, bool _upsert)
+        public async Task<Hashtable> find_and_modify(string db, string collection, byte[] bson_query, byte[] bson_update, bool _new, bool _upsert)
         {
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
@@ -160,19 +142,8 @@ namespace dbproxy
 
             try
             {
-                var serializer = MessagePackSerializer.Get<Hashtable>();
-
-                var _tmp = new MemoryStream();
-                _tmp.Write(msgpack_query, 0, msgpack_query.Length);
-                _tmp.Position = 0;
-                var table_query = serializer.Unpack(_tmp);
-                var _bson_query = new MongoDB.Bson.BsonDocument(table_query);
-
-                _tmp = new MemoryStream();
-                _tmp.Write(msgpack_update, 0, msgpack_update.Length);
-                _tmp.Position = 0;
-                var table_update = serializer.Unpack(_tmp);
-                var _bson_update = new MongoDB.Bson.BsonDocument(table_update);
+                var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
+                var _bson_update = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_update);
 
                 var _query = new MongoDB.Driver.BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
                 var _bson_update_impl = new MongoDB.Bson.BsonDocument { { "$set", _bson_update } };
@@ -197,7 +168,7 @@ namespace dbproxy
             return null;
         }
 
-        public async Task<ArrayList> find(string db, string collection, byte[] msgpack_query)
+        public async Task<ArrayList> find(string db, string collection, byte[] bson_query)
         {
             ArrayList _list = new ArrayList();
 
@@ -207,14 +178,8 @@ namespace dbproxy
 
             try
             {
-                var serializer = MessagePackSerializer.Get<Hashtable>();
 
-                var _tmp = new MemoryStream();
-                _tmp.Write(msgpack_query, 0, msgpack_query.Length);
-                _tmp.Position = 0;
-                var table_query = serializer.Unpack(_tmp);
-                var _bson_query = new MongoDB.Bson.BsonDocument(table_query);
-
+                var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
                 var c = await _collection.FindAsync<MongoDB.Bson.BsonDocument>(_bson_query);
 
                 do
@@ -245,7 +210,7 @@ namespace dbproxy
             return _list;
 		}
 
-        public async Task<int> count(string db, string collection, byte[] msgpack_query)
+        public async Task<int> count(string db, string collection, byte[] bson_query)
         {
             long c = 0;
 
@@ -255,14 +220,7 @@ namespace dbproxy
 
             try
             {
-                var serializer = MessagePackSerializer.Get<Hashtable>();
-
-                var _tmp = new MemoryStream();
-                _tmp.Write(msgpack_query, 0, msgpack_query.Length);
-                _tmp.Position = 0;
-                var table_query = serializer.Unpack(_tmp);
-                var _bson_query = new MongoDB.Bson.BsonDocument(table_query);
-
+                var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
                 c = await _collection.CountDocumentsAsync(_bson_query);
             }
             catch (System.Exception e)
@@ -278,7 +236,7 @@ namespace dbproxy
             return (int)c;
         }
 
-		public async Task<bool> remove(string db, string collection, byte[] msgpack_query)
+		public async Task<bool> remove(string db, string collection, byte[] bson_query)
         {
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
@@ -286,14 +244,7 @@ namespace dbproxy
 
             try
             {
-                var serializer = MessagePackSerializer.Get<Hashtable>();
-
-                var _tmp = new MemoryStream();
-                _tmp.Write(msgpack_query, 0, msgpack_query.Length);
-                _tmp.Position = 0;
-                var table_query = serializer.Unpack(_tmp);
-                var _bson_query = new MongoDB.Bson.BsonDocument(table_query);
-
+                var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
                 await _collection.DeleteOneAsync(_bson_query);
             }
             catch (System.Exception e)

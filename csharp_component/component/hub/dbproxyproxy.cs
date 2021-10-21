@@ -7,7 +7,7 @@ namespace hub
 {
 	public class dbproxyproxy
 	{
-        public static Dictionary<String, Action<ArrayList> > onGetObjectInfo_callback_set;
+        public static Dictionary<String, Action<MongoDB.Bson.BsonDocument> > onGetObjectInfo_callback_set;
         public static Dictionary<String, Action> onGetObjectInfo_end_cb_set;
 
         private abelkhan.hub_call_dbproxy_caller _hub_call_dbproxy_caller;
@@ -25,7 +25,7 @@ namespace hub
 		{
             _hub_call_dbproxy_caller = new abelkhan.hub_call_dbproxy_caller(ch, abelkhan.modulemng_handle._modulemng);
 
-            onGetObjectInfo_callback_set = new Dictionary<String, Action<ArrayList>>();
+            onGetObjectInfo_callback_set = new Dictionary<String, Action<MongoDB.Bson.BsonDocument>>();
             onGetObjectInfo_end_cb_set = new Dictionary<String, Action>();
         }
 
@@ -64,13 +64,14 @@ namespace hub
                 _collection = collection;
             }
 
-            public void createPersistedObject(MsgPack.MessagePackObjectDictionary object_info, Action<EM_DB_RESULT> _handle)
+            public void createPersistedObject(MongoDB.Bson.BsonDocument object_info, Action<EM_DB_RESULT> _handle)
             {
                 using (var st = new MemoryStream())
                 {
-                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<MsgPack.MessagePackObjectDictionary>();
-                    _serialization.Pack(st, object_info);
+                    var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
+                    MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, object_info);
                     st.Position = 0;
+
                     _dbproxy._hub_call_dbproxy_caller.create_persisted_object(_db, _collection, st.ToArray()).callBack(()=> {
                         log.log.trace("createPersistedObject sucessed!");
                         _handle(EM_DB_RESULT.EM_DB_SUCESSED);
@@ -84,16 +85,16 @@ namespace hub
                 }
             }
 
-            public void updataPersistedObject(MsgPack.MessagePackObjectDictionary query_info, MsgPack.MessagePackObjectDictionary updata_info, bool is_upsert, Action<EM_DB_RESULT> _handle)
+            public void updataPersistedObject(MongoDB.Bson.BsonDocument query_info, MongoDB.Bson.BsonDocument updata_info, bool is_upsert, Action<EM_DB_RESULT> _handle)
             {
                 using (MemoryStream st_query = new MemoryStream(), st_update = new MemoryStream())
                 {
-                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<MsgPack.MessagePackObjectDictionary>();
-                    
-                    _serialization.Pack(st_query, query_info);
+                    var write_query = new MongoDB.Bson.IO.BsonBinaryWriter(st_query);
+                    MongoDB.Bson.Serialization.BsonSerializer.Serialize(write_query, query_info);
                     st_query.Position = 0;
 
-                    _serialization.Pack(st_update, updata_info);
+                    var write_update = new MongoDB.Bson.IO.BsonBinaryWriter(st_update);
+                    MongoDB.Bson.Serialization.BsonSerializer.Serialize(write_update, updata_info);
                     st_update.Position = 0;
 
                     _dbproxy._hub_call_dbproxy_caller.updata_persisted_object(_db, _collection, st_query.ToArray(), st_update.ToArray(), is_upsert).callBack(() =>
@@ -112,26 +113,21 @@ namespace hub
                 }
             }
 
-            public void findAndModifyObject(MsgPack.MessagePackObjectDictionary query_info, MsgPack.MessagePackObjectDictionary updata_info, bool _new, bool is_upsert, Action<EM_DB_RESULT, MsgPack.MessagePackObjectDictionary> _handle)
+            public void findAndModifyObject(MongoDB.Bson.BsonDocument query_info, MongoDB.Bson.BsonDocument updata_info, bool _new, bool is_upsert, Action<EM_DB_RESULT, MongoDB.Bson.BsonDocument> _handle)
             {
                 using (MemoryStream st_query = new MemoryStream(), st_update = new MemoryStream())
                 {
-                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<MsgPack.MessagePackObjectDictionary>();
+                    var write_query = new MongoDB.Bson.IO.BsonBinaryWriter(st_query);
+                    MongoDB.Bson.Serialization.BsonSerializer.Serialize(write_query, query_info);
 
-                    _serialization.Pack(st_query, query_info);
-                    st_query.Position = 0;
-
-                    _serialization.Pack(st_update, updata_info);
-                    st_update.Position = 0;
+                    var write_update = new MongoDB.Bson.IO.BsonBinaryWriter(st_update);
+                    MongoDB.Bson.Serialization.BsonSerializer.Serialize(write_update, updata_info);
 
                     _dbproxy._hub_call_dbproxy_caller.find_and_modify(_db, _collection, st_query.ToArray(), st_update.ToArray(), _new, is_upsert).callBack((byte[] obj) =>
                     {
                         log.log.trace("findAndModifyObject sucessed!");
 
-                        var st_obj = new MemoryStream();
-                        st_obj.Write(obj);
-                        st_obj.Position = 0;
-                        var obj_table = _serialization.Unpack(st_obj);
+                        var obj_table = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(obj);
                         _handle(EM_DB_RESULT.EM_DB_SUCESSED, obj_table);
                     }, () =>
                     {
@@ -145,13 +141,14 @@ namespace hub
                 }
             }
 
-            public void getObjectCount(MsgPack.MessagePackObjectDictionary query_json, Action<EM_DB_RESULT, uint> _handle)
+            public void getObjectCount(MongoDB.Bson.BsonDocument query_json, Action<EM_DB_RESULT, uint> _handle)
             {
                 using (var st = new MemoryStream())
                 {
-                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<MsgPack.MessagePackObjectDictionary>();
-                    _serialization.Pack(st, query_json);
+                    var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
+                    MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, query_json);
                     st.Position = 0;
+
                     _dbproxy._hub_call_dbproxy_caller.get_object_count(_db, _collection, st.ToArray()).callBack((count)=> {
                         log.log.trace("getObjectCount sucessed!");
                         _handle(EM_DB_RESULT.EM_DB_SUCESSED, count);
@@ -165,12 +162,12 @@ namespace hub
                 }
             }
 
-            public void getObjectInfo(MsgPack.MessagePackObjectDictionary query_obj, Action<ArrayList> _handle, Action _end)
+            public void getObjectInfo(MongoDB.Bson.BsonDocument query_obj, Action<MongoDB.Bson.BsonDocument> _handle, Action _end)
             {
                 using (var st = new MemoryStream())
                 {
-                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<MsgPack.MessagePackObjectDictionary>();
-                    _serialization.Pack(st, query_obj);
+                    var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
+                    MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, query_obj);
                     st.Position = 0;
 
                     var callbackid = System.Guid.NewGuid().ToString();
@@ -181,12 +178,12 @@ namespace hub
                 }
             }
 
-            public void removeObject(MsgPack.MessagePackObjectDictionary query_obj, Action<EM_DB_RESULT> _handle)
+            public void removeObject(MongoDB.Bson.BsonDocument query_obj, Action<EM_DB_RESULT> _handle)
             {
                 using (var st = new MemoryStream())
                 {
-                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<MsgPack.MessagePackObjectDictionary>();
-                    _serialization.Pack(st, query_obj);
+                    var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
+                    MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, query_obj);
                     st.Position = 0;
 
                     _dbproxy._hub_call_dbproxy_caller.remove_object(_db, _collection, st.ToArray()).callBack(()=> {

@@ -17,17 +17,10 @@ namespace hub
 
 		public void ack_get_object_info(String callbackid, byte[] obejct_array)
 		{
-			if (dbproxyproxy.onGetObjectInfo_callback_set.TryGetValue(callbackid, out Action<ArrayList> cb))
+			if (dbproxyproxy.onGetObjectInfo_callback_set.TryGetValue(callbackid, out Action<MongoDB.Bson.BsonDocument> cb))
             {
-				var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
-				using (var st = new MemoryStream())
-                {
-					st.Write(obejct_array);
-					st.Position = 0;
-
-					var objs = _serialization.Unpack(st);
-					cb(objs);
-				}
+				var objs = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(obejct_array);
+				cb(objs);
             }
 		}
 
