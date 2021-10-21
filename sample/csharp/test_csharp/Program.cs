@@ -22,19 +22,21 @@ namespace test_csharp
                     log.log.err("ping client:{0} timeout!", cuuid);
                 });
             }
+            hub.hub._timer.addticktime(3000, heartbeat);
         }
 
         static void Main(string[] args)
         {
-            var _hub = new hub.hub(args);
-
+            var _hub = new hub.hub(args[0], args[1], "test");
             client_list = new List<string>();
 
             var _test_c2s_module = new abelkhan.test_c2s_module();
             _test_c2s_module.on_login += () => {
+                log.log.trace("client:{0} login!", hub.hub._gates.current_client_uuid);
                 client_list.Add(hub.hub._gates.current_client_uuid);
             };
             _test_c2s_module.on_get_svr_host += () => {
+                log.log.trace("get_svr_host!");
                 var rsp = (abelkhan.test_c2s_get_svr_host_rsp)_test_c2s_module.rsp;
                 rsp.rsp("127.0.0.1", 4002);
             };

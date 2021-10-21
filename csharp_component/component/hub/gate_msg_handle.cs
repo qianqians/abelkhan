@@ -38,9 +38,10 @@ namespace hub
 
                 var module = ((MsgPack.MessagePackObject)_event[0]).AsString();
                 var func = ((MsgPack.MessagePackObject)_event[1]).AsString();
-                var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
+                var argvs = ((MsgPack.MessagePackObject)_event[2]).AsList();
 
                 hub._gates.current_client_uuid = uuid;
+                hub._gates.client_connect(uuid, _gate_call_hub_module.current_ch);
                 hub._modules.process_module_mothed(module, func, argvs);
                 hub._gates.current_client_uuid = "";
             }

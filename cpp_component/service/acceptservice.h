@@ -40,9 +40,9 @@ public:
 			auto ch = std::make_shared<channel>(s);
 			ch->sigondisconn.connect(std::bind(&acceptservice::onChannelDisconn, this, std::placeholders::_1));
 			ch->sigdisconn.connect(std::bind(&acceptservice::ChannelDisconn, this, std::placeholders::_1));
-			sigchannelconnect.emit(ch);
-
 			ch->start();
+
+			sigchannelconnect.emit(ch);
 		}
 
 		s = std::make_shared<boost::asio::ip::tcp::socket>(*_service);

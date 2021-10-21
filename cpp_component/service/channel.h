@@ -47,8 +47,6 @@ public:
 	concurrent::signals<void(std::shared_ptr<channel>)> sigondisconn;
 	concurrent::signals<void(std::shared_ptr<channel>)> sigdisconn;
 
-	uint8_t xor_key[8] = {0};
-
 private:
 	static void onRecv(std::shared_ptr<channel> ch, const boost::system::error_code& error, std::size_t bytes_transferred){
 		if (ch->is_close) {

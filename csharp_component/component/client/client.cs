@@ -411,6 +411,8 @@ namespace client
                 remove_chs.Clear();
             }
 
+            abelkhan.TinyTimer.poll();
+			
             Int64 tick_end = timer.refresh();
 
             return tick_end - tick_begin;

@@ -240,7 +240,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
             _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
             rsp_code += "        private string hub_name_" + _hub_uuid + ";\n"
             rsp_code += "        private client.client _client_handle;\n"
-            rsp_code += "        public " + module_name + "_" + func_name + "_rsp(client.client client_handle_, string current_hub, UInt64 _uuid) : base(\"" + module_name + "_rsp_cb\", _ch)\n"
+            rsp_code += "        public " + module_name + "_" + func_name + "_rsp(client.client client_handle_, string current_hub, UInt64 _uuid) \n"
             rsp_code += "        {\n"
             rsp_code += "            _client_handle = client_handle_;\n"
             rsp_code += "            hub_name_" + _hub_uuid + " = current_hub;\n"

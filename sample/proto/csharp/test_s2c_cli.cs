@@ -14,7 +14,7 @@ namespace abelkhan
         private UInt64 uuid_94d71f95_a670_3916_89a9_44df18fb711b;
         private string hub_name_ca6794ee_a403_309d_b40e_f37578d53e8d;
         private client.client _client_handle;
-        public test_s2c_ping_rsp(client.client client_handle_, string current_hub, UInt64 _uuid) : base("test_s2c_rsp_cb", _ch)
+        public test_s2c_ping_rsp(client.client client_handle_, string current_hub, UInt64 _uuid) 
         {
             _client_handle = client_handle_;
             hub_name_ca6794ee_a403_309d_b40e_f37578d53e8d = current_hub;

@@ -35,7 +35,7 @@ public:
 		_client_call_gate_module->Init(service::_modulemng);
 		_client_call_gate_module->sig_heartbeats.connect(std::bind(&client_msg_handle::heartbeats, this));
 		_client_call_gate_module->sig_get_hub_info.connect(std::bind(&client_msg_handle::get_hub_info, this, std::placeholders::_1));
-		_client_call_gate_module->sig_forward_client_call_hub;
+		_client_call_gate_module->sig_forward_client_call_hub.connect(std::bind(&client_msg_handle::forward_client_call_hub, this, std::placeholders::_1, std::placeholders::_2));
 	}
 
 	void heartbeats() {

@@ -34,7 +34,7 @@ public:
 		_gate_call_hub_module->Init(service::_modulemng);
 		_gate_call_hub_module->sig_client_disconnect.connect(std::bind(&gate_msg_handle::client_disconnect, this, std::placeholders::_1));
 		_gate_call_hub_module->sig_client_exception.connect(std::bind(&gate_msg_handle::client_exception, this, std::placeholders::_1));
-		_gate_call_hub_module->sig_client_call_hub;
+		_gate_call_hub_module->sig_client_call_hub.connect(std::bind(&gate_msg_handle::client_call_hub, this, std::placeholders::_1, std::placeholders::_2));
 	
 	}
 

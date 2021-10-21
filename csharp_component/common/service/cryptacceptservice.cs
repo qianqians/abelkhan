@@ -57,15 +57,9 @@ namespace abelkhan
             context.Flush();
         }
 
-        //public event Action<cryptchannel> on_disconnect;
         public override void ExceptionCaught(IChannelHandlerContext context, System.Exception exception)
         {
             context.CloseAsync();
-            
-            //if (on_disconnect != null)
-            //{
-            //    on_disconnect(ch);
-            //}
         }
     }
 

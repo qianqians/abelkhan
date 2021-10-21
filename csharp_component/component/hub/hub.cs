@@ -8,16 +8,14 @@ namespace hub
 {
 	public class hub
 	{
-		public hub(String[] args)
+		public hub(string config_file, string _hub_name, string _hub_type)
 		{
-            _config = new abelkhan.config(args[0]);
+            _config = new abelkhan.config(config_file);
 			_center_config = _config.get_value_dict("center");
-			if (args.Length > 1)
-			{
-                _root_config = _config;
-                _config = _config.get_value_dict(args[1]);
-			}
-            name = args[1];
+			_root_config = _config;
+            _config = _config.get_value_dict(_hub_name);
+            name = _hub_name;
+            type = _hub_type;
 
             var log_level = _config.get_value_string("log_level");
             if (log_level == "trace")
@@ -330,32 +328,6 @@ namespace hub
 
             return poll_tick;
         }
-
-		private static void Main(String[] args)
-		{
-			if (args.Length <= 0)
-			{
-				return;
-			}
-
-			hub _hub = new hub(args);
-            
-			while (true)
-            {
-                var ticktime = _hub.poll();
-
-				if (_closeHandle.is_close)
-                {
-                    log.log.info("server closed, hub server:{0}", hub.name);
-					break;
-				}
-                
-				if (ticktime < 50)
-				{
-					Thread.Sleep(5);
-				}
-			}
-		}
 
 		public static string name;
 		public static string type;
