@@ -13,6 +13,9 @@ INCLUDE_DIRECTORIES(${spdlog_INCLUDE_PATH})
 set(json11_INCLUDE_PATH ../../cpp_component/3rdparty/json11 CACHE PATH "json11 include path")
 INCLUDE_DIRECTORIES(${json11_INCLUDE_PATH})
 
+set(libbson_INCLUDE_PATH ../../cpp_component/3rdparty/libbson/include CACHE PATH "libbson include path")
+INCLUDE_DIRECTORIES(${libbson_INCLUDE_PATH})
+
 set(msgpack11_INCLUDE_PATH ../../tools/juggle/cpp/3rdparty/msgpack11 CACHE PATH "msgpack11 include path")
 INCLUDE_DIRECTORIES(${msgpack11_INCLUDE_PATH})
 
@@ -71,6 +74,7 @@ target_link_libraries(test debug ${LIBS_DEBUG_PATH}/spdlogd optimized ${LIBS_REL
 target_link_libraries(test debug ${LIBS_DEBUG_PATH}/enet optimized ${LIBS_RELEASE_PATH}/enet)
 target_link_libraries(test debug ${LIBS_DEBUG_PATH}/msgpack11 optimized ${LIBS_RELEASE_PATH}/msgpack11)
 target_link_libraries(test debug ${LIBS_DEBUG_PATH}/json11 optimized ${LIBS_RELEASE_PATH}/json11)
+target_link_libraries(test debug ${LIBS_DEBUG_PATH}/bson optimized ${LIBS_RELEASE_PATH}/bson)
 target_link_libraries(test debug ${LIBS_DEBUG_PATH}/hub optimized ${LIBS_RELEASE_PATH}/hub)
 target_link_libraries(test Crypt32 )
 target_link_libraries(test ws2_32)

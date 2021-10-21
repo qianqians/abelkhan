@@ -27,19 +27,24 @@ public:
 	}
 
 	void ack_get_object_info(std::string callbackid, std::vector<uint8_t> bin_obejct_array) {
-		std::string err;
-		auto doc = msgpack11::MsgPack::parse((const char*)bin_obejct_array.data(), bin_obejct_array.size(), err);
-		if (doc.is_array()) {
-			auto cb = dbproxyproxy::get_object_info_callback.find(callbackid);
-			if (cb != dbproxyproxy::get_object_info_callback.end()) {
-				cb->second(doc.array_items());
+		auto cb = dbproxyproxy::get_object_info_callback.find(callbackid);
+		try {
+			auto doc = BSON::Value::fromBSON(std::string((const char*)bin_obejct_array.data(), bin_obejct_array.size()));
+			if (doc.isArray()) {
+				
+				if (cb != dbproxyproxy::get_object_info_callback.end()) {
+					cb->second(doc.getArray());
+				}
+				else {
+					spdlog::error("unreg getObjectInfo callback id:{0}!", callbackid);
+				}
 			}
 			else {
-				spdlog::error("unreg getObjectInfo callback id:{0}!", callbackid);
+				spdlog::error("getObjectInfo return is not array!");
 			}
 		}
-		else {
-			spdlog::error("getObjectInfo return is not array!");
+		catch (std::runtime_error err) {
+			spdlog::trace("getObjectInfo rsp parse faild:{0}!", err.what());
 		}
 	}
 

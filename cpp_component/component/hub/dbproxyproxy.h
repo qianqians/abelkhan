@@ -15,7 +15,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <spdlog/spdlog.h>
-#include <msgpack11.hpp>
+#include <bson/Value.h>
 
 #include <abelkhan.h>
 
@@ -57,8 +57,8 @@ public:
 			_dbproxy = proxy_;
 		}
 
-		void createPersistedObject(msgpack11::MsgPack& object_info, std::function<void(EM_DB_RESULT)> cb) {
-			auto _data_str = object_info.dump();
+		void createPersistedObject(BSON::Value& object_info, std::function<void(EM_DB_RESULT)> cb) {
+			auto _data_str = object_info.toBSON();
 			std::vector<uint8_t> data;
 			auto len = _data_str.size();
 			data.resize(len);
@@ -75,14 +75,14 @@ public:
 			});
 		}
 
-		void updataPersistedObject(msgpack11::MsgPack& query_info, msgpack11::MsgPack& updata_info, bool is_upsert, std::function<void(EM_DB_RESULT)> cb) {
-			auto _query_str = query_info.dump();
+		void updataPersistedObject(BSON::Value& query_info, BSON::Value& updata_info, bool is_upsert, std::function<void(EM_DB_RESULT)> cb) {
+			auto _query_str = query_info.toBSON();
 			std::vector<uint8_t> query;
 			auto len = _query_str.size();
 			query.resize(len);
 			memcpy(query.data(), _query_str.data(), len);
 
-			auto _updata_str = updata_info.dump();
+			auto _updata_str = updata_info.toBSON();
 			std::vector<uint8_t> updata;
 			len = _updata_str.size();
 			updata.resize(len);
@@ -100,41 +100,46 @@ public:
 			});
 		}
 
-		void findAndModify(msgpack11::MsgPack& query_info, msgpack11::MsgPack& updata_info, bool _new, bool is_upsert, std::function<void(EM_DB_RESULT, msgpack11::MsgPack)> cb) {
-			auto _query_str = query_info.dump();
+		void findAndModify(BSON::Value& query_info, BSON::Value& updata_info, bool _new, bool is_upsert, std::function<void(EM_DB_RESULT, BSON::Value)> cb) {
+			auto _query_str = query_info.toBSON();
 			std::vector<uint8_t> query;
 			auto len = _query_str.size();
 			query.resize(len);
 			memcpy(query.data(), _query_str.data(), len);
 
-			auto _updata_str = updata_info.dump();
+			auto _updata_str = updata_info.toBSON();
 			std::vector<uint8_t> updata;
 			len = _updata_str.size();
 			updata.resize(len);
 			memcpy(updata.data(), _updata_str.data(), len);
 
 			_dbproxy->_dbproxy_caller->find_and_modify(_db, _collection, query, updata, _new, is_upsert)->callBack([cb](std::vector<uint8_t> object_info) {
-				std::string err;
-				auto doc = msgpack11::MsgPack::parse((const char*)object_info.data(), object_info.size(), err);
-				if (doc.is_object()) {
-					spdlog::trace("findAndModify sucessed!");
-					cb(EM_DB_RESULT::EM_DB_SUCESSED, doc);
+				try {
+					auto doc = BSON::Value::fromBSON(std::string((const char*)object_info.data(), object_info.size()));
+					if (doc.isObject()) {
+						spdlog::trace("findAndModify sucessed!");
+						cb(EM_DB_RESULT::EM_DB_SUCESSED, doc);
+					}
+					else {
+						spdlog::trace("findAndModify rsp parse faild not object!");
+						cb(EM_DB_RESULT::EM_DB_FAILD, BSON::Value());
+					}
 				}
-				else {
-					spdlog::trace("findAndModify rsp parse faild:{0}!", err);
-					cb(EM_DB_RESULT::EM_DB_FAILD, msgpack11::MsgPack());
+				catch (std::runtime_error err) {
+					spdlog::trace("findAndModify rsp parse faild:{0}!", err.what());
+					cb(EM_DB_RESULT::EM_DB_FAILD, BSON::Value());
 				}
 			}, [cb]() {
 				spdlog::trace("findAndModify faild!");
-				cb(EM_DB_RESULT::EM_DB_FAILD, msgpack11::MsgPack());
+				cb(EM_DB_RESULT::EM_DB_FAILD, BSON::Value());
 			})->timeout(5 * 1000, [cb]() {
 				spdlog::trace("findAndModify timeout!");
-				cb(EM_DB_RESULT::EM_DB_FAILD, msgpack11::MsgPack());
+				cb(EM_DB_RESULT::EM_DB_FAILD, BSON::Value());
 			});
 		}
 
-		void getObjectCount(msgpack11::MsgPack& query_info, std::function<void(EM_DB_RESULT, uint32_t)> cb) {
-			auto _query_str = query_info.dump();
+		void getObjectCount(BSON::Value& query_info, std::function<void(EM_DB_RESULT, uint32_t)> cb) {
+			auto _query_str = query_info.toBSON();
 			std::vector<uint8_t> query;
 			auto len = _query_str.size();
 			query.resize(len);
@@ -152,8 +157,8 @@ public:
 			});
 		}
 
-		void getObjectInfo(msgpack11::MsgPack& query_info, std::function<void(msgpack11::MsgPack::array)> cb, std::function<void()> end) {
-			auto _query_str = query_info.dump();
+		void getObjectInfo(BSON::Value& query_info, std::function<void(BSON::Array)> cb, std::function<void()> end) {
+			auto _query_str = query_info.toBSON();
 			std::vector<uint8_t> query;
 			auto len = _query_str.size();
 			query.resize(len);
@@ -165,8 +170,8 @@ public:
 			dbproxyproxy::get_object_info_end_callback[callbackid] = end;
 		}
 
-		void removeObject(msgpack11::MsgPack& query_info, std::function<void(EM_DB_RESULT)> cb) {
-			auto _query_str = query_info.dump();
+		void removeObject(BSON::Value& query_info, std::function<void(EM_DB_RESULT)> cb) {
+			auto _query_str = query_info.toBSON();
 			std::vector<uint8_t> query;
 			auto len = _query_str.size();
 			query.resize(len);
@@ -211,7 +216,7 @@ public:
 	}
 
 public:
-	static std::unordered_map<std::string, std::function<void(msgpack11::MsgPack::array)> > get_object_info_callback;
+	static std::unordered_map<std::string, std::function<void(BSON::Array)> > get_object_info_callback;
 	static std::unordered_map<std::string, std::function<void()> > get_object_info_end_callback;
 
 private:
