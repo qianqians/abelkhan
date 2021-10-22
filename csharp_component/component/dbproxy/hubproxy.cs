@@ -16,11 +16,13 @@ namespace dbproxy
 			_caller = new abelkhan.dbproxy_call_hub_caller(ch, abelkhan.modulemng_handle._modulemng);
 		}
 
-		public void ack_get_object_info(string callbackid, ArrayList object_info)
+		public void ack_get_object_info(string callbackid, MongoDB.Bson.BsonDocument object_info)
 		{
 			using (var stream = new MemoryStream()) {
-				_serializer.Pack(stream, object_info);
+				var write = new MongoDB.Bson.IO.BsonBinaryWriter(stream);
+				MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, object_info);
 				stream.Position = 0;
+
 				_caller.ack_get_object_info(callbackid, stream.ToArray());
 			}
 		}

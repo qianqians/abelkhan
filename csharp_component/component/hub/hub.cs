@@ -162,18 +162,6 @@ namespace hub
             _timer.addticktime(3 * 1000, heartbeat);
         }
 
-        public event Action onConnectDB;
-        public void onConnectDB_event()
-        {
-            onConnectDB?.Invoke();
-        }
-
-        public event Action onConnectExtendDB;
-        public void onConnectExtendDB_event()
-        {
-            onConnectExtendDB?.Invoke();
-        }
-
         public event Action onCloseServer;
         public void onCloseServer_event()
         {

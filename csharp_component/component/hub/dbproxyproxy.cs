@@ -7,7 +7,7 @@ namespace hub
 {
 	public class dbproxyproxy
 	{
-        public static Dictionary<String, Action<MongoDB.Bson.BsonDocument> > onGetObjectInfo_callback_set;
+        public static Dictionary<String, Action<MongoDB.Bson.BsonArray> > onGetObjectInfo_callback_set;
         public static Dictionary<String, Action> onGetObjectInfo_end_cb_set;
 
         private abelkhan.hub_call_dbproxy_caller _hub_call_dbproxy_caller;
@@ -25,7 +25,7 @@ namespace hub
 		{
             _hub_call_dbproxy_caller = new abelkhan.hub_call_dbproxy_caller(ch, abelkhan.modulemng_handle._modulemng);
 
-            onGetObjectInfo_callback_set = new Dictionary<String, Action<MongoDB.Bson.BsonDocument>>();
+            onGetObjectInfo_callback_set = new Dictionary<String, Action<MongoDB.Bson.BsonArray> >();
             onGetObjectInfo_end_cb_set = new Dictionary<String, Action>();
         }
 
@@ -162,7 +162,7 @@ namespace hub
                 }
             }
 
-            public void getObjectInfo(MongoDB.Bson.BsonDocument query_obj, Action<MongoDB.Bson.BsonDocument> _handle, Action _end)
+            public void getObjectInfo(MongoDB.Bson.BsonDocument query_obj, Action<MongoDB.Bson.BsonArray> _handle, Action _end)
             {
                 using (var st = new MemoryStream())
                 {

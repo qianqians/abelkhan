@@ -24,16 +24,17 @@ public:
 		_dbproxy_call_hub_module = std::make_shared<abelkhan::dbproxy_call_hub_module>();
 		_dbproxy_call_hub_module->Init(service::_modulemng);
 		_dbproxy_call_hub_module->sig_ack_get_object_info.connect(std::bind(&dbproxy_msg_handle::ack_get_object_info, this, std::placeholders::_1, std::placeholders::_2));
+		_dbproxy_call_hub_module->sig_ack_get_object_info_end.connect(std::bind(&dbproxy_msg_handle::ack_get_object_info_end, this, std::placeholders::_1));
 	}
 
 	void ack_get_object_info(std::string callbackid, std::vector<uint8_t> bin_obejct_array) {
 		auto cb = dbproxyproxy::get_object_info_callback.find(callbackid);
 		try {
 			auto doc = BSON::Value::fromBSON(std::string((const char*)bin_obejct_array.data(), bin_obejct_array.size()));
-			if (doc.isArray()) {
+			if (doc["_list"].isArray()) {
 				
 				if (cb != dbproxyproxy::get_object_info_callback.end()) {
-					cb->second(doc.getArray());
+					cb->second(doc["_list"].getArray());
 				}
 				else {
 					spdlog::error("unreg getObjectInfo callback id:{0}!", callbackid);

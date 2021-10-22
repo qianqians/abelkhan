@@ -93,11 +93,14 @@ namespace dbproxy
             var obj = await dbproxy._mongodbproxy.find_and_modify(db, collection, query_data, object_data, is_new, upsert);
             if (obj != null)
             {
-                var serializer = MessagePackSerializer.Get<Hashtable>();
+                using (var st = new MemoryStream())
+                {
+                    var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
+                    MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, obj);
+                    st.Position = 0;
 
-                var _tmp = new MemoryStream();
-                serializer.Pack(_tmp, obj);
-                rsp.rsp(_tmp.ToArray());
+                    rsp.rsp(st.ToArray());
+                }
             }
             else
             {
@@ -184,16 +187,16 @@ namespace dbproxy
 
         public async void do_event()
         {
-            ArrayList _list = await dbproxy._mongodbproxy.find(db, collection, query_data);
+            var _list = await dbproxy._mongodbproxy.find(db, collection, query_data);
 
             int count = 0;
-            ArrayList _datalist = new ArrayList();
             if (_list.Count == 0)
             {
-                _hubproxy.ack_get_object_info(callbackid, _datalist);
+                _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _list } });
             }
             else
             {
+                var _datalist = new MongoDB.Bson.BsonArray();
                 foreach (var data in _list)
                 {
                     _datalist.Add(data);
@@ -202,15 +205,15 @@ namespace dbproxy
 
                     if (count >= 100)
                     {
-                        _hubproxy.ack_get_object_info(callbackid, _datalist);
+                        _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _datalist } });
 
                         count = 0;
-                        _datalist = new ArrayList();
+                        _datalist = new MongoDB.Bson.BsonArray();
                     }
                 }
                 if (count > 0 && count < 100)
                 {
-                    _hubproxy.ack_get_object_info(callbackid, _datalist);
+                    _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _datalist } });
                 }
             }
             _hubproxy.ack_get_object_info_end(callbackid);

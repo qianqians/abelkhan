@@ -134,7 +134,7 @@ namespace dbproxy
             return true;
 		}
 
-        public async Task<Hashtable> find_and_modify(string db, string collection, byte[] bson_query, byte[] bson_update, bool _new, bool _upsert)
+        public async Task<MongoDB.Bson.BsonDocument> find_and_modify(string db, string collection, byte[] bson_query, byte[] bson_update, bool _new, bool _upsert)
         {
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
@@ -155,6 +155,8 @@ namespace dbproxy
                 };
 
                 var r = await _collection.FindOneAndUpdateAsync(_query, _update, options);
+
+                return r;
             }
             catch (System.Exception e)
             {
@@ -168,9 +170,9 @@ namespace dbproxy
             return null;
         }
 
-        public async Task<ArrayList> find(string db, string collection, byte[] bson_query)
+        public async Task<MongoDB.Bson.BsonArray> find(string db, string collection, byte[] bson_query)
         {
-            ArrayList _list = new ArrayList();
+            var _list = new MongoDB.Bson.BsonArray();
 
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
@@ -190,9 +192,8 @@ namespace dbproxy
                     {
                         foreach (var data in _c)
                         {
-                            var _data = data.ToHashtable();
-                            _data.Remove("_id");
-                            _list.Add(_data);
+                            data.Remove("_id");
+                            _list.Add(data);
                         }
                     }
                 } while (c.MoveNext());

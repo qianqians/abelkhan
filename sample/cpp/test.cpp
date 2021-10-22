@@ -31,6 +31,17 @@ int main(int argc, char* argv[]) {
         _hub->close_svr();
     });
 
+    _hub->sig_dbproxy_init.connect([_hub]() {
+        BSON::Value query = BSON::Object{};
+        _hub->_dbproxyproxy->getCollection("test", "test")->getObjectInfo(query, [](auto _array) {
+            for (auto doc : _array) {
+                spdlog::trace("getObjectInfo doc:{0}!", doc.toJSON());
+            }
+        }, []() {
+            spdlog::trace("getObjectInfo end!");
+        });
+    });
+
     auto client_list = std::make_shared<std::vector<std::string> >();
     auto _test_c2s_module = std::make_shared<abelkhan::test_c2s_module>();
     _test_c2s_module->Init(_hub);
@@ -38,7 +49,7 @@ int main(int argc, char* argv[]) {
         spdlog::trace("client{0} login!", _hub->_gatemng->current_client_cuuid);
         client_list->push_back(_hub->_gatemng->current_client_cuuid);
 
-        BSON::Value doc = BSON::Object{ {"svr", "test_cpp"}, {"cuuid", _hub->_gatemng->current_client_cuuid} };
+        BSON::Value doc = BSON::Array{ "svr", "test_cpp", "cuuid", _hub->_gatemng->current_client_cuuid };
         _hub->_dbproxyproxy->getCollection("test", "test")->createPersistedObject(doc, [](auto ret) {
             spdlog::trace("createPersistedObject ret:{0}!", ret);
         });

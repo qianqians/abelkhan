@@ -7,7 +7,13 @@ namespace dbproxy
 {
 	public class dbproxy
 	{
-		public dbproxy(String[] args)
+        static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception ex = e.ExceptionObject as Exception;
+            log.log.err("unhandle exception:{0}", ex.ToString());
+        }
+
+        public dbproxy(String[] args)
 		{
 			is_busy = false;
 
@@ -51,6 +57,8 @@ namespace dbproxy
                     System.IO.Directory.CreateDirectory(log_dir);
                 }
             }
+
+            AppDomain.CurrentDomain.UnhandledException += UnhandledException;
 
             if (_config.has_key("db_ip") && _config.has_key("db_port"))
             {

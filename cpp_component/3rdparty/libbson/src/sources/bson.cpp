@@ -42,7 +42,7 @@ std::string BSON::Value::toBSON() const {
           .push_back('\x00');
       result.append(val.toBSON());
     }
-    docSize = (int32)result.size() + 4;
+    docSize = (int32)result.size() + 1 + 4;
     result = docSize.toBSON().append(result);
     result.push_back('\x00');
     break;
@@ -233,10 +233,8 @@ BSON::Value BSON::Value::fromBSON(const std::string &bson) {
       value = std::string{(const char *)(docPtr + currentByte), len};
       if (docType == BSON::OBJECT) {
         result[name] = fromBSON(value);
-        result[name].setType(BSON::ARRAY);
       } else {
         result.push_back(fromBSON(value));
-        result[result.size() - 1].setType(BSON::ARRAY);
       }
       currentByte += value.size();
       break;
@@ -245,10 +243,8 @@ BSON::Value BSON::Value::fromBSON(const std::string &bson) {
       value = std::string{(const char *)(docPtr + currentByte), len};
       if (docType == BSON::OBJECT) {
         result[name] = fromBSON(value);
-        result[name].setType(BSON::OBJECT);
       } else {
         result.push_back(fromBSON(value));
-        result[result.size() - 1].setType(BSON::OBJECT);
       }
       currentByte += value.size();
       break;

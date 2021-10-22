@@ -30,6 +30,17 @@ namespace test_csharp
             var _hub = new hub.hub(args[0], args[1], "test");
             client_list = new List<string>();
 
+            _hub.onDBProxyInit += ()=> {
+                hub.hub._dbproxy.getCollection("test", "test").getObjectInfo(new MongoDB.Bson.BsonDocument(), (_array) => {
+                    foreach (var doc in _array)
+                    {
+                        log.log.trace("getObjectInfo info:{0}!", doc.ToString());
+                    }
+                }, ()=> {
+                    log.log.trace("getObjectInfo info end!");
+                });
+            };
+
             var _test_c2s_module = new abelkhan.test_c2s_module();
             _test_c2s_module.on_login += () => {
                 log.log.trace("client:{0} login!", hub.hub._gates.current_client_uuid);
