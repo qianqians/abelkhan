@@ -37,6 +37,11 @@ int main(int argc, char* argv[]) {
     _test_c2s_module->sig_login.connect([client_list, _hub]() {
         spdlog::trace("client{0} login!", _hub->_gatemng->current_client_cuuid);
         client_list->push_back(_hub->_gatemng->current_client_cuuid);
+
+        BSON::Value doc = BSON::Object{ {"svr", "test_cpp"}, {"cuuid", _hub->_gatemng->current_client_cuuid} };
+        _hub->_dbproxyproxy->getCollection("test", "test")->createPersistedObject(doc, [](auto ret) {
+            spdlog::trace("createPersistedObject ret:{0}!", ret);
+        });
     });
     _test_c2s_module->sig_get_svr_host.connect([_test_c2s_module]() {
         spdlog::trace("sig_get_svr_host!");

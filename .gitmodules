@@ -4,6 +4,3 @@
 [submodule "cpp_component/3rdparty/json11"]
 	path = cpp_component/3rdparty/json11
 	url = git@github.com:dropbox/json11.git
-[submodule "cpp_component/3rdparty/libbson"]
-	path = cpp_component/3rdparty/libbson
-	url = git@github.com:trusch/libbson.git

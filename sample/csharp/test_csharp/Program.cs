@@ -34,6 +34,10 @@ namespace test_csharp
             _test_c2s_module.on_login += () => {
                 log.log.trace("client:{0} login!", hub.hub._gates.current_client_uuid);
                 client_list.Add(hub.hub._gates.current_client_uuid);
+
+                hub.hub._dbproxy.getCollection("test", "test").createPersistedObject(new MongoDB.Bson.BsonDocument() { {"svr", "test_csharp"}, {"cuuid", hub.hub._gates.current_client_uuid } }, (ret)=> {
+                    log.log.trace("createPersistedObject ret:{0}", ret);
+                });
             };
             _test_c2s_module.on_get_svr_host += () => {
                 log.log.trace("get_svr_host!");

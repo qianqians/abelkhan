@@ -151,6 +151,7 @@ namespace hub
             _center_msg_handle = new center_msg_handle(this, _closeHandle, _centerproxy);
             _dbproxy_msg_handle = new dbproxy_msg_handle();
             _gate_msg_handle = new gate_msg_handle();
+            _client_msg_handle = new client_msg_handle();
 
             _centerproxy.reg_hub(ip, port, name);
         }
@@ -359,6 +360,7 @@ namespace hub
         private dbproxy_msg_handle _dbproxy_msg_handle;
         private hub_msg_handle _hub_msg_handle;
         private gate_msg_handle _gate_msg_handle;
+        private client_msg_handle _client_msg_handle;
 
         public event Action<hubproxy> on_hubproxy;
         public event Action<string, string> on_hub_closed;

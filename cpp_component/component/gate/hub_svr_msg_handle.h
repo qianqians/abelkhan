@@ -66,7 +66,9 @@ public:
 		auto ch = _hub_call_gate_module->current_ch;
 		auto hub_proxy = _hubsvrmanager->get_hub(ch);
 		auto client_proxy = _clientmanager->get_client(cuuid);
-		client_proxy->call_client(hub_proxy->_hub_name, rpc_argv);
+		if (client_proxy) {
+			client_proxy->call_client(hub_proxy->_hub_name, rpc_argv);
+		}
 	}
 
 	void forward_hub_call_group_client(std::vector<std::string> cuuids, std::vector<uint8_t> rpc_argv) {
