@@ -176,18 +176,22 @@ namespace dbproxy
 
     public class find_event
     {
-        public find_event(hubproxy _hubproxy_, string _db, string _collection, byte[] _query_data, string _callbackid)
+        public find_event(hubproxy _hubproxy_, string _db, string _collection, byte[] _query_data, int _skip, int _limit, string _sort, bool _Ascending_, string _callbackid)
         {
             _hubproxy = _hubproxy_;
             db = _db;
             collection = _collection;
             query_data = _query_data;
+            skip = _skip;
+            limit = _limit;
+            sort = _sort;
+            _Ascending = _Ascending_;
             callbackid = _callbackid;
         }
 
         public async void do_event()
         {
-            var _list = await dbproxy._mongodbproxy.find(db, collection, query_data);
+            var _list = await dbproxy._mongodbproxy.find(db, collection, query_data, limit, skip, sort, _Ascending);
 
             int count = 0;
             if (_list.Count == 0)
@@ -223,6 +227,10 @@ namespace dbproxy
         public string db;
         public string collection;
         public byte[] query_data;
+        public int skip;
+        public int limit;
+        public string sort;
+        public bool _Ascending;
         public string callbackid;
     }
     

@@ -10,7 +10,7 @@ module hub_call_dbproxy{
 	
 	remove_object req(string db, string collection, bin query_info) rsp() err();
 	
-	get_object_info ntf(string db, string collection, bin query_info, string callbackid);
+	get_object_info ntf(string db, string collection, bin query_info, int32 _skip, int32 _limit, string _sort, bool _Ascending_, string callbackid);
 
 	get_object_count req(string db, string collection, bin query_info) rsp(uint32 count) err();
 	

@@ -170,7 +170,7 @@ namespace dbproxy
             return null;
         }
 
-        public async Task<MongoDB.Bson.BsonArray> find(string db, string collection, byte[] bson_query)
+        public async Task<MongoDB.Bson.BsonArray> find(string db, string collection, byte[] bson_query, int skip, int limit, string sort, bool _Ascending)
         {
             var _list = new MongoDB.Bson.BsonArray();
 
@@ -180,9 +180,29 @@ namespace dbproxy
 
             try
             {
-
                 var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
-                var c = await _collection.FindAsync<MongoDB.Bson.BsonDocument>(_bson_query);
+                var _opt = new FindOptions<MongoDB.Bson.BsonDocument>();
+                if (skip > 0)
+                {
+                    _opt.Skip = skip;
+                }
+                if (limit > 0)
+                {
+                    _opt.Limit = limit;
+                }
+                if (string.IsNullOrEmpty(sort))
+                {
+                    if (_Ascending)
+                    {
+                        _opt.Sort = Builders<MongoDB.Bson.BsonDocument>.Sort.Ascending(sort);
+                    }
+                    else
+                    {
+                        _opt.Sort = Builders<MongoDB.Bson.BsonDocument>.Sort.Descending(sort);
+                    }
+                }
+
+                var c = await _collection.FindAsync<MongoDB.Bson.BsonDocument>(_bson_query, _opt);
 
                 do
                 {

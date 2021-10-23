@@ -544,11 +544,15 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
         return cb_remove_object_obj;
     }
 
-    public get_object_info(db:string, collection:string, query_info:Uint8Array, callbackid:string){
+    public get_object_info(db:string, collection:string, query_info:Uint8Array, _skip:number, _limit:number, _sort:string, _Ascending_:boolean, callbackid:string){
         let _argv_1f17e6de_d423_391b_a599_7268e665a53f:any[] = [];
         _argv_1f17e6de_d423_391b_a599_7268e665a53f.push(db);
         _argv_1f17e6de_d423_391b_a599_7268e665a53f.push(collection);
         _argv_1f17e6de_d423_391b_a599_7268e665a53f.push(query_info);
+        _argv_1f17e6de_d423_391b_a599_7268e665a53f.push(_skip);
+        _argv_1f17e6de_d423_391b_a599_7268e665a53f.push(_limit);
+        _argv_1f17e6de_d423_391b_a599_7268e665a53f.push(_sort);
+        _argv_1f17e6de_d423_391b_a599_7268e665a53f.push(_Ascending_);
         _argv_1f17e6de_d423_391b_a599_7268e665a53f.push(callbackid);
         this.call_module_method("get_object_info", _argv_1f17e6de_d423_391b_a599_7268e665a53f);
     }
@@ -818,13 +822,17 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
         this.rsp = null;
     }
 
-    public cb_get_object_info : (db:string, collection:string, query_info:Uint8Array, callbackid:string)=>void | null;
+    public cb_get_object_info : (db:string, collection:string, query_info:Uint8Array, _skip:number, _limit:number, _sort:string, _Ascending_:boolean, callbackid:string)=>void | null;
     get_object_info(inArray:any[]){
         let _argv_:any[] = [];
         _argv_.push(inArray[0]);
         _argv_.push(inArray[1]);
         _argv_.push(inArray[2]);
         _argv_.push(inArray[3]);
+        _argv_.push(inArray[4]);
+        _argv_.push(inArray[5]);
+        _argv_.push(inArray[6]);
+        _argv_.push(inArray[7]);
         if (this.cb_get_object_info){
             this.cb_get_object_info.apply(null, _argv_);
         }

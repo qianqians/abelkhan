@@ -727,11 +727,15 @@ namespace abelkhan
             return cb_remove_object_obj;
         }
 
-        public void get_object_info(string db, string collection, byte[] query_info, string callbackid){
+        public void get_object_info(string db, string collection, byte[] query_info, Int32 _skip, Int32 _limit, string _sort, bool _Ascending_, string callbackid){
             var _argv_1f17e6de_d423_391b_a599_7268e665a53f = new ArrayList();
             _argv_1f17e6de_d423_391b_a599_7268e665a53f.Add(db);
             _argv_1f17e6de_d423_391b_a599_7268e665a53f.Add(collection);
             _argv_1f17e6de_d423_391b_a599_7268e665a53f.Add(query_info);
+            _argv_1f17e6de_d423_391b_a599_7268e665a53f.Add(_skip);
+            _argv_1f17e6de_d423_391b_a599_7268e665a53f.Add(_limit);
+            _argv_1f17e6de_d423_391b_a599_7268e665a53f.Add(_sort);
+            _argv_1f17e6de_d423_391b_a599_7268e665a53f.Add(_Ascending_);
             _argv_1f17e6de_d423_391b_a599_7268e665a53f.Add(callbackid);
             call_module_method("get_object_info", _argv_1f17e6de_d423_391b_a599_7268e665a53f);
         }
@@ -995,14 +999,18 @@ namespace abelkhan
             rsp = null;
         }
 
-        public event Action<string, string, byte[], string> on_get_object_info;
+        public event Action<string, string, byte[], Int32, Int32, string, bool, string> on_get_object_info;
         public void get_object_info(IList<MsgPack.MessagePackObject> inArray){
             var _db = ((MsgPack.MessagePackObject)inArray[0]).AsString();
             var _collection = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             var _query_info = ((MsgPack.MessagePackObject)inArray[2]).AsBinary();
-            var _callbackid = ((MsgPack.MessagePackObject)inArray[3]).AsString();
+            var __skip = ((MsgPack.MessagePackObject)inArray[3]).AsInt32();
+            var __limit = ((MsgPack.MessagePackObject)inArray[4]).AsInt32();
+            var __sort = ((MsgPack.MessagePackObject)inArray[5]).AsString();
+            var __Ascending_ = ((MsgPack.MessagePackObject)inArray[6]).AsBoolean();
+            var _callbackid = ((MsgPack.MessagePackObject)inArray[7]).AsString();
             if (on_get_object_info != null){
-                on_get_object_info(_db, _collection, _query_info, _callbackid);
+                on_get_object_info(_db, _collection, _query_info, __skip, __limit, __sort, __Ascending_, _callbackid);
             }
         }
 

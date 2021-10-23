@@ -491,11 +491,15 @@ namespace abelkhan
             return cb_remove_object_obj;
         }
 
-        void get_object_info(std::string db, std::string collection, std::vector<uint8_t> query_info, std::string callbackid){
+        void get_object_info(std::string db, std::string collection, std::vector<uint8_t> query_info, int32_t _skip, int32_t _limit, std::string _sort, bool _Ascending_, std::string callbackid){
             msgpack11::MsgPack::array _argv_1f17e6de_d423_391b_a599_7268e665a53f;
             _argv_1f17e6de_d423_391b_a599_7268e665a53f.push_back(db);
             _argv_1f17e6de_d423_391b_a599_7268e665a53f.push_back(collection);
             _argv_1f17e6de_d423_391b_a599_7268e665a53f.push_back(query_info);
+            _argv_1f17e6de_d423_391b_a599_7268e665a53f.push_back(_skip);
+            _argv_1f17e6de_d423_391b_a599_7268e665a53f.push_back(_limit);
+            _argv_1f17e6de_d423_391b_a599_7268e665a53f.push_back(_sort);
+            _argv_1f17e6de_d423_391b_a599_7268e665a53f.push_back(_Ascending_);
             _argv_1f17e6de_d423_391b_a599_7268e665a53f.push_back(callbackid);
             call_module_method("get_object_info", _argv_1f17e6de_d423_391b_a599_7268e665a53f);
         }
@@ -766,13 +770,17 @@ namespace abelkhan
             rsp = nullptr;
         }
 
-        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>, std::string)> sig_get_object_info;
+        concurrent::signals<void(std::string, std::string, std::vector<uint8_t>, int32_t, int32_t, std::string, bool, std::string)> sig_get_object_info;
         void get_object_info(const msgpack11::MsgPack::array& inArray){
             auto _db = inArray[0].string_value();
             auto _collection = inArray[1].string_value();
             auto _query_info = inArray[2].binary_items();
-            auto _callbackid = inArray[3].string_value();
-            sig_get_object_info.emit(_db, _collection, _query_info, _callbackid);
+            auto __skip = inArray[3].int32_value();
+            auto __limit = inArray[4].int32_value();
+            auto __sort = inArray[5].string_value();
+            auto __Ascending_ = inArray[6].bool_value();
+            auto _callbackid = inArray[7].string_value();
+            sig_get_object_info.emit(_db, _collection, _query_info, __skip, __limit, __sort, __Ascending_, _callbackid);
         }
 
         concurrent::signals<void(std::string, std::string, std::vector<uint8_t>)> sig_get_object_count;

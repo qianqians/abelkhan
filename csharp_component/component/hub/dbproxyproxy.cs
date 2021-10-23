@@ -172,7 +172,23 @@ namespace hub
 
                     var callbackid = System.Guid.NewGuid().ToString();
 
-                    _dbproxy._hub_call_dbproxy_caller.get_object_info(_db, _collection, st.ToArray(), callbackid);
+                    _dbproxy._hub_call_dbproxy_caller.get_object_info(_db, _collection, st.ToArray(), 0, 0, "", false, callbackid);
+                    dbproxyproxy.onGetObjectInfo_callback_set.Add(callbackid, _handle);
+                    dbproxyproxy.onGetObjectInfo_end_cb_set.Add(callbackid, _end);
+                }
+            }
+
+            public void getObjectInfoEx(MongoDB.Bson.BsonDocument query_obj, int skip, int limit, string sort, bool _Ascending, Action<MongoDB.Bson.BsonArray> _handle, Action _end)
+            {
+                using (var st = new MemoryStream())
+                {
+                    var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
+                    MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, query_obj);
+                    st.Position = 0;
+
+                    var callbackid = System.Guid.NewGuid().ToString();
+
+                    _dbproxy._hub_call_dbproxy_caller.get_object_info(_db, _collection, st.ToArray(), skip, limit, sort, _Ascending, callbackid);
                     dbproxyproxy.onGetObjectInfo_callback_set.Add(callbackid, _handle);
                     dbproxyproxy.onGetObjectInfo_end_cb_set.Add(callbackid, _end);
                 }

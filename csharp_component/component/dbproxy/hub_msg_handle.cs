@@ -119,7 +119,7 @@ namespace dbproxy
             log.log.trace("end get_object_info");
         }
 
-		public void get_object_info(string db, string collection, byte[] query_data, string callbackid)
+		public void get_object_info(string db, string collection, byte[] query_data, int _skip, int _limit, string _sort, bool _Ascending_, string callbackid)
         {
             log.log.trace("begin get_object_info");
 
@@ -130,7 +130,7 @@ namespace dbproxy
                 return;
             }
 
-            dbproxy._dbevent.push_find_event(new find_event(_hubproxy, db, collection, query_data, callbackid));
+            dbproxy._dbevent.push_find_event(new find_event(_hubproxy, db, collection, query_data, _skip, _limit, _sort, _Ascending_, callbackid));
 
             log.log.trace("end get_object_info");
         }
