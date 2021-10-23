@@ -190,7 +190,7 @@ namespace dbproxy
                 {
                     _opt.Limit = limit;
                 }
-                if (string.IsNullOrEmpty(sort))
+                if (!string.IsNullOrEmpty(sort))
                 {
                     if (_Ascending)
                     {
