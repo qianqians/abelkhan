@@ -165,7 +165,20 @@ public:
 			memcpy(query.data(), _query_str.data(), len);
 
 			auto callbackid = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
-			_dbproxy->_dbproxy_caller->get_object_info(_db, _collection, query, callbackid);
+			_dbproxy->_dbproxy_caller->get_object_info(_db, _collection, query, 0, 0, "", false, callbackid);
+			dbproxyproxy::get_object_info_callback[callbackid] = cb;
+			dbproxyproxy::get_object_info_end_callback[callbackid] = end;
+		}
+
+		void getObjectInfoEx(BSON::Value& query_info, int32_t _skip, int32_t _limit, std::string _sort, bool _Ascending_, std::function<void(BSON::Array)> cb, std::function<void()> end) {
+			auto _query_str = query_info.toBSON();
+			std::vector<uint8_t> query;
+			auto len = _query_str.size();
+			query.resize(len);
+			memcpy(query.data(), _query_str.data(), len);
+
+			auto callbackid = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
+			_dbproxy->_dbproxy_caller->get_object_info(_db, _collection, query, _skip, _limit, _sort, _Ascending_, callbackid);
 			dbproxyproxy::get_object_info_callback[callbackid] = cb;
 			dbproxyproxy::get_object_info_end_callback[callbackid] = end;
 		}
