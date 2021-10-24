@@ -59,6 +59,11 @@ int main(int argc, char* argv[]) {
         auto rsp = std::static_pointer_cast<abelkhan::test_c2s_get_svr_host_rsp>(_test_c2s_module->rsp);
         rsp->rsp("127.0.0.1", (uint16_t)4001);
     });
+    _test_c2s_module->sig_get_websocket_svr_host.connect([_test_c2s_module]() {
+        spdlog::trace("get_websocket_svr_host!");
+        auto rsp = std::static_pointer_cast<abelkhan::test_c2s_get_websocket_svr_host_rsp>(_test_c2s_module->rsp);
+        rsp->rsp("127.0.0.1", (uint16_t)4051);
+    });
 
     auto _test_s2c_caller = std::make_shared<abelkhan::test_s2c_caller>(_hub);
     _hub->_timerservice->addticktimer(3000, std::bind(heartbeat, _hub, _test_s2c_caller, client_list, std::placeholders::_1));

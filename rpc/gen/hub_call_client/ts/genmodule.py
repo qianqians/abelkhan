@@ -127,7 +127,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
             rsp_code += "    private hub_name_" + _hub_uuid + ":string;\n"
             rsp_code += "    private _client_handle:client_handle.client ;\n\n"
             rsp_code += "    constructor(_client_handle_:client_handle.client, current_hub:string, _uuid:number){\n"
-            rsp_code += "        this._client_handle = client_handle_;\n"
+            rsp_code += "        this._client_handle = _client_handle_;\n"
             rsp_code += "        this.hub_name_" + _hub_uuid + " = current_hub;\n"
             rsp_code += "        this.uuid_" + _rsp_uuid + " = _uuid;\n"
             rsp_code += "    }\n\n"
@@ -174,7 +174,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     rsp_code += "        }\n"                                                     
                     rsp_code += "        _argv_" + _argv_uuid + ".push(_array_" + _array_uuid + ");\n"
-            rsp_code += "        this._client_handle.call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb\", \"" + func_name + "_rsp\", _argv_" + _argv_uuid + ");\n"
+            rsp_code += "        this._client_handle.call_hub(this.hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb\", \"" + func_name + "_rsp\", _argv_" + _argv_uuid + ");\n"
             rsp_code += "    }\n\n"
 
             rsp_code += "    public err("
@@ -219,7 +219,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     rsp_code += "        }\n"                                                     
                     rsp_code += "        _argv_" + _argv_uuid + ".push(_array_" + _array_uuid + ");\n"
-            rsp_code += "        this._client_handle.call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb\", \"" + func_name + "_err\", _argv_" + _argv_uuid + ");\n"
+            rsp_code += "        this._client_handle.call_hub(this.hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb\", \"" + func_name + "_err\", _argv_" + _argv_uuid + ");\n"
             rsp_code += "    }\n\n"
             rsp_code += "}\n\n"
 

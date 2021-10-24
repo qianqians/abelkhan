@@ -1,4 +1,5 @@
 module test_c2s {
     login ntf();
 	get_svr_host req() rsp(string ip, uint16 port) err();
+	get_websocket_svr_host req() rsp(string ip, uint16 port) err();
 }

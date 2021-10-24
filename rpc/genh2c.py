@@ -27,9 +27,9 @@ def gen_csharp_import(_import):
     return code
 
 def gen_ts_import(_import):
-    code = "import client_handle = require(\"client_handle\");\n"
+    code = "import * as client_handle from \"client_handle\";\n"
     for _i in _import:
-        code += "import " + _i + " = require(\"./" + _i + "\");\n"
+        code += "import * as " + _i + " from \"./" + _i + "\";\n"
     return code
 
 def gen(inputdir, lang, outputdir):

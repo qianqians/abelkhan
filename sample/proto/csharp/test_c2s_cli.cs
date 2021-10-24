@@ -66,15 +66,75 @@ namespace abelkhan
 
     }
 
+    public class test_c2s_get_websocket_svr_host_cb
+    {
+        private UInt64 cb_uuid;
+        private test_c2s_rsp_cb module_rsp_cb;
+
+        public test_c2s_get_websocket_svr_host_cb(UInt64 _cb_uuid, test_c2s_rsp_cb _module_rsp_cb)
+        {
+            cb_uuid = _cb_uuid;
+            module_rsp_cb = _module_rsp_cb;
+        }
+
+        public event Action<string, UInt16> on_get_websocket_svr_host_cb;
+        public event Action on_get_websocket_svr_host_err;
+        public event Action on_get_websocket_svr_host_timeout;
+
+        public test_c2s_get_websocket_svr_host_cb callBack(Action<string, UInt16> cb, Action err)
+        {
+            on_get_websocket_svr_host_cb += cb;
+            on_get_websocket_svr_host_err += err;
+            return this;
+        }
+
+        public void timeout(UInt64 tick, Action timeout_cb)
+        {
+            TinyTimer.add_timer(tick, ()=>{
+                module_rsp_cb.get_websocket_svr_host_timeout(cb_uuid);
+            });
+            on_get_websocket_svr_host_timeout += timeout_cb;
+        }
+
+        public void call_cb(string ip, UInt16 port)
+        {
+            if (on_get_websocket_svr_host_cb != null)
+            {
+                on_get_websocket_svr_host_cb(ip, port);
+            }
+        }
+
+        public void call_err()
+        {
+            if (on_get_websocket_svr_host_err != null)
+            {
+                on_get_websocket_svr_host_err();
+            }
+        }
+
+        public void call_timeout()
+        {
+            if (on_get_websocket_svr_host_timeout != null)
+            {
+                on_get_websocket_svr_host_timeout();
+            }
+        }
+
+    }
+
 /*this cb code is codegen by abelkhan for c#*/
     public class test_c2s_rsp_cb : common.imodule {
         public Dictionary<UInt64, test_c2s_get_svr_host_cb> map_get_svr_host;
+        public Dictionary<UInt64, test_c2s_get_websocket_svr_host_cb> map_get_websocket_svr_host;
         public test_c2s_rsp_cb(common.modulemanager modules)
         {
             modules.add_module("test_c2s_rsp_cb", this);
             map_get_svr_host = new Dictionary<UInt64, test_c2s_get_svr_host_cb>();
             reg_cb("get_svr_host_rsp", get_svr_host_rsp);
             reg_cb("get_svr_host_err", get_svr_host_err);
+            map_get_websocket_svr_host = new Dictionary<UInt64, test_c2s_get_websocket_svr_host_cb>();
+            reg_cb("get_websocket_svr_host_rsp", get_websocket_svr_host_rsp);
+            reg_cb("get_websocket_svr_host_err", get_websocket_svr_host_err);
         }
 
         public void get_svr_host_rsp(IList<MsgPack.MessagePackObject> inArray){
@@ -110,6 +170,44 @@ namespace abelkhan
                 if (map_get_svr_host.TryGetValue(uuid, out test_c2s_get_svr_host_cb rsp))
                 {
                     map_get_svr_host.Remove(uuid);
+                }
+                return rsp;
+            }
+        }
+
+        public void get_websocket_svr_host_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _ip = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _port = ((MsgPack.MessagePackObject)inArray[2]).AsUInt16();
+            var rsp = try_get_and_del_get_websocket_svr_host_cb(uuid);
+            if (rsp != null)
+            {
+                rsp.call_cb(_ip, _port);
+            }
+        }
+
+        public void get_websocket_svr_host_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var rsp = try_get_and_del_get_websocket_svr_host_cb(uuid);
+            if (rsp != null)
+            {
+                rsp.call_err();
+            }
+        }
+
+        public void get_websocket_svr_host_timeout(UInt64 cb_uuid){
+            var rsp = try_get_and_del_get_websocket_svr_host_cb(cb_uuid);
+            if (rsp != null){
+                rsp.call_timeout();
+            }
+        }
+
+        private test_c2s_get_websocket_svr_host_cb try_get_and_del_get_websocket_svr_host_cb(UInt64 uuid){
+            lock(map_get_websocket_svr_host)
+            {
+                if (map_get_websocket_svr_host.TryGetValue(uuid, out test_c2s_get_websocket_svr_host_cb rsp))
+                {
+                    map_get_websocket_svr_host.Remove(uuid);
                 }
                 return rsp;
             }
@@ -167,6 +265,19 @@ namespace abelkhan
             var cb_get_svr_host_obj = new test_c2s_get_svr_host_cb(uuid_7d3daecb_6f7c_5aba_96f4_8c3441412b65, rsp_cb_test_c2s_handle);
             rsp_cb_test_c2s_handle.map_get_svr_host.Add(uuid_7d3daecb_6f7c_5aba_96f4_8c3441412b65, cb_get_svr_host_obj);
             return cb_get_svr_host_obj;
+        }
+
+        public test_c2s_get_websocket_svr_host_cb get_websocket_svr_host(){
+            Interlocked.Increment(ref uuid_c233fb06_7c62_3839_a7d5_edade25b16c5);
+            var uuid_4c3154db_d59e_53aa_8765_bd54308cf4a5 = (UInt64)uuid_c233fb06_7c62_3839_a7d5_edade25b16c5;
+
+            var _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f = new ArrayList();
+            _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f.Add(uuid_4c3154db_d59e_53aa_8765_bd54308cf4a5);
+            _client_handle.call_hub(hub_name_c233fb06_7c62_3839_a7d5_edade25b16c5, "test_c2s", "get_websocket_svr_host", _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f);
+
+            var cb_get_websocket_svr_host_obj = new test_c2s_get_websocket_svr_host_cb(uuid_4c3154db_d59e_53aa_8765_bd54308cf4a5, rsp_cb_test_c2s_handle);
+            rsp_cb_test_c2s_handle.map_get_websocket_svr_host.Add(uuid_4c3154db_d59e_53aa_8765_bd54308cf4a5, cb_get_websocket_svr_host_obj);
+            return cb_get_websocket_svr_host_obj;
         }
 
     }

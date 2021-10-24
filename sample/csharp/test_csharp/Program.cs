@@ -55,6 +55,11 @@ namespace test_csharp
                 var rsp = (abelkhan.test_c2s_get_svr_host_rsp)_test_c2s_module.rsp;
                 rsp.rsp("127.0.0.1", 4002);
             };
+            _test_c2s_module.on_get_websocket_svr_host += () => {
+                log.log.trace("get_websocket_svr_host!");
+                var rsp = (abelkhan.test_c2s_get_svr_host_rsp)_test_c2s_module.rsp;
+                rsp.rsp("127.0.0.1", 4052);
+            };
 
             _test_s2c_caller = new abelkhan.test_s2c_caller();
             hub.hub._timer.addticktime(3000, heartbeat);

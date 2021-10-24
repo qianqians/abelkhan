@@ -18,8 +18,6 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
 
     code = "let rsp_cb_" + module_name + "_handle : " + module_name + "_rsp_cb | null = null;\n"
     code += "export class " + module_name + "_caller {\n"
-    _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
-    code += "    private uuid_" + _uuid + " : number = Math.round(Math.random() * Number.MAX_VALUE);\n\n"
     code += "    private _hubproxy:" + module_name + "_hubproxy;\n"
     code += "    constructor(_client:client_handle.client){\n"
     code += "        if (rsp_cb_" + module_name + "_handle == null){\n"
@@ -27,16 +25,18 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "        }\n"
     code += "        this._hubproxy = new " + module_name + "_hubproxy(_client);\n"
     code += "    }\n\n"
-    code += "    public " + module_name + "_hubproxy get_hub(string hub_name)\n"
+    code += "    public get_hub(hub_name:string)\n"
     code += "    {\n"
     _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
-    code += "        this._hubproxy.hub_namee_" + _hub_uuid + " = hub_name;\n"
-    code += "        return _hubproxy;\n"
+    code += "        this._hubproxy.hub_name_" + _hub_uuid + " = hub_name;\n"
+    code += "        return this._hubproxy;\n"
     code += "    }\n\n"
     code += "}\n\n"
 
-    code += "export class" + module_name + "_hubproxy\n{\n"
-    code += "    public string hub_name_" + _hub_uuid + ";\n"
+    code += "export class " + module_name + "_hubproxy\n{\n"
+    _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
+    code += "    private uuid_" + _uuid + " : number = Math.round(Math.random() * Number.MAX_VALUE);\n\n"
+    code += "    public hub_name_" + _hub_uuid + ":string;\n"
     code += "    private _client_handle:client_handle.client;\n\n"
     code += "    constructor(client_handle_:client_handle.client)\n"
     code += "    {\n"

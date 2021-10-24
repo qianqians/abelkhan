@@ -41,6 +41,36 @@ namespace abelkhan
 
     };
 
+    class test_c2s_get_websocket_svr_host_rsp : public common::Response {
+    private:
+        std::shared_ptr<hub::hub_service> _hub_handle;
+        std::string _client_cuuid_ea3a8af7_4bd0_3344_a846_4962c0e7c00f;
+        uint64_t uuid_e3b24ad3_3493_397d_93f9_1e0d27ae8bc1;
+
+    public:
+        test_c2s_get_websocket_svr_host_rsp(std::shared_ptr<hub::hub_service> _hub, std::string client_cuuid, uint64_t _uuid)
+        {
+            _hub_handle = _hub;
+            _client_cuuid_ea3a8af7_4bd0_3344_a846_4962c0e7c00f = client_cuuid;
+            uuid_e3b24ad3_3493_397d_93f9_1e0d27ae8bc1 = _uuid;
+        }
+
+        void rsp(std::string ip, uint16_t port){
+            msgpack11::MsgPack::array _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f;
+            _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f.push_back(uuid_e3b24ad3_3493_397d_93f9_1e0d27ae8bc1);
+            _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f.push_back(ip);
+            _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f.push_back(port);
+            _hub_handle->_gatemng->call_client(_client_cuuid_ea3a8af7_4bd0_3344_a846_4962c0e7c00f, "test_c2s_rsp_cb", "get_websocket_svr_host_rsp", _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f);
+        }
+
+        void err(){
+            msgpack11::MsgPack::array _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f;
+            _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f.push_back(uuid_e3b24ad3_3493_397d_93f9_1e0d27ae8bc1);
+            _hub_handle->_gatemng->call_client(_client_cuuid_ea3a8af7_4bd0_3344_a846_4962c0e7c00f, "test_c2s_rsp_cb", "get_websocket_svr_host_err", _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f);
+        }
+
+    };
+
     class test_c2s_module : public common::imodule, public std::enable_shared_from_this<test_c2s_module>{
     private:
         std::shared_ptr<hub::hub_service> hub_handle;
@@ -56,6 +86,7 @@ namespace abelkhan
 
             reg_cb("login", std::bind(&test_c2s_module::login, this, std::placeholders::_1));
             reg_cb("get_svr_host", std::bind(&test_c2s_module::get_svr_host, this, std::placeholders::_1));
+            reg_cb("get_websocket_svr_host", std::bind(&test_c2s_module::get_websocket_svr_host, this, std::placeholders::_1));
         }
 
         concurrent::signals<void()> sig_login;
@@ -68,6 +99,14 @@ namespace abelkhan
             auto _cb_uuid = inArray[0].uint64_value();
             rsp = std::make_shared<test_c2s_get_svr_host_rsp>(hub_handle, hub_handle->_gatemng->current_client_cuuid, _cb_uuid);
             sig_get_svr_host.emit();
+            rsp = nullptr;
+        }
+
+        concurrent::signals<void()> sig_get_websocket_svr_host;
+        void get_websocket_svr_host(const msgpack11::MsgPack::array& inArray){
+            auto _cb_uuid = inArray[0].uint64_value();
+            rsp = std::make_shared<test_c2s_get_websocket_svr_host_rsp>(hub_handle, hub_handle->_gatemng->current_client_cuuid, _cb_uuid);
+            sig_get_websocket_svr_host.emit();
             rsp = nullptr;
         }
 

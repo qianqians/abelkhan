@@ -1,4 +1,4 @@
-import abelkhan = require("abelkhan");
+import * as abelkhan from "abelkhan";
 /*this enum code is codegen by abelkhan codegen for ts*/
 
 /*this struct code is codegen by abelkhan codegen for typescript*/
