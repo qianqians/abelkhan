@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
         spdlog::trace("client{0} login!", _hub->_gatemng->current_client_cuuid);
         client_list->push_back(_hub->_gatemng->current_client_cuuid);
 
-        BSON::Value doc = BSON::Array{ "svr", "test_cpp", "cuuid", _hub->_gatemng->current_client_cuuid };
+        BSON::Value doc = BSON::Object{ { "info", BSON::Array{"svr", "test_cpp", "cuuid", _hub->_gatemng->current_client_cuuid}}};
         _hub->_dbproxyproxy->getCollection("test", "test")->createPersistedObject(doc, [](auto ret) {
             spdlog::trace("createPersistedObject ret:{0}!", ret);
         });
