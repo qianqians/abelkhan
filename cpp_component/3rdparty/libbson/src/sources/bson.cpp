@@ -101,13 +101,12 @@ std::string BSON::Value::getTypePrefix() const {
   return "";
 }
 
-BSON::Value BSON::Value::fromBSON(const std::string &bson) {
+BSON::Value BSON::Value::fromBSON(const std::string &bson, BSON::Type docType) {
   BSON::Value result;
   uint32_t currentByte = 0;
   const uint8_t *docPtr = (const uint8_t *)&bson[0];
   const uint32_t docLen = *((const uint32_t *)docPtr);
   currentByte += 4;
-  BSON::Type docType = BSON::OBJECT;
   result.setType(docType);
   bool first = true;
   while (currentByte < docLen) {
@@ -155,10 +154,6 @@ BSON::Value BSON::Value::fromBSON(const std::string &bson) {
     auto nameEndPos = bson.find('\x00', currentByte);
     std::string name{(const char *)(docPtr + currentByte),
                      nameEndPos - currentByte};
-    if (first && name == "0") {
-      docType = BSON::ARRAY;
-      result.setType(docType);
-    }
     currentByte += name.size() + 1;
     std::string value;
     uint32_t len;
@@ -232,9 +227,9 @@ BSON::Value BSON::Value::fromBSON(const std::string &bson) {
       len = *((BSON::int32 *)(docPtr + currentByte));
       value = std::string{(const char *)(docPtr + currentByte), len};
       if (docType == BSON::OBJECT) {
-        result[name] = fromBSON(value);
+        result[name] = fromBSON(value, type);
       } else {
-        result.push_back(fromBSON(value));
+        result.push_back(fromBSON(value, type));
       }
       currentByte += value.size();
       break;
@@ -242,9 +237,9 @@ BSON::Value BSON::Value::fromBSON(const std::string &bson) {
       len = *((BSON::int32 *)(docPtr + currentByte));
       value = std::string{(const char *)(docPtr + currentByte), len};
       if (docType == BSON::OBJECT) {
-        result[name] = fromBSON(value);
+        result[name] = fromBSON(value, type);
       } else {
-        result.push_back(fromBSON(value));
+        result.push_back(fromBSON(value, type));
       }
       currentByte += value.size();
       break;

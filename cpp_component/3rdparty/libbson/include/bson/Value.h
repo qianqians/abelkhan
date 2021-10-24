@@ -314,7 +314,7 @@ public:
 
   // BSON functions
   std::string toBSON() const;
-  static Value fromBSON(const std::string &bson);
+  static Value fromBSON(const std::string &bson, BSON::Type docType = BSON::OBJECT);
 };
 }
 
