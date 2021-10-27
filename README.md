@@ -15,7 +15,7 @@ theDarkforce@aliyun.com
 
 ## 相关项目
 juggle:https://github.com/qianqians/juggle  
-concurrent:https://github.com/qianqians/concurrent
+concurrent:https://github.com/qianqians/concurrent  
 meter:https://github.com/qianqians/meter  
   
 ## QQ群
