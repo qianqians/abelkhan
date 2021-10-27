@@ -1,4 +1,4 @@
-import { encode, decode } from "@msgpack/msgpack";
+import { encode, decode } from "./@msgpack/msgpack";
 import * as abelkhan from "./abelkhan";
 import * as gate from "./gate";
 import * as hub from "./hub";
