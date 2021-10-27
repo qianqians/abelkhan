@@ -1,4 +1,4 @@
-import * as client_handle from "client_handle";
+import * as client_handle from "./client_handle";
 /*this enum code is codegen by abelkhan codegen for ts*/
 
 /*this struct code is codegen by abelkhan codegen for typescript*/

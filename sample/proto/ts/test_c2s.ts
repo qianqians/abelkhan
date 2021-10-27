@@ -1,4 +1,4 @@
-import * as client_handle from "client_handle";
+import * as client_handle from "./client_handle";
 /*this enum code is codegen by abelkhan codegen for ts*/
 
 /*this struct code is codegen by abelkhan codegen for typescript*/
@@ -170,7 +170,7 @@ export class test_c2s_caller {
 
 export class test_c2s_hubproxy
 {
-    private uuid_c233fb06_7c62_3839_a7d5_edade25b16c5 : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_c233fb06_7c62_3839_a7d5_edade25b16c5 : number = Math.round(Math.random() * 1000);
 
     public hub_name_c233fb06_7c62_3839_a7d5_edade25b16c5:string;
     private _client_handle:client_handle.client;
@@ -186,7 +186,7 @@ export class test_c2s_hubproxy
     }
 
     public get_svr_host(){
-        let uuid_7d3daecb_6f7c_5aba_96f4_8c3441412b65 = this.uuid_c233fb06_7c62_3839_a7d5_edade25b16c5++;
+        let uuid_7d3daecb_6f7c_5aba_96f4_8c3441412b65 = Math.round(this.uuid_c233fb06_7c62_3839_a7d5_edade25b16c5++);
 
         let _argv_abbb842f_52d0_34e7_9d8d_642d072db165:any[] = [uuid_7d3daecb_6f7c_5aba_96f4_8c3441412b65];
         this._client_handle.call_hub(this.hub_name_c233fb06_7c62_3839_a7d5_edade25b16c5, "test_c2s", "get_svr_host", _argv_abbb842f_52d0_34e7_9d8d_642d072db165);
@@ -198,7 +198,7 @@ export class test_c2s_hubproxy
     }
 
     public get_websocket_svr_host(){
-        let uuid_4c3154db_d59e_53aa_8765_bd54308cf4a5 = this.uuid_c233fb06_7c62_3839_a7d5_edade25b16c5++;
+        let uuid_4c3154db_d59e_53aa_8765_bd54308cf4a5 = Math.round(this.uuid_c233fb06_7c62_3839_a7d5_edade25b16c5++);
 
         let _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f:any[] = [uuid_4c3154db_d59e_53aa_8765_bd54308cf4a5];
         this._client_handle.call_hub(this.hub_name_c233fb06_7c62_3839_a7d5_edade25b16c5, "test_c2s", "get_websocket_svr_host", _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f);

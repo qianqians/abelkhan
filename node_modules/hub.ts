@@ -81,7 +81,7 @@ export class hub_call_hub_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_hub_call_hub_handle : hub_call_hub_rsp_cb | null = null;
 export class hub_call_hub_caller extends abelkhan.Icaller {
-    private uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f : number = Math.round(Math.random() * 1000);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("hub_call_hub", _ch);
@@ -91,7 +91,7 @@ export class hub_call_hub_caller extends abelkhan.Icaller {
     }
 
     public reg_hub(hub_name:string, hub_type:string){
-        let uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = this.uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f++;
+        let uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = Math.round(this.uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f++);
 
         let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106];
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(hub_name);
@@ -123,7 +123,7 @@ export class gate_call_hub_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_gate_call_hub_handle : gate_call_hub_rsp_cb | null = null;
 export class gate_call_hub_caller extends abelkhan.Icaller {
-    private uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1 : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1 : number = Math.round(Math.random() * 1000);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("gate_call_hub", _ch);
@@ -231,7 +231,7 @@ export class client_call_hub_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_client_call_hub_handle : client_call_hub_rsp_cb | null = null;
 export class client_call_hub_caller extends abelkhan.Icaller {
-    private uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263 : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263 : number = Math.round(Math.random() * 1000);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("client_call_hub", _ch);
@@ -247,7 +247,7 @@ export class client_call_hub_caller extends abelkhan.Icaller {
     }
 
     public heartbeats(){
-        let uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = this.uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263++;
+        let uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = Math.round(this.uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263++);
 
         let _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4:any[] = [uuid_a514ca5f_2c67_5668_aac0_354397bdce36];
         this.call_module_method("heartbeats", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
@@ -277,7 +277,7 @@ export class hub_call_client_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_hub_call_client_handle : hub_call_client_rsp_cb | null = null;
 export class hub_call_client_caller extends abelkhan.Icaller {
-    private uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb : number = Math.round(Math.random() * 1000);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("hub_call_client", _ch);

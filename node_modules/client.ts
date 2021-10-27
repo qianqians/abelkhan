@@ -14,7 +14,7 @@ export class gate_call_client_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_gate_call_client_handle : gate_call_client_rsp_cb | null = null;
 export class gate_call_client_caller extends abelkhan.Icaller {
-    private uuid_b84dd831_2e79_3280_a337_a69dd489e75f : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_b84dd831_2e79_3280_a337_a69dd489e75f : number = Math.round(Math.random() * 1000);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("gate_call_client", _ch);

@@ -14,7 +14,7 @@ export class dbproxy_call_hub_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_dbproxy_call_hub_handle : dbproxy_call_hub_rsp_cb | null = null;
 export class dbproxy_call_hub_caller extends abelkhan.Icaller {
-    private uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8 : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8 : number = Math.round(Math.random() * 1000);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("dbproxy_call_hub", _ch);
@@ -452,7 +452,7 @@ export class hub_call_dbproxy_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_hub_call_dbproxy_handle : hub_call_dbproxy_rsp_cb | null = null;
 export class hub_call_dbproxy_caller extends abelkhan.Icaller {
-    private uuid_e713438c_e791_3714_ad31_4ccbddee2554 : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_e713438c_e791_3714_ad31_4ccbddee2554 : number = Math.round(Math.random() * 1000);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("hub_call_dbproxy", _ch);
@@ -462,7 +462,7 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
     }
 
     public reg_hub(hub_name:string){
-        let uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
+        let uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = Math.round(this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++);
 
         let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106];
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(hub_name);
@@ -476,7 +476,7 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
     }
 
     public create_persisted_object(db:string, collection:string, object_info:Uint8Array){
-        let uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
+        let uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb = Math.round(this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++);
 
         let _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607:any[] = [uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb];
         _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.push(db);
@@ -492,7 +492,7 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
     }
 
     public updata_persisted_object(db:string, collection:string, query_info:Uint8Array, updata_info:Uint8Array, _upsert:boolean){
-        let uuid_7864a402_2d75_5c02_b24b_50287a06732f = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
+        let uuid_7864a402_2d75_5c02_b24b_50287a06732f = Math.round(this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++);
 
         let _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425:any[] = [uuid_7864a402_2d75_5c02_b24b_50287a06732f];
         _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.push(db);
@@ -510,7 +510,7 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
     }
 
     public find_and_modify(db:string, collection:string, query_info:Uint8Array, updata_info:Uint8Array, _new:boolean, _upsert:boolean){
-        let uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
+        let uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a = Math.round(this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++);
 
         let _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58:any[] = [uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a];
         _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.push(db);
@@ -529,7 +529,7 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
     }
 
     public remove_object(db:string, collection:string, query_info:Uint8Array){
-        let uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
+        let uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f = Math.round(this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++);
 
         let _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da:any[] = [uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f];
         _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.push(db);
@@ -558,7 +558,7 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
     }
 
     public get_object_count(db:string, collection:string, query_info:Uint8Array){
-        let uuid_975425f5_8baf_5905_beeb_4454e78907f6 = this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
+        let uuid_975425f5_8baf_5905_beeb_4454e78907f6 = Math.round(this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++);
 
         let _argv_2632cded_162c_3a9b_86ee_462b614cbeea:any[] = [uuid_975425f5_8baf_5905_beeb_4454e78907f6];
         _argv_2632cded_162c_3a9b_86ee_462b614cbeea.push(db);

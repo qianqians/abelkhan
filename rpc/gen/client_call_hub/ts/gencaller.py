@@ -35,7 +35,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
 
     code += "export class " + module_name + "_hubproxy\n{\n"
     _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
-    code += "    private uuid_" + _uuid + " : number = Math.round(Math.random() * Number.MAX_VALUE);\n\n"
+    code += "    private uuid_" + _uuid + " : number = Math.round(Math.random() * 1000);\n\n"
     code += "    public hub_name_" + _hub_uuid + ":string;\n"
     code += "    private _client_handle:client_handle.client;\n\n"
     code += "    constructor(client_handle_:client_handle.client)\n"
@@ -251,7 +251,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                     code += ", "
             code += "){\n"
             _cb_uuid_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_DNS, func_name)).split('-'))
-            code += "        let uuid_" + _cb_uuid_uuid + " = this.uuid_" + _uuid + "++;\n\n"
+            code += "        let uuid_" + _cb_uuid_uuid + " = Math.round(this.uuid_" + _uuid + "++);\n\n"
             _argv_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
             code += "        let _argv_" + _argv_uuid + ":any[] = [uuid_" + _cb_uuid_uuid + "];\n"
             for _type, _name, _parameter in i[2]:

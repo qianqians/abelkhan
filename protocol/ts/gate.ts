@@ -12,16 +12,17 @@ export class hub_info
 }
 
 export function hub_info_to_protcol(_struct:hub_info){
-    let _protocol:any[] = [];
-    _protocol.push(_struct.hub_name);
-    _protocol.push(_struct.hub_type);
-    return _protocol;
+    return _struct;
 }
 
-export function protcol_to_hub_info(_protocol:any[]){
+export function protcol_to_hub_info(_protocol:any){
     let _struct = new hub_info();
-    _struct.hub_name = _protocol[0] as string;
-    _struct.hub_type = _protocol[1] as string;
+    for (const [key, val] of Object.entries(_protocol))        if (key === "hub_name"){
+            _struct.hub_name = val as string;
+        }
+        else if (key === "hub_type"){
+            _struct.hub_type = val as string;
+        }
     return _struct;
 }
 
@@ -104,7 +105,7 @@ export class hub_call_gate_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_hub_call_gate_handle : hub_call_gate_rsp_cb | null = null;
 export class hub_call_gate_caller extends abelkhan.Icaller {
-    private uuid_9796175c_1119_3833_bf31_5ee139b40edc : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_9796175c_1119_3833_bf31_5ee139b40edc : number = Math.round(Math.random() * 1000);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("hub_call_gate", _ch);
@@ -114,7 +115,7 @@ export class hub_call_gate_caller extends abelkhan.Icaller {
     }
 
     public reg_hub(hub_name:string, hub_type:string){
-        let uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = this.uuid_9796175c_1119_3833_bf31_5ee139b40edc++;
+        let uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = Math.round(this.uuid_9796175c_1119_3833_bf31_5ee139b40edc++);
 
         let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106];
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(hub_name);
@@ -309,7 +310,7 @@ export class client_call_gate_rsp_cb extends abelkhan.Imodule {
 
 export let rsp_cb_client_call_gate_handle : client_call_gate_rsp_cb | null = null;
 export class client_call_gate_caller extends abelkhan.Icaller {
-    private uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2 : number = Math.round(Math.random() * Number.MAX_VALUE);
+    private uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2 : number = Math.round(Math.random() * 1000);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
         super("client_call_gate", _ch);
@@ -319,7 +320,7 @@ export class client_call_gate_caller extends abelkhan.Icaller {
     }
 
     public heartbeats(){
-        let uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = this.uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2++;
+        let uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = Math.round(this.uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2++);
 
         let _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4:any[] = [uuid_a514ca5f_2c67_5668_aac0_354397bdce36];
         this.call_module_method("heartbeats", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
@@ -332,7 +333,7 @@ export class client_call_gate_caller extends abelkhan.Icaller {
     }
 
     public get_hub_info(hub_type:string){
-        let uuid_e9d2753f_7d38_512d_80ff_7aae13508048 = this.uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2++;
+        let uuid_e9d2753f_7d38_512d_80ff_7aae13508048 = Math.round(this.uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2++);
 
         let _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24:any[] = [uuid_e9d2753f_7d38_512d_80ff_7aae13508048];
         _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.push(hub_type);

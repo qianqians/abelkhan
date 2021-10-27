@@ -27,7 +27,7 @@ def gen_csharp_import(_import):
     return code
 
 def gen_ts_import(_import):
-    code = "import * as client_handle from \"client_handle\";\n"
+    code = "import * as client_handle from \"./client_handle\";\n"
     for _i in _import:
         code += "import * as " + _i + " from \"./" + _i + "\";\n"
     return code
