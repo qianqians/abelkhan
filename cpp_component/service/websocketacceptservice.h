@@ -97,6 +97,7 @@ public:
 	void onAccept(websocketpp::connection_hdl hdl) {
 		if (_is_ssl) {
 			auto ch = std::make_shared<webchannel>(asio_tls_server, hdl);
+			ch->Init();
 
 			std::scoped_lock<std::mutex> l(_chs_mu);
 			_chs.insert(std::make_pair(hdl.lock().get(), ch));
@@ -107,7 +108,8 @@ public:
 		}
 		else {
 			auto ch = std::make_shared<webchannel>(asio_server, hdl);
-			
+			ch->Init();
+
 			std::scoped_lock<std::mutex> l(_chs_mu);
 			_chs.insert(std::make_pair(hdl.lock().get(), ch));
 			
