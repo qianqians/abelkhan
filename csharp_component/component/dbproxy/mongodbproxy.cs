@@ -115,8 +115,7 @@ namespace dbproxy
                 var _bson_update = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_update);
 
                 var _query = new MongoDB.Driver.BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
-                var _bson_update_impl = new MongoDB.Bson.BsonDocument { { "$set", _bson_update } };
-                var _update = new MongoDB.Driver.BsonDocumentUpdateDefinition<MongoDB.Bson.BsonDocument>(_bson_update_impl);
+                var _update = new MongoDB.Driver.BsonDocumentUpdateDefinition<MongoDB.Bson.BsonDocument>(_bson_update);
                 var options = new UpdateOptions() { IsUpsert = upsert };
 
                 await _collection.UpdateOneAsync(_query, _update, options);
