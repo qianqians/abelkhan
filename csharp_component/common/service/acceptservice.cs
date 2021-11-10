@@ -54,6 +54,8 @@ namespace abelkhan
     {
         private ushort port;
         private IChannel boundChannel;
+        private IEventLoopGroup bossGroup;
+        private IEventLoopGroup workerGroup;
 
         public acceptservice(ushort _port)
         {
@@ -68,9 +70,6 @@ namespace abelkhan
 
         private async Task RunServerAsync()
         {
-            IEventLoopGroup bossGroup;
-            IEventLoopGroup workerGroup;
-
             var dispatcher = new DispatcherEventLoopGroup();
             bossGroup = dispatcher;
             workerGroup = new WorkerEventLoopGroup(dispatcher);
@@ -98,9 +97,18 @@ namespace abelkhan
             }
         }
 
-        public void start()
+        public  void start()
         {
             RunServerAsync().Wait();
+        }
+
+        public async void close()
+        {
+            await boundChannel.CloseAsync();
+
+            await Task.WhenAll(
+                bossGroup.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1)),
+                workerGroup.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1)));
         }
     }
 }

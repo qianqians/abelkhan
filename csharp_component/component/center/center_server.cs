@@ -140,6 +140,15 @@ namespace abelkhan
                 }
 
                 _svrmanager.remove_closed_svr();
+
+                if (_closeHandle.is_closing && _svrmanager.check_all_hub_closed())
+                {
+                    _svrmanager.close_db();
+                    _closeHandle.is_close = true;
+
+                    _accept_svr_service.close();
+                    _accept_gm_service.close();
+                }
             }
             catch (abelkhan.Exception e)
             {

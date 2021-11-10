@@ -30,7 +30,6 @@ namespace dbproxy
                 
             var rsp = (abelkhan.hub_call_dbproxy_reg_hub_rsp)_hub_call_dbproxy_module.rsp;
             hubproxy _hubproxy = _hubmanager.reg_hub(_hub_call_dbproxy_module.current_ch, hub_name);
-            _closehandle.reg_logic();
             rsp.rsp();
         }
 

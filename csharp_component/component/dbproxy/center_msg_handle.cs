@@ -36,7 +36,6 @@ namespace dbproxy
 			if (svr_type == "hub")
 			{
 				_hubs.on_hub_closed(svr_name);
-				_closehandle.logic_closed();
 			}
 		}
 

@@ -28,7 +28,7 @@ namespace dbproxy
 				hubproxys_name.Remove(name);
 				hubproxys.Remove(_proxy._ch);
 
-                lock (dbproxy.remove_chs)
+				lock (dbproxy.remove_chs)
                 {
 					dbproxy.remove_chs.Add(_proxy._ch);
 				}
@@ -43,6 +43,11 @@ namespace dbproxy
 			}
 
 			return null;
+		}
+
+		public int hub_num()
+        {
+			return hubproxys_name.Count;
 		}
 
 		private Dictionary<String, hubproxy> hubproxys_name;

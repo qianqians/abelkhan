@@ -172,6 +172,11 @@ namespace hub
         {
             _centerproxy.closed();
 
+            if (_cryptacceptservice != null)
+            {
+                _cryptacceptservice.close();
+            }
+
             _timer.addticktime(3 * 1000, (tick) =>
             {
                 _closeHandle.is_close = true;

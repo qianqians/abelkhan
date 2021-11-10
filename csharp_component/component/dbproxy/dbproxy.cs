@@ -207,8 +207,9 @@ namespace dbproxy
 				if (_closeHandle.is_close())
                 {
                     log.log.info("server closed, dbproxy server:{0}", dbproxy.name);
-					break;
-				}
+                    _dbproxy._acceptservice.close();
+                    break;
+                }
                 
 				if (ticktime > 200)
 				{
