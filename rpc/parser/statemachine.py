@@ -32,8 +32,9 @@ class statemachine(object):
                     self.machine = None
                 if isinstance(self.machine, _import):
                     self._import.append(self.machine.name)
+                    self.machine = None
         else:
-            if ch in [' ', '    ', '\r', '\n', '\t', '\0']:
+            if ch in [' ', '    ', '\r', '\n', '\t', '\0', '\r\n']:
                 if deleteNoneSpacelstrip(self.keyworld) == 'module':
                     self.machine = module()
                     self.keyworld = ''
@@ -50,16 +51,19 @@ class statemachine(object):
                 self.keyworld += ch
 
     def getmodule(self):
-        print(self.module)
+        print("module:" + str(self.module))
         return self.module
 
     def getenum(self):
+        print("enum:" + str(self.enum))
         return self.enum
 
     def getstruct(self):
+        print("struct" + str(self.struct))
         return self.struct
 
     def getimport(self):
+        print("import" + str(self._import))
         return self._import
 
     def syntaxanalysis(self, genfilestr):

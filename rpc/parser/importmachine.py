@@ -12,10 +12,11 @@ class _import(object):
         self.machine = None
 
     def push(self, ch):
-        if ch in [' ', '    ', '\r', '\n', '\t', '\0']:
+        if ch in [' ', '    ', '\r', '\n', '\t', '\0', '\r\n']:
             self.keyworld = deleteNoneSpacelstrip(self.keyworld)
             if self.keyworld != '':
                 self.name = deleteNoneSpacelstrip(self.keyworld)
+                print(self.name)
                 return True
 
         self.keyworld += ch
