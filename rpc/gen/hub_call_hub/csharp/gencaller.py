@@ -19,12 +19,10 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code = "    public class " + module_name + "_caller {\n"
     code += "        public static " + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle = null;\n"
     code += "        private " + module_name + "_hubproxy _hubproxy;\n"
-    _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
-    code += "        private Int64 uuid_" + _uuid + " = (Int64)RandomUUID.random();\n\n"
-    code += "        public " + module_name + "_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base(\"" + module_name + "\", _ch)\n"
+    code += "        public " + module_name + "_caller()\n"
     code += "        {\n"
     code += "            if (rsp_cb_" + module_name + "_handle == null)\n            {\n"
-    code += "                rsp_cb_" + module_name + "_handle = new " + module_name + "_rsp_cb(modules);\n"
+    code += "                rsp_cb_" + module_name + "_handle = new " + module_name + "_rsp_cb();\n"
     code += "            }\n"
     code += "            _hubproxy = new " + module_name + "_hubproxy(rsp_cb_" + module_name + "_handle);\n"
     code += "        }\n\n"
@@ -37,6 +35,8 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
 
     code += "    class " + module_name + "_hubproxy {\n"
     code += "    public string hub_name_" + _hub_uuid + ";\n"
+    _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
+    code += "        private Int64 uuid_" + _uuid + " = (Int64)RandomUUID.random();\n\n"
     code += "    private " + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle;\n\n"
     code += "    public " + module_name + "_hubproxy(" + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle_)\n"
     code += "    {\n"
