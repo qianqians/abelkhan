@@ -26,7 +26,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "            }\n"
     code += "            _hubproxy = new " + module_name + "_hubproxy(rsp_cb_" + module_name + "_handle);\n"
     code += "        }\n\n"
-    code += "        " + module_name + "_hubproxy get_hub(string hub_name) {\n"
+    code += "        public " + module_name + "_hubproxy get_hub(string hub_name) {\n"
     _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
     code += "            _hubproxy.hub_name_" + _hub_uuid + " = hub_name;\n"
     code += "            return _hubproxy;\n"
