@@ -33,15 +33,15 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "        }\n\n"
     code += "    }\n\n"
 
-    code += "    class " + module_name + "_hubproxy {\n"
-    code += "    public string hub_name_" + _hub_uuid + ";\n"
+    code += "    public class " + module_name + "_hubproxy {\n"
+    code += "        public string hub_name_" + _hub_uuid + ";\n"
     _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
     code += "        private Int64 uuid_" + _uuid + " = (Int64)RandomUUID.random();\n\n"
-    code += "    private " + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle;\n\n"
-    code += "    public " + module_name + "_hubproxy(" + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle_)\n"
-    code += "    {\n"
+    code += "        private " + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle;\n\n"
+    code += "        public " + module_name + "_hubproxy(" + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle_)\n"
+    code += "        {\n"
     code += "            rsp_cb_" + module_name + "_handle = rsp_cb_" + module_name + "_handle_;\n"
-    code += "    }\n\n"
+    code += "        }\n\n"
 
 
     for i in funcs:
