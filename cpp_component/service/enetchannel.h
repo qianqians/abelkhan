@@ -46,7 +46,6 @@ public:
 			ENetPacket* packet = enet_packet_create(data, len, ENET_PACKET_FLAG_RELIABLE);
 			enet_peer_send(_peer, 0, packet);
 			enet_host_flush(_host);
-			enet_packet_destroy(packet);
 		}
 		catch (std::exception e) {
 			spdlog::error("enetchannel push exception error:{0}", e.what());
