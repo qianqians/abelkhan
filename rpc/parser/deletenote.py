@@ -14,32 +14,32 @@ def deletenote(filestr):
         while(1):
             if count == 1:
                 indexafter = _str.find("*/")
-                if indexafter is not -1:
+                if indexafter != -1:
                     _str = _str[indexafter+2:]
                     count = 0
                 else:
                     break
 
             index = _str.find('//')
-            if index is not -1:
+            if index != -1:
                 _str = _str[0:index]
             else:
                 indexbegin = _str.find("/*")
-                if indexbegin is not -1:
+                if indexbegin != -1:
                     errornote = _str
                     indexafter = _str.find("*/")
-                    if indexafter is not -1:
+                    if indexafter != -1:
                         _str = _str[0:indexbegin] + _str[indexafter+2:]
                     else:
                         count = 1
                         break
 
-            if _str is not "":
+            if _str != "":
                 genfilestr.append(_str)
 
             break
 
-    if count is 1:
+    if count == 1:
         raise Exception("c/c++ coding error unpaired /* ", errornote)
 
     return genfilestr

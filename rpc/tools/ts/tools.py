@@ -143,7 +143,7 @@ def convert_type(typestr, dependent_struct, dependent_enum):
             return _import + "." + typestr
     elif check_in_dependent(typestr, dependent_enum):
         _import = get_import(typestr, dependent_enum)
-    	if _import == "":
+        if _import == "":
             return typestr
         else:
             return _import + "." + typestr
