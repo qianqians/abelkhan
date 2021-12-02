@@ -4,7 +4,6 @@ namespace abelkhan
 {
 
 /*this caller code is codegen by abelkhan codegen for cpp*/
-std::shared_ptr<dbproxy_call_hub_rsp_cb> dbproxy_call_hub_caller::rsp_cb_dbproxy_call_hub_handle = nullptr;
 std::shared_ptr<hub_call_dbproxy_rsp_cb> hub_call_dbproxy_caller::rsp_cb_hub_call_dbproxy_handle = nullptr;
 hub_call_dbproxy_reg_hub_cb::hub_call_dbproxy_reg_hub_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_dbproxy_rsp_cb> _module_rsp_cb) {
     cb_uuid = _cb_uuid;
@@ -126,5 +125,6 @@ void hub_call_dbproxy_get_object_count_cb::timeout(uint64_t tick, std::function<
     sig_get_object_count_timeout.connect(timeout_cb);
 }
 
+std::shared_ptr<dbproxy_call_hub_rsp_cb> dbproxy_call_hub_caller::rsp_cb_dbproxy_call_hub_handle = nullptr;
 
 }

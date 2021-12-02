@@ -3,6 +3,46 @@ import * as abelkhan from "./abelkhan";
 
 /*this struct code is codegen by abelkhan codegen for typescript*/
 /*this caller code is codegen by abelkhan codegen for typescript*/
+/*this cb code is codegen by abelkhan for ts*/
+export class gate_call_hub_rsp_cb extends abelkhan.Imodule {
+    constructor(modules:abelkhan.modulemng){
+        super("gate_call_hub_rsp_cb");
+        modules.reg_module(this);
+
+    }
+}
+
+export let rsp_cb_gate_call_hub_handle : gate_call_hub_rsp_cb | null = null;
+export class gate_call_hub_caller extends abelkhan.Icaller {
+    private uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1 : number = Math.round(Math.random() * 1000);
+
+    constructor(_ch:any, modules:abelkhan.modulemng){
+        super("gate_call_hub", _ch);
+        if (rsp_cb_gate_call_hub_handle == null){
+            rsp_cb_gate_call_hub_handle = new gate_call_hub_rsp_cb(modules);
+        }
+    }
+
+    public client_disconnect(client_uuid:string){
+        let _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60:any[] = [];
+        _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60.push(client_uuid);
+        this.call_module_method("client_disconnect", _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60);
+    }
+
+    public client_exception(client_uuid:string){
+        let _argv_706b1331_3629_3681_9d39_d2ef3b6675ed:any[] = [];
+        _argv_706b1331_3629_3681_9d39_d2ef3b6675ed.push(client_uuid);
+        this.call_module_method("client_exception", _argv_706b1331_3629_3681_9d39_d2ef3b6675ed);
+    }
+
+    public client_call_hub(client_uuid:string, rpc_argv:Uint8Array){
+        let _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263:any[] = [];
+        _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.push(client_uuid);
+        _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.push(rpc_argv);
+        this.call_module_method("client_call_hub", _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263);
+    }
+
+}
 export class hub_call_hub_reg_hub_cb{
     private cb_uuid : number;
     private module_rsp_cb : hub_call_hub_rsp_cb;
@@ -113,42 +153,29 @@ export class hub_call_hub_caller extends abelkhan.Icaller {
 
 }
 /*this cb code is codegen by abelkhan for ts*/
-export class gate_call_hub_rsp_cb extends abelkhan.Imodule {
+export class hub_call_client_rsp_cb extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
-        super("gate_call_hub_rsp_cb");
+        super("hub_call_client_rsp_cb");
         modules.reg_module(this);
 
     }
 }
 
-export let rsp_cb_gate_call_hub_handle : gate_call_hub_rsp_cb | null = null;
-export class gate_call_hub_caller extends abelkhan.Icaller {
-    private uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1 : number = Math.round(Math.random() * 1000);
+export let rsp_cb_hub_call_client_handle : hub_call_client_rsp_cb | null = null;
+export class hub_call_client_caller extends abelkhan.Icaller {
+    private uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb : number = Math.round(Math.random() * 1000);
 
     constructor(_ch:any, modules:abelkhan.modulemng){
-        super("gate_call_hub", _ch);
-        if (rsp_cb_gate_call_hub_handle == null){
-            rsp_cb_gate_call_hub_handle = new gate_call_hub_rsp_cb(modules);
+        super("hub_call_client", _ch);
+        if (rsp_cb_hub_call_client_handle == null){
+            rsp_cb_hub_call_client_handle = new hub_call_client_rsp_cb(modules);
         }
     }
 
-    public client_disconnect(client_uuid:string){
-        let _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60:any[] = [];
-        _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60.push(client_uuid);
-        this.call_module_method("client_disconnect", _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60);
-    }
-
-    public client_exception(client_uuid:string){
-        let _argv_706b1331_3629_3681_9d39_d2ef3b6675ed:any[] = [];
-        _argv_706b1331_3629_3681_9d39_d2ef3b6675ed.push(client_uuid);
-        this.call_module_method("client_exception", _argv_706b1331_3629_3681_9d39_d2ef3b6675ed);
-    }
-
-    public client_call_hub(client_uuid:string, rpc_argv:Uint8Array){
-        let _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263:any[] = [];
-        _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.push(client_uuid);
-        _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.push(rpc_argv);
-        this.call_module_method("client_call_hub", _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263);
+    public call_client(rpc_argv:Uint8Array){
+        let _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab:any[] = [];
+        _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push(rpc_argv);
+        this.call_module_method("call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
     }
 
 }
@@ -266,34 +293,52 @@ export class client_call_hub_caller extends abelkhan.Icaller {
     }
 
 }
-/*this cb code is codegen by abelkhan for ts*/
-export class hub_call_client_rsp_cb extends abelkhan.Imodule {
+/*this module code is codegen by abelkhan codegen for typescript*/
+export class gate_call_hub_module extends abelkhan.Imodule {
+    private modules:abelkhan.modulemng;
     constructor(modules:abelkhan.modulemng){
-        super("hub_call_client_rsp_cb");
-        modules.reg_module(this);
+        super("gate_call_hub");
+        this.modules = modules;
+        this.modules.reg_module(this);
 
+        this.reg_method("client_disconnect", this.client_disconnect.bind(this));
+        this.reg_method("client_exception", this.client_exception.bind(this));
+        this.reg_method("client_call_hub", this.client_call_hub.bind(this));
+
+        this.cb_client_disconnect = null;
+        this.cb_client_exception = null;
+        this.cb_client_call_hub = null;
     }
-}
 
-export let rsp_cb_hub_call_client_handle : hub_call_client_rsp_cb | null = null;
-export class hub_call_client_caller extends abelkhan.Icaller {
-    private uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb : number = Math.round(Math.random() * 1000);
-
-    constructor(_ch:any, modules:abelkhan.modulemng){
-        super("hub_call_client", _ch);
-        if (rsp_cb_hub_call_client_handle == null){
-            rsp_cb_hub_call_client_handle = new hub_call_client_rsp_cb(modules);
+    public cb_client_disconnect : (client_uuid:string)=>void | null;
+    client_disconnect(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        if (this.cb_client_disconnect){
+            this.cb_client_disconnect.apply(null, _argv_);
         }
     }
 
-    public call_client(rpc_argv:Uint8Array){
-        let _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab:any[] = [];
-        _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push(rpc_argv);
-        this.call_module_method("call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
+    public cb_client_exception : (client_uuid:string)=>void | null;
+    client_exception(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        if (this.cb_client_exception){
+            this.cb_client_exception.apply(null, _argv_);
+        }
+    }
+
+    public cb_client_call_hub : (client_uuid:string, rpc_argv:Uint8Array)=>void | null;
+    client_call_hub(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        _argv_.push(inArray[1]);
+        if (this.cb_client_call_hub){
+            this.cb_client_call_hub.apply(null, _argv_);
+        }
     }
 
 }
-/*this module code is codegen by abelkhan codegen for typescript*/
 export class hub_call_hub_reg_hub_rsp extends abelkhan.Icaller {
     private uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 : number;
     constructor(_ch:abelkhan.Ichannel, _uuid:number){
@@ -350,47 +395,24 @@ export class hub_call_hub_module extends abelkhan.Imodule {
     }
 
 }
-export class gate_call_hub_module extends abelkhan.Imodule {
+export class hub_call_client_module extends abelkhan.Imodule {
     private modules:abelkhan.modulemng;
     constructor(modules:abelkhan.modulemng){
-        super("gate_call_hub");
+        super("hub_call_client");
         this.modules = modules;
         this.modules.reg_module(this);
 
-        this.reg_method("client_disconnect", this.client_disconnect.bind(this));
-        this.reg_method("client_exception", this.client_exception.bind(this));
-        this.reg_method("client_call_hub", this.client_call_hub.bind(this));
+        this.reg_method("call_client", this.call_client.bind(this));
 
-        this.cb_client_disconnect = null;
-        this.cb_client_exception = null;
-        this.cb_client_call_hub = null;
+        this.cb_call_client = null;
     }
 
-    public cb_client_disconnect : (client_uuid:string)=>void | null;
-    client_disconnect(inArray:any[]){
+    public cb_call_client : (rpc_argv:Uint8Array)=>void | null;
+    call_client(inArray:any[]){
         let _argv_:any[] = [];
         _argv_.push(inArray[0]);
-        if (this.cb_client_disconnect){
-            this.cb_client_disconnect.apply(null, _argv_);
-        }
-    }
-
-    public cb_client_exception : (client_uuid:string)=>void | null;
-    client_exception(inArray:any[]){
-        let _argv_:any[] = [];
-        _argv_.push(inArray[0]);
-        if (this.cb_client_exception){
-            this.cb_client_exception.apply(null, _argv_);
-        }
-    }
-
-    public cb_client_call_hub : (client_uuid:string, rpc_argv:Uint8Array)=>void | null;
-    client_call_hub(inArray:any[]){
-        let _argv_:any[] = [];
-        _argv_.push(inArray[0]);
-        _argv_.push(inArray[1]);
-        if (this.cb_client_call_hub){
-            this.cb_client_call_hub.apply(null, _argv_);
+        if (this.cb_call_client){
+            this.cb_call_client.apply(null, _argv_);
         }
     }
 
@@ -457,28 +479,6 @@ export class client_call_hub_module extends abelkhan.Imodule {
         _argv_.push(inArray[0]);
         if (this.cb_call_hub){
             this.cb_call_hub.apply(null, _argv_);
-        }
-    }
-
-}
-export class hub_call_client_module extends abelkhan.Imodule {
-    private modules:abelkhan.modulemng;
-    constructor(modules:abelkhan.modulemng){
-        super("hub_call_client");
-        this.modules = modules;
-        this.modules.reg_module(this);
-
-        this.reg_method("call_client", this.call_client.bind(this));
-
-        this.cb_call_client = null;
-    }
-
-    public cb_call_client : (rpc_argv:Uint8Array)=>void | null;
-    call_client(inArray:any[]){
-        let _argv_:any[] = [];
-        _argv_.push(inArray[0]);
-        if (this.cb_call_client){
-            this.cb_call_client.apply(null, _argv_);
         }
     }
 

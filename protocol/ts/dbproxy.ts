@@ -3,40 +3,6 @@ import * as abelkhan from "./abelkhan";
 
 /*this struct code is codegen by abelkhan codegen for typescript*/
 /*this caller code is codegen by abelkhan codegen for typescript*/
-/*this cb code is codegen by abelkhan for ts*/
-export class dbproxy_call_hub_rsp_cb extends abelkhan.Imodule {
-    constructor(modules:abelkhan.modulemng){
-        super("dbproxy_call_hub_rsp_cb");
-        modules.reg_module(this);
-
-    }
-}
-
-export let rsp_cb_dbproxy_call_hub_handle : dbproxy_call_hub_rsp_cb | null = null;
-export class dbproxy_call_hub_caller extends abelkhan.Icaller {
-    private uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8 : number = Math.round(Math.random() * 1000);
-
-    constructor(_ch:any, modules:abelkhan.modulemng){
-        super("dbproxy_call_hub", _ch);
-        if (rsp_cb_dbproxy_call_hub_handle == null){
-            rsp_cb_dbproxy_call_hub_handle = new dbproxy_call_hub_rsp_cb(modules);
-        }
-    }
-
-    public ack_get_object_info(callbackid:string, object_info:Uint8Array){
-        let _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7:any[] = [];
-        _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7.push(callbackid);
-        _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7.push(object_info);
-        this.call_module_method("ack_get_object_info", _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7);
-    }
-
-    public ack_get_object_info_end(callbackid:string){
-        let _argv_e4756ccf_94e2_3b4f_958a_701f7076e607:any[] = [];
-        _argv_e4756ccf_94e2_3b4f_958a_701f7076e607.push(callbackid);
-        this.call_module_method("ack_get_object_info_end", _argv_e4756ccf_94e2_3b4f_958a_701f7076e607);
-    }
-
-}
 export class hub_call_dbproxy_reg_hub_cb{
     private cb_uuid : number;
     private module_rsp_cb : hub_call_dbproxy_rsp_cb;
@@ -574,41 +540,41 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
     }
 
 }
-/*this module code is codegen by abelkhan codegen for typescript*/
-export class dbproxy_call_hub_module extends abelkhan.Imodule {
-    private modules:abelkhan.modulemng;
+/*this cb code is codegen by abelkhan for ts*/
+export class dbproxy_call_hub_rsp_cb extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
-        super("dbproxy_call_hub");
-        this.modules = modules;
-        this.modules.reg_module(this);
+        super("dbproxy_call_hub_rsp_cb");
+        modules.reg_module(this);
 
-        this.reg_method("ack_get_object_info", this.ack_get_object_info.bind(this));
-        this.reg_method("ack_get_object_info_end", this.ack_get_object_info_end.bind(this));
-
-        this.cb_ack_get_object_info = null;
-        this.cb_ack_get_object_info_end = null;
     }
+}
 
-    public cb_ack_get_object_info : (callbackid:string, object_info:Uint8Array)=>void | null;
-    ack_get_object_info(inArray:any[]){
-        let _argv_:any[] = [];
-        _argv_.push(inArray[0]);
-        _argv_.push(inArray[1]);
-        if (this.cb_ack_get_object_info){
-            this.cb_ack_get_object_info.apply(null, _argv_);
+export let rsp_cb_dbproxy_call_hub_handle : dbproxy_call_hub_rsp_cb | null = null;
+export class dbproxy_call_hub_caller extends abelkhan.Icaller {
+    private uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8 : number = Math.round(Math.random() * 1000);
+
+    constructor(_ch:any, modules:abelkhan.modulemng){
+        super("dbproxy_call_hub", _ch);
+        if (rsp_cb_dbproxy_call_hub_handle == null){
+            rsp_cb_dbproxy_call_hub_handle = new dbproxy_call_hub_rsp_cb(modules);
         }
     }
 
-    public cb_ack_get_object_info_end : (callbackid:string)=>void | null;
-    ack_get_object_info_end(inArray:any[]){
-        let _argv_:any[] = [];
-        _argv_.push(inArray[0]);
-        if (this.cb_ack_get_object_info_end){
-            this.cb_ack_get_object_info_end.apply(null, _argv_);
-        }
+    public ack_get_object_info(callbackid:string, object_info:Uint8Array){
+        let _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7:any[] = [];
+        _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7.push(callbackid);
+        _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7.push(object_info);
+        this.call_module_method("ack_get_object_info", _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7);
+    }
+
+    public ack_get_object_info_end(callbackid:string){
+        let _argv_e4756ccf_94e2_3b4f_958a_701f7076e607:any[] = [];
+        _argv_e4756ccf_94e2_3b4f_958a_701f7076e607.push(callbackid);
+        this.call_module_method("ack_get_object_info_end", _argv_e4756ccf_94e2_3b4f_958a_701f7076e607);
     }
 
 }
+/*this module code is codegen by abelkhan codegen for typescript*/
 export class hub_call_dbproxy_reg_hub_rsp extends abelkhan.Icaller {
     private uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 : number;
     constructor(_ch:abelkhan.Ichannel, _uuid:number){
@@ -850,6 +816,40 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
             this.cb_get_object_count.apply(null, _argv_);
         }
         this.rsp = null;
+    }
+
+}
+export class dbproxy_call_hub_module extends abelkhan.Imodule {
+    private modules:abelkhan.modulemng;
+    constructor(modules:abelkhan.modulemng){
+        super("dbproxy_call_hub");
+        this.modules = modules;
+        this.modules.reg_module(this);
+
+        this.reg_method("ack_get_object_info", this.ack_get_object_info.bind(this));
+        this.reg_method("ack_get_object_info_end", this.ack_get_object_info_end.bind(this));
+
+        this.cb_ack_get_object_info = null;
+        this.cb_ack_get_object_info_end = null;
+    }
+
+    public cb_ack_get_object_info : (callbackid:string, object_info:Uint8Array)=>void | null;
+    ack_get_object_info(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        _argv_.push(inArray[1]);
+        if (this.cb_ack_get_object_info){
+            this.cb_ack_get_object_info.apply(null, _argv_);
+        }
+    }
+
+    public cb_ack_get_object_info_end : (callbackid:string)=>void | null;
+    ack_get_object_info_end(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        if (this.cb_ack_get_object_info_end){
+            this.cb_ack_get_object_info_end.apply(null, _argv_);
+        }
     }
 
 }

@@ -3,75 +3,6 @@ import * as abelkhan from "./abelkhan";
 
 /*this struct code is codegen by abelkhan codegen for typescript*/
 /*this caller code is codegen by abelkhan codegen for typescript*/
-/*this cb code is codegen by abelkhan for ts*/
-export class center_call_hub_rsp_cb extends abelkhan.Imodule {
-    constructor(modules:abelkhan.modulemng){
-        super("center_call_hub_rsp_cb");
-        modules.reg_module(this);
-
-    }
-}
-
-export let rsp_cb_center_call_hub_handle : center_call_hub_rsp_cb | null = null;
-export class center_call_hub_caller extends abelkhan.Icaller {
-    private uuid_adbd1e34_0c90_3426_aefa_4d734c07a706 : number = Math.round(Math.random() * 1000);
-
-    constructor(_ch:any, modules:abelkhan.modulemng){
-        super("center_call_hub", _ch);
-        if (rsp_cb_center_call_hub_handle == null){
-            rsp_cb_center_call_hub_handle = new center_call_hub_rsp_cb(modules);
-        }
-    }
-
-    public distribute_server_address(svr_type:string, svr_name:string, ip:string, port:number){
-        let _argv_b71bf35c_d65b_3682_98d1_b934f5276558:any[] = [];
-        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(svr_type);
-        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(svr_name);
-        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(ip);
-        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(port);
-        this.call_module_method("distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
-    }
-
-    public reload(argv:string){
-        let _argv_ba37af53_beea_3d61_82e1_8d15e335971d:any[] = [];
-        _argv_ba37af53_beea_3d61_82e1_8d15e335971d.push(argv);
-        this.call_module_method("reload", _argv_ba37af53_beea_3d61_82e1_8d15e335971d);
-    }
-
-}
-/*this cb code is codegen by abelkhan for ts*/
-export class center_call_server_rsp_cb extends abelkhan.Imodule {
-    constructor(modules:abelkhan.modulemng){
-        super("center_call_server_rsp_cb");
-        modules.reg_module(this);
-
-    }
-}
-
-export let rsp_cb_center_call_server_handle : center_call_server_rsp_cb | null = null;
-export class center_call_server_caller extends abelkhan.Icaller {
-    private uuid_8c11e5bb_e9ff_3a0b_a436_65a9922a8da5 : number = Math.round(Math.random() * 1000);
-
-    constructor(_ch:any, modules:abelkhan.modulemng){
-        super("center_call_server", _ch);
-        if (rsp_cb_center_call_server_handle == null){
-            rsp_cb_center_call_server_handle = new center_call_server_rsp_cb(modules);
-        }
-    }
-
-    public close_server(){
-        let _argv_8394af17_8a06_3068_977d_477a1276f56e:any[] = [];
-        this.call_module_method("close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
-    }
-
-    public svr_be_closed(svr_type:string, svr_name:string){
-        let _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac:any[] = [];
-        _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push(svr_type);
-        _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push(svr_name);
-        this.call_module_method("svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
-    }
-
-}
 export class center_reg_server_cb{
     private cb_uuid : number;
     private module_rsp_cb : center_rsp_cb;
@@ -188,6 +119,75 @@ export class center_caller extends abelkhan.Icaller {
 
 }
 /*this cb code is codegen by abelkhan for ts*/
+export class center_call_server_rsp_cb extends abelkhan.Imodule {
+    constructor(modules:abelkhan.modulemng){
+        super("center_call_server_rsp_cb");
+        modules.reg_module(this);
+
+    }
+}
+
+export let rsp_cb_center_call_server_handle : center_call_server_rsp_cb | null = null;
+export class center_call_server_caller extends abelkhan.Icaller {
+    private uuid_8c11e5bb_e9ff_3a0b_a436_65a9922a8da5 : number = Math.round(Math.random() * 1000);
+
+    constructor(_ch:any, modules:abelkhan.modulemng){
+        super("center_call_server", _ch);
+        if (rsp_cb_center_call_server_handle == null){
+            rsp_cb_center_call_server_handle = new center_call_server_rsp_cb(modules);
+        }
+    }
+
+    public close_server(){
+        let _argv_8394af17_8a06_3068_977d_477a1276f56e:any[] = [];
+        this.call_module_method("close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
+    }
+
+    public svr_be_closed(svr_type:string, svr_name:string){
+        let _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac:any[] = [];
+        _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push(svr_type);
+        _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push(svr_name);
+        this.call_module_method("svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
+    }
+
+}
+/*this cb code is codegen by abelkhan for ts*/
+export class center_call_hub_rsp_cb extends abelkhan.Imodule {
+    constructor(modules:abelkhan.modulemng){
+        super("center_call_hub_rsp_cb");
+        modules.reg_module(this);
+
+    }
+}
+
+export let rsp_cb_center_call_hub_handle : center_call_hub_rsp_cb | null = null;
+export class center_call_hub_caller extends abelkhan.Icaller {
+    private uuid_adbd1e34_0c90_3426_aefa_4d734c07a706 : number = Math.round(Math.random() * 1000);
+
+    constructor(_ch:any, modules:abelkhan.modulemng){
+        super("center_call_hub", _ch);
+        if (rsp_cb_center_call_hub_handle == null){
+            rsp_cb_center_call_hub_handle = new center_call_hub_rsp_cb(modules);
+        }
+    }
+
+    public distribute_server_address(svr_type:string, svr_name:string, ip:string, port:number){
+        let _argv_b71bf35c_d65b_3682_98d1_b934f5276558:any[] = [];
+        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(svr_type);
+        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(svr_name);
+        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(ip);
+        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(port);
+        this.call_module_method("distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
+    }
+
+    public reload(argv:string){
+        let _argv_ba37af53_beea_3d61_82e1_8d15e335971d:any[] = [];
+        _argv_ba37af53_beea_3d61_82e1_8d15e335971d.push(argv);
+        this.call_module_method("reload", _argv_ba37af53_beea_3d61_82e1_8d15e335971d);
+    }
+
+}
+/*this cb code is codegen by abelkhan for ts*/
 export class gm_center_rsp_cb extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("gm_center_rsp_cb");
@@ -228,75 +228,6 @@ export class gm_center_caller extends abelkhan.Icaller {
 
 }
 /*this module code is codegen by abelkhan codegen for typescript*/
-export class center_call_hub_module extends abelkhan.Imodule {
-    private modules:abelkhan.modulemng;
-    constructor(modules:abelkhan.modulemng){
-        super("center_call_hub");
-        this.modules = modules;
-        this.modules.reg_module(this);
-
-        this.reg_method("distribute_server_address", this.distribute_server_address.bind(this));
-        this.reg_method("reload", this.reload.bind(this));
-
-        this.cb_distribute_server_address = null;
-        this.cb_reload = null;
-    }
-
-    public cb_distribute_server_address : (svr_type:string, svr_name:string, ip:string, port:number)=>void | null;
-    distribute_server_address(inArray:any[]){
-        let _argv_:any[] = [];
-        _argv_.push(inArray[0]);
-        _argv_.push(inArray[1]);
-        _argv_.push(inArray[2]);
-        _argv_.push(inArray[3]);
-        if (this.cb_distribute_server_address){
-            this.cb_distribute_server_address.apply(null, _argv_);
-        }
-    }
-
-    public cb_reload : (argv:string)=>void | null;
-    reload(inArray:any[]){
-        let _argv_:any[] = [];
-        _argv_.push(inArray[0]);
-        if (this.cb_reload){
-            this.cb_reload.apply(null, _argv_);
-        }
-    }
-
-}
-export class center_call_server_module extends abelkhan.Imodule {
-    private modules:abelkhan.modulemng;
-    constructor(modules:abelkhan.modulemng){
-        super("center_call_server");
-        this.modules = modules;
-        this.modules.reg_module(this);
-
-        this.reg_method("close_server", this.close_server.bind(this));
-        this.reg_method("svr_be_closed", this.svr_be_closed.bind(this));
-
-        this.cb_close_server = null;
-        this.cb_svr_be_closed = null;
-    }
-
-    public cb_close_server : ()=>void | null;
-    close_server(inArray:any[]){
-        let _argv_:any[] = [];
-        if (this.cb_close_server){
-            this.cb_close_server.apply(null, _argv_);
-        }
-    }
-
-    public cb_svr_be_closed : (svr_type:string, svr_name:string)=>void | null;
-    svr_be_closed(inArray:any[]){
-        let _argv_:any[] = [];
-        _argv_.push(inArray[0]);
-        _argv_.push(inArray[1]);
-        if (this.cb_svr_be_closed){
-            this.cb_svr_be_closed.apply(null, _argv_);
-        }
-    }
-
-}
 export class center_reg_server_rsp extends abelkhan.Icaller {
     private uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda : number;
     constructor(_ch:abelkhan.Ichannel, _uuid:number){
@@ -360,6 +291,75 @@ export class center_module extends abelkhan.Imodule {
         let _argv_:any[] = [];
         if (this.cb_closed){
             this.cb_closed.apply(null, _argv_);
+        }
+    }
+
+}
+export class center_call_server_module extends abelkhan.Imodule {
+    private modules:abelkhan.modulemng;
+    constructor(modules:abelkhan.modulemng){
+        super("center_call_server");
+        this.modules = modules;
+        this.modules.reg_module(this);
+
+        this.reg_method("close_server", this.close_server.bind(this));
+        this.reg_method("svr_be_closed", this.svr_be_closed.bind(this));
+
+        this.cb_close_server = null;
+        this.cb_svr_be_closed = null;
+    }
+
+    public cb_close_server : ()=>void | null;
+    close_server(inArray:any[]){
+        let _argv_:any[] = [];
+        if (this.cb_close_server){
+            this.cb_close_server.apply(null, _argv_);
+        }
+    }
+
+    public cb_svr_be_closed : (svr_type:string, svr_name:string)=>void | null;
+    svr_be_closed(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        _argv_.push(inArray[1]);
+        if (this.cb_svr_be_closed){
+            this.cb_svr_be_closed.apply(null, _argv_);
+        }
+    }
+
+}
+export class center_call_hub_module extends abelkhan.Imodule {
+    private modules:abelkhan.modulemng;
+    constructor(modules:abelkhan.modulemng){
+        super("center_call_hub");
+        this.modules = modules;
+        this.modules.reg_module(this);
+
+        this.reg_method("distribute_server_address", this.distribute_server_address.bind(this));
+        this.reg_method("reload", this.reload.bind(this));
+
+        this.cb_distribute_server_address = null;
+        this.cb_reload = null;
+    }
+
+    public cb_distribute_server_address : (svr_type:string, svr_name:string, ip:string, port:number)=>void | null;
+    distribute_server_address(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        _argv_.push(inArray[1]);
+        _argv_.push(inArray[2]);
+        _argv_.push(inArray[3]);
+        if (this.cb_distribute_server_address){
+            this.cb_distribute_server_address.apply(null, _argv_);
+        }
+    }
+
+    public cb_reload : (argv:string)=>void | null;
+    reload(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        if (this.cb_reload){
+            this.cb_reload.apply(null, _argv_);
         }
     }
 

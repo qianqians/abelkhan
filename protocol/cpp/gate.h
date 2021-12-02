@@ -38,136 +38,6 @@ namespace abelkhan
     };
 
 /*this caller code is codegen by abelkhan codegen for cpp*/
-    class hub_call_gate_rsp_cb;
-    class hub_call_gate_reg_hub_cb : public std::enable_shared_from_this<hub_call_gate_reg_hub_cb>{
-    private:
-        uint64_t cb_uuid;
-        std::shared_ptr<hub_call_gate_rsp_cb> module_rsp_cb;
-
-    public:
-        hub_call_gate_reg_hub_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_gate_rsp_cb> _module_rsp_cb);
-    public:
-        concurrent::signals<void()> sig_reg_hub_cb;
-        concurrent::signals<void()> sig_reg_hub_err;
-        concurrent::signals<void()> sig_reg_hub_timeout;
-
-        std::shared_ptr<hub_call_gate_reg_hub_cb> callBack(std::function<void()> cb, std::function<void()> err);
-        void timeout(uint64_t tick, std::function<void()> timeout_cb);
-    };
-
-/*this cb code is codegen by abelkhan for cpp*/
-    class hub_call_gate_rsp_cb : public Imodule, public std::enable_shared_from_this<hub_call_gate_rsp_cb>{
-    public:
-        std::mutex mutex_map_reg_hub;
-        std::map<uint64_t, std::shared_ptr<hub_call_gate_reg_hub_cb> > map_reg_hub;
-        hub_call_gate_rsp_cb() : Imodule("hub_call_gate_rsp_cb")
-        {
-        }
-
-        void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-            reg_method("reg_hub_rsp", std::bind(&hub_call_gate_rsp_cb::reg_hub_rsp, this, std::placeholders::_1));
-            reg_method("reg_hub_err", std::bind(&hub_call_gate_rsp_cb::reg_hub_err, this, std::placeholders::_1));
-        }
-
-        void reg_hub_rsp(const msgpack11::MsgPack::array& inArray){
-            auto uuid = inArray[0].uint64_value();
-            auto rsp = try_get_and_del_reg_hub_cb(uuid);
-            if (rsp != nullptr){
-                rsp->sig_reg_hub_cb.emit();
-            }
-        }
-
-        void reg_hub_err(const msgpack11::MsgPack::array& inArray){
-            auto uuid = inArray[0].uint64_value();
-            auto rsp = try_get_and_del_reg_hub_cb(uuid);
-            if (rsp != nullptr){
-                rsp->sig_reg_hub_err.emit();
-            }
-        }
-
-        void reg_hub_timeout(uint64_t cb_uuid){
-            auto rsp = try_get_and_del_reg_hub_cb(cb_uuid);
-            if (rsp != nullptr){
-                rsp->sig_reg_hub_timeout.emit();
-            }
-        }
-
-        std::shared_ptr<hub_call_gate_reg_hub_cb> try_get_and_del_reg_hub_cb(uint64_t uuid){
-            std::lock_guard<std::mutex> l(mutex_map_reg_hub);
-            if (map_reg_hub.find(uuid) != map_reg_hub.end()) {
-                auto rsp = map_reg_hub[uuid];
-                map_reg_hub.erase(uuid);
-                return rsp;
-            }
-            return nullptr;
-        }
-
-    };
-
-    class hub_call_gate_caller : Icaller {
-    private:
-        static std::shared_ptr<hub_call_gate_rsp_cb> rsp_cb_hub_call_gate_handle;
-
-    private:
-        std::atomic<uint64_t> uuid_9796175c_1119_3833_bf31_5ee139b40edc;
-
-    public:
-        hub_call_gate_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("hub_call_gate", _ch)
-        {
-            if (rsp_cb_hub_call_gate_handle == nullptr){
-                rsp_cb_hub_call_gate_handle = std::make_shared<hub_call_gate_rsp_cb>();
-                rsp_cb_hub_call_gate_handle->Init(modules);
-            }
-            uuid_9796175c_1119_3833_bf31_5ee139b40edc.store(random());
-        }
-
-        std::shared_ptr<hub_call_gate_reg_hub_cb> reg_hub(std::string hub_name, std::string hub_type){
-            auto uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = uuid_9796175c_1119_3833_bf31_5ee139b40edc++;
-            msgpack11::MsgPack::array _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
-            _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67.push_back(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106);
-            _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67.push_back(hub_name);
-            _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67.push_back(hub_type);
-            call_module_method("reg_hub", _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
-
-            auto cb_reg_hub_obj = std::make_shared<hub_call_gate_reg_hub_cb>(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_gate_handle);
-            std::lock_guard<std::mutex> l(rsp_cb_hub_call_gate_handle->mutex_map_reg_hub);
-            rsp_cb_hub_call_gate_handle->map_reg_hub.insert(std::make_pair(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, cb_reg_hub_obj));
-            return cb_reg_hub_obj;
-        }
-
-        void disconnect_client(std::string client_uuid){
-            msgpack11::MsgPack::array _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85;
-            _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.push_back(client_uuid);
-            call_module_method("disconnect_client", _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85);
-        }
-
-        void forward_hub_call_client(std::string client_uuid, std::vector<uint8_t> rpc_argv){
-            msgpack11::MsgPack::array _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1;
-            _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1.push_back(client_uuid);
-            _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1.push_back(rpc_argv);
-            call_module_method("forward_hub_call_client", _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1);
-        }
-
-        void forward_hub_call_group_client(std::vector<std::string> client_uuids, std::vector<uint8_t> rpc_argv){
-            msgpack11::MsgPack::array _argv_374b012d_0718_3f84_91f0_784b12f8189c;
-            msgpack11::MsgPack::array _array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1;
-            for(auto v_a8e916a0_4f15_5329_b872_d0ff30ba7fe6 : client_uuids){
-                _array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1.push_back(v_a8e916a0_4f15_5329_b872_d0ff30ba7fe6);
-            }
-            _argv_374b012d_0718_3f84_91f0_784b12f8189c.push_back(_array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1);
-            _argv_374b012d_0718_3f84_91f0_784b12f8189c.push_back(rpc_argv);
-            call_module_method("forward_hub_call_group_client", _argv_374b012d_0718_3f84_91f0_784b12f8189c);
-        }
-
-        void forward_hub_call_global_client(std::vector<uint8_t> rpc_argv){
-            msgpack11::MsgPack::array _argv_f69241c3_642a_3b51_bb37_cf638176493a;
-            _argv_f69241c3_642a_3b51_bb37_cf638176493a.push_back(rpc_argv);
-            call_module_method("forward_hub_call_global_client", _argv_f69241c3_642a_3b51_bb37_cf638176493a);
-        }
-
-    };
     class client_call_gate_rsp_cb;
     class client_call_gate_heartbeats_cb : public std::enable_shared_from_this<client_call_gate_heartbeats_cb>{
     private:
@@ -346,88 +216,137 @@ namespace abelkhan
         }
 
     };
-/*this module code is codegen by abelkhan codegen for cpp*/
-    class hub_call_gate_reg_hub_rsp : public Response {
+    class hub_call_gate_rsp_cb;
+    class hub_call_gate_reg_hub_cb : public std::enable_shared_from_this<hub_call_gate_reg_hub_cb>{
     private:
-        uint64_t uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
+        uint64_t cb_uuid;
+        std::shared_ptr<hub_call_gate_rsp_cb> module_rsp_cb;
 
     public:
-        hub_call_gate_reg_hub_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response("hub_call_gate_rsp_cb", _ch)
-        {
-            uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 = _uuid;
-        }
+        hub_call_gate_reg_hub_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_gate_rsp_cb> _module_rsp_cb);
+    public:
+        concurrent::signals<void()> sig_reg_hub_cb;
+        concurrent::signals<void()> sig_reg_hub_err;
+        concurrent::signals<void()> sig_reg_hub_timeout;
 
-        void rsp(){
-            msgpack11::MsgPack::array _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7;
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push_back(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
-            call_module_method("reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
-        }
-
-        void err(){
-            msgpack11::MsgPack::array _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7;
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push_back(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
-            call_module_method("reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
-        }
-
+        std::shared_ptr<hub_call_gate_reg_hub_cb> callBack(std::function<void()> cb, std::function<void()> err);
+        void timeout(uint64_t tick, std::function<void()> timeout_cb);
     };
 
-    class hub_call_gate_module : public Imodule, public std::enable_shared_from_this<hub_call_gate_module>{
+/*this cb code is codegen by abelkhan for cpp*/
+    class hub_call_gate_rsp_cb : public Imodule, public std::enable_shared_from_this<hub_call_gate_rsp_cb>{
     public:
-        hub_call_gate_module() : Imodule("hub_call_gate")
+        std::mutex mutex_map_reg_hub;
+        std::map<uint64_t, std::shared_ptr<hub_call_gate_reg_hub_cb> > map_reg_hub;
+        hub_call_gate_rsp_cb() : Imodule("hub_call_gate_rsp_cb")
         {
         }
 
-        void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
+        void Init(std::shared_ptr<modulemng> modules){
+            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
 
-            reg_method("reg_hub", std::bind(&hub_call_gate_module::reg_hub, this, std::placeholders::_1));
-            reg_method("disconnect_client", std::bind(&hub_call_gate_module::disconnect_client, this, std::placeholders::_1));
-            reg_method("forward_hub_call_client", std::bind(&hub_call_gate_module::forward_hub_call_client, this, std::placeholders::_1));
-            reg_method("forward_hub_call_group_client", std::bind(&hub_call_gate_module::forward_hub_call_group_client, this, std::placeholders::_1));
-            reg_method("forward_hub_call_global_client", std::bind(&hub_call_gate_module::forward_hub_call_global_client, this, std::placeholders::_1));
+            reg_method("reg_hub_rsp", std::bind(&hub_call_gate_rsp_cb::reg_hub_rsp, this, std::placeholders::_1));
+            reg_method("reg_hub_err", std::bind(&hub_call_gate_rsp_cb::reg_hub_err, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string, std::string)> sig_reg_hub;
-        void reg_hub(const msgpack11::MsgPack::array& inArray){
-            auto _cb_uuid = inArray[0].uint64_value();
-            auto _hub_name = inArray[1].string_value();
-            auto _hub_type = inArray[2].string_value();
-            rsp = std::make_shared<hub_call_gate_reg_hub_rsp>(current_ch, _cb_uuid);
-            sig_reg_hub.emit(_hub_name, _hub_type);
-            rsp = nullptr;
-        }
-
-        concurrent::signals<void(std::string)> sig_disconnect_client;
-        void disconnect_client(const msgpack11::MsgPack::array& inArray){
-            auto _client_uuid = inArray[0].string_value();
-            sig_disconnect_client.emit(_client_uuid);
-        }
-
-        concurrent::signals<void(std::string, std::vector<uint8_t>)> sig_forward_hub_call_client;
-        void forward_hub_call_client(const msgpack11::MsgPack::array& inArray){
-            auto _client_uuid = inArray[0].string_value();
-            auto _rpc_argv = inArray[1].binary_items();
-            sig_forward_hub_call_client.emit(_client_uuid, _rpc_argv);
-        }
-
-        concurrent::signals<void(std::vector<std::string>, std::vector<uint8_t>)> sig_forward_hub_call_group_client;
-        void forward_hub_call_group_client(const msgpack11::MsgPack::array& inArray){
-            std::vector<std::string> _client_uuids;
-            auto _protocol_array = inArray[0].array_items();
-            for(auto it_dfd11414_89c9_5adb_8977_69b93b30195b : _protocol_array){
-                _client_uuids.push_back(it_dfd11414_89c9_5adb_8977_69b93b30195b.string_value());
+        void reg_hub_rsp(const msgpack11::MsgPack::array& inArray){
+            auto uuid = inArray[0].uint64_value();
+            auto rsp = try_get_and_del_reg_hub_cb(uuid);
+            if (rsp != nullptr){
+                rsp->sig_reg_hub_cb.emit();
             }
-            auto _rpc_argv = inArray[1].binary_items();
-            sig_forward_hub_call_group_client.emit(_client_uuids, _rpc_argv);
         }
 
-        concurrent::signals<void(std::vector<uint8_t>)> sig_forward_hub_call_global_client;
-        void forward_hub_call_global_client(const msgpack11::MsgPack::array& inArray){
-            auto _rpc_argv = inArray[0].binary_items();
-            sig_forward_hub_call_global_client.emit(_rpc_argv);
+        void reg_hub_err(const msgpack11::MsgPack::array& inArray){
+            auto uuid = inArray[0].uint64_value();
+            auto rsp = try_get_and_del_reg_hub_cb(uuid);
+            if (rsp != nullptr){
+                rsp->sig_reg_hub_err.emit();
+            }
+        }
+
+        void reg_hub_timeout(uint64_t cb_uuid){
+            auto rsp = try_get_and_del_reg_hub_cb(cb_uuid);
+            if (rsp != nullptr){
+                rsp->sig_reg_hub_timeout.emit();
+            }
+        }
+
+        std::shared_ptr<hub_call_gate_reg_hub_cb> try_get_and_del_reg_hub_cb(uint64_t uuid){
+            std::lock_guard<std::mutex> l(mutex_map_reg_hub);
+            if (map_reg_hub.find(uuid) != map_reg_hub.end()) {
+                auto rsp = map_reg_hub[uuid];
+                map_reg_hub.erase(uuid);
+                return rsp;
+            }
+            return nullptr;
         }
 
     };
+
+    class hub_call_gate_caller : Icaller {
+    private:
+        static std::shared_ptr<hub_call_gate_rsp_cb> rsp_cb_hub_call_gate_handle;
+
+    private:
+        std::atomic<uint64_t> uuid_9796175c_1119_3833_bf31_5ee139b40edc;
+
+    public:
+        hub_call_gate_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("hub_call_gate", _ch)
+        {
+            if (rsp_cb_hub_call_gate_handle == nullptr){
+                rsp_cb_hub_call_gate_handle = std::make_shared<hub_call_gate_rsp_cb>();
+                rsp_cb_hub_call_gate_handle->Init(modules);
+            }
+            uuid_9796175c_1119_3833_bf31_5ee139b40edc.store(random());
+        }
+
+        std::shared_ptr<hub_call_gate_reg_hub_cb> reg_hub(std::string hub_name, std::string hub_type){
+            auto uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = uuid_9796175c_1119_3833_bf31_5ee139b40edc++;
+            msgpack11::MsgPack::array _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
+            _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67.push_back(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106);
+            _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67.push_back(hub_name);
+            _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67.push_back(hub_type);
+            call_module_method("reg_hub", _argv_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
+
+            auto cb_reg_hub_obj = std::make_shared<hub_call_gate_reg_hub_cb>(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_gate_handle);
+            std::lock_guard<std::mutex> l(rsp_cb_hub_call_gate_handle->mutex_map_reg_hub);
+            rsp_cb_hub_call_gate_handle->map_reg_hub.insert(std::make_pair(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, cb_reg_hub_obj));
+            return cb_reg_hub_obj;
+        }
+
+        void disconnect_client(std::string client_uuid){
+            msgpack11::MsgPack::array _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85;
+            _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.push_back(client_uuid);
+            call_module_method("disconnect_client", _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85);
+        }
+
+        void forward_hub_call_client(std::string client_uuid, std::vector<uint8_t> rpc_argv){
+            msgpack11::MsgPack::array _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1;
+            _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1.push_back(client_uuid);
+            _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1.push_back(rpc_argv);
+            call_module_method("forward_hub_call_client", _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1);
+        }
+
+        void forward_hub_call_group_client(std::vector<std::string> client_uuids, std::vector<uint8_t> rpc_argv){
+            msgpack11::MsgPack::array _argv_374b012d_0718_3f84_91f0_784b12f8189c;
+            msgpack11::MsgPack::array _array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1;
+            for(auto v_a8e916a0_4f15_5329_b872_d0ff30ba7fe6 : client_uuids){
+                _array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1.push_back(v_a8e916a0_4f15_5329_b872_d0ff30ba7fe6);
+            }
+            _argv_374b012d_0718_3f84_91f0_784b12f8189c.push_back(_array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1);
+            _argv_374b012d_0718_3f84_91f0_784b12f8189c.push_back(rpc_argv);
+            call_module_method("forward_hub_call_group_client", _argv_374b012d_0718_3f84_91f0_784b12f8189c);
+        }
+
+        void forward_hub_call_global_client(std::vector<uint8_t> rpc_argv){
+            msgpack11::MsgPack::array _argv_f69241c3_642a_3b51_bb37_cf638176493a;
+            _argv_f69241c3_642a_3b51_bb37_cf638176493a.push_back(rpc_argv);
+            call_module_method("forward_hub_call_global_client", _argv_f69241c3_642a_3b51_bb37_cf638176493a);
+        }
+
+    };
+/*this module code is codegen by abelkhan codegen for cpp*/
     class client_call_gate_heartbeats_rsp : public Response {
     private:
         uint64_t uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56;
@@ -518,6 +437,87 @@ namespace abelkhan
             auto _hub_name = inArray[0].string_value();
             auto _rpc_argv = inArray[1].binary_items();
             sig_forward_client_call_hub.emit(_hub_name, _rpc_argv);
+        }
+
+    };
+    class hub_call_gate_reg_hub_rsp : public Response {
+    private:
+        uint64_t uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
+
+    public:
+        hub_call_gate_reg_hub_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response("hub_call_gate_rsp_cb", _ch)
+        {
+            uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 = _uuid;
+        }
+
+        void rsp(){
+            msgpack11::MsgPack::array _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7;
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push_back(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
+            call_module_method("reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+        }
+
+        void err(){
+            msgpack11::MsgPack::array _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7;
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push_back(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
+            call_module_method("reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+        }
+
+    };
+
+    class hub_call_gate_module : public Imodule, public std::enable_shared_from_this<hub_call_gate_module>{
+    public:
+        hub_call_gate_module() : Imodule("hub_call_gate")
+        {
+        }
+
+        void Init(std::shared_ptr<modulemng> _modules){
+            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
+
+            reg_method("reg_hub", std::bind(&hub_call_gate_module::reg_hub, this, std::placeholders::_1));
+            reg_method("disconnect_client", std::bind(&hub_call_gate_module::disconnect_client, this, std::placeholders::_1));
+            reg_method("forward_hub_call_client", std::bind(&hub_call_gate_module::forward_hub_call_client, this, std::placeholders::_1));
+            reg_method("forward_hub_call_group_client", std::bind(&hub_call_gate_module::forward_hub_call_group_client, this, std::placeholders::_1));
+            reg_method("forward_hub_call_global_client", std::bind(&hub_call_gate_module::forward_hub_call_global_client, this, std::placeholders::_1));
+        }
+
+        concurrent::signals<void(std::string, std::string)> sig_reg_hub;
+        void reg_hub(const msgpack11::MsgPack::array& inArray){
+            auto _cb_uuid = inArray[0].uint64_value();
+            auto _hub_name = inArray[1].string_value();
+            auto _hub_type = inArray[2].string_value();
+            rsp = std::make_shared<hub_call_gate_reg_hub_rsp>(current_ch, _cb_uuid);
+            sig_reg_hub.emit(_hub_name, _hub_type);
+            rsp = nullptr;
+        }
+
+        concurrent::signals<void(std::string)> sig_disconnect_client;
+        void disconnect_client(const msgpack11::MsgPack::array& inArray){
+            auto _client_uuid = inArray[0].string_value();
+            sig_disconnect_client.emit(_client_uuid);
+        }
+
+        concurrent::signals<void(std::string, std::vector<uint8_t>)> sig_forward_hub_call_client;
+        void forward_hub_call_client(const msgpack11::MsgPack::array& inArray){
+            auto _client_uuid = inArray[0].string_value();
+            auto _rpc_argv = inArray[1].binary_items();
+            sig_forward_hub_call_client.emit(_client_uuid, _rpc_argv);
+        }
+
+        concurrent::signals<void(std::vector<std::string>, std::vector<uint8_t>)> sig_forward_hub_call_group_client;
+        void forward_hub_call_group_client(const msgpack11::MsgPack::array& inArray){
+            std::vector<std::string> _client_uuids;
+            auto _protocol_array = inArray[0].array_items();
+            for(auto it_dfd11414_89c9_5adb_8977_69b93b30195b : _protocol_array){
+                _client_uuids.push_back(it_dfd11414_89c9_5adb_8977_69b93b30195b.string_value());
+            }
+            auto _rpc_argv = inArray[1].binary_items();
+            sig_forward_hub_call_group_client.emit(_client_uuids, _rpc_argv);
+        }
+
+        concurrent::signals<void(std::vector<uint8_t>)> sig_forward_hub_call_global_client;
+        void forward_hub_call_global_client(const msgpack11::MsgPack::array& inArray){
+            auto _rpc_argv = inArray[0].binary_items();
+            sig_forward_hub_call_global_client.emit(_rpc_argv);
         }
 
     };

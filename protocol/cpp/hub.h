@@ -11,6 +11,57 @@ namespace abelkhan
 
 /*this struct code is codegen by abelkhan codegen for cpp*/
 /*this caller code is codegen by abelkhan codegen for cpp*/
+/*this cb code is codegen by abelkhan for cpp*/
+    class gate_call_hub_rsp_cb : public Imodule, public std::enable_shared_from_this<gate_call_hub_rsp_cb>{
+    public:
+        gate_call_hub_rsp_cb() : Imodule("gate_call_hub_rsp_cb")
+        {
+        }
+
+        void Init(std::shared_ptr<modulemng> modules){
+            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
+
+        }
+
+    };
+
+    class gate_call_hub_caller : Icaller {
+    private:
+        static std::shared_ptr<gate_call_hub_rsp_cb> rsp_cb_gate_call_hub_handle;
+
+    private:
+        std::atomic<uint64_t> uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1;
+
+    public:
+        gate_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("gate_call_hub", _ch)
+        {
+            if (rsp_cb_gate_call_hub_handle == nullptr){
+                rsp_cb_gate_call_hub_handle = std::make_shared<gate_call_hub_rsp_cb>();
+                rsp_cb_gate_call_hub_handle->Init(modules);
+            }
+            uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1.store(random());
+        }
+
+        void client_disconnect(std::string client_uuid){
+            msgpack11::MsgPack::array _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60;
+            _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60.push_back(client_uuid);
+            call_module_method("client_disconnect", _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60);
+        }
+
+        void client_exception(std::string client_uuid){
+            msgpack11::MsgPack::array _argv_706b1331_3629_3681_9d39_d2ef3b6675ed;
+            _argv_706b1331_3629_3681_9d39_d2ef3b6675ed.push_back(client_uuid);
+            call_module_method("client_exception", _argv_706b1331_3629_3681_9d39_d2ef3b6675ed);
+        }
+
+        void client_call_hub(std::string client_uuid, std::vector<uint8_t> rpc_argv){
+            msgpack11::MsgPack::array _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263;
+            _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.push_back(client_uuid);
+            _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.push_back(rpc_argv);
+            call_module_method("client_call_hub", _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263);
+        }
+
+    };
     class hub_call_hub_rsp_cb;
     class hub_call_hub_reg_hub_cb : public std::enable_shared_from_this<hub_call_hub_reg_hub_cb>{
     private:
@@ -118,9 +169,9 @@ namespace abelkhan
 
     };
 /*this cb code is codegen by abelkhan for cpp*/
-    class gate_call_hub_rsp_cb : public Imodule, public std::enable_shared_from_this<gate_call_hub_rsp_cb>{
+    class hub_call_client_rsp_cb : public Imodule, public std::enable_shared_from_this<hub_call_client_rsp_cb>{
     public:
-        gate_call_hub_rsp_cb() : Imodule("gate_call_hub_rsp_cb")
+        hub_call_client_rsp_cb() : Imodule("hub_call_client_rsp_cb")
         {
         }
 
@@ -131,40 +182,27 @@ namespace abelkhan
 
     };
 
-    class gate_call_hub_caller : Icaller {
+    class hub_call_client_caller : Icaller {
     private:
-        static std::shared_ptr<gate_call_hub_rsp_cb> rsp_cb_gate_call_hub_handle;
+        static std::shared_ptr<hub_call_client_rsp_cb> rsp_cb_hub_call_client_handle;
 
     private:
-        std::atomic<uint64_t> uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1;
+        std::atomic<uint64_t> uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb;
 
     public:
-        gate_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("gate_call_hub", _ch)
+        hub_call_client_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("hub_call_client", _ch)
         {
-            if (rsp_cb_gate_call_hub_handle == nullptr){
-                rsp_cb_gate_call_hub_handle = std::make_shared<gate_call_hub_rsp_cb>();
-                rsp_cb_gate_call_hub_handle->Init(modules);
+            if (rsp_cb_hub_call_client_handle == nullptr){
+                rsp_cb_hub_call_client_handle = std::make_shared<hub_call_client_rsp_cb>();
+                rsp_cb_hub_call_client_handle->Init(modules);
             }
-            uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1.store(random());
+            uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb.store(random());
         }
 
-        void client_disconnect(std::string client_uuid){
-            msgpack11::MsgPack::array _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60;
-            _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60.push_back(client_uuid);
-            call_module_method("client_disconnect", _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60);
-        }
-
-        void client_exception(std::string client_uuid){
-            msgpack11::MsgPack::array _argv_706b1331_3629_3681_9d39_d2ef3b6675ed;
-            _argv_706b1331_3629_3681_9d39_d2ef3b6675ed.push_back(client_uuid);
-            call_module_method("client_exception", _argv_706b1331_3629_3681_9d39_d2ef3b6675ed);
-        }
-
-        void client_call_hub(std::string client_uuid, std::vector<uint8_t> rpc_argv){
-            msgpack11::MsgPack::array _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263;
-            _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.push_back(client_uuid);
-            _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.push_back(rpc_argv);
-            call_module_method("client_call_hub", _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263);
+        void call_client(std::vector<uint8_t> rpc_argv){
+            msgpack11::MsgPack::array _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab;
+            _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push_back(rpc_argv);
+            call_module_method("call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
         }
 
     };
@@ -279,45 +317,41 @@ namespace abelkhan
         }
 
     };
-/*this cb code is codegen by abelkhan for cpp*/
-    class hub_call_client_rsp_cb : public Imodule, public std::enable_shared_from_this<hub_call_client_rsp_cb>{
-    public:
-        hub_call_client_rsp_cb() : Imodule("hub_call_client_rsp_cb")
-        {
-        }
-
-        void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-        }
-
-    };
-
-    class hub_call_client_caller : Icaller {
-    private:
-        static std::shared_ptr<hub_call_client_rsp_cb> rsp_cb_hub_call_client_handle;
-
-    private:
-        std::atomic<uint64_t> uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb;
-
-    public:
-        hub_call_client_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("hub_call_client", _ch)
-        {
-            if (rsp_cb_hub_call_client_handle == nullptr){
-                rsp_cb_hub_call_client_handle = std::make_shared<hub_call_client_rsp_cb>();
-                rsp_cb_hub_call_client_handle->Init(modules);
-            }
-            uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb.store(random());
-        }
-
-        void call_client(std::vector<uint8_t> rpc_argv){
-            msgpack11::MsgPack::array _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab;
-            _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push_back(rpc_argv);
-            call_module_method("call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
-        }
-
-    };
 /*this module code is codegen by abelkhan codegen for cpp*/
+    class gate_call_hub_module : public Imodule, public std::enable_shared_from_this<gate_call_hub_module>{
+    public:
+        gate_call_hub_module() : Imodule("gate_call_hub")
+        {
+        }
+
+        void Init(std::shared_ptr<modulemng> _modules){
+            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
+
+            reg_method("client_disconnect", std::bind(&gate_call_hub_module::client_disconnect, this, std::placeholders::_1));
+            reg_method("client_exception", std::bind(&gate_call_hub_module::client_exception, this, std::placeholders::_1));
+            reg_method("client_call_hub", std::bind(&gate_call_hub_module::client_call_hub, this, std::placeholders::_1));
+        }
+
+        concurrent::signals<void(std::string)> sig_client_disconnect;
+        void client_disconnect(const msgpack11::MsgPack::array& inArray){
+            auto _client_uuid = inArray[0].string_value();
+            sig_client_disconnect.emit(_client_uuid);
+        }
+
+        concurrent::signals<void(std::string)> sig_client_exception;
+        void client_exception(const msgpack11::MsgPack::array& inArray){
+            auto _client_uuid = inArray[0].string_value();
+            sig_client_exception.emit(_client_uuid);
+        }
+
+        concurrent::signals<void(std::string, std::vector<uint8_t>)> sig_client_call_hub;
+        void client_call_hub(const msgpack11::MsgPack::array& inArray){
+            auto _client_uuid = inArray[0].string_value();
+            auto _rpc_argv = inArray[1].binary_items();
+            sig_client_call_hub.emit(_client_uuid, _rpc_argv);
+        }
+
+    };
     class hub_call_hub_reg_hub_rsp : public Response {
     private:
         uint64_t uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
@@ -372,37 +406,22 @@ namespace abelkhan
         }
 
     };
-    class gate_call_hub_module : public Imodule, public std::enable_shared_from_this<gate_call_hub_module>{
+    class hub_call_client_module : public Imodule, public std::enable_shared_from_this<hub_call_client_module>{
     public:
-        gate_call_hub_module() : Imodule("gate_call_hub")
+        hub_call_client_module() : Imodule("hub_call_client")
         {
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
             _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
 
-            reg_method("client_disconnect", std::bind(&gate_call_hub_module::client_disconnect, this, std::placeholders::_1));
-            reg_method("client_exception", std::bind(&gate_call_hub_module::client_exception, this, std::placeholders::_1));
-            reg_method("client_call_hub", std::bind(&gate_call_hub_module::client_call_hub, this, std::placeholders::_1));
+            reg_method("call_client", std::bind(&hub_call_client_module::call_client, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string)> sig_client_disconnect;
-        void client_disconnect(const msgpack11::MsgPack::array& inArray){
-            auto _client_uuid = inArray[0].string_value();
-            sig_client_disconnect.emit(_client_uuid);
-        }
-
-        concurrent::signals<void(std::string)> sig_client_exception;
-        void client_exception(const msgpack11::MsgPack::array& inArray){
-            auto _client_uuid = inArray[0].string_value();
-            sig_client_exception.emit(_client_uuid);
-        }
-
-        concurrent::signals<void(std::string, std::vector<uint8_t>)> sig_client_call_hub;
-        void client_call_hub(const msgpack11::MsgPack::array& inArray){
-            auto _client_uuid = inArray[0].string_value();
-            auto _rpc_argv = inArray[1].binary_items();
-            sig_client_call_hub.emit(_client_uuid, _rpc_argv);
+        concurrent::signals<void(std::vector<uint8_t>)> sig_call_client;
+        void call_client(const msgpack11::MsgPack::array& inArray){
+            auto _rpc_argv = inArray[0].binary_items();
+            sig_call_client.emit(_rpc_argv);
         }
 
     };
@@ -463,25 +482,6 @@ namespace abelkhan
         void call_hub(const msgpack11::MsgPack::array& inArray){
             auto _rpc_argv = inArray[0].binary_items();
             sig_call_hub.emit(_rpc_argv);
-        }
-
-    };
-    class hub_call_client_module : public Imodule, public std::enable_shared_from_this<hub_call_client_module>{
-    public:
-        hub_call_client_module() : Imodule("hub_call_client")
-        {
-        }
-
-        void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-            reg_method("call_client", std::bind(&hub_call_client_module::call_client, this, std::placeholders::_1));
-        }
-
-        concurrent::signals<void(std::vector<uint8_t>)> sig_call_client;
-        void call_client(const msgpack11::MsgPack::array& inArray){
-            auto _rpc_argv = inArray[0].binary_items();
-            sig_call_client.emit(_rpc_argv);
         }
 
     };

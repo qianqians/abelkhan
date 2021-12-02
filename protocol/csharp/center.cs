@@ -10,77 +10,6 @@ namespace abelkhan
 
 /*this struct code is codegen by abelkhan codegen for c#*/
 /*this caller code is codegen by abelkhan codegen for c#*/
-/*this cb code is codegen by abelkhan for c#*/
-    public class center_call_hub_rsp_cb : abelkhan.Imodule {
-        public center_call_hub_rsp_cb(abelkhan.modulemng modules) : base("center_call_hub_rsp_cb")
-        {
-            modules.reg_module(this);
-        }
-
-    }
-
-    public class center_call_hub_caller : abelkhan.Icaller {
-        public static center_call_hub_rsp_cb rsp_cb_center_call_hub_handle = null;
-        private Int64 uuid_adbd1e34_0c90_3426_aefa_4d734c07a706 = (Int64)RandomUUID.random();
-
-        public center_call_hub_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("center_call_hub", _ch)
-        {
-            if (rsp_cb_center_call_hub_handle == null)
-            {
-                rsp_cb_center_call_hub_handle = new center_call_hub_rsp_cb(modules);
-            }
-        }
-
-        public void distribute_server_address(string svr_type, string svr_name, string ip, UInt16 port){
-            var _argv_b71bf35c_d65b_3682_98d1_b934f5276558 = new ArrayList();
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(svr_type);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(svr_name);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(ip);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(port);
-            call_module_method("distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
-        }
-
-        public void reload(string argv){
-            var _argv_ba37af53_beea_3d61_82e1_8d15e335971d = new ArrayList();
-            _argv_ba37af53_beea_3d61_82e1_8d15e335971d.Add(argv);
-            call_module_method("reload", _argv_ba37af53_beea_3d61_82e1_8d15e335971d);
-        }
-
-    }
-/*this cb code is codegen by abelkhan for c#*/
-    public class center_call_server_rsp_cb : abelkhan.Imodule {
-        public center_call_server_rsp_cb(abelkhan.modulemng modules) : base("center_call_server_rsp_cb")
-        {
-            modules.reg_module(this);
-        }
-
-    }
-
-    public class center_call_server_caller : abelkhan.Icaller {
-        public static center_call_server_rsp_cb rsp_cb_center_call_server_handle = null;
-        private Int64 uuid_8c11e5bb_e9ff_3a0b_a436_65a9922a8da5 = (Int64)RandomUUID.random();
-
-        public center_call_server_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("center_call_server", _ch)
-        {
-            if (rsp_cb_center_call_server_handle == null)
-            {
-                rsp_cb_center_call_server_handle = new center_call_server_rsp_cb(modules);
-            }
-        }
-
-        public void close_server(){
-            var _argv_8394af17_8a06_3068_977d_477a1276f56e = new ArrayList();
-            call_module_method("close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
-        }
-
-        public void svr_be_closed(string svr_type, string svr_name){
-            var _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac = new ArrayList();
-            _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.Add(svr_type);
-            _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.Add(svr_name);
-            call_module_method("svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
-        }
-
-    }
     public class center_reg_server_cb
     {
         private UInt64 cb_uuid;
@@ -227,6 +156,77 @@ namespace abelkhan
 
     }
 /*this cb code is codegen by abelkhan for c#*/
+    public class center_call_server_rsp_cb : abelkhan.Imodule {
+        public center_call_server_rsp_cb(abelkhan.modulemng modules) : base("center_call_server_rsp_cb")
+        {
+            modules.reg_module(this);
+        }
+
+    }
+
+    public class center_call_server_caller : abelkhan.Icaller {
+        public static center_call_server_rsp_cb rsp_cb_center_call_server_handle = null;
+        private Int64 uuid_8c11e5bb_e9ff_3a0b_a436_65a9922a8da5 = (Int64)RandomUUID.random();
+
+        public center_call_server_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("center_call_server", _ch)
+        {
+            if (rsp_cb_center_call_server_handle == null)
+            {
+                rsp_cb_center_call_server_handle = new center_call_server_rsp_cb(modules);
+            }
+        }
+
+        public void close_server(){
+            var _argv_8394af17_8a06_3068_977d_477a1276f56e = new ArrayList();
+            call_module_method("close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
+        }
+
+        public void svr_be_closed(string svr_type, string svr_name){
+            var _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac = new ArrayList();
+            _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.Add(svr_type);
+            _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.Add(svr_name);
+            call_module_method("svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
+        }
+
+    }
+/*this cb code is codegen by abelkhan for c#*/
+    public class center_call_hub_rsp_cb : abelkhan.Imodule {
+        public center_call_hub_rsp_cb(abelkhan.modulemng modules) : base("center_call_hub_rsp_cb")
+        {
+            modules.reg_module(this);
+        }
+
+    }
+
+    public class center_call_hub_caller : abelkhan.Icaller {
+        public static center_call_hub_rsp_cb rsp_cb_center_call_hub_handle = null;
+        private Int64 uuid_adbd1e34_0c90_3426_aefa_4d734c07a706 = (Int64)RandomUUID.random();
+
+        public center_call_hub_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("center_call_hub", _ch)
+        {
+            if (rsp_cb_center_call_hub_handle == null)
+            {
+                rsp_cb_center_call_hub_handle = new center_call_hub_rsp_cb(modules);
+            }
+        }
+
+        public void distribute_server_address(string svr_type, string svr_name, string ip, UInt16 port){
+            var _argv_b71bf35c_d65b_3682_98d1_b934f5276558 = new ArrayList();
+            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(svr_type);
+            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(svr_name);
+            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(ip);
+            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(port);
+            call_module_method("distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
+        }
+
+        public void reload(string argv){
+            var _argv_ba37af53_beea_3d61_82e1_8d15e335971d = new ArrayList();
+            _argv_ba37af53_beea_3d61_82e1_8d15e335971d.Add(argv);
+            call_module_method("reload", _argv_ba37af53_beea_3d61_82e1_8d15e335971d);
+        }
+
+    }
+/*this cb code is codegen by abelkhan for c#*/
     public class gm_center_rsp_cb : abelkhan.Imodule {
         public gm_center_rsp_cb(abelkhan.modulemng modules) : base("gm_center_rsp_cb")
         {
@@ -268,65 +268,6 @@ namespace abelkhan
 
     }
 /*this module code is codegen by abelkhan codegen for c#*/
-    public class center_call_hub_module : abelkhan.Imodule {
-        private abelkhan.modulemng modules;
-        public center_call_hub_module(abelkhan.modulemng _modules) : base("center_call_hub")
-        {
-            modules = _modules;
-            modules.reg_module(this);
-
-            reg_method("distribute_server_address", distribute_server_address);
-            reg_method("reload", reload);
-        }
-
-        public event Action<string, string, string, UInt16> on_distribute_server_address;
-        public void distribute_server_address(IList<MsgPack.MessagePackObject> inArray){
-            var _svr_type = ((MsgPack.MessagePackObject)inArray[0]).AsString();
-            var _svr_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
-            var _ip = ((MsgPack.MessagePackObject)inArray[2]).AsString();
-            var _port = ((MsgPack.MessagePackObject)inArray[3]).AsUInt16();
-            if (on_distribute_server_address != null){
-                on_distribute_server_address(_svr_type, _svr_name, _ip, _port);
-            }
-        }
-
-        public event Action<string> on_reload;
-        public void reload(IList<MsgPack.MessagePackObject> inArray){
-            var _argv = ((MsgPack.MessagePackObject)inArray[0]).AsString();
-            if (on_reload != null){
-                on_reload(_argv);
-            }
-        }
-
-    }
-    public class center_call_server_module : abelkhan.Imodule {
-        private abelkhan.modulemng modules;
-        public center_call_server_module(abelkhan.modulemng _modules) : base("center_call_server")
-        {
-            modules = _modules;
-            modules.reg_module(this);
-
-            reg_method("close_server", close_server);
-            reg_method("svr_be_closed", svr_be_closed);
-        }
-
-        public event Action on_close_server;
-        public void close_server(IList<MsgPack.MessagePackObject> inArray){
-            if (on_close_server != null){
-                on_close_server();
-            }
-        }
-
-        public event Action<string, string> on_svr_be_closed;
-        public void svr_be_closed(IList<MsgPack.MessagePackObject> inArray){
-            var _svr_type = ((MsgPack.MessagePackObject)inArray[0]).AsString();
-            var _svr_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
-            if (on_svr_be_closed != null){
-                on_svr_be_closed(_svr_type, _svr_name);
-            }
-        }
-
-    }
     public class center_reg_server_rsp : abelkhan.Response {
         private UInt64 uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda;
         public center_reg_server_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("center_rsp_cb", _ch)
@@ -385,6 +326,65 @@ namespace abelkhan
         public void closed(IList<MsgPack.MessagePackObject> inArray){
             if (on_closed != null){
                 on_closed();
+            }
+        }
+
+    }
+    public class center_call_server_module : abelkhan.Imodule {
+        private abelkhan.modulemng modules;
+        public center_call_server_module(abelkhan.modulemng _modules) : base("center_call_server")
+        {
+            modules = _modules;
+            modules.reg_module(this);
+
+            reg_method("close_server", close_server);
+            reg_method("svr_be_closed", svr_be_closed);
+        }
+
+        public event Action on_close_server;
+        public void close_server(IList<MsgPack.MessagePackObject> inArray){
+            if (on_close_server != null){
+                on_close_server();
+            }
+        }
+
+        public event Action<string, string> on_svr_be_closed;
+        public void svr_be_closed(IList<MsgPack.MessagePackObject> inArray){
+            var _svr_type = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _svr_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            if (on_svr_be_closed != null){
+                on_svr_be_closed(_svr_type, _svr_name);
+            }
+        }
+
+    }
+    public class center_call_hub_module : abelkhan.Imodule {
+        private abelkhan.modulemng modules;
+        public center_call_hub_module(abelkhan.modulemng _modules) : base("center_call_hub")
+        {
+            modules = _modules;
+            modules.reg_module(this);
+
+            reg_method("distribute_server_address", distribute_server_address);
+            reg_method("reload", reload);
+        }
+
+        public event Action<string, string, string, UInt16> on_distribute_server_address;
+        public void distribute_server_address(IList<MsgPack.MessagePackObject> inArray){
+            var _svr_type = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _svr_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _ip = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            var _port = ((MsgPack.MessagePackObject)inArray[3]).AsUInt16();
+            if (on_distribute_server_address != null){
+                on_distribute_server_address(_svr_type, _svr_name, _ip, _port);
+            }
+        }
+
+        public event Action<string> on_reload;
+        public void reload(IList<MsgPack.MessagePackObject> inArray){
+            var _argv = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            if (on_reload != null){
+                on_reload(_argv);
             }
         }
 

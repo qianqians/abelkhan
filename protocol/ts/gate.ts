@@ -27,139 +27,6 @@ export function protcol_to_hub_info(_protocol:any){
 }
 
 /*this caller code is codegen by abelkhan codegen for typescript*/
-export class hub_call_gate_reg_hub_cb{
-    private cb_uuid : number;
-    private module_rsp_cb : hub_call_gate_rsp_cb;
-
-    public event_reg_hub_handle_cb : ()=>void | null;
-    public event_reg_hub_handle_err : ()=>void | null;
-    public event_reg_hub_handle_timeout : ()=>void | null;
-    constructor(_cb_uuid : number, _module_rsp_cb : hub_call_gate_rsp_cb){
-        this.cb_uuid = _cb_uuid;
-        this.module_rsp_cb = _module_rsp_cb;
-        this.event_reg_hub_handle_cb = null;
-        this.event_reg_hub_handle_err = null;
-        this.event_reg_hub_handle_timeout = null;
-    }
-
-    callBack(_cb:()=>void, _err:()=>void)
-    {
-        this.event_reg_hub_handle_cb = _cb;
-        this.event_reg_hub_handle_err = _err;
-        return this;
-    }
-
-    timeout(tick:number, timeout_cb:()=>void)
-    {
-        setTimeout(()=>{ this.module_rsp_cb.reg_hub_timeout(this.cb_uuid); }, tick);
-        this.event_reg_hub_handle_timeout = timeout_cb;
-    }
-
-}
-
-/*this cb code is codegen by abelkhan for ts*/
-export class hub_call_gate_rsp_cb extends abelkhan.Imodule {
-    public map_reg_hub:Map<number, hub_call_gate_reg_hub_cb>;
-    constructor(modules:abelkhan.modulemng){
-        super("hub_call_gate_rsp_cb");
-        modules.reg_module(this);
-
-        this.map_reg_hub = new Map<number, hub_call_gate_reg_hub_cb>();
-        this.reg_method("reg_hub_rsp", this.reg_hub_rsp.bind(this));
-        this.reg_method("reg_hub_err", this.reg_hub_err.bind(this));
-    }
-    public reg_hub_rsp(inArray:any[]){
-        let uuid = inArray[0];
-        let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [];
-        var rsp = this.try_get_and_del_reg_hub_cb(uuid);
-        if (rsp && rsp.event_reg_hub_handle_cb) {
-            rsp.event_reg_hub_handle_cb.apply(null, _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
-        }
-    }
-
-    public reg_hub_err(inArray:any[]){
-        let uuid = inArray[0];
-        let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [];
-        var rsp = this.try_get_and_del_reg_hub_cb(uuid);
-        if (rsp && rsp.event_reg_hub_handle_err) {
-            rsp.event_reg_hub_handle_err.apply(null, _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
-        }
-    }
-
-    public reg_hub_timeout(cb_uuid : number){
-        let rsp = this.try_get_and_del_reg_hub_cb(cb_uuid);
-        if (rsp){
-            if (rsp.event_reg_hub_handle_timeout) {
-                rsp.event_reg_hub_handle_timeout.apply(null);
-            }
-        }
-    }
-
-    private try_get_and_del_reg_hub_cb(uuid : number){
-        var rsp = this.map_reg_hub.get(uuid);
-        this.map_reg_hub.delete(uuid);
-        return rsp;
-    }
-
-}
-
-export let rsp_cb_hub_call_gate_handle : hub_call_gate_rsp_cb | null = null;
-export class hub_call_gate_caller extends abelkhan.Icaller {
-    private uuid_9796175c_1119_3833_bf31_5ee139b40edc : number = Math.round(Math.random() * 1000);
-
-    constructor(_ch:any, modules:abelkhan.modulemng){
-        super("hub_call_gate", _ch);
-        if (rsp_cb_hub_call_gate_handle == null){
-            rsp_cb_hub_call_gate_handle = new hub_call_gate_rsp_cb(modules);
-        }
-    }
-
-    public reg_hub(hub_name:string, hub_type:string){
-        let uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = Math.round(this.uuid_9796175c_1119_3833_bf31_5ee139b40edc++);
-
-        let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106];
-        _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(hub_name);
-        _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(hub_type);
-        this.call_module_method("reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
-
-        let cb_reg_hub_obj = new hub_call_gate_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_gate_handle);
-        if (rsp_cb_hub_call_gate_handle){
-            rsp_cb_hub_call_gate_handle.map_reg_hub.set(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, cb_reg_hub_obj);
-        }
-        return cb_reg_hub_obj;
-    }
-
-    public disconnect_client(client_uuid:string){
-        let _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85:any[] = [];
-        _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.push(client_uuid);
-        this.call_module_method("disconnect_client", _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85);
-    }
-
-    public forward_hub_call_client(client_uuid:string, rpc_argv:Uint8Array){
-        let _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1:any[] = [];
-        _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1.push(client_uuid);
-        _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1.push(rpc_argv);
-        this.call_module_method("forward_hub_call_client", _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1);
-    }
-
-    public forward_hub_call_group_client(client_uuids:string[], rpc_argv:Uint8Array){
-        let _argv_374b012d_0718_3f84_91f0_784b12f8189c:any[] = [];
-        let _array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1:any[] = [];
-        for(let v_dfd11414_89c9_5adb_8977_69b93b30195b of client_uuids){
-            _array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1.push(v_dfd11414_89c9_5adb_8977_69b93b30195b);
-        }
-        _argv_374b012d_0718_3f84_91f0_784b12f8189c.push(_array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1);
-        _argv_374b012d_0718_3f84_91f0_784b12f8189c.push(rpc_argv);
-        this.call_module_method("forward_hub_call_group_client", _argv_374b012d_0718_3f84_91f0_784b12f8189c);
-    }
-
-    public forward_hub_call_global_client(rpc_argv:Uint8Array){
-        let _argv_f69241c3_642a_3b51_bb37_cf638176493a:any[] = [];
-        _argv_f69241c3_642a_3b51_bb37_cf638176493a.push(rpc_argv);
-        this.call_module_method("forward_hub_call_global_client", _argv_f69241c3_642a_3b51_bb37_cf638176493a);
-    }
-
-}
 export class client_call_gate_heartbeats_cb{
     private cb_uuid : number;
     private module_rsp_cb : client_call_gate_rsp_cb;
@@ -354,7 +221,233 @@ export class client_call_gate_caller extends abelkhan.Icaller {
     }
 
 }
+export class hub_call_gate_reg_hub_cb{
+    private cb_uuid : number;
+    private module_rsp_cb : hub_call_gate_rsp_cb;
+
+    public event_reg_hub_handle_cb : ()=>void | null;
+    public event_reg_hub_handle_err : ()=>void | null;
+    public event_reg_hub_handle_timeout : ()=>void | null;
+    constructor(_cb_uuid : number, _module_rsp_cb : hub_call_gate_rsp_cb){
+        this.cb_uuid = _cb_uuid;
+        this.module_rsp_cb = _module_rsp_cb;
+        this.event_reg_hub_handle_cb = null;
+        this.event_reg_hub_handle_err = null;
+        this.event_reg_hub_handle_timeout = null;
+    }
+
+    callBack(_cb:()=>void, _err:()=>void)
+    {
+        this.event_reg_hub_handle_cb = _cb;
+        this.event_reg_hub_handle_err = _err;
+        return this;
+    }
+
+    timeout(tick:number, timeout_cb:()=>void)
+    {
+        setTimeout(()=>{ this.module_rsp_cb.reg_hub_timeout(this.cb_uuid); }, tick);
+        this.event_reg_hub_handle_timeout = timeout_cb;
+    }
+
+}
+
+/*this cb code is codegen by abelkhan for ts*/
+export class hub_call_gate_rsp_cb extends abelkhan.Imodule {
+    public map_reg_hub:Map<number, hub_call_gate_reg_hub_cb>;
+    constructor(modules:abelkhan.modulemng){
+        super("hub_call_gate_rsp_cb");
+        modules.reg_module(this);
+
+        this.map_reg_hub = new Map<number, hub_call_gate_reg_hub_cb>();
+        this.reg_method("reg_hub_rsp", this.reg_hub_rsp.bind(this));
+        this.reg_method("reg_hub_err", this.reg_hub_err.bind(this));
+    }
+    public reg_hub_rsp(inArray:any[]){
+        let uuid = inArray[0];
+        let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [];
+        var rsp = this.try_get_and_del_reg_hub_cb(uuid);
+        if (rsp && rsp.event_reg_hub_handle_cb) {
+            rsp.event_reg_hub_handle_cb.apply(null, _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+        }
+    }
+
+    public reg_hub_err(inArray:any[]){
+        let uuid = inArray[0];
+        let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [];
+        var rsp = this.try_get_and_del_reg_hub_cb(uuid);
+        if (rsp && rsp.event_reg_hub_handle_err) {
+            rsp.event_reg_hub_handle_err.apply(null, _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+        }
+    }
+
+    public reg_hub_timeout(cb_uuid : number){
+        let rsp = this.try_get_and_del_reg_hub_cb(cb_uuid);
+        if (rsp){
+            if (rsp.event_reg_hub_handle_timeout) {
+                rsp.event_reg_hub_handle_timeout.apply(null);
+            }
+        }
+    }
+
+    private try_get_and_del_reg_hub_cb(uuid : number){
+        var rsp = this.map_reg_hub.get(uuid);
+        this.map_reg_hub.delete(uuid);
+        return rsp;
+    }
+
+}
+
+export let rsp_cb_hub_call_gate_handle : hub_call_gate_rsp_cb | null = null;
+export class hub_call_gate_caller extends abelkhan.Icaller {
+    private uuid_9796175c_1119_3833_bf31_5ee139b40edc : number = Math.round(Math.random() * 1000);
+
+    constructor(_ch:any, modules:abelkhan.modulemng){
+        super("hub_call_gate", _ch);
+        if (rsp_cb_hub_call_gate_handle == null){
+            rsp_cb_hub_call_gate_handle = new hub_call_gate_rsp_cb(modules);
+        }
+    }
+
+    public reg_hub(hub_name:string, hub_type:string){
+        let uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = Math.round(this.uuid_9796175c_1119_3833_bf31_5ee139b40edc++);
+
+        let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106];
+        _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(hub_name);
+        _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(hub_type);
+        this.call_module_method("reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+
+        let cb_reg_hub_obj = new hub_call_gate_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_gate_handle);
+        if (rsp_cb_hub_call_gate_handle){
+            rsp_cb_hub_call_gate_handle.map_reg_hub.set(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, cb_reg_hub_obj);
+        }
+        return cb_reg_hub_obj;
+    }
+
+    public disconnect_client(client_uuid:string){
+        let _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85:any[] = [];
+        _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.push(client_uuid);
+        this.call_module_method("disconnect_client", _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85);
+    }
+
+    public forward_hub_call_client(client_uuid:string, rpc_argv:Uint8Array){
+        let _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1:any[] = [];
+        _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1.push(client_uuid);
+        _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1.push(rpc_argv);
+        this.call_module_method("forward_hub_call_client", _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1);
+    }
+
+    public forward_hub_call_group_client(client_uuids:string[], rpc_argv:Uint8Array){
+        let _argv_374b012d_0718_3f84_91f0_784b12f8189c:any[] = [];
+        let _array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1:any[] = [];
+        for(let v_dfd11414_89c9_5adb_8977_69b93b30195b of client_uuids){
+            _array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1.push(v_dfd11414_89c9_5adb_8977_69b93b30195b);
+        }
+        _argv_374b012d_0718_3f84_91f0_784b12f8189c.push(_array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1);
+        _argv_374b012d_0718_3f84_91f0_784b12f8189c.push(rpc_argv);
+        this.call_module_method("forward_hub_call_group_client", _argv_374b012d_0718_3f84_91f0_784b12f8189c);
+    }
+
+    public forward_hub_call_global_client(rpc_argv:Uint8Array){
+        let _argv_f69241c3_642a_3b51_bb37_cf638176493a:any[] = [];
+        _argv_f69241c3_642a_3b51_bb37_cf638176493a.push(rpc_argv);
+        this.call_module_method("forward_hub_call_global_client", _argv_f69241c3_642a_3b51_bb37_cf638176493a);
+    }
+
+}
 /*this module code is codegen by abelkhan codegen for typescript*/
+export class client_call_gate_heartbeats_rsp extends abelkhan.Icaller {
+    private uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56 : number;
+    constructor(_ch:abelkhan.Ichannel, _uuid:number){
+        super("client_call_gate_rsp_cb", _ch);
+        this.uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56 = _uuid;
+    }
+
+    public rsp(timetmp:number){
+        let _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4:any[] = [this.uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56];
+        _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.push(timetmp);
+        this.call_module_method("heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+    }
+
+    public err(){
+        let _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4:any[] = [this.uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56];
+        this.call_module_method("heartbeats_err", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+    }
+
+}
+
+export class client_call_gate_get_hub_info_rsp extends abelkhan.Icaller {
+    private uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b : number;
+    constructor(_ch:abelkhan.Ichannel, _uuid:number){
+        super("client_call_gate_rsp_cb", _ch);
+        this.uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b = _uuid;
+    }
+
+    public rsp(hub_info:hub_info[]){
+        let _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24:any[] = [this.uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b];
+        let _array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2:any[] = [];        for(let v_72192cc7_d049_3653_a25b_4eaf8d18d7e2 of hub_info){
+            _array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2.push(hub_info_to_protcol(v_72192cc7_d049_3653_a25b_4eaf8d18d7e2));
+        }
+        _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.push(_array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2);
+        this.call_module_method("get_hub_info_rsp", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
+    }
+
+    public err(){
+        let _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24:any[] = [this.uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b];
+        this.call_module_method("get_hub_info_err", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
+    }
+
+}
+
+export class client_call_gate_module extends abelkhan.Imodule {
+    private modules:abelkhan.modulemng;
+    constructor(modules:abelkhan.modulemng){
+        super("client_call_gate");
+        this.modules = modules;
+        this.modules.reg_module(this);
+
+        this.reg_method("heartbeats", this.heartbeats.bind(this));
+        this.reg_method("get_hub_info", this.get_hub_info.bind(this));
+        this.reg_method("forward_client_call_hub", this.forward_client_call_hub.bind(this));
+
+        this.cb_heartbeats = null;
+        this.cb_get_hub_info = null;
+        this.cb_forward_client_call_hub = null;
+    }
+
+    public cb_heartbeats : ()=>void | null;
+    heartbeats(inArray:any[]){
+        let _cb_uuid = inArray[0];
+        let _argv_:any[] = [];
+        this.rsp = new client_call_gate_heartbeats_rsp(this.current_ch, _cb_uuid);
+        if (this.cb_heartbeats){
+            this.cb_heartbeats.apply(null, _argv_);
+        }
+        this.rsp = null;
+    }
+
+    public cb_get_hub_info : (hub_type:string)=>void | null;
+    get_hub_info(inArray:any[]){
+        let _cb_uuid = inArray[0];
+        let _argv_:any[] = [];
+        _argv_.push(inArray[1]);
+        this.rsp = new client_call_gate_get_hub_info_rsp(this.current_ch, _cb_uuid);
+        if (this.cb_get_hub_info){
+            this.cb_get_hub_info.apply(null, _argv_);
+        }
+        this.rsp = null;
+    }
+
+    public cb_forward_client_call_hub : (hub_name:string, rpc_argv:Uint8Array)=>void | null;
+    forward_client_call_hub(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        _argv_.push(inArray[1]);
+        if (this.cb_forward_client_call_hub){
+            this.cb_forward_client_call_hub.apply(null, _argv_);
+        }
+    }
+
+}
 export class hub_call_gate_reg_hub_rsp extends abelkhan.Icaller {
     private uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 : number;
     constructor(_ch:abelkhan.Ichannel, _uuid:number){
@@ -446,99 +539,6 @@ export class hub_call_gate_module extends abelkhan.Imodule {
         _argv_.push(inArray[0]);
         if (this.cb_forward_hub_call_global_client){
             this.cb_forward_hub_call_global_client.apply(null, _argv_);
-        }
-    }
-
-}
-export class client_call_gate_heartbeats_rsp extends abelkhan.Icaller {
-    private uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56 : number;
-    constructor(_ch:abelkhan.Ichannel, _uuid:number){
-        super("client_call_gate_rsp_cb", _ch);
-        this.uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56 = _uuid;
-    }
-
-    public rsp(timetmp:number){
-        let _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4:any[] = [this.uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56];
-        _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.push(timetmp);
-        this.call_module_method("heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
-    }
-
-    public err(){
-        let _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4:any[] = [this.uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56];
-        this.call_module_method("heartbeats_err", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
-    }
-
-}
-
-export class client_call_gate_get_hub_info_rsp extends abelkhan.Icaller {
-    private uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b : number;
-    constructor(_ch:abelkhan.Ichannel, _uuid:number){
-        super("client_call_gate_rsp_cb", _ch);
-        this.uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b = _uuid;
-    }
-
-    public rsp(hub_info:hub_info[]){
-        let _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24:any[] = [this.uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b];
-        let _array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2:any[] = [];        for(let v_72192cc7_d049_3653_a25b_4eaf8d18d7e2 of hub_info){
-            _array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2.push(hub_info_to_protcol(v_72192cc7_d049_3653_a25b_4eaf8d18d7e2));
-        }
-        _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.push(_array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2);
-        this.call_module_method("get_hub_info_rsp", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
-    }
-
-    public err(){
-        let _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24:any[] = [this.uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b];
-        this.call_module_method("get_hub_info_err", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
-    }
-
-}
-
-export class client_call_gate_module extends abelkhan.Imodule {
-    private modules:abelkhan.modulemng;
-    constructor(modules:abelkhan.modulemng){
-        super("client_call_gate");
-        this.modules = modules;
-        this.modules.reg_module(this);
-
-        this.reg_method("heartbeats", this.heartbeats.bind(this));
-        this.reg_method("get_hub_info", this.get_hub_info.bind(this));
-        this.reg_method("forward_client_call_hub", this.forward_client_call_hub.bind(this));
-
-        this.cb_heartbeats = null;
-        this.cb_get_hub_info = null;
-        this.cb_forward_client_call_hub = null;
-    }
-
-    public cb_heartbeats : ()=>void | null;
-    heartbeats(inArray:any[]){
-        let _cb_uuid = inArray[0];
-        let _argv_:any[] = [];
-        this.rsp = new client_call_gate_heartbeats_rsp(this.current_ch, _cb_uuid);
-        if (this.cb_heartbeats){
-            this.cb_heartbeats.apply(null, _argv_);
-        }
-        this.rsp = null;
-    }
-
-    public cb_get_hub_info : (hub_type:string)=>void | null;
-    get_hub_info(inArray:any[]){
-        let _cb_uuid = inArray[0];
-        let _argv_:any[] = [];
-        _argv_.push(inArray[1]);
-        this.rsp = new client_call_gate_get_hub_info_rsp(this.current_ch, _cb_uuid);
-        if (this.cb_get_hub_info){
-            this.cb_get_hub_info.apply(null, _argv_);
-        }
-        this.rsp = null;
-    }
-
-    public cb_forward_client_call_hub : (hub_name:string, rpc_argv:Uint8Array)=>void | null;
-    forward_client_call_hub(inArray:any[]){
-        let _argv_:any[] = [];
-        _argv_.push(inArray[0]);
-        _argv_.push(inArray[1]);
-        if (this.cb_forward_client_call_hub){
-            this.cb_forward_client_call_hub.apply(null, _argv_);
         }
     }
 

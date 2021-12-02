@@ -10,6 +10,47 @@ namespace abelkhan
 
 /*this struct code is codegen by abelkhan codegen for c#*/
 /*this caller code is codegen by abelkhan codegen for c#*/
+/*this cb code is codegen by abelkhan for c#*/
+    public class gate_call_hub_rsp_cb : abelkhan.Imodule {
+        public gate_call_hub_rsp_cb(abelkhan.modulemng modules) : base("gate_call_hub_rsp_cb")
+        {
+            modules.reg_module(this);
+        }
+
+    }
+
+    public class gate_call_hub_caller : abelkhan.Icaller {
+        public static gate_call_hub_rsp_cb rsp_cb_gate_call_hub_handle = null;
+        private Int64 uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1 = (Int64)RandomUUID.random();
+
+        public gate_call_hub_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("gate_call_hub", _ch)
+        {
+            if (rsp_cb_gate_call_hub_handle == null)
+            {
+                rsp_cb_gate_call_hub_handle = new gate_call_hub_rsp_cb(modules);
+            }
+        }
+
+        public void client_disconnect(string client_uuid){
+            var _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60 = new ArrayList();
+            _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60.Add(client_uuid);
+            call_module_method("client_disconnect", _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60);
+        }
+
+        public void client_exception(string client_uuid){
+            var _argv_706b1331_3629_3681_9d39_d2ef3b6675ed = new ArrayList();
+            _argv_706b1331_3629_3681_9d39_d2ef3b6675ed.Add(client_uuid);
+            call_module_method("client_exception", _argv_706b1331_3629_3681_9d39_d2ef3b6675ed);
+        }
+
+        public void client_call_hub(string client_uuid, byte[] rpc_argv){
+            var _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263 = new ArrayList();
+            _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.Add(client_uuid);
+            _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.Add(rpc_argv);
+            call_module_method("client_call_hub", _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263);
+        }
+
+    }
     public class hub_call_hub_reg_hub_cb
     {
         private UInt64 cb_uuid;
@@ -150,43 +191,30 @@ namespace abelkhan
 
     }
 /*this cb code is codegen by abelkhan for c#*/
-    public class gate_call_hub_rsp_cb : abelkhan.Imodule {
-        public gate_call_hub_rsp_cb(abelkhan.modulemng modules) : base("gate_call_hub_rsp_cb")
+    public class hub_call_client_rsp_cb : abelkhan.Imodule {
+        public hub_call_client_rsp_cb(abelkhan.modulemng modules) : base("hub_call_client_rsp_cb")
         {
             modules.reg_module(this);
         }
 
     }
 
-    public class gate_call_hub_caller : abelkhan.Icaller {
-        public static gate_call_hub_rsp_cb rsp_cb_gate_call_hub_handle = null;
-        private Int64 uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1 = (Int64)RandomUUID.random();
+    public class hub_call_client_caller : abelkhan.Icaller {
+        public static hub_call_client_rsp_cb rsp_cb_hub_call_client_handle = null;
+        private Int64 uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb = (Int64)RandomUUID.random();
 
-        public gate_call_hub_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("gate_call_hub", _ch)
+        public hub_call_client_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("hub_call_client", _ch)
         {
-            if (rsp_cb_gate_call_hub_handle == null)
+            if (rsp_cb_hub_call_client_handle == null)
             {
-                rsp_cb_gate_call_hub_handle = new gate_call_hub_rsp_cb(modules);
+                rsp_cb_hub_call_client_handle = new hub_call_client_rsp_cb(modules);
             }
         }
 
-        public void client_disconnect(string client_uuid){
-            var _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60 = new ArrayList();
-            _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60.Add(client_uuid);
-            call_module_method("client_disconnect", _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60);
-        }
-
-        public void client_exception(string client_uuid){
-            var _argv_706b1331_3629_3681_9d39_d2ef3b6675ed = new ArrayList();
-            _argv_706b1331_3629_3681_9d39_d2ef3b6675ed.Add(client_uuid);
-            call_module_method("client_exception", _argv_706b1331_3629_3681_9d39_d2ef3b6675ed);
-        }
-
-        public void client_call_hub(string client_uuid, byte[] rpc_argv){
-            var _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263 = new ArrayList();
-            _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.Add(client_uuid);
-            _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.Add(rpc_argv);
-            call_module_method("client_call_hub", _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263);
+        public void call_client(byte[] rpc_argv){
+            var _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab = new ArrayList();
+            _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.Add(rpc_argv);
+            call_module_method("call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
         }
 
     }
@@ -334,35 +362,45 @@ namespace abelkhan
         }
 
     }
-/*this cb code is codegen by abelkhan for c#*/
-    public class hub_call_client_rsp_cb : abelkhan.Imodule {
-        public hub_call_client_rsp_cb(abelkhan.modulemng modules) : base("hub_call_client_rsp_cb")
+/*this module code is codegen by abelkhan codegen for c#*/
+    public class gate_call_hub_module : abelkhan.Imodule {
+        private abelkhan.modulemng modules;
+        public gate_call_hub_module(abelkhan.modulemng _modules) : base("gate_call_hub")
         {
+            modules = _modules;
             modules.reg_module(this);
+
+            reg_method("client_disconnect", client_disconnect);
+            reg_method("client_exception", client_exception);
+            reg_method("client_call_hub", client_call_hub);
         }
 
-    }
-
-    public class hub_call_client_caller : abelkhan.Icaller {
-        public static hub_call_client_rsp_cb rsp_cb_hub_call_client_handle = null;
-        private Int64 uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb = (Int64)RandomUUID.random();
-
-        public hub_call_client_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("hub_call_client", _ch)
-        {
-            if (rsp_cb_hub_call_client_handle == null)
-            {
-                rsp_cb_hub_call_client_handle = new hub_call_client_rsp_cb(modules);
+        public event Action<string> on_client_disconnect;
+        public void client_disconnect(IList<MsgPack.MessagePackObject> inArray){
+            var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            if (on_client_disconnect != null){
+                on_client_disconnect(_client_uuid);
             }
         }
 
-        public void call_client(byte[] rpc_argv){
-            var _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab = new ArrayList();
-            _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.Add(rpc_argv);
-            call_module_method("call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
+        public event Action<string> on_client_exception;
+        public void client_exception(IList<MsgPack.MessagePackObject> inArray){
+            var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            if (on_client_exception != null){
+                on_client_exception(_client_uuid);
+            }
+        }
+
+        public event Action<string, byte[]> on_client_call_hub;
+        public void client_call_hub(IList<MsgPack.MessagePackObject> inArray){
+            var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _rpc_argv = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
+            if (on_client_call_hub != null){
+                on_client_call_hub(_client_uuid, _rpc_argv);
+            }
         }
 
     }
-/*this module code is codegen by abelkhan codegen for c#*/
     public class hub_call_hub_reg_hub_rsp : abelkhan.Response {
         private UInt64 uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
         public hub_call_hub_reg_hub_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_hub_rsp_cb", _ch)
@@ -416,40 +454,21 @@ namespace abelkhan
         }
 
     }
-    public class gate_call_hub_module : abelkhan.Imodule {
+    public class hub_call_client_module : abelkhan.Imodule {
         private abelkhan.modulemng modules;
-        public gate_call_hub_module(abelkhan.modulemng _modules) : base("gate_call_hub")
+        public hub_call_client_module(abelkhan.modulemng _modules) : base("hub_call_client")
         {
             modules = _modules;
             modules.reg_module(this);
 
-            reg_method("client_disconnect", client_disconnect);
-            reg_method("client_exception", client_exception);
-            reg_method("client_call_hub", client_call_hub);
+            reg_method("call_client", call_client);
         }
 
-        public event Action<string> on_client_disconnect;
-        public void client_disconnect(IList<MsgPack.MessagePackObject> inArray){
-            var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
-            if (on_client_disconnect != null){
-                on_client_disconnect(_client_uuid);
-            }
-        }
-
-        public event Action<string> on_client_exception;
-        public void client_exception(IList<MsgPack.MessagePackObject> inArray){
-            var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
-            if (on_client_exception != null){
-                on_client_exception(_client_uuid);
-            }
-        }
-
-        public event Action<string, byte[]> on_client_call_hub;
-        public void client_call_hub(IList<MsgPack.MessagePackObject> inArray){
-            var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
-            var _rpc_argv = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
-            if (on_client_call_hub != null){
-                on_client_call_hub(_client_uuid, _rpc_argv);
+        public event Action<byte[]> on_call_client;
+        public void call_client(IList<MsgPack.MessagePackObject> inArray){
+            var _rpc_argv = ((MsgPack.MessagePackObject)inArray[0]).AsBinary();
+            if (on_call_client != null){
+                on_call_client(_rpc_argv);
             }
         }
 
@@ -511,25 +530,6 @@ namespace abelkhan
             var _rpc_argv = ((MsgPack.MessagePackObject)inArray[0]).AsBinary();
             if (on_call_hub != null){
                 on_call_hub(_rpc_argv);
-            }
-        }
-
-    }
-    public class hub_call_client_module : abelkhan.Imodule {
-        private abelkhan.modulemng modules;
-        public hub_call_client_module(abelkhan.modulemng _modules) : base("hub_call_client")
-        {
-            modules = _modules;
-            modules.reg_module(this);
-
-            reg_method("call_client", call_client);
-        }
-
-        public event Action<byte[]> on_call_client;
-        public void call_client(IList<MsgPack.MessagePackObject> inArray){
-            var _rpc_argv = ((MsgPack.MessagePackObject)inArray[0]).AsBinary();
-            if (on_call_client != null){
-                on_call_client(_rpc_argv);
             }
         }
 

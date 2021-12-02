@@ -10,41 +10,6 @@ namespace abelkhan
 
 /*this struct code is codegen by abelkhan codegen for c#*/
 /*this caller code is codegen by abelkhan codegen for c#*/
-/*this cb code is codegen by abelkhan for c#*/
-    public class dbproxy_call_hub_rsp_cb : abelkhan.Imodule {
-        public dbproxy_call_hub_rsp_cb(abelkhan.modulemng modules) : base("dbproxy_call_hub_rsp_cb")
-        {
-            modules.reg_module(this);
-        }
-
-    }
-
-    public class dbproxy_call_hub_caller : abelkhan.Icaller {
-        public static dbproxy_call_hub_rsp_cb rsp_cb_dbproxy_call_hub_handle = null;
-        private Int64 uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8 = (Int64)RandomUUID.random();
-
-        public dbproxy_call_hub_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("dbproxy_call_hub", _ch)
-        {
-            if (rsp_cb_dbproxy_call_hub_handle == null)
-            {
-                rsp_cb_dbproxy_call_hub_handle = new dbproxy_call_hub_rsp_cb(modules);
-            }
-        }
-
-        public void ack_get_object_info(string callbackid, byte[] object_info){
-            var _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7 = new ArrayList();
-            _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7.Add(callbackid);
-            _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7.Add(object_info);
-            call_module_method("ack_get_object_info", _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7);
-        }
-
-        public void ack_get_object_info_end(string callbackid){
-            var _argv_e4756ccf_94e2_3b4f_958a_701f7076e607 = new ArrayList();
-            _argv_e4756ccf_94e2_3b4f_958a_701f7076e607.Add(callbackid);
-            call_module_method("ack_get_object_info_end", _argv_e4756ccf_94e2_3b4f_958a_701f7076e607);
-        }
-
-    }
     public class hub_call_dbproxy_reg_hub_cb
     {
         private UInt64 cb_uuid;
@@ -757,36 +722,42 @@ namespace abelkhan
         }
 
     }
-/*this module code is codegen by abelkhan codegen for c#*/
-    public class dbproxy_call_hub_module : abelkhan.Imodule {
-        private abelkhan.modulemng modules;
-        public dbproxy_call_hub_module(abelkhan.modulemng _modules) : base("dbproxy_call_hub")
+/*this cb code is codegen by abelkhan for c#*/
+    public class dbproxy_call_hub_rsp_cb : abelkhan.Imodule {
+        public dbproxy_call_hub_rsp_cb(abelkhan.modulemng modules) : base("dbproxy_call_hub_rsp_cb")
         {
-            modules = _modules;
             modules.reg_module(this);
-
-            reg_method("ack_get_object_info", ack_get_object_info);
-            reg_method("ack_get_object_info_end", ack_get_object_info_end);
-        }
-
-        public event Action<string, byte[]> on_ack_get_object_info;
-        public void ack_get_object_info(IList<MsgPack.MessagePackObject> inArray){
-            var _callbackid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
-            var _object_info = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
-            if (on_ack_get_object_info != null){
-                on_ack_get_object_info(_callbackid, _object_info);
-            }
-        }
-
-        public event Action<string> on_ack_get_object_info_end;
-        public void ack_get_object_info_end(IList<MsgPack.MessagePackObject> inArray){
-            var _callbackid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
-            if (on_ack_get_object_info_end != null){
-                on_ack_get_object_info_end(_callbackid);
-            }
         }
 
     }
+
+    public class dbproxy_call_hub_caller : abelkhan.Icaller {
+        public static dbproxy_call_hub_rsp_cb rsp_cb_dbproxy_call_hub_handle = null;
+        private Int64 uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8 = (Int64)RandomUUID.random();
+
+        public dbproxy_call_hub_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("dbproxy_call_hub", _ch)
+        {
+            if (rsp_cb_dbproxy_call_hub_handle == null)
+            {
+                rsp_cb_dbproxy_call_hub_handle = new dbproxy_call_hub_rsp_cb(modules);
+            }
+        }
+
+        public void ack_get_object_info(string callbackid, byte[] object_info){
+            var _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7 = new ArrayList();
+            _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7.Add(callbackid);
+            _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7.Add(object_info);
+            call_module_method("ack_get_object_info", _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7);
+        }
+
+        public void ack_get_object_info_end(string callbackid){
+            var _argv_e4756ccf_94e2_3b4f_958a_701f7076e607 = new ArrayList();
+            _argv_e4756ccf_94e2_3b4f_958a_701f7076e607.Add(callbackid);
+            call_module_method("ack_get_object_info_end", _argv_e4756ccf_94e2_3b4f_958a_701f7076e607);
+        }
+
+    }
+/*this module code is codegen by abelkhan codegen for c#*/
     public class hub_call_dbproxy_reg_hub_rsp : abelkhan.Response {
         private UInt64 uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
         public hub_call_dbproxy_reg_hub_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
@@ -1025,6 +996,35 @@ namespace abelkhan
                 on_get_object_count(_db, _collection, _query_info);
             }
             rsp = null;
+        }
+
+    }
+    public class dbproxy_call_hub_module : abelkhan.Imodule {
+        private abelkhan.modulemng modules;
+        public dbproxy_call_hub_module(abelkhan.modulemng _modules) : base("dbproxy_call_hub")
+        {
+            modules = _modules;
+            modules.reg_module(this);
+
+            reg_method("ack_get_object_info", ack_get_object_info);
+            reg_method("ack_get_object_info_end", ack_get_object_info_end);
+        }
+
+        public event Action<string, byte[]> on_ack_get_object_info;
+        public void ack_get_object_info(IList<MsgPack.MessagePackObject> inArray){
+            var _callbackid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _object_info = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
+            if (on_ack_get_object_info != null){
+                on_ack_get_object_info(_callbackid, _object_info);
+            }
+        }
+
+        public event Action<string> on_ack_get_object_info_end;
+        public void ack_get_object_info_end(IList<MsgPack.MessagePackObject> inArray){
+            var _callbackid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            if (on_ack_get_object_info_end != null){
+                on_ack_get_object_info_end(_callbackid);
+            }
         }
 
     }

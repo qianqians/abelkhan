@@ -11,97 +11,6 @@ namespace abelkhan
 
 /*this struct code is codegen by abelkhan codegen for cpp*/
 /*this caller code is codegen by abelkhan codegen for cpp*/
-/*this cb code is codegen by abelkhan for cpp*/
-    class center_call_hub_rsp_cb : public Imodule, public std::enable_shared_from_this<center_call_hub_rsp_cb>{
-    public:
-        center_call_hub_rsp_cb() : Imodule("center_call_hub_rsp_cb")
-        {
-        }
-
-        void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-        }
-
-    };
-
-    class center_call_hub_caller : Icaller {
-    private:
-        static std::shared_ptr<center_call_hub_rsp_cb> rsp_cb_center_call_hub_handle;
-
-    private:
-        std::atomic<uint64_t> uuid_adbd1e34_0c90_3426_aefa_4d734c07a706;
-
-    public:
-        center_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("center_call_hub", _ch)
-        {
-            if (rsp_cb_center_call_hub_handle == nullptr){
-                rsp_cb_center_call_hub_handle = std::make_shared<center_call_hub_rsp_cb>();
-                rsp_cb_center_call_hub_handle->Init(modules);
-            }
-            uuid_adbd1e34_0c90_3426_aefa_4d734c07a706.store(random());
-        }
-
-        void distribute_server_address(std::string svr_type, std::string svr_name, std::string ip, uint16_t port){
-            msgpack11::MsgPack::array _argv_b71bf35c_d65b_3682_98d1_b934f5276558;
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(svr_type);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(svr_name);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(ip);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(port);
-            call_module_method("distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
-        }
-
-        void reload(std::string argv){
-            msgpack11::MsgPack::array _argv_ba37af53_beea_3d61_82e1_8d15e335971d;
-            _argv_ba37af53_beea_3d61_82e1_8d15e335971d.push_back(argv);
-            call_module_method("reload", _argv_ba37af53_beea_3d61_82e1_8d15e335971d);
-        }
-
-    };
-/*this cb code is codegen by abelkhan for cpp*/
-    class center_call_server_rsp_cb : public Imodule, public std::enable_shared_from_this<center_call_server_rsp_cb>{
-    public:
-        center_call_server_rsp_cb() : Imodule("center_call_server_rsp_cb")
-        {
-        }
-
-        void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-        }
-
-    };
-
-    class center_call_server_caller : Icaller {
-    private:
-        static std::shared_ptr<center_call_server_rsp_cb> rsp_cb_center_call_server_handle;
-
-    private:
-        std::atomic<uint64_t> uuid_8c11e5bb_e9ff_3a0b_a436_65a9922a8da5;
-
-    public:
-        center_call_server_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("center_call_server", _ch)
-        {
-            if (rsp_cb_center_call_server_handle == nullptr){
-                rsp_cb_center_call_server_handle = std::make_shared<center_call_server_rsp_cb>();
-                rsp_cb_center_call_server_handle->Init(modules);
-            }
-            uuid_8c11e5bb_e9ff_3a0b_a436_65a9922a8da5.store(random());
-        }
-
-        void close_server(){
-            msgpack11::MsgPack::array _argv_8394af17_8a06_3068_977d_477a1276f56e;
-            call_module_method("close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
-        }
-
-        void svr_be_closed(std::string svr_type, std::string svr_name){
-            msgpack11::MsgPack::array _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac;
-            _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push_back(svr_type);
-            _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push_back(svr_name);
-            call_module_method("svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
-        }
-
-    };
     class center_rsp_cb;
     class center_reg_server_cb : public std::enable_shared_from_this<center_reg_server_cb>{
     private:
@@ -215,6 +124,97 @@ namespace abelkhan
 
     };
 /*this cb code is codegen by abelkhan for cpp*/
+    class center_call_server_rsp_cb : public Imodule, public std::enable_shared_from_this<center_call_server_rsp_cb>{
+    public:
+        center_call_server_rsp_cb() : Imodule("center_call_server_rsp_cb")
+        {
+        }
+
+        void Init(std::shared_ptr<modulemng> modules){
+            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
+
+        }
+
+    };
+
+    class center_call_server_caller : Icaller {
+    private:
+        static std::shared_ptr<center_call_server_rsp_cb> rsp_cb_center_call_server_handle;
+
+    private:
+        std::atomic<uint64_t> uuid_8c11e5bb_e9ff_3a0b_a436_65a9922a8da5;
+
+    public:
+        center_call_server_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("center_call_server", _ch)
+        {
+            if (rsp_cb_center_call_server_handle == nullptr){
+                rsp_cb_center_call_server_handle = std::make_shared<center_call_server_rsp_cb>();
+                rsp_cb_center_call_server_handle->Init(modules);
+            }
+            uuid_8c11e5bb_e9ff_3a0b_a436_65a9922a8da5.store(random());
+        }
+
+        void close_server(){
+            msgpack11::MsgPack::array _argv_8394af17_8a06_3068_977d_477a1276f56e;
+            call_module_method("close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
+        }
+
+        void svr_be_closed(std::string svr_type, std::string svr_name){
+            msgpack11::MsgPack::array _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac;
+            _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push_back(svr_type);
+            _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push_back(svr_name);
+            call_module_method("svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
+        }
+
+    };
+/*this cb code is codegen by abelkhan for cpp*/
+    class center_call_hub_rsp_cb : public Imodule, public std::enable_shared_from_this<center_call_hub_rsp_cb>{
+    public:
+        center_call_hub_rsp_cb() : Imodule("center_call_hub_rsp_cb")
+        {
+        }
+
+        void Init(std::shared_ptr<modulemng> modules){
+            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
+
+        }
+
+    };
+
+    class center_call_hub_caller : Icaller {
+    private:
+        static std::shared_ptr<center_call_hub_rsp_cb> rsp_cb_center_call_hub_handle;
+
+    private:
+        std::atomic<uint64_t> uuid_adbd1e34_0c90_3426_aefa_4d734c07a706;
+
+    public:
+        center_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("center_call_hub", _ch)
+        {
+            if (rsp_cb_center_call_hub_handle == nullptr){
+                rsp_cb_center_call_hub_handle = std::make_shared<center_call_hub_rsp_cb>();
+                rsp_cb_center_call_hub_handle->Init(modules);
+            }
+            uuid_adbd1e34_0c90_3426_aefa_4d734c07a706.store(random());
+        }
+
+        void distribute_server_address(std::string svr_type, std::string svr_name, std::string ip, uint16_t port){
+            msgpack11::MsgPack::array _argv_b71bf35c_d65b_3682_98d1_b934f5276558;
+            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(svr_type);
+            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(svr_name);
+            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(ip);
+            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(port);
+            call_module_method("distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
+        }
+
+        void reload(std::string argv){
+            msgpack11::MsgPack::array _argv_ba37af53_beea_3d61_82e1_8d15e335971d;
+            _argv_ba37af53_beea_3d61_82e1_8d15e335971d.push_back(argv);
+            call_module_method("reload", _argv_ba37af53_beea_3d61_82e1_8d15e335971d);
+        }
+
+    };
+/*this cb code is codegen by abelkhan for cpp*/
     class gm_center_rsp_cb : public Imodule, public std::enable_shared_from_this<gm_center_rsp_cb>{
     public:
         gm_center_rsp_cb() : Imodule("gm_center_rsp_cb")
@@ -266,61 +266,6 @@ namespace abelkhan
 
     };
 /*this module code is codegen by abelkhan codegen for cpp*/
-    class center_call_hub_module : public Imodule, public std::enable_shared_from_this<center_call_hub_module>{
-    public:
-        center_call_hub_module() : Imodule("center_call_hub")
-        {
-        }
-
-        void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-            reg_method("distribute_server_address", std::bind(&center_call_hub_module::distribute_server_address, this, std::placeholders::_1));
-            reg_method("reload", std::bind(&center_call_hub_module::reload, this, std::placeholders::_1));
-        }
-
-        concurrent::signals<void(std::string, std::string, std::string, uint16_t)> sig_distribute_server_address;
-        void distribute_server_address(const msgpack11::MsgPack::array& inArray){
-            auto _svr_type = inArray[0].string_value();
-            auto _svr_name = inArray[1].string_value();
-            auto _ip = inArray[2].string_value();
-            auto _port = inArray[3].uint16_value();
-            sig_distribute_server_address.emit(_svr_type, _svr_name, _ip, _port);
-        }
-
-        concurrent::signals<void(std::string)> sig_reload;
-        void reload(const msgpack11::MsgPack::array& inArray){
-            auto _argv = inArray[0].string_value();
-            sig_reload.emit(_argv);
-        }
-
-    };
-    class center_call_server_module : public Imodule, public std::enable_shared_from_this<center_call_server_module>{
-    public:
-        center_call_server_module() : Imodule("center_call_server")
-        {
-        }
-
-        void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-            reg_method("close_server", std::bind(&center_call_server_module::close_server, this, std::placeholders::_1));
-            reg_method("svr_be_closed", std::bind(&center_call_server_module::svr_be_closed, this, std::placeholders::_1));
-        }
-
-        concurrent::signals<void()> sig_close_server;
-        void close_server(const msgpack11::MsgPack::array& inArray){
-            sig_close_server.emit();
-        }
-
-        concurrent::signals<void(std::string, std::string)> sig_svr_be_closed;
-        void svr_be_closed(const msgpack11::MsgPack::array& inArray){
-            auto _svr_type = inArray[0].string_value();
-            auto _svr_name = inArray[1].string_value();
-            sig_svr_be_closed.emit(_svr_type, _svr_name);
-        }
-
-    };
     class center_reg_server_rsp : public Response {
     private:
         uint64_t uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda;
@@ -379,6 +324,61 @@ namespace abelkhan
         concurrent::signals<void()> sig_closed;
         void closed(const msgpack11::MsgPack::array& inArray){
             sig_closed.emit();
+        }
+
+    };
+    class center_call_server_module : public Imodule, public std::enable_shared_from_this<center_call_server_module>{
+    public:
+        center_call_server_module() : Imodule("center_call_server")
+        {
+        }
+
+        void Init(std::shared_ptr<modulemng> _modules){
+            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
+
+            reg_method("close_server", std::bind(&center_call_server_module::close_server, this, std::placeholders::_1));
+            reg_method("svr_be_closed", std::bind(&center_call_server_module::svr_be_closed, this, std::placeholders::_1));
+        }
+
+        concurrent::signals<void()> sig_close_server;
+        void close_server(const msgpack11::MsgPack::array& inArray){
+            sig_close_server.emit();
+        }
+
+        concurrent::signals<void(std::string, std::string)> sig_svr_be_closed;
+        void svr_be_closed(const msgpack11::MsgPack::array& inArray){
+            auto _svr_type = inArray[0].string_value();
+            auto _svr_name = inArray[1].string_value();
+            sig_svr_be_closed.emit(_svr_type, _svr_name);
+        }
+
+    };
+    class center_call_hub_module : public Imodule, public std::enable_shared_from_this<center_call_hub_module>{
+    public:
+        center_call_hub_module() : Imodule("center_call_hub")
+        {
+        }
+
+        void Init(std::shared_ptr<modulemng> _modules){
+            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
+
+            reg_method("distribute_server_address", std::bind(&center_call_hub_module::distribute_server_address, this, std::placeholders::_1));
+            reg_method("reload", std::bind(&center_call_hub_module::reload, this, std::placeholders::_1));
+        }
+
+        concurrent::signals<void(std::string, std::string, std::string, uint16_t)> sig_distribute_server_address;
+        void distribute_server_address(const msgpack11::MsgPack::array& inArray){
+            auto _svr_type = inArray[0].string_value();
+            auto _svr_name = inArray[1].string_value();
+            auto _ip = inArray[2].string_value();
+            auto _port = inArray[3].uint16_value();
+            sig_distribute_server_address.emit(_svr_type, _svr_name, _ip, _port);
+        }
+
+        concurrent::signals<void(std::string)> sig_reload;
+        void reload(const msgpack11::MsgPack::array& inArray){
+            auto _argv = inArray[0].string_value();
+            sig_reload.emit(_argv);
         }
 
     };

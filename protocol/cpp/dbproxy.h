@@ -11,51 +11,6 @@ namespace abelkhan
 
 /*this struct code is codegen by abelkhan codegen for cpp*/
 /*this caller code is codegen by abelkhan codegen for cpp*/
-/*this cb code is codegen by abelkhan for cpp*/
-    class dbproxy_call_hub_rsp_cb : public Imodule, public std::enable_shared_from_this<dbproxy_call_hub_rsp_cb>{
-    public:
-        dbproxy_call_hub_rsp_cb() : Imodule("dbproxy_call_hub_rsp_cb")
-        {
-        }
-
-        void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-        }
-
-    };
-
-    class dbproxy_call_hub_caller : Icaller {
-    private:
-        static std::shared_ptr<dbproxy_call_hub_rsp_cb> rsp_cb_dbproxy_call_hub_handle;
-
-    private:
-        std::atomic<uint64_t> uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8;
-
-    public:
-        dbproxy_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("dbproxy_call_hub", _ch)
-        {
-            if (rsp_cb_dbproxy_call_hub_handle == nullptr){
-                rsp_cb_dbproxy_call_hub_handle = std::make_shared<dbproxy_call_hub_rsp_cb>();
-                rsp_cb_dbproxy_call_hub_handle->Init(modules);
-            }
-            uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8.store(random());
-        }
-
-        void ack_get_object_info(std::string callbackid, std::vector<uint8_t> object_info){
-            msgpack11::MsgPack::array _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7;
-            _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7.push_back(callbackid);
-            _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7.push_back(object_info);
-            call_module_method("ack_get_object_info", _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7);
-        }
-
-        void ack_get_object_info_end(std::string callbackid){
-            msgpack11::MsgPack::array _argv_e4756ccf_94e2_3b4f_958a_701f7076e607;
-            _argv_e4756ccf_94e2_3b4f_958a_701f7076e607.push_back(callbackid);
-            call_module_method("ack_get_object_info_end", _argv_e4756ccf_94e2_3b4f_958a_701f7076e607);
-        }
-
-    };
     class hub_call_dbproxy_rsp_cb;
     class hub_call_dbproxy_reg_hub_cb : public std::enable_shared_from_this<hub_call_dbproxy_reg_hub_cb>{
     private:
@@ -520,34 +475,52 @@ namespace abelkhan
         }
 
     };
-/*this module code is codegen by abelkhan codegen for cpp*/
-    class dbproxy_call_hub_module : public Imodule, public std::enable_shared_from_this<dbproxy_call_hub_module>{
+/*this cb code is codegen by abelkhan for cpp*/
+    class dbproxy_call_hub_rsp_cb : public Imodule, public std::enable_shared_from_this<dbproxy_call_hub_rsp_cb>{
     public:
-        dbproxy_call_hub_module() : Imodule("dbproxy_call_hub")
+        dbproxy_call_hub_rsp_cb() : Imodule("dbproxy_call_hub_rsp_cb")
         {
         }
 
-        void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
+        void Init(std::shared_ptr<modulemng> modules){
+            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
 
-            reg_method("ack_get_object_info", std::bind(&dbproxy_call_hub_module::ack_get_object_info, this, std::placeholders::_1));
-            reg_method("ack_get_object_info_end", std::bind(&dbproxy_call_hub_module::ack_get_object_info_end, this, std::placeholders::_1));
-        }
-
-        concurrent::signals<void(std::string, std::vector<uint8_t>)> sig_ack_get_object_info;
-        void ack_get_object_info(const msgpack11::MsgPack::array& inArray){
-            auto _callbackid = inArray[0].string_value();
-            auto _object_info = inArray[1].binary_items();
-            sig_ack_get_object_info.emit(_callbackid, _object_info);
-        }
-
-        concurrent::signals<void(std::string)> sig_ack_get_object_info_end;
-        void ack_get_object_info_end(const msgpack11::MsgPack::array& inArray){
-            auto _callbackid = inArray[0].string_value();
-            sig_ack_get_object_info_end.emit(_callbackid);
         }
 
     };
+
+    class dbproxy_call_hub_caller : Icaller {
+    private:
+        static std::shared_ptr<dbproxy_call_hub_rsp_cb> rsp_cb_dbproxy_call_hub_handle;
+
+    private:
+        std::atomic<uint64_t> uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8;
+
+    public:
+        dbproxy_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("dbproxy_call_hub", _ch)
+        {
+            if (rsp_cb_dbproxy_call_hub_handle == nullptr){
+                rsp_cb_dbproxy_call_hub_handle = std::make_shared<dbproxy_call_hub_rsp_cb>();
+                rsp_cb_dbproxy_call_hub_handle->Init(modules);
+            }
+            uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8.store(random());
+        }
+
+        void ack_get_object_info(std::string callbackid, std::vector<uint8_t> object_info){
+            msgpack11::MsgPack::array _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7;
+            _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7.push_back(callbackid);
+            _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7.push_back(object_info);
+            call_module_method("ack_get_object_info", _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7);
+        }
+
+        void ack_get_object_info_end(std::string callbackid){
+            msgpack11::MsgPack::array _argv_e4756ccf_94e2_3b4f_958a_701f7076e607;
+            _argv_e4756ccf_94e2_3b4f_958a_701f7076e607.push_back(callbackid);
+            call_module_method("ack_get_object_info_end", _argv_e4756ccf_94e2_3b4f_958a_701f7076e607);
+        }
+
+    };
+/*this module code is codegen by abelkhan codegen for cpp*/
     class hub_call_dbproxy_reg_hub_rsp : public Response {
     private:
         uint64_t uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
@@ -792,6 +765,33 @@ namespace abelkhan
             rsp = std::make_shared<hub_call_dbproxy_get_object_count_rsp>(current_ch, _cb_uuid);
             sig_get_object_count.emit(_db, _collection, _query_info);
             rsp = nullptr;
+        }
+
+    };
+    class dbproxy_call_hub_module : public Imodule, public std::enable_shared_from_this<dbproxy_call_hub_module>{
+    public:
+        dbproxy_call_hub_module() : Imodule("dbproxy_call_hub")
+        {
+        }
+
+        void Init(std::shared_ptr<modulemng> _modules){
+            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
+
+            reg_method("ack_get_object_info", std::bind(&dbproxy_call_hub_module::ack_get_object_info, this, std::placeholders::_1));
+            reg_method("ack_get_object_info_end", std::bind(&dbproxy_call_hub_module::ack_get_object_info_end, this, std::placeholders::_1));
+        }
+
+        concurrent::signals<void(std::string, std::vector<uint8_t>)> sig_ack_get_object_info;
+        void ack_get_object_info(const msgpack11::MsgPack::array& inArray){
+            auto _callbackid = inArray[0].string_value();
+            auto _object_info = inArray[1].binary_items();
+            sig_ack_get_object_info.emit(_callbackid, _object_info);
+        }
+
+        concurrent::signals<void(std::string)> sig_ack_get_object_info_end;
+        void ack_get_object_info_end(const msgpack11::MsgPack::array& inArray){
+            auto _callbackid = inArray[0].string_value();
+            sig_ack_get_object_info_end.emit(_callbackid);
         }
 
     };

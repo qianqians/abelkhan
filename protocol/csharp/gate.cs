@@ -34,169 +34,6 @@ namespace abelkhan
     }
 
 /*this caller code is codegen by abelkhan codegen for c#*/
-    public class hub_call_gate_reg_hub_cb
-    {
-        private UInt64 cb_uuid;
-        private hub_call_gate_rsp_cb module_rsp_cb;
-
-        public hub_call_gate_reg_hub_cb(UInt64 _cb_uuid, hub_call_gate_rsp_cb _module_rsp_cb)
-        {
-            cb_uuid = _cb_uuid;
-            module_rsp_cb = _module_rsp_cb;
-        }
-
-        public event Action on_reg_hub_cb;
-        public event Action on_reg_hub_err;
-        public event Action on_reg_hub_timeout;
-
-        public hub_call_gate_reg_hub_cb callBack(Action cb, Action err)
-        {
-            on_reg_hub_cb += cb;
-            on_reg_hub_err += err;
-            return this;
-        }
-
-        public void timeout(UInt64 tick, Action timeout_cb)
-        {
-            TinyTimer.add_timer(tick, ()=>{
-                module_rsp_cb.reg_hub_timeout(cb_uuid);
-            });
-            on_reg_hub_timeout += timeout_cb;
-        }
-
-        public void call_cb()
-        {
-            if (on_reg_hub_cb != null)
-            {
-                on_reg_hub_cb();
-            }
-        }
-
-        public void call_err()
-        {
-            if (on_reg_hub_err != null)
-            {
-                on_reg_hub_err();
-            }
-        }
-
-        public void call_timeout()
-        {
-            if (on_reg_hub_timeout != null)
-            {
-                on_reg_hub_timeout();
-            }
-        }
-
-    }
-
-/*this cb code is codegen by abelkhan for c#*/
-    public class hub_call_gate_rsp_cb : abelkhan.Imodule {
-        public Dictionary<UInt64, hub_call_gate_reg_hub_cb> map_reg_hub;
-        public hub_call_gate_rsp_cb(abelkhan.modulemng modules) : base("hub_call_gate_rsp_cb")
-        {
-            modules.reg_module(this);
-            map_reg_hub = new Dictionary<UInt64, hub_call_gate_reg_hub_cb>();
-            reg_method("reg_hub_rsp", reg_hub_rsp);
-            reg_method("reg_hub_err", reg_hub_err);
-        }
-
-        public void reg_hub_rsp(IList<MsgPack.MessagePackObject> inArray){
-            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            var rsp = try_get_and_del_reg_hub_cb(uuid);
-            if (rsp != null)
-            {
-                rsp.call_cb();
-            }
-        }
-
-        public void reg_hub_err(IList<MsgPack.MessagePackObject> inArray){
-            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            var rsp = try_get_and_del_reg_hub_cb(uuid);
-            if (rsp != null)
-            {
-                rsp.call_err();
-            }
-        }
-
-        public void reg_hub_timeout(UInt64 cb_uuid){
-            var rsp = try_get_and_del_reg_hub_cb(cb_uuid);
-            if (rsp != null){
-                rsp.call_timeout();
-            }
-        }
-
-        private hub_call_gate_reg_hub_cb try_get_and_del_reg_hub_cb(UInt64 uuid){
-            lock(map_reg_hub)
-            {
-                if (map_reg_hub.TryGetValue(uuid, out hub_call_gate_reg_hub_cb rsp))
-                {
-                    map_reg_hub.Remove(uuid);
-                }
-                return rsp;
-            }
-        }
-
-    }
-
-    public class hub_call_gate_caller : abelkhan.Icaller {
-        public static hub_call_gate_rsp_cb rsp_cb_hub_call_gate_handle = null;
-        private Int64 uuid_9796175c_1119_3833_bf31_5ee139b40edc = (Int64)RandomUUID.random();
-
-        public hub_call_gate_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("hub_call_gate", _ch)
-        {
-            if (rsp_cb_hub_call_gate_handle == null)
-            {
-                rsp_cb_hub_call_gate_handle = new hub_call_gate_rsp_cb(modules);
-            }
-        }
-
-        public hub_call_gate_reg_hub_cb reg_hub(string hub_name, string hub_type){
-            Interlocked.Increment(ref uuid_9796175c_1119_3833_bf31_5ee139b40edc);
-            var uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = (UInt64)uuid_9796175c_1119_3833_bf31_5ee139b40edc;
-
-            var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106);
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(hub_name);
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(hub_type);
-            call_module_method("reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
-
-            var cb_reg_hub_obj = new hub_call_gate_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_gate_handle);
-            rsp_cb_hub_call_gate_handle.map_reg_hub.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, cb_reg_hub_obj);
-            return cb_reg_hub_obj;
-        }
-
-        public void disconnect_client(string client_uuid){
-            var _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85 = new ArrayList();
-            _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.Add(client_uuid);
-            call_module_method("disconnect_client", _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85);
-        }
-
-        public void forward_hub_call_client(string client_uuid, byte[] rpc_argv){
-            var _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1 = new ArrayList();
-            _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1.Add(client_uuid);
-            _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1.Add(rpc_argv);
-            call_module_method("forward_hub_call_client", _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1);
-        }
-
-        public void forward_hub_call_group_client(List<string> client_uuids, byte[] rpc_argv){
-            var _argv_374b012d_0718_3f84_91f0_784b12f8189c = new ArrayList();
-            var _array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1 = new ArrayList();
-            foreach(var v_a8e916a0_4f15_5329_b872_d0ff30ba7fe6 in client_uuids){
-                _array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1.Add(v_a8e916a0_4f15_5329_b872_d0ff30ba7fe6);
-            }
-            _argv_374b012d_0718_3f84_91f0_784b12f8189c.Add(_array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1);
-            _argv_374b012d_0718_3f84_91f0_784b12f8189c.Add(rpc_argv);
-            call_module_method("forward_hub_call_group_client", _argv_374b012d_0718_3f84_91f0_784b12f8189c);
-        }
-
-        public void forward_hub_call_global_client(byte[] rpc_argv){
-            var _argv_f69241c3_642a_3b51_bb37_cf638176493a = new ArrayList();
-            _argv_f69241c3_642a_3b51_bb37_cf638176493a.Add(rpc_argv);
-            call_module_method("forward_hub_call_global_client", _argv_f69241c3_642a_3b51_bb37_cf638176493a);
-        }
-
-    }
     public class client_call_gate_heartbeats_cb
     {
         private UInt64 cb_uuid;
@@ -451,93 +288,170 @@ namespace abelkhan
         }
 
     }
-/*this module code is codegen by abelkhan codegen for c#*/
-    public class hub_call_gate_reg_hub_rsp : abelkhan.Response {
-        private UInt64 uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
-        public hub_call_gate_reg_hub_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_gate_rsp_cb", _ch)
+    public class hub_call_gate_reg_hub_cb
+    {
+        private UInt64 cb_uuid;
+        private hub_call_gate_rsp_cb module_rsp_cb;
+
+        public hub_call_gate_reg_hub_cb(UInt64 _cb_uuid, hub_call_gate_rsp_cb _module_rsp_cb)
         {
-            uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 = _uuid;
+            cb_uuid = _cb_uuid;
+            module_rsp_cb = _module_rsp_cb;
         }
 
-        public void rsp(){
-            var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
-            call_module_method("reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+        public event Action on_reg_hub_cb;
+        public event Action on_reg_hub_err;
+        public event Action on_reg_hub_timeout;
+
+        public hub_call_gate_reg_hub_cb callBack(Action cb, Action err)
+        {
+            on_reg_hub_cb += cb;
+            on_reg_hub_err += err;
+            return this;
         }
 
-        public void err(){
-            var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
-            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
-            call_module_method("reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+        public void timeout(UInt64 tick, Action timeout_cb)
+        {
+            TinyTimer.add_timer(tick, ()=>{
+                module_rsp_cb.reg_hub_timeout(cb_uuid);
+            });
+            on_reg_hub_timeout += timeout_cb;
+        }
+
+        public void call_cb()
+        {
+            if (on_reg_hub_cb != null)
+            {
+                on_reg_hub_cb();
+            }
+        }
+
+        public void call_err()
+        {
+            if (on_reg_hub_err != null)
+            {
+                on_reg_hub_err();
+            }
+        }
+
+        public void call_timeout()
+        {
+            if (on_reg_hub_timeout != null)
+            {
+                on_reg_hub_timeout();
+            }
         }
 
     }
 
-    public class hub_call_gate_module : abelkhan.Imodule {
-        private abelkhan.modulemng modules;
-        public hub_call_gate_module(abelkhan.modulemng _modules) : base("hub_call_gate")
+/*this cb code is codegen by abelkhan for c#*/
+    public class hub_call_gate_rsp_cb : abelkhan.Imodule {
+        public Dictionary<UInt64, hub_call_gate_reg_hub_cb> map_reg_hub;
+        public hub_call_gate_rsp_cb(abelkhan.modulemng modules) : base("hub_call_gate_rsp_cb")
         {
-            modules = _modules;
             modules.reg_module(this);
-
-            reg_method("reg_hub", reg_hub);
-            reg_method("disconnect_client", disconnect_client);
-            reg_method("forward_hub_call_client", forward_hub_call_client);
-            reg_method("forward_hub_call_group_client", forward_hub_call_group_client);
-            reg_method("forward_hub_call_global_client", forward_hub_call_global_client);
+            map_reg_hub = new Dictionary<UInt64, hub_call_gate_reg_hub_cb>();
+            reg_method("reg_hub_rsp", reg_hub_rsp);
+            reg_method("reg_hub_err", reg_hub_err);
         }
 
-        public event Action<string, string> on_reg_hub;
-        public void reg_hub(IList<MsgPack.MessagePackObject> inArray){
-            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            var _hub_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
-            var _hub_type = ((MsgPack.MessagePackObject)inArray[2]).AsString();
-            rsp = new hub_call_gate_reg_hub_rsp(current_ch, _cb_uuid);
-            if (on_reg_hub != null){
-                on_reg_hub(_hub_name, _hub_type);
-            }
-            rsp = null;
-        }
-
-        public event Action<string> on_disconnect_client;
-        public void disconnect_client(IList<MsgPack.MessagePackObject> inArray){
-            var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
-            if (on_disconnect_client != null){
-                on_disconnect_client(_client_uuid);
+        public void reg_hub_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var rsp = try_get_and_del_reg_hub_cb(uuid);
+            if (rsp != null)
+            {
+                rsp.call_cb();
             }
         }
 
-        public event Action<string, byte[]> on_forward_hub_call_client;
-        public void forward_hub_call_client(IList<MsgPack.MessagePackObject> inArray){
-            var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
-            var _rpc_argv = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
-            if (on_forward_hub_call_client != null){
-                on_forward_hub_call_client(_client_uuid, _rpc_argv);
+        public void reg_hub_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var rsp = try_get_and_del_reg_hub_cb(uuid);
+            if (rsp != null)
+            {
+                rsp.call_err();
             }
         }
 
-        public event Action<List<string>, byte[]> on_forward_hub_call_group_client;
-        public void forward_hub_call_group_client(IList<MsgPack.MessagePackObject> inArray){
-            var _client_uuids = new List<string>();
-            var _protocol_array = ((MsgPack.MessagePackObject)inArray[0]).AsList();
-            foreach (var v_dfd11414_89c9_5adb_8977_69b93b30195b in _protocol_array){
-                _client_uuids.Add(((MsgPack.MessagePackObject)v_dfd11414_89c9_5adb_8977_69b93b30195b).AsString());
-            }
-            var _rpc_argv = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
-            if (on_forward_hub_call_group_client != null){
-                on_forward_hub_call_group_client(_client_uuids, _rpc_argv);
+        public void reg_hub_timeout(UInt64 cb_uuid){
+            var rsp = try_get_and_del_reg_hub_cb(cb_uuid);
+            if (rsp != null){
+                rsp.call_timeout();
             }
         }
 
-        public event Action<byte[]> on_forward_hub_call_global_client;
-        public void forward_hub_call_global_client(IList<MsgPack.MessagePackObject> inArray){
-            var _rpc_argv = ((MsgPack.MessagePackObject)inArray[0]).AsBinary();
-            if (on_forward_hub_call_global_client != null){
-                on_forward_hub_call_global_client(_rpc_argv);
+        private hub_call_gate_reg_hub_cb try_get_and_del_reg_hub_cb(UInt64 uuid){
+            lock(map_reg_hub)
+            {
+                if (map_reg_hub.TryGetValue(uuid, out hub_call_gate_reg_hub_cb rsp))
+                {
+                    map_reg_hub.Remove(uuid);
+                }
+                return rsp;
             }
         }
 
     }
+
+    public class hub_call_gate_caller : abelkhan.Icaller {
+        public static hub_call_gate_rsp_cb rsp_cb_hub_call_gate_handle = null;
+        private Int64 uuid_9796175c_1119_3833_bf31_5ee139b40edc = (Int64)RandomUUID.random();
+
+        public hub_call_gate_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("hub_call_gate", _ch)
+        {
+            if (rsp_cb_hub_call_gate_handle == null)
+            {
+                rsp_cb_hub_call_gate_handle = new hub_call_gate_rsp_cb(modules);
+            }
+        }
+
+        public hub_call_gate_reg_hub_cb reg_hub(string hub_name, string hub_type){
+            Interlocked.Increment(ref uuid_9796175c_1119_3833_bf31_5ee139b40edc);
+            var uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = (UInt64)uuid_9796175c_1119_3833_bf31_5ee139b40edc;
+
+            var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106);
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(hub_name);
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(hub_type);
+            call_module_method("reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+
+            var cb_reg_hub_obj = new hub_call_gate_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_gate_handle);
+            rsp_cb_hub_call_gate_handle.map_reg_hub.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, cb_reg_hub_obj);
+            return cb_reg_hub_obj;
+        }
+
+        public void disconnect_client(string client_uuid){
+            var _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85 = new ArrayList();
+            _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.Add(client_uuid);
+            call_module_method("disconnect_client", _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85);
+        }
+
+        public void forward_hub_call_client(string client_uuid, byte[] rpc_argv){
+            var _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1 = new ArrayList();
+            _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1.Add(client_uuid);
+            _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1.Add(rpc_argv);
+            call_module_method("forward_hub_call_client", _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1);
+        }
+
+        public void forward_hub_call_group_client(List<string> client_uuids, byte[] rpc_argv){
+            var _argv_374b012d_0718_3f84_91f0_784b12f8189c = new ArrayList();
+            var _array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1 = new ArrayList();
+            foreach(var v_a8e916a0_4f15_5329_b872_d0ff30ba7fe6 in client_uuids){
+                _array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1.Add(v_a8e916a0_4f15_5329_b872_d0ff30ba7fe6);
+            }
+            _argv_374b012d_0718_3f84_91f0_784b12f8189c.Add(_array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1);
+            _argv_374b012d_0718_3f84_91f0_784b12f8189c.Add(rpc_argv);
+            call_module_method("forward_hub_call_group_client", _argv_374b012d_0718_3f84_91f0_784b12f8189c);
+        }
+
+        public void forward_hub_call_global_client(byte[] rpc_argv){
+            var _argv_f69241c3_642a_3b51_bb37_cf638176493a = new ArrayList();
+            _argv_f69241c3_642a_3b51_bb37_cf638176493a.Add(rpc_argv);
+            call_module_method("forward_hub_call_global_client", _argv_f69241c3_642a_3b51_bb37_cf638176493a);
+        }
+
+    }
+/*this module code is codegen by abelkhan codegen for c#*/
     public class client_call_gate_heartbeats_rsp : abelkhan.Response {
         private UInt64 uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56;
         public client_call_gate_heartbeats_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("client_call_gate_rsp_cb", _ch)
@@ -625,6 +539,92 @@ namespace abelkhan
             var _rpc_argv = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
             if (on_forward_client_call_hub != null){
                 on_forward_client_call_hub(_hub_name, _rpc_argv);
+            }
+        }
+
+    }
+    public class hub_call_gate_reg_hub_rsp : abelkhan.Response {
+        private UInt64 uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
+        public hub_call_gate_reg_hub_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_gate_rsp_cb", _ch)
+        {
+            uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 = _uuid;
+        }
+
+        public void rsp(){
+            var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
+            call_module_method("reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+        }
+
+        public void err(){
+            var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
+            _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
+            call_module_method("reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+        }
+
+    }
+
+    public class hub_call_gate_module : abelkhan.Imodule {
+        private abelkhan.modulemng modules;
+        public hub_call_gate_module(abelkhan.modulemng _modules) : base("hub_call_gate")
+        {
+            modules = _modules;
+            modules.reg_module(this);
+
+            reg_method("reg_hub", reg_hub);
+            reg_method("disconnect_client", disconnect_client);
+            reg_method("forward_hub_call_client", forward_hub_call_client);
+            reg_method("forward_hub_call_group_client", forward_hub_call_group_client);
+            reg_method("forward_hub_call_global_client", forward_hub_call_global_client);
+        }
+
+        public event Action<string, string> on_reg_hub;
+        public void reg_hub(IList<MsgPack.MessagePackObject> inArray){
+            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _hub_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _hub_type = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            rsp = new hub_call_gate_reg_hub_rsp(current_ch, _cb_uuid);
+            if (on_reg_hub != null){
+                on_reg_hub(_hub_name, _hub_type);
+            }
+            rsp = null;
+        }
+
+        public event Action<string> on_disconnect_client;
+        public void disconnect_client(IList<MsgPack.MessagePackObject> inArray){
+            var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            if (on_disconnect_client != null){
+                on_disconnect_client(_client_uuid);
+            }
+        }
+
+        public event Action<string, byte[]> on_forward_hub_call_client;
+        public void forward_hub_call_client(IList<MsgPack.MessagePackObject> inArray){
+            var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _rpc_argv = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
+            if (on_forward_hub_call_client != null){
+                on_forward_hub_call_client(_client_uuid, _rpc_argv);
+            }
+        }
+
+        public event Action<List<string>, byte[]> on_forward_hub_call_group_client;
+        public void forward_hub_call_group_client(IList<MsgPack.MessagePackObject> inArray){
+            var _client_uuids = new List<string>();
+            var _protocol_array = ((MsgPack.MessagePackObject)inArray[0]).AsList();
+            foreach (var v_dfd11414_89c9_5adb_8977_69b93b30195b in _protocol_array){
+                _client_uuids.Add(((MsgPack.MessagePackObject)v_dfd11414_89c9_5adb_8977_69b93b30195b).AsString());
+            }
+            var _rpc_argv = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
+            if (on_forward_hub_call_group_client != null){
+                on_forward_hub_call_group_client(_client_uuids, _rpc_argv);
+            }
+        }
+
+        public event Action<byte[]> on_forward_hub_call_global_client;
+        public void forward_hub_call_global_client(IList<MsgPack.MessagePackObject> inArray){
+            var _rpc_argv = ((MsgPack.MessagePackObject)inArray[0]).AsBinary();
+            if (on_forward_hub_call_global_client != null){
+                on_forward_hub_call_global_client(_rpc_argv);
             }
         }
 
