@@ -30,7 +30,11 @@ def batch(inputdir):
         fname = os.path.splitext(filename)[0]
         fex = os.path.splitext(filename)[1]
         if fex == '.juggle':
-            file = open(inputdir + '//' + filename, 'r', encoding='utf-8')
+            from sys import version_info
+            if version_info.major == 2:
+                file = open(inputdir + '//' + filename, 'r')
+            elif version_info.major == 3:
+                file = open(inputdir + '//' + filename, 'r', encoding='utf-8')
             genfilestr = file.readlines()
 
             _import, module, enum, struct = parser(genfilestr)
