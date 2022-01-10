@@ -54,15 +54,15 @@ int main(int argc, char* argv[]) {
             spdlog::trace("createPersistedObject ret:{0}!", ret);
         });
     });
-    _test_c2s_module->sig_get_svr_host.connect([_test_c2s_module]() {
+    _test_c2s_module->sig_get_svr_host.connect([_hub, _test_c2s_module]() {
         spdlog::trace("sig_get_svr_host!");
         auto rsp = std::static_pointer_cast<abelkhan::test_c2s_get_svr_host_rsp>(_test_c2s_module->rsp);
-        rsp->rsp("127.0.0.1", (uint16_t)4001);
+        rsp->rsp(_hub->tcp_address_info->host, _hub->tcp_address_info->port);
     });
-    _test_c2s_module->sig_get_websocket_svr_host.connect([_test_c2s_module]() {
+    _test_c2s_module->sig_get_websocket_svr_host.connect([_hub, _test_c2s_module]() {
         spdlog::trace("get_websocket_svr_host!");
         auto rsp = std::static_pointer_cast<abelkhan::test_c2s_get_websocket_svr_host_rsp>(_test_c2s_module->rsp);
-        rsp->rsp("127.0.0.1", (uint16_t)4051);
+        rsp->rsp(_hub->websocket_address_info->host, _hub->websocket_address_info->port);
     });
 
     auto _test_s2c_caller = std::make_shared<abelkhan::test_s2c_caller>(_hub);

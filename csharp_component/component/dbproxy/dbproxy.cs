@@ -98,7 +98,7 @@ namespace dbproxy
             _dbevent = new dbevent();
             _dbevent.start();
 
-            var ip = _config.get_value_string("ip");
+            var host = _config.get_value_string("host");
             var port = (ushort)_config.get_value_int("port");
 			_acceptservice = new abelkhan.acceptservice(port);
             _acceptservice.on_connect += (abelkhan.Ichannel ch) => {
@@ -110,9 +110,9 @@ namespace dbproxy
             _acceptservice.start();
             _hub_msg_handle = new hub_msg_handle(_hubmanager, _closeHandle);
 
-            var center_ip = _center_config.get_value_string("ip");
+            var center_host = _center_config.get_value_string("host");
 			var center_port = (short)_center_config.get_value_int("port");
-            var _socket = abelkhan.connectservice.connect(System.Net.IPAddress.Parse(center_ip), center_port);
+            var _socket = abelkhan.connectservice.connect(System.Net.Dns.GetHostAddresses(center_host)[0], center_port);
             var _center_ch = new abelkhan.rawchannel(_socket);
             lock (add_chs)
             {
@@ -120,7 +120,7 @@ namespace dbproxy
             }
             _centerproxy = new centerproxy(_center_ch);
             _center_msg_handle = new center_msg_handle(_closeHandle, _hubmanager);
-            _centerproxy.reg_dbproxy(ip, (short)port, name);
+            _centerproxy.reg_dbproxy(host, (short)port);
 
             heartbeath_center(service.timerservice.Tick);
         }

@@ -17,6 +17,11 @@
 
 namespace hub{
 
+struct name_info {
+	std::string name;
+	uint32_t serial;
+};
+
 class centerproxy {
 public:
 	centerproxy(std::shared_ptr<abelkhan::Ichannel> ch) {
@@ -29,9 +34,11 @@ public:
 	~centerproxy(){
 	}
 
-	void reg_server(std::string ip, short port, std::string hub_name) {
+	void reg_server(std::string host, short port, std::string sub_type, struct name_info &_info) {
 		spdlog::trace("begin connect center server!");
-		_center_caller->reg_server("hub", ip, port, hub_name)->callBack([this]() {
+		_center_caller->reg_server("hub", sub_type, host, port)->callBack([this, &_info](uint32_t serial, std::string name) {
+			_info.name = name;
+			_info.serial = serial;
 			spdlog::trace("connect center sucessed!");
 			is_reg_sucess = true;
 		}, []() {

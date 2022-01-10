@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 
 namespace hub
@@ -59,9 +60,9 @@ namespace hub
             remove_chs = new List<abelkhan.Ichannel>();
 
             ManagedENet.Startup();
-            var ip = _config.get_value_string("ip");
+            var host = _config.get_value_string("host");
             var port = (ushort)_config.get_value_int("port");
-            _enetservice = new abelkhan.enetservice(ip, port);
+            _enetservice = new abelkhan.enetservice(Dns.GetHostAddresses(host)[0].ToString(), port);
             _enetservice.on_connect += (ch) => {
                 lock (add_chs)
                 {
@@ -95,9 +96,9 @@ namespace hub
                 on_direct_client_disconnect?.Invoke(client_cuuid);
             };
 
-            var center_ip = _center_config.get_value_string("ip");
+            var center_host = _center_config.get_value_string("host");
 			var center_port = (short)_center_config.get_value_int("port");
-			var _socket = abelkhan.connectservice.connect(System.Net.IPAddress.Parse(center_ip), center_port);
+			var _socket = abelkhan.connectservice.connect(System.Net.Dns.GetHostAddresses(center_host)[0], center_port);
             var center_ch = new abelkhan.rawchannel(_socket);
             _centerproxy = new centerproxy(center_ch);
             lock (add_chs)
@@ -111,9 +112,10 @@ namespace hub
                 var tcp_listen = _config.get_value_bool("tcp_listen");
                 if (tcp_listen)
                 {
-                    var tcp_outside_ip = _config.get_value_string("tcp_outside_ip");
-                    var tcp_outside_port = (ushort)_config.get_value_int("tcp_outside_port");
-                    _cryptacceptservice = new abelkhan.cryptacceptservice(tcp_outside_port);
+                    tcp_outside_address = new addressinfo();
+                    tcp_outside_address.host = _config.get_value_string("tcp_outside_host");
+                    tcp_outside_address.port = (ushort)_config.get_value_int("tcp_outside_port");
+                    _cryptacceptservice = new abelkhan.cryptacceptservice(tcp_outside_address.port);
                     _cryptacceptservice.on_connect += (ch) => {
                         lock (add_chs)
                         {
@@ -129,14 +131,15 @@ namespace hub
                 var is_websocket_listen = _config.get_value_bool("websocket_listen");
                 if (is_websocket_listen)
                 {
-                    var websocket_outside_ip = _config.get_value_string("websocket_outside_ip");
-                    var websocket_outside_port = (ushort)_config.get_value_int("websocket_outside_port");
+                    websocket_outside_address = new addressinfo();
+                    websocket_outside_address.host = _config.get_value_string("websocket_outside_host");
+                    websocket_outside_address.port = (ushort)_config.get_value_int("websocket_outside_port");
                     var is_ssl = _config.get_value_bool("is_ssl");
                     string pfx = "";
                     if (is_ssl) {
                         pfx = _config.get_value_string("pfx");
                     }
-                    _websocketacceptservice = new abelkhan.websocketacceptservice(websocket_outside_port, is_ssl, pfx);
+                    _websocketacceptservice = new abelkhan.websocketacceptservice(websocket_outside_address.port, is_ssl, pfx);
                     _websocketacceptservice.on_connect += (ch) =>
                     {
                         lock (add_chs)
@@ -153,7 +156,7 @@ namespace hub
             _gate_msg_handle = new gate_msg_handle();
             _client_msg_handle = new client_msg_handle();
 
-            _centerproxy.reg_hub(ip, port, name);
+            _centerproxy.reg_hub(host, port, name);
         }
 
         public void heartbeat(long _)
@@ -189,20 +192,13 @@ namespace hub
             onReload?.Invoke(argv);
         }
 
-        public void connect_dbproxy(string dbproxy_name, string db_ip, short db_port)
+        public void connect_dbproxy(string dbproxy_name, string db_host, short db_port)
 		{
             if (_config.has_key("dbproxy") && _config.get_value_string("dbproxy") == dbproxy_name)
             {
                 var dbproxy_cfg = _root_config.get_value_dict(dbproxy_name);
-                var _db_ip = dbproxy_cfg.get_value_string("ip");
-                var _db_port = (short)dbproxy_cfg.get_value_int("port");
-                if (db_ip != _db_ip || db_port != _db_port)
-                {
-                    log.log.err("dbproxy:{0}, wrong ip:{1}, port:{2}!", dbproxy_name, db_ip, db_port);
-                    return;
-                }
 
-                var _socket = abelkhan.connectservice.connect(System.Net.IPAddress.Parse(db_ip), db_port);
+                var _socket = abelkhan.connectservice.connect(Dns.GetHostAddresses(db_host)[0], db_port);
                 var _db_ch = new abelkhan.rawchannel(_socket);
                 _dbproxy = new dbproxyproxy(_db_ch);
                 lock (add_chs)
@@ -215,15 +211,8 @@ namespace hub
             else if (_config.has_key("extend_dbproxy") && _config.get_value_string("extend_dbproxy") == dbproxy_name)
             {
                 var dbproxy_cfg = _root_config.get_value_dict(dbproxy_name);
-                var _db_ip = dbproxy_cfg.get_value_string("ip");
-                var _db_port = (short)dbproxy_cfg.get_value_int("port");
-                if (db_ip != _db_ip || db_port != _db_port)
-                {
-                    log.log.err("dbproxy:{0}, wrong ip:{1}, port:{2}!", dbproxy_name, db_ip, db_port);
-                    return;
-                }
-
-                var _socket = abelkhan.connectservice.connect(System.Net.IPAddress.Parse(db_ip), db_port);
+                
+                var _socket = abelkhan.connectservice.connect(Dns.GetHostAddresses(db_host)[0], db_port);
                 var _db_ch = new abelkhan.rawchannel(_socket);
                 lock (add_chs)
                 {
@@ -247,9 +236,9 @@ namespace hub
             onExtendDBProxyInit?.Invoke();
         }
 
-        public void reg_hub(String hub_ip, short hub_port)
+        public void reg_hub(String hub_host, short hub_port)
         {
-            _enetservice.connect(hub_ip, (ushort)hub_port, (ch)=> {
+            _enetservice.connect(hub_host, (ushort)hub_port, (ch)=> {
                 var _caller = new abelkhan.hub_call_hub_caller(ch, abelkhan.modulemng_handle._modulemng);
                 _caller.reg_hub(name, type);
             });
@@ -323,8 +312,17 @@ namespace hub
             return poll_tick;
         }
 
+        public class addressinfo
+        {
+            public string host;
+            public ushort port;
+        }
+
 		public static string name;
-		public static string type;
+        public static uint serial = 0;
+        public static string type;
+        public static addressinfo tcp_outside_address = null;
+        public static addressinfo websocket_outside_address = null;
 
         public static abelkhan.config _config;
         public static abelkhan.config _root_config;

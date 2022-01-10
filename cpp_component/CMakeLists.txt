@@ -32,6 +32,9 @@ INCLUDE_DIRECTORIES(${json11_INCLUDE_PATH})
 set(libbson_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//3rdparty//libbson//include CACHE PATH "libbson include path")
 INCLUDE_DIRECTORIES(${libbson_INCLUDE_PATH})
 
+set(c_ares_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//3rdparty//c-ares//include CACHE PATH "c-ares include path")
+INCLUDE_DIRECTORIES(${c_ares_INCLUDE_PATH})
+
 set(msgpack11_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//tools//juggle//cpp//3rdparty//msgpack11 CACHE PATH "msgpack11 include path")
 INCLUDE_DIRECTORIES(${msgpack11_INCLUDE_PATH})
 

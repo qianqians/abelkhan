@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 
+#include "DNS.h"
 #include "enetchannel.h"
 
 namespace service
@@ -10,7 +11,9 @@ namespace service
 
 class enetacceptservice {
 public:
-	enetacceptservice(std::string ip, short port){
+	enetacceptservice(std::string host, short port){
+		auto ip = DNS(host);
+
 		ENetAddress address;
 		if (enet_address_set_host_ip(&address, ip.c_str()) != 0) {
 			throw std::exception("enet_address_set_host_ip faild");

@@ -13,12 +13,14 @@ namespace hub
             _center_caller = new abelkhan.center_caller(ch, abelkhan.modulemng_handle._modulemng);
         }
 
-		public void reg_hub(String ip, ushort port, String name)
+		public void reg_hub(String host, ushort port, String sub_type)
         {
             log.log.trace("begin connect center server");
 
-            _center_caller.reg_server("hub", ip, port, name).callBack(() =>
+            _center_caller.reg_server("hub", sub_type, host, port).callBack((uint serial_num, string name) =>
             {
+                hub.name = name;
+                hub.serial = serial_num;
                 log.log.trace("connect center server sucessed");
             }, () =>
             {

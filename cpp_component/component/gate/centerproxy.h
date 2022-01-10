@@ -16,6 +16,11 @@
 
 namespace gate{
 
+struct name_info {
+	std::string name;
+	uint32_t serial;
+};
+
 class centerproxy {
 public:
 	centerproxy(std::shared_ptr<abelkhan::Ichannel> ch) {
@@ -27,8 +32,10 @@ public:
 	virtual ~centerproxy(){
 	}
 
-	void reg_server(std::string ip, short port, std::string name) {
-		_center_caller->reg_server("gate", ip, port, name)->callBack([this](){
+	void reg_server(std::string host, short port, struct name_info &_name_info) {
+		_center_caller->reg_server("gate", "gate", host, port)->callBack([this, &_name_info](uint32_t serial, std::string name){
+			_name_info.name = name;
+			_name_info.serial = serial;
 			is_reg_sucess = true;
 			spdlog::trace("connect center server sucess!");
 		}, [](){

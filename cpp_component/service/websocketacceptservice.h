@@ -14,7 +14,7 @@ namespace service
 
 class webacceptservice {
 public:
-	webacceptservice(std::string ip, short port, bool is_ssl, std::string _certificate_chain_file, std::string _private_key_file, std::string _tmp_dh_file)
+	webacceptservice(std::string host, short port, bool is_ssl, std::string _certificate_chain_file, std::string _private_key_file, std::string _tmp_dh_file)
 	{
 		_is_ssl = is_ssl;
 

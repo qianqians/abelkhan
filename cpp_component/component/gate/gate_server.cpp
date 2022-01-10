@@ -47,7 +47,10 @@ int main(int argc, char * argv[]) {
 	if (argc >= 3) {
 		_config = _config->get_value_dict(argv[2]);
 	}
-	auto gate_name = argv[2];
+
+	gate::name_info gate_name_info;
+	gate_name_info.name = argv[2];
+	gate_name_info.serial = 0;
 
 	auto file_path = _config->get_value_string("log_dir") + _config->get_value_string("log_file");
 	auto log_level = _config->get_value_string("log_level");
@@ -80,9 +83,9 @@ int main(int argc, char * argv[]) {
 	{
 		spdlog::error("An error occurred while initializing ENet!");
 	}
-	auto inside_ip = _config->get_value_string("inside_ip");
+	auto inside_host = _config->get_value_string("inside_host");
 	auto inside_port = (short)_config->get_value_int("inside_port");
-	auto _hub_service = std::make_shared<service::enetacceptservice>(inside_ip, inside_port);
+	auto _hub_service = std::make_shared<service::enetacceptservice>(inside_host, inside_port);
 
 	auto io_service = std::make_shared<boost::asio::io_service>();
 	auto _connectnetworkservice = std::make_shared<service::connectservice>(io_service);
@@ -90,15 +93,15 @@ int main(int argc, char * argv[]) {
 	auto center_port = (short)_center_config->get_value_int("port");
 	auto _center_ch = _connectnetworkservice->connect(center_ip, center_port);
 	auto _centerproxy = std::make_shared<gate::centerproxy>(_center_ch);
-	_centerproxy->reg_server(inside_ip, inside_port, gate_name);
+	_centerproxy->reg_server(inside_host, inside_port, gate_name_info);
 
 	std::shared_ptr<service::acceptservice> _client_service = nullptr;
 	if (_config->has_key("tcp_listen")) {
 		auto is_tcp_listen = _config->get_value_bool("tcp_listen");
 		if (is_tcp_listen) {
-			auto tcp_outside_ip = _config->get_value_string("tcp_outside_ip");
+			auto tcp_outside_host = _config->get_value_string("tcp_outside_host");
 			auto tcp_outside_port = (short)_config->get_value_int("tcp_outside_port");
-			_client_service = std::make_shared<service::acceptservice>(tcp_outside_ip, tcp_outside_port, io_service);
+			_client_service = std::make_shared<service::acceptservice>(tcp_outside_host, tcp_outside_port, io_service);
 			_client_service->sigchannelconnect.connect([_clientmanager](std::shared_ptr<abelkhan::Ichannel> ch) {
 				std::static_pointer_cast<service::channel>(ch)->set_xor_key_crypt();
 
@@ -117,7 +120,7 @@ int main(int argc, char * argv[]) {
 	if (_config->has_key("websocket_listen")) {
 		auto is_websocket_listen = _config->get_value_bool("websocket_listen");
 		if (is_websocket_listen) {
-			auto websocket_outside_ip = _config->get_value_string("websocket_outside_ip");
+			auto websocket_outside_host = _config->get_value_string("websocket_outside_host");
 			auto websocket_outside_port = (short)_config->get_value_int("websocket_outside_port");
 			auto is_ssl = _config->get_value_bool("is_ssl");
 			std::string certificate, private_key, tmp_dh;
@@ -126,7 +129,7 @@ int main(int argc, char * argv[]) {
 				auto private_key = _config->get_value_string("private_key");
 				auto tmp_dh = _config->get_value_string("tmp_dh");
 			}
-			_websocket_service = std::make_shared<service::webacceptservice>(websocket_outside_ip, websocket_outside_port, is_ssl, certificate, private_key, tmp_dh);
+			_websocket_service = std::make_shared<service::webacceptservice>(websocket_outside_host, websocket_outside_port, is_ssl, certificate, private_key, tmp_dh);
 			_websocket_service->sigchannelconnect.connect([_clientmanager](std::shared_ptr<abelkhan::Ichannel> ch) {
 				auto _client = _clientmanager->reg_client(ch);
 				_client->ntf_cuuid();
@@ -174,7 +177,7 @@ int main(int argc, char * argv[]) {
 
 		if (_closehandle->is_closed) {
 			enet_deinitialize();
-			spdlog::info("server closed, gate server name:{0}!", gate_name);
+			spdlog::info("server closed, gate server name:{0}!", gate_name_info.name);
 			spdlog::shutdown();
 			break;
 		}

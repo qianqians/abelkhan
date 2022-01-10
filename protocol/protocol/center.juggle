@@ -1,6 +1,6 @@
 module center{
 
-	reg_server req(string type, string ip, uint16 port, string svr_name) rsp() err();
+	reg_server req(string type, string sub_type, string host, uint16 port) rsp(uint32 serial_num, string sub_name) err();
 	
 	heartbeat ntf();
 	
@@ -18,7 +18,7 @@ module center_call_server{
 
 module center_call_hub{
 
-	distribute_server_address ntf(string svr_type, string svr_name, string ip, uint16 port);
+	distribute_server_address ntf(string svr_type, string sub_type, string svr_name, string host, uint16 port);
 	
 	reload ntf(string argv);
 	

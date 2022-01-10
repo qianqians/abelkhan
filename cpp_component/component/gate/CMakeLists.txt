@@ -68,6 +68,7 @@ target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/spdlogd optimized ${LIBS_REL
 target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/enet optimized ${LIBS_RELEASE_PATH}/enet)
 target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/msgpack11 optimized ${LIBS_RELEASE_PATH}/msgpack11)
 target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/json11 optimized ${LIBS_RELEASE_PATH}/json11)
+target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/cares optimized ${LIBS_RELEASE_PATH}/cares)
 target_link_libraries(gate Crypt32 )
 target_link_libraries(gate ws2_32)
 target_link_libraries(gate winmm)

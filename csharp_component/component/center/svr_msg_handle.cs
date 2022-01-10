@@ -4,6 +4,8 @@
  * qianqians
  */
 
+using System.Collections.Generic;
+
 namespace abelkhan
 {
     public class svr_msg_handle
@@ -12,10 +14,14 @@ namespace abelkhan
         private svrmanager _svrmng;
         private closehandle _closehandle;
 
+        private Dictionary<string, uint> name_serial;
+
         public svr_msg_handle(svrmanager svrs, closehandle closehandle)
         {
             _svrmng = svrs;
             _closehandle = closehandle;
+
+            name_serial = new Dictionary<string, uint>();
 
             _center_module = new center_module(abelkhan.modulemng_handle._modulemng);
             _center_module.on_reg_server += reg_server;
@@ -23,12 +29,33 @@ namespace abelkhan
             _center_module.on_closed += closed;
         }
 
-        private void reg_server(string type, string ip, ushort port, string name)
+        private void reg_server(string type, string sub_type, string host, ushort port)
         {
+            var name_prefix = sub_type;
+            if (string.IsNullOrEmpty(name_prefix))
+            {
+                name_prefix = type;
+            }
+            if (string.IsNullOrEmpty(name_prefix))
+            {
+                log.log.err("reg server no type and hub_type!");
+            }
+            if (!name_serial.TryGetValue(name_prefix, out uint serial))
+            {
+                serial = 0;
+                name_serial.Add(name_prefix, serial);
+            }
+            else
+            {
+                name_serial[name_prefix] = ++serial;
+            }
+            var name = string.Format("{0}{1}", name_prefix, serial);
+
             var rsp = (abelkhan.center_reg_server_rsp)_center_module.rsp;
+            rsp.rsp(serial, name);
 
             _svrmng.for_each_hub((hubproxy _proxy) =>{
-                _proxy.distribute_server_address(type, name, ip, (ushort)port);
+                _proxy.distribute_server_address(type, sub_type, name, host, (ushort)port);
             });
 
             if (type == "hub")
@@ -36,13 +63,11 @@ namespace abelkhan
                 var _hubproxy = _svrmng.reg_hub(_center_module.current_ch, type, name);
 
                 _svrmng.for_each_svr((svrproxy _proxy) =>{
-                    _hubproxy.distribute_server_address(_proxy.type, _proxy.name, _proxy.ip, _proxy.port);
+                    _hubproxy.distribute_server_address(_proxy.type, _proxy.sub_type, _proxy.name, _proxy.host, _proxy.port);
                 });
             }
 
-            _svrmng.reg_svr(_center_module.current_ch, type, name, ip, (ushort)port);
-
-            rsp.rsp();
+            _svrmng.reg_svr(_center_module.current_ch, type, sub_type, name, host, (ushort)port);
         }
 
         private void heartbeat()

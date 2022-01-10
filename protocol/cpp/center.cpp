@@ -10,7 +10,7 @@ center_reg_server_cb::center_reg_server_cb(uint64_t _cb_uuid, std::shared_ptr<ce
     module_rsp_cb = _module_rsp_cb;
 }
 
-std::shared_ptr<center_reg_server_cb> center_reg_server_cb::callBack(std::function<void()> cb, std::function<void()> err) {
+std::shared_ptr<center_reg_server_cb> center_reg_server_cb::callBack(std::function<void(uint32_t serial_num, std::string sub_name)> cb, std::function<void()> err) {
     sig_reg_server_cb.connect(cb);
     sig_reg_server_err.connect(err);
     return shared_from_this();

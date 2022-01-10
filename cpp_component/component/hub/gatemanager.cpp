@@ -19,7 +19,7 @@ gateproxy::gateproxy(std::shared_ptr<abelkhan::Ichannel> ch, std::shared_ptr<hub
 }
 
 void gateproxy::reg_hub() {
-	_hub_call_gate_caller->reg_hub(_hub->hub_name, _hub->hub_type)->callBack([this]() {
+	_hub_call_gate_caller->reg_hub(_hub->name_info.name, _hub->hub_type)->callBack([this]() {
 		spdlog::trace("hub reg_hub to gate:{0} sucessed", _gate_name);
 		sig_reg_hub_sucessed.emit();
 	}, [this]() {
@@ -84,10 +84,11 @@ gatemanager::gatemanager(std::shared_ptr<service::enetacceptservice> conn_, std:
 	_data = (unsigned char*)malloc(_data_size);
 }
 
-void gatemanager::connect_gate(std::string gate_name, std::string ip, uint16_t port) {
-	spdlog::trace("connect_gate ip:{0} port:{1}", ip, port);
-	_conn->connect(ip, port, [this, ip, port, gate_name](std::shared_ptr<abelkhan::Ichannel> ch) {
-		spdlog::trace("gate ip:{0}  port:{1} reg_hub", ip, port);
+void gatemanager::connect_gate(std::string gate_name, std::string host, uint16_t port) {
+	spdlog::trace("connect_gate host:{0} port:{1}", host, port);
+	auto ip = service::DNS(host);
+	_conn->connect(ip, port, [this, host, port, gate_name](std::shared_ptr<abelkhan::Ichannel> ch) {
+		spdlog::trace("gate host:{0}  port:{1} reg_hub", host, port);
 		auto _gate_proxy = std::make_shared<gateproxy>(ch, _hub, gate_name);
 		_gate_proxy->sig_reg_hub_sucessed.connect([this, gate_name, ch, _gate_proxy]() {
 			gates[gate_name] = _gate_proxy;

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 
 namespace hub
 {
@@ -59,9 +60,9 @@ namespace hub
             hub._timer.addticktime(10 * 1000, heartbeat_client);
         }
 
-		public void connect_gate(String name, String ip, ushort port)
+		public void connect_gate(String name, String host, ushort port)
 		{
-			_gate_conn.connect(ip, port, (ch)=> {
+			_gate_conn.connect(host, port, (ch)=> {
                 var _proxy = new gateproxy(ch);
                 gates.Add(name, _proxy);
                 ch_gateproxys.Add(ch, _proxy);

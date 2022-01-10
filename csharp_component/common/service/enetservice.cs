@@ -88,11 +88,11 @@ namespace abelkhan
             host.Flush();
         }
 
-        public void connect(string ip, ushort port, Action<enetchannel> cb)
+        public void connect(string ulr_host, ushort port, Action<enetchannel> cb)
         {
-            log.log.trace("enet connect ip:{0}, port:{1}!", ip, port);
+            log.log.trace("enet connect host:{0}, port:{1}!", ulr_host, port);
 
-            IPEndPoint connectEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
+            IPEndPoint connectEndPoint = new IPEndPoint(Dns.GetHostAddresses(ulr_host)[0], port);
 
             var ip_bytes = connectEndPoint.Address.GetAddressBytes();
             var ip_addr = (UInt64)(ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24);

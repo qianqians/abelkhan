@@ -10,11 +10,12 @@ namespace dbproxy
 			_center_caller = new abelkhan.center_caller(ch, abelkhan.modulemng_handle._modulemng);
 		}
 
-		public void reg_dbproxy(String ip, short port, String name)
+		public void reg_dbproxy(String host, short port)
 		{
             log.log.trace("begin connect center server");
 
-			_center_caller.reg_server("dbproxy", ip, (ushort)port, name).callBack(()=>{
+			_center_caller.reg_server("dbproxy", "dbproxy", host, (ushort)port).callBack((uint serial, string name) =>{
+				dbproxy.name = name;
 				log.log.trace("connect center server sucessed");
 			}, ()=> {
 				log.log.err("connect center server faild");

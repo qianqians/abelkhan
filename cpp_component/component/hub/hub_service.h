@@ -18,6 +18,7 @@
 #include <modulemanager.h>
 
 #include "closehandle.h"
+#include "centerproxy.h"
 #include "hubsvrmanager.h"
 #include "gatemanager.h"
 #include "dbproxyproxy.h"
@@ -72,8 +73,17 @@ private:
 	void heartbeat(int64_t tick);
 
 public:
-	std::string hub_name;
 	std::string hub_type;
+	hub::name_info name_info;
+
+	class addressinfo {
+	public:
+		std::string host;
+		uint16_t port;
+	};
+	std::shared_ptr<addressinfo> tcp_address_info = nullptr;
+	std::shared_ptr<addressinfo> websocket_address_info = nullptr;
+
 	bool is_busy;
 
 	concurrent::signals<void(std::string) > sig_reload;

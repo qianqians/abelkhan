@@ -46,24 +46,24 @@ namespace hub
 			}
         }
 
-		public void distribute_server_address(String type, String name, String ip, ushort port)
+		public void distribute_server_address(String type, String sub_type, String name, String host, ushort port)
         {
             log.log.trace("recv distribute server address");
 
 			if (type == "dbproxy") 
 			{
-				log.log.trace("recv distribute server address connect_dbproxy ip:{0}, port:{1}", ip, port);
-				_hub.connect_dbproxy (name, ip, (short)port);
+				log.log.trace("recv distribute server address connect_dbproxy ip:{0}, port:{1}", host, port);
+				_hub.connect_dbproxy (name, host, (short)port);
 			}
 			if (type == "gate")
 			{
-				log.log.trace("recv distribute server address gate ip:{0}, port:{1}", ip, port);
-				hub._gates.connect_gate(name, ip, (ushort)port);
+				log.log.trace("recv distribute server address gate ip:{0}, port:{1}", host, port);
+				hub._gates.connect_gate(name, host, (ushort)port);
 			}
             if (type == "hub")
 			{
-				log.log.trace("recv distribute server address hub ip:{0}, port:{1}", ip, port);
-				_hub.reg_hub(ip, (short)port);
+				log.log.trace("recv distribute server address hub ip:{0}, port:{1}", host, port);
+				_hub.reg_hub(host, (short)port);
             }
 		}
 
