@@ -1,8 +1,8 @@
 {
     "center":{
-        "ip":"127.0.0.1",
+        "host":"127.0.0.1",
         "port":1001,
-        "gm_ip":"127.0.0.1",
+        "gm_host":"127.0.0.1",
         "gm_port":1002,
 		"log_level":"trace",
 		"log_file":"center.txt",
@@ -11,7 +11,7 @@
 
     "dbproxy":{
 		"name":"dbproxy",
-		"ip":"127.0.0.1",
+		"host":"127.0.0.1",
 		"port":2001,
 		"db_url":"mongodb://127.0.0.1:27017",
 		"log_level":"trace",
@@ -21,13 +21,13 @@
 	
 	"gate":{
 		"name":"gate",
-		"inside_ip":"127.0.0.1",
+		"inside_host":"127.0.0.1",
 		"inside_port":2021,
 		"tcp_listen":true,
-		"tcp_outside_ip":"127.0.0.1",
+		"tcp_outside_host":"127.0.0.1",
 		"tcp_outside_port":3001,
 		"websocket_listen":true,
-		"websocket_outside_ip":"127.0.0.1",
+		"websocket_outside_host":"127.0.0.1",
 		"websocket_outside_port":3011,
 		"is_ssl":false,
         "log_level":"trace",
@@ -37,14 +37,14 @@
 	
 	"test_cpp":{
 		"name":"test_cpp",
-		"ip":"127.0.0.1",
+		"host":"127.0.0.1",
 		"port":2051,
 		"dbproxy":"dbproxy",
 		"tcp_listen":true,
-		"tcp_outside_ip":"127.0.0.1",
+		"tcp_outside_host":"127.0.0.1",
 		"tcp_outside_port":4001,
 		"websocket_listen":true,
-		"websocket_outside_ip":"127.0.0.1",
+		"websocket_outside_host":"127.0.0.1",
 		"websocket_outside_port":4051,
 		"is_ssl":false,
 		"log_level":"trace",
@@ -54,14 +54,14 @@
 	
 	"test_csharp":{
 		"name":"test_csharp",
-		"ip":"127.0.0.1",
+		"host":"127.0.0.1",
 		"port":2052,
 		"dbproxy":"dbproxy",
 		"tcp_listen":true,
-		"tcp_outside_ip":"127.0.0.1",
+		"tcp_outside_host":"127.0.0.1",
 		"tcp_outside_port":4002,
 		"websocket_listen":true,
-		"websocket_outside_ip":"127.0.0.1",
+		"websocket_outside_host":"127.0.0.1",
 		"websocket_outside_port":4052,
 		"is_ssl":false,
 		"log_level":"trace",

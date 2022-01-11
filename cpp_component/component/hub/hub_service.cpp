@@ -42,6 +42,7 @@ hub_service::hub_service(std::string config_file_path, std::string config_name, 
 
 void hub_service::init() {
 	enet_initialize();
+	ares_library_init(ARES_LIB_INIT_ALL);
 
 	auto file_path = _config->get_value_string("log_dir") + _config->get_value_string("log_file");
 	auto log_level = _config->get_value_string("log_level");
@@ -136,12 +137,12 @@ void hub_service::heartbeat(int64_t tick) {
 void hub_service::connect_center() {
 	spdlog::trace("begin on connect center");
 
-	auto ip = _center_config->get_value_string("ip");
+	auto ip = _center_config->get_value_string("host");
 	auto port = (short)(_center_config->get_value_int("port"));
 	auto center_ch = _center_service->connect(ip, port);
 
 	_centerproxy = std::make_shared<centerproxy>(center_ch);
-	_centerproxy->reg_server(_config->get_value_string("ip"), (short)_config->get_value_int("port"), hub_type, name_info);
+	_centerproxy->reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
 
 	heartbeat(_timerservice->Tick);
 

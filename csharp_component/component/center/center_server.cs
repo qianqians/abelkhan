@@ -71,7 +71,7 @@ namespace abelkhan
 
             _svrmanager = new svrmanager(_timer);
             _svr_msg_handle = new svr_msg_handle(_svrmanager, _closeHandle);
-            var ip = _config.get_value_string("ip");
+            var host = _config.get_value_string("host");
             var port = _config.get_value_int("port");
             _accept_svr_service = new acceptservice((ushort)port);
             _accept_svr_service.on_connect += (abelkhan.Ichannel ch) => {
@@ -84,7 +84,7 @@ namespace abelkhan
 
             _gmmanager = new gmmanager();
             _gm_msg_handle = new gm_msg_handle(_svrmanager, _gmmanager, _closeHandle);
-            var gm_ip = _config.get_value_string("gm_ip");
+            var gm_host = _config.get_value_string("gm_host");
             var gm_port = _config.get_value_int("gm_port");
             _accept_gm_service = new acceptservice((ushort)gm_port);
             _accept_gm_service.on_connect += (abelkhan.Ichannel ch) =>{

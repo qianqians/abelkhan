@@ -34,8 +34,6 @@ std::shared_ptr<spdlog::logger> file_logger = nullptr;
 }
 
 int main(int argc, char * argv[]) {
-	enet_initialize();
-
 	if (argc <= 1) {
 		std::cout << "non input start argv" << std::endl;
 		return -1;
@@ -70,6 +68,12 @@ int main(int argc, char * argv[]) {
 		_log::InitLog(file_path, spdlog::level::level_enum::err);
 	}
 
+	if (enet_initialize() != 0)
+	{
+		spdlog::error("An error occurred while initializing ENet!");
+	}
+	ares_library_init(ARES_LIB_INIT_ALL);
+
 	auto _timerservice = std::make_shared<service::timerservice>();
 	auto _hubsvrmanager = std::make_shared<gate::hubsvrmanager>();
 	auto _clientmanager = std::make_shared<gate::clientmanager>(_hubsvrmanager);
@@ -79,17 +83,13 @@ int main(int argc, char * argv[]) {
 	auto _hub_svr_msg_handle = std::make_shared<gate::hub_svr_msg_handle>(_clientmanager, _hubsvrmanager);
 	auto _client_msg_handle = std::make_shared<gate::client_msg_handle>(_clientmanager, _hubsvrmanager, _timerservice);
 
-	if (enet_initialize() != 0)
-	{
-		spdlog::error("An error occurred while initializing ENet!");
-	}
 	auto inside_host = _config->get_value_string("inside_host");
 	auto inside_port = (short)_config->get_value_int("inside_port");
 	auto _hub_service = std::make_shared<service::enetacceptservice>(inside_host, inside_port);
 
 	auto io_service = std::make_shared<boost::asio::io_service>();
 	auto _connectnetworkservice = std::make_shared<service::connectservice>(io_service);
-	auto center_ip = _center_config->get_value_string("ip");
+	auto center_ip = _center_config->get_value_string("host");
 	auto center_port = (short)_center_config->get_value_int("port");
 	auto _center_ch = _connectnetworkservice->connect(center_ip, center_port);
 	auto _centerproxy = std::make_shared<gate::centerproxy>(_center_ch);
