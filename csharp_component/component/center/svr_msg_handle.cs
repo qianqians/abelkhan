@@ -29,7 +29,7 @@ namespace abelkhan
             _center_module.on_closed += closed;
         }
 
-        private void reg_server(string type, string sub_type, string host, ushort port)
+        private void reg_server(string type, string sub_type, string svr_name, string host, ushort port)
         {
             var name_prefix = sub_type;
             if (string.IsNullOrEmpty(name_prefix))
@@ -49,7 +49,11 @@ namespace abelkhan
             {
                 name_serial[name_prefix] = ++serial;
             }
-            var name = string.Format("{0}{1}", name_prefix, serial);
+            var name = svr_name;
+            if (type == "hub" || type == "gate")
+            {
+                name = string.Format("{0}{1}", name_prefix, serial);
+            }
 
             var rsp = (abelkhan.center_reg_server_rsp)_center_module.rsp;
             rsp.rsp(serial, name);

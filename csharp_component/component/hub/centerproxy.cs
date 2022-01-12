@@ -17,7 +17,7 @@ namespace hub
         {
             log.log.trace("begin connect center server");
 
-            _center_caller.reg_server("hub", sub_type, host, port).callBack((uint serial_num, string name) =>
+            _center_caller.reg_server("hub", sub_type, hub.name, host, port).callBack((uint serial_num, string name) =>
             {
                 hub.name = name;
                 hub.serial = serial_num;

@@ -1,6 +1,6 @@
 module center{
 
-	reg_server req(string type, string sub_type, string host, uint16 port) rsp(uint32 serial_num, string sub_name) err();
+	reg_server req(string type, string sub_type, string svr_name, string host, uint16 port) rsp(uint32 serial_num, string svr_name) err();
 	
 	heartbeat ntf();
 	
