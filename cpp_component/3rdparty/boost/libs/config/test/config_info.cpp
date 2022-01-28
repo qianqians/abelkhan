@@ -380,6 +380,7 @@ void print_compiler_macros()
   PRINT_MACRO(__clang_minor__);
   PRINT_MACRO(__clang_version__);
   PRINT_MACRO(__clang_patchlevel__);
+  PRINT_MACRO(__apple_build_version__);
 
   // misc compilers not covered so far:
   PRINT_MACRO(__USLC__);
@@ -1262,12 +1263,15 @@ void print_boost_macros()
 
 
 
+
    // END GENERATED BLOCK
 
    PRINT_MACRO(BOOST_CXX_VERSION);
    PRINT_MACRO(BOOST_INTEL);
    PRINT_MACRO(BOOST_MSVC);
    PRINT_MACRO(BOOST_GCC);
+   PRINT_MACRO(BOOST_CLANG);
+   PRINT_MACRO(BOOST_CLANG_VERSION);
    PRINT_MACRO(BOOST_LIBSTDCXX_VERSION);
    PRINT_MACRO(BOOST_STD_EXTENSION_NAMESPACE);
    PRINT_MACRO(BOOST_UNREACHABLE_RETURN(0));
@@ -1289,6 +1293,9 @@ void print_boost_macros()
 #ifdef __has_include
 #if __has_include(<version>)
 #  include <version>
+#endif
+#if __has_include(<atomic>) && (BOOST_CXX_VERSION > 201100)
+#  include <atomic>
 #endif
 #endif
 
@@ -1490,6 +1497,18 @@ void print_sd6_macros()
     // C++98:
     PRINT_MACRO(__cpp_rtti);
     PRINT_MACRO(__cpp_exceptions);
+
+    // <atomic>:
+    PRINT_MACRO(ATOMIC_INT_LOCK_FREE);
+    PRINT_MACRO(ATOMIC_SHORT_LOCK_FREE);
+    PRINT_MACRO(ATOMIC_LONG_LOCK_FREE);
+    PRINT_MACRO(ATOMIC_LLONG_LOCK_FREE);
+    PRINT_MACRO(ATOMIC_POINTER_LOCK_FREE);
+    PRINT_MACRO(ATOMIC_CHAR_LOCK_FREE);
+    PRINT_MACRO(ATOMIC_WCHAR_T_LOCK_FREE);
+    PRINT_MACRO(ATOMIC_CHAR8_T_LOCK_FREE);
+    PRINT_MACRO(ATOMIC_CHAR16_T_LOCK_FREE);
+    PRINT_MACRO(ATOMIC_CHAR32_T_LOCK_FREE);
 }
 
 void print_separator()

@@ -295,8 +295,6 @@ union reparse_data_buffer
 
 #define BOOST_SET_CURRENT_DIRECTORY(P) (::chdir(P) == 0)
 #define BOOST_CREATE_HARD_LINK(F, T) (::link(T, F) == 0)
-#define BOOST_REMOVE_DIRECTORY(P) (::rmdir(P) == 0)
-#define BOOST_DELETE_FILE(P) (::unlink(P) == 0)
 #define BOOST_MOVE_FILE(OLD, NEW) (::rename(OLD, NEW) == 0)
 #define BOOST_RESIZE_FILE(P, SZ) (::truncate(P, SZ) == 0)
 
@@ -304,11 +302,8 @@ union reparse_data_buffer
 
 #define BOOST_SET_CURRENT_DIRECTORY(P) (::SetCurrentDirectoryW(P) != 0)
 #define BOOST_CREATE_HARD_LINK(F, T) (create_hard_link_api(F, T, 0) != 0)
-#define BOOST_REMOVE_DIRECTORY(P) (::RemoveDirectoryW(P) != 0)
-#define BOOST_DELETE_FILE(P) (::DeleteFileW(P) != 0)
 #define BOOST_MOVE_FILE(OLD, NEW) (::MoveFileExW(OLD, NEW, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED) != 0)
 #define BOOST_RESIZE_FILE(P, SZ) (resize_file_api(P, SZ) != 0)
-#define BOOST_READ_SYMLINK(P, T)
 
 #endif
 
@@ -329,6 +324,8 @@ void init_fill_random_impl(unsigned int major_ver, unsigned int minor_ver, unsig
 
 namespace {
 
+#if defined(BOOST_POSIX_API)
+
 // Size of a small buffer for a path that can be placed on stack, in character code units
 BOOST_CONSTEXPR_OR_CONST std::size_t small_path_size = 1024u;
 
@@ -342,6 +339,8 @@ BOOST_CONSTEXPR_OR_CONST std::size_t small_path_size = 1024u;
 // - GNU/Hurd: no hard limit
 BOOST_CONSTEXPR_OR_CONST std::size_t absolute_path_max = 32u * 1024u;
 
+#endif // defined(BOOST_POSIX_API)
+
 // Maximum number of resolved symlinks before we register a loop
 BOOST_CONSTEXPR_OR_CONST unsigned int symloop_max =
 #if defined(SYMLOOP_MAX)
@@ -350,8 +349,6 @@ BOOST_CONSTEXPR_OR_CONST unsigned int symloop_max =
     40
 #endif
 ;
-
-fs::file_type query_file_type(path const& p, error_code* ec);
 
 //  general helpers  -----------------------------------------------------------------//
 
@@ -363,81 +360,6 @@ bool is_empty_directory(path const& p, error_code* ec)
 }
 
 bool not_found_error(int errval) BOOST_NOEXCEPT; // forward declaration
-
-// only called if directory exists
-inline bool remove_directory(path const& p) // true if succeeds or not found
-{
-    return BOOST_REMOVE_DIRECTORY(p.c_str()) || not_found_error(BOOST_ERRNO); // mitigate possible file system race. See #11166
-}
-
-// only called if file exists
-inline bool remove_file(path const& p) // true if succeeds or not found
-{
-    return BOOST_DELETE_FILE(p.c_str()) || not_found_error(BOOST_ERRNO); // mitigate possible file system race. See #11166
-}
-
-// called by remove and remove_all_aux
-// return true if file removed, false if not removed
-bool remove_file_or_directory(path const& p, fs::file_type type, error_code* ec)
-{
-    if (type == fs::file_not_found)
-    {
-        if (ec)
-            ec->clear();
-        return false;
-    }
-
-    if (type == fs::directory_file
-#ifdef BOOST_WINDOWS_API
-        || type == fs::_detail_directory_symlink
-#endif
-    )
-    {
-        if (error(!remove_directory(p) ? BOOST_ERRNO : 0, p, ec, "boost::filesystem::remove"))
-            return false;
-    }
-    else
-    {
-        if (error(!remove_file(p) ? BOOST_ERRNO : 0, p, ec, "boost::filesystem::remove"))
-            return false;
-    }
-    return true;
-}
-
-uintmax_t remove_all_aux(path const& p, fs::file_type type, error_code* ec)
-{
-    uintmax_t count = 0u;
-
-    if (type == fs::directory_file) // but not a directory symlink
-    {
-        fs::directory_iterator itr;
-        fs::detail::directory_iterator_construct(itr, p, static_cast< unsigned int >(directory_options::none), ec);
-        if (ec && *ec)
-            return count;
-
-        const fs::directory_iterator end_dit;
-        while (itr != end_dit)
-        {
-            fs::file_type tmp_type = query_file_type(itr->path(), ec);
-            if (ec && *ec)
-                return count;
-
-            count += remove_all_aux(itr->path(), tmp_type, ec);
-            if (ec && *ec)
-                return count;
-
-            fs::detail::directory_iterator_increment(itr, ec);
-            if (ec && *ec)
-                return count;
-        }
-    }
-
-    remove_file_or_directory(p, type, ec);
-    if (ec && *ec)
-        return count;
-
-    return ++count;
-}
 
 #ifdef BOOST_POSIX_API
 
@@ -973,9 +895,101 @@ const syscall_initializer syscall_init;
 
 #endif // defined(linux) || defined(__linux) || defined(__linux__)
 
-inline fs::file_type query_file_type(path const& p, error_code* ec)
+//! remove() implementation
+inline bool remove_impl(path const& p, fs::file_type type, error_code* ec)
 {
-    return fs::detail::symlink_status(p, ec).type();
+    if (type == fs::file_not_found)
+        return false;
+
+    int res;
+    if (type == fs::directory_file)
+        res = ::rmdir(p.c_str());
+    else
+        res = ::unlink(p.c_str());
+
+    if (res != 0)
+    {
+        int err = errno;
+        if (BOOST_UNLIKELY(!not_found_error(err)))
+            emit_error(err, p, ec, "boost::filesystem::remove");
+
+        return false;
+    }
+
+    return true;
+}
+
+//! remove() implementation
+inline bool remove_impl(path const& p, error_code* ec)
+{
+    // Since POSIX remove() is specified to work with either files or directories, in a
+    // perfect world it could just be called. But some important real-world operating
+    // systems (Windows, Mac OS, for example) don't implement the POSIX spec. So
+    // we have to distinguish between files and directories and call corresponding APIs
+    // to remove them.
+
+    error_code local_ec;
+    fs::file_type type = fs::detail::symlink_status(p, &local_ec).type();
+    if (BOOST_UNLIKELY(type == fs::status_error))
+    {
+        if (!ec)
+            BOOST_FILESYSTEM_THROW(filesystem_error("boost::filesystem::remove", p, local_ec));
+
+        *ec = local_ec;
+        return false;
+    }
+
+    return fs::detail::remove_impl(p, type, ec);
+}
+
+//! remove_all() implementation
+uintmax_t remove_all_impl(path const& p, error_code* ec)
+{
+    fs::file_type type;
+    {
+        error_code local_ec;
+        type = fs::detail::symlink_status(p, &local_ec).type();
+
+        if (type == fs::file_not_found)
+            return 0u;
+
+        if (BOOST_UNLIKELY(type == fs::status_error))
+        {
+            if (!ec)
+                BOOST_FILESYSTEM_THROW(filesystem_error("boost::filesystem::remove_all", p, local_ec));
+
+            *ec = local_ec;
+            return static_cast< uintmax_t >(-1);
+        }
+    }
+
+    uintmax_t count = 0u;
+
+    if (type == fs::directory_file) // but not a directory symlink
+    {
+        fs::directory_iterator itr;
+        fs::detail::directory_iterator_construct(itr, p, static_cast< unsigned int >(directory_options::none), ec);
+        if (ec && *ec)
+            return static_cast< uintmax_t >(-1);
+
+        const fs::directory_iterator end_dit;
+        while (itr != end_dit)
+        {
+            count += fs::detail::remove_all_impl(itr->path(), ec);
+            if (ec && *ec)
+                return static_cast< uintmax_t >(-1);
+
+            fs::detail::directory_iterator_increment(itr, ec);
+            if (ec && *ec)
+                return static_cast< uintmax_t >(-1);
+        }
+    }
+
+    count += fs::detail::remove_impl(p, type, ec);
+    if (ec && *ec)
+        return static_cast< uintmax_t >(-1);
+
+    return count;
 }
 
 #else // defined(BOOST_POSIX_API)
@@ -1081,16 +1095,14 @@ bool is_reparse_point_a_symlink(path const& p)
         || buf->rdb.ReparseTag == IO_REPARSE_TAG_MOUNT_POINT; // aka "directory junction" or "junction"
 }
 
-inline std::size_t get_full_path_name(
-    path const& src, std::size_t len, wchar_t* buf, wchar_t** p)
+inline std::size_t get_full_path_name(path const& src, std::size_t len, wchar_t* buf, wchar_t** p)
 {
-    return static_cast< std::size_t >(
-        ::GetFullPathNameW(src.c_str(), static_cast< DWORD >(len), buf, p));
+    return static_cast< std::size_t >(::GetFullPathNameW(src.c_str(), static_cast< DWORD >(len), buf, p));
 }
 
-fs::file_status process_status_failure(path const& p, error_code* ec)
+inline fs::file_status process_status_failure(path const& p, error_code* ec)
 {
-    int errval(::GetLastError());
+    int errval = ::GetLastError();
     if (ec)                                    // always report errval, even though some
         ec->assign(errval, system_category()); // errval values are not status_errors
 
@@ -1102,32 +1114,163 @@ fs::file_status process_status_failure(path const& p, error_code* ec)
     {
         return fs::file_status(fs::type_unknown);
     }
+
     if (!ec)
         BOOST_FILESYSTEM_THROW(filesystem_error("boost::filesystem::status", p, error_code(errval, system_category())));
+
     return fs::file_status(fs::status_error);
 }
 
-//  differs from symlink_status() in that directory symlinks are reported as
-//  _detail_directory_symlink, as required on Windows by remove() and its helpers.
-fs::file_type query_file_type(path const& p, error_code* ec)
+//! remove() implementation
+inline bool remove_impl(path const& p, DWORD attrs, error_code* ec)
 {
-    DWORD attr(::GetFileAttributesW(p.c_str()));
-    if (attr == 0xFFFFFFFF)
+    // The following is similar to symlink_status(), except that it distinguishes between symlinks
+    // to directories and to files, and also preserves the full file attributes, which we'll need below.
+    bool is_directory;
+    if (BOOST_UNLIKELY(attrs == INVALID_FILE_ATTRIBUTES))
     {
-        return process_status_failure(p, ec).type();
+        error_code local_ec;
+        file_type type = process_status_failure(p, &local_ec).type();
+
+        if (type == fs::file_not_found)
+            return false;
+
+        if (BOOST_UNLIKELY(type == fs::status_error))
+        {
+            if (!ec)
+                BOOST_FILESYSTEM_THROW(filesystem_error("boost::filesystem::remove", p, local_ec));
+
+            *ec = local_ec;
+            return false;
+        }
+
+        is_directory = type == fs::directory_file;
+    }
+    else if (attrs & FILE_ATTRIBUTE_REPARSE_POINT)
+    {
+        is_directory = (attrs & FILE_ATTRIBUTE_DIRECTORY) && is_reparse_point_a_symlink(p);
+    }
+    else
+    {
+        is_directory = (attrs & FILE_ATTRIBUTE_DIRECTORY) != 0;
     }
 
-    if (ec)
-        ec->clear();
-
-    if (attr & FILE_ATTRIBUTE_REPARSE_POINT)
+    if (is_directory)
     {
-        if (is_reparse_point_a_symlink(p))
-            return (attr & FILE_ATTRIBUTE_DIRECTORY) ? fs::_detail_directory_symlink : fs::symlink_file;
-        return fs::reparse_file;
+        BOOL res = ::RemoveDirectoryW(p.c_str());
+        if (BOOST_UNLIKELY(!res))
+        {
+            DWORD err = ::GetLastError();
+            if (!not_found_error(err))
+                emit_error(err, p, ec, "boost::filesystem::remove");
+
+            return false;
+        }
+    }
+    else
+    {
+        const bool is_read_only = (attrs & FILE_ATTRIBUTE_READONLY) != 0;
+        if (is_read_only)
+        {
+            // DeleteFileW does not allow to remove a read-only file, so we have to drop the attribute
+            DWORD new_attrs = attrs & ~FILE_ATTRIBUTE_READONLY;
+            BOOL res = ::SetFileAttributesW(p.c_str(), new_attrs);
+            if (BOOST_UNLIKELY(!res))
+            {
+                DWORD err = ::GetLastError();
+                if (!not_found_error(err))
+                    emit_error(err, p, ec, "boost::filesystem::remove");
+
+                return false;
+            }
+        }
+
+        BOOL res = ::DeleteFileW(p.c_str());
+        if (BOOST_UNLIKELY(!res))
+        {
+            DWORD err = ::GetLastError();
+            if (!not_found_error(err))
+            {
+                if (is_read_only)
+                {
+                    // Try to restore the read-only attribute
+                    ::SetFileAttributesW(p.c_str(), attrs);
+                }
+
+                emit_error(err, p, ec, "boost::filesystem::remove");
+            }
+
+            return false;
+        }
     }
 
-    return (attr & FILE_ATTRIBUTE_DIRECTORY) ? fs::directory_file : fs::regular_file;
+    return true;
+}
+
+//! remove() implementation
+inline bool remove_impl(path const& p, error_code* ec)
+{
+    return remove_impl(p, ::GetFileAttributesW(p.c_str()), ec);
+}
+
+//! remove_all() implementation
+uintmax_t remove_all_impl(path const& p, error_code* ec)
+{
+    const DWORD attrs = ::GetFileAttributesW(p.c_str());
+    bool recurse;
+    if (BOOST_UNLIKELY(attrs == INVALID_FILE_ATTRIBUTES))
+    {
+        error_code local_ec;
+        file_type type = process_status_failure(p, &local_ec).type();
+
+        if (type == fs::file_not_found)
+            return 0u;
+
+        if (BOOST_UNLIKELY(type == fs::status_error))
+        {
+            if (!ec)
+                BOOST_FILESYSTEM_THROW(filesystem_error("boost::filesystem::remove_all", p, local_ec));
+
+            *ec = local_ec;
+            return static_cast< uintmax_t >(-1);
+        }
+
+        // Some unknown file type
+        recurse = false;
+    }
+    else
+    {
+        // Recurse into directories, but not into junctions or directory symlinks
+        recurse = (attrs & FILE_ATTRIBUTE_DIRECTORY) != 0 && (attrs & FILE_ATTRIBUTE_REPARSE_POINT) == 0;
+    }
+
+    uintmax_t count = 0u;
+
+    if (recurse)
+    {
+        fs::directory_iterator itr;
+        fs::detail::directory_iterator_construct(itr, p, static_cast< unsigned int >(directory_options::none), ec);
+        if (ec && *ec)
+            return static_cast< uintmax_t >(-1);
+
+        const fs::directory_iterator end_dit;
+        while (itr != end_dit)
+        {
+            count += remove_all_impl(itr->path(), ec);
+            if (ec && *ec)
+                return static_cast< uintmax_t >(-1);
+
+            fs::detail::directory_iterator_increment(itr, ec);
+            if (ec && *ec)
+                return static_cast< uintmax_t >(-1);
+        }
+    }
+
+    count += remove_impl(p, attrs, ec);
+    if (ec && *ec)
+        return static_cast< uintmax_t >(-1);
+
+    return count;
 }
 
 inline BOOL resize_file_api(const wchar_t* p, uintmax_t size)
@@ -1340,23 +1483,11 @@ BOOST_FILESYSTEM_DECL bool possible_large_file_size_support()
 BOOST_FILESYSTEM_DECL
 path absolute(path const& p, path const& base, system::error_code* ec)
 {
-    //  if ( p.empty() || p.is_absolute() )
-    //    return p;
-    //  //  recursively calling absolute is sub-optimal, but is simple
-    //  path abs_base(base.is_absolute() ? base : absolute(base));
-    //# ifdef BOOST_WINDOWS_API
-    //  if (p.has_root_directory())
-    //    return abs_base.root_name() / p;
-    //  //  !p.has_root_directory
-    //  if (p.has_root_name())
-    //    return p.root_name()
-    //      / abs_base.root_directory() / abs_base.relative_path() / p.relative_path();
-    //  //  !p.has_root_name()
-    //# endif
-    //  return abs_base / p;
-
     if (ec)
         ec->clear();
+
+    if (p.is_absolute())
+        return p;
 
     //  recursively calling absolute is sub-optimal, but is sure and simple
     path abs_base = base;
@@ -1374,35 +1505,30 @@ path absolute(path const& p, path const& base, system::error_code* ec)
         }
     }
 
-    //  store expensive to compute values that are needed multiple times
-    path p_root_name(p.root_name());
-    path base_root_name(abs_base.root_name());
-    path p_root_directory(p.root_directory());
-
     if (p.empty())
         return abs_base;
 
-    if (!p_root_name.empty()) // p.has_root_name()
+    path res;
+    if (p.has_root_name())
+        res = p.root_name();
+    else
+        res = abs_base.root_name();
+
+    if (p.has_root_directory())
     {
-        if (p_root_directory.empty()) // !p.has_root_directory()
-            return p_root_name / abs_base.root_directory() / abs_base.relative_path() / p.relative_path();
-        // p is absolute, so fall through to return p at end of block
-    }
-    else if (!p_root_directory.empty()) // p.has_root_directory()
-    {
-#ifdef BOOST_POSIX_API
-        // POSIX can have root name it it is a network path
-        if (base_root_name.empty()) // !abs_base.has_root_name()
-            return p;
-#endif
-        return base_root_name / p;
+        res.concat(p.root_directory());
     }
     else
     {
-        return abs_base / p;
+        res.concat(abs_base.root_directory());
+        res /= abs_base.relative_path();
     }
 
-    return p; // p.is_absolute() is true
+    path p_relative_path(p.relative_path());
+    if (!p_relative_path.empty())
+        res /= p_relative_path;
+
+    return res;
 }
 
 BOOST_FILESYSTEM_DECL
@@ -1464,8 +1590,7 @@ path canonical(path const& p, path const& base, system::error_code* ec)
                 // the preferred separator. This is important on Windows, as in some cases,
                 // like paths for network shares and cloud storage mount points GetFileAttributesW
                 // will return "file not found" if the path contains forward slashes.
-                path::value_type sep[2] = { path::preferred_separator, static_cast< path::value_type >('\0') };
-                result /= sep;
+                result += path::preferred_separator;
                 // We don't need to check for a symlink after adding a separator.
                 continue;
             }
@@ -2086,54 +2211,59 @@ bool create_directories(path const& p, system::error_code* ec)
         return false;
     }
 
-    if (p.filename_is_dot() || p.filename_is_dot_dot())
-        return create_directories(p.parent_path(), ec);
+    if (ec)
+        ec->clear();
 
+    path::const_iterator e(p.end()), it(e);
+    path parent(p);
+    path const& dot_p = dot_path();
+    path const& dot_dot_p = dot_dot_path();
     error_code local_ec;
-    file_status p_status = detail::status(p, &local_ec);
 
-    if (p_status.type() == directory_file)
+    // Find the initial part of the path that exists
+    for (path fname = parent.filename(); parent.has_relative_path(); fname = parent.filename())
     {
-        if (ec)
-            ec->clear();
-        return false;
-    }
-    else if (BOOST_UNLIKELY(p_status.type() == status_error))
-    {
-        if (!ec)
-            BOOST_FILESYSTEM_THROW(filesystem_error("boost::filesystem::create_directories", p, local_ec));
-        *ec = local_ec;
-        return false;
-    }
-
-    path parent = p.parent_path();
-    BOOST_ASSERT_MSG(parent != p, "internal error: p == p.parent_path()");
-    if (!parent.empty())
-    {
-        // determine if the parent exists
-        file_status parent_status = detail::status(parent, &local_ec);
-
-        // if the parent does not exist, create the parent
-        if (parent_status.type() == file_not_found)
+        if (!fname.empty() && fname != dot_p && fname != dot_dot_p)
         {
-            create_directories(parent, local_ec);
-            if (BOOST_UNLIKELY(!!local_ec))
+            file_status existing_status = detail::status(parent, &local_ec);
+
+            if (existing_status.type() == directory_file)
             {
-            parent_fail_local_ec:
+                break;
+            }
+            else if (BOOST_UNLIKELY(existing_status.type() == status_error))
+            {
                 if (!ec)
-                    BOOST_FILESYSTEM_THROW(filesystem_error("boost::filesystem::create_directories", parent, local_ec));
+                    BOOST_FILESYSTEM_THROW(filesystem_error("boost::filesystem::create_directories", p, parent, local_ec));
                 *ec = local_ec;
                 return false;
             }
         }
-        else if (BOOST_UNLIKELY(parent_status.type() == status_error))
+
+        --it;
+        parent.remove_filename();
+    }
+
+    // Create missing directories
+    bool created = false;
+    for (; it != e; ++it)
+    {
+        path const& fname = *it;
+        parent /= fname;
+        if (!fname.empty() && fname != dot_p && fname != dot_dot_p)
         {
-            goto parent_fail_local_ec;
+            created = create_directory(parent, NULL, &local_ec);
+            if (BOOST_UNLIKELY(!!local_ec))
+            {
+                if (!ec)
+                    BOOST_FILESYSTEM_THROW(filesystem_error("boost::filesystem::create_directories", p, parent, local_ec));
+                *ec = local_ec;
+                return false;
+            }
         }
     }
 
-    // create the directory
-    return create_directory(p, NULL, ec);
+    return created;
 }
 
 BOOST_FILESYSTEM_DECL
@@ -3083,28 +3213,19 @@ path relative(path const& p, path const& base, error_code* ec)
 BOOST_FILESYSTEM_DECL
 bool remove(path const& p, error_code* ec)
 {
-    error_code tmp_ec;
-    file_type type = query_file_type(p, &tmp_ec);
-    if (error(type == status_error ? tmp_ec.value() : 0, p, ec, "boost::filesystem::remove"))
-        return false;
+    if (ec)
+        ec->clear();
 
-    // Since POSIX remove() is specified to work with either files or directories, in a
-    // perfect world it could just be called. But some important real-world operating
-    // systems (Windows, Mac OS X, for example) don't implement the POSIX spec. So
-    // remove_file_or_directory() is always called to keep it simple.
-    return remove_file_or_directory(p, type, ec);
+    return detail::remove_impl(p, ec);
 }
 
 BOOST_FILESYSTEM_DECL
 uintmax_t remove_all(path const& p, error_code* ec)
 {
-    error_code tmp_ec;
-    file_type type = query_file_type(p, &tmp_ec);
-    if (error(type == status_error ? tmp_ec.value() : 0, p, ec, "boost::filesystem::remove_all"))
-        return 0;
+    if (ec)
+        ec->clear();
 
-    return (type != status_error && type != file_not_found) // exists
-        ? remove_all_aux(p, type, ec) : 0;
+    return detail::remove_all_impl(p, ec);
 }
 
 BOOST_FILESYSTEM_DECL
@@ -3267,18 +3388,18 @@ file_status status(path const& p, error_code* ec)
 
 #else // defined(BOOST_POSIX_API)
 
-    DWORD attr(::GetFileAttributesW(p.c_str()));
-    if (attr == 0xFFFFFFFF)
+    DWORD attrs = ::GetFileAttributesW(p.c_str());
+    if (attrs == INVALID_FILE_ATTRIBUTES)
     {
         return process_status_failure(p, ec);
     }
 
-    perms permissions = make_permissions(p, attr);
+    perms permissions = make_permissions(p, attrs);
 
     //  reparse point handling;
     //    since GetFileAttributesW does not resolve symlinks, try to open a file
     //    handle to discover if the file exists
-    if (attr & FILE_ATTRIBUTE_REPARSE_POINT)
+    if (attrs & FILE_ATTRIBUTE_REPARSE_POINT)
     {
         if (!is_reparse_point_a_symlink(p))
         {
@@ -3308,10 +3429,10 @@ file_status status(path const& p, error_code* ec)
             return process_status_failure(p, ec);
         }
 
-        attr = info.dwFileAttributes;
+        attrs = info.dwFileAttributes;
     }
 
-    return (attr & FILE_ATTRIBUTE_DIRECTORY) ? file_status(directory_file, permissions) : file_status(regular_file, permissions);
+    return (attrs & FILE_ATTRIBUTE_DIRECTORY) ? file_status(directory_file, permissions) : file_status(regular_file, permissions);
 
 #endif // defined(BOOST_POSIX_API)
 }
@@ -3374,18 +3495,18 @@ file_status symlink_status(path const& p, error_code* ec)
 
 #else // defined(BOOST_POSIX_API)
 
-    DWORD attr(::GetFileAttributesW(p.c_str()));
-    if (attr == 0xFFFFFFFF)
+    DWORD attrs = ::GetFileAttributesW(p.c_str());
+    if (attrs == INVALID_FILE_ATTRIBUTES)
     {
         return process_status_failure(p, ec);
     }
 
-    perms permissions = make_permissions(p, attr);
+    perms permissions = make_permissions(p, attrs);
 
-    if (attr & FILE_ATTRIBUTE_REPARSE_POINT)
+    if (attrs & FILE_ATTRIBUTE_REPARSE_POINT)
         return is_reparse_point_a_symlink(p) ? file_status(symlink_file, permissions) : file_status(reparse_file, permissions);
 
-    return (attr & FILE_ATTRIBUTE_DIRECTORY) ? file_status(directory_file, permissions) : file_status(regular_file, permissions);
+    return (attrs & FILE_ATTRIBUTE_DIRECTORY) ? file_status(directory_file, permissions) : file_status(regular_file, permissions);
 
 #endif // defined(BOOST_POSIX_API)
 }
@@ -3588,8 +3709,7 @@ path weakly_canonical(path const& p, path const& base, system::error_code* ec)
         {
             // Convert generic separator returned by the iterator for the root directory to
             // the preferred separator.
-            path::value_type sep[2] = { path::preferred_separator, static_cast< path::value_type >('\0') };
-            head /= sep;
+            head += path::preferred_separator;
         }
         else
         {
@@ -3627,8 +3747,7 @@ path weakly_canonical(path const& p, path const& base, system::error_code* ec)
         {
             // Convert generic separator returned by the iterator for the root directory to
             // the preferred separator.
-            path::value_type sep[2] = { path::preferred_separator, static_cast< path::value_type >('\0') };
-            tail /= sep;
+            tail += path::preferred_separator;
             continue;
         }
 #endif
