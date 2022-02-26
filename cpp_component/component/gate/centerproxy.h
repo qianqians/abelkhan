@@ -18,7 +18,6 @@ namespace gate{
 
 struct name_info {
 	std::string name;
-	uint32_t serial;
 };
 
 class centerproxy {
@@ -33,9 +32,7 @@ public:
 	}
 
 	void reg_server(std::string host, short port, struct name_info &_name_info) {
-		_center_caller->reg_server("gate", "gate", _name_info.name, host, port)->callBack([this, &_name_info](uint32_t serial, std::string name){
-			_name_info.name = name;
-			_name_info.serial = serial;
+		_center_caller->reg_server("gate", _name_info.name, host, port)->callBack([this, &_name_info](){
 			is_reg_sucess = true;
 			spdlog::trace("connect center server sucess!");
 		}, [](){

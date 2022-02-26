@@ -14,7 +14,7 @@ namespace dbproxy
 		{
             log.log.trace("begin connect center server");
 
-			_center_caller.reg_server("dbproxy", "dbproxy", dbproxy.name, host, (ushort)port).callBack((uint serial, string name) =>{
+			_center_caller.reg_server("dbproxy", dbproxy.name, host, (ushort)port).callBack(() =>{
 				log.log.trace("connect center server sucessed");
 			}, ()=> {
 				log.log.err("connect center server faild");

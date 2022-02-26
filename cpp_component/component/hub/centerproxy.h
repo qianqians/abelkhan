@@ -19,7 +19,6 @@ namespace hub{
 
 struct name_info {
 	std::string name;
-	uint32_t serial;
 };
 
 class centerproxy {
@@ -36,9 +35,7 @@ public:
 
 	void reg_server(std::string host, short port, std::string sub_type, struct name_info &_info) {
 		spdlog::trace("begin connect center server!");
-		_center_caller->reg_server("hub", sub_type, _info.name, host, port)->callBack([this, &_info](uint32_t serial, std::string name) {
-			_info.name = name;
-			_info.serial = serial;
+		_center_caller->reg_server("hub", _info.name, host, port)->callBack([this, &_info]() {
 			spdlog::trace("connect center sucessed!");
 			is_reg_sucess = true;
 		}, []() {

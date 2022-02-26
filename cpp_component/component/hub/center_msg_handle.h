@@ -34,7 +34,7 @@ public:
 
 		_center_call_hub_module = std::make_shared<abelkhan::center_call_hub_module>();
 		_center_call_hub_module->Init(service::_modulemng);
-		_center_call_hub_module->sig_distribute_server_address.connect(std::bind(&center_msg_handle::distribute_server_address, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
+		_center_call_hub_module->sig_distribute_server_address.connect(std::bind(&center_msg_handle::distribute_server_address, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 		_center_call_hub_module->sig_reload.connect(std::bind(&center_msg_handle::reload, this, std::placeholders::_1));
 	}
 
@@ -47,7 +47,7 @@ private:
 		_hub->sig_svr_be_closed.emit(svr_type, svr_name);
 	}
 
-	void distribute_server_address(std::string type, std::string sub_type, std::string name, std::string ip, int64_t port) {
+	void distribute_server_address(std::string type, std::string name, std::string ip, int64_t port) {
 		if (type == "gate") {
 			_hub->connect_gate(name, ip, (uint16_t)port);
 		}

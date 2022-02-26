@@ -64,19 +64,37 @@ gatemanager::gatemanager(std::shared_ptr<service::enetacceptservice> conn_, std:
 			return;
 		}
 
-		for (auto it = clients.begin(); it != clients.end(); it++) {
-			if (it->second->_gate_name == svr_name) {
-				clients.erase(it);
-				break;
+		auto old_it = wait_destory_gates.find(svr_name);
+		if (old_it != wait_destory_gates.end()) {
+			for (auto it = clients.begin(); it != clients.end(); ) {
+				if (it->second == old_it->second) {
+					it = clients.erase(it);
+				}
+				else {
+					it++;
+				}
 			}
-		}
-		
-		auto it = gates.find(svr_name);
-		if (it != gates.end()) {
-			ch_gates.erase(it->second->_ch);
-			gates.erase(it);
 
-			_hub->sig_gate_closed.emit(svr_name);
+			ch_gates.erase(old_it->second->_ch);
+			wait_destory_gates.erase(old_it);
+		}
+		else {
+			for (auto it = clients.begin(); it != clients.end(); it++) {
+				if (it->second->_gate_name == svr_name) {
+					it = clients.erase(it);
+				}
+				else {
+					it++;
+				}
+			}
+
+			auto it = gates.find(svr_name);
+			if (it != gates.end()) {
+				ch_gates.erase(it->second->_ch);
+				gates.erase(it);
+
+				_hub->sig_gate_closed.emit(svr_name);
+			}
 		}
 	});
 
@@ -89,8 +107,15 @@ void gatemanager::connect_gate(std::string gate_name, std::string host, uint16_t
 	auto ip = service::DNS(host);
 	_conn->connect(ip, port, [this, host, port, gate_name](std::shared_ptr<abelkhan::Ichannel> ch) {
 		spdlog::trace("gate host:{0}  port:{1} reg_hub", host, port);
+		
 		auto _gate_proxy = std::make_shared<gateproxy>(ch, _hub, gate_name);
 		_gate_proxy->sig_reg_hub_sucessed.connect([this, gate_name, ch, _gate_proxy]() {
+
+			auto it = gates.find(gate_name);
+			if (it != gates.end()) {
+				wait_destory_gates.insert(std::make_pair(it->first, it->second));
+			}
+
 			gates[gate_name] = _gate_proxy;
 			ch_gates[ch] = _gate_proxy;
 		});

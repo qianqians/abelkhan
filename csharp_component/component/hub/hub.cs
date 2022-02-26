@@ -319,7 +319,6 @@ namespace hub
         }
 
 		public static string name;
-        public static uint serial = 0;
         public static string type;
         public static addressinfo tcp_outside_address = null;
         public static addressinfo websocket_outside_address = null;

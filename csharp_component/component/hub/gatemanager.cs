@@ -33,12 +33,13 @@ namespace hub
 
     public class gatemanager
 	{
-        public String current_client_uuid;
+        public string current_client_uuid;
 
-        private Dictionary<String, gateproxy> clients;
+        private Dictionary<string, gateproxy> clients;
 
+        private Dictionary<string, gateproxy> _wait_destory_gateproxys;
         private Dictionary<abelkhan.Ichannel, gateproxy> ch_gateproxys;
-        private Dictionary<String, gateproxy> gates;
+        private Dictionary<string, gateproxy> gates;
 
         private Dictionary<string, directproxy> direct_clients;
         private Dictionary<abelkhan.Ichannel, directproxy> ch_direct_clients;
@@ -51,7 +52,9 @@ namespace hub
 			current_client_uuid = "";
 
 			clients = new Dictionary<string, gateproxy>();
-			ch_gateproxys = new Dictionary<abelkhan.Ichannel, gateproxy>();
+
+            _wait_destory_gateproxys = new Dictionary<string, gateproxy>();
+            ch_gateproxys = new Dictionary<abelkhan.Ichannel, gateproxy>();
 			gates = new Dictionary<string, gateproxy>();
 
             direct_clients = new Dictionary<string, directproxy>();
@@ -64,8 +67,19 @@ namespace hub
 		{
 			_gate_conn.connect(host, port, (ch)=> {
                 var _proxy = new gateproxy(ch);
-                gates.Add(name, _proxy);
+
+                if (gates.TryGetValue(name, out gateproxy _old_proxy))
+                {
+                    _wait_destory_gateproxys.Add(name, _old_proxy);
+                    gates[name] = _proxy;
+                }
+                else
+                {
+                    gates.Add(name, _proxy);
+                }
+
                 ch_gateproxys.Add(ch, _proxy);
+
                 lock (hub.add_chs)
                 {
                     hub.add_chs.Add(ch);
@@ -86,24 +100,55 @@ namespace hub
         public event Action<string> on_gate_closed;
         public void gate_be_closed(string svr_name)
         {
-            if (gates.Remove(svr_name, out gateproxy _proxy))
+            if (_wait_destory_gateproxys.TryGetValue(svr_name, out gateproxy _old_proxy))
             {
+                var remove = new List<string>();
                 foreach (var it in clients)
                 {
-                    if (it.Value == _proxy)
+                    if (it.Value == _old_proxy)
                     {
-                        clients.Remove(it.Key);
-                        break;
+                        remove.Add(it.Key);
                     }
                 }
-                ch_gateproxys.Remove(_proxy._ch);
+                foreach (var it in remove)
+                {
+                    clients.Remove(it);
+                }
+
+                ch_gateproxys.Remove(_old_proxy._ch);
+                _wait_destory_gateproxys.Remove(svr_name);
 
                 lock (hub.remove_chs)
                 {
-                    hub.remove_chs.Add(_proxy._ch);
+                    hub.remove_chs.Add(_old_proxy._ch);
                 }
+            }
+            else
+            {
+                if (gates.Remove(svr_name, out gateproxy _proxy))
+                {
+                    var remove = new List<string>();
+                    foreach (var it in clients)
+                    {
+                        if (it.Value == _proxy)
+                        {
+                            remove.Add(it.Key);
+                        }
+                    }
+                    foreach (var it in remove)
+                    {
+                        clients.Remove(it);
+                    }
 
-                on_gate_closed?.Invoke(svr_name);
+                    ch_gateproxys.Remove(_proxy._ch);
+
+                    lock (hub.remove_chs)
+                    {
+                        hub.remove_chs.Add(_proxy._ch);
+                    }
+
+                    on_gate_closed?.Invoke(svr_name);
+                }
             }
         }
 

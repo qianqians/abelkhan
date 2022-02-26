@@ -35,7 +35,6 @@ hub_service::hub_service(std::string config_file_path, std::string config_name, 
 	_config = _config->get_value_dict(config_name);
 
 	name_info.name = config_name;
-	name_info.serial = 0;
 	hub_type = hub_type_;
 	is_busy = false;
 }

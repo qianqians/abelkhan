@@ -6,8 +6,13 @@ namespace dbproxy
 {
 	public class hubmanager
 	{
+		private Dictionary<string, hubproxy> wait_destory_hubs;
+		private Dictionary<string, hubproxy> hubproxys_name;
+		private Dictionary<abelkhan.Ichannel, hubproxy> hubproxys;
+
 		public hubmanager()
 		{
+			wait_destory_hubs = new Dictionary<string, hubproxy>();
 			hubproxys_name = new Dictionary<string, hubproxy> ();
 			hubproxys = new Dictionary<abelkhan.Ichannel, hubproxy> ();
 		}
@@ -15,7 +20,15 @@ namespace dbproxy
 		public hubproxy reg_hub(abelkhan.Ichannel ch, String name)
 		{
 			hubproxy _hubproxy = new hubproxy (ch);
-			hubproxys_name.Add (name, _hubproxy);
+			if (hubproxys_name.TryGetValue(name, out hubproxy _old_proxy))
+            {
+				wait_destory_hubs.Add(name, _old_proxy);
+				hubproxys_name[name] = _hubproxy;
+			}
+            else
+            {
+				hubproxys_name.Add(name, _hubproxy);
+			}
 			hubproxys.Add (ch, _hubproxy);
 
 			return _hubproxy;
@@ -23,14 +36,27 @@ namespace dbproxy
 
 		public void on_hub_closed(string name)
 		{
-			if (hubproxys_name.TryGetValue(name, out hubproxy _proxy))
+			if (wait_destory_hubs.TryGetValue(name, out hubproxy _old_proxy))
 			{
-				hubproxys_name.Remove(name);
-				hubproxys.Remove(_proxy._ch);
+				hubproxys.Remove(_old_proxy._ch);
+				wait_destory_hubs.Remove(name);
 
 				lock (dbproxy.remove_chs)
-                {
-					dbproxy.remove_chs.Add(_proxy._ch);
+				{
+					dbproxy.remove_chs.Add(_old_proxy._ch);
+				}
+			}
+			else
+			{
+				if (hubproxys_name.TryGetValue(name, out hubproxy _proxy))
+				{
+					hubproxys_name.Remove(name);
+					hubproxys.Remove(_proxy._ch);
+
+					lock (dbproxy.remove_chs)
+					{
+						dbproxy.remove_chs.Add(_proxy._ch);
+					}
 				}
 			}
 		}
@@ -49,9 +75,6 @@ namespace dbproxy
         {
 			return hubproxys_name.Count;
 		}
-
-		private Dictionary<String, hubproxy> hubproxys_name;
-		private Dictionary<abelkhan.Ichannel, hubproxy> hubproxys;
 
 	}
 }

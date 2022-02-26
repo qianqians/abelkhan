@@ -20,11 +20,11 @@ namespace abelkhan
     public:
         center_reg_server_cb(uint64_t _cb_uuid, std::shared_ptr<center_rsp_cb> _module_rsp_cb);
     public:
-        concurrent::signals<void(uint32_t, std::string)> sig_reg_server_cb;
+        concurrent::signals<void()> sig_reg_server_cb;
         concurrent::signals<void()> sig_reg_server_err;
         concurrent::signals<void()> sig_reg_server_timeout;
 
-        std::shared_ptr<center_reg_server_cb> callBack(std::function<void(uint32_t serial_num, std::string svr_name)> cb, std::function<void()> err);
+        std::shared_ptr<center_reg_server_cb> callBack(std::function<void()> cb, std::function<void()> err);
         void timeout(uint64_t tick, std::function<void()> timeout_cb);
     };
 
@@ -46,11 +46,9 @@ namespace abelkhan
 
         void reg_server_rsp(const msgpack11::MsgPack::array& inArray){
             auto uuid = inArray[0].uint64_value();
-            auto _serial_num = inArray[1].uint32_value();
-            auto _svr_name = inArray[2].string_value();
             auto rsp = try_get_and_del_reg_server_cb(uuid);
             if (rsp != nullptr){
-                rsp->sig_reg_server_cb.emit(_serial_num, _svr_name);
+                rsp->sig_reg_server_cb.emit();
             }
         }
 
@@ -98,12 +96,11 @@ namespace abelkhan
             uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066.store(random());
         }
 
-        std::shared_ptr<center_reg_server_cb> reg_server(std::string type, std::string sub_type, std::string svr_name, std::string host, uint16_t port){
+        std::shared_ptr<center_reg_server_cb> reg_server(std::string type, std::string svr_name, std::string host, uint16_t port){
             auto uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066++;
             msgpack11::MsgPack::array _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda;
             _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255);
             _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(type);
-            _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(sub_type);
             _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(svr_name);
             _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(host);
             _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(port);
@@ -201,10 +198,9 @@ namespace abelkhan
             uuid_adbd1e34_0c90_3426_aefa_4d734c07a706.store(random());
         }
 
-        void distribute_server_address(std::string svr_type, std::string sub_type, std::string svr_name, std::string host, uint16_t port){
+        void distribute_server_address(std::string svr_type, std::string svr_name, std::string host, uint16_t port){
             msgpack11::MsgPack::array _argv_b71bf35c_d65b_3682_98d1_b934f5276558;
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(svr_type);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(sub_type);
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(svr_name);
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(host);
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(port);
@@ -280,11 +276,9 @@ namespace abelkhan
             uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda = _uuid;
         }
 
-        void rsp(uint32_t serial_num, std::string svr_name){
+        void rsp(){
             msgpack11::MsgPack::array _argv_86ab8166_c1a7_3809_8c9b_df444f746076;
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push_back(uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda);
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push_back(serial_num);
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push_back(svr_name);
             call_module_method("reg_server_rsp", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
         }
 
@@ -310,16 +304,15 @@ namespace abelkhan
             reg_method("closed", std::bind(&center_module::closed, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string, std::string, std::string, std::string, uint16_t)> sig_reg_server;
+        concurrent::signals<void(std::string, std::string, std::string, uint16_t)> sig_reg_server;
         void reg_server(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
             auto _type = inArray[1].string_value();
-            auto _sub_type = inArray[2].string_value();
-            auto _svr_name = inArray[3].string_value();
-            auto _host = inArray[4].string_value();
-            auto _port = inArray[5].uint16_value();
+            auto _svr_name = inArray[2].string_value();
+            auto _host = inArray[3].string_value();
+            auto _port = inArray[4].uint16_value();
             rsp = std::make_shared<center_reg_server_rsp>(current_ch, _cb_uuid);
-            sig_reg_server.emit(_type, _sub_type, _svr_name, _host, _port);
+            sig_reg_server.emit(_type, _svr_name, _host, _port);
             rsp = nullptr;
         }
 
@@ -373,14 +366,13 @@ namespace abelkhan
             reg_method("reload", std::bind(&center_call_hub_module::reload, this, std::placeholders::_1));
         }
 
-        concurrent::signals<void(std::string, std::string, std::string, std::string, uint16_t)> sig_distribute_server_address;
+        concurrent::signals<void(std::string, std::string, std::string, uint16_t)> sig_distribute_server_address;
         void distribute_server_address(const msgpack11::MsgPack::array& inArray){
             auto _svr_type = inArray[0].string_value();
-            auto _sub_type = inArray[1].string_value();
-            auto _svr_name = inArray[2].string_value();
-            auto _host = inArray[3].string_value();
-            auto _port = inArray[4].uint16_value();
-            sig_distribute_server_address.emit(_svr_type, _sub_type, _svr_name, _host, _port);
+            auto _svr_name = inArray[1].string_value();
+            auto _host = inArray[2].string_value();
+            auto _port = inArray[3].uint16_value();
+            sig_distribute_server_address.emit(_svr_type, _svr_name, _host, _port);
         }
 
         concurrent::signals<void(std::string)> sig_reload;

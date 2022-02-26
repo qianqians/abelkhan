@@ -90,14 +90,14 @@ export class center_caller extends abelkhan.Icaller {
         }
     }
 
-    public reg_server(type:string, ip:string, port:number, svr_name:string){
+    public reg_server(type:string, svr_name:string, host:string, port:number){
         let uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = Math.round(this.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066++);
 
         let _argv_86ab8166_c1a7_3809_8c9b_df444f746076:any[] = [uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255];
         _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(type);
-        _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(ip);
-        _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(port);
         _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(svr_name);
+        _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(host);
+        _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(port);
         this.call_module_method("reg_server", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
 
         let cb_reg_server_obj = new center_reg_server_cb(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255, rsp_cb_center_handle);
@@ -171,11 +171,11 @@ export class center_call_hub_caller extends abelkhan.Icaller {
         }
     }
 
-    public distribute_server_address(svr_type:string, svr_name:string, ip:string, port:number){
+    public distribute_server_address(svr_type:string, svr_name:string, host:string, port:number){
         let _argv_b71bf35c_d65b_3682_98d1_b934f5276558:any[] = [];
         _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(svr_type);
         _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(svr_name);
-        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(ip);
+        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(host);
         _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(port);
         this.call_module_method("distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
     }
@@ -263,7 +263,7 @@ export class center_module extends abelkhan.Imodule {
         this.cb_closed = null;
     }
 
-    public cb_reg_server : (type:string, ip:string, port:number, svr_name:string)=>void | null;
+    public cb_reg_server : (type:string, svr_name:string, host:string, port:number)=>void | null;
     reg_server(inArray:any[]){
         let _cb_uuid = inArray[0];
         let _argv_:any[] = [];
@@ -342,7 +342,7 @@ export class center_call_hub_module extends abelkhan.Imodule {
         this.cb_reload = null;
     }
 
-    public cb_distribute_server_address : (svr_type:string, svr_name:string, ip:string, port:number)=>void | null;
+    public cb_distribute_server_address : (svr_type:string, svr_name:string, host:string, port:number)=>void | null;
     distribute_server_address(inArray:any[]){
         let _argv_:any[] = [];
         _argv_.push(inArray[0]);

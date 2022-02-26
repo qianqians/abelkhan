@@ -14,6 +14,7 @@ namespace abelkhan
     public class enetservice
     {
         private ENetHost host;
+        private Dictionary<UInt64, enetchannel> back_conns;
         private Dictionary<UInt64, enetchannel> conns;
         private Dictionary<UInt64, Action<enetchannel> > conn_cbs;
 
@@ -24,6 +25,7 @@ namespace abelkhan
             var listenEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
             host = new ENetHost(listenEndPoint, 2048, 1);
 
+            back_conns = new Dictionary<UInt64, enetchannel>();
             conns = new Dictionary<UInt64, enetchannel>();
             conn_cbs = new Dictionary<UInt64, Action<enetchannel> >();
         }
@@ -46,19 +48,30 @@ namespace abelkhan
                         var peerHandle = ip_addr << 32 | (UInt64)((UInt32)ep.Port);
 
                         log.log.trace("enetservice poll raddr:{0}", peerHandle);
-                        if (!conns.TryGetValue(peerHandle, out enetchannel ch))
+                        if (!back_conns.TryGetValue(peerHandle, out enetchannel ch))
                         {
                             ch = new enetchannel(host, Event.Peer);
-                            conns[peerHandle] = ch;
+                            back_conns.Add(peerHandle, ch);
+
+                            on_connect?.Invoke(ch);
+                        }
+                        else
+                        {
+                            back_conns.Remove(peerHandle);
                         }
 
                         if (conn_cbs.Remove(peerHandle, out Action<enetchannel> cb))
                         {
                             cb(ch);
                         }
+
+                        if (conns.ContainsKey(peerHandle))
+                        {
+                            conns[peerHandle] = ch;
+                        }
                         else
                         {
-                            on_connect?.Invoke(ch);
+                            conns.Add(peerHandle, ch);
                         }
                     }
                     break;

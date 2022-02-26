@@ -21,11 +21,11 @@ namespace abelkhan
             module_rsp_cb = _module_rsp_cb;
         }
 
-        public event Action<UInt32, string> on_reg_server_cb;
+        public event Action on_reg_server_cb;
         public event Action on_reg_server_err;
         public event Action on_reg_server_timeout;
 
-        public center_reg_server_cb callBack(Action<UInt32, string> cb, Action err)
+        public center_reg_server_cb callBack(Action cb, Action err)
         {
             on_reg_server_cb += cb;
             on_reg_server_err += err;
@@ -40,11 +40,11 @@ namespace abelkhan
             on_reg_server_timeout += timeout_cb;
         }
 
-        public void call_cb(UInt32 serial_num, string svr_name)
+        public void call_cb()
         {
             if (on_reg_server_cb != null)
             {
-                on_reg_server_cb(serial_num, svr_name);
+                on_reg_server_cb();
             }
         }
 
@@ -79,12 +79,10 @@ namespace abelkhan
 
         public void reg_server_rsp(IList<MsgPack.MessagePackObject> inArray){
             var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            var _serial_num = ((MsgPack.MessagePackObject)inArray[1]).AsUInt32();
-            var _svr_name = ((MsgPack.MessagePackObject)inArray[2]).AsString();
             var rsp = try_get_and_del_reg_server_cb(uuid);
             if (rsp != null)
             {
-                rsp.call_cb(_serial_num, _svr_name);
+                rsp.call_cb();
             }
         }
 
@@ -129,14 +127,13 @@ namespace abelkhan
             }
         }
 
-        public center_reg_server_cb reg_server(string type, string sub_type, string svr_name, string host, UInt16 port){
+        public center_reg_server_cb reg_server(string type, string svr_name, string host, UInt16 port){
             Interlocked.Increment(ref uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066);
             var uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = (UInt64)uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066;
 
             var _argv_86ab8166_c1a7_3809_8c9b_df444f746076 = new ArrayList();
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255);
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(type);
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(sub_type);
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(svr_name);
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(host);
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(port);
@@ -213,10 +210,9 @@ namespace abelkhan
             }
         }
 
-        public void distribute_server_address(string svr_type, string sub_type, string svr_name, string host, UInt16 port){
+        public void distribute_server_address(string svr_type, string svr_name, string host, UInt16 port){
             var _argv_b71bf35c_d65b_3682_98d1_b934f5276558 = new ArrayList();
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(svr_type);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(sub_type);
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(svr_name);
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(host);
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(port);
@@ -279,11 +275,9 @@ namespace abelkhan
             uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda = _uuid;
         }
 
-        public void rsp(UInt32 serial_num_3326bec3_a11a_3ddf_b469_fd70e5cd0817, string svr_name_540199bd_4b0b_3d54_b0e9_e525fa7e9b5a){
+        public void rsp(){
             var _argv_86ab8166_c1a7_3809_8c9b_df444f746076 = new ArrayList();
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda);
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(serial_num_3326bec3_a11a_3ddf_b469_fd70e5cd0817);
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(svr_name_540199bd_4b0b_3d54_b0e9_e525fa7e9b5a);
             call_module_method("reg_server_rsp", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
         }
 
@@ -307,17 +301,16 @@ namespace abelkhan
             reg_method("closed", closed);
         }
 
-        public event Action<string, string, string, string, UInt16> on_reg_server;
+        public event Action<string, string, string, UInt16> on_reg_server;
         public void reg_server(IList<MsgPack.MessagePackObject> inArray){
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var _type = ((MsgPack.MessagePackObject)inArray[1]).AsString();
-            var _sub_type = ((MsgPack.MessagePackObject)inArray[2]).AsString();
-            var _svr_name = ((MsgPack.MessagePackObject)inArray[3]).AsString();
-            var _host = ((MsgPack.MessagePackObject)inArray[4]).AsString();
-            var _port = ((MsgPack.MessagePackObject)inArray[5]).AsUInt16();
+            var _svr_name = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            var _host = ((MsgPack.MessagePackObject)inArray[3]).AsString();
+            var _port = ((MsgPack.MessagePackObject)inArray[4]).AsUInt16();
             rsp = new center_reg_server_rsp(current_ch, _cb_uuid);
             if (on_reg_server != null){
-                on_reg_server(_type, _sub_type, _svr_name, _host, _port);
+                on_reg_server(_type, _svr_name, _host, _port);
             }
             rsp = null;
         }
@@ -376,15 +369,14 @@ namespace abelkhan
             reg_method("reload", reload);
         }
 
-        public event Action<string, string, string, string, UInt16> on_distribute_server_address;
+        public event Action<string, string, string, UInt16> on_distribute_server_address;
         public void distribute_server_address(IList<MsgPack.MessagePackObject> inArray){
             var _svr_type = ((MsgPack.MessagePackObject)inArray[0]).AsString();
-            var _sub_type = ((MsgPack.MessagePackObject)inArray[1]).AsString();
-            var _svr_name = ((MsgPack.MessagePackObject)inArray[2]).AsString();
-            var _host = ((MsgPack.MessagePackObject)inArray[3]).AsString();
-            var _port = ((MsgPack.MessagePackObject)inArray[4]).AsUInt16();
+            var _svr_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _host = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            var _port = ((MsgPack.MessagePackObject)inArray[3]).AsUInt16();
             if (on_distribute_server_address != null){
-                on_distribute_server_address(_svr_type, _sub_type, _svr_name, _host, _port);
+                on_distribute_server_address(_svr_type, _svr_name, _host, _port);
             }
         }
 

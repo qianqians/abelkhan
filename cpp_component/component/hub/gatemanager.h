@@ -107,6 +107,8 @@ private:
 	std::shared_ptr<hub_service> _hub;
 	
 	std::unordered_map<std::string, std::shared_ptr<gateproxy> > clients;
+
+	std::unordered_map<std::string, std::shared_ptr<gateproxy> > wait_destory_gates;
 	std::unordered_map<std::string, std::shared_ptr<gateproxy> > gates;
 	std::unordered_map<std::shared_ptr<abelkhan::Ichannel>, std::shared_ptr<gateproxy> > ch_gates;
 

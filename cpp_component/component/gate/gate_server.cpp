@@ -48,7 +48,6 @@ int main(int argc, char * argv[]) {
 
 	gate::name_info gate_name_info;
 	gate_name_info.name = argv[2];
-	gate_name_info.serial = 0;
 
 	auto file_path = _config->get_value_string("log_dir") + _config->get_value_string("log_file");
 	auto log_level = _config->get_value_string("log_level");

@@ -46,7 +46,7 @@ namespace hub
 			}
         }
 
-		public void distribute_server_address(String type, String sub_type, String name, String host, ushort port)
+		public void distribute_server_address(String type, String name, String host, ushort port)
         {
             log.log.trace("recv distribute server address");
 

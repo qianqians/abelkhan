@@ -59,19 +59,33 @@ public:
 	std::shared_ptr<hubproxy> reg_hub(std::string hub_name, std::string& hub_type, std::shared_ptr<abelkhan::Ichannel> ch) {
 		auto _hubproxy = std::make_shared<hubproxy>(hub_name, hub_type, ch);
 
-		hub_name_proxy.insert(std::make_pair(hub_name, _hubproxy));
-		hub_channel_name.insert(std::make_pair(ch, hub_name));
+		auto it = hub_name_proxy.find(hub_name);
+		if (it != hub_name_proxy.end()) {
+			wait_destory_proxy.insert(std::make_pair(it->first, it->second));
+			hub_name_proxy[hub_name] = _hubproxy;
+		}
+		else {
+			hub_name_proxy.insert(std::make_pair(hub_name, _hubproxy));
+			hub_channel_name.insert(std::make_pair(ch, hub_name));
+		}
 
 		return _hubproxy;
 	}
 
 	void unreg_hub(std::string hub_name) {
-		auto it = hub_name_proxy.find(hub_name);
-		if (it != hub_name_proxy.end()) {
-			spdlog::trace("hubsvrmanager unreg_hub:{0}!", hub_name);
+		auto old_id = wait_destory_proxy.find(hub_name);
+		if (old_id != wait_destory_proxy.end()) {
+			hub_channel_name.erase(old_id->second->_ch);
+			wait_destory_proxy.erase(old_id);
+		}
+		else {
+			auto it = hub_name_proxy.find(hub_name);
+			if (it != hub_name_proxy.end()) {
+				spdlog::trace("hubsvrmanager unreg_hub:{0}!", hub_name);
 
-			hub_channel_name.erase(it->second->_ch);
-			hub_name_proxy.erase(it);
+				hub_channel_name.erase(it->second->_ch);
+				hub_name_proxy.erase(it);
+			}
 		}
 	}
 
@@ -110,6 +124,7 @@ public:
 	}
 
 private:
+	std::map<std::string, std::shared_ptr<hubproxy> > wait_destory_proxy;
 	std::map<std::string, std::shared_ptr<hubproxy> > hub_name_proxy;
 	std::map<std::shared_ptr<abelkhan::Ichannel>, std::string> hub_channel_name;
 

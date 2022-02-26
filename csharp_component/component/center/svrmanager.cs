@@ -12,7 +12,6 @@ namespace abelkhan
     public class svrproxy
     {
         public string type;
-        public string sub_type;
         public string name;
         public string host;
         public ushort port;
@@ -22,10 +21,9 @@ namespace abelkhan
         public abelkhan.Ichannel ch;
         private abelkhan.center_call_server_caller _center_call_server_caller;
 
-        public svrproxy(abelkhan.Ichannel _ch, string _type, string _sub_type, string _name, string _host, ushort _port)
+        public svrproxy(abelkhan.Ichannel _ch, string _type, string _name, string _host, ushort _port)
         {
             type = _type;
-            sub_type = _sub_type;
             name = _name;
             host = _host;
             port = _port;
@@ -65,9 +63,9 @@ namespace abelkhan
             _center_call_hub_caller = new abelkhan.center_call_hub_caller(ch, abelkhan.modulemng_handle._modulemng);
         }
 
-        public void distribute_server_address(string type, string sub_type, string name, string host, ushort port)
+        public void distribute_server_address(string type, string name, string host, ushort port)
         {
-            _center_call_hub_caller.distribute_server_address(type, sub_type, name, host, port);
+            _center_call_hub_caller.distribute_server_address(type, name, host, port);
         }
 
         public void reload(string argv)
@@ -94,9 +92,9 @@ namespace abelkhan
             heartbeat_svr(service.timerservice.Tick);
         }
 
-        public void reg_svr(abelkhan.Ichannel ch, string type, string sub_type, string name, string host, ushort port)
+        public void reg_svr(abelkhan.Ichannel ch, string type, string name, string host, ushort port)
         {
-            var _svrproxy = new svrproxy(ch, type, sub_type, name, host, port);
+            var _svrproxy = new svrproxy(ch, type, name, host, port);
             svrproxys.Add(ch, _svrproxy);
             if (type == "dbproxy")
             {
