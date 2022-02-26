@@ -140,7 +140,6 @@ namespace abelkhan
                 if ((service.timerservice.Tick - _proxy.Value.timetmp) > 6 * 1000)
                 {
                     on_svr_close(_proxy.Value);
-                    closed_svr_list.Add(_proxy.Value);
                 }
             }
             _timer.addticktime(6 * 1000, heartbeat_svr);
