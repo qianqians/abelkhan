@@ -34,27 +34,32 @@ public:
 				spdlog::trace("enetacceptservice connect begin!");
 
 				std::shared_ptr<enetchannel> ch = nullptr;
-
 				uint64_t peerHandle = (uint64_t)_event.peer->address.host << 32 | _event.peer->address.port;
-				auto it_ch = chs.find(peerHandle);
-				if (it_ch == chs.end()) {
-					uint64_t peerHandle = (uint64_t)_event.peer->address.host << 32 | _event.peer->address.port;
+
+				auto it_ch = back_chs.find(peerHandle);
+				if (it_ch == back_chs.end()) {
 					ch = std::make_shared<enetchannel>(_host, _event.peer);
 					ch->Init();
-					chs.insert(std::make_pair(peerHandle, ch));
+					back_chs.insert(std::make_pair(peerHandle, ch));
 				}
 				else {
 					ch = it_ch->second;
+					back_chs.erase(it_ch);
+				}
+
+				if (chs.find(peerHandle) == chs.end()) {
+					chs.insert(std::make_pair(peerHandle, ch));
+				}
+				else {
+					chs[peerHandle] = ch;
 				}
 
 				char ip[256] = {0};
 				enet_address_get_host_ip(&_event.peer->address, ip, 256);
 				std::string cb_handle = std::string(ip) + ":" + std::to_string(_event.peer->address.port);
 				auto cb = cbs.find(cb_handle);
-
-				spdlog::trace("enetacceptservice cb_handle:{0}", cb_handle);
-
 				if (cb != cbs.end()) {
+					spdlog::trace("enetacceptservice cb_handle:{0}", cb_handle);
 					(cb->second)(ch);
 					cbs.erase(cb_handle);
 				}
@@ -107,6 +112,7 @@ private:
 	ENetHost * _host;
 
 	std::unordered_map<std::string, std::function<void(std::shared_ptr<abelkhan::Ichannel>)> > cbs;
+	std::unordered_map<uint64_t, std::shared_ptr<enetchannel> > back_chs;
 	std::unordered_map<uint64_t, std::shared_ptr<enetchannel> > chs;
 
 };
