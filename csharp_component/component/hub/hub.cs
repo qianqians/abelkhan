@@ -78,6 +78,10 @@ namespace hub
             {
                 on_hubproxy?.Invoke(_proxy);
             };
+            _hubs.on_hubproxy_reconn += (_proxy) =>
+            {
+                on_hubproxy_reconn?.Invoke(_proxy);
+            };
             _hubs.on_hub_closed += (string name, string type) =>
             {
                 on_hub_closed?.Invoke(name, type);
@@ -353,6 +357,7 @@ namespace hub
         private client_msg_handle _client_msg_handle;
 
         public event Action<hubproxy> on_hubproxy;
+        public event Action<hubproxy> on_hubproxy_reconn;
         public event Action<string, string> on_hub_closed;
 
         public event Action<string> on_client_disconnect;
