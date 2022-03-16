@@ -50,7 +50,7 @@ export class Test extends Component {
             this._cli.get_hub_info("test", (hub_info_list)=>{
                 for (let hub_info of hub_info_list){
                     this._test_c2s_caller.get_hub(hub_info.hub_name).login();
-                    this._test_c2s_caller.get_hub(hub_info.hub_name).get_svr_host().callBack((ip, port) =>
+                    this._test_c2s_caller.get_hub(hub_info.hub_name).get_websocket_svr_host().callBack((ip, port) =>
                     {
                         console.log("get_svr_host sucessed!");
                         console.log("connect_hub name:{0}, type:{1}, ip:{2}, port:{3}!", hub_info.hub_name, hub_info.hub_type, ip, port);
