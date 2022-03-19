@@ -60,7 +60,7 @@ export class wschannel implements abelkhan.Ichannel {
                     break;
                 }
     
-                var str_bytes = new_data.subarray(4, (len + 4))
+                var str_bytes = new_data.subarray(4, (len + 4));
                 that.events.push(decode(str_bytes));
                 
                 if ( new_data.length > (len + 4) ){
