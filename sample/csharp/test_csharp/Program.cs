@@ -57,7 +57,7 @@ namespace test_csharp
             };
             _test_c2s_module.on_get_websocket_svr_host += () => {
                 log.log.trace("get_websocket_svr_host!");
-                var rsp = (abelkhan.test_c2s_get_svr_host_rsp)_test_c2s_module.rsp;
+                var rsp = (abelkhan.test_c2s_get_websocket_svr_host_rsp)_test_c2s_module.rsp;
                 rsp.rsp(hub.hub.websocket_outside_address.host, hub.hub.websocket_outside_address.port);
             };
 

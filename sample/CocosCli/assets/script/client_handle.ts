@@ -359,7 +359,9 @@ export class client
                 }
             };
             _hubproxy.onHubTime = (hub_name, tick)=>{
-                that.onHubTime(hub_name, tick);
+                if (that.onHubTime) {
+                   that.onHubTime(hub_name, tick);
+                }
             }
             _hubproxy.connect_hub(that.uuid);
             
