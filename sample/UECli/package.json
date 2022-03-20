@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "@types/node": "^17.0.21",
+    "msgpack-ts": "^1.0.4"
+  },
+  "dependencies": {
+    "msgpack-js": "^0.3.0"
+  }
+}

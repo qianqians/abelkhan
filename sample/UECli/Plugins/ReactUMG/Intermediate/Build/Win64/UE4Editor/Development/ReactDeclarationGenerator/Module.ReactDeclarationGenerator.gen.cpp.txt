@@ -1,0 +1,14 @@
+C:\Users\theDa\Documents\abelkhan\sample\UECli\Plugins\ReactUMG\Intermediate\Build\Win64\UE4Editor\Development\ReactDeclarationGenerator\Definitions.ReactDeclarationGenerator.h
+C:/Users/theDa/Documents/abelkhan/sample/UECli/Plugins/ReactUMG/Intermediate/Build/Win64/UE4Editor/Inc/ReactDeclarationGenerator/ReactDeclarationGenerator.gen.cpp
+C:\Program Files\Epic Games\UE_4.27\Engine\Source\Runtime\CoreUObject\Public\UObject/GeneratedCppIncludes.h
+C:\Program Files\Epic Games\UE_4.27\Engine\Source\Runtime\CoreUObject\Public\UObject/MetaData.h
+C:\Users\theDa\Documents\abelkhan\sample\UECli\Plugins\ReactUMG\Source\ReactDeclarationGenerator/Public/ReactDeclarationGenerator.h
+C:\Users\theDa\Documents\abelkhan\sample\UECli\Plugins\Puerts\Source\DeclarationGenerator\Public\CodeGenerator.h
+C:\Users\theDa\Documents\abelkhan\sample\UECli\Plugins\Puerts\Intermediate\Build\Win64\UE4Editor\Inc\DeclarationGenerator\CodeGenerator.generated.h
+C:\Program Files\Epic Games\UE_4.27\Engine\Source\Runtime\CoreUObject\Public\UObject/NoExportTypes.h
+C:\Program Files\Epic Games\UE_4.27\Engine\Source\Runtime\CoreUObject\Public\UObject/PropertyAccessUtil.h
+C:\Program Files\Epic Games\UE_4.27\Engine\Source\Runtime\Core\Public\Math/UnitConversion.h
+C:\Program Files\Epic Games\UE_4.27\Engine\Source\Runtime\Core\Public\Math/UnitConversion.inl
+C:\Program Files\Epic Games\UE_4.27\Engine\Source\Runtime\Core\Public\Internationalization/PolyglotTextData.h
+C:\Users\theDa\Documents\abelkhan\sample\UECli\Plugins\ReactUMG\Intermediate\Build\Win64\UE4Editor\Inc\ReactDeclarationGenerator\ReactDeclarationGenerator.generated.h
+C:/Users/theDa/Documents/abelkhan/sample/UECli/Plugins/ReactUMG/Intermediate/Build/Win64/UE4Editor/Inc/ReactDeclarationGenerator/ReactDeclarationGenerator.init.gen.cpp

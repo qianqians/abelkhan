@@ -1,0 +1,10 @@
+{
+	"BuildId": "17155196",
+	"Modules": 
+	{
+		"DeclarationGenerator": "UE4Editor-DeclarationGenerator.dll",
+		"JsEnv": "UE4Editor-JsEnv.dll",
+		"Puerts": "UE4Editor-Puerts.dll",
+		"PuertsEditor": "UE4Editor-PuertsEditor.dll"
+	}
+}

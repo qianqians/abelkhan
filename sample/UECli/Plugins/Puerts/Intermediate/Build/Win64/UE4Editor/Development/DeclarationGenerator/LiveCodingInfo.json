@@ -1,0 +1,17 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.DeclarationGenerator.cpp.obj": [
+			"CodeGenerator.cpp.obj",
+			"DeclarationGenerator.cpp.obj",
+			"GenDTSCommands.cpp.obj",
+			"GenDTSStyle.cpp.obj",
+			"TemplateBindingGenerator.cpp.obj"
+		],
+		"Module.DeclarationGenerator.gen.cpp.obj": [
+			"CodeGenerator.gen.cpp.obj",
+			"DeclarationGenerator.init.gen.cpp.obj",
+			"TemplateBindingGenerator.gen.cpp.obj"
+		]
+	}
+}

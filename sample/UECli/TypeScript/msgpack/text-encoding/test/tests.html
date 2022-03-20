@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<title>Encoding API Tests</title>
+<link rel="stylesheet" href="testharness.js/testharness.css">
+<h1>Encoding API Tests</h1>
+<script src="testharness.js/testharness.js"></script>
+<script src="testharness.js/testharnessreport.js"></script>
+<script>
+setup({explicit_timeout: true});
+
+// Hide native implementation so polyfill will be used
+self.TextEncoder = null;
+self.TextDecoder = null;
+</script>
+
+<script src="../lib/encoding-indexes.js"></script>
+<script src="../lib/encoding.js"></script>
+<script src="test-misc.js"></script>
+<script src="test-utf.js"></script>
+<!-- TODO: test for all single-byte encoding indexes -->
+
+<script src="test-big5.js"></script>
+<script src="test-euc-jp.js"></script>
+<script src="test-iso-2022-jp.js"></script>
+<script src="test-shift_jis.js"></script>
+<script src="test-euc-kr.js"></script>
+<script src="test-gb18030.js"></script>
+<script src="test-x-user-defined.js"></script>

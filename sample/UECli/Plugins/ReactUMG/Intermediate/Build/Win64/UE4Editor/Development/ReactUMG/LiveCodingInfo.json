@@ -1,0 +1,15 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.ReactUMG.cpp.obj": [
+			"ReactUMGModule.cpp.obj",
+			"ReactWidget.cpp.obj",
+			"UMGManager.cpp.obj"
+		],
+		"Module.ReactUMG.gen.cpp.obj": [
+			"ReactUMG.init.gen.cpp.obj",
+			"ReactWidget.gen.cpp.obj",
+			"UMGManager.gen.cpp.obj"
+		]
+	}
+}

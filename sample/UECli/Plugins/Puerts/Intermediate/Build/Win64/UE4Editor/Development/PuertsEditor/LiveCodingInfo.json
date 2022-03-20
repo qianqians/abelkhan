@@ -1,0 +1,20 @@
+{
+	"RemapUnityFiles": 
+	{
+		"Module.PuertsEditor.cpp.obj": [
+			"FileSystemOperation.cpp.obj",
+			"PEBlueprintAsset.cpp.obj",
+			"PEBlueprintMetaData.cpp.obj",
+			"PEDirectoryWatcher.cpp.obj",
+			"PuertsEditorModule.cpp.obj",
+			"TypeScriptCompilerContext.cpp.obj"
+		],
+		"Module.PuertsEditor.gen.cpp.obj": [
+			"FileSystemOperation.gen.cpp.obj",
+			"PEBlueprintAsset.gen.cpp.obj",
+			"PEBlueprintMetaData.gen.cpp.obj",
+			"PEDirectoryWatcher.gen.cpp.obj",
+			"PuertsEditor.init.gen.cpp.obj"
+		]
+	}
+}
