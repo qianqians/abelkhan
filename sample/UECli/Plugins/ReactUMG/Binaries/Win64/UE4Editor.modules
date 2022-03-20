@@ -1,8 +1,0 @@
-{
-	"BuildId": "17155196",
-	"Modules": 
-	{
-		"ReactDeclarationGenerator": "UE4Editor-ReactDeclarationGenerator.dll",
-		"ReactUMG": "UE4Editor-ReactUMG.dll"
-	}
-}
