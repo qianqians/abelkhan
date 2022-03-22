@@ -29,7 +29,6 @@ public:
 
 public:
 	FReceiveThread(UTickGameInstance* _instance);
-	~FReceiveThread();
 
 };
 

@@ -37,16 +37,9 @@ void FReceiveThread::Stop()
 	threadRuning = false;
 	if (thread) {
 		thread->WaitForCompletion();
+		delete thread;
 	}
 }
-
-FReceiveThread::~FReceiveThread()
-{
-	threadRuning = false;
-	delete thread;
-	thread = NULL;
-}
-
 
 void UTickGameInstance::OnStart()
 {
