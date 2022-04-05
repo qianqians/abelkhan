@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading;
 using MsgPack.Serialization;
 
@@ -140,7 +141,10 @@ namespace abelkhan
             call_module_method("reg_server", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
 
             var cb_reg_server_obj = new center_reg_server_cb(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255, rsp_cb_center_handle);
-            rsp_cb_center_handle.map_reg_server.Add(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255, cb_reg_server_obj);
+            lock(rsp_cb_center_handle.map_reg_server)
+            {
+                rsp_cb_center_handle.map_reg_server.Add(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255, cb_reg_server_obj);
+            }
             return cb_reg_server_obj;
         }
 

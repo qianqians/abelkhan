@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading;
 using MsgPack.Serialization;
 
@@ -619,7 +620,10 @@ namespace abelkhan
             call_module_method("reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
 
             var cb_reg_hub_obj = new hub_call_dbproxy_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_dbproxy_handle);
-            rsp_cb_hub_call_dbproxy_handle.map_reg_hub.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, cb_reg_hub_obj);
+            lock(rsp_cb_hub_call_dbproxy_handle.map_reg_hub)
+            {
+                rsp_cb_hub_call_dbproxy_handle.map_reg_hub.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, cb_reg_hub_obj);
+            }
             return cb_reg_hub_obj;
         }
 
@@ -635,7 +639,10 @@ namespace abelkhan
             call_module_method("create_persisted_object", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
 
             var cb_create_persisted_object_obj = new hub_call_dbproxy_create_persisted_object_cb(uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb, rsp_cb_hub_call_dbproxy_handle);
-            rsp_cb_hub_call_dbproxy_handle.map_create_persisted_object.Add(uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb, cb_create_persisted_object_obj);
+            lock(rsp_cb_hub_call_dbproxy_handle.map_create_persisted_object)
+            {
+                rsp_cb_hub_call_dbproxy_handle.map_create_persisted_object.Add(uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb, cb_create_persisted_object_obj);
+            }
             return cb_create_persisted_object_obj;
         }
 
@@ -653,7 +660,10 @@ namespace abelkhan
             call_module_method("updata_persisted_object", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
 
             var cb_updata_persisted_object_obj = new hub_call_dbproxy_updata_persisted_object_cb(uuid_7864a402_2d75_5c02_b24b_50287a06732f, rsp_cb_hub_call_dbproxy_handle);
-            rsp_cb_hub_call_dbproxy_handle.map_updata_persisted_object.Add(uuid_7864a402_2d75_5c02_b24b_50287a06732f, cb_updata_persisted_object_obj);
+            lock(rsp_cb_hub_call_dbproxy_handle.map_updata_persisted_object)
+            {
+                rsp_cb_hub_call_dbproxy_handle.map_updata_persisted_object.Add(uuid_7864a402_2d75_5c02_b24b_50287a06732f, cb_updata_persisted_object_obj);
+            }
             return cb_updata_persisted_object_obj;
         }
 
@@ -672,7 +682,10 @@ namespace abelkhan
             call_module_method("find_and_modify", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
 
             var cb_find_and_modify_obj = new hub_call_dbproxy_find_and_modify_cb(uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a, rsp_cb_hub_call_dbproxy_handle);
-            rsp_cb_hub_call_dbproxy_handle.map_find_and_modify.Add(uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a, cb_find_and_modify_obj);
+            lock(rsp_cb_hub_call_dbproxy_handle.map_find_and_modify)
+            {
+                rsp_cb_hub_call_dbproxy_handle.map_find_and_modify.Add(uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a, cb_find_and_modify_obj);
+            }
             return cb_find_and_modify_obj;
         }
 
@@ -688,7 +701,10 @@ namespace abelkhan
             call_module_method("remove_object", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
 
             var cb_remove_object_obj = new hub_call_dbproxy_remove_object_cb(uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f, rsp_cb_hub_call_dbproxy_handle);
-            rsp_cb_hub_call_dbproxy_handle.map_remove_object.Add(uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f, cb_remove_object_obj);
+            lock(rsp_cb_hub_call_dbproxy_handle.map_remove_object)
+            {
+                rsp_cb_hub_call_dbproxy_handle.map_remove_object.Add(uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f, cb_remove_object_obj);
+            }
             return cb_remove_object_obj;
         }
 
@@ -717,7 +733,10 @@ namespace abelkhan
             call_module_method("get_object_count", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
 
             var cb_get_object_count_obj = new hub_call_dbproxy_get_object_count_cb(uuid_975425f5_8baf_5905_beeb_4454e78907f6, rsp_cb_hub_call_dbproxy_handle);
-            rsp_cb_hub_call_dbproxy_handle.map_get_object_count.Add(uuid_975425f5_8baf_5905_beeb_4454e78907f6, cb_get_object_count_obj);
+            lock(rsp_cb_hub_call_dbproxy_handle.map_get_object_count)
+            {
+                rsp_cb_hub_call_dbproxy_handle.map_get_object_count.Add(uuid_975425f5_8baf_5905_beeb_4454e78907f6, cb_get_object_count_obj);
+            }
             return cb_get_object_count_obj;
         }
 

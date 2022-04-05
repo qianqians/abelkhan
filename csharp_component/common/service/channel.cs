@@ -15,12 +15,14 @@ namespace abelkhan
     public class channel : abelkhan.Ichannel
     {
         private IChannelHandlerContext context;
+        private object lockobj;
 
         public channel_onrecv _channel_onrecv;
 
         public channel(IChannelHandlerContext _context)
         {
             context = _context;
+            lockobj = new object();
             _channel_onrecv = new channel_onrecv();
         }
 
@@ -44,7 +46,10 @@ namespace abelkhan
             var initialMessage = Unpooled.Buffer((int)len);
             initialMessage.WriteBytes(data);
 
-            context.WriteAndFlushAsync(initialMessage);
+            lock (lockobj)
+            {
+                context.WriteAndFlushAsync(initialMessage);
+            }
         }
     }
 }

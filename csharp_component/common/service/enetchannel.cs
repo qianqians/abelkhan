@@ -14,12 +14,14 @@ namespace abelkhan
     {
         private ENetHost host;
         private ENetPeer peer;
+        private object lockobj;
         public channel_onrecv _channel_onrecv;
 
         public enetchannel(ENetHost _host, ENetPeer _peer)
         {
             host = _host;
             peer = _peer;
+            lockobj = new object();
 
             _channel_onrecv = new channel_onrecv();
         }
@@ -45,7 +47,10 @@ namespace abelkhan
 
         public void send(byte[] data)
         {
-            peer.Send(0, data, ENetPacketFlags.Reliable);
+            lock (lockobj)
+            {
+                peer.Send(0, data, ENetPacketFlags.Reliable);
+            }
         }
     }
 }

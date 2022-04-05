@@ -488,7 +488,10 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                     cp_code += "            _argv_" + _argv_uuid + ".Add(_array_" + _array_uuid + ");\n"
             cp_code += "            hub.hub._gates.call_client(client_uuid_" + _client_uuid + ", \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n\n"
             cp_code += "            var cb_" + func_name + "_obj = new " + module_name + "_" + func_name + "_cb(uuid_" + _cb_uuid_uuid + ", rsp_cb_" + module_name + "_handle);\n"
-            cp_code += "            rsp_cb_" + module_name + "_handle.map_" + func_name + ".Add(uuid_" + _cb_uuid_uuid + ", cb_" + func_name + "_obj);\n"
+            cp_code += "            lock(rsp_cb_" + module_name + "_handle.map_" + func_name + ")\n"
+            cp_code += "            {"
+            cp_code += "                rsp_cb_" + module_name + "_handle.map_" + func_name + ".Add(uuid_" + _cb_uuid_uuid + ", cb_" + func_name + "_obj);\n"
+            cp_code += "            }"
             cp_code += "            return cb_" + func_name + "_obj;\n"
             cp_code += "        }\n\n"
 

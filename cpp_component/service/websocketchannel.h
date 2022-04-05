@@ -1,6 +1,8 @@
 #ifndef _websocket_channel_h
 #define _websocket_channel_h
 
+#include <mutex>
+
 #include <websocketpp/config/asio.hpp>
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/connection.hpp>
@@ -84,6 +86,7 @@ public:
 		}
 
 		try {
+			std::lock_guard<std::mutex> lock(_mutex);
 			if (is_ssl) {
 				asio_tls_server->send(hdl, data, len, websocketpp::frame::opcode::binary);
 			}
@@ -104,6 +107,8 @@ private:
 	std::shared_ptr<websocketpp::server<websocketpp::config::asio_tls> > asio_tls_server;
 	std::shared_ptr<websocketpp::server<websocketpp::config::asio> > asio_server;
 	bool is_ssl;
+
+	std::mutex _mutex;
 
 	std::shared_ptr<channel_encrypt_decrypt_ondata> ch_encrypt_decrypt_ondata;
 

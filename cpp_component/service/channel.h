@@ -6,6 +6,7 @@
 #include <iostream>
 #include <functional>
 #include <thread>
+#include <mutex>
 
 #include <boost/asio.hpp>
 #include <msgpack11.hpp>
@@ -101,6 +102,7 @@ public:
 				ch_encrypt_decrypt_ondata->xor_key_encrypt_decrypt(&data[4], len - 4);
 			}
 			
+			std::lock_guard<std::mutex> lock(_mutex);
 			size_t offset = 0;
 			while (offset < len) {
 				try {
@@ -127,6 +129,8 @@ public:
 
 private:
 	std::shared_ptr<boost::asio::ip::tcp::socket> s;
+
+	std::mutex _mutex;
 
 	std::shared_ptr<channel_encrypt_decrypt_ondata> ch_encrypt_decrypt_ondata;
 	char read_buff[8 * 1024];

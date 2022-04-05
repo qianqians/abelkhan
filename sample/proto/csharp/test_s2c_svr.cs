@@ -135,8 +135,9 @@ namespace abelkhan
             hub.hub._gates.call_client(client_uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43, "test_s2c", "ping", _argv_ca6794ee_a403_309d_b40e_f37578d53e8d);
 
             var cb_ping_obj = new test_s2c_ping_cb(uuid_80c27ee8_c9bc_583c_bad4_a73880e2ce8f, rsp_cb_test_s2c_handle);
-            rsp_cb_test_s2c_handle.map_ping.Add(uuid_80c27ee8_c9bc_583c_bad4_a73880e2ce8f, cb_ping_obj);
-            return cb_ping_obj;
+            lock(rsp_cb_test_s2c_handle.map_ping)
+            {                rsp_cb_test_s2c_handle.map_ping.Add(uuid_80c27ee8_c9bc_583c_bad4_a73880e2ce8f, cb_ping_obj);
+            }            return cb_ping_obj;
         }
 
     }

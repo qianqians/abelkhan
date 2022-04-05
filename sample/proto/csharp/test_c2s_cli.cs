@@ -263,8 +263,9 @@ namespace abelkhan
             _client_handle.call_hub(hub_name_c233fb06_7c62_3839_a7d5_edade25b16c5, "test_c2s", "get_svr_host", _argv_abbb842f_52d0_34e7_9d8d_642d072db165);
 
             var cb_get_svr_host_obj = new test_c2s_get_svr_host_cb(uuid_7d3daecb_6f7c_5aba_96f4_8c3441412b65, rsp_cb_test_c2s_handle);
-            rsp_cb_test_c2s_handle.map_get_svr_host.Add(uuid_7d3daecb_6f7c_5aba_96f4_8c3441412b65, cb_get_svr_host_obj);
-            return cb_get_svr_host_obj;
+            lock(rsp_cb_test_c2s_handle.map_get_svr_host)
+            {                rsp_cb_test_c2s_handle.map_get_svr_host.Add(uuid_7d3daecb_6f7c_5aba_96f4_8c3441412b65, cb_get_svr_host_obj);
+            }            return cb_get_svr_host_obj;
         }
 
         public test_c2s_get_websocket_svr_host_cb get_websocket_svr_host(){
@@ -276,8 +277,9 @@ namespace abelkhan
             _client_handle.call_hub(hub_name_c233fb06_7c62_3839_a7d5_edade25b16c5, "test_c2s", "get_websocket_svr_host", _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f);
 
             var cb_get_websocket_svr_host_obj = new test_c2s_get_websocket_svr_host_cb(uuid_4c3154db_d59e_53aa_8765_bd54308cf4a5, rsp_cb_test_c2s_handle);
-            rsp_cb_test_c2s_handle.map_get_websocket_svr_host.Add(uuid_4c3154db_d59e_53aa_8765_bd54308cf4a5, cb_get_websocket_svr_host_obj);
-            return cb_get_websocket_svr_host_obj;
+            lock(rsp_cb_test_c2s_handle.map_get_websocket_svr_host)
+            {                rsp_cb_test_c2s_handle.map_get_websocket_svr_host.Add(uuid_4c3154db_d59e_53aa_8765_bd54308cf4a5, cb_get_websocket_svr_host_obj);
+            }            return cb_get_websocket_svr_host_obj;
         }
 
     }

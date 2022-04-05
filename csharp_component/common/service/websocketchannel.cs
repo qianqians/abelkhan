@@ -14,13 +14,14 @@ namespace abelkhan
     public class websocketchannel : abelkhan.Ichannel
     {
         private IWebSocketConnection _socket;
+        private object lockobj;
 
         public channel_onrecv _channel_onrecv;
 
         public event Action<websocketchannel> on_connect;
-        //public event Action<websocketchannel> on_disconnect;
         public websocketchannel(IWebSocketConnection socket)
         {
+            lockobj = new object();
             _channel_onrecv = new channel_onrecv();
 
             _socket = socket;
@@ -51,7 +52,10 @@ namespace abelkhan
 
         public void send(byte[] data)
         {
-            _socket.Send(data);
+            lock (lockobj)
+            {
+                _socket.Send(data);
+            }
         }
     }
 }

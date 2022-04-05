@@ -456,7 +456,10 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                     code += "            _argv_" + _argv_uuid + ".Add(_array_" + _array_uuid + ");\n"
             code += "            _client_handle.call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n\n"
             code += "            var cb_" + func_name + "_obj = new " + module_name + "_" + func_name + "_cb(uuid_" + _cb_uuid_uuid + ", rsp_cb_" + module_name + "_handle);\n"
-            code += "            rsp_cb_" + module_name + "_handle.map_" + func_name + ".Add(uuid_" + _cb_uuid_uuid + ", cb_" + func_name + "_obj);\n"
+            code += "            lock(rsp_cb_" + module_name + "_handle.map_" + func_name + ")\n"
+            code += "            {"
+            code += "                rsp_cb_" + module_name + "_handle.map_" + func_name + ".Add(uuid_" + _cb_uuid_uuid + ", cb_" + func_name + "_obj);\n"
+            code += "            }"
             code += "            return cb_" + func_name + "_obj;\n"
             code += "        }\n\n"
 

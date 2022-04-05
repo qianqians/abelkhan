@@ -3,7 +3,7 @@
 
 #include <list>
 #include <iostream>
-#include <any>
+#include <mutex>
 
 #include <spdlog/spdlog.h>
 #include <enet/enet.h>
@@ -44,6 +44,8 @@ public:
 	{
 		try {
 			ENetPacket* packet = enet_packet_create(data, len, ENET_PACKET_FLAG_RELIABLE);
+
+			std::lock_guard<std::mutex> lock(_mutex);
 			enet_peer_send(_peer, 0, packet);
 			enet_host_flush(_host);
 		}
@@ -55,6 +57,8 @@ public:
 private:
 	ENetHost * _host;
 	ENetPeer * _peer;
+
+	std::mutex _mutex;
 
 	std::shared_ptr<channel_encrypt_decrypt_ondata> ch_encrypt_decrypt_ondata;
 
