@@ -25,6 +25,12 @@ namespace abelkhan
         public closehandle _closeHandle;
         public service.timerservice _timer;
 
+        static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception ex = e.ExceptionObject as Exception;
+            log.log.err("unhandle exception:{0}", ex.ToString());
+        }
+
         public center(string cfg_file, string cfg_name)
         {
             var _root_cfg = new config(cfg_file);
@@ -61,6 +67,8 @@ namespace abelkhan
                     System.IO.Directory.CreateDirectory(log_dir);
                 }
             }
+
+            AppDomain.CurrentDomain.UnhandledException += UnhandledException;
 
             _timer = new service.timerservice();
             _timetmp = _timer.refresh();

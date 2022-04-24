@@ -62,7 +62,7 @@ namespace log
             System.DateTime startTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             System.DateTime time = startTime.AddMilliseconds((double)tmptime);
 
-            string strlog = $"[time] [level] [sf.GetMethod().DeclaringType.FullName] [sf.GetMethod().Name]:log";
+            string strlog = $"[{time}] [{level}] [{sf.GetMethod().DeclaringType.FullName}] [{sf.GetMethod().Name}]:{log}";
 
             lock (logFile)
             {
@@ -79,7 +79,7 @@ namespace log
                     if (finfo.Length > 1024 * 1024 * 32)
                     {
                         fs.Close();
-                        string tmpfile = string.Format("{0}.{1}", realLogFile, time.ToString("yyyy_MM_dd_h_m_s"));
+                        string tmpfile = $"{realLogFile}.{time.ToString("yyyy_MM_dd_h_m_s")}";
                         finfo.MoveTo(tmpfile);
                         var tmp = System.IO.File.Create(realLogFile);
                         tmp.Close();

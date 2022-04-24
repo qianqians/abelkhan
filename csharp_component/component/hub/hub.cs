@@ -9,7 +9,13 @@ namespace hub
 {
 	public class hub
 	{
-		public hub(string config_file, string _hub_name, string _hub_type)
+        static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception ex = e.ExceptionObject as Exception;
+            log.log.err("unhandle exception:{0}", ex.ToString());
+        }
+
+        public hub(string config_file, string _hub_name, string _hub_type)
 		{
             _config = new abelkhan.config(config_file);
 			_center_config = _config.get_value_dict("center");
@@ -49,7 +55,9 @@ namespace hub
                     System.IO.Directory.CreateDirectory(log_dir);
                 }
             }
-            
+
+            AppDomain.CurrentDomain.UnhandledException += UnhandledException;
+
             _timer = new service.timerservice();
             _timer.refresh();
 
