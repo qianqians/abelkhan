@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DotNetty.Buffers;
+using DotNetty.Common.Utilities;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Libuv;
@@ -36,12 +37,11 @@ namespace abelkhan
         public event Action<cryptchannel> on_channel_exception;
         public override void ChannelRead(IChannelHandlerContext context, object message)
         {
-            var buffer = message as IByteBuffer;
-            Span<byte> spby = ((Span<byte>)buffer.Array).Slice(buffer.ArrayOffset, buffer.ReadableBytes);
-            byte[] recv_data = spby.ToArray();
-
             try
             {
+                var buffer = message as IByteBuffer;
+                Span<byte> spby = ((Span<byte>)buffer.Array).Slice(buffer.ArrayOffset, buffer.ReadableBytes);
+                byte[] recv_data = spby.ToArray();
                 ch._channel_onrecv.on_recv(recv_data);
             }
             catch (System.Exception e)
@@ -49,6 +49,10 @@ namespace abelkhan
                 log.log.err("channel_onrecv.on_recv error:{0}!", e);
                 ch.disconnect();
                 on_channel_exception?.Invoke(ch);
+            }
+            finally
+            {
+                ReferenceCountUtil.Release(message);
             }
         }
 

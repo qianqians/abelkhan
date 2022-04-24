@@ -64,8 +64,7 @@ namespace abelkhan
                     st.Position = 0;
                     _channel_onrecv.on_recv(st.ToArray());
 
-                    ch.s.BeginReceive(recvbuf, 0, recvbuflength, 0,
-                                      new AsyncCallback(this.onRead), this);
+                    ch.s.BeginReceive(recvbuf, 0, recvbuflength, 0, new AsyncCallback(this.onRead), this);
                 }
                 else
                 {
@@ -101,8 +100,7 @@ namespace abelkhan
                         _send_state = send_state.busy;
                         tmp_send_buff = data;
                         send_len = 0;
-                        s.BeginSend(data, 0, data.Length, SocketFlags.None,
-                                    new AsyncCallback(this.send_callback), this);
+                        s.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(this.send_callback), this);
                     }
                     else
                     {
@@ -133,8 +131,7 @@ namespace abelkhan
                     send_len += send;
                     if (send_len < tmp_send_buff.Length)
                     {
-                        s.BeginSend(tmp_send_buff, send_len, tmp_send_buff.Length - send_len,
-                                    SocketFlags.None, new AsyncCallback(this.send_callback), this);
+                        s.BeginSend(tmp_send_buff, send_len, tmp_send_buff.Length - send_len, SocketFlags.None, new AsyncCallback(this.send_callback), this);
                     }
                     else if (send_len == tmp_send_buff.Length)
                     {
@@ -147,8 +144,7 @@ namespace abelkhan
                             var data = (byte[])send_buff.Dequeue();
                             tmp_send_buff = data;
                             send_len = 0;
-                            s.BeginSend(data, 0, data.Length, SocketFlags.None,
-                                        new AsyncCallback(this.send_callback), this);
+                            s.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(this.send_callback), this);
                         }
                     }
                 }
