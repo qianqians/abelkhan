@@ -353,7 +353,7 @@ namespace client
                 {
                     _s_cli.s.EndConnect(ar);
 
-                    var ch = new abelkhan.rawchannel(_s_cli.s);
+                    var ch = new abelkhan.cryptrawchannel(_s_cli.s);
                     lock (add_chs)
                     {
                         add_chs.Add(ch);
