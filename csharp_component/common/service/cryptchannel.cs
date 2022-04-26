@@ -25,33 +25,7 @@ namespace abelkhan
             lockobj = new object();
 
             _channel_onrecv = new channel_onrecv();
-            _channel_onrecv.on_recv_data += (byte[] data) => {
-                var len = data.Length;
-                byte xor_key0 = (byte)(len & 0xff);
-                byte xor_key1 = (byte)((len >> 8) & 0xff);
-                byte xor_key2 = (byte)((len >> 16) & 0xff);
-                byte xor_key3 = (byte)((len >> 24) & 0xff);
-
-                for (var i = 0; i < data.Length; ++i)
-                {
-                    if ((i % 4) == 0)
-                    {
-                        data[i] ^= xor_key0;
-                    }
-                    else if ((i % 4) == 1)
-                    {
-                        data[i] ^= xor_key1;
-                    }
-                    else if ((i % 4) == 2)
-                    {
-                        data[i] ^= xor_key2;
-                    }
-                    else if ((i % 4) == 3)
-                    {
-                        data[i] ^= xor_key3;
-                    }
-                }
-            };
+            _channel_onrecv.on_recv_data += crypt.crypt_func;
         }
 
         public ArrayList pop()
