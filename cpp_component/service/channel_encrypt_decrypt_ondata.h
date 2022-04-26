@@ -31,8 +31,17 @@ public:
 		uint8_t xor_key[4] = { 0 };
 		xor_key[0] = len & 0xff;
 		xor_key[1] = len >> 8 & 0xff;
+		if (xor_key[1] == 0) {
+			xor_key[1] = xor_key[0] + 1;
+		}
 		xor_key[2] = len >> 16 & 0xff;
+		if (xor_key[2] == 0) {
+			xor_key[2] = xor_key[0] + 1;
+		}
 		xor_key[3] = len >> 24 & 0xff;
+		if (xor_key[3] == 0) {
+			xor_key[3] = xor_key[0] + 1;
+		}
 		for (size_t i = 0; i < len; i++) {
 			data[i] ^= xor_key[i & 0x03];
 		}
