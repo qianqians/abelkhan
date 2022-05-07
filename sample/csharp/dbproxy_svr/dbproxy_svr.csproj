@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\csharp_component\component\center\center.csproj" />
+    <ProjectReference Include="..\..\..\csharp_component\component\dbproxy\dbproxy.csproj" />
   </ItemGroup>
 
 </Project>

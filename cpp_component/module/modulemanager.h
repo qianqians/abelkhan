@@ -25,7 +25,7 @@ public:
 		}
 		else {
 			spdlog::error("modulemanager.process_module_mothed unreg module name:{0}!", module_name);
-			throw moduleException(concurrent::format("modulemanager.process_module_mothed unreg module name:%s!", module_name));
+			throw moduleException(std::format("modulemanager.process_module_mothed unreg module name:{0}!", module_name));
 		}
 	}
 

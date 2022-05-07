@@ -50,7 +50,7 @@ public:
 		}
 		else {
 			spdlog::error("imodule.invoke unreg func name:{0}", cb_name);
-			throw moduleException(concurrent::format("imodule.invoke unreg func name:%s!", cb_name));
+			throw moduleException(std::format("imodule.invoke unreg func name:{0}!", cb_name));
 		}
 	}
 

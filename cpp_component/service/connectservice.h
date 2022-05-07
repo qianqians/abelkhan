@@ -16,14 +16,17 @@ public:
 		_service = service;
 	}
 
-	std::shared_ptr<abelkhan::Ichannel> connect(std::string ip, short port)
+	void connect(std::string ip, short port, std::function<void(std::shared_ptr<abelkhan::Ichannel>)> callback)
 	{
 		auto s = std::make_shared<boost::asio::ip::tcp::socket>(*_service);
-		s->connect(boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(ip), port));
-		auto ch = std::make_shared<channel>(s);
-		ch->start();
+		s->async_connect(boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(ip), port), [callback, s] (const boost::system::error_code &ec) {
+			if (!ec) {
+				auto ch = std::make_shared<channel>(s);
+				ch->start();
 
-		return ch;
+				callback(ch);
+			}
+		});
 	}
 
 private:

@@ -68,8 +68,8 @@ namespace hub
             remove_chs = new List<abelkhan.Ichannel>();
 
             ManagedENet.Startup();
-            var host = _config.get_value_string("host");
-            var port = (ushort)_config.get_value_int("port");
+            host = _config.get_value_string("host");
+            port = (ushort)_config.get_value_int("port");
             _enetservice = new abelkhan.enetservice(Dns.GetHostAddresses(host)[0].ToString(), port);
             _enetservice.on_connect += (ch) => {
                 lock (add_chs)
@@ -108,8 +108,8 @@ namespace hub
                 on_direct_client_disconnect?.Invoke(client_cuuid);
             };
 
-            var center_host = _center_config.get_value_string("host");
-			var center_port = (short)_center_config.get_value_int("port");
+            center_host = _center_config.get_value_string("host");
+			center_port = (short)_center_config.get_value_int("port");
 			var _socket = abelkhan.connectservice.connect(System.Net.Dns.GetHostAddresses(center_host)[0], center_port);
             var center_ch = new abelkhan.rawchannel(_socket);
             _centerproxy = new centerproxy(center_ch);
@@ -171,9 +171,48 @@ namespace hub
             _centerproxy.reg_hub(host, port, name);
         }
 
+        public Action onCenterCrash;
+        private async void reconnect_center()
+        {
+            if (reconn_count > 5)
+            {
+                onCenterCrash?.Invoke();
+            }
+
+            reconn_count++;
+
+            lock (remove_chs)
+            {
+                remove_chs.Add(_centerproxy._ch);
+            }
+
+            var _socket = abelkhan.connectservice.connect(System.Net.Dns.GetHostAddresses(center_host)[0], center_port);
+            var _center_ch = new abelkhan.rawchannel(_socket);
+            lock (add_chs)
+            {
+                add_chs.Add(_center_ch);
+            }
+            _centerproxy = new centerproxy(_center_ch);
+            if (await _centerproxy.reconn_reg_dbproxy(host, port))
+            {
+                reconn_count = 0;
+            }
+        }
+
         public void heartbeat(long _)
         {
-            _centerproxy.heartbeat();
+            do
+            {
+                if ((service.timerservice.Tick - _centerproxy.timetmp) > 6 * 1000)
+                {
+                    reconnect_center();
+                    break;
+                }
+
+                _centerproxy.heartbeat();
+
+            } while (false);
+
             _timer.addticktime(3 * 1000, heartbeat);
         }
 
@@ -315,14 +354,14 @@ namespace hub
             }
 
             Int64 tick_end = _timer.refresh();
-            Int64 poll_tick = tick_end - tick_begin;
+            tick = (uint)(tick_end - tick_begin);
 
-            if (poll_tick > 50)
+            if (tick > 50)
             {
-                log.log.trace("poll_tick:{0}", poll_tick);
+                log.log.trace("poll_tick:{0}", tick);
             }
 
-            return poll_tick;
+            return tick;
         }
 
         public class addressinfo
@@ -333,6 +372,7 @@ namespace hub
 
 		public static string name;
         public static string type;
+        public static uint tick;
         public static addressinfo tcp_outside_address = null;
         public static addressinfo websocket_outside_address = null;
 
@@ -356,6 +396,14 @@ namespace hub
         public static dbproxyproxy _dbproxy;
         public static dbproxyproxy _extend_dbproxy;
         public static service.timerservice _timer;
+
+        private string host;
+        private ushort port;
+
+        private string center_host;
+        private short center_port;
+
+        private uint reconn_count = 0;
 
         private centerproxy _centerproxy;
 

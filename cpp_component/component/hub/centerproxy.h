@@ -23,11 +23,13 @@ struct name_info {
 
 class centerproxy {
 public:
-	centerproxy(std::shared_ptr<abelkhan::Ichannel> ch) {
+	centerproxy(std::shared_ptr<abelkhan::Ichannel> ch, std::shared_ptr<service::timerservice> _timer) {
 		is_reg_sucess = false;
-
+		_timerservice = _timer;
 		_center_ch = ch;
 		_center_caller = std::make_shared<abelkhan::center_caller>(_center_ch, service::_modulemng);
+
+		timetmp = _timerservice->Tick;
 	}
 
 	~centerproxy(){
@@ -44,10 +46,29 @@ public:
 			spdlog::trace("connect center timeout!");
 		});
 	}
+
+	void reconn_reg_server(std::string host, short port, std::string sub_type, struct name_info& _info) {
+		spdlog::trace("begin connect center server!");
+		_center_caller->reconn_reg_server("hub", _info.name, host, port)->callBack([this, &_info]() {
+			spdlog::trace("connect center sucessed!");
+			is_reg_sucess = true;
+		}, []() {
+			spdlog::trace("connect center failed!");
+		})->timeout(5 * 1000, []() {
+			spdlog::trace("connect center timeout!");
+		});
+	}
 	
-	void heartbeat() {
+	void heartbeat(uint32_t tick) {
 		spdlog::trace("heartbeat center!");
-		_center_caller->heartbeat();
+		_center_caller->heartbeat(tick)->callBack([this] {
+			spdlog::trace("heartbeat center server sucessed");
+			timetmp = _timerservice->Tick;
+		}, [] {
+			spdlog::trace("heartbeat center server faild");
+		})->timeout(5 * 1000, [] {
+			spdlog::trace("heartbeat center server timeout");
+		});;
 	}
 
 	void closed() {
@@ -56,8 +77,10 @@ public:
 
 public:
 	bool is_reg_sucess;
+	time_t timetmp;
 
 private:
+	std::shared_ptr<service::timerservice> _timerservice;
 	std::shared_ptr<abelkhan::Ichannel> _center_ch;
 	std::shared_ptr<abelkhan::center_caller> _center_caller;
 

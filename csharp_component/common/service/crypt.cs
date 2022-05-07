@@ -15,17 +15,17 @@ namespace abelkhan
             byte xor_key1 = (byte)((len >> 8) & 0xff);
             if (xor_key1 == 0)
             {
-                xor_key1 = (byte)(xor_key0 + 1);
+                xor_key1 = (byte)(xor_key0 + xor_key0 % 3);
             }
             byte xor_key2 = (byte)((len >> 16) & 0xff);
             if (xor_key2 == 0)
             {
-                xor_key2 = (byte)(xor_key0 + 1);
+                xor_key2 = (byte)(xor_key0 + xor_key0 % 5);
             }
             byte xor_key3 = (byte)((len >> 24) & 0xff);
             if (xor_key3 == 0)
             {
-                xor_key3 = (byte)(xor_key0 + 1);
+                xor_key3 = (byte)(xor_key0 + xor_key0 % 7);
             }
 
             for (var i = 0; i < data.Length; ++i)

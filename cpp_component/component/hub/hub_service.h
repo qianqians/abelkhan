@@ -67,9 +67,11 @@ public:
 
 	void close_svr();
 
-	int poll();
+	uint32_t poll();
 
 private:
+	void reconnect_center();
+
 	void heartbeat(int64_t tick);
 
 public:
@@ -84,6 +86,7 @@ public:
 	std::shared_ptr<addressinfo> tcp_address_info = nullptr;
 	std::shared_ptr<addressinfo> websocket_address_info = nullptr;
 
+	uint32_t tick;
 	bool is_busy;
 
 	concurrent::signals<void(std::string) > sig_reload;
@@ -102,6 +105,8 @@ public:
 	
 	concurrent::signals<void() > sig_dbproxy_init;
 	concurrent::signals<void() > sig_extend_dbproxy_init;
+
+	concurrent::signals<void() > sig_center_crash;
 
 	common::modulemanager modules;
 
@@ -140,6 +145,8 @@ private:
 	std::shared_ptr<hub_svr_msg_handle> _hub_svr_msg_handle;
 
 	std::shared_ptr<centerproxy> _centerproxy;
+
+	uint32_t reconn_count;
 
 };
 

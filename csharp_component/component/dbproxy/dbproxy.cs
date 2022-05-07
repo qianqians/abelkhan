@@ -13,18 +13,15 @@ namespace dbproxy
             log.log.err("unhandle exception:{0}", ex.ToString());
         }
 
-        public dbproxy(String[] args)
+        public dbproxy(string cfg_file, string cfg_name)
 		{
 			is_busy = false;
 
-            abelkhan.config _config = new abelkhan.config(args[0]);
+            abelkhan.config _config = new abelkhan.config(cfg_file);
             abelkhan.config _center_config = _config.get_value_dict("center");
-			if (args.Length > 1)
-			{
-                _config = _config.get_value_dict(args[1]);
-            }
+            _config = _config.get_value_dict(cfg_name);
 
-            name = args[1];
+            name = cfg_name;
 
             var log_level = _config.get_value_string("log_level");
             if (log_level == "trace")
@@ -98,8 +95,8 @@ namespace dbproxy
             _dbevent = new dbevent();
             _dbevent.start();
 
-            var host = _config.get_value_string("host");
-            var port = (ushort)_config.get_value_int("port");
+            host = _config.get_value_string("host");
+            port = (ushort)_config.get_value_int("port");
 			_acceptservice = new abelkhan.acceptservice(port);
             _acceptservice.on_connect += (abelkhan.Ichannel ch) => {
                 lock (add_chs)
@@ -110,8 +107,8 @@ namespace dbproxy
             _acceptservice.start();
             _hub_msg_handle = new hub_msg_handle(_hubmanager, _closeHandle);
 
-            var center_host = _center_config.get_value_string("host");
-			var center_port = (short)_center_config.get_value_int("port");
+            center_host = _center_config.get_value_string("host");
+			center_port = (short)_center_config.get_value_int("port");
             var _socket = abelkhan.connectservice.connect(System.Net.Dns.GetHostAddresses(center_host)[0], center_port);
             var _center_ch = new abelkhan.rawchannel(_socket);
             lock (add_chs)
@@ -120,14 +117,53 @@ namespace dbproxy
             }
             _centerproxy = new centerproxy(_center_ch);
             _center_msg_handle = new center_msg_handle(_closeHandle, _hubmanager);
-            _centerproxy.reg_dbproxy(host, (short)port);
+            _centerproxy.reg_dbproxy(host, port);
 
             heartbeath_center(service.timerservice.Tick);
         }
 
+        public Action onCenterCrash;
+        private async void reconnect_center()
+        {
+            if (reconn_count > 5)
+            {
+                onCenterCrash?.Invoke();
+            }
+
+            reconn_count++;
+
+            lock (remove_chs)
+            {
+                remove_chs.Add(_centerproxy._ch);
+            }
+
+            var _socket = abelkhan.connectservice.connect(System.Net.Dns.GetHostAddresses(center_host)[0], center_port);
+            var _center_ch = new abelkhan.rawchannel(_socket);
+            lock (add_chs)
+            {
+                add_chs.Add(_center_ch);
+            }
+            _centerproxy = new centerproxy(_center_ch);
+            if (await _centerproxy.reconn_reg_dbproxy(host, port))
+            {
+                reconn_count = 0;
+            }
+        }
+
         private void heartbeath_center(Int64 tick)
         {
-            _centerproxy.heartbeath();
+            do
+            {
+                if ((service.timerservice.Tick - _centerproxy.timetmp) > 6 * 1000)
+                {
+                    reconnect_center();
+                    break;
+                }
+
+                _centerproxy.heartbeath();
+
+            } while (false);
+
             _timer.addticktime(3 * 1000, heartbeath_center);
         }
 
@@ -185,52 +221,22 @@ namespace dbproxy
                 log.log.err("{0}", e);
             }
 
-            Int64 tick_end = _timer.refresh();
+            tick = (uint)(_timer.refresh() - tick_begin);
+            if (tick > 100)
+            {
+                is_busy = true;
+            }
+            else
+            {
+                is_busy = false;
+            }
 
-            return tick_end - tick_begin;
-        }
-        
-		private static void Main(String[] args)
-		{
-			if (args.Length <= 0)
-			{
-                log.log.err("non input start argv");
-				return;
-			}
-
-			dbproxy _dbproxy = new dbproxy(args);
-            
-			while (true)
-			{
-                var ticktime = _dbproxy.poll();
-
-				if (_closeHandle.is_close())
-                {
-                    log.log.info("server closed, dbproxy server:{0}", dbproxy.name);
-                    _dbproxy._acceptservice.close();
-                    break;
-                }
-                
-				if (ticktime > 200)
-				{
-					is_busy = true;
-				}
-				else 
-				{
-					is_busy = false;
-				}
-
-				if (ticktime < 50)
-				{
-					Thread.Sleep(5);
-				}
-			}
-
-            dbproxy._dbevent.join_all();
+            return tick;
         }
 
 		public static String name;
 		public static bool is_busy;
+        public static uint tick;
 		public static closehandle _closeHandle;
         public static dbevent _dbevent;
         public static hubmanager _hubmanager;
@@ -241,10 +247,18 @@ namespace dbproxy
         private List<abelkhan.Ichannel> add_chs;
         public static List<abelkhan.Ichannel> remove_chs;
 
+        private string host;
+        private ushort port;
+
+        private string center_host;
+        private short center_port;
+
+        private uint reconn_count = 0;
+
         private hub_msg_handle _hub_msg_handle;
         private center_msg_handle _center_msg_handle;
 
-        private abelkhan.acceptservice _acceptservice;
+        public abelkhan.acceptservice _acceptservice;
 		private centerproxy _centerproxy;
 
 	}

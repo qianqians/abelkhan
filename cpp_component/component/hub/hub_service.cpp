@@ -34,6 +34,7 @@ hub_service::hub_service(std::string config_file_path, std::string config_name, 
 	_root_config = _config;
 	_config = _config->get_value_dict(config_name);
 
+	reconn_count = 0;
 	name_info.name = config_name;
 	hub_type = hub_type_;
 	is_busy = false;
@@ -128,8 +129,16 @@ void hub_service::init() {
 	}
 }
 
-void hub_service::heartbeat(int64_t tick) {
-	_centerproxy->heartbeat();
+void hub_service::heartbeat(int64_t _tick) {
+	do {
+		if ((_tick - _centerproxy->timetmp) > 6 * 1000) {
+			reconnect_center();
+			break;
+		}
+		_centerproxy->heartbeat(tick);
+
+	} while (false);
+
 	_timerservice->addticktimer(3 * 1000, std::bind(&hub_service::heartbeat, this, std::placeholders::_1));
 }
 
@@ -138,14 +147,39 @@ void hub_service::connect_center() {
 
 	auto ip = _center_config->get_value_string("host");
 	auto port = (short)(_center_config->get_value_int("port"));
-	auto center_ch = _center_service->connect(ip, port);
+	_center_service->connect(ip, port, [this](auto center_ch) {
+		spdlog::trace("connect center success");
 
-	_centerproxy = std::make_shared<centerproxy>(center_ch);
-	_centerproxy->reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
+		_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
+		_centerproxy->reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
 
-	heartbeat(_timerservice->Tick);
+		heartbeat(_timerservice->Tick);
 
-	spdlog::trace("end on connect center");
+		spdlog::trace("end on connect center");
+	});
+}
+
+void hub_service::reconnect_center() {
+	spdlog::trace("begin on connect center");
+
+	if (reconn_count > 5) {
+		sig_center_crash.emit();
+	}
+
+	++reconn_count;
+
+	auto ip = _center_config->get_value_string("host");
+	auto port = (short)(_center_config->get_value_int("port"));
+	_center_service->connect(ip, port, [this](auto center_ch) {
+		reconn_count = 0;
+
+		_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
+		_centerproxy->reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
+
+		heartbeat(_timerservice->Tick);
+
+		spdlog::trace("end on connect center");
+	});
 }
 
 void hub_service::connect_gate(std::string gate_name, std::string host, uint16_t port) {
@@ -171,22 +205,24 @@ void hub_service::try_connect_db(std::string dbproxy_name, std::string dbproxy_h
 	if (_config->has_key("dbproxy") && _config->get_value_string("dbproxy") == dbproxy_name) {
 		auto dbproxy_cfg = _root_config->get_value_dict(dbproxy_name);
 		auto _db_ip = service::DNS(dbproxy_host);
-		auto ch = _dbproxy_service->connect(_db_ip, dbproxy_port);
-		_dbproxyproxy = std::make_shared<dbproxyproxy>(ch);
-		_dbproxyproxy->sig_dbproxy_init.connect([this]() {
-			sig_dbproxy_init.emit();
+		_dbproxy_service->connect(_db_ip, dbproxy_port, [this](std::shared_ptr<abelkhan::Ichannel> ch) {
+			_dbproxyproxy = std::make_shared<dbproxyproxy>(ch);
+			_dbproxyproxy->sig_dbproxy_init.connect([this]() {
+				sig_dbproxy_init.emit();
+			});
+			_dbproxyproxy->reg_server(name_info.name);
 		});
-		_dbproxyproxy->reg_server(name_info.name);
 	}
 	else if (_config->has_key("extend_dbproxy") && _config->get_value_string("extend_dbproxy") == dbproxy_name) {
 		auto dbproxy_cfg = _root_config->get_value_dict(dbproxy_name);
 		auto _db_ip = service::DNS(dbproxy_host);
-		auto ch = _dbproxy_service->connect(_db_ip, dbproxy_port);
-		_extend_dbproxyproxy = std::make_shared<dbproxyproxy>(ch);
-		_extend_dbproxyproxy->sig_dbproxy_init.connect([this]() {
-			sig_dbproxy_init.emit();
+		_dbproxy_service->connect(_db_ip, dbproxy_port, [this](std::shared_ptr<abelkhan::Ichannel> ch) {
+			_extend_dbproxyproxy = std::make_shared<dbproxyproxy>(ch);
+			_extend_dbproxyproxy->sig_dbproxy_init.connect([this]() {
+				sig_dbproxy_init.emit();
+				});
+			_extend_dbproxyproxy->reg_server(name_info.name);
 		});
-		_extend_dbproxyproxy->reg_server(name_info.name);
 	}
 	
 }
@@ -197,7 +233,7 @@ void hub_service::close_svr() {
 	spdlog::shutdown();
 }
 
-int hub_service::poll() {
+uint32_t hub_service::poll() {
 	auto time_now = msec_time();
 
 	try {
@@ -221,11 +257,9 @@ int hub_service::poll() {
 		spdlog::error("hub_service::poll error:{0}", err.what());
 	}
 
-	auto _tmp_now = msec_time();
-	auto _tmp_time = _tmp_now - time_now;
-	time_now = _tmp_now;
+	tick = msec_time() - time_now;
 
-	return (int)_tmp_time;
+	return (int)tick;
 }
 
 }

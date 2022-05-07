@@ -33,6 +33,10 @@ namespace _log {
 std::shared_ptr<spdlog::logger> file_logger = nullptr;
 }
 
+namespace gate {
+std::shared_ptr<gate::centerproxy> _centerproxy;
+}
+
 int main(int argc, char * argv[]) {
 	if (argc <= 1) {
 		std::cout << "non input start argv" << std::endl;
@@ -90,9 +94,11 @@ int main(int argc, char * argv[]) {
 	auto _connectnetworkservice = std::make_shared<service::connectservice>(io_service);
 	auto center_ip = _center_config->get_value_string("host");
 	auto center_port = (short)_center_config->get_value_int("port");
-	auto _center_ch = _connectnetworkservice->connect(center_ip, center_port);
-	auto _centerproxy = std::make_shared<gate::centerproxy>(_center_ch);
-	_centerproxy->reg_server(inside_host, inside_port, gate_name_info);
+	_connectnetworkservice->connect(center_ip, center_port, [_timerservice, inside_host, inside_port, &gate_name_info](auto _center_ch) {
+		gate::_centerproxy = std::make_shared<gate::centerproxy>(_center_ch, _timerservice);
+		gate::_centerproxy->reg_server(inside_host, inside_port, gate_name_info);
+	});
+	
 
 	std::shared_ptr<service::acceptservice> _client_service = nullptr;
 	if (_config->has_key("tcp_listen")) {
@@ -141,8 +147,22 @@ int main(int argc, char * argv[]) {
 		}
 	}
 
+	uint32_t reconn_count = 0;
 	_timerservice->addticktimer(10 * 1000, std::bind(heartbeat_client, _clientmanager, _timerservice, std::placeholders::_1));
-	heartbeat_center(_centerproxy, _timerservice, _timerservice->Tick);
+	heartbeat_center(_timerservice, [&reconn_count, _connectnetworkservice, _timerservice, center_ip, center_port, inside_host, inside_port, &gate_name_info] () {
+		if (reconn_count > 5) {
+			spdlog::critical("connect center faild count:{0}!", reconn_count);
+		}
+		
+		++reconn_count;
+
+		_connectnetworkservice->connect(center_ip, center_port, [&reconn_count, _timerservice, inside_host, inside_port, &gate_name_info](auto _center_ch) {
+			gate::_centerproxy = std::make_shared<gate::centerproxy>(_center_ch, _timerservice);
+			gate::_centerproxy->reg_server(inside_host, inside_port, gate_name_info);
+
+			reconn_count = 0;
+		});
+	}, _timerservice->Tick);
 
 	while (true){
 		clock_t begin = clock();

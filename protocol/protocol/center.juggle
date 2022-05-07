@@ -2,7 +2,9 @@ module center{
 
 	reg_server req(string type, string svr_name, string host, uint16 port) rsp() err();
 	
-	heartbeat ntf();
+	reconn_reg_server req(string type, string svr_name, string host, uint16 port) rsp() err();
+	
+	heartbeat req(uint32 tick) rsp() err();
 	
 	closed ntf();
 	
