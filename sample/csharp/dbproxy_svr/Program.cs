@@ -7,7 +7,7 @@ namespace dbproxy_svr
     {
 		static void Main(string[] args)
 		{
-			var _dbproxy = new dbproxy.dbproxy(args[0], args[1]);
+            var _dbproxy = new dbproxy.dbproxy(args[0], args[1]);
 
 			log.log.trace("dbproxy start ok");
 

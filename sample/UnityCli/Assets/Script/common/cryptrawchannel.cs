@@ -87,30 +87,7 @@ namespace abelkhan
 
         public void send(byte[] data)
         {
-            byte xor_key0 = data[0];
-            byte xor_key1 = data[1];
-            byte xor_key2 = data[2];
-            byte xor_key3 = data[3];
-            for (var i = 4; i < data.Length; ++i)
-            {
-                if ((i % 4) == 0)
-                {
-                    data[i] ^= xor_key0;
-                }
-                else if ((i % 4) == 1)
-                {
-                    data[i] ^= xor_key1;
-                }
-                else if ((i % 4) == 2)
-                {
-                    data[i] ^= xor_key2;
-                }
-                else if ((i % 4) == 3)
-                {
-                    data[i] ^= xor_key3;
-                }
-            }
-
+            crypt.crypt_func_send(data);
             senddata(data);
         }
 

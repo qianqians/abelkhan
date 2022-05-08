@@ -75,6 +75,10 @@ namespace log
                         tmp.Close();
                         fs = new System.IO.StreamWriter(realLogFile, true);
                     }
+                    if (fs == null)
+                    {
+                        fs = new System.IO.StreamWriter(realLogFile, true);
+                    }
                     System.IO.FileInfo finfo = new System.IO.FileInfo(realLogFile);
                     if (finfo.Length > 1024 * 1024 * 32)
                     {

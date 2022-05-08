@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.client = exports.wschannel = exports.modulemng = exports.imodule = void 0;
 const puerts_1 = require("puerts");
 const msgpack_1 = require("./msgpack");
 const abelkhan = require("./abelkhan");
@@ -9,19 +8,21 @@ const hub = require("./hub");
 const _client = require("./client");
 class imodule {
     constructor() {
+        this.methods = new Map();
+        this.rsp = null;
     }
-    methods = new Map();
     reg_cb(method_name, method) {
         this.methods.set(method_name, method);
     }
-    rsp = null;
     invoke(cb_name, _event) {
         this.methods.get(cb_name).call(this, _event);
     }
 }
 exports.imodule = imodule;
 class modulemng {
-    module_set = new Map();
+    constructor() {
+        this.module_set = new Map();
+    }
     add_module(module_name, _module) {
         this.module_set.set(module_name, _module);
     }
@@ -31,14 +32,12 @@ class modulemng {
 }
 exports.modulemng = modulemng;
 class gateproxy {
-    _ch;
-    _client_call_gate_caller;
     constructor(ch) {
+        this.onGateTime = null;
+        this.onGateDisconnect = null;
         this._ch = ch;
         this._client_call_gate_caller = new gate.client_call_gate_caller(ch, abelkhan._modulemng);
     }
-    onGateTime = null;
-    onGateDisconnect = null;
     heartbeats() {
         let that = this;
         this._client_call_gate_caller.heartbeats().callBack((_svr_timetmp) => {
@@ -61,15 +60,13 @@ class gateproxy {
     }
     call_hub(hub, module, func, argv) {
         let _event = [module, func, argv];
-        this._client_call_gate_caller.forward_client_call_hub(hub, (0, msgpack_1.encode)(_event));
+        this._client_call_gate_caller.forward_client_call_hub(hub, msgpack_1.encode(_event));
     }
 }
 class hubproxy {
-    _hub_name;
-    _hub_type;
-    _ch;
-    _client_call_hub_caller;
     constructor(hub_name, hub_type, ch) {
+        this.onHubTime = null;
+        this.onHubDisconnect = null;
         this._hub_name = hub_name;
         this._hub_type = hub_type;
         this._ch = ch;
@@ -78,8 +75,6 @@ class hubproxy {
     connect_hub(cuuid) {
         this._client_call_hub_caller.connect_hub(cuuid);
     }
-    onHubTime = null;
-    onHubDisconnect = null;
     heartbeats() {
         let that = this;
         this._client_call_hub_caller.heartbeats().callBack((_hub_timetmp) => {
@@ -94,16 +89,14 @@ class hubproxy {
     }
     call_hub(module, func, argv) {
         let _event = [module, func, argv];
-        this._client_call_hub_caller.call_hub((0, msgpack_1.encode)(_event));
+        this._client_call_hub_caller.call_hub(msgpack_1.encode(_event));
     }
 }
 class wschannel {
-    events = [];
-    offset = 0;
-    data = null;
-    ws;
-    net_handle;
     constructor(_ws, _net_handle) {
+        this.events = [];
+        this.offset = 0;
+        this.data = null;
         this.ws = _ws;
         this.net_handle = _net_handle;
     }
@@ -119,25 +112,38 @@ class wschannel {
             if ((len + 4) > new_data.length) {
                 break;
             }
+            var key0 = new_data[0];
+            var key1 = new_data[1];
+            if (key1 == 0) {
+                key1 = (key0 + key0 % 3) & 0xff;
+            }
+            var key2 = new_data[2];
+            if (key2 == 0) {
+                key2 = (key0 + key0 % 5) & 0xff;
+            }
+            var key3 = new_data[3];
+            if (key3 == 0) {
+                key3 = (key0 + key0 % 7) & 0xff;
+            }
             var str_bytes = new_data.subarray(4, (len + 4));
             let i = 0;
             while (i < str_bytes.length) {
                 if ((i % 4) == 0) {
-                    str_bytes[i] ^= new_data[0];
+                    str_bytes[i] ^= key0;
                 }
                 else if ((i % 4) == 1) {
-                    str_bytes[i] ^= new_data[1];
+                    str_bytes[i] ^= key1;
                 }
                 else if ((i % 4) == 2) {
-                    str_bytes[i] ^= new_data[2];
+                    str_bytes[i] ^= key2;
                 }
                 else if ((i % 4) == 3) {
-                    str_bytes[i] ^= new_data[3];
+                    str_bytes[i] ^= key3;
                 }
                 i++;
             }
             try {
-                let ev = (0, msgpack_1.decode)(str_bytes);
+                let ev = msgpack_1.decode(str_bytes);
                 this.events.push(ev);
             }
             catch (e) {
@@ -162,19 +168,32 @@ class wschannel {
         }
     }
     send(send_data) {
+        var key0 = send_data[0];
+        var key1 = send_data[1];
+        if (key1 == 0) {
+            key1 = (key0 + key0 % 3) & 0xff;
+        }
+        var key2 = send_data[2];
+        if (key2 == 0) {
+            key2 = (key0 + key0 % 5) & 0xff;
+        }
+        var key3 = send_data[3];
+        if (key3 == 0) {
+            key3 = (key0 + key0 % 7) & 0xff;
+        }
         let i = 4;
         while (i < send_data.length) {
             if ((i % 4) == 0) {
-                send_data[i] ^= send_data[0];
+                send_data[i] ^= key0;
             }
             else if ((i % 4) == 1) {
-                send_data[i] ^= send_data[1];
+                send_data[i] ^= key1;
             }
             else if ((i % 4) == 2) {
-                send_data[i] ^= send_data[2];
+                send_data[i] ^= key2;
             }
             else if ((i % 4) == 3) {
-                send_data[i] ^= send_data[3];
+                send_data[i] ^= key3;
             }
             i++;
         }
@@ -191,21 +210,12 @@ class wschannel {
 }
 exports.wschannel = wschannel;
 class client {
-    onGateDisConnect = null;
-    onHubDisConnect = null;
-    onGateTime = null;
-    onHubTime = null;
-    uuid;
-    _modulemng;
-    current_hub;
-    _conn;
-    _gateproxy = null;
-    _hubproxy_set;
-    _ch_hubproxy_set;
-    _map_ch;
-    _gate_call_client_module;
-    _hub_call_client_module;
     constructor(net_instance) {
+        this.onGateDisConnect = null;
+        this.onHubDisConnect = null;
+        this.onGateTime = null;
+        this.onHubTime = null;
+        this._gateproxy = null;
         this._modulemng = new modulemng();
         this._hubproxy_set = new Map();
         this._ch_hubproxy_set = new Map();
@@ -213,7 +223,7 @@ class client {
         this._conn.NotifyNetMsg.Bind((s, buffer) => {
             let ch = this._map_ch.get(s);
             if (ch) {
-                ch.recv((0, puerts_1.$unref)(buffer));
+                ch.recv(puerts_1.$unref(buffer));
                 while (true) {
                     let ev = ch.pop();
                     if (!ev) {
@@ -240,7 +250,7 @@ class client {
         }
     }
     gate_call_client(hub_name, rpc_argv) {
-        let _event = (0, msgpack_1.decode)(rpc_argv);
+        let _event = msgpack_1.decode(rpc_argv);
         let module = _event[0];
         let func = _event[1];
         let argvs = _event[2];
@@ -249,7 +259,7 @@ class client {
         this.current_hub = "";
     }
     hub_call_client(rpc_argv) {
-        let _event = (0, msgpack_1.decode)(rpc_argv);
+        let _event = msgpack_1.decode(rpc_argv);
         let module = _event[0];
         let func = _event[1];
         let argvs = _event[2];
@@ -281,8 +291,6 @@ class client {
             this._gateproxy.call_hub(hub_name, module, func, argv);
         }
     }
-    onGateConnect;
-    onGateConnectFaild;
     connect_gate(ip, port) {
         let s = this._conn.Connect(ip, port);
         if (s < 0) {
@@ -306,8 +314,6 @@ class client {
         };
         return true;
     }
-    onHubConnect;
-    onHubConnectFaild;
     connect_hub(hub_name, hub_type, ip, port) {
         let s = this._conn.Connect(ip, port);
         let ch = new wschannel(s, this._conn);

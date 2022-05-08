@@ -79,7 +79,7 @@ gatemanager::gatemanager(std::shared_ptr<service::enetacceptservice> conn_, std:
 			wait_destory_gates.erase(old_it);
 		}
 		else {
-			for (auto it = clients.begin(); it != clients.end(); it++) {
+			for (auto it = clients.begin(); it != clients.end(); ) {
 				if (it->second->_gate_name == svr_name) {
 					it = clients.erase(it);
 				}

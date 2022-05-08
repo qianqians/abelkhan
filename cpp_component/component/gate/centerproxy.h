@@ -56,7 +56,7 @@ public:
 		});
 	}
 
-	void heartbeat() {
+	void heartbeat(uint32_t tick) {
 		spdlog::trace("heartbeat center!");
 		_center_caller->heartbeat(tick)->callBack([this] {
 			spdlog::trace("heartbeat center server sucessed");
@@ -74,7 +74,6 @@ public:
 
 public:
 	bool is_reg_sucess;
-	uint32_t tick;
 	time_t timetmp ;
 
 private:
@@ -83,8 +82,6 @@ private:
 	std::shared_ptr<abelkhan::center_caller> _center_caller;
 
 };
-
-extern std::shared_ptr<gate::centerproxy> _centerproxy;
 
 }
 

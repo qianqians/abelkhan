@@ -16,6 +16,8 @@
 
 #include <json11.hpp>
 
+#include <log.h>
+
 namespace config {
 
 class config {

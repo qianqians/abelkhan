@@ -142,20 +142,34 @@ export class wschannel implements abelkhan.Ichannel {
                 break;
             }
 
+            var key0 = new_data[0];
+            var key1 = new_data[1];
+            if (key1 == 0) {
+                key1 = (key0 + key0 % 3) & 0xff;
+            }
+            var key2 = new_data[2];
+            if (key2 == 0) {
+                key2 = (key0 + key0 % 5) & 0xff;
+            }
+            var key3 = new_data[3];
+            if (key3 == 0) {
+                key3 = (key0 + key0 % 7) & 0xff;
+            }
+
             var str_bytes = new_data.subarray(4, (len + 4));
             let i = 0;
             while(i < str_bytes.length) {
                 if ((i % 4) == 0) {
-                    str_bytes[i] ^= new_data[0];
+                    str_bytes[i] ^= key0;
                 }
                 else if ((i % 4) == 1) {    
-                    str_bytes[i] ^= new_data[1];
+                    str_bytes[i] ^= key1;
                 }
                 else if ((i % 4) == 2) {
-                    str_bytes[i] ^= new_data[2];
+                    str_bytes[i] ^= key2;
                 }
                 else if ((i % 4) == 3) {
-                    str_bytes[i] ^= new_data[3];
+                    str_bytes[i] ^= key3;
                 }
                 i++;
             }
@@ -186,19 +200,33 @@ export class wschannel implements abelkhan.Ichannel {
     }
 
     public send(send_data:Uint8Array) {
+        var key0 = send_data[0];
+        var key1 = send_data[1];
+        if (key1 == 0) {
+            key1 = (key0 + key0 % 3) & 0xff;
+        }
+        var key2 = send_data[2];
+        if (key2 == 0) {
+            key2 = (key0 + key0 % 5) & 0xff;
+        }
+        var key3 = send_data[3];
+        if (key3 == 0) {
+            key3 = (key0 + key0 % 7) & 0xff;
+        }
+
         let i = 4;
         while(i < send_data.length) {
             if ((i % 4) == 0) {
-                send_data[i] ^= send_data[0];
+                send_data[i] ^= key0;
             }
             else if ((i % 4) == 1) {    
-                send_data[i] ^= send_data[1];
+                send_data[i] ^= key1;
             }
             else if ((i % 4) == 2) {
-                send_data[i] ^= send_data[2];
+                send_data[i] ^= key2;
             }
             else if ((i % 4) == 3) {
-                send_data[i] ^= send_data[3];
+                send_data[i] ^= key3;
             }
             i++;
         }

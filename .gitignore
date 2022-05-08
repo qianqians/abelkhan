@@ -246,3 +246,4 @@ ModelManifest.xml
 *.pyc
 
 vc_build/
+.build/

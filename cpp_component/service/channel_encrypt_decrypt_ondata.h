@@ -30,20 +30,36 @@ public:
 	void xor_key_encrypt_decrypt(char* data, size_t len) {
 		uint8_t xor_key[4] = { 0 };
 		xor_key[0] = len & 0xff;
-		xor_key[1] = len >> 8 & 0xff;
+		xor_key[1] = (len >> 8) & 0xff;
 		if (xor_key[1] == 0) {
 			xor_key[1] = xor_key[0] + xor_key[0] % 3;
 		}
-		xor_key[2] = len >> 16 & 0xff;
+		xor_key[2] = (len >> 16) & 0xff;
 		if (xor_key[2] == 0) {
 			xor_key[2] = xor_key[0] + xor_key[0] % 5;
 		}
-		xor_key[3] = len >> 24 & 0xff;
+		xor_key[3] = (len >> 24) & 0xff;
 		if (xor_key[3] == 0) {
 			xor_key[3] = xor_key[0] + xor_key[0] % 7;
 		}
 		for (size_t i = 0; i < len; i++) {
-			data[i] ^= xor_key[i & 0x03];
+			auto k = i % 4;
+			if (k == 0)
+			{
+				data[i] ^= xor_key[0];
+			}
+			else if (k == 1)
+			{
+				data[i] ^= xor_key[1];
+			}
+			else if (k == 2)
+			{
+				data[i] ^= xor_key[2];
+			}
+			else if (k == 3)
+			{
+				data[i] ^= xor_key[3];
+			}
 		}
 	}
 

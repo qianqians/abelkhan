@@ -11,24 +11,24 @@
 #include <modulemng_handle.h>
 #include <gc_poll.h>
 
+#include "gate_server.h"
 #include "centerproxy.h"
 #include "hubsvrmanager.h"
-#include "closehandle.h"
 
 namespace gate {
 
 class center_msg_handle
 {
 private:
-	std::shared_ptr<closehandle> _closehandle;
+	std::shared_ptr<gate_service> _gate_service;
 	std::shared_ptr<hubsvrmanager> _hubsvrmanager;
 	std::shared_ptr<service::timerservice> _timerservice;
 
 	std::shared_ptr<abelkhan::center_call_server_module> _center_call_server_module;
 
 public:
-	center_msg_handle(std::shared_ptr<gate::closehandle> closehandle_, std::shared_ptr<hubsvrmanager> hubsvrmanager_, std::shared_ptr<service::timerservice> timerservice_) {
-		_closehandle = closehandle_;
+	center_msg_handle(std::shared_ptr<gate::gate_service> gate_service_, std::shared_ptr<hubsvrmanager> hubsvrmanager_, std::shared_ptr<service::timerservice> timerservice_) {
+		_gate_service = gate_service_;
 		_hubsvrmanager = hubsvrmanager_;
 		_timerservice = timerservice_;
 
@@ -40,7 +40,7 @@ public:
 
 	void on_close_server() {
 		_timerservice->addticktimer(5 * 1000, [this](int64_t tick) {
-			_closehandle->is_closed = true;
+			_gate_service->sig_close_server.emit();
 		});
 	}
 

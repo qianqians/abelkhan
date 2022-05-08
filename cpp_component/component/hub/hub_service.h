@@ -72,7 +72,7 @@ public:
 private:
 	void reconnect_center();
 
-	void heartbeat(int64_t tick);
+	static void heartbeat(std::shared_ptr<hub_service> this_ptr, int64_t tick);
 
 public:
 	std::string hub_type;

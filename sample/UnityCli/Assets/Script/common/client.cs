@@ -259,7 +259,7 @@ namespace client
                         }
                         _gateproxy = null;
 
-                        onGateDisConnect.Invoke();
+                        onGateDisConnect?.Invoke();
                     };
                     _gateproxy.onGateTime += (tick) =>
                     {

@@ -37,6 +37,7 @@ hub_service::hub_service(std::string config_file_path, std::string config_name, 
 	reconn_count = 0;
 	name_info.name = config_name;
 	hub_type = hub_type_;
+	tick = 0;
 	is_busy = false;
 }
 
@@ -129,17 +130,17 @@ void hub_service::init() {
 	}
 }
 
-void hub_service::heartbeat(int64_t _tick) {
+void hub_service::heartbeat(std::shared_ptr<hub_service> this_ptr, int64_t _tick) {
 	do {
-		if ((_tick - _centerproxy->timetmp) > 6 * 1000) {
-			reconnect_center();
+		if ((_tick - this_ptr->_centerproxy->timetmp) > 6 * 1000) {
+			this_ptr->reconnect_center();
 			break;
 		}
-		_centerproxy->heartbeat(tick);
+		this_ptr->_centerproxy->heartbeat(this_ptr->tick);
 
 	} while (false);
 
-	_timerservice->addticktimer(3 * 1000, std::bind(&hub_service::heartbeat, this, std::placeholders::_1));
+	this_ptr->_timerservice->addticktimer(3 * 1000, std::bind(&hub_service::heartbeat, this_ptr, std::placeholders::_1));
 }
 
 void hub_service::connect_center() {
@@ -153,7 +154,7 @@ void hub_service::connect_center() {
 		_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
 		_centerproxy->reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
 
-		heartbeat(_timerservice->Tick);
+		heartbeat(shared_from_this(), _timerservice->Tick);
 
 		spdlog::trace("end on connect center");
 	});
@@ -175,8 +176,6 @@ void hub_service::reconnect_center() {
 
 		_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
 		_centerproxy->reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
-
-		heartbeat(_timerservice->Tick);
 
 		spdlog::trace("end on connect center");
 	});

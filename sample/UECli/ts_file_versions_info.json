@@ -1,14 +1,6 @@
 {
-    "C:/Users/theDa/Documents/abelkhan/sample/UECli/TypeScript/TsGameMode.ts": {
-        "version": "39e540ab89ef1d1abd79fa50de3595b6",
-        "processed": false
-    },
     "C:/Users/theDa/Documents/abelkhan/sample/UECli/TypeScript/TsNetGameInstance.ts": {
         "version": "e9f2b969343d206b7efb67ba2d12693d",
-        "processed": false
-    },
-    "C:/Users/theDa/Documents/abelkhan/sample/UECli/TypeScript/TsPlayer.ts": {
-        "version": "83f41aaefbcb326c798abfd055b39167",
         "processed": false
     },
     "C:/Users/theDa/Documents/abelkhan/sample/UECli/TypeScript/abelkhan.ts": {
@@ -20,8 +12,8 @@
         "processed": false
     },
     "C:/Users/theDa/Documents/abelkhan/sample/UECli/TypeScript/client_handle.ts": {
-        "version": "bdaa493fc0d44bc3f9f3cb54a1c528f4",
-        "processed": false
+        "version": "2b932fb8d20e2869bd38cc1ca81c6ad9",
+        "processed": true
     },
     "C:/Users/theDa/Documents/abelkhan/sample/UECli/TypeScript/gate.ts": {
         "version": "0007a18a0f1dd72fc698a7f354ad2a32",
@@ -55,6 +47,10 @@
         "version": "a9c2f3bfc665d2d4dd5cfcd6ccf4f269",
         "processed": false
     },
+    "C:/Users/theDa/Documents/abelkhan/sample/UECli/Plugins/Puerts/Typing/cpp/index.d.ts": {
+        "version": "0469b868b283f3f58a9a564efce5edab",
+        "processed": false
+    },
     "C:/Users/theDa/Documents/abelkhan/sample/UECli/Plugins/Puerts/Typing/ffi/index.d.ts": {
         "version": "a371a5609d4ee418c7557ae5aa47afae",
         "processed": false
@@ -69,6 +65,10 @@
     },
     "C:/Users/theDa/Documents/abelkhan/sample/UECli/Plugins/Puerts/Typing/ue/puerts.d.ts": {
         "version": "d3c9bef98318ba895f2fedfb260e3b3f",
+        "processed": false
+    },
+    "C:/Users/theDa/Documents/abelkhan/sample/UECli/Plugins/Puerts/Typing/ue/ue.d.ts": {
+        "version": "341a6103b7dc4950bc36d625a4e30d2b",
         "processed": false
     },
     "C:/Users/theDa/Documents/abelkhan/sample/UECli/Plugins/Puerts/Typing/ue/ue_s.d.ts": {
