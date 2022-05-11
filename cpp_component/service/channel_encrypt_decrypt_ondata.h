@@ -31,35 +31,38 @@ public:
 		uint8_t xor_key[4] = { 0 };
 		xor_key[0] = len & 0xff;
 		xor_key[1] = (len >> 8) & 0xff;
-		if (xor_key[1] == 0) {
-			xor_key[1] = xor_key[0] + xor_key[0] % 3;
-		}
 		xor_key[2] = (len >> 16) & 0xff;
-		if (xor_key[2] == 0) {
-			xor_key[2] = xor_key[0] + xor_key[0] % 5;
-		}
 		xor_key[3] = (len >> 24) & 0xff;
-		if (xor_key[3] == 0) {
-			xor_key[3] = xor_key[0] + xor_key[0] % 7;
+		
+		uint8_t base = 0;
+		if (xor_key[0] != 0) {
+			base = xor_key[0];
 		}
+		else if (xor_key[1] != 0) {
+			base = xor_key[1];
+		}
+		else if (xor_key[2] != 0) {
+			base = xor_key[2];
+		}
+		else if (xor_key[3] != 0) {
+			base = xor_key[3];
+		}
+		
+		if (xor_key[0] == 0) {
+			xor_key[0] = base + base % 3;
+		}
+		if (xor_key[1] == 0) {
+			xor_key[1] = base + base % 7;
+		}
+		if (xor_key[2] == 0) {
+			xor_key[2] = base + base % 13;
+		}
+		if (xor_key[3] == 0) {
+			xor_key[3] = base + base % 17;
+		}
+		
 		for (size_t i = 0; i < len; i++) {
-			auto k = i % 4;
-			if (k == 0)
-			{
-				data[i] ^= xor_key[0];
-			}
-			else if (k == 1)
-			{
-				data[i] ^= xor_key[1];
-			}
-			else if (k == 2)
-			{
-				data[i] ^= xor_key[2];
-			}
-			else if (k == 3)
-			{
-				data[i] ^= xor_key[3];
-			}
+			data[i] ^= xor_key[i % 4];
 		}
 	}
 

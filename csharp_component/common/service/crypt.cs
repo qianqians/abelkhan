@@ -11,21 +11,45 @@ namespace abelkhan
         public static void crypt_func(byte[] data)
         {
             var len = data.Length;
-            byte xor_key0 = (byte)(len & 0xff);
-            byte xor_key1 = (byte)((len >> 8) & 0xff);
+			
+			byte xor_key0  = len & 0xff;
+			byte xor_key1 = (len >> 8) & 0xff;
+			byte xor_key2 = (len >> 16) & 0xff;
+			byte xor_key3 = (len >> 24) & 0xff;
+			
+			var base_xor = 0;
+			if (xor_key0 != 0)
+			{
+				base_xor = xor_key0;
+			}
+			else if (xor_key1 != 0) 
+			{
+				base_xor = xor_key1;
+			}
+			else if (xor_key2 != 0) 
+			{
+				base_xor = xor_key2;
+			}
+			else if (xor_key3 != 0) 
+			{
+				base_xor = xor_key3;
+			}
+			
+			if (xor_key0 == 0)
+            {
+                xor_key0 = (byte)(base_xor + base_xor % 3);
+            }
             if (xor_key1 == 0)
             {
-                xor_key1 = (byte)(xor_key0 + xor_key0 % 3);
+                xor_key1 = (byte)(base_xor + base_xor % 7);
             }
-            byte xor_key2 = (byte)((len >> 16) & 0xff);
             if (xor_key2 == 0)
             {
-                xor_key2 = (byte)(xor_key0 + xor_key0 % 5);
+                xor_key2 = (byte)(base_xor + base_xor % 13);
             }
-            byte xor_key3 = (byte)((len >> 24) & 0xff);
             if (xor_key3 == 0)
             {
-                xor_key3 = (byte)(xor_key0 + xor_key0 % 7);
+                xor_key3 = (byte)(base_xor + base_xor % 17);
             }
 
             for (var i = 0; i < data.Length; ++i)
@@ -54,19 +78,42 @@ namespace abelkhan
         {
             byte xor_key0 = data[0];
             byte xor_key1 = data[1];
+            byte xor_key2 = data[2];
+            byte xor_key3 = data[3];
+			
+			var base_xor = 0;
+			if (xor_key0 != 0)
+			{
+				base_xor = xor_key0;
+			}
+			else if (xor_key1 != 0) 
+			{
+				base_xor = xor_key1;
+			}
+			else if (xor_key2 != 0) 
+			{
+				base_xor = xor_key2;
+			}
+			else if (xor_key3 != 0) 
+			{
+				base_xor = xor_key3;
+			}
+			
+            if (xor_key0 == 0)
+            {
+                xor_key0 = (byte)(base_xor + base_xor % 3);
+            }
             if (xor_key1 == 0)
             {
-                xor_key1 = (byte)(xor_key0 + xor_key0 % 3);
+                xor_key1 = (byte)(base_xor + base_xor % 7);
             }
-            byte xor_key2 = data[2];
             if (xor_key2 == 0)
             {
-                xor_key2 = (byte)(xor_key0 + xor_key0 % 5);
+                xor_key2 = (byte)(base_xor + base_xor % 13);
             }
-            byte xor_key3 = data[3];
             if (xor_key3 == 0)
             {
-                xor_key3 = (byte)(xor_key0 + xor_key0 % 7);
+                xor_key3 = (byte)(base_xor + base_xor % 17);
             }
 
             for (var i = 4; i < data.Length; ++i)

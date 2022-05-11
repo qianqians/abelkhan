@@ -144,17 +144,35 @@ export class wschannel implements abelkhan.Ichannel {
 
             var key0 = new_data[0];
             var key1 = new_data[1];
-            if (key1 == 0) {
-                key1 = (key0 + key0 % 3) & 0xff;
-            }
             var key2 = new_data[2];
-            if (key2 == 0) {
-                key2 = (key0 + key0 % 5) & 0xff;
-            }
             var key3 = new_data[3];
-            if (key3 == 0) {
-                key3 = (key0 + key0 % 7) & 0xff;
-            }
+			
+			var base_xor = 0;
+			if (key0 != 0) {
+				base_xor = key0;
+			}
+			else if (key1 != 0) {
+				base_xor = key1;
+			}
+			else if (key2 != 0) {
+				base_xor = key2;
+			}
+			else if (key3 != 0) {
+				base_xor = key3;
+			}
+			
+            if (key0 == 0) {
+				key0 = (base_xor + base_xor % 3) & 0xff;
+			}
+			if (key1 == 0) {
+				key1 = (base_xor + base_xor % 7) & 0xff;
+			}
+			if (key2 == 0) {
+				key2 = (base_xor + base_xor % 13) & 0xff;
+			}
+			if (key3 == 0) {
+				key3 = (base_xor + base_xor % 17) & 0xff;
+			}
 
             var str_bytes = new_data.subarray(4, (len + 4));
             let i = 0;
@@ -202,16 +220,34 @@ export class wschannel implements abelkhan.Ichannel {
     public send(send_data:Uint8Array) {
         var key0 = send_data[0];
         var key1 = send_data[1];
-        if (key1 == 0) {
-            key1 = (key0 + key0 % 3) & 0xff;
-        }
         var key2 = send_data[2];
-        if (key2 == 0) {
-            key2 = (key0 + key0 % 5) & 0xff;
-        }
         var key3 = send_data[3];
+		
+		var base_xor = 0;
+		if (key0 != 0) {
+			base_xor = key0;
+		}
+		else if (key1 != 0) {
+			base_xor = key1;
+		}
+		else if (key2 != 0) {
+			base_xor = key2;
+		}
+		else if (key3 != 0) {
+			base_xor = key3;
+		}
+		
+		if (key0 == 0) {
+            key0 = (base_xor + base_xor % 3) & 0xff;
+        }
+        if (key1 == 0) {
+            key1 = (base_xor + base_xor % 7) & 0xff;
+        }
+        if (key2 == 0) {
+            key2 = (base_xor + base_xor % 13) & 0xff;
+        }
         if (key3 == 0) {
-            key3 = (key0 + key0 % 7) & 0xff;
+            key3 = (base_xor + base_xor % 17) & 0xff;
         }
 
         let i = 4;
