@@ -12,10 +12,10 @@ namespace abelkhan
         {
             var len = data.Length;
 			
-			byte xor_key0  = len & 0xff;
-			byte xor_key1 = (len >> 8) & 0xff;
-			byte xor_key2 = (len >> 16) & 0xff;
-			byte xor_key3 = (len >> 24) & 0xff;
+			byte xor_key0  = (byte)(len & 0xff);
+			byte xor_key1 = (byte)((len >> 8) & 0xff);
+			byte xor_key2 = (byte)((len >> 16) & 0xff);
+			byte xor_key3 = (byte)((len >> 24) & 0xff);
 			
 			var base_xor = 0;
 			if (xor_key0 != 0)
