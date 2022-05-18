@@ -18,6 +18,7 @@ namespace hub
 
 			_center_call_server_module = new abelkhan.center_call_server_module(abelkhan.modulemng_handle._modulemng);
 			_center_call_server_module.on_close_server += close_server;
+			_center_call_server_module.on_console_close_server += console_close_server;
 			_center_call_server_module.on_svr_be_closed += svr_be_closed;
 
 			_center_call_hub_module = new abelkhan.center_call_hub_module(abelkhan.modulemng_handle._modulemng);
@@ -25,12 +26,24 @@ namespace hub
 			_center_call_hub_module.on_reload += reload;
 		}
 
-		public void close_server()
+		private void close_server()
 		{
             _hub.onCloseServer_event();
 		}
 
-		public void svr_be_closed(string svr_type, string svr_name)
+		private void console_close_server(string svr_type, string svr_name)
+		{
+			if (svr_type == "hub" && svr_name == hub.name)
+			{
+				_hub.onCloseServer_event();
+			}
+			else
+			{
+				svr_be_closed(svr_type, svr_name);
+			}
+		}
+
+		private void svr_be_closed(string svr_type, string svr_name)
         {
 			if (svr_type == "dbproxy")
             {
@@ -46,7 +59,7 @@ namespace hub
 			}
         }
 
-		public void distribute_server_address(String type, String name, String host, ushort port)
+		private void distribute_server_address(String type, String name, String host, ushort port)
         {
             log.log.trace("recv distribute server address");
 
@@ -67,7 +80,7 @@ namespace hub
             }
 		}
 
-		public void reload(string argv)
+		private void reload(string argv)
         {
 			_hub.onReload_event(argv);
 		}

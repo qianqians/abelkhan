@@ -16,10 +16,11 @@ namespace dbproxy
 
 			_center_call_server_module = new abelkhan.center_call_server_module(abelkhan.modulemng_handle._modulemng);
 			_center_call_server_module.on_close_server += close_server;
+			_center_call_server_module.on_console_close_server += console_close_server;
 			_center_call_server_module.on_svr_be_closed += svr_be_closed;
 		}
 
-		public void close_server()
+		private void close_server()
 		{
             dbproxy._timer.addticktime(3 * 1000, close_server_impl);
 		}
@@ -29,7 +30,22 @@ namespace dbproxy
             _closehandle._is_close = true;
         }
 
-		public void svr_be_closed(string svr_type, string svr_name)
+		private void console_close_server(string svr_type, string svr_name)
+        {
+			if (svr_type == "dbproxy" && svr_name == dbproxy.name)
+            {
+				dbproxy._timer.addticktime(3 * 1000, close_server_impl);
+			}
+            else
+            {
+				if (svr_type == "hub")
+				{
+					_hubs.on_hub_closed(svr_name);
+				}
+			}
+        }
+
+		private void svr_be_closed(string svr_type, string svr_name)
         {
             log.log.trace("svr_be_closed");
 

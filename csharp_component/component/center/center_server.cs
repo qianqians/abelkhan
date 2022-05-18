@@ -20,6 +20,7 @@ namespace abelkhan
         private gmmanager _gmmanager;
         private List<abelkhan.Ichannel> chs;
         private List<abelkhan.Ichannel> add_chs;
+        public List<abelkhan.Ichannel> remove_chs;
         private Int64 _timetmp;
 
         public closehandle _closeHandle;
@@ -77,7 +78,7 @@ namespace abelkhan
             add_chs = new List<abelkhan.Ichannel>();
             _closeHandle = new closehandle();
 
-            _svrmanager = new svrmanager(_timer);
+            _svrmanager = new svrmanager(_timer, this);
             _svr_msg_handle = new svr_msg_handle(_svrmanager, _closeHandle);
             var host = _config.get_value_string("host");
             var port = _config.get_value_int("port");
@@ -148,6 +149,15 @@ namespace abelkhan
                 }
 
                 _svrmanager.remove_closed_svr();
+
+                lock (remove_chs)
+                {
+                    foreach (var _ch in remove_chs)
+                    {
+                        chs.Remove(_ch);
+                    }
+                    remove_chs.Clear();
+                }
 
                 if (_closeHandle.is_closing && _svrmanager.check_all_hub_closed())
                 {

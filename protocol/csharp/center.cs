@@ -408,6 +408,13 @@ namespace abelkhan
             call_module_method("close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
         }
 
+        public void console_close_server(string svr_type, string svr_name){
+            var _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc = new ArrayList();
+            _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc.Add(svr_type);
+            _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc.Add(svr_name);
+            call_module_method("console_close_server", _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc);
+        }
+
         public void svr_be_closed(string svr_type, string svr_name){
             var _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac = new ArrayList();
             _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.Add(svr_type);
@@ -626,6 +633,7 @@ namespace abelkhan
             modules.reg_module(this);
 
             reg_method("close_server", close_server);
+            reg_method("console_close_server", console_close_server);
             reg_method("svr_be_closed", svr_be_closed);
         }
 
@@ -633,6 +641,15 @@ namespace abelkhan
         public void close_server(IList<MsgPack.MessagePackObject> inArray){
             if (on_close_server != null){
                 on_close_server();
+            }
+        }
+
+        public event Action<string, string> on_console_close_server;
+        public void console_close_server(IList<MsgPack.MessagePackObject> inArray){
+            var _svr_type = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _svr_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            if (on_console_close_server != null){
+                on_console_close_server(_svr_type, _svr_name);
             }
         }
 

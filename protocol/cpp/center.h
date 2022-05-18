@@ -291,6 +291,13 @@ namespace abelkhan
             call_module_method("close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
         }
 
+        void console_close_server(std::string svr_type, std::string svr_name){
+            msgpack11::MsgPack::array _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc;
+            _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc.push_back(svr_type);
+            _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc.push_back(svr_name);
+            call_module_method("console_close_server", _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc);
+        }
+
         void svr_be_closed(std::string svr_type, std::string svr_name){
             msgpack11::MsgPack::array _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac;
             _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push_back(svr_type);
@@ -534,12 +541,20 @@ namespace abelkhan
             _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
 
             reg_method("close_server", std::bind(&center_call_server_module::close_server, this, std::placeholders::_1));
+            reg_method("console_close_server", std::bind(&center_call_server_module::console_close_server, this, std::placeholders::_1));
             reg_method("svr_be_closed", std::bind(&center_call_server_module::svr_be_closed, this, std::placeholders::_1));
         }
 
         concurrent::signals<void()> sig_close_server;
         void close_server(const msgpack11::MsgPack::array& inArray){
             sig_close_server.emit();
+        }
+
+        concurrent::signals<void(std::string, std::string)> sig_console_close_server;
+        void console_close_server(const msgpack11::MsgPack::array& inArray){
+            auto _svr_type = inArray[0].string_value();
+            auto _svr_name = inArray[1].string_value();
+            sig_console_close_server.emit(_svr_type, _svr_name);
         }
 
         concurrent::signals<void(std::string, std::string)> sig_svr_be_closed;

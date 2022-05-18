@@ -62,8 +62,10 @@ public:
 
 	std::shared_ptr<closehandle> _closehandle;
 
-private:
+public:
 	name_info gate_name_info;
+
+private:
 	uint32_t reconn_count;
 	uint32_t tick;
 

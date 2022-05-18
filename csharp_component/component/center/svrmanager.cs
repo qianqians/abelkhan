@@ -45,6 +45,11 @@ namespace abelkhan
             _center_call_server_caller.close_server();
         }
 
+        public void console_close_server(string type, string name)
+        {
+            _center_call_server_caller.console_close_server(type, name);
+        }
+
         public void server_be_closed(string type, string name)
         {
             _center_call_server_caller.svr_be_closed(type, name);
@@ -84,15 +89,18 @@ namespace abelkhan
         public Dictionary<abelkhan.Ichannel, svrproxy> svrproxys;
         private Dictionary<abelkhan.Ichannel, hubproxy> hubproxys;
         private service.timerservice _timer;
+        private center _center;
 
-        public svrmanager(service.timerservice timer)
+        public svrmanager(service.timerservice timer, center _center_proxy)
         {
+            _timer = timer;
+            _center = _center_proxy;
+
             dbproxys = new List<svrproxy>();
             new_svrproxys = new List<svrproxy>();
             new_hubproxys = new List<hubproxy>();
             svrproxys = new Dictionary<abelkhan.Ichannel, svrproxy>();
             hubproxys = new Dictionary<Ichannel, hubproxy>();
-            _timer = timer;
             closed_svr_list = new List<svrproxy>();
 
             heartbeat_svr(service.timerservice.Tick);
@@ -146,6 +154,20 @@ namespace abelkhan
                 {
                     hubproxys.Remove(_proxy.ch);
                 }
+
+                if (new_svrproxys.Contains(_proxy))
+                {
+                    new_svrproxys.Remove(_proxy);
+                }
+
+                foreach (var _hubproxy in new_hubproxys)
+                {
+                    if (_hubproxy.type == _proxy.type && _hubproxy.name == _proxy.name)
+                    {
+                        new_hubproxys.Remove(_hubproxy);
+                        break;
+                    }
+                }
             }
             closed_svr_list.Clear();
         }
@@ -169,6 +191,58 @@ namespace abelkhan
             for_each_svr((_proxy_tmp)=> {
                 _proxy_tmp.server_be_closed(_proxy.type, _proxy.name);
             });
+        }
+
+        public void console_close_server(string type, string name)
+        {
+            svrproxy _close_svrproxy = null;
+            foreach(var _proxy in svrproxys)
+            {
+                if (_proxy.Value.name == name)
+                {
+                    _close_svrproxy = _proxy.Value;
+                    break;
+                }
+            }
+
+            foreach(var _proxy in svrproxys)
+            {
+                _proxy.Value.console_close_server(_close_svrproxy.type, _close_svrproxy.name);
+            }
+
+            if (svrproxys.ContainsKey(_close_svrproxy.ch))
+            {
+                svrproxys.Remove(_close_svrproxy.ch);
+            }
+
+            if (dbproxys.Contains(_close_svrproxy))
+            {
+                dbproxys.Remove(_close_svrproxy);
+            }
+
+            if (hubproxys.ContainsKey(_close_svrproxy.ch))
+            {
+                hubproxys.Remove(_close_svrproxy.ch);
+            }
+
+            if (new_svrproxys.Contains(_close_svrproxy))
+            {
+                new_svrproxys.Remove(_close_svrproxy);
+            }
+
+            foreach (var _hubproxy in new_hubproxys)
+            {
+                if (_hubproxy.type == _close_svrproxy.type && _hubproxy.name == _close_svrproxy.name)
+                {
+                    new_hubproxys.Remove(_hubproxy);
+                    break;
+                }
+            }
+
+            lock (_center.remove_chs)
+            {
+                _center.remove_chs.Add(_close_svrproxy.ch);
+            }
         }
 
         public bool check_all_hub_closed()
