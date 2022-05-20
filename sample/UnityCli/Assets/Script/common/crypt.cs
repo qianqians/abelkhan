@@ -8,7 +8,7 @@ namespace abelkhan
 {
     public class crypt
     {
-        public static void crypt_func(byte[] data)
+        public static void crypt_func(byte[] data, int offset, int limit)
         {
             var len = data.Length;
 			
@@ -52,7 +52,7 @@ namespace abelkhan
                 xor_key3 = (byte)(base_xor + base_xor % 17);
             }
 
-            for (var i = 0; i < data.Length; ++i)
+            for (var i = offset; i < limit; ++i)
             {
                 var k = i % 4;
                 if (k == 0)
