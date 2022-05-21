@@ -254,8 +254,7 @@ namespace abelkhan
         }
 
         public client_call_gate_heartbeats_cb heartbeats(){
-            Interlocked.Increment(ref uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2);
-            var uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = (UInt64)uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2;
+            var uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = (UInt64)Interlocked.Increment(ref uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2);
 
             var _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = new ArrayList();
             _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(uuid_a514ca5f_2c67_5668_aac0_354397bdce36);
@@ -270,8 +269,7 @@ namespace abelkhan
         }
 
         public client_call_gate_get_hub_info_cb get_hub_info(string hub_type){
-            Interlocked.Increment(ref uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2);
-            var uuid_e9d2753f_7d38_512d_80ff_7aae13508048 = (UInt64)uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2;
+            var uuid_e9d2753f_7d38_512d_80ff_7aae13508048 = (UInt64)Interlocked.Increment(ref uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2);
 
             var _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24 = new ArrayList();
             _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.Add(uuid_e9d2753f_7d38_512d_80ff_7aae13508048);
@@ -412,8 +410,7 @@ namespace abelkhan
         }
 
         public hub_call_gate_reg_hub_cb reg_hub(string hub_name, string hub_type){
-            Interlocked.Increment(ref uuid_9796175c_1119_3833_bf31_5ee139b40edc);
-            var uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = (UInt64)uuid_9796175c_1119_3833_bf31_5ee139b40edc;
+            var uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = (UInt64)Interlocked.Increment(ref uuid_9796175c_1119_3833_bf31_5ee139b40edc);
 
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106);

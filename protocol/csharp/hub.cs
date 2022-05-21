@@ -169,8 +169,7 @@ namespace abelkhan
         }
 
         public hub_call_hub_reg_hub_cb reg_hub(string hub_name, string hub_type){
-            Interlocked.Increment(ref uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f);
-            var uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = (UInt64)uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f;
+            var uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = (UInt64)Interlocked.Increment(ref uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f);
 
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106);
@@ -346,8 +345,7 @@ namespace abelkhan
         }
 
         public client_call_hub_heartbeats_cb heartbeats(){
-            Interlocked.Increment(ref uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263);
-            var uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = (UInt64)uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263;
+            var uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = (UInt64)Interlocked.Increment(ref uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263);
 
             var _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = new ArrayList();
             _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(uuid_a514ca5f_2c67_5668_aac0_354397bdce36);

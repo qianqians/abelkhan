@@ -320,8 +320,7 @@ namespace abelkhan
         }
 
         public center_reg_server_cb reg_server(string type, string svr_name, string host, UInt16 port){
-            Interlocked.Increment(ref uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066);
-            var uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = (UInt64)uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066;
+            var uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = (UInt64)Interlocked.Increment(ref uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066);
 
             var _argv_86ab8166_c1a7_3809_8c9b_df444f746076 = new ArrayList();
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255);
@@ -340,8 +339,7 @@ namespace abelkhan
         }
 
         public center_reconn_reg_server_cb reconn_reg_server(string type, string svr_name, string host, UInt16 port){
-            Interlocked.Increment(ref uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066);
-            var uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d = (UInt64)uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066;
+            var uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d = (UInt64)Interlocked.Increment(ref uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066);
 
             var _argv_a181e793_c43f_3b7f_b19e_178395e5927d = new ArrayList();
             _argv_a181e793_c43f_3b7f_b19e_178395e5927d.Add(uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d);
@@ -360,8 +358,7 @@ namespace abelkhan
         }
 
         public center_heartbeat_cb heartbeat(UInt32 tick){
-            Interlocked.Increment(ref uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066);
-            var uuid_9654538a_9916_57dc_8ea5_806086d7a378 = (UInt64)uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066;
+            var uuid_9654538a_9916_57dc_8ea5_806086d7a378 = (UInt64)Interlocked.Increment(ref uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066);
 
             var _argv_af04a217_eafb_393c_9e34_0303485bef77 = new ArrayList();
             _argv_af04a217_eafb_393c_9e34_0303485bef77.Add(uuid_9654538a_9916_57dc_8ea5_806086d7a378);

@@ -460,8 +460,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                     cp_code += ", "
             cp_code += "){\n"
             _cb_uuid_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_DNS, func_name)).split('-'))
-            cp_code += "            Interlocked.Increment(ref uuid_" + _uuid + ");\n"
-            cp_code += "            var uuid_" + _cb_uuid_uuid + " = (UInt64)uuid_" + _uuid + ";\n\n"
+            cp_code += "            var uuid_" + _cb_uuid_uuid + " = (UInt64)Interlocked.Increment(ref uuid_" + _uuid + ");\n\n"
             _argv_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
             cp_code += "            var _argv_" + _argv_uuid + " = new ArrayList();\n"
             cp_code += "            _argv_" + _argv_uuid + ".Add(uuid_" + _cb_uuid_uuid + ");\n"

@@ -255,8 +255,7 @@ namespace abelkhan
         }
 
         public test_c2s_get_svr_host_cb get_svr_host(){
-            Interlocked.Increment(ref uuid_c233fb06_7c62_3839_a7d5_edade25b16c5);
-            var uuid_7d3daecb_6f7c_5aba_96f4_8c3441412b65 = (UInt64)uuid_c233fb06_7c62_3839_a7d5_edade25b16c5;
+            var uuid_7d3daecb_6f7c_5aba_96f4_8c3441412b65 = (UInt64)Interlocked.Increment(ref uuid_c233fb06_7c62_3839_a7d5_edade25b16c5);
 
             var _argv_abbb842f_52d0_34e7_9d8d_642d072db165 = new ArrayList();
             _argv_abbb842f_52d0_34e7_9d8d_642d072db165.Add(uuid_7d3daecb_6f7c_5aba_96f4_8c3441412b65);
@@ -269,8 +268,7 @@ namespace abelkhan
         }
 
         public test_c2s_get_websocket_svr_host_cb get_websocket_svr_host(){
-            Interlocked.Increment(ref uuid_c233fb06_7c62_3839_a7d5_edade25b16c5);
-            var uuid_4c3154db_d59e_53aa_8765_bd54308cf4a5 = (UInt64)uuid_c233fb06_7c62_3839_a7d5_edade25b16c5;
+            var uuid_4c3154db_d59e_53aa_8765_bd54308cf4a5 = (UInt64)Interlocked.Increment(ref uuid_c233fb06_7c62_3839_a7d5_edade25b16c5);
 
             var _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f = new ArrayList();
             _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f.Add(uuid_4c3154db_d59e_53aa_8765_bd54308cf4a5);

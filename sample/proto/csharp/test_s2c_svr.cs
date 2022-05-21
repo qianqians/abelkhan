@@ -127,8 +127,7 @@ namespace abelkhan
         }
 
         public test_s2c_ping_cb ping(){
-            Interlocked.Increment(ref uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43);
-            var uuid_80c27ee8_c9bc_583c_bad4_a73880e2ce8f = (UInt64)uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43;
+            var uuid_80c27ee8_c9bc_583c_bad4_a73880e2ce8f = (UInt64)Interlocked.Increment(ref uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43);
 
             var _argv_ca6794ee_a403_309d_b40e_f37578d53e8d = new ArrayList();
             _argv_ca6794ee_a403_309d_b40e_f37578d53e8d.Add(uuid_80c27ee8_c9bc_583c_bad4_a73880e2ce8f);
