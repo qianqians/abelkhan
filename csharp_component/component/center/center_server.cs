@@ -76,6 +76,7 @@ namespace abelkhan
 
             chs = new List<abelkhan.Ichannel>();
             add_chs = new List<abelkhan.Ichannel>();
+            remove_chs = new List<Ichannel>();
             _closeHandle = new closehandle();
 
             _svrmanager = new svrmanager(_timer, this);
