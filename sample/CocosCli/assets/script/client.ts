@@ -41,8 +41,8 @@ export class gate_call_client_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("gate_call_client");
         this.modules = modules;
-        this.modules.reg_method("ntf_cuuid", [this, this.ntf_cuuid.bind(this)]);
-        this.modules.reg_method("call_client", [this, this.call_client.bind(this)]);
+        this.modules.reg_method("gate_call_client_ntf_cuuid", [this, this.ntf_cuuid.bind(this)]);
+        this.modules.reg_method("gate_call_client_call_client", [this, this.call_client.bind(this)]);
 
         this.cb_ntf_cuuid = null;
         this.cb_call_client = null;

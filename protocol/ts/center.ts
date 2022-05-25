@@ -101,14 +101,14 @@ export class center_rsp_cb extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("center_rsp_cb");
         this.map_reg_server = new Map<number, center_reg_server_cb>();
-        modules.reg_method("reg_server_rsp", [this, this.reg_server_rsp.bind(this)]);
-        modules.reg_method("reg_server_err", [this, this.reg_server_err.bind(this)]);
+        modules.reg_method("center_rsp_cb_reg_server_rsp", [this, this.reg_server_rsp.bind(this)]);
+        modules.reg_method("center_rsp_cb_reg_server_err", [this, this.reg_server_err.bind(this)]);
         this.map_reconn_reg_server = new Map<number, center_reconn_reg_server_cb>();
-        modules.reg_method("reconn_reg_server_rsp", [this, this.reconn_reg_server_rsp.bind(this)]);
-        modules.reg_method("reconn_reg_server_err", [this, this.reconn_reg_server_err.bind(this)]);
+        modules.reg_method("center_rsp_cb_reconn_reg_server_rsp", [this, this.reconn_reg_server_rsp.bind(this)]);
+        modules.reg_method("center_rsp_cb_reconn_reg_server_err", [this, this.reconn_reg_server_err.bind(this)]);
         this.map_heartbeat = new Map<number, center_heartbeat_cb>();
-        modules.reg_method("heartbeat_rsp", [this, this.heartbeat_rsp.bind(this)]);
-        modules.reg_method("heartbeat_err", [this, this.heartbeat_err.bind(this)]);
+        modules.reg_method("center_rsp_cb_heartbeat_rsp", [this, this.heartbeat_rsp.bind(this)]);
+        modules.reg_method("center_rsp_cb_heartbeat_err", [this, this.heartbeat_err.bind(this)]);
     }
     public reg_server_rsp(inArray:any[]){
         let uuid = inArray[0];
@@ -449,10 +449,10 @@ export class center_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("center");
         this.modules = modules;
-        this.modules.reg_method("reg_server", [this, this.reg_server.bind(this)]);
-        this.modules.reg_method("reconn_reg_server", [this, this.reconn_reg_server.bind(this)]);
-        this.modules.reg_method("heartbeat", [this, this.heartbeat.bind(this)]);
-        this.modules.reg_method("closed", [this, this.closed.bind(this)]);
+        this.modules.reg_method("center_reg_server", [this, this.reg_server.bind(this)]);
+        this.modules.reg_method("center_reconn_reg_server", [this, this.reconn_reg_server.bind(this)]);
+        this.modules.reg_method("center_heartbeat", [this, this.heartbeat.bind(this)]);
+        this.modules.reg_method("center_closed", [this, this.closed.bind(this)]);
 
         this.cb_reg_server = null;
         this.cb_reconn_reg_server = null;
@@ -516,9 +516,9 @@ export class center_call_server_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("center_call_server");
         this.modules = modules;
-        this.modules.reg_method("close_server", [this, this.close_server.bind(this)]);
-        this.modules.reg_method("console_close_server", [this, this.console_close_server.bind(this)]);
-        this.modules.reg_method("svr_be_closed", [this, this.svr_be_closed.bind(this)]);
+        this.modules.reg_method("center_call_server_close_server", [this, this.close_server.bind(this)]);
+        this.modules.reg_method("center_call_server_console_close_server", [this, this.console_close_server.bind(this)]);
+        this.modules.reg_method("center_call_server_svr_be_closed", [this, this.svr_be_closed.bind(this)]);
 
         this.cb_close_server = null;
         this.cb_console_close_server = null;
@@ -559,8 +559,8 @@ export class center_call_hub_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("center_call_hub");
         this.modules = modules;
-        this.modules.reg_method("distribute_server_address", [this, this.distribute_server_address.bind(this)]);
-        this.modules.reg_method("reload", [this, this.reload.bind(this)]);
+        this.modules.reg_method("center_call_hub_distribute_server_address", [this, this.distribute_server_address.bind(this)]);
+        this.modules.reg_method("center_call_hub_reload", [this, this.reload.bind(this)]);
 
         this.cb_distribute_server_address = null;
         this.cb_reload = null;
@@ -593,9 +593,9 @@ export class gm_center_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("gm_center");
         this.modules = modules;
-        this.modules.reg_method("confirm_gm", [this, this.confirm_gm.bind(this)]);
-        this.modules.reg_method("close_clutter", [this, this.close_clutter.bind(this)]);
-        this.modules.reg_method("reload", [this, this.reload.bind(this)]);
+        this.modules.reg_method("gm_center_confirm_gm", [this, this.confirm_gm.bind(this)]);
+        this.modules.reg_method("gm_center_close_clutter", [this, this.close_clutter.bind(this)]);
+        this.modules.reg_method("gm_center_reload", [this, this.reload.bind(this)]);
 
         this.cb_confirm_gm = null;
         this.cb_close_clutter = null;

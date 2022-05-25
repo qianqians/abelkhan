@@ -88,7 +88,6 @@ namespace abelkhan
         public void call_module_method(String methodname, ArrayList argvs)
         {
 			ArrayList _event = new ArrayList();
-            _event.Add(module_name);
             _event.Add(methodname);
             _event.Add(argvs);
 
@@ -138,43 +137,6 @@ namespace abelkhan
             rsp = null;
         }
 
-        public void reg_method(String method_name, Action<IList<MsgPack.MessagePackObject> > method){
-            events.Add(method_name, method);
-        }
-
-        public void process_event(Ichannel _ch, ArrayList _event)
-		{
-			current_ch = _ch;
-            try
-            {
-                String func_name = ((MsgPack.MessagePackObject)_event[1]).AsString();
-
-                if (events.TryGetValue(func_name, out Action<IList<MsgPack.MessagePackObject> > method))
-                {
-                    try
-                    {
-                        method(((MsgPack.MessagePackObject)_event[2]).AsList());
-                    }
-                    catch (System.Exception e)
-                    {
-                        throw new abelkhan.Exception(string.Format("function name:{0} System.Exception:{1}", func_name, e));
-                    }
-                }
-                else
-                {
-                    throw new abelkhan.Exception(string.Format("do not have a function named::{0}", func_name));
-                }
-            }
-            catch (System.Exception e)
-            {
-                throw new abelkhan.Exception(string.Format("System.Exception:{0}", e));
-            }
-            finally
-            {
-                current_ch = null;
-            }
-        }
-
 		public Ichannel current_ch;
         public Response rsp;
 		public String module_name;
@@ -184,29 +146,27 @@ namespace abelkhan
     {
 		public modulemng()
 		{
-			module_set = new Dictionary<string, Imodule>();
+			method_set = new Dictionary<string, Tuple<Imodule, Action<IList<MsgPack.MessagePackObject> > > >();
 		}
 
-		public void reg_module(Imodule module)
-        {
-			module_set.Add(module.module_name, module);
+        public void reg_method(String method_name, Tuple<Imodule, Action<IList<MsgPack.MessagePackObject> > > method){
+            method_set.Add(method_name, method);
         }
 
-		public void unreg_module(Imodule module)
-        {
-			module_set.Remove(module.module_name);
-        }
-
+        public Action<abelkhan.Ichannel> on_msg;
         public void process_event(Ichannel _ch, ArrayList _event){
             try{
-                String module_name = ((MsgPack.MessagePackObject)_event[0]).AsString();
-                if (module_set.TryGetValue(module_name, out Imodule _module))
+                String method_name = ((MsgPack.MessagePackObject)_event[0]).AsString();
+                if (method_set.TryGetValue(method_name, out Tuple<Imodule, Action<IList<MsgPack.MessagePackObject> > > _method))
                 {
-                    _module.process_event(_ch, _event);
+                    _method.Item1.current_ch = _ch;
+                    _method.Item2.Invoke(((MsgPack.MessagePackObject)_event[1]).AsList());
+                    on_msg?.Invoke(_ch);
+                    _method.Item1.current_ch = null;
                 }
                 else
                 {
-                    throw new abelkhan.Exception(string.Format("do not have a module named::{0}", module_name));
+                    throw new abelkhan.Exception(string.Format("do not have a method named::{0}", method_name));
                 }
             }
             catch (System.Exception e)
@@ -215,6 +175,6 @@ namespace abelkhan
             }
         }
 
-        private Dictionary<string, Imodule> module_set;
+        private Dictionary<string, Tuple<Imodule, Action<IList<MsgPack.MessagePackObject> > > > method_set;
     }
 }

@@ -87,8 +87,8 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_method("reg_hub_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_hub_rsp_cb::reg_hub_rsp, this, std::placeholders::_1)));
-            modules->reg_method("reg_hub_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_hub_rsp_cb::reg_hub_err, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_hub_rsp_cb_reg_hub_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_hub_rsp_cb::reg_hub_rsp, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_hub_rsp_cb_reg_hub_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_hub_rsp_cb::reg_hub_err, this, std::placeholders::_1)));
         }
 
         void reg_hub_rsp(const msgpack11::MsgPack::array& inArray){
@@ -227,8 +227,8 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_method("heartbeats_rsp", std::make_tuple(shared_from_this(), std::bind(&client_call_hub_rsp_cb::heartbeats_rsp, this, std::placeholders::_1)));
-            modules->reg_method("heartbeats_err", std::make_tuple(shared_from_this(), std::bind(&client_call_hub_rsp_cb::heartbeats_err, this, std::placeholders::_1)));
+            modules->reg_method("client_call_hub_rsp_cb_heartbeats_rsp", std::make_tuple(shared_from_this(), std::bind(&client_call_hub_rsp_cb::heartbeats_rsp, this, std::placeholders::_1)));
+            modules->reg_method("client_call_hub_rsp_cb_heartbeats_err", std::make_tuple(shared_from_this(), std::bind(&client_call_hub_rsp_cb::heartbeats_err, this, std::placeholders::_1)));
         }
 
         void heartbeats_rsp(const msgpack11::MsgPack::array& inArray){
@@ -317,9 +317,9 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_method("client_disconnect", std::make_tuple(shared_from_this(), std::bind(&gate_call_hub_module::client_disconnect, this, std::placeholders::_1)));
-            _modules->reg_method("client_exception", std::make_tuple(shared_from_this(), std::bind(&gate_call_hub_module::client_exception, this, std::placeholders::_1)));
-            _modules->reg_method("client_call_hub", std::make_tuple(shared_from_this(), std::bind(&gate_call_hub_module::client_call_hub, this, std::placeholders::_1)));
+            _modules->reg_method("gate_call_hub_client_disconnect", std::make_tuple(shared_from_this(), std::bind(&gate_call_hub_module::client_disconnect, this, std::placeholders::_1)));
+            _modules->reg_method("gate_call_hub_client_exception", std::make_tuple(shared_from_this(), std::bind(&gate_call_hub_module::client_exception, this, std::placeholders::_1)));
+            _modules->reg_method("gate_call_hub_client_call_hub", std::make_tuple(shared_from_this(), std::bind(&gate_call_hub_module::client_call_hub, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string)> sig_client_disconnect;
@@ -373,8 +373,8 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_method("reg_hub", std::make_tuple(shared_from_this(), std::bind(&hub_call_hub_module::reg_hub, this, std::placeholders::_1)));
-            _modules->reg_method("hub_call_hub_mothed", std::make_tuple(shared_from_this(), std::bind(&hub_call_hub_module::hub_call_hub_mothed, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_hub_reg_hub", std::make_tuple(shared_from_this(), std::bind(&hub_call_hub_module::reg_hub, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_hub_hub_call_hub_mothed", std::make_tuple(shared_from_this(), std::bind(&hub_call_hub_module::hub_call_hub_mothed, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string, std::string)> sig_reg_hub;
@@ -401,7 +401,7 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_method("call_client", std::make_tuple(shared_from_this(), std::bind(&hub_call_client_module::call_client, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_client_call_client", std::make_tuple(shared_from_this(), std::bind(&hub_call_client_module::call_client, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::vector<uint8_t>)> sig_call_client;
@@ -443,9 +443,9 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_method("connect_hub", std::make_tuple(shared_from_this(), std::bind(&client_call_hub_module::connect_hub, this, std::placeholders::_1)));
-            _modules->reg_method("heartbeats", std::make_tuple(shared_from_this(), std::bind(&client_call_hub_module::heartbeats, this, std::placeholders::_1)));
-            _modules->reg_method("call_hub", std::make_tuple(shared_from_this(), std::bind(&client_call_hub_module::call_hub, this, std::placeholders::_1)));
+            _modules->reg_method("client_call_hub_connect_hub", std::make_tuple(shared_from_this(), std::bind(&client_call_hub_module::connect_hub, this, std::placeholders::_1)));
+            _modules->reg_method("client_call_hub_heartbeats", std::make_tuple(shared_from_this(), std::bind(&client_call_hub_module::heartbeats, this, std::placeholders::_1)));
+            _modules->reg_method("client_call_hub_call_hub", std::make_tuple(shared_from_this(), std::bind(&client_call_hub_module::call_hub, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string)> sig_connect_hub;

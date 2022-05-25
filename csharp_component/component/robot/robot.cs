@@ -38,13 +38,12 @@ namespace client
             });
         }
 
-        public void call_hub(string hub, string module, string func, ArrayList argv)
+        public void call_hub(string hub, string func, ArrayList argv)
         {
             var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
             using (MemoryStream st = new MemoryStream())
             {
                 var _event = new ArrayList();
-                _event.Add(module);
                 _event.Add(func);
                 _event.Add(argv);
                 _serialization.Pack(st, _event);
@@ -90,13 +89,12 @@ namespace client
             });
         }
 
-        public void call_hub(string module, string func, ArrayList argv)
+        public void call_hub(string func, ArrayList argv)
         {
             var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
             using (MemoryStream st = new MemoryStream())
             {
                 var _event = new ArrayList();
-                _event.Add(module);
                 _event.Add(func);
                 _event.Add(argv);
                 _serialization.Pack(st, _event);
@@ -157,17 +155,17 @@ namespace client
             _gateproxy?.get_hub_info(hub_type, cb);
         }
 
-        public void call_hub(string hub_name, string module, string func, ArrayList argv)
+        public void call_hub(string hub_name, string func, ArrayList argv)
         {
             if (_hubproxy_set.TryGetValue(hub_name, out hubproxy _hubproxy))
             {
-                _hubproxy.call_hub(module, func, argv);
+                _hubproxy.call_hub(func, argv);
                 return;
             }
 
             if (_gateproxy != null)
             {
-                _gateproxy.call_hub(hub_name, module, func, argv);
+                _gateproxy.call_hub(hub_name, func, argv);
             }
         }
 
@@ -387,7 +385,7 @@ namespace client
         {
             using (var st = new MemoryStream())
             {
-                st.Write(rpc_argv);
+                st.Write(rpc_argv, 0, rpc_argv.Length);
                 st.Position = 0;
 
                 var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
@@ -406,7 +404,7 @@ namespace client
         {
             using (var st = new MemoryStream())
             {
-                st.Write(rpc_argv);
+                st.Write(rpc_argv, 0, rpc_argv.Length);
                 st.Position = 0;
 
                 var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();

@@ -194,23 +194,23 @@ export class hub_call_dbproxy_rsp_cb extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("hub_call_dbproxy_rsp_cb");
         this.map_reg_hub = new Map<number, hub_call_dbproxy_reg_hub_cb>();
-        modules.reg_method("reg_hub_rsp", [this, this.reg_hub_rsp.bind(this)]);
-        modules.reg_method("reg_hub_err", [this, this.reg_hub_err.bind(this)]);
+        modules.reg_method("hub_call_dbproxy_rsp_cb_reg_hub_rsp", [this, this.reg_hub_rsp.bind(this)]);
+        modules.reg_method("hub_call_dbproxy_rsp_cb_reg_hub_err", [this, this.reg_hub_err.bind(this)]);
         this.map_create_persisted_object = new Map<number, hub_call_dbproxy_create_persisted_object_cb>();
-        modules.reg_method("create_persisted_object_rsp", [this, this.create_persisted_object_rsp.bind(this)]);
-        modules.reg_method("create_persisted_object_err", [this, this.create_persisted_object_err.bind(this)]);
+        modules.reg_method("hub_call_dbproxy_rsp_cb_create_persisted_object_rsp", [this, this.create_persisted_object_rsp.bind(this)]);
+        modules.reg_method("hub_call_dbproxy_rsp_cb_create_persisted_object_err", [this, this.create_persisted_object_err.bind(this)]);
         this.map_updata_persisted_object = new Map<number, hub_call_dbproxy_updata_persisted_object_cb>();
-        modules.reg_method("updata_persisted_object_rsp", [this, this.updata_persisted_object_rsp.bind(this)]);
-        modules.reg_method("updata_persisted_object_err", [this, this.updata_persisted_object_err.bind(this)]);
+        modules.reg_method("hub_call_dbproxy_rsp_cb_updata_persisted_object_rsp", [this, this.updata_persisted_object_rsp.bind(this)]);
+        modules.reg_method("hub_call_dbproxy_rsp_cb_updata_persisted_object_err", [this, this.updata_persisted_object_err.bind(this)]);
         this.map_find_and_modify = new Map<number, hub_call_dbproxy_find_and_modify_cb>();
-        modules.reg_method("find_and_modify_rsp", [this, this.find_and_modify_rsp.bind(this)]);
-        modules.reg_method("find_and_modify_err", [this, this.find_and_modify_err.bind(this)]);
+        modules.reg_method("hub_call_dbproxy_rsp_cb_find_and_modify_rsp", [this, this.find_and_modify_rsp.bind(this)]);
+        modules.reg_method("hub_call_dbproxy_rsp_cb_find_and_modify_err", [this, this.find_and_modify_err.bind(this)]);
         this.map_remove_object = new Map<number, hub_call_dbproxy_remove_object_cb>();
-        modules.reg_method("remove_object_rsp", [this, this.remove_object_rsp.bind(this)]);
-        modules.reg_method("remove_object_err", [this, this.remove_object_err.bind(this)]);
+        modules.reg_method("hub_call_dbproxy_rsp_cb_remove_object_rsp", [this, this.remove_object_rsp.bind(this)]);
+        modules.reg_method("hub_call_dbproxy_rsp_cb_remove_object_err", [this, this.remove_object_err.bind(this)]);
         this.map_get_object_count = new Map<number, hub_call_dbproxy_get_object_count_cb>();
-        modules.reg_method("get_object_count_rsp", [this, this.get_object_count_rsp.bind(this)]);
-        modules.reg_method("get_object_count_err", [this, this.get_object_count_err.bind(this)]);
+        modules.reg_method("hub_call_dbproxy_rsp_cb_get_object_count_rsp", [this, this.get_object_count_rsp.bind(this)]);
+        modules.reg_method("hub_call_dbproxy_rsp_cb_get_object_count_err", [this, this.get_object_count_err.bind(this)]);
     }
     public reg_hub_rsp(inArray:any[]){
         let uuid = inArray[0];
@@ -692,13 +692,13 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("hub_call_dbproxy");
         this.modules = modules;
-        this.modules.reg_method("reg_hub", [this, this.reg_hub.bind(this)]);
-        this.modules.reg_method("create_persisted_object", [this, this.create_persisted_object.bind(this)]);
-        this.modules.reg_method("updata_persisted_object", [this, this.updata_persisted_object.bind(this)]);
-        this.modules.reg_method("find_and_modify", [this, this.find_and_modify.bind(this)]);
-        this.modules.reg_method("remove_object", [this, this.remove_object.bind(this)]);
-        this.modules.reg_method("get_object_info", [this, this.get_object_info.bind(this)]);
-        this.modules.reg_method("get_object_count", [this, this.get_object_count.bind(this)]);
+        this.modules.reg_method("hub_call_dbproxy_reg_hub", [this, this.reg_hub.bind(this)]);
+        this.modules.reg_method("hub_call_dbproxy_create_persisted_object", [this, this.create_persisted_object.bind(this)]);
+        this.modules.reg_method("hub_call_dbproxy_updata_persisted_object", [this, this.updata_persisted_object.bind(this)]);
+        this.modules.reg_method("hub_call_dbproxy_find_and_modify", [this, this.find_and_modify.bind(this)]);
+        this.modules.reg_method("hub_call_dbproxy_remove_object", [this, this.remove_object.bind(this)]);
+        this.modules.reg_method("hub_call_dbproxy_get_object_info", [this, this.get_object_info.bind(this)]);
+        this.modules.reg_method("hub_call_dbproxy_get_object_count", [this, this.get_object_count.bind(this)]);
 
         this.cb_reg_hub = null;
         this.cb_create_persisted_object = null;
@@ -818,8 +818,8 @@ export class dbproxy_call_hub_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("dbproxy_call_hub");
         this.modules = modules;
-        this.modules.reg_method("ack_get_object_info", [this, this.ack_get_object_info.bind(this)]);
-        this.modules.reg_method("ack_get_object_info_end", [this, this.ack_get_object_info_end.bind(this)]);
+        this.modules.reg_method("dbproxy_call_hub_ack_get_object_info", [this, this.ack_get_object_info.bind(this)]);
+        this.modules.reg_method("dbproxy_call_hub_ack_get_object_info_end", [this, this.ack_get_object_info_end.bind(this)]);
 
         this.cb_ack_get_object_info = null;
         this.cb_ack_get_object_info_end = null;

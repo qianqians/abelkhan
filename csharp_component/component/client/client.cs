@@ -33,18 +33,19 @@ namespace client
         {
             _client_call_gate_caller.get_hub_info(hub_type).callBack((hub_info) => {
                 cb(hub_info);
-            }, () => { }).timeout(5 * 1000, ()=> {
+            }, () => { 
+                
+            }).timeout(5 * 1000, ()=> {
                 onGateDisconnect?.Invoke(_ch);
             });
         }
 
-        public void call_hub(string hub, string module, string func, ArrayList argv)
+        public void call_hub(string hub, string func, ArrayList argv)
         {
             var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
             using (MemoryStream st = new MemoryStream())
             {
                 var _event = new ArrayList();
-                _event.Add(module);
                 _event.Add(func);
                 _event.Add(argv);
                 _serialization.Pack(st, _event);
@@ -90,13 +91,12 @@ namespace client
             });
         }
 
-        public void call_hub(string module, string func, ArrayList argv)
+        public void call_hub(string func, ArrayList argv)
         {
             var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
             using (MemoryStream st = new MemoryStream())
             {
                 var _event = new ArrayList();
-                _event.Add(module);
                 _event.Add(func);
                 _event.Add(argv);
                 _serialization.Pack(st, _event);
@@ -169,7 +169,7 @@ namespace client
         {
             using (var st = new MemoryStream())
             {
-                st.Write(rpc_argv);
+                st.Write(rpc_argv, 0, rpc_argv.Length);
                 st.Position = 0;
 
                 var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
@@ -188,7 +188,7 @@ namespace client
         {
             using (var st = new MemoryStream())
             {
-                st.Write(rpc_argv);
+                st.Write(rpc_argv, 0, rpc_argv.Length);
                 st.Position = 0;
 
                 var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
@@ -225,23 +225,23 @@ namespace client
             _gateproxy?.get_hub_info(hub_type, cb);
         }
 
-        public void call_hub(string hub_name, string module, string func, ArrayList argv)
+        public void call_hub(string hub_name, string func, ArrayList argv)
         {
             if (_hubproxy_set.TryGetValue(hub_name, out hubproxy _hubproxy))
             {
-                _hubproxy.call_hub(module, func, argv);
+                _hubproxy.call_hub(func, argv);
                 return;
             }
 
             if (_gateproxy != null)
             {
-                _gateproxy.call_hub(hub_name, module, func, argv);
+                _gateproxy.call_hub(hub_name, func, argv);
             }
         }
 
         public event Action onGateConnect;
         public event Action onGateConnectFaild;
-        public void connect_gate(string ip, short port, long timeout)
+        public void connect_gate(string ip, ushort port, long timeout)
         {
             connect(ip, port, timeout, (is_conn, ch) => {
                 if (is_conn && ch != null)
@@ -255,7 +255,7 @@ namespace client
                         }
                         _gateproxy = null;
 
-                        onGateDisConnect.Invoke();
+                        onGateDisConnect?.Invoke();
                     };
                     _gateproxy.onGateTime += (tick) =>
                     {
@@ -271,7 +271,7 @@ namespace client
 
         public event Action<string> onHubConnect;
         public event Action<string> onHubConnectFaild;
-        public void connect_hub(string hub_name, string hub_type, string ip, short port, long timeout)
+        public void connect_hub(string hub_name, string hub_type, string ip, ushort port, long timeout)
         {
             connect(ip, port, timeout, (is_conn, ch) => { 
                 if (is_conn && ch != null)
@@ -284,9 +284,11 @@ namespace client
                             remove_chs.Add(ch);
                         }
 
-                        if (_ch_hubproxy_set.Remove(ch, out hubproxy _proxy))
+                        if (_ch_hubproxy_set.ContainsKey(ch))
                         {
+                            var _proxy = _ch_hubproxy_set[ch];
                             _hubproxy_set.Remove(_proxy._hub_name);
+                            _ch_hubproxy_set.Remove(ch);
                         }
 
                         onHubDisConnect?.Invoke(hub_name);
@@ -316,7 +318,7 @@ namespace client
             public Action<bool, abelkhan.Ichannel> cb;
         }
 
-        private void connect(string ip, short port, long timeout, Action<bool, abelkhan.Ichannel> cb)
+        private void connect(string ip, ushort port, long timeout, Action<bool, abelkhan.Ichannel> cb)
         {
             IPAddress address = IPAddress.Parse(ip);
 

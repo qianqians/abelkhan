@@ -9,7 +9,6 @@ const abelkhan = require("./abelkhan");
 class gate_call_client_rsp_cb extends abelkhan.Imodule {
     constructor(modules) {
         super("gate_call_client_rsp_cb");
-        modules.reg_module(this);
     }
 }
 exports.gate_call_client_rsp_cb = gate_call_client_rsp_cb;
@@ -25,13 +24,13 @@ class gate_call_client_caller extends abelkhan.Icaller {
     ntf_cuuid(cuuid) {
         let _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1 = [];
         _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1.push(cuuid);
-        this.call_module_method("ntf_cuuid", _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1);
+        this.call_module_method("gate_call_client_ntf_cuuid", _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1);
     }
     call_client(hub_name, rpc_argv) {
         let _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab = [];
         _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push(hub_name);
         _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push(rpc_argv);
-        this.call_module_method("call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
+        this.call_module_method("gate_call_client_call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
     }
 }
 exports.gate_call_client_caller = gate_call_client_caller;
@@ -41,9 +40,8 @@ class gate_call_client_module extends abelkhan.Imodule {
     constructor(modules) {
         super("gate_call_client");
         this.modules = modules;
-        this.modules.reg_module(this);
-        this.reg_method("ntf_cuuid", this.ntf_cuuid.bind(this));
-        this.reg_method("call_client", this.call_client.bind(this));
+        this.modules.reg_method("gate_call_client_ntf_cuuid", [this, this.ntf_cuuid.bind(this)]);
+        this.modules.reg_method("gate_call_client_call_client", [this, this.call_client.bind(this)]);
         this.cb_ntf_cuuid = null;
         this.cb_call_client = null;
     }

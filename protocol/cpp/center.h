@@ -76,12 +76,12 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_method("reg_server_rsp", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reg_server_rsp, this, std::placeholders::_1)));
-            modules->reg_method("reg_server_err", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reg_server_err, this, std::placeholders::_1)));
-            modules->reg_method("reconn_reg_server_rsp", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reconn_reg_server_rsp, this, std::placeholders::_1)));
-            modules->reg_method("reconn_reg_server_err", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reconn_reg_server_err, this, std::placeholders::_1)));
-            modules->reg_method("heartbeat_rsp", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::heartbeat_rsp, this, std::placeholders::_1)));
-            modules->reg_method("heartbeat_err", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::heartbeat_err, this, std::placeholders::_1)));
+            modules->reg_method("center_rsp_cb_reg_server_rsp", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reg_server_rsp, this, std::placeholders::_1)));
+            modules->reg_method("center_rsp_cb_reg_server_err", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reg_server_err, this, std::placeholders::_1)));
+            modules->reg_method("center_rsp_cb_reconn_reg_server_rsp", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reconn_reg_server_rsp, this, std::placeholders::_1)));
+            modules->reg_method("center_rsp_cb_reconn_reg_server_err", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reconn_reg_server_err, this, std::placeholders::_1)));
+            modules->reg_method("center_rsp_cb_heartbeat_rsp", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::heartbeat_rsp, this, std::placeholders::_1)));
+            modules->reg_method("center_rsp_cb_heartbeat_err", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::heartbeat_err, this, std::placeholders::_1)));
         }
 
         void reg_server_rsp(const msgpack11::MsgPack::array& inArray){
@@ -476,10 +476,10 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_method("reg_server", std::make_tuple(shared_from_this(), std::bind(&center_module::reg_server, this, std::placeholders::_1)));
-            _modules->reg_method("reconn_reg_server", std::make_tuple(shared_from_this(), std::bind(&center_module::reconn_reg_server, this, std::placeholders::_1)));
-            _modules->reg_method("heartbeat", std::make_tuple(shared_from_this(), std::bind(&center_module::heartbeat, this, std::placeholders::_1)));
-            _modules->reg_method("closed", std::make_tuple(shared_from_this(), std::bind(&center_module::closed, this, std::placeholders::_1)));
+            _modules->reg_method("center_reg_server", std::make_tuple(shared_from_this(), std::bind(&center_module::reg_server, this, std::placeholders::_1)));
+            _modules->reg_method("center_reconn_reg_server", std::make_tuple(shared_from_this(), std::bind(&center_module::reconn_reg_server, this, std::placeholders::_1)));
+            _modules->reg_method("center_heartbeat", std::make_tuple(shared_from_this(), std::bind(&center_module::heartbeat, this, std::placeholders::_1)));
+            _modules->reg_method("center_closed", std::make_tuple(shared_from_this(), std::bind(&center_module::closed, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string, std::string, std::string, uint16_t)> sig_reg_server;
@@ -528,9 +528,9 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_method("close_server", std::make_tuple(shared_from_this(), std::bind(&center_call_server_module::close_server, this, std::placeholders::_1)));
-            _modules->reg_method("console_close_server", std::make_tuple(shared_from_this(), std::bind(&center_call_server_module::console_close_server, this, std::placeholders::_1)));
-            _modules->reg_method("svr_be_closed", std::make_tuple(shared_from_this(), std::bind(&center_call_server_module::svr_be_closed, this, std::placeholders::_1)));
+            _modules->reg_method("center_call_server_close_server", std::make_tuple(shared_from_this(), std::bind(&center_call_server_module::close_server, this, std::placeholders::_1)));
+            _modules->reg_method("center_call_server_console_close_server", std::make_tuple(shared_from_this(), std::bind(&center_call_server_module::console_close_server, this, std::placeholders::_1)));
+            _modules->reg_method("center_call_server_svr_be_closed", std::make_tuple(shared_from_this(), std::bind(&center_call_server_module::svr_be_closed, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void()> sig_close_server;
@@ -560,8 +560,8 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_method("distribute_server_address", std::make_tuple(shared_from_this(), std::bind(&center_call_hub_module::distribute_server_address, this, std::placeholders::_1)));
-            _modules->reg_method("reload", std::make_tuple(shared_from_this(), std::bind(&center_call_hub_module::reload, this, std::placeholders::_1)));
+            _modules->reg_method("center_call_hub_distribute_server_address", std::make_tuple(shared_from_this(), std::bind(&center_call_hub_module::distribute_server_address, this, std::placeholders::_1)));
+            _modules->reg_method("center_call_hub_reload", std::make_tuple(shared_from_this(), std::bind(&center_call_hub_module::reload, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string, std::string, std::string, uint16_t)> sig_distribute_server_address;
@@ -587,9 +587,9 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_method("confirm_gm", std::make_tuple(shared_from_this(), std::bind(&gm_center_module::confirm_gm, this, std::placeholders::_1)));
-            _modules->reg_method("close_clutter", std::make_tuple(shared_from_this(), std::bind(&gm_center_module::close_clutter, this, std::placeholders::_1)));
-            _modules->reg_method("reload", std::make_tuple(shared_from_this(), std::bind(&gm_center_module::reload, this, std::placeholders::_1)));
+            _modules->reg_method("gm_center_confirm_gm", std::make_tuple(shared_from_this(), std::bind(&gm_center_module::confirm_gm, this, std::placeholders::_1)));
+            _modules->reg_method("gm_center_close_clutter", std::make_tuple(shared_from_this(), std::bind(&gm_center_module::close_clutter, this, std::placeholders::_1)));
+            _modules->reg_method("gm_center_reload", std::make_tuple(shared_from_this(), std::bind(&gm_center_module::reload, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string)> sig_confirm_gm;

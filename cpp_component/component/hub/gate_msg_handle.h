@@ -55,7 +55,7 @@ public:
 			return;
 		}
 		auto _event = _msgpack_obj.array_items();
-		if (_event.size() != 3) {
+		if (_event.size() != 2) {
 			spdlog::trace("call_hub _event argv is not match num_3!");
 			_hub->sig_client_exception.emit(cuuid);
 			return;

@@ -50,8 +50,8 @@ namespace abelkhan
         public gate_call_client_module(abelkhan.modulemng _modules) : base("gate_call_client")
         {
             modules = _modules;
-            modules.reg_method("ntf_cuuid", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, ntf_cuuid));
-            modules.reg_method("call_client", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, call_client));
+            modules.reg_method("gate_call_client_ntf_cuuid", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, ntf_cuuid));
+            modules.reg_method("gate_call_client_call_client", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, call_client));
         }
 
         public event Action<string> on_ntf_cuuid;

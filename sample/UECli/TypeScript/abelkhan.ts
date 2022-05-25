@@ -16,7 +16,7 @@ export class Icaller{
     }
 
     public call_module_method(method_name:String, argvs:any){
-        var _event = encode([this.module_name, method_name, argvs]);
+        var _event = encode([method_name, argvs]);
         
         var send_data = new Uint8Array(4 + _event.length);
         send_data[0] = _event.length & 0xff;
@@ -31,34 +31,24 @@ export class Icaller{
 
 export class Imodule{
     public module_name : String;
+    public current_ch:Ichannel = null;
+    public rsp:any = null;
     constructor(_module_name:String){
         this.module_name = _module_name;
     }
-
-    private methods = new Map<String, any>();
-    public reg_method(method_name:String, method:any){
-        this.methods.set(method_name, method);
-    }
-    
-    public current_ch:Ichannel = null;
-    public rsp:any = null;
-    public process_event(_ch:Ichannel, _event:any){
-        this.current_ch = _ch;
-        this.methods.get(_event[1]).call(this, _event[2]);
-        this.current_ch = null;
-    }
-
 }
 
 export class modulemng{
-    private module_set = new Map<String, Imodule>();
+    private method_set = new Map<String, [Imodule, any]>();
 
-    public reg_module(_module:Imodule){
-        this.module_set.set(_module.module_name, _module);
+    public reg_method(method_name:String, method:[Imodule, any]){
+        this.method_set.set(method_name, method);
     }
 
     public process_event(_ch:Ichannel, _event:any){
-        this.module_set.get(_event[0]).process_event(_ch, _event);
+        this.method_set.get(_event[0])[0].current_ch = _ch;
+        this.method_set.get(_event[0])[1].call(this, _event[1]);
+        this.method_set.get(_event[0])[0].current_ch = null;
     }
 }
 export let _modulemng = new modulemng();

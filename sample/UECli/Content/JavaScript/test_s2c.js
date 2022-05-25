@@ -16,11 +16,11 @@ class test_s2c_ping_rsp {
     }
     rsp() {
         let _argv_ca6794ee_a403_309d_b40e_f37578d53e8d = [this.uuid_94d71f95_a670_3916_89a9_44df18fb711b];
-        this._client_handle.call_hub(this.hub_name_ca6794ee_a403_309d_b40e_f37578d53e8d, "test_s2c_rsp_cb", "ping_rsp", _argv_ca6794ee_a403_309d_b40e_f37578d53e8d);
+        this._client_handle.call_hub(this.hub_name_ca6794ee_a403_309d_b40e_f37578d53e8d, "test_s2c_rsp_cb_ping_rsp", _argv_ca6794ee_a403_309d_b40e_f37578d53e8d);
     }
     err() {
         let _argv_ca6794ee_a403_309d_b40e_f37578d53e8d = [this.uuid_94d71f95_a670_3916_89a9_44df18fb711b];
-        this._client_handle.call_hub(this.hub_name_ca6794ee_a403_309d_b40e_f37578d53e8d, "test_s2c_rsp_cb", "ping_err", _argv_ca6794ee_a403_309d_b40e_f37578d53e8d);
+        this._client_handle.call_hub(this.hub_name_ca6794ee_a403_309d_b40e_f37578d53e8d, "test_s2c_rsp_cb_ping_err", _argv_ca6794ee_a403_309d_b40e_f37578d53e8d);
     }
 }
 exports.test_s2c_ping_rsp = test_s2c_ping_rsp;
@@ -29,8 +29,7 @@ class test_s2c_module extends client_handle.imodule {
     constructor(_client_handle_) {
         super();
         this._client_handle = _client_handle_;
-        this._client_handle._modulemng.add_module("test_s2c", this);
-        this.reg_cb("ping", this.ping.bind(this));
+        this._client_handle._modulemng.add_method("test_s2c_ping", this.ping.bind(this));
         this.cb_ping = null;
     }
     cb_ping;

@@ -77,8 +77,8 @@ export class hub_call_hub_rsp_cb extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("hub_call_hub_rsp_cb");
         this.map_reg_hub = new Map<number, hub_call_hub_reg_hub_cb>();
-        modules.reg_method("reg_hub_rsp", [this, this.reg_hub_rsp.bind(this)]);
-        modules.reg_method("reg_hub_err", [this, this.reg_hub_err.bind(this)]);
+        modules.reg_method("hub_call_hub_rsp_cb_reg_hub_rsp", [this, this.reg_hub_rsp.bind(this)]);
+        modules.reg_method("hub_call_hub_rsp_cb_reg_hub_err", [this, this.reg_hub_err.bind(this)]);
     }
     public reg_hub_rsp(inArray:any[]){
         let uuid = inArray[0];
@@ -209,8 +209,8 @@ export class client_call_hub_rsp_cb extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("client_call_hub_rsp_cb");
         this.map_heartbeats = new Map<number, client_call_hub_heartbeats_cb>();
-        modules.reg_method("heartbeats_rsp", [this, this.heartbeats_rsp.bind(this)]);
-        modules.reg_method("heartbeats_err", [this, this.heartbeats_err.bind(this)]);
+        modules.reg_method("client_call_hub_rsp_cb_heartbeats_rsp", [this, this.heartbeats_rsp.bind(this)]);
+        modules.reg_method("client_call_hub_rsp_cb_heartbeats_err", [this, this.heartbeats_err.bind(this)]);
     }
     public heartbeats_rsp(inArray:any[]){
         let uuid = inArray[0];
@@ -291,9 +291,9 @@ export class gate_call_hub_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("gate_call_hub");
         this.modules = modules;
-        this.modules.reg_method("client_disconnect", [this, this.client_disconnect.bind(this)]);
-        this.modules.reg_method("client_exception", [this, this.client_exception.bind(this)]);
-        this.modules.reg_method("client_call_hub", [this, this.client_call_hub.bind(this)]);
+        this.modules.reg_method("gate_call_hub_client_disconnect", [this, this.client_disconnect.bind(this)]);
+        this.modules.reg_method("gate_call_hub_client_exception", [this, this.client_exception.bind(this)]);
+        this.modules.reg_method("gate_call_hub_client_call_hub", [this, this.client_call_hub.bind(this)]);
 
         this.cb_client_disconnect = null;
         this.cb_client_exception = null;
@@ -353,8 +353,8 @@ export class hub_call_hub_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("hub_call_hub");
         this.modules = modules;
-        this.modules.reg_method("reg_hub", [this, this.reg_hub.bind(this)]);
-        this.modules.reg_method("hub_call_hub_mothed", [this, this.hub_call_hub_mothed.bind(this)]);
+        this.modules.reg_method("hub_call_hub_reg_hub", [this, this.reg_hub.bind(this)]);
+        this.modules.reg_method("hub_call_hub_hub_call_hub_mothed", [this, this.hub_call_hub_mothed.bind(this)]);
 
         this.cb_reg_hub = null;
         this.cb_hub_call_hub_mothed = null;
@@ -388,7 +388,7 @@ export class hub_call_client_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("hub_call_client");
         this.modules = modules;
-        this.modules.reg_method("call_client", [this, this.call_client.bind(this)]);
+        this.modules.reg_method("hub_call_client_call_client", [this, this.call_client.bind(this)]);
 
         this.cb_call_client = null;
     }
@@ -428,9 +428,9 @@ export class client_call_hub_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("client_call_hub");
         this.modules = modules;
-        this.modules.reg_method("connect_hub", [this, this.connect_hub.bind(this)]);
-        this.modules.reg_method("heartbeats", [this, this.heartbeats.bind(this)]);
-        this.modules.reg_method("call_hub", [this, this.call_hub.bind(this)]);
+        this.modules.reg_method("client_call_hub_connect_hub", [this, this.connect_hub.bind(this)]);
+        this.modules.reg_method("client_call_hub_heartbeats", [this, this.heartbeats.bind(this)]);
+        this.modules.reg_method("client_call_hub_call_hub", [this, this.call_hub.bind(this)]);
 
         this.cb_connect_hub = null;
         this.cb_heartbeats = null;

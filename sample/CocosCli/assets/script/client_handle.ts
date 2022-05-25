@@ -5,29 +5,21 @@ import * as hub from "./hub";
 import * as _client from "./client";
 
 export class imodule {
-    constructor(){
-    }
-
-    private methods = new Map<string, any>();
-    public reg_cb(method_name:string, method:any) {
-        this.methods.set(method_name, method);
-    }
-    
     public rsp:any = null;
-    public invoke(cb_name:string, _event:any[]) {
-        this.methods.get(cb_name).call(this, _event);
+
+    constructor(){
     }
 }
 
 export class modulemng {
-    private module_set = new Map<string, imodule>();
+    private method_set = new Map<string, any>();
 
-    public add_module(module_name:string, _module:imodule) {
-        this.module_set.set(module_name, _module);
+    public add_method(method_name:string, method:any) {
+        this.method_set.set(method_name, method);
     }
 
-    public process_event(module_name:string, func_name:string, _event:any[]) {
-        this.module_set.get(module_name).invoke(func_name, _event);
+    public process_event(cb_name:string, _event:any[]) {
+        this.method_set.get(cb_name).call(null, _event);
     }
 }
 
@@ -142,8 +134,8 @@ class gateproxy {
         });
     }
 
-    public call_hub(hub:string, module:string, func:string, argv:any[]) {
-        let _event = [module, func, argv];
+    public call_hub(hub:string, func:string, argv:any[]) {
+        let _event = [func, argv];
         this._client_call_gate_caller.forward_client_call_hub(hub, encode(_event));
     }
 }
@@ -182,8 +174,8 @@ class hubproxy {
         });
     }
 
-    public call_hub(module:string, func:string, argv:any[]) {
-        let _event = [module, func, argv];
+    public call_hub(func:string, argv:any[]) {
+        let _event = [func, argv];
         this._client_call_hub_caller.call_hub(encode(_event));
     }
 }
@@ -249,26 +241,24 @@ export class client
     private gate_call_client(hub_name:string, rpc_argv:Uint8Array)
     {
         let _event = decode(rpc_argv) as any[];
-        let module = _event[0] as string;
-        let func = _event[1] as string;
-        let argvs = _event[2] as any[];
+        let func = _event[0] as string;
+        let argvs = _event[1] as any[];
 
         this.current_hub = hub_name;
-        this._modulemng.process_event(module, func, argvs);
+        this._modulemng.process_event(func, argvs);
         this.current_hub = "";
     }
 
     private hub_call_client(rpc_argv:Uint8Array)
     {
         let _event = decode(rpc_argv) as any[];
-        let module = _event[0] as string;
-        let func = _event[1] as string;
-        let argvs = _event[2] as any[];
+        let func = _event[0] as string;
+        let argvs = _event[1] as any[];
 
         let _hubproxy = this._ch_hubproxy_set.get(this._hub_call_client_module.current_ch);
 
         this.current_hub = _hubproxy._hub_name;
-        this._modulemng.process_event(module, func, argvs);
+        this._modulemng.process_event(func, argvs);
         this.current_hub = "";
     }
 
@@ -289,18 +279,18 @@ export class client
         this._gateproxy?.get_hub_info(hub_type, cb);
     }
 
-    public call_hub(hub_name:string, module:string, func:string, argv:any[])
+    public call_hub(hub_name:string, func:string, argv:any[])
     {
         if (this._hubproxy_set.has(hub_name))
         {
             let _hubproxy = this._hubproxy_set.get(hub_name);
-            _hubproxy.call_hub(module, func, argv);
+            _hubproxy.call_hub(func, argv);
             return;
         }
 
         if (this._gateproxy != null)
         {
-            this._gateproxy.call_hub(hub_name, module, func, argv);
+            this._gateproxy.call_hub(hub_name, func, argv);
         }
     }
 

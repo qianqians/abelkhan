@@ -133,18 +133,18 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_method("reg_hub_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::reg_hub_rsp, this, std::placeholders::_1)));
-            modules->reg_method("reg_hub_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::reg_hub_err, this, std::placeholders::_1)));
-            modules->reg_method("create_persisted_object_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::create_persisted_object_rsp, this, std::placeholders::_1)));
-            modules->reg_method("create_persisted_object_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::create_persisted_object_err, this, std::placeholders::_1)));
-            modules->reg_method("updata_persisted_object_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::updata_persisted_object_rsp, this, std::placeholders::_1)));
-            modules->reg_method("updata_persisted_object_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::updata_persisted_object_err, this, std::placeholders::_1)));
-            modules->reg_method("find_and_modify_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::find_and_modify_rsp, this, std::placeholders::_1)));
-            modules->reg_method("find_and_modify_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::find_and_modify_err, this, std::placeholders::_1)));
-            modules->reg_method("remove_object_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::remove_object_rsp, this, std::placeholders::_1)));
-            modules->reg_method("remove_object_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::remove_object_err, this, std::placeholders::_1)));
-            modules->reg_method("get_object_count_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::get_object_count_rsp, this, std::placeholders::_1)));
-            modules->reg_method("get_object_count_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::get_object_count_err, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_dbproxy_rsp_cb_reg_hub_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::reg_hub_rsp, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_dbproxy_rsp_cb_reg_hub_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::reg_hub_err, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_dbproxy_rsp_cb_create_persisted_object_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::create_persisted_object_rsp, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_dbproxy_rsp_cb_create_persisted_object_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::create_persisted_object_err, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_dbproxy_rsp_cb_updata_persisted_object_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::updata_persisted_object_rsp, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_dbproxy_rsp_cb_updata_persisted_object_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::updata_persisted_object_err, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_dbproxy_rsp_cb_find_and_modify_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::find_and_modify_rsp, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_dbproxy_rsp_cb_find_and_modify_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::find_and_modify_err, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_dbproxy_rsp_cb_remove_object_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::remove_object_rsp, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_dbproxy_rsp_cb_remove_object_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::remove_object_err, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_dbproxy_rsp_cb_get_object_count_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::get_object_count_rsp, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_dbproxy_rsp_cb_get_object_count_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::get_object_count_err, this, std::placeholders::_1)));
         }
 
         void reg_hub_rsp(const msgpack11::MsgPack::array& inArray){
@@ -670,13 +670,13 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_method("reg_hub", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::reg_hub, this, std::placeholders::_1)));
-            _modules->reg_method("create_persisted_object", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::create_persisted_object, this, std::placeholders::_1)));
-            _modules->reg_method("updata_persisted_object", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::updata_persisted_object, this, std::placeholders::_1)));
-            _modules->reg_method("find_and_modify", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::find_and_modify, this, std::placeholders::_1)));
-            _modules->reg_method("remove_object", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::remove_object, this, std::placeholders::_1)));
-            _modules->reg_method("get_object_info", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::get_object_info, this, std::placeholders::_1)));
-            _modules->reg_method("get_object_count", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::get_object_count, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_dbproxy_reg_hub", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::reg_hub, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_dbproxy_create_persisted_object", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::create_persisted_object, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_dbproxy_updata_persisted_object", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::updata_persisted_object, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_dbproxy_find_and_modify", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::find_and_modify, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_dbproxy_remove_object", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::remove_object, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_dbproxy_get_object_info", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::get_object_info, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_dbproxy_get_object_count", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::get_object_count, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string)> sig_reg_hub;
@@ -769,8 +769,8 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_method("ack_get_object_info", std::make_tuple(shared_from_this(), std::bind(&dbproxy_call_hub_module::ack_get_object_info, this, std::placeholders::_1)));
-            _modules->reg_method("ack_get_object_info_end", std::make_tuple(shared_from_this(), std::bind(&dbproxy_call_hub_module::ack_get_object_info_end, this, std::placeholders::_1)));
+            _modules->reg_method("dbproxy_call_hub_ack_get_object_info", std::make_tuple(shared_from_this(), std::bind(&dbproxy_call_hub_module::ack_get_object_info, this, std::placeholders::_1)));
+            _modules->reg_method("dbproxy_call_hub_ack_get_object_info_end", std::make_tuple(shared_from_this(), std::bind(&dbproxy_call_hub_module::ack_get_object_info_end, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string, std::vector<uint8_t>)> sig_ack_get_object_info;

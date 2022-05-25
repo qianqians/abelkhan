@@ -84,10 +84,10 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_method("heartbeats_rsp", std::make_tuple(shared_from_this(), std::bind(&client_call_gate_rsp_cb::heartbeats_rsp, this, std::placeholders::_1)));
-            modules->reg_method("heartbeats_err", std::make_tuple(shared_from_this(), std::bind(&client_call_gate_rsp_cb::heartbeats_err, this, std::placeholders::_1)));
-            modules->reg_method("get_hub_info_rsp", std::make_tuple(shared_from_this(), std::bind(&client_call_gate_rsp_cb::get_hub_info_rsp, this, std::placeholders::_1)));
-            modules->reg_method("get_hub_info_err", std::make_tuple(shared_from_this(), std::bind(&client_call_gate_rsp_cb::get_hub_info_err, this, std::placeholders::_1)));
+            modules->reg_method("client_call_gate_rsp_cb_heartbeats_rsp", std::make_tuple(shared_from_this(), std::bind(&client_call_gate_rsp_cb::heartbeats_rsp, this, std::placeholders::_1)));
+            modules->reg_method("client_call_gate_rsp_cb_heartbeats_err", std::make_tuple(shared_from_this(), std::bind(&client_call_gate_rsp_cb::heartbeats_err, this, std::placeholders::_1)));
+            modules->reg_method("client_call_gate_rsp_cb_get_hub_info_rsp", std::make_tuple(shared_from_this(), std::bind(&client_call_gate_rsp_cb::get_hub_info_rsp, this, std::placeholders::_1)));
+            modules->reg_method("client_call_gate_rsp_cb_get_hub_info_err", std::make_tuple(shared_from_this(), std::bind(&client_call_gate_rsp_cb::get_hub_info_err, this, std::placeholders::_1)));
         }
 
         void heartbeats_rsp(const msgpack11::MsgPack::array& inArray){
@@ -241,8 +241,8 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_method("reg_hub_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_rsp_cb::reg_hub_rsp, this, std::placeholders::_1)));
-            modules->reg_method("reg_hub_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_rsp_cb::reg_hub_err, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_gate_rsp_cb_reg_hub_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_rsp_cb::reg_hub_rsp, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_gate_rsp_cb_reg_hub_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_rsp_cb::reg_hub_err, this, std::placeholders::_1)));
         }
 
         void reg_hub_rsp(const msgpack11::MsgPack::array& inArray){
@@ -404,9 +404,9 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_method("heartbeats", std::make_tuple(shared_from_this(), std::bind(&client_call_gate_module::heartbeats, this, std::placeholders::_1)));
-            _modules->reg_method("get_hub_info", std::make_tuple(shared_from_this(), std::bind(&client_call_gate_module::get_hub_info, this, std::placeholders::_1)));
-            _modules->reg_method("forward_client_call_hub", std::make_tuple(shared_from_this(), std::bind(&client_call_gate_module::forward_client_call_hub, this, std::placeholders::_1)));
+            _modules->reg_method("client_call_gate_heartbeats", std::make_tuple(shared_from_this(), std::bind(&client_call_gate_module::heartbeats, this, std::placeholders::_1)));
+            _modules->reg_method("client_call_gate_get_hub_info", std::make_tuple(shared_from_this(), std::bind(&client_call_gate_module::get_hub_info, this, std::placeholders::_1)));
+            _modules->reg_method("client_call_gate_forward_client_call_hub", std::make_tuple(shared_from_this(), std::bind(&client_call_gate_module::forward_client_call_hub, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void()> sig_heartbeats;
@@ -465,11 +465,11 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_method("reg_hub", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::reg_hub, this, std::placeholders::_1)));
-            _modules->reg_method("disconnect_client", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::disconnect_client, this, std::placeholders::_1)));
-            _modules->reg_method("forward_hub_call_client", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::forward_hub_call_client, this, std::placeholders::_1)));
-            _modules->reg_method("forward_hub_call_group_client", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::forward_hub_call_group_client, this, std::placeholders::_1)));
-            _modules->reg_method("forward_hub_call_global_client", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::forward_hub_call_global_client, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_gate_reg_hub", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::reg_hub, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_gate_disconnect_client", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::disconnect_client, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_gate_forward_hub_call_client", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::forward_hub_call_client, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_gate_forward_hub_call_group_client", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::forward_hub_call_group_client, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_gate_forward_hub_call_global_client", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::forward_hub_call_global_client, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string, std::string)> sig_reg_hub;

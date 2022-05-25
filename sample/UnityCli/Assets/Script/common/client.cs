@@ -40,13 +40,12 @@ namespace client
             });
         }
 
-        public void call_hub(string hub, string module, string func, ArrayList argv)
+        public void call_hub(string hub, string func, ArrayList argv)
         {
             var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
             using (MemoryStream st = new MemoryStream())
             {
                 var _event = new ArrayList();
-                _event.Add(module);
                 _event.Add(func);
                 _event.Add(argv);
                 _serialization.Pack(st, _event);
@@ -92,13 +91,12 @@ namespace client
             });
         }
 
-        public void call_hub(string module, string func, ArrayList argv)
+        public void call_hub(string func, ArrayList argv)
         {
             var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
             using (MemoryStream st = new MemoryStream())
             {
                 var _event = new ArrayList();
-                _event.Add(module);
                 _event.Add(func);
                 _event.Add(argv);
                 _serialization.Pack(st, _event);
@@ -177,12 +175,11 @@ namespace client
                 var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
                 var _event = _serialization.Unpack(st);
 
-                var module = ((MsgPack.MessagePackObject)_event[0]).AsString();
-                var func = ((MsgPack.MessagePackObject)_event[1]).AsString();
-                var argvs = ((MsgPack.MessagePackObject)_event[2]).AsList();
+                var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
+                var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
                 current_hub = hub_name;
-                modulemanager.process_module_mothed(module, func, argvs);
+                modulemanager.process_module_mothed(func, argvs);
                 current_hub = "";
             }
         }
@@ -197,14 +194,13 @@ namespace client
                 var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
                 var _event = _serialization.Unpack(st);
 
-                var module = ((MsgPack.MessagePackObject)_event[0]).AsString();
-                var func = ((MsgPack.MessagePackObject)_event[1]).AsString();
-                var argvs = ((MsgPack.MessagePackObject)_event[2]).AsList();
+                var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
+                var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
                 var _hubproxy = _ch_hubproxy_set[_hub_call_client_module.current_ch];
 
                 current_hub = _hubproxy._hub_name;
-                modulemanager.process_module_mothed(module, func, argvs);
+                modulemanager.process_module_mothed(func, argvs);
                 current_hub = "";
             }
         }
@@ -229,17 +225,17 @@ namespace client
             _gateproxy?.get_hub_info(hub_type, cb);
         }
 
-        public void call_hub(string hub_name, string module, string func, ArrayList argv)
+        public void call_hub(string hub_name, string func, ArrayList argv)
         {
             if (_hubproxy_set.TryGetValue(hub_name, out hubproxy _hubproxy))
             {
-                _hubproxy.call_hub(module, func, argv);
+                _hubproxy.call_hub(func, argv);
                 return;
             }
 
             if (_gateproxy != null)
             {
-                _gateproxy.call_hub(hub_name, module, func, argv);
+                _gateproxy.call_hub(hub_name, func, argv);
             }
         }
 
@@ -416,7 +412,7 @@ namespace client
             }
 
             abelkhan.TinyTimer.poll();
-
+			
             Int64 tick_end = timer.refresh();
 
             return tick_end - tick_begin;

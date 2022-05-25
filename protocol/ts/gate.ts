@@ -94,11 +94,11 @@ export class client_call_gate_rsp_cb extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("client_call_gate_rsp_cb");
         this.map_heartbeats = new Map<number, client_call_gate_heartbeats_cb>();
-        modules.reg_method("heartbeats_rsp", [this, this.heartbeats_rsp.bind(this)]);
-        modules.reg_method("heartbeats_err", [this, this.heartbeats_err.bind(this)]);
+        modules.reg_method("client_call_gate_rsp_cb_heartbeats_rsp", [this, this.heartbeats_rsp.bind(this)]);
+        modules.reg_method("client_call_gate_rsp_cb_heartbeats_err", [this, this.heartbeats_err.bind(this)]);
         this.map_get_hub_info = new Map<number, client_call_gate_get_hub_info_cb>();
-        modules.reg_method("get_hub_info_rsp", [this, this.get_hub_info_rsp.bind(this)]);
-        modules.reg_method("get_hub_info_err", [this, this.get_hub_info_err.bind(this)]);
+        modules.reg_method("client_call_gate_rsp_cb_get_hub_info_rsp", [this, this.get_hub_info_rsp.bind(this)]);
+        modules.reg_method("client_call_gate_rsp_cb_get_hub_info_err", [this, this.get_hub_info_err.bind(this)]);
     }
     public heartbeats_rsp(inArray:any[]){
         let uuid = inArray[0];
@@ -255,8 +255,8 @@ export class hub_call_gate_rsp_cb extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("hub_call_gate_rsp_cb");
         this.map_reg_hub = new Map<number, hub_call_gate_reg_hub_cb>();
-        modules.reg_method("reg_hub_rsp", [this, this.reg_hub_rsp.bind(this)]);
-        modules.reg_method("reg_hub_err", [this, this.reg_hub_err.bind(this)]);
+        modules.reg_method("hub_call_gate_rsp_cb_reg_hub_rsp", [this, this.reg_hub_rsp.bind(this)]);
+        modules.reg_method("hub_call_gate_rsp_cb_reg_hub_err", [this, this.reg_hub_err.bind(this)]);
     }
     public reg_hub_rsp(inArray:any[]){
         let uuid = inArray[0];
@@ -399,9 +399,9 @@ export class client_call_gate_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("client_call_gate");
         this.modules = modules;
-        this.modules.reg_method("heartbeats", [this, this.heartbeats.bind(this)]);
-        this.modules.reg_method("get_hub_info", [this, this.get_hub_info.bind(this)]);
-        this.modules.reg_method("forward_client_call_hub", [this, this.forward_client_call_hub.bind(this)]);
+        this.modules.reg_method("client_call_gate_heartbeats", [this, this.heartbeats.bind(this)]);
+        this.modules.reg_method("client_call_gate_get_hub_info", [this, this.get_hub_info.bind(this)]);
+        this.modules.reg_method("client_call_gate_forward_client_call_hub", [this, this.forward_client_call_hub.bind(this)]);
 
         this.cb_heartbeats = null;
         this.cb_get_hub_info = null;
@@ -466,11 +466,11 @@ export class hub_call_gate_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("hub_call_gate");
         this.modules = modules;
-        this.modules.reg_method("reg_hub", [this, this.reg_hub.bind(this)]);
-        this.modules.reg_method("disconnect_client", [this, this.disconnect_client.bind(this)]);
-        this.modules.reg_method("forward_hub_call_client", [this, this.forward_hub_call_client.bind(this)]);
-        this.modules.reg_method("forward_hub_call_group_client", [this, this.forward_hub_call_group_client.bind(this)]);
-        this.modules.reg_method("forward_hub_call_global_client", [this, this.forward_hub_call_global_client.bind(this)]);
+        this.modules.reg_method("hub_call_gate_reg_hub", [this, this.reg_hub.bind(this)]);
+        this.modules.reg_method("hub_call_gate_disconnect_client", [this, this.disconnect_client.bind(this)]);
+        this.modules.reg_method("hub_call_gate_forward_hub_call_client", [this, this.forward_hub_call_client.bind(this)]);
+        this.modules.reg_method("hub_call_gate_forward_hub_call_group_client", [this, this.forward_hub_call_group_client.bind(this)]);
+        this.modules.reg_method("hub_call_gate_forward_hub_call_global_client", [this, this.forward_hub_call_global_client.bind(this)]);
 
         this.cb_reg_hub = null;
         this.cb_disconnect_client = null;

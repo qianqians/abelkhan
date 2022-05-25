@@ -186,14 +186,14 @@ namespace abelkhan
         public center_rsp_cb(abelkhan.modulemng modules) : base("center_rsp_cb")
         {
             map_reg_server = new Dictionary<UInt64, center_reg_server_cb>();
-            modules.reg_method("reg_server_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server_rsp));
-            modules.reg_method("reg_server_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server_err));
+            modules.reg_method("center_rsp_cb_reg_server_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server_rsp));
+            modules.reg_method("center_rsp_cb_reg_server_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server_err));
             map_reconn_reg_server = new Dictionary<UInt64, center_reconn_reg_server_cb>();
-            modules.reg_method("reconn_reg_server_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server_rsp));
-            modules.reg_method("reconn_reg_server_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server_err));
+            modules.reg_method("center_rsp_cb_reconn_reg_server_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server_rsp));
+            modules.reg_method("center_rsp_cb_reconn_reg_server_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server_err));
             map_heartbeat = new Dictionary<UInt64, center_heartbeat_cb>();
-            modules.reg_method("heartbeat_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeat_rsp));
-            modules.reg_method("heartbeat_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeat_err));
+            modules.reg_method("center_rsp_cb_heartbeat_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeat_rsp));
+            modules.reg_method("center_rsp_cb_heartbeat_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeat_err));
         }
 
         public void reg_server_rsp(IList<MsgPack.MessagePackObject> inArray){
@@ -563,10 +563,10 @@ namespace abelkhan
         public center_module(abelkhan.modulemng _modules) : base("center")
         {
             modules = _modules;
-            modules.reg_method("reg_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server));
-            modules.reg_method("reconn_reg_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server));
-            modules.reg_method("heartbeat", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeat));
-            modules.reg_method("closed", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, closed));
+            modules.reg_method("center_reg_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server));
+            modules.reg_method("center_reconn_reg_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server));
+            modules.reg_method("center_heartbeat", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeat));
+            modules.reg_method("center_closed", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, closed));
         }
 
         public event Action<string, string, string, UInt16> on_reg_server;
@@ -621,9 +621,9 @@ namespace abelkhan
         public center_call_server_module(abelkhan.modulemng _modules) : base("center_call_server")
         {
             modules = _modules;
-            modules.reg_method("close_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, close_server));
-            modules.reg_method("console_close_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, console_close_server));
-            modules.reg_method("svr_be_closed", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, svr_be_closed));
+            modules.reg_method("center_call_server_close_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, close_server));
+            modules.reg_method("center_call_server_console_close_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, console_close_server));
+            modules.reg_method("center_call_server_svr_be_closed", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, svr_be_closed));
         }
 
         public event Action on_close_server;
@@ -657,8 +657,8 @@ namespace abelkhan
         public center_call_hub_module(abelkhan.modulemng _modules) : base("center_call_hub")
         {
             modules = _modules;
-            modules.reg_method("distribute_server_address", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, distribute_server_address));
-            modules.reg_method("reload", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reload));
+            modules.reg_method("center_call_hub_distribute_server_address", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, distribute_server_address));
+            modules.reg_method("center_call_hub_reload", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reload));
         }
 
         public event Action<string, string, string, UInt16> on_distribute_server_address;
@@ -686,9 +686,9 @@ namespace abelkhan
         public gm_center_module(abelkhan.modulemng _modules) : base("gm_center")
         {
             modules = _modules;
-            modules.reg_method("confirm_gm", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, confirm_gm));
-            modules.reg_method("close_clutter", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, close_clutter));
-            modules.reg_method("reload", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reload));
+            modules.reg_method("gm_center_confirm_gm", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, confirm_gm));
+            modules.reg_method("gm_center_close_clutter", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, close_clutter));
+            modules.reg_method("gm_center_reload", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reload));
         }
 
         public event Action<string> on_confirm_gm;

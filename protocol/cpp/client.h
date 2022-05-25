@@ -62,8 +62,8 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_method("ntf_cuuid", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::ntf_cuuid, this, std::placeholders::_1)));
-            _modules->reg_method("call_client", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::call_client, this, std::placeholders::_1)));
+            _modules->reg_method("gate_call_client_ntf_cuuid", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::ntf_cuuid, this, std::placeholders::_1)));
+            _modules->reg_method("gate_call_client_call_client", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::call_client, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string)> sig_ntf_cuuid;
