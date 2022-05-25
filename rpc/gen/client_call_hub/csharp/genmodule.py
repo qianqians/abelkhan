@@ -10,7 +10,6 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
     code_constructor = "    public class " + module_name + "_module : common.imodule {\n"
     code_constructor += "        public " + module_name + "_module()\n"
     code_constructor += "        {\n"
-    code_constructor += "            hub.hub._modules.add_module(\"" + module_name + "\", this);\n\n"
         
     code_constructor_cb = ""
     rsp_code = ""
@@ -19,7 +18,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
         func_name = i[0]
 
         if i[1] == "ntf":
-            code_constructor += "            reg_cb(\"" + func_name + "\", " + func_name + ");\n"
+            code_constructor += "            hub.hub._modules.add_mothed(\"" + module_name + "_" + func_name + "\", " + func_name + ");\n"
                 
             code_func += "        public event Action"
             if len(i[2]) > 0:
@@ -124,7 +123,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
             code_func += "            }\n"
             code_func += "        }\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
-            code_constructor += "            reg_cb(\"" + func_name + "\", " + func_name + ");\n"
+            code_constructor += "            hub.hub._modules.add_mothed(\"" + module_name + "_" + func_name + "\", " + func_name + ");\n"
             
             code_func += "        public event Action"
             if len(i[2]) > 0:
@@ -280,7 +279,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     rsp_code += "            }\n"                                                     
                     rsp_code += "            _argv_" + _argv_uuid + ".Add(_array_" + _array_uuid + ");\n"
-            rsp_code += "            hub.hub._gates.call_client(_client_uuid_" + _client_uuid + ", \"" + module_name + "_rsp_cb\", \"" + func_name + "_rsp\", _argv_" + _argv_uuid + ");\n"
+            rsp_code += "            hub.hub._gates.call_client(_client_uuid_" + _client_uuid + ", \"" + module_name + "_rsp_cb_" + func_name + "_rsp\", _argv_" + _argv_uuid + ");\n"
             rsp_code += "        }\n\n"
 
             rsp_code += "        public void err("
@@ -320,7 +319,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     rsp_code += "            }\n"                                                     
                     rsp_code += "            _argv_" + _argv_uuid + ".Add(_array_" + _array_uuid + ");\n"
-            rsp_code += "            hub.hub._gates.call_client(_client_uuid_" + _client_uuid + ", \"" + module_name + "_rsp_cb\", \"" + func_name + "_err\", _argv_" + _argv_uuid + ");\n"
+            rsp_code += "            hub.hub._gates.call_client(_client_uuid_" + _client_uuid + ", \"" + module_name + "_rsp_cb_" + func_name + "_err\", _argv_" + _argv_uuid + ");\n"
             rsp_code += "        }\n\n"
             rsp_code += "    }\n\n"
 

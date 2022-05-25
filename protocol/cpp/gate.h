@@ -357,13 +357,13 @@ namespace abelkhan
             msgpack11::MsgPack::array _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4;
             _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.push_back(uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56);
             _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.push_back(timetmp);
-            call_module_method("client_call_gate_heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+            call_module_method("client_call_gate_rsp_cb_heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4;
             _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.push_back(uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56);
-            call_module_method("client_call_gate_heartbeats_err", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+            call_module_method("client_call_gate_rsp_cb_heartbeats_err", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
         }
 
     };
@@ -386,13 +386,13 @@ namespace abelkhan
                 _array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2.push_back(hub_info::hub_info_to_protcol(v_53b78086_1765_5879_87b4_63333838766a));
             }
             _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.push_back(_array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2);
-            call_module_method("client_call_gate_get_hub_info_rsp", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
+            call_module_method("client_call_gate_rsp_cb_get_hub_info_rsp", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24;
             _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.push_back(uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b);
-            call_module_method("client_call_gate_get_hub_info_err", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
+            call_module_method("client_call_gate_rsp_cb_get_hub_info_err", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
         }
 
     };
@@ -447,13 +447,13 @@ namespace abelkhan
         void rsp(){
             msgpack11::MsgPack::array _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7;
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push_back(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
-            call_module_method("hub_call_gate_reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+            call_module_method("hub_call_gate_rsp_cb_reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7;
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push_back(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
-            call_module_method("hub_call_gate_reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+            call_module_method("hub_call_gate_rsp_cb_reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 
     };

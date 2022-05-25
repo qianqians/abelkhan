@@ -49,12 +49,11 @@ public:
 				return;
 			}
 
-			auto module_name = InArray[0].string_value();
-			auto func_name = InArray[1].string_value();
-			auto argvs = InArray[2].array_items();
+			auto func_name = InArray[0].string_value();
+			auto argvs = InArray[1].array_items();
 
 			_hubmng->current_hubproxy = _hubmng->get_hub(_hub_call_hub_module->current_ch);
-			_hub->modules.process_module_mothed(module_name, func_name, argvs);
+			_hub->modules.process_module_mothed(func_name, argvs);
 			_hubmng->current_hubproxy = nullptr;
 		}
 		catch (std::exception e) {

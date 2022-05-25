@@ -396,12 +396,12 @@ export class center_reg_server_rsp extends abelkhan.Icaller {
 
     public rsp(){
         let _argv_86ab8166_c1a7_3809_8c9b_df444f746076:any[] = [this.uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda];
-        this.call_module_method("center_reg_server_rsp", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
+        this.call_module_method("center_rsp_cb_reg_server_rsp", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
     }
 
     public err(){
         let _argv_86ab8166_c1a7_3809_8c9b_df444f746076:any[] = [this.uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda];
-        this.call_module_method("center_reg_server_err", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
+        this.call_module_method("center_rsp_cb_reg_server_err", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
     }
 
 }
@@ -415,12 +415,12 @@ export class center_reconn_reg_server_rsp extends abelkhan.Icaller {
 
     public rsp(){
         let _argv_a181e793_c43f_3b7f_b19e_178395e5927d:any[] = [this.uuid_39461677_ebd9_335f_830b_8d355adba2f0];
-        this.call_module_method("center_reconn_reg_server_rsp", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
+        this.call_module_method("center_rsp_cb_reconn_reg_server_rsp", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
     }
 
     public err(){
         let _argv_a181e793_c43f_3b7f_b19e_178395e5927d:any[] = [this.uuid_39461677_ebd9_335f_830b_8d355adba2f0];
-        this.call_module_method("center_reconn_reg_server_err", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
+        this.call_module_method("center_rsp_cb_reconn_reg_server_err", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
     }
 
 }
@@ -434,12 +434,12 @@ export class center_heartbeat_rsp extends abelkhan.Icaller {
 
     public rsp(){
         let _argv_af04a217_eafb_393c_9e34_0303485bef77:any[] = [this.uuid_617b63d0_e6d6_3c80_8c13_63a98d39e89f];
-        this.call_module_method("center_heartbeat_rsp", _argv_af04a217_eafb_393c_9e34_0303485bef77);
+        this.call_module_method("center_rsp_cb_heartbeat_rsp", _argv_af04a217_eafb_393c_9e34_0303485bef77);
     }
 
     public err(){
         let _argv_af04a217_eafb_393c_9e34_0303485bef77:any[] = [this.uuid_617b63d0_e6d6_3c80_8c13_63a98d39e89f];
-        this.call_module_method("center_heartbeat_err", _argv_af04a217_eafb_393c_9e34_0303485bef77);
+        this.call_module_method("center_rsp_cb_heartbeat_err", _argv_af04a217_eafb_393c_9e34_0303485bef77);
     }
 
 }

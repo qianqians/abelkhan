@@ -8,28 +8,28 @@ namespace common
 	{
 		public modulemanager()
 		{
-			modules = new Dictionary<string, imodule>();
+			motheds = new Dictionary<string, Action<IList<MsgPack.MessagePackObject> > >();
 		}
 
-		public void add_module(String module_name, imodule _module)
+		public void add_mothed(string cb_name, Action<IList<MsgPack.MessagePackObject>> cb)
 		{
-			modules.Add(module_name, _module);
+			motheds.Add(cb_name, cb);
 		}
 
-		public void process_module_mothed(String module_name, String func_name, IList<MsgPack.MessagePackObject> argvs)
+		public void process_module_mothed(String func_name, IList<MsgPack.MessagePackObject> argvs)
 		{
-            if (modules.TryGetValue(module_name, out imodule _module))
+            if (motheds.TryGetValue(func_name, out Action<IList<MsgPack.MessagePackObject> > mothed))
 			{
-				_module.invoke(func_name, argvs);
+				mothed.Invoke(argvs);
 			}
 			else
             {
-                log.log.err("do not have a module name:{0}", module_name);
-				throw new moduleException(String.Format("modulemanager.process_module_mothed unreg module_name:%s!", module_name));
+                log.log.err("do not have a mothed name:{0}", func_name);
+				throw new moduleException(String.Format("modulemanager.process_module_mothed unreg mothed name:%s!", func_name));
 			}
 		}
 
-		private Dictionary<string, imodule> modules;
+		private Dictionary<string, Action<IList<MsgPack.MessagePackObject> > > motheds;
 	}
 }
 

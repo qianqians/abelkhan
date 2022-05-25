@@ -24,13 +24,13 @@ namespace abelkhan
         public void rsp(){
             var _argv_ca6794ee_a403_309d_b40e_f37578d53e8d = new ArrayList();
             _argv_ca6794ee_a403_309d_b40e_f37578d53e8d.Add(uuid_94d71f95_a670_3916_89a9_44df18fb711b);
-            _client_handle.call_hub(hub_name_ca6794ee_a403_309d_b40e_f37578d53e8d, "test_s2c_rsp_cb", "ping_rsp", _argv_ca6794ee_a403_309d_b40e_f37578d53e8d);
+            _client_handle.call_hub(hub_name_ca6794ee_a403_309d_b40e_f37578d53e8d, "test_s2c_rsp_cb_ping_rsp", _argv_ca6794ee_a403_309d_b40e_f37578d53e8d);
         }
 
         public void err(){
             var _argv_ca6794ee_a403_309d_b40e_f37578d53e8d = new ArrayList();
             _argv_ca6794ee_a403_309d_b40e_f37578d53e8d.Add(uuid_94d71f95_a670_3916_89a9_44df18fb711b);
-            _client_handle.call_hub(hub_name_ca6794ee_a403_309d_b40e_f37578d53e8d, "test_s2c_rsp_cb", "ping_err", _argv_ca6794ee_a403_309d_b40e_f37578d53e8d);
+            _client_handle.call_hub(hub_name_ca6794ee_a403_309d_b40e_f37578d53e8d, "test_s2c_rsp_cb_ping_err", _argv_ca6794ee_a403_309d_b40e_f37578d53e8d);
         }
 
     }
@@ -40,9 +40,7 @@ namespace abelkhan
         public test_s2c_module(client.client client_handle_) 
         {
             _client_handle = client_handle_;
-            _client_handle.modulemanager.add_module("test_s2c", this);
-
-            reg_cb("ping", ping);
+            _client_handle.modulemanager.add_mothed("test_s2c_ping", ping);
         }
 
         public event Action on_ping;

@@ -16,7 +16,6 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     cb_code_constructor += "        {\n"
     cb_code_constructor += "        }\n\n"
     cb_code_constructor += "        void Init(std::shared_ptr<hub::hub_service> _hub_service){\n"
-    cb_code_constructor += "            _hub_service->modules.add_module(\"" + module_name + "_rsp_cb\", std::static_pointer_cast<common::imodule>(shared_from_this()));\n\n"
     cb_code_section = ""
 
     code = "    class " + module_name + "_clientproxy;\n"
@@ -134,15 +133,15 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                     tmp_code += "            _argv_" + _argv_uuid + ".push_back(_array_" + _array_uuid + ");\n"
             if i[1] == "ntf":
                 cp_code += tmp_code
-                cp_code += "            _hub_handle->_gatemng->call_client(client_uuid_" + _client_uuid + ", \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n"
+                cp_code += "            _hub_handle->_gatemng->call_client(client_uuid_" + _client_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
                 cp_code += "        }\n\n"
             elif i[1] == "multicast":
                 cm_code += tmp_code
-                cm_code += "            _hub_handle->_gatemng->call_group_client(client_uuids_" + _client_uuid + ", \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n"
+                cm_code += "            _hub_handle->_gatemng->call_group_client(client_uuids_" + _client_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
                 cm_code += "        }\n\n"
             elif i[1] == "broadcast":
                 cbc_code += tmp_code
-                cbc_code += "            _hub_handle->_gatemng->call_global_client(\"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n"
+                cbc_code += "            _hub_handle->_gatemng->call_global_client(\"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
                 cbc_code += "        }\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
             cb_func += "    class " + module_name + "_rsp_cb;\n"
@@ -228,8 +227,8 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
 
             cb_code += "        std::mutex mutex_map_" + func_name + ";\n"
             cb_code += "        std::map<uint64_t, std::shared_ptr<" + module_name + "_"  + func_name + "_cb> > map_" + func_name + ";\n"
-            cb_code_constructor += "            reg_cb(\"" + func_name + "_rsp\", std::bind(&" + module_name + "_rsp_cb::" + func_name + "_rsp, this, std::placeholders::_1));\n"
-            cb_code_constructor += "            reg_cb(\"" + func_name + "_err\", std::bind(&" + module_name + "_rsp_cb::" + func_name + "_err, this, std::placeholders::_1));\n"
+            cb_code_constructor += "            _hub_service->modules.add_mothed(\"" + module_name + "_rsp_cb_" + func_name + "_rsp\", std::bind(&" + module_name + "_rsp_cb::" + func_name + "_rsp, this, std::placeholders::_1));\n"
+            cb_code_constructor += "            _hub_service->modules.add_mothed(\"" + module_name + "_rsp_cb_" + func_name + "_err\", std::bind(&" + module_name + "_rsp_cb::" + func_name + "_err, this, std::placeholders::_1));\n"
 
             cb_code_section += "        void " + func_name + "_rsp(const msgpack11::MsgPack::array& inArray){\n"
             cb_code_section += "            auto uuid = inArray[0].uint64_value();\n"
@@ -471,7 +470,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     cp_code += "            }\n"                                                     
                     cp_code += "            _argv_" + _argv_uuid + ".push_back(_array_" + _array_uuid + ");\n"
-            cp_code += "            _hub_handle->_gatemng->call_client(client_uuid_" + _client_uuid + ", \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n"
+            cp_code += "            _hub_handle->_gatemng->call_client(client_uuid_" + _client_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
             cp_code += "            auto cb_" + func_name + "_obj = std::make_shared<" + module_name + "_"  + func_name + "_cb>(uuid_" + _cb_uuid_uuid + ", rsp_cb_" + module_name + "_handle);\n"
             cp_code += "            std::lock_guard<std::mutex> l(rsp_cb_" + module_name + "_handle->mutex_map_" + func_name + ");\n"
             cp_code += "            rsp_cb_" + module_name + "_handle->map_" + func_name + ".insert(std::make_pair(uuid_" + _cb_uuid_uuid + ", cb_" + func_name + "_obj));\n"

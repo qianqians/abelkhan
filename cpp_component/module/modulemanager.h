@@ -10,27 +10,28 @@ namespace common
 {
 
 class modulemanager {
+protected:
+	std::map<std::string, std::function< void(msgpack11::MsgPack::array) > > motheds;
+
 public:
-	void add_module(std::string module_name, std::shared_ptr<imodule> module)
+	void add_mothed(std::string mothed_name, std::function< void(msgpack11::MsgPack::array) > mothed)
 	{
-		modules.insert(std::make_pair(module_name, module));
+		motheds.insert(std::make_pair(mothed_name, mothed));
 	}
 
-	void process_module_mothed(std::string& module_name, std::string& cb_name, msgpack11::MsgPack::array& InArray)
+	void process_module_mothed(const std::string& mothed_name, msgpack11::MsgPack::array& InArray)
 	{
-		auto module = modules.find(module_name);
-		if (module != modules.end())
+		auto mothed = motheds.find(mothed_name);
+		if (mothed != motheds.end())
 		{
-			(module->second)->invoke(cb_name, InArray);
+			(mothed->second)(InArray);
 		}
 		else {
-			spdlog::error("modulemanager.process_module_mothed unreg module name:{0}!", module_name);
-			throw moduleException(std::format("modulemanager.process_module_mothed unreg module name:{0}!", module_name));
+			spdlog::error("modulemanager.process_module_mothed unreg mothed name:{0}!", mothed_name);
+			throw moduleException(std::format("modulemanager.process_module_mothed unreg mothed name:{0}!", mothed_name));
 		}
 	}
 
-private:
-	std::map<std::string, std::shared_ptr<imodule> > modules;
 
 };
 

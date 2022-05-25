@@ -77,12 +77,11 @@ public:
 				return;
 			}
 
-			auto _module = InArray[0].string_value();
-			auto func = InArray[1].string_value();
-			auto argvs = InArray[2].array_items();
+			auto func = InArray[0].string_value();
+			auto argvs = InArray[1].array_items();
 
 			_gates->current_client_cuuid = _proxy->_cuuid;
-			_hub->modules.process_module_mothed(_module, func, argvs);
+			_hub->modules.process_module_mothed(func, argvs);
 			_gates->current_client_cuuid = "";
 		}
 		catch (std::exception e) {

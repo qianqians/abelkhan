@@ -221,9 +221,8 @@ void gatemanager::heartbeat_client(int64_t ticktime) {
 	}
 }
 
-void gatemanager::call_client(const std::string& cuuid, const std::string& _module, const std::string& func, const msgpack11::MsgPack::array& argvs) {
+void gatemanager::call_client(const std::string& cuuid, const std::string& func, const msgpack11::MsgPack::array& argvs) {
 	msgpack11::MsgPack::array event_;
-	event_.push_back(_module);
 	event_.push_back(func);
 	event_.push_back(argvs);
 	msgpack11::MsgPack _pack(event_);
@@ -247,9 +246,8 @@ void gatemanager::call_client(const std::string& cuuid, const std::string& _modu
 
 }
 
-void gatemanager::call_group_client(const std::vector<std::string>& cuuids, const std::string& _module, const std::string& func, const msgpack11::MsgPack::array& argvs) {
+void gatemanager::call_group_client(const std::vector<std::string>& cuuids, const std::string& func, const msgpack11::MsgPack::array& argvs) {
 	msgpack11::MsgPack::array event_;
-	event_.push_back(_module);
 	event_.push_back(func);
 	event_.push_back(argvs);
 	msgpack11::MsgPack _pack(event_);
@@ -316,9 +314,8 @@ void gatemanager::call_group_client(const std::vector<std::string>& cuuids, cons
 	}
 }
 
-void gatemanager::call_global_client(const std::string& _module, const std::string& func, const msgpack11::MsgPack::array& argvs) {
+void gatemanager::call_global_client(const std::string& func, const msgpack11::MsgPack::array& argvs) {
 	msgpack11::MsgPack::array event_;
-	event_.push_back(_module);
 	event_.push_back(func);
 	event_.push_back(argvs);
 	msgpack11::MsgPack _pack(event_);

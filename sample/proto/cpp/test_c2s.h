@@ -30,13 +30,13 @@ namespace abelkhan
             _argv_abbb842f_52d0_34e7_9d8d_642d072db165.push_back(uuid_f8b1c4e0_ccd3_3a81_80ee_02001b676fd3);
             _argv_abbb842f_52d0_34e7_9d8d_642d072db165.push_back(ip);
             _argv_abbb842f_52d0_34e7_9d8d_642d072db165.push_back(port);
-            _hub_handle->_gatemng->call_client(_client_cuuid_abbb842f_52d0_34e7_9d8d_642d072db165, "test_c2s_rsp_cb", "get_svr_host_rsp", _argv_abbb842f_52d0_34e7_9d8d_642d072db165);
+            _hub_handle->_gatemng->call_client(_client_cuuid_abbb842f_52d0_34e7_9d8d_642d072db165, "test_c2s_rsp_cb_get_svr_host_rsp", _argv_abbb842f_52d0_34e7_9d8d_642d072db165);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_abbb842f_52d0_34e7_9d8d_642d072db165;
             _argv_abbb842f_52d0_34e7_9d8d_642d072db165.push_back(uuid_f8b1c4e0_ccd3_3a81_80ee_02001b676fd3);
-            _hub_handle->_gatemng->call_client(_client_cuuid_abbb842f_52d0_34e7_9d8d_642d072db165, "test_c2s_rsp_cb", "get_svr_host_err", _argv_abbb842f_52d0_34e7_9d8d_642d072db165);
+            _hub_handle->_gatemng->call_client(_client_cuuid_abbb842f_52d0_34e7_9d8d_642d072db165, "test_c2s_rsp_cb_get_svr_host_err", _argv_abbb842f_52d0_34e7_9d8d_642d072db165);
         }
 
     };
@@ -60,13 +60,13 @@ namespace abelkhan
             _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f.push_back(uuid_e3b24ad3_3493_397d_93f9_1e0d27ae8bc1);
             _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f.push_back(ip);
             _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f.push_back(port);
-            _hub_handle->_gatemng->call_client(_client_cuuid_ea3a8af7_4bd0_3344_a846_4962c0e7c00f, "test_c2s_rsp_cb", "get_websocket_svr_host_rsp", _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f);
+            _hub_handle->_gatemng->call_client(_client_cuuid_ea3a8af7_4bd0_3344_a846_4962c0e7c00f, "test_c2s_rsp_cb_get_websocket_svr_host_rsp", _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f;
             _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f.push_back(uuid_e3b24ad3_3493_397d_93f9_1e0d27ae8bc1);
-            _hub_handle->_gatemng->call_client(_client_cuuid_ea3a8af7_4bd0_3344_a846_4962c0e7c00f, "test_c2s_rsp_cb", "get_websocket_svr_host_err", _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f);
+            _hub_handle->_gatemng->call_client(_client_cuuid_ea3a8af7_4bd0_3344_a846_4962c0e7c00f, "test_c2s_rsp_cb_get_websocket_svr_host_err", _argv_ea3a8af7_4bd0_3344_a846_4962c0e7c00f);
         }
 
     };
@@ -82,11 +82,9 @@ namespace abelkhan
 
         void Init(std::shared_ptr<hub::hub_service> _hub_service){
             hub_handle = _hub_service;
-            _hub_service->modules.add_module("test_c2s", std::static_pointer_cast<common::imodule>(shared_from_this()));
-
-            reg_cb("login", std::bind(&test_c2s_module::login, this, std::placeholders::_1));
-            reg_cb("get_svr_host", std::bind(&test_c2s_module::get_svr_host, this, std::placeholders::_1));
-            reg_cb("get_websocket_svr_host", std::bind(&test_c2s_module::get_websocket_svr_host, this, std::placeholders::_1));
+            _hub_service->modules.add_mothed("test_c2s_login", std::bind(&test_c2s_module::login, this, std::placeholders::_1));
+            _hub_service->modules.add_mothed("test_c2s_get_svr_host", std::bind(&test_c2s_module::get_svr_host, this, std::placeholders::_1));
+            _hub_service->modules.add_mothed("test_c2s_get_websocket_svr_host", std::bind(&test_c2s_module::get_websocket_svr_host, this, std::placeholders::_1));
         }
 
         concurrent::signals<void()> sig_login;

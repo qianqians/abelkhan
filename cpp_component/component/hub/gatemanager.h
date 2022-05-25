@@ -90,11 +90,11 @@ public:
 
 	void heartbeat_client(int64_t ticktime);
 
-	void call_client(const std::string& uuid, const std::string& _module, const std::string& func, const msgpack11::MsgPack::array& argvs);
+	void call_client(const std::string& uuid, const std::string& func, const msgpack11::MsgPack::array& argvs);
 
-	void call_group_client(const std::vector<std::string>& uuids, const std::string& _module, const std::string& func, const msgpack11::MsgPack::array& argvs);
+	void call_group_client(const std::vector<std::string>& uuids, const std::string& func, const msgpack11::MsgPack::array& argvs);
 
-	void call_global_client(const std::string& _module, const std::string& func, const msgpack11::MsgPack::array& argvs);
+	void call_global_client(const std::string& func, const msgpack11::MsgPack::array& argvs);
 
 public:
 	std::string current_client_cuuid;

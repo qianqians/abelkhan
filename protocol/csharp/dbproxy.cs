@@ -778,13 +778,13 @@ namespace abelkhan
         public void rsp(){
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
-            call_module_method("hub_call_dbproxy_reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+            call_module_method("hub_call_dbproxy_rsp_cb_reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 
         public void err(){
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
-            call_module_method("hub_call_dbproxy_reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+            call_module_method("hub_call_dbproxy_rsp_cb_reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 
     }
@@ -799,13 +799,13 @@ namespace abelkhan
         public void rsp(){
             var _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607 = new ArrayList();
             _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.Add(uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b);
-            call_module_method("hub_call_dbproxy_create_persisted_object_rsp", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
+            call_module_method("hub_call_dbproxy_rsp_cb_create_persisted_object_rsp", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
         }
 
         public void err(){
             var _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607 = new ArrayList();
             _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.Add(uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b);
-            call_module_method("hub_call_dbproxy_create_persisted_object_err", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
+            call_module_method("hub_call_dbproxy_rsp_cb_create_persisted_object_err", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
         }
 
     }
@@ -820,13 +820,13 @@ namespace abelkhan
         public void rsp(){
             var _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425 = new ArrayList();
             _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(uuid_16267d40_cddc_312f_87c0_185a55b79ad2);
-            call_module_method("hub_call_dbproxy_updata_persisted_object_rsp", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
+            call_module_method("hub_call_dbproxy_rsp_cb_updata_persisted_object_rsp", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
         }
 
         public void err(){
             var _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425 = new ArrayList();
             _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(uuid_16267d40_cddc_312f_87c0_185a55b79ad2);
-            call_module_method("hub_call_dbproxy_updata_persisted_object_err", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
+            call_module_method("hub_call_dbproxy_rsp_cb_updata_persisted_object_err", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
         }
 
     }
@@ -842,13 +842,13 @@ namespace abelkhan
             var _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58 = new ArrayList();
             _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(uuid_c7725286_bd2c_331b_8ba9_90ffcefab6ae);
             _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(object_info_95c5b6a3_d4a6_3baf_8fea_9e22167f3d40);
-            call_module_method("hub_call_dbproxy_find_and_modify_rsp", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
+            call_module_method("hub_call_dbproxy_rsp_cb_find_and_modify_rsp", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
         }
 
         public void err(){
             var _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58 = new ArrayList();
             _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(uuid_c7725286_bd2c_331b_8ba9_90ffcefab6ae);
-            call_module_method("hub_call_dbproxy_find_and_modify_err", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
+            call_module_method("hub_call_dbproxy_rsp_cb_find_and_modify_err", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
         }
 
     }
@@ -863,13 +863,13 @@ namespace abelkhan
         public void rsp(){
             var _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da = new ArrayList();
             _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.Add(uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1);
-            call_module_method("hub_call_dbproxy_remove_object_rsp", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
+            call_module_method("hub_call_dbproxy_rsp_cb_remove_object_rsp", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
         }
 
         public void err(){
             var _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da = new ArrayList();
             _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.Add(uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1);
-            call_module_method("hub_call_dbproxy_remove_object_err", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
+            call_module_method("hub_call_dbproxy_rsp_cb_remove_object_err", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
         }
 
     }
@@ -885,13 +885,13 @@ namespace abelkhan
             var _argv_2632cded_162c_3a9b_86ee_462b614cbeea = new ArrayList();
             _argv_2632cded_162c_3a9b_86ee_462b614cbeea.Add(uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2);
             _argv_2632cded_162c_3a9b_86ee_462b614cbeea.Add(count_5292aa87_6be8_3979_a905_592fb57973b5);
-            call_module_method("hub_call_dbproxy_get_object_count_rsp", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
+            call_module_method("hub_call_dbproxy_rsp_cb_get_object_count_rsp", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
         }
 
         public void err(){
             var _argv_2632cded_162c_3a9b_86ee_462b614cbeea = new ArrayList();
             _argv_2632cded_162c_3a9b_86ee_462b614cbeea.Add(uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2);
-            call_module_method("hub_call_dbproxy_get_object_count_err", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
+            call_module_method("hub_call_dbproxy_rsp_cb_get_object_count_err", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
         }
 
     }

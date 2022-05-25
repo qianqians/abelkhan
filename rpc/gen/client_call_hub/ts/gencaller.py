@@ -13,7 +13,6 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     cb_code += "export class " + module_name + "_rsp_cb extends client_handle.imodule {\n"
     cb_code_constructor = "    constructor(modules:client_handle.modulemng){\n"
     cb_code_constructor += "        super();\n"
-    cb_code_constructor += "        modules.add_module(\"" + module_name + "_rsp_cb\", this);\n\n"
     cb_code_section = ""
 
     code = "let rsp_cb_" + module_name + "_handle : " + module_name + "_rsp_cb | null = null;\n"
@@ -89,7 +88,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     code += "        }\n"                                                     
                     code += "        _argv_" + _argv_uuid + ".push(_array_" + _array_uuid + ");\n"
-            code += "        this._client_handle.call_hub(this.hub_name_" + _hub_uuid + ", \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n"
+            code += "        this._client_handle.call_hub(this.hub_name_" + _hub_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
             code += "    }\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
             rsp_fn = "("
@@ -139,8 +138,8 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
 
             cb_code += "    public map_" + func_name + ":Map<number, " + module_name + "_" + func_name + "_cb>;\n"
             cb_code_constructor += "        this.map_" + func_name + " = new Map<number, " + module_name + "_" + func_name + "_cb>();\n"
-            cb_code_constructor += "        this.reg_cb(\"" + func_name + "_rsp\", this." + func_name + "_rsp.bind(this));\n"
-            cb_code_constructor += "        this.reg_cb(\"" + func_name + "_err\", this." + func_name + "_err.bind(this));\n"
+            cb_code_constructor += "        modules.add_method(\"" + module_name + "_rsp_cb_" + func_name + "_rsp\", this." + func_name + "_rsp.bind(this));\n"
+            cb_code_constructor += "        modules.add_method(\"" + module_name + "_rsp_cb_" + func_name + "_err\", this." + func_name + "_err.bind(this));\n"
 
             cb_code_section += "    public " + func_name + "_rsp(inArray:any[]){\n"
             cb_code_section += "        let uuid = inArray[0];\n"
@@ -283,7 +282,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     code += "        }\n"                                                     
                     code += "        _argv_" + _argv_uuid + ".push(_array_" + _array_uuid + ");\n"
-            code += "        this._client_handle.call_hub(this.hub_name_" + _hub_uuid + ", \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n"
+            code += "        this._client_handle.call_hub(this.hub_name_" + _hub_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
             code += "        let cb_" + func_name + "_obj = new " + module_name + "_" + func_name + "_cb(uuid_" + _cb_uuid_uuid + ", rsp_cb_" + module_name + "_handle);\n"
             code += "        if (rsp_cb_" + module_name + "_handle){\n"
             code += "            rsp_cb_" + module_name + "_handle.map_" + func_name + ".set(uuid_" + _cb_uuid_uuid + ", cb_" + func_name + "_obj);\n"

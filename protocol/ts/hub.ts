@@ -338,12 +338,12 @@ export class hub_call_hub_reg_hub_rsp extends abelkhan.Icaller {
 
     public rsp(){
         let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [this.uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67];
-        this.call_module_method("hub_call_hub_reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+        this.call_module_method("hub_call_hub_rsp_cb_reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
     }
 
     public err(){
         let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [this.uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67];
-        this.call_module_method("hub_call_hub_reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+        this.call_module_method("hub_call_hub_rsp_cb_reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
     }
 
 }
@@ -413,12 +413,12 @@ export class client_call_hub_heartbeats_rsp extends abelkhan.Icaller {
     public rsp(timetmp:number){
         let _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4:any[] = [this.uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56];
         _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.push(timetmp);
-        this.call_module_method("client_call_hub_heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+        this.call_module_method("client_call_hub_rsp_cb_heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
     }
 
     public err(){
         let _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4:any[] = [this.uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56];
-        this.call_module_method("client_call_hub_heartbeats_err", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+        this.call_module_method("client_call_hub_rsp_cb_heartbeats_err", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
     }
 
 }

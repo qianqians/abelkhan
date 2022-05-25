@@ -38,13 +38,12 @@ namespace hub
 			_hub_call_gate_caller.disconnect_client(uuid);
         }
 
-        public void forward_hub_call_client(String uuid, String module, String func, ArrayList argv)
+        public void forward_hub_call_client(String uuid, String func, ArrayList argv)
         {
 			var _serializer = MessagePackSerializer.Get<ArrayList>();
 			using (var st = new MemoryStream())
             {
 				ArrayList _event = new ArrayList();
-				_event.Add(module);
 				_event.Add(func);
 				_event.Add(argv);
 				_serializer.Pack(st, _event);
@@ -53,13 +52,12 @@ namespace hub
 
         }
 
-        public void forward_hub_call_group_client(List<string> uuids, String module, String func, ArrayList argv)
+        public void forward_hub_call_group_client(List<string> uuids, String func, ArrayList argv)
 		{
 			var _serializer = MessagePackSerializer.Get<ArrayList>();
 			using (var st = new MemoryStream())
 			{
 				ArrayList _event = new ArrayList();
-				_event.Add(module);
 				_event.Add(func);
 				_event.Add(argv);
 				_serializer.Pack(st, _event);
@@ -67,13 +65,12 @@ namespace hub
 			}
 		}
 
-		public void forward_hub_call_global_client(String module, String func, ArrayList argv)
+		public void forward_hub_call_global_client(String func, ArrayList argv)
 		{
 			var _serializer = MessagePackSerializer.Get<ArrayList>();
 			using (var st = new MemoryStream())
 			{
 				ArrayList _event = new ArrayList();
-				_event.Add(module);
 				_event.Add(func);
 				_event.Add(argv);
 				_serializer.Pack(st, _event);

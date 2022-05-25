@@ -32,28 +32,6 @@ class Response
 };
 
 class imodule {
-protected:
-	std::map<std::string, std::function< void(msgpack11::MsgPack::array) > > cbs;
-
-	void reg_cb(std::string cb_name, std::function< void(msgpack11::MsgPack::array) > cb)
-	{
-		cbs.insert(std::make_pair(cb_name, cb));
-	}
-
-public:
-	void invoke(std::string& cb_name, msgpack11::MsgPack::array& InArray)
-	{
-		auto cb = cbs.find(cb_name);
-		if (cb != cbs.end())
-		{
-			(cb->second)(InArray);
-		}
-		else {
-			spdlog::error("imodule.invoke unreg func name:{0}", cb_name);
-			throw moduleException(std::format("imodule.invoke unreg func name:{0}!", cb_name));
-		}
-	}
-
 public:
     std::shared_ptr<Response> rsp;
 };

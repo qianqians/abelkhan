@@ -55,12 +55,11 @@ namespace hub
 						var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
 						var _event = _serialization.Unpack(st);
 
-						var module = ((MsgPack.MessagePackObject)_event[0]).AsString();
-						var func = ((MsgPack.MessagePackObject)_event[1]).AsString();
-						var argvs = ((MsgPack.MessagePackObject)_event[2]).AsList();
+						var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
+						var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
 						hub._gates.current_client_uuid = _proxy._cuuid;
-						hub._modules.process_module_mothed(module, func, argvs);
+						hub._modules.process_module_mothed(func, argvs);
 						hub._gates.current_client_uuid = "";
 					}
 				}

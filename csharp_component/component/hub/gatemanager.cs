@@ -266,7 +266,7 @@ namespace hub
             }
         }
 
-        public void call_client(String uuid, String module, String func, ArrayList _argvs_list)
+        public void call_client(String uuid, String func, ArrayList _argvs_list)
 		{
             if (direct_clients.TryGetValue(uuid, out directproxy _client))
             {
@@ -275,7 +275,6 @@ namespace hub
                     var _serializer = MessagePackSerializer.Get<ArrayList>();
 
                     ArrayList _event = new ArrayList();
-                    _event.Add(module);
                     _event.Add(func);
                     _event.Add(_argvs_list);
                     _serializer.Pack(st, _event);
@@ -287,7 +286,7 @@ namespace hub
 
             if (clients.ContainsKey(uuid))
 			{
-                clients[uuid].forward_hub_call_client(uuid, module, func, _argvs_list);
+                clients[uuid].forward_hub_call_client(uuid, func, _argvs_list);
             }
             else
             {
@@ -295,7 +294,7 @@ namespace hub
             }
         }
 
-        public void call_group_client(List<string> uuids, String module, String func, ArrayList _argvs_list)
+        public void call_group_client(List<string> uuids, String func, ArrayList _argvs_list)
         {
             var _direct_clients = new List<directproxy>();
             var tmp_gates = new Dictionary<gateproxy, List<string> >();
@@ -324,7 +323,6 @@ namespace hub
                     var _serializer = MessagePackSerializer.Get<ArrayList>();
 
                     ArrayList _rpc_argv = new ArrayList();
-                    _rpc_argv.Add(module);
                     _rpc_argv.Add(func);
                     _rpc_argv.Add(_argvs_list);
                     _serializer.Pack(st, _rpc_argv);
@@ -352,15 +350,15 @@ namespace hub
 
             foreach (var _proxy in tmp_gates)
 			{
-				_proxy.Key.forward_hub_call_group_client(_proxy.Value, module, func, _argvs_list);
+				_proxy.Key.forward_hub_call_group_client(_proxy.Value, func, _argvs_list);
 			}
 		}
 
-		public void call_global_client(String module, String func, ArrayList _argvs_list)
+		public void call_global_client(String func, ArrayList _argvs_list)
 		{
             foreach (var _proxy in ch_gateproxys)
 			{
-				_proxy.Value.forward_hub_call_global_client(module, func, _argvs_list);
+				_proxy.Value.forward_hub_call_global_client(func, _argvs_list);
 			}
 		}
 	}

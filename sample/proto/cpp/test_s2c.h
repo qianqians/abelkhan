@@ -38,10 +38,8 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<hub::hub_service> _hub_service){
-            _hub_service->modules.add_module("test_s2c_rsp_cb", std::static_pointer_cast<common::imodule>(shared_from_this()));
-
-            reg_cb("ping_rsp", std::bind(&test_s2c_rsp_cb::ping_rsp, this, std::placeholders::_1));
-            reg_cb("ping_err", std::bind(&test_s2c_rsp_cb::ping_err, this, std::placeholders::_1));
+            _hub_service->modules.add_mothed("test_s2c_rsp_cb_ping_rsp", std::bind(&test_s2c_rsp_cb::ping_rsp, this, std::placeholders::_1));
+            _hub_service->modules.add_mothed("test_s2c_rsp_cb_ping_err", std::bind(&test_s2c_rsp_cb::ping_err, this, std::placeholders::_1));
         }
 
         void ping_rsp(const msgpack11::MsgPack::array& inArray){
@@ -100,7 +98,7 @@ namespace abelkhan
             auto uuid_80c27ee8_c9bc_583c_bad4_a73880e2ce8f = uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43++;
             msgpack11::MsgPack::array _argv_94d71f95_a670_3916_89a9_44df18fb711b;
             _argv_94d71f95_a670_3916_89a9_44df18fb711b.push_back(uuid_80c27ee8_c9bc_583c_bad4_a73880e2ce8f);
-            _hub_handle->_gatemng->call_client(client_uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43, "test_s2c", "ping", _argv_94d71f95_a670_3916_89a9_44df18fb711b);
+            _hub_handle->_gatemng->call_client(client_uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43, "test_s2c_ping", _argv_94d71f95_a670_3916_89a9_44df18fb711b);
             auto cb_ping_obj = std::make_shared<test_s2c_ping_cb>(uuid_80c27ee8_c9bc_583c_bad4_a73880e2ce8f, rsp_cb_test_s2c_handle);
             std::lock_guard<std::mutex> l(rsp_cb_test_s2c_handle->mutex_map_ping);
             rsp_cb_test_s2c_handle->map_ping.insert(std::make_pair(uuid_80c27ee8_c9bc_583c_bad4_a73880e2ce8f, cb_ping_obj));

@@ -71,10 +71,9 @@ namespace abelkhan
         public Dictionary<UInt64, test_s2c_ping_cb> map_ping;
         public test_s2c_rsp_cb() 
         {
-            hub.hub._modules.add_module("test_s2c_rsp_cb", this);
             map_ping = new Dictionary<UInt64, test_s2c_ping_cb>();
-            reg_cb("ping_rsp", ping_rsp);
-            reg_cb("ping_err", ping_err);
+            hub.hub._modules.add_mothed("test_s2c_rsp_cb_ping_rsp", ping_rsp);
+            hub.hub._modules.add_mothed("test_s2c_rsp_cb_ping_err", ping_err);
         }
 
         public void ping_rsp(IList<MsgPack.MessagePackObject> inArray){
@@ -131,7 +130,7 @@ namespace abelkhan
 
             var _argv_ca6794ee_a403_309d_b40e_f37578d53e8d = new ArrayList();
             _argv_ca6794ee_a403_309d_b40e_f37578d53e8d.Add(uuid_80c27ee8_c9bc_583c_bad4_a73880e2ce8f);
-            hub.hub._gates.call_client(client_uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43, "test_s2c", "ping", _argv_ca6794ee_a403_309d_b40e_f37578d53e8d);
+            hub.hub._gates.call_client(client_uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43, "test_s2c_ping", _argv_ca6794ee_a403_309d_b40e_f37578d53e8d);
 
             var cb_ping_obj = new test_s2c_ping_cb(uuid_80c27ee8_c9bc_583c_bad4_a73880e2ce8f, rsp_cb_test_s2c_handle);
             lock(rsp_cb_test_s2c_handle.map_ping)

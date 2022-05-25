@@ -16,7 +16,6 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     cb_code_constructor += "        {\n"
     cb_code_constructor += "        }\n\n"
     cb_code_constructor += "        void Init(std::shared_ptr<hub::hub_service> _hub_service){\n"
-    cb_code_constructor += "            _hub_service->modules.add_module(\"" + module_name + "_rsp_cb\", std::static_pointer_cast<common::imodule>(shared_from_this()));\n\n"
     cb_code_section = ""
 
     code = "    class " + module_name + "_hubproxy;\n"
@@ -100,7 +99,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     code += "            }\n"                                                     
                     code += "            _argv_" + _argv_uuid + ".push_back(_array_" + _array_uuid + ");\n"
-            code += "            _hub_service->_hubmng->call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n"
+            code += "            _hub_service->_hubmng->call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
             code += "        }\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
             cb_func += "    class " + module_name + "_rsp_cb;\n"
@@ -186,8 +185,8 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
 
             cb_code += "        std::mutex mutex_map_" + func_name + ";\n"
             cb_code += "        std::map<uint64_t, std::shared_ptr<" + module_name + "_"  + func_name + "_cb> > map_" + func_name + ";\n"
-            cb_code_constructor += "            reg_cb(\"" + func_name + "_rsp\", std::bind(&" + module_name + "_rsp_cb::" + func_name + "_rsp, this, std::placeholders::_1));\n"
-            cb_code_constructor += "            reg_cb(\"" + func_name + "_err\", std::bind(&" + module_name + "_rsp_cb::" + func_name + "_err, this, std::placeholders::_1));\n"
+            cb_code_constructor += "            _hub_service->modules.add_mothed(\"" + module_name + "_rsp_cb_" + func_name + "_rsp\", std::bind(&" + module_name + "_rsp_cb::" + func_name + "_rsp, this, std::placeholders::_1));\n"
+            cb_code_constructor += "            _hub_service->modules.add_mothed(\"" + module_name + "_rsp_cb_" + func_name + "_err\", std::bind(&" + module_name + "_rsp_cb::" + func_name + "_err, this, std::placeholders::_1));\n"
 
             cb_code_section += "        void " + func_name + "_rsp(const msgpack11::MsgPack::array& inArray){\n"
             cb_code_section += "            auto uuid = inArray[0].uint64_value();\n"
@@ -429,7 +428,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     code += "            }\n"                                                     
                     code += "            _argv_" + _argv_uuid + ".push_back(_array_" + _array_uuid + ");\n"
-            code += "            _hub_service->_hubmng->call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "\", \"" + func_name + "\", _argv_" + _argv_uuid + ");\n\n"
+            code += "            _hub_service->_hubmng->call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n\n"
             code += "            auto cb_" + func_name + "_obj = std::make_shared<" + module_name + "_"  + func_name + "_cb>(uuid_" + _cb_uuid_uuid + ", rsp_cb_" + module_name + "_handle);\n"
             code += "            std::lock_guard<std::mutex> l(rsp_cb_" + module_name + "_handle->mutex_map_" + func_name + ");\n"
             code += "            rsp_cb_" + module_name + "_handle->map_" + func_name + ".insert(std::make_pair(uuid_" + _cb_uuid_uuid + ", cb_" + func_name + "_obj));\n"

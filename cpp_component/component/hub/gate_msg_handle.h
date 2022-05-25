@@ -62,12 +62,12 @@ public:
 		}
 
 		try {
-			auto module_name = _event[0].string_value();
-			auto func_name = _event[1].string_value();
-			auto argvs = _event[2].array_items();
+			auto func_name = _event[0].string_value();
+			auto argvs = _event[1].array_items();
+
 			_gates->client_connect(cuuid, _gate_call_hub_module->current_ch);
 			_gates->current_client_cuuid = cuuid;
-			_hub->modules.process_module_mothed(module_name, func_name, argvs);
+			_hub->modules.process_module_mothed(func_name, argvs);
 			_gates->current_client_cuuid = "";
 		}
 		catch (std::exception e) {
