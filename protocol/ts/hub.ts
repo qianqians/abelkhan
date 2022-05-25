@@ -7,8 +7,6 @@ import * as abelkhan from "./abelkhan";
 export class gate_call_hub_rsp_cb extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("gate_call_hub_rsp_cb");
-        modules.reg_module(this);
-
     }
 }
 
@@ -26,20 +24,20 @@ export class gate_call_hub_caller extends abelkhan.Icaller {
     public client_disconnect(client_uuid:string){
         let _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60:any[] = [];
         _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60.push(client_uuid);
-        this.call_module_method("client_disconnect", _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60);
+        this.call_module_method("gate_call_hub_client_disconnect", _argv_0b9435aa_3d03_3778_acfb_c7bfbd4f3e60);
     }
 
     public client_exception(client_uuid:string){
         let _argv_706b1331_3629_3681_9d39_d2ef3b6675ed:any[] = [];
         _argv_706b1331_3629_3681_9d39_d2ef3b6675ed.push(client_uuid);
-        this.call_module_method("client_exception", _argv_706b1331_3629_3681_9d39_d2ef3b6675ed);
+        this.call_module_method("gate_call_hub_client_exception", _argv_706b1331_3629_3681_9d39_d2ef3b6675ed);
     }
 
     public client_call_hub(client_uuid:string, rpc_argv:Uint8Array){
         let _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263:any[] = [];
         _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.push(client_uuid);
         _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263.push(rpc_argv);
-        this.call_module_method("client_call_hub", _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263);
+        this.call_module_method("gate_call_hub_client_call_hub", _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263);
     }
 
 }
@@ -78,11 +76,9 @@ export class hub_call_hub_rsp_cb extends abelkhan.Imodule {
     public map_reg_hub:Map<number, hub_call_hub_reg_hub_cb>;
     constructor(modules:abelkhan.modulemng){
         super("hub_call_hub_rsp_cb");
-        modules.reg_module(this);
-
         this.map_reg_hub = new Map<number, hub_call_hub_reg_hub_cb>();
-        this.reg_method("reg_hub_rsp", this.reg_hub_rsp.bind(this));
-        this.reg_method("reg_hub_err", this.reg_hub_err.bind(this));
+        modules.reg_method("reg_hub_rsp", [this, this.reg_hub_rsp.bind(this)]);
+        modules.reg_method("reg_hub_err", [this, this.reg_hub_err.bind(this)]);
     }
     public reg_hub_rsp(inArray:any[]){
         let uuid = inArray[0];
@@ -136,7 +132,7 @@ export class hub_call_hub_caller extends abelkhan.Icaller {
         let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106];
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(hub_name);
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(hub_type);
-        this.call_module_method("reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+        this.call_module_method("hub_call_hub_reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
 
         let cb_reg_hub_obj = new hub_call_hub_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_hub_handle);
         if (rsp_cb_hub_call_hub_handle){
@@ -148,7 +144,7 @@ export class hub_call_hub_caller extends abelkhan.Icaller {
     public hub_call_hub_mothed(rpc_argv:Uint8Array){
         let _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e:any[] = [];
         _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e.push(rpc_argv);
-        this.call_module_method("hub_call_hub_mothed", _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e);
+        this.call_module_method("hub_call_hub_hub_call_hub_mothed", _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e);
     }
 
 }
@@ -156,8 +152,6 @@ export class hub_call_hub_caller extends abelkhan.Icaller {
 export class hub_call_client_rsp_cb extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("hub_call_client_rsp_cb");
-        modules.reg_module(this);
-
     }
 }
 
@@ -175,7 +169,7 @@ export class hub_call_client_caller extends abelkhan.Icaller {
     public call_client(rpc_argv:Uint8Array){
         let _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab:any[] = [];
         _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push(rpc_argv);
-        this.call_module_method("call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
+        this.call_module_method("hub_call_client_call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
     }
 
 }
@@ -214,11 +208,9 @@ export class client_call_hub_rsp_cb extends abelkhan.Imodule {
     public map_heartbeats:Map<number, client_call_hub_heartbeats_cb>;
     constructor(modules:abelkhan.modulemng){
         super("client_call_hub_rsp_cb");
-        modules.reg_module(this);
-
         this.map_heartbeats = new Map<number, client_call_hub_heartbeats_cb>();
-        this.reg_method("heartbeats_rsp", this.heartbeats_rsp.bind(this));
-        this.reg_method("heartbeats_err", this.heartbeats_err.bind(this));
+        modules.reg_method("heartbeats_rsp", [this, this.heartbeats_rsp.bind(this)]);
+        modules.reg_method("heartbeats_err", [this, this.heartbeats_err.bind(this)]);
     }
     public heartbeats_rsp(inArray:any[]){
         let uuid = inArray[0];
@@ -270,14 +262,14 @@ export class client_call_hub_caller extends abelkhan.Icaller {
     public connect_hub(client_uuid:string){
         let _argv_dc2ee339_bef5_3af9_a492_592ba4f08559:any[] = [];
         _argv_dc2ee339_bef5_3af9_a492_592ba4f08559.push(client_uuid);
-        this.call_module_method("connect_hub", _argv_dc2ee339_bef5_3af9_a492_592ba4f08559);
+        this.call_module_method("client_call_hub_connect_hub", _argv_dc2ee339_bef5_3af9_a492_592ba4f08559);
     }
 
     public heartbeats(){
         let uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = Math.round(this.uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263++);
 
         let _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4:any[] = [uuid_a514ca5f_2c67_5668_aac0_354397bdce36];
-        this.call_module_method("heartbeats", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+        this.call_module_method("client_call_hub_heartbeats", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
 
         let cb_heartbeats_obj = new client_call_hub_heartbeats_cb(uuid_a514ca5f_2c67_5668_aac0_354397bdce36, rsp_cb_client_call_hub_handle);
         if (rsp_cb_client_call_hub_handle){
@@ -289,7 +281,7 @@ export class client_call_hub_caller extends abelkhan.Icaller {
     public call_hub(rpc_argv:Uint8Array){
         let _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3:any[] = [];
         _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3.push(rpc_argv);
-        this.call_module_method("call_hub", _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3);
+        this.call_module_method("client_call_hub_call_hub", _argv_c06f6974_e54a_3491_ae66_1e1861dd19e3);
     }
 
 }
@@ -299,11 +291,9 @@ export class gate_call_hub_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("gate_call_hub");
         this.modules = modules;
-        this.modules.reg_module(this);
-
-        this.reg_method("client_disconnect", this.client_disconnect.bind(this));
-        this.reg_method("client_exception", this.client_exception.bind(this));
-        this.reg_method("client_call_hub", this.client_call_hub.bind(this));
+        this.modules.reg_method("client_disconnect", [this, this.client_disconnect.bind(this)]);
+        this.modules.reg_method("client_exception", [this, this.client_exception.bind(this)]);
+        this.modules.reg_method("client_call_hub", [this, this.client_call_hub.bind(this)]);
 
         this.cb_client_disconnect = null;
         this.cb_client_exception = null;
@@ -348,12 +338,12 @@ export class hub_call_hub_reg_hub_rsp extends abelkhan.Icaller {
 
     public rsp(){
         let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [this.uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67];
-        this.call_module_method("reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+        this.call_module_method("hub_call_hub_reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
     }
 
     public err(){
         let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [this.uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67];
-        this.call_module_method("reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+        this.call_module_method("hub_call_hub_reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
     }
 
 }
@@ -363,10 +353,8 @@ export class hub_call_hub_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("hub_call_hub");
         this.modules = modules;
-        this.modules.reg_module(this);
-
-        this.reg_method("reg_hub", this.reg_hub.bind(this));
-        this.reg_method("hub_call_hub_mothed", this.hub_call_hub_mothed.bind(this));
+        this.modules.reg_method("reg_hub", [this, this.reg_hub.bind(this)]);
+        this.modules.reg_method("hub_call_hub_mothed", [this, this.hub_call_hub_mothed.bind(this)]);
 
         this.cb_reg_hub = null;
         this.cb_hub_call_hub_mothed = null;
@@ -400,9 +388,7 @@ export class hub_call_client_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("hub_call_client");
         this.modules = modules;
-        this.modules.reg_module(this);
-
-        this.reg_method("call_client", this.call_client.bind(this));
+        this.modules.reg_method("call_client", [this, this.call_client.bind(this)]);
 
         this.cb_call_client = null;
     }
@@ -427,12 +413,12 @@ export class client_call_hub_heartbeats_rsp extends abelkhan.Icaller {
     public rsp(timetmp:number){
         let _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4:any[] = [this.uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56];
         _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.push(timetmp);
-        this.call_module_method("heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+        this.call_module_method("client_call_hub_heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
     }
 
     public err(){
         let _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4:any[] = [this.uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56];
-        this.call_module_method("heartbeats_err", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+        this.call_module_method("client_call_hub_heartbeats_err", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
     }
 
 }
@@ -442,11 +428,9 @@ export class client_call_hub_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("client_call_hub");
         this.modules = modules;
-        this.modules.reg_module(this);
-
-        this.reg_method("connect_hub", this.connect_hub.bind(this));
-        this.reg_method("heartbeats", this.heartbeats.bind(this));
-        this.reg_method("call_hub", this.call_hub.bind(this));
+        this.modules.reg_method("connect_hub", [this, this.connect_hub.bind(this)]);
+        this.modules.reg_method("heartbeats", [this, this.heartbeats.bind(this)]);
+        this.modules.reg_method("call_hub", [this, this.call_hub.bind(this)]);
 
         this.cb_connect_hub = null;
         this.cb_heartbeats = null;

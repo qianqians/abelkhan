@@ -19,8 +19,6 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
         }
 
     };
@@ -45,14 +43,14 @@ namespace abelkhan
         void ntf_cuuid(std::string cuuid){
             msgpack11::MsgPack::array _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1;
             _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1.push_back(cuuid);
-            call_module_method("ntf_cuuid", _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1);
+            call_module_method("gate_call_client_ntf_cuuid", _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1);
         }
 
         void call_client(std::string hub_name, std::vector<uint8_t> rpc_argv){
             msgpack11::MsgPack::array _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab;
             _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push_back(hub_name);
             _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push_back(rpc_argv);
-            call_module_method("call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
+            call_module_method("gate_call_client_call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
         }
 
     };
@@ -64,10 +62,8 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-            reg_method("ntf_cuuid", std::bind(&gate_call_client_module::ntf_cuuid, this, std::placeholders::_1));
-            reg_method("call_client", std::bind(&gate_call_client_module::call_client, this, std::placeholders::_1));
+            _modules->reg_method("ntf_cuuid", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::ntf_cuuid, this, std::placeholders::_1)));
+            _modules->reg_method("call_client", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::call_client, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string)> sig_ntf_cuuid;

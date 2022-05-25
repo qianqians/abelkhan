@@ -76,14 +76,12 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-            reg_method("reg_server_rsp", std::bind(&center_rsp_cb::reg_server_rsp, this, std::placeholders::_1));
-            reg_method("reg_server_err", std::bind(&center_rsp_cb::reg_server_err, this, std::placeholders::_1));
-            reg_method("reconn_reg_server_rsp", std::bind(&center_rsp_cb::reconn_reg_server_rsp, this, std::placeholders::_1));
-            reg_method("reconn_reg_server_err", std::bind(&center_rsp_cb::reconn_reg_server_err, this, std::placeholders::_1));
-            reg_method("heartbeat_rsp", std::bind(&center_rsp_cb::heartbeat_rsp, this, std::placeholders::_1));
-            reg_method("heartbeat_err", std::bind(&center_rsp_cb::heartbeat_err, this, std::placeholders::_1));
+            modules->reg_method("reg_server_rsp", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reg_server_rsp, this, std::placeholders::_1)));
+            modules->reg_method("reg_server_err", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reg_server_err, this, std::placeholders::_1)));
+            modules->reg_method("reconn_reg_server_rsp", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reconn_reg_server_rsp, this, std::placeholders::_1)));
+            modules->reg_method("reconn_reg_server_err", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reconn_reg_server_err, this, std::placeholders::_1)));
+            modules->reg_method("heartbeat_rsp", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::heartbeat_rsp, this, std::placeholders::_1)));
+            modules->reg_method("heartbeat_err", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::heartbeat_err, this, std::placeholders::_1)));
         }
 
         void reg_server_rsp(const msgpack11::MsgPack::array& inArray){
@@ -212,7 +210,7 @@ namespace abelkhan
             _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(svr_name);
             _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(host);
             _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(port);
-            call_module_method("reg_server", _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda);
+            call_module_method("center_reg_server", _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda);
 
             auto cb_reg_server_obj = std::make_shared<center_reg_server_cb>(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255, rsp_cb_center_handle);
             std::lock_guard<std::mutex> l(rsp_cb_center_handle->mutex_map_reg_server);
@@ -228,7 +226,7 @@ namespace abelkhan
             _argv_39461677_ebd9_335f_830b_8d355adba2f0.push_back(svr_name);
             _argv_39461677_ebd9_335f_830b_8d355adba2f0.push_back(host);
             _argv_39461677_ebd9_335f_830b_8d355adba2f0.push_back(port);
-            call_module_method("reconn_reg_server", _argv_39461677_ebd9_335f_830b_8d355adba2f0);
+            call_module_method("center_reconn_reg_server", _argv_39461677_ebd9_335f_830b_8d355adba2f0);
 
             auto cb_reconn_reg_server_obj = std::make_shared<center_reconn_reg_server_cb>(uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d, rsp_cb_center_handle);
             std::lock_guard<std::mutex> l(rsp_cb_center_handle->mutex_map_reconn_reg_server);
@@ -241,7 +239,7 @@ namespace abelkhan
             msgpack11::MsgPack::array _argv_617b63d0_e6d6_3c80_8c13_63a98d39e89f;
             _argv_617b63d0_e6d6_3c80_8c13_63a98d39e89f.push_back(uuid_9654538a_9916_57dc_8ea5_806086d7a378);
             _argv_617b63d0_e6d6_3c80_8c13_63a98d39e89f.push_back(tick);
-            call_module_method("heartbeat", _argv_617b63d0_e6d6_3c80_8c13_63a98d39e89f);
+            call_module_method("center_heartbeat", _argv_617b63d0_e6d6_3c80_8c13_63a98d39e89f);
 
             auto cb_heartbeat_obj = std::make_shared<center_heartbeat_cb>(uuid_9654538a_9916_57dc_8ea5_806086d7a378, rsp_cb_center_handle);
             std::lock_guard<std::mutex> l(rsp_cb_center_handle->mutex_map_heartbeat);
@@ -251,7 +249,7 @@ namespace abelkhan
 
         void closed(){
             msgpack11::MsgPack::array _argv_e0d5aabb_d671_3c7e_99e4_6d374f7fd4ee;
-            call_module_method("closed", _argv_e0d5aabb_d671_3c7e_99e4_6d374f7fd4ee);
+            call_module_method("center_closed", _argv_e0d5aabb_d671_3c7e_99e4_6d374f7fd4ee);
         }
 
     };
@@ -263,8 +261,6 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
         }
 
     };
@@ -288,21 +284,21 @@ namespace abelkhan
 
         void close_server(){
             msgpack11::MsgPack::array _argv_8394af17_8a06_3068_977d_477a1276f56e;
-            call_module_method("close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
+            call_module_method("center_call_server_close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
         }
 
         void console_close_server(std::string svr_type, std::string svr_name){
             msgpack11::MsgPack::array _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc;
             _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc.push_back(svr_type);
             _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc.push_back(svr_name);
-            call_module_method("console_close_server", _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc);
+            call_module_method("center_call_server_console_close_server", _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc);
         }
 
         void svr_be_closed(std::string svr_type, std::string svr_name){
             msgpack11::MsgPack::array _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac;
             _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push_back(svr_type);
             _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push_back(svr_name);
-            call_module_method("svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
+            call_module_method("center_call_server_svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
         }
 
     };
@@ -314,8 +310,6 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
         }
 
     };
@@ -343,13 +337,13 @@ namespace abelkhan
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(svr_name);
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(host);
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(port);
-            call_module_method("distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
+            call_module_method("center_call_hub_distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
         }
 
         void reload(std::string argv){
             msgpack11::MsgPack::array _argv_ba37af53_beea_3d61_82e1_8d15e335971d;
             _argv_ba37af53_beea_3d61_82e1_8d15e335971d.push_back(argv);
-            call_module_method("reload", _argv_ba37af53_beea_3d61_82e1_8d15e335971d);
+            call_module_method("center_call_hub_reload", _argv_ba37af53_beea_3d61_82e1_8d15e335971d);
         }
 
     };
@@ -361,8 +355,6 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
         }
 
     };
@@ -387,20 +379,20 @@ namespace abelkhan
         void confirm_gm(std::string gm_name){
             msgpack11::MsgPack::array _argv_d097689c_b711_3837_8783_64916ae34cea;
             _argv_d097689c_b711_3837_8783_64916ae34cea.push_back(gm_name);
-            call_module_method("confirm_gm", _argv_d097689c_b711_3837_8783_64916ae34cea);
+            call_module_method("gm_center_confirm_gm", _argv_d097689c_b711_3837_8783_64916ae34cea);
         }
 
         void close_clutter(std::string gmname){
             msgpack11::MsgPack::array _argv_576c03c3_06da_36a2_b868_752da601cb54;
             _argv_576c03c3_06da_36a2_b868_752da601cb54.push_back(gmname);
-            call_module_method("close_clutter", _argv_576c03c3_06da_36a2_b868_752da601cb54);
+            call_module_method("gm_center_close_clutter", _argv_576c03c3_06da_36a2_b868_752da601cb54);
         }
 
         void reload(std::string gmname, std::string argv){
             msgpack11::MsgPack::array _argv_ba37af53_beea_3d61_82e1_8d15e335971d;
             _argv_ba37af53_beea_3d61_82e1_8d15e335971d.push_back(gmname);
             _argv_ba37af53_beea_3d61_82e1_8d15e335971d.push_back(argv);
-            call_module_method("reload", _argv_ba37af53_beea_3d61_82e1_8d15e335971d);
+            call_module_method("gm_center_reload", _argv_ba37af53_beea_3d61_82e1_8d15e335971d);
         }
 
     };
@@ -418,13 +410,13 @@ namespace abelkhan
         void rsp(){
             msgpack11::MsgPack::array _argv_86ab8166_c1a7_3809_8c9b_df444f746076;
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push_back(uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda);
-            call_module_method("reg_server_rsp", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
+            call_module_method("center_reg_server_rsp", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_86ab8166_c1a7_3809_8c9b_df444f746076;
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push_back(uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda);
-            call_module_method("reg_server_err", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
+            call_module_method("center_reg_server_err", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
         }
 
     };
@@ -442,13 +434,13 @@ namespace abelkhan
         void rsp(){
             msgpack11::MsgPack::array _argv_a181e793_c43f_3b7f_b19e_178395e5927d;
             _argv_a181e793_c43f_3b7f_b19e_178395e5927d.push_back(uuid_39461677_ebd9_335f_830b_8d355adba2f0);
-            call_module_method("reconn_reg_server_rsp", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
+            call_module_method("center_reconn_reg_server_rsp", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_a181e793_c43f_3b7f_b19e_178395e5927d;
             _argv_a181e793_c43f_3b7f_b19e_178395e5927d.push_back(uuid_39461677_ebd9_335f_830b_8d355adba2f0);
-            call_module_method("reconn_reg_server_err", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
+            call_module_method("center_reconn_reg_server_err", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
         }
 
     };
@@ -466,13 +458,13 @@ namespace abelkhan
         void rsp(){
             msgpack11::MsgPack::array _argv_af04a217_eafb_393c_9e34_0303485bef77;
             _argv_af04a217_eafb_393c_9e34_0303485bef77.push_back(uuid_617b63d0_e6d6_3c80_8c13_63a98d39e89f);
-            call_module_method("heartbeat_rsp", _argv_af04a217_eafb_393c_9e34_0303485bef77);
+            call_module_method("center_heartbeat_rsp", _argv_af04a217_eafb_393c_9e34_0303485bef77);
         }
 
         void err(){
             msgpack11::MsgPack::array _argv_af04a217_eafb_393c_9e34_0303485bef77;
             _argv_af04a217_eafb_393c_9e34_0303485bef77.push_back(uuid_617b63d0_e6d6_3c80_8c13_63a98d39e89f);
-            call_module_method("heartbeat_err", _argv_af04a217_eafb_393c_9e34_0303485bef77);
+            call_module_method("center_heartbeat_err", _argv_af04a217_eafb_393c_9e34_0303485bef77);
         }
 
     };
@@ -484,12 +476,10 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-            reg_method("reg_server", std::bind(&center_module::reg_server, this, std::placeholders::_1));
-            reg_method("reconn_reg_server", std::bind(&center_module::reconn_reg_server, this, std::placeholders::_1));
-            reg_method("heartbeat", std::bind(&center_module::heartbeat, this, std::placeholders::_1));
-            reg_method("closed", std::bind(&center_module::closed, this, std::placeholders::_1));
+            _modules->reg_method("reg_server", std::make_tuple(shared_from_this(), std::bind(&center_module::reg_server, this, std::placeholders::_1)));
+            _modules->reg_method("reconn_reg_server", std::make_tuple(shared_from_this(), std::bind(&center_module::reconn_reg_server, this, std::placeholders::_1)));
+            _modules->reg_method("heartbeat", std::make_tuple(shared_from_this(), std::bind(&center_module::heartbeat, this, std::placeholders::_1)));
+            _modules->reg_method("closed", std::make_tuple(shared_from_this(), std::bind(&center_module::closed, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string, std::string, std::string, uint16_t)> sig_reg_server;
@@ -538,11 +528,9 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-            reg_method("close_server", std::bind(&center_call_server_module::close_server, this, std::placeholders::_1));
-            reg_method("console_close_server", std::bind(&center_call_server_module::console_close_server, this, std::placeholders::_1));
-            reg_method("svr_be_closed", std::bind(&center_call_server_module::svr_be_closed, this, std::placeholders::_1));
+            _modules->reg_method("close_server", std::make_tuple(shared_from_this(), std::bind(&center_call_server_module::close_server, this, std::placeholders::_1)));
+            _modules->reg_method("console_close_server", std::make_tuple(shared_from_this(), std::bind(&center_call_server_module::console_close_server, this, std::placeholders::_1)));
+            _modules->reg_method("svr_be_closed", std::make_tuple(shared_from_this(), std::bind(&center_call_server_module::svr_be_closed, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void()> sig_close_server;
@@ -572,10 +560,8 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-            reg_method("distribute_server_address", std::bind(&center_call_hub_module::distribute_server_address, this, std::placeholders::_1));
-            reg_method("reload", std::bind(&center_call_hub_module::reload, this, std::placeholders::_1));
+            _modules->reg_method("distribute_server_address", std::make_tuple(shared_from_this(), std::bind(&center_call_hub_module::distribute_server_address, this, std::placeholders::_1)));
+            _modules->reg_method("reload", std::make_tuple(shared_from_this(), std::bind(&center_call_hub_module::reload, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string, std::string, std::string, uint16_t)> sig_distribute_server_address;
@@ -601,11 +587,9 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_module(std::static_pointer_cast<Imodule>(shared_from_this()));
-
-            reg_method("confirm_gm", std::bind(&gm_center_module::confirm_gm, this, std::placeholders::_1));
-            reg_method("close_clutter", std::bind(&gm_center_module::close_clutter, this, std::placeholders::_1));
-            reg_method("reload", std::bind(&gm_center_module::reload, this, std::placeholders::_1));
+            _modules->reg_method("confirm_gm", std::make_tuple(shared_from_this(), std::bind(&gm_center_module::confirm_gm, this, std::placeholders::_1)));
+            _modules->reg_method("close_clutter", std::make_tuple(shared_from_this(), std::bind(&gm_center_module::close_clutter, this, std::placeholders::_1)));
+            _modules->reg_method("reload", std::make_tuple(shared_from_this(), std::bind(&gm_center_module::reload, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string)> sig_confirm_gm;

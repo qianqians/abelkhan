@@ -152,13 +152,12 @@ namespace abelkhan
         public Dictionary<UInt64, client_call_gate_get_hub_info_cb> map_get_hub_info;
         public client_call_gate_rsp_cb(abelkhan.modulemng modules) : base("client_call_gate_rsp_cb")
         {
-            modules.reg_module(this);
             map_heartbeats = new Dictionary<UInt64, client_call_gate_heartbeats_cb>();
-            reg_method("heartbeats_rsp", heartbeats_rsp);
-            reg_method("heartbeats_err", heartbeats_err);
+            modules.reg_method("heartbeats_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeats_rsp));
+            modules.reg_method("heartbeats_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeats_err));
             map_get_hub_info = new Dictionary<UInt64, client_call_gate_get_hub_info_cb>();
-            reg_method("get_hub_info_rsp", get_hub_info_rsp);
-            reg_method("get_hub_info_err", get_hub_info_err);
+            modules.reg_method("get_hub_info_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_hub_info_rsp));
+            modules.reg_method("get_hub_info_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_hub_info_err));
         }
 
         public void heartbeats_rsp(IList<MsgPack.MessagePackObject> inArray){
@@ -258,7 +257,7 @@ namespace abelkhan
 
             var _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = new ArrayList();
             _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(uuid_a514ca5f_2c67_5668_aac0_354397bdce36);
-            call_module_method("heartbeats", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+            call_module_method("client_call_gate_heartbeats", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
 
             var cb_heartbeats_obj = new client_call_gate_heartbeats_cb(uuid_a514ca5f_2c67_5668_aac0_354397bdce36, rsp_cb_client_call_gate_handle);
             lock(rsp_cb_client_call_gate_handle.map_heartbeats)
@@ -274,7 +273,7 @@ namespace abelkhan
             var _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24 = new ArrayList();
             _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.Add(uuid_e9d2753f_7d38_512d_80ff_7aae13508048);
             _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.Add(hub_type);
-            call_module_method("get_hub_info", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
+            call_module_method("client_call_gate_get_hub_info", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
 
             var cb_get_hub_info_obj = new client_call_gate_get_hub_info_cb(uuid_e9d2753f_7d38_512d_80ff_7aae13508048, rsp_cb_client_call_gate_handle);
             lock(rsp_cb_client_call_gate_handle.map_get_hub_info)
@@ -288,7 +287,7 @@ namespace abelkhan
             var _argv_eb5e7a5e_3532_32ad_81f9_9b27aa6833e5 = new ArrayList();
             _argv_eb5e7a5e_3532_32ad_81f9_9b27aa6833e5.Add(hub_name);
             _argv_eb5e7a5e_3532_32ad_81f9_9b27aa6833e5.Add(rpc_argv);
-            call_module_method("forward_client_call_hub", _argv_eb5e7a5e_3532_32ad_81f9_9b27aa6833e5);
+            call_module_method("client_call_gate_forward_client_call_hub", _argv_eb5e7a5e_3532_32ad_81f9_9b27aa6833e5);
         }
 
     }
@@ -353,10 +352,9 @@ namespace abelkhan
         public Dictionary<UInt64, hub_call_gate_reg_hub_cb> map_reg_hub;
         public hub_call_gate_rsp_cb(abelkhan.modulemng modules) : base("hub_call_gate_rsp_cb")
         {
-            modules.reg_module(this);
             map_reg_hub = new Dictionary<UInt64, hub_call_gate_reg_hub_cb>();
-            reg_method("reg_hub_rsp", reg_hub_rsp);
-            reg_method("reg_hub_err", reg_hub_err);
+            modules.reg_method("reg_hub_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub_rsp));
+            modules.reg_method("reg_hub_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub_err));
         }
 
         public void reg_hub_rsp(IList<MsgPack.MessagePackObject> inArray){
@@ -416,7 +414,7 @@ namespace abelkhan
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106);
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(hub_name);
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(hub_type);
-            call_module_method("reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+            call_module_method("hub_call_gate_reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
 
             var cb_reg_hub_obj = new hub_call_gate_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_gate_handle);
             lock(rsp_cb_hub_call_gate_handle.map_reg_hub)
@@ -429,14 +427,14 @@ namespace abelkhan
         public void disconnect_client(string client_uuid){
             var _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85 = new ArrayList();
             _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.Add(client_uuid);
-            call_module_method("disconnect_client", _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85);
+            call_module_method("hub_call_gate_disconnect_client", _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85);
         }
 
         public void forward_hub_call_client(string client_uuid, byte[] rpc_argv){
             var _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1 = new ArrayList();
             _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1.Add(client_uuid);
             _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1.Add(rpc_argv);
-            call_module_method("forward_hub_call_client", _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1);
+            call_module_method("hub_call_gate_forward_hub_call_client", _argv_7d7a3c95_d5f5_386c_9a43_eadf3c9912b1);
         }
 
         public void forward_hub_call_group_client(List<string> client_uuids, byte[] rpc_argv){
@@ -447,13 +445,13 @@ namespace abelkhan
             }
             _argv_374b012d_0718_3f84_91f0_784b12f8189c.Add(_array_0b370787_bccf_3fe3_a7ff_d9e69112f3e1);
             _argv_374b012d_0718_3f84_91f0_784b12f8189c.Add(rpc_argv);
-            call_module_method("forward_hub_call_group_client", _argv_374b012d_0718_3f84_91f0_784b12f8189c);
+            call_module_method("hub_call_gate_forward_hub_call_group_client", _argv_374b012d_0718_3f84_91f0_784b12f8189c);
         }
 
         public void forward_hub_call_global_client(byte[] rpc_argv){
             var _argv_f69241c3_642a_3b51_bb37_cf638176493a = new ArrayList();
             _argv_f69241c3_642a_3b51_bb37_cf638176493a.Add(rpc_argv);
-            call_module_method("forward_hub_call_global_client", _argv_f69241c3_642a_3b51_bb37_cf638176493a);
+            call_module_method("hub_call_gate_forward_hub_call_global_client", _argv_f69241c3_642a_3b51_bb37_cf638176493a);
         }
 
     }
@@ -469,13 +467,13 @@ namespace abelkhan
             var _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = new ArrayList();
             _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56);
             _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(timetmp_3c36cb1d_ce2b_3926_8169_233374fa19ac);
-            call_module_method("heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+            call_module_method("client_call_gate_heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
         }
 
         public void err(){
             var _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = new ArrayList();
             _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56);
-            call_module_method("heartbeats_err", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
+            call_module_method("client_call_gate_heartbeats_err", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4);
         }
 
     }
@@ -495,13 +493,13 @@ namespace abelkhan
                 _array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2.Add(hub_info.hub_info_to_protcol(v_53b78086_1765_5879_87b4_63333838766a));
             }
             _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.Add(_array_4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2);
-            call_module_method("get_hub_info_rsp", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
+            call_module_method("client_call_gate_get_hub_info_rsp", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
         }
 
         public void err(){
             var _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24 = new ArrayList();
             _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.Add(uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b);
-            call_module_method("get_hub_info_err", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
+            call_module_method("client_call_gate_get_hub_info_err", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24);
         }
 
     }
@@ -511,11 +509,9 @@ namespace abelkhan
         public client_call_gate_module(abelkhan.modulemng _modules) : base("client_call_gate")
         {
             modules = _modules;
-            modules.reg_module(this);
-
-            reg_method("heartbeats", heartbeats);
-            reg_method("get_hub_info", get_hub_info);
-            reg_method("forward_client_call_hub", forward_client_call_hub);
+            modules.reg_method("heartbeats", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeats));
+            modules.reg_method("get_hub_info", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_hub_info));
+            modules.reg_method("forward_client_call_hub", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, forward_client_call_hub));
         }
 
         public event Action on_heartbeats;
@@ -559,13 +555,13 @@ namespace abelkhan
         public void rsp(){
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
-            call_module_method("reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+            call_module_method("hub_call_gate_reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 
         public void err(){
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
-            call_module_method("reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+            call_module_method("hub_call_gate_reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 
     }
@@ -575,13 +571,11 @@ namespace abelkhan
         public hub_call_gate_module(abelkhan.modulemng _modules) : base("hub_call_gate")
         {
             modules = _modules;
-            modules.reg_module(this);
-
-            reg_method("reg_hub", reg_hub);
-            reg_method("disconnect_client", disconnect_client);
-            reg_method("forward_hub_call_client", forward_hub_call_client);
-            reg_method("forward_hub_call_group_client", forward_hub_call_group_client);
-            reg_method("forward_hub_call_global_client", forward_hub_call_global_client);
+            modules.reg_method("reg_hub", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub));
+            modules.reg_method("disconnect_client", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, disconnect_client));
+            modules.reg_method("forward_hub_call_client", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, forward_hub_call_client));
+            modules.reg_method("forward_hub_call_group_client", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, forward_hub_call_group_client));
+            modules.reg_method("forward_hub_call_global_client", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, forward_hub_call_global_client));
         }
 
         public event Action<string, string> on_reg_hub;

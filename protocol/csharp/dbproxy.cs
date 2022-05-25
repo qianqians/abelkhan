@@ -356,25 +356,24 @@ namespace abelkhan
         public Dictionary<UInt64, hub_call_dbproxy_get_object_count_cb> map_get_object_count;
         public hub_call_dbproxy_rsp_cb(abelkhan.modulemng modules) : base("hub_call_dbproxy_rsp_cb")
         {
-            modules.reg_module(this);
             map_reg_hub = new Dictionary<UInt64, hub_call_dbproxy_reg_hub_cb>();
-            reg_method("reg_hub_rsp", reg_hub_rsp);
-            reg_method("reg_hub_err", reg_hub_err);
+            modules.reg_method("reg_hub_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub_rsp));
+            modules.reg_method("reg_hub_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub_err));
             map_create_persisted_object = new Dictionary<UInt64, hub_call_dbproxy_create_persisted_object_cb>();
-            reg_method("create_persisted_object_rsp", create_persisted_object_rsp);
-            reg_method("create_persisted_object_err", create_persisted_object_err);
+            modules.reg_method("create_persisted_object_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, create_persisted_object_rsp));
+            modules.reg_method("create_persisted_object_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, create_persisted_object_err));
             map_updata_persisted_object = new Dictionary<UInt64, hub_call_dbproxy_updata_persisted_object_cb>();
-            reg_method("updata_persisted_object_rsp", updata_persisted_object_rsp);
-            reg_method("updata_persisted_object_err", updata_persisted_object_err);
+            modules.reg_method("updata_persisted_object_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, updata_persisted_object_rsp));
+            modules.reg_method("updata_persisted_object_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, updata_persisted_object_err));
             map_find_and_modify = new Dictionary<UInt64, hub_call_dbproxy_find_and_modify_cb>();
-            reg_method("find_and_modify_rsp", find_and_modify_rsp);
-            reg_method("find_and_modify_err", find_and_modify_err);
+            modules.reg_method("find_and_modify_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, find_and_modify_rsp));
+            modules.reg_method("find_and_modify_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, find_and_modify_err));
             map_remove_object = new Dictionary<UInt64, hub_call_dbproxy_remove_object_cb>();
-            reg_method("remove_object_rsp", remove_object_rsp);
-            reg_method("remove_object_err", remove_object_err);
+            modules.reg_method("remove_object_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, remove_object_rsp));
+            modules.reg_method("remove_object_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, remove_object_err));
             map_get_object_count = new Dictionary<UInt64, hub_call_dbproxy_get_object_count_cb>();
-            reg_method("get_object_count_rsp", get_object_count_rsp);
-            reg_method("get_object_count_err", get_object_count_err);
+            modules.reg_method("get_object_count_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_object_count_rsp));
+            modules.reg_method("get_object_count_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_object_count_err));
         }
 
         public void reg_hub_rsp(IList<MsgPack.MessagePackObject> inArray){
@@ -615,7 +614,7 @@ namespace abelkhan
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106);
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(hub_name);
-            call_module_method("reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+            call_module_method("hub_call_dbproxy_reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
 
             var cb_reg_hub_obj = new hub_call_dbproxy_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_dbproxy_handle);
             lock(rsp_cb_hub_call_dbproxy_handle.map_reg_hub)
@@ -633,7 +632,7 @@ namespace abelkhan
             _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.Add(db);
             _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.Add(collection);
             _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.Add(object_info);
-            call_module_method("create_persisted_object", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
+            call_module_method("hub_call_dbproxy_create_persisted_object", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
 
             var cb_create_persisted_object_obj = new hub_call_dbproxy_create_persisted_object_cb(uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb, rsp_cb_hub_call_dbproxy_handle);
             lock(rsp_cb_hub_call_dbproxy_handle.map_create_persisted_object)
@@ -653,7 +652,7 @@ namespace abelkhan
             _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(query_info);
             _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(updata_info);
             _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(_upsert);
-            call_module_method("updata_persisted_object", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
+            call_module_method("hub_call_dbproxy_updata_persisted_object", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
 
             var cb_updata_persisted_object_obj = new hub_call_dbproxy_updata_persisted_object_cb(uuid_7864a402_2d75_5c02_b24b_50287a06732f, rsp_cb_hub_call_dbproxy_handle);
             lock(rsp_cb_hub_call_dbproxy_handle.map_updata_persisted_object)
@@ -674,7 +673,7 @@ namespace abelkhan
             _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(updata_info);
             _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(_new);
             _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(_upsert);
-            call_module_method("find_and_modify", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
+            call_module_method("hub_call_dbproxy_find_and_modify", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
 
             var cb_find_and_modify_obj = new hub_call_dbproxy_find_and_modify_cb(uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a, rsp_cb_hub_call_dbproxy_handle);
             lock(rsp_cb_hub_call_dbproxy_handle.map_find_and_modify)
@@ -692,7 +691,7 @@ namespace abelkhan
             _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.Add(db);
             _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.Add(collection);
             _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.Add(query_info);
-            call_module_method("remove_object", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
+            call_module_method("hub_call_dbproxy_remove_object", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
 
             var cb_remove_object_obj = new hub_call_dbproxy_remove_object_cb(uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f, rsp_cb_hub_call_dbproxy_handle);
             lock(rsp_cb_hub_call_dbproxy_handle.map_remove_object)
@@ -712,7 +711,7 @@ namespace abelkhan
             _argv_1f17e6de_d423_391b_a599_7268e665a53f.Add(_sort);
             _argv_1f17e6de_d423_391b_a599_7268e665a53f.Add(_Ascending_);
             _argv_1f17e6de_d423_391b_a599_7268e665a53f.Add(callbackid);
-            call_module_method("get_object_info", _argv_1f17e6de_d423_391b_a599_7268e665a53f);
+            call_module_method("hub_call_dbproxy_get_object_info", _argv_1f17e6de_d423_391b_a599_7268e665a53f);
         }
 
         public hub_call_dbproxy_get_object_count_cb get_object_count(string db, string collection, byte[] query_info){
@@ -723,7 +722,7 @@ namespace abelkhan
             _argv_2632cded_162c_3a9b_86ee_462b614cbeea.Add(db);
             _argv_2632cded_162c_3a9b_86ee_462b614cbeea.Add(collection);
             _argv_2632cded_162c_3a9b_86ee_462b614cbeea.Add(query_info);
-            call_module_method("get_object_count", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
+            call_module_method("hub_call_dbproxy_get_object_count", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
 
             var cb_get_object_count_obj = new hub_call_dbproxy_get_object_count_cb(uuid_975425f5_8baf_5905_beeb_4454e78907f6, rsp_cb_hub_call_dbproxy_handle);
             lock(rsp_cb_hub_call_dbproxy_handle.map_get_object_count)
@@ -738,7 +737,6 @@ namespace abelkhan
     public class dbproxy_call_hub_rsp_cb : abelkhan.Imodule {
         public dbproxy_call_hub_rsp_cb(abelkhan.modulemng modules) : base("dbproxy_call_hub_rsp_cb")
         {
-            modules.reg_module(this);
         }
 
     }
@@ -759,13 +757,13 @@ namespace abelkhan
             var _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7 = new ArrayList();
             _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7.Add(callbackid);
             _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7.Add(object_info);
-            call_module_method("ack_get_object_info", _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7);
+            call_module_method("dbproxy_call_hub_ack_get_object_info", _argv_4b9aab45_a48a_36d2_a0cb_00e4d4c3a7c7);
         }
 
         public void ack_get_object_info_end(string callbackid){
             var _argv_e4756ccf_94e2_3b4f_958a_701f7076e607 = new ArrayList();
             _argv_e4756ccf_94e2_3b4f_958a_701f7076e607.Add(callbackid);
-            call_module_method("ack_get_object_info_end", _argv_e4756ccf_94e2_3b4f_958a_701f7076e607);
+            call_module_method("dbproxy_call_hub_ack_get_object_info_end", _argv_e4756ccf_94e2_3b4f_958a_701f7076e607);
         }
 
     }
@@ -780,13 +778,13 @@ namespace abelkhan
         public void rsp(){
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
-            call_module_method("reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+            call_module_method("hub_call_dbproxy_reg_hub_rsp", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 
         public void err(){
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67);
-            call_module_method("reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
+            call_module_method("hub_call_dbproxy_reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
         }
 
     }
@@ -801,13 +799,13 @@ namespace abelkhan
         public void rsp(){
             var _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607 = new ArrayList();
             _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.Add(uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b);
-            call_module_method("create_persisted_object_rsp", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
+            call_module_method("hub_call_dbproxy_create_persisted_object_rsp", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
         }
 
         public void err(){
             var _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607 = new ArrayList();
             _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.Add(uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b);
-            call_module_method("create_persisted_object_err", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
+            call_module_method("hub_call_dbproxy_create_persisted_object_err", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607);
         }
 
     }
@@ -822,13 +820,13 @@ namespace abelkhan
         public void rsp(){
             var _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425 = new ArrayList();
             _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(uuid_16267d40_cddc_312f_87c0_185a55b79ad2);
-            call_module_method("updata_persisted_object_rsp", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
+            call_module_method("hub_call_dbproxy_updata_persisted_object_rsp", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
         }
 
         public void err(){
             var _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425 = new ArrayList();
             _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(uuid_16267d40_cddc_312f_87c0_185a55b79ad2);
-            call_module_method("updata_persisted_object_err", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
+            call_module_method("hub_call_dbproxy_updata_persisted_object_err", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425);
         }
 
     }
@@ -844,13 +842,13 @@ namespace abelkhan
             var _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58 = new ArrayList();
             _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(uuid_c7725286_bd2c_331b_8ba9_90ffcefab6ae);
             _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(object_info_95c5b6a3_d4a6_3baf_8fea_9e22167f3d40);
-            call_module_method("find_and_modify_rsp", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
+            call_module_method("hub_call_dbproxy_find_and_modify_rsp", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
         }
 
         public void err(){
             var _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58 = new ArrayList();
             _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(uuid_c7725286_bd2c_331b_8ba9_90ffcefab6ae);
-            call_module_method("find_and_modify_err", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
+            call_module_method("hub_call_dbproxy_find_and_modify_err", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58);
         }
 
     }
@@ -865,13 +863,13 @@ namespace abelkhan
         public void rsp(){
             var _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da = new ArrayList();
             _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.Add(uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1);
-            call_module_method("remove_object_rsp", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
+            call_module_method("hub_call_dbproxy_remove_object_rsp", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
         }
 
         public void err(){
             var _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da = new ArrayList();
             _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.Add(uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1);
-            call_module_method("remove_object_err", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
+            call_module_method("hub_call_dbproxy_remove_object_err", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da);
         }
 
     }
@@ -887,13 +885,13 @@ namespace abelkhan
             var _argv_2632cded_162c_3a9b_86ee_462b614cbeea = new ArrayList();
             _argv_2632cded_162c_3a9b_86ee_462b614cbeea.Add(uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2);
             _argv_2632cded_162c_3a9b_86ee_462b614cbeea.Add(count_5292aa87_6be8_3979_a905_592fb57973b5);
-            call_module_method("get_object_count_rsp", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
+            call_module_method("hub_call_dbproxy_get_object_count_rsp", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
         }
 
         public void err(){
             var _argv_2632cded_162c_3a9b_86ee_462b614cbeea = new ArrayList();
             _argv_2632cded_162c_3a9b_86ee_462b614cbeea.Add(uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2);
-            call_module_method("get_object_count_err", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
+            call_module_method("hub_call_dbproxy_get_object_count_err", _argv_2632cded_162c_3a9b_86ee_462b614cbeea);
         }
 
     }
@@ -903,15 +901,13 @@ namespace abelkhan
         public hub_call_dbproxy_module(abelkhan.modulemng _modules) : base("hub_call_dbproxy")
         {
             modules = _modules;
-            modules.reg_module(this);
-
-            reg_method("reg_hub", reg_hub);
-            reg_method("create_persisted_object", create_persisted_object);
-            reg_method("updata_persisted_object", updata_persisted_object);
-            reg_method("find_and_modify", find_and_modify);
-            reg_method("remove_object", remove_object);
-            reg_method("get_object_info", get_object_info);
-            reg_method("get_object_count", get_object_count);
+            modules.reg_method("reg_hub", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub));
+            modules.reg_method("create_persisted_object", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, create_persisted_object));
+            modules.reg_method("updata_persisted_object", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, updata_persisted_object));
+            modules.reg_method("find_and_modify", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, find_and_modify));
+            modules.reg_method("remove_object", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, remove_object));
+            modules.reg_method("get_object_info", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_object_info));
+            modules.reg_method("get_object_count", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_object_count));
         }
 
         public event Action<string> on_reg_hub;
@@ -1016,10 +1012,8 @@ namespace abelkhan
         public dbproxy_call_hub_module(abelkhan.modulemng _modules) : base("dbproxy_call_hub")
         {
             modules = _modules;
-            modules.reg_module(this);
-
-            reg_method("ack_get_object_info", ack_get_object_info);
-            reg_method("ack_get_object_info_end", ack_get_object_info_end);
+            modules.reg_method("ack_get_object_info", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, ack_get_object_info));
+            modules.reg_method("ack_get_object_info_end", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, ack_get_object_info_end));
         }
 
         public event Action<string, byte[]> on_ack_get_object_info;

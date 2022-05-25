@@ -185,16 +185,15 @@ namespace abelkhan
         public Dictionary<UInt64, center_heartbeat_cb> map_heartbeat;
         public center_rsp_cb(abelkhan.modulemng modules) : base("center_rsp_cb")
         {
-            modules.reg_module(this);
             map_reg_server = new Dictionary<UInt64, center_reg_server_cb>();
-            reg_method("reg_server_rsp", reg_server_rsp);
-            reg_method("reg_server_err", reg_server_err);
+            modules.reg_method("reg_server_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server_rsp));
+            modules.reg_method("reg_server_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server_err));
             map_reconn_reg_server = new Dictionary<UInt64, center_reconn_reg_server_cb>();
-            reg_method("reconn_reg_server_rsp", reconn_reg_server_rsp);
-            reg_method("reconn_reg_server_err", reconn_reg_server_err);
+            modules.reg_method("reconn_reg_server_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server_rsp));
+            modules.reg_method("reconn_reg_server_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server_err));
             map_heartbeat = new Dictionary<UInt64, center_heartbeat_cb>();
-            reg_method("heartbeat_rsp", heartbeat_rsp);
-            reg_method("heartbeat_err", heartbeat_err);
+            modules.reg_method("heartbeat_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeat_rsp));
+            modules.reg_method("heartbeat_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeat_err));
         }
 
         public void reg_server_rsp(IList<MsgPack.MessagePackObject> inArray){
@@ -328,7 +327,7 @@ namespace abelkhan
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(svr_name);
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(host);
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(port);
-            call_module_method("reg_server", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
+            call_module_method("center_reg_server", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
 
             var cb_reg_server_obj = new center_reg_server_cb(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255, rsp_cb_center_handle);
             lock(rsp_cb_center_handle.map_reg_server)
@@ -347,7 +346,7 @@ namespace abelkhan
             _argv_a181e793_c43f_3b7f_b19e_178395e5927d.Add(svr_name);
             _argv_a181e793_c43f_3b7f_b19e_178395e5927d.Add(host);
             _argv_a181e793_c43f_3b7f_b19e_178395e5927d.Add(port);
-            call_module_method("reconn_reg_server", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
+            call_module_method("center_reconn_reg_server", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
 
             var cb_reconn_reg_server_obj = new center_reconn_reg_server_cb(uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d, rsp_cb_center_handle);
             lock(rsp_cb_center_handle.map_reconn_reg_server)
@@ -363,7 +362,7 @@ namespace abelkhan
             var _argv_af04a217_eafb_393c_9e34_0303485bef77 = new ArrayList();
             _argv_af04a217_eafb_393c_9e34_0303485bef77.Add(uuid_9654538a_9916_57dc_8ea5_806086d7a378);
             _argv_af04a217_eafb_393c_9e34_0303485bef77.Add(tick);
-            call_module_method("heartbeat", _argv_af04a217_eafb_393c_9e34_0303485bef77);
+            call_module_method("center_heartbeat", _argv_af04a217_eafb_393c_9e34_0303485bef77);
 
             var cb_heartbeat_obj = new center_heartbeat_cb(uuid_9654538a_9916_57dc_8ea5_806086d7a378, rsp_cb_center_handle);
             lock(rsp_cb_center_handle.map_heartbeat)
@@ -375,7 +374,7 @@ namespace abelkhan
 
         public void closed(){
             var _argv_e0d5aabb_d671_3c7e_99e4_6d374f7fd4ee = new ArrayList();
-            call_module_method("closed", _argv_e0d5aabb_d671_3c7e_99e4_6d374f7fd4ee);
+            call_module_method("center_closed", _argv_e0d5aabb_d671_3c7e_99e4_6d374f7fd4ee);
         }
 
     }
@@ -383,7 +382,6 @@ namespace abelkhan
     public class center_call_server_rsp_cb : abelkhan.Imodule {
         public center_call_server_rsp_cb(abelkhan.modulemng modules) : base("center_call_server_rsp_cb")
         {
-            modules.reg_module(this);
         }
 
     }
@@ -402,21 +400,21 @@ namespace abelkhan
 
         public void close_server(){
             var _argv_8394af17_8a06_3068_977d_477a1276f56e = new ArrayList();
-            call_module_method("close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
+            call_module_method("center_call_server_close_server", _argv_8394af17_8a06_3068_977d_477a1276f56e);
         }
 
         public void console_close_server(string svr_type, string svr_name){
             var _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc = new ArrayList();
             _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc.Add(svr_type);
             _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc.Add(svr_name);
-            call_module_method("console_close_server", _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc);
+            call_module_method("center_call_server_console_close_server", _argv_57b322da_74a5_3d2e_9f27_bf5bc1921fcc);
         }
 
         public void svr_be_closed(string svr_type, string svr_name){
             var _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac = new ArrayList();
             _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.Add(svr_type);
             _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.Add(svr_name);
-            call_module_method("svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
+            call_module_method("center_call_server_svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
         }
 
     }
@@ -424,7 +422,6 @@ namespace abelkhan
     public class center_call_hub_rsp_cb : abelkhan.Imodule {
         public center_call_hub_rsp_cb(abelkhan.modulemng modules) : base("center_call_hub_rsp_cb")
         {
-            modules.reg_module(this);
         }
 
     }
@@ -447,13 +444,13 @@ namespace abelkhan
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(svr_name);
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(host);
             _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(port);
-            call_module_method("distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
+            call_module_method("center_call_hub_distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
         }
 
         public void reload(string argv){
             var _argv_ba37af53_beea_3d61_82e1_8d15e335971d = new ArrayList();
             _argv_ba37af53_beea_3d61_82e1_8d15e335971d.Add(argv);
-            call_module_method("reload", _argv_ba37af53_beea_3d61_82e1_8d15e335971d);
+            call_module_method("center_call_hub_reload", _argv_ba37af53_beea_3d61_82e1_8d15e335971d);
         }
 
     }
@@ -461,7 +458,6 @@ namespace abelkhan
     public class gm_center_rsp_cb : abelkhan.Imodule {
         public gm_center_rsp_cb(abelkhan.modulemng modules) : base("gm_center_rsp_cb")
         {
-            modules.reg_module(this);
         }
 
     }
@@ -481,20 +477,20 @@ namespace abelkhan
         public void confirm_gm(string gm_name){
             var _argv_d097689c_b711_3837_8783_64916ae34cea = new ArrayList();
             _argv_d097689c_b711_3837_8783_64916ae34cea.Add(gm_name);
-            call_module_method("confirm_gm", _argv_d097689c_b711_3837_8783_64916ae34cea);
+            call_module_method("gm_center_confirm_gm", _argv_d097689c_b711_3837_8783_64916ae34cea);
         }
 
         public void close_clutter(string gmname){
             var _argv_576c03c3_06da_36a2_b868_752da601cb54 = new ArrayList();
             _argv_576c03c3_06da_36a2_b868_752da601cb54.Add(gmname);
-            call_module_method("close_clutter", _argv_576c03c3_06da_36a2_b868_752da601cb54);
+            call_module_method("gm_center_close_clutter", _argv_576c03c3_06da_36a2_b868_752da601cb54);
         }
 
         public void reload(string gmname, string argv){
             var _argv_ba37af53_beea_3d61_82e1_8d15e335971d = new ArrayList();
             _argv_ba37af53_beea_3d61_82e1_8d15e335971d.Add(gmname);
             _argv_ba37af53_beea_3d61_82e1_8d15e335971d.Add(argv);
-            call_module_method("reload", _argv_ba37af53_beea_3d61_82e1_8d15e335971d);
+            call_module_method("gm_center_reload", _argv_ba37af53_beea_3d61_82e1_8d15e335971d);
         }
 
     }
@@ -509,13 +505,13 @@ namespace abelkhan
         public void rsp(){
             var _argv_86ab8166_c1a7_3809_8c9b_df444f746076 = new ArrayList();
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda);
-            call_module_method("reg_server_rsp", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
+            call_module_method("center_reg_server_rsp", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
         }
 
         public void err(){
             var _argv_86ab8166_c1a7_3809_8c9b_df444f746076 = new ArrayList();
             _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda);
-            call_module_method("reg_server_err", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
+            call_module_method("center_reg_server_err", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
         }
 
     }
@@ -530,13 +526,13 @@ namespace abelkhan
         public void rsp(){
             var _argv_a181e793_c43f_3b7f_b19e_178395e5927d = new ArrayList();
             _argv_a181e793_c43f_3b7f_b19e_178395e5927d.Add(uuid_39461677_ebd9_335f_830b_8d355adba2f0);
-            call_module_method("reconn_reg_server_rsp", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
+            call_module_method("center_reconn_reg_server_rsp", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
         }
 
         public void err(){
             var _argv_a181e793_c43f_3b7f_b19e_178395e5927d = new ArrayList();
             _argv_a181e793_c43f_3b7f_b19e_178395e5927d.Add(uuid_39461677_ebd9_335f_830b_8d355adba2f0);
-            call_module_method("reconn_reg_server_err", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
+            call_module_method("center_reconn_reg_server_err", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
         }
 
     }
@@ -551,13 +547,13 @@ namespace abelkhan
         public void rsp(){
             var _argv_af04a217_eafb_393c_9e34_0303485bef77 = new ArrayList();
             _argv_af04a217_eafb_393c_9e34_0303485bef77.Add(uuid_617b63d0_e6d6_3c80_8c13_63a98d39e89f);
-            call_module_method("heartbeat_rsp", _argv_af04a217_eafb_393c_9e34_0303485bef77);
+            call_module_method("center_heartbeat_rsp", _argv_af04a217_eafb_393c_9e34_0303485bef77);
         }
 
         public void err(){
             var _argv_af04a217_eafb_393c_9e34_0303485bef77 = new ArrayList();
             _argv_af04a217_eafb_393c_9e34_0303485bef77.Add(uuid_617b63d0_e6d6_3c80_8c13_63a98d39e89f);
-            call_module_method("heartbeat_err", _argv_af04a217_eafb_393c_9e34_0303485bef77);
+            call_module_method("center_heartbeat_err", _argv_af04a217_eafb_393c_9e34_0303485bef77);
         }
 
     }
@@ -567,12 +563,10 @@ namespace abelkhan
         public center_module(abelkhan.modulemng _modules) : base("center")
         {
             modules = _modules;
-            modules.reg_module(this);
-
-            reg_method("reg_server", reg_server);
-            reg_method("reconn_reg_server", reconn_reg_server);
-            reg_method("heartbeat", heartbeat);
-            reg_method("closed", closed);
+            modules.reg_method("reg_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server));
+            modules.reg_method("reconn_reg_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server));
+            modules.reg_method("heartbeat", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeat));
+            modules.reg_method("closed", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, closed));
         }
 
         public event Action<string, string, string, UInt16> on_reg_server;
@@ -627,11 +621,9 @@ namespace abelkhan
         public center_call_server_module(abelkhan.modulemng _modules) : base("center_call_server")
         {
             modules = _modules;
-            modules.reg_module(this);
-
-            reg_method("close_server", close_server);
-            reg_method("console_close_server", console_close_server);
-            reg_method("svr_be_closed", svr_be_closed);
+            modules.reg_method("close_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, close_server));
+            modules.reg_method("console_close_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, console_close_server));
+            modules.reg_method("svr_be_closed", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, svr_be_closed));
         }
 
         public event Action on_close_server;
@@ -665,10 +657,8 @@ namespace abelkhan
         public center_call_hub_module(abelkhan.modulemng _modules) : base("center_call_hub")
         {
             modules = _modules;
-            modules.reg_module(this);
-
-            reg_method("distribute_server_address", distribute_server_address);
-            reg_method("reload", reload);
+            modules.reg_method("distribute_server_address", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, distribute_server_address));
+            modules.reg_method("reload", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reload));
         }
 
         public event Action<string, string, string, UInt16> on_distribute_server_address;
@@ -696,11 +686,9 @@ namespace abelkhan
         public gm_center_module(abelkhan.modulemng _modules) : base("gm_center")
         {
             modules = _modules;
-            modules.reg_module(this);
-
-            reg_method("confirm_gm", confirm_gm);
-            reg_method("close_clutter", close_clutter);
-            reg_method("reload", reload);
+            modules.reg_method("confirm_gm", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, confirm_gm));
+            modules.reg_method("close_clutter", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, close_clutter));
+            modules.reg_method("reload", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reload));
         }
 
         public event Action<string> on_confirm_gm;
