@@ -132,9 +132,9 @@ namespace abelkhan
             }
         }
 
-        public void start()
+        public async void start()
         {
-            RunServerAsync().Wait();
+            await RunServerAsync();
         }
 
         public async void close()

@@ -77,6 +77,7 @@ namespace hub
                     add_chs.Add(ch);
                 }
             };
+            _enetservice.start();
 
             _closeHandle = new closehandle();
             _hubs = new hubmanager();
@@ -304,8 +305,6 @@ namespace hub
             try
             {
                 _timer.poll();
-
-                _enetservice.poll();
 
                 lock (add_chs)
                 {

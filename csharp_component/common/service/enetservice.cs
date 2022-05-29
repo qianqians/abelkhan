@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Net;
+using System.Threading.Tasks;
 using ENet.Managed;
 
 namespace abelkhan
@@ -17,6 +18,7 @@ namespace abelkhan
         private Dictionary<UInt64, enetchannel> back_conns;
         private Dictionary<UInt64, enetchannel> conns;
         private Dictionary<UInt64, Action<enetchannel> > conn_cbs;
+        private Task run_t;
 
         public event Action<abelkhan.Ichannel> on_connect;
 
@@ -30,7 +32,7 @@ namespace abelkhan
             conn_cbs = new Dictionary<UInt64, Action<enetchannel> >();
         }
 
-        public void poll()
+        private void poll()
         {
             var Event = host.Service(TimeSpan.FromSeconds(0));
 
@@ -99,6 +101,18 @@ namespace abelkhan
                     throw new NotImplementedException();
             }
             host.Flush();
+        }
+
+        public void start()
+        {
+            run_t = new Task(()=>
+            {
+                while (true)
+                {
+                    poll();
+                }
+            });
+            run_t.Start();
         }
 
         public void connect(string ulr_host, ushort port, Action<enetchannel> cb)
