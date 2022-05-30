@@ -235,6 +235,7 @@ namespace hub
             _timer.addticktime(3 * 1000, (tick) =>
             {
                 _closeHandle.is_close = true;
+                _enetservice.stop();
                 ManagedENet.Shutdown();
             });
         }

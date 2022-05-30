@@ -19,6 +19,7 @@ namespace abelkhan
         private Dictionary<UInt64, enetchannel> conns;
         private Dictionary<UInt64, Action<enetchannel> > conn_cbs;
         private Task run_t;
+        private bool run_flag = true;
 
         public event Action<abelkhan.Ichannel> on_connect;
 
@@ -34,7 +35,7 @@ namespace abelkhan
 
         private void poll()
         {
-            var Event = host.Service(TimeSpan.FromSeconds(0));
+            var Event = host.Service(TimeSpan.FromMilliseconds(10));
 
             switch (Event.Type)
             {
@@ -107,12 +108,17 @@ namespace abelkhan
         {
             run_t = new Task(()=>
             {
-                while (true)
+                while (run_flag)
                 {
                     poll();
                 }
             });
             run_t.Start();
+        }
+
+        public void stop()
+        {
+            run_flag = false;
         }
 
         public void connect(string ulr_host, ushort port, Action<enetchannel> cb)
