@@ -23,16 +23,7 @@ namespace abelkhan
         {
             context = _context;
             lockobj = new object();
-            _channel_onrecv = new channel_onrecv();
-        }
-
-        public ArrayList pop()
-        {
-            if (_channel_onrecv.que.Count > 0)
-            {
-                return _channel_onrecv.que.Dequeue();
-            }
-            return null;
+            _channel_onrecv = new channel_onrecv(this);
         }
 
         public void disconnect()

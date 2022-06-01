@@ -18,7 +18,6 @@ namespace abelkhan
         private acceptservice _accept_gm_service;
         private gm_msg_handle _gm_msg_handle;
         private gmmanager _gmmanager;
-        private List<abelkhan.Ichannel> chs;
         private List<abelkhan.Ichannel> add_chs;
         public List<abelkhan.Ichannel> remove_chs;
         private Int64 _timetmp;
@@ -74,7 +73,6 @@ namespace abelkhan
             _timer = new service.timerservice();
             _timetmp = _timer.refresh();
 
-            chs = new List<abelkhan.Ichannel>();
             add_chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<Ichannel>();
             _closeHandle = new closehandle();
@@ -114,48 +112,29 @@ namespace abelkhan
             {
                 _timer.poll();
 
-                lock (add_chs)
+                while (true)
                 {
-                    foreach (var ch in add_chs)
+                    if (!event_queue.msgQue.TryDequeue(out Tuple<Ichannel, ArrayList> _event))
                     {
-                        chs.Add(ch);
+                        break;
                     }
-                    add_chs.Clear();
-                }
-
-                foreach (var ch in chs)
-                {
-                    while (true)
-                    {
-                        ArrayList ev = null;
-                        lock (ch)
-                        {
-                            ev = ch.pop();
-                        }
-                        if (ev == null)
-                        {
-                            break;
-                        }
-                        abelkhan.modulemng_handle._modulemng.process_event(ch, ev);
-                    }
+                    abelkhan.modulemng_handle._modulemng.process_event(_event.Item1, _event.Item2);
                 }
 
                 lock (_svrmanager.closed_svr_list)
                 {
                     foreach (var _proxy in _svrmanager.closed_svr_list)
                     {
-                        chs.Remove(_proxy.ch);
                         on_svr_disconnect?.Invoke(_proxy);
                     }
                 }
-
                 _svrmanager.remove_closed_svr();
 
                 lock (remove_chs)
                 {
                     foreach (var _ch in remove_chs)
                     {
-                        chs.Remove(_ch);
+                        add_chs.Remove(_ch);
                     }
                     remove_chs.Clear();
                 }

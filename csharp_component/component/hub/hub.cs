@@ -64,7 +64,6 @@ namespace hub
             _modules = new common.modulemanager();
 
             add_chs = new List<abelkhan.Ichannel>();
-            chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<abelkhan.Ichannel>();
 
             ManagedENet.Startup();
@@ -307,37 +306,20 @@ namespace hub
             {
                 _timer.poll();
 
-                lock (add_chs)
+                while (true)
                 {
-                    foreach (var ch in add_chs)
+                    if (!abelkhan.event_queue.msgQue.TryDequeue(out Tuple<abelkhan.Ichannel, ArrayList> _event))
                     {
-                        chs.Add(ch);
+                        break;
                     }
-                    add_chs.Clear();
-                }
-
-                foreach (var ch in chs)
-                {
-                    while (true)
-                    {
-                        ArrayList ev = null;
-                        lock (ch)
-                        {
-                            ev = ch.pop();
-                        }
-                        if (ev == null)
-                        {
-                            break;
-                        }
-                        abelkhan.modulemng_handle._modulemng.process_event(ch, ev);
-                    }
+                    abelkhan.modulemng_handle._modulemng.process_event(_event.Item1, _event.Item2);
                 }
 
                 lock (remove_chs)
                 {
                     foreach (var ch in remove_chs)
                     {
-                        chs.Remove(ch);
+                        add_chs.Remove(ch);
                     }
                     remove_chs.Clear();
                 }
@@ -383,7 +365,6 @@ namespace hub
         public static common.modulemanager _modules;
 
         public static List<abelkhan.Ichannel> add_chs;
-        public static List<abelkhan.Ichannel> chs;
         public static List<abelkhan.Ichannel> remove_chs;
 
         private abelkhan.enetservice _enetservice;

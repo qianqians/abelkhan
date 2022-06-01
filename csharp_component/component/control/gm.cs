@@ -59,16 +59,11 @@ namespace gm
             {
                 while (true)
                 {
-                    ArrayList _event = null;
-                    lock (ch)
-                    {
-                        _event = ch.pop();
-                    }
-                    if (_event == null)
+                    if (!abelkhan.event_queue.msgQue.TryDequeue(out Tuple<abelkhan.Ichannel, ArrayList> _event))
                     {
                         break;
                     }
-                    abelkhan.modulemng_handle._modulemng.process_event(ch, _event);
+                    abelkhan.modulemng_handle._modulemng.process_event(_event.Item1, _event.Item2);
                 }
             }
             catch (abelkhan.Exception e)

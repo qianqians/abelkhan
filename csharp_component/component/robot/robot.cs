@@ -308,7 +308,6 @@ namespace client
         public static service.timerservice timer;
 
         public static List<abelkhan.Ichannel> add_chs;
-        public static List<abelkhan.Ichannel> chs;
         public static List<abelkhan.Ichannel> remove_chs;
 
         public static string current_hub;
@@ -332,7 +331,6 @@ namespace client
             timer.refresh();
 
             add_chs = new List<abelkhan.Ichannel>();
-            chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<abelkhan.Ichannel>();
 
             modulemanager = new common.modulemanager();
@@ -423,39 +421,22 @@ namespace client
         {
             Int64 tick_begin = timer.poll();
 
-            lock (add_chs)
+            while (true)
             {
-                foreach (var ch in add_chs)
+                if (!abelkhan.event_queue.msgQue.TryDequeue(out Tuple<abelkhan.Ichannel, ArrayList> _event))
                 {
-                    chs.Add(ch);
+                    break;
                 }
-                add_chs.Clear();
-            }
-
-            foreach (var ch in chs)
-            {
-                while (true)
-                {
-                    ArrayList ev = null;
-                    lock (ch)
-                    {
-                        ev = ch.pop();
-                    }
-                    if (ev == null)
-                    {
-                        break;
-                    }
-                    current_robot = ch_robotproxys[ch];
-                    abelkhan.modulemng_handle._modulemng.process_event(ch, ev);
-                    current_robot = null;
-                }
+                current_robot = ch_robotproxys[_event.Item1];
+                abelkhan.modulemng_handle._modulemng.process_event(_event.Item1, _event.Item2);
+                current_robot = null;
             }
 
             lock (remove_chs)
             {
                 foreach (var ch in remove_chs)
                 {
-                    chs.Remove(ch);
+                    add_chs.Remove(ch);
                 }
                 remove_chs.Clear();
             }

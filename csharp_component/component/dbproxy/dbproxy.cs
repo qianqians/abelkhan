@@ -86,7 +86,6 @@ namespace dbproxy
             _timer = new service.timerservice();
             _timer.refresh();
 
-            chs = new List<abelkhan.Ichannel>();
             add_chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<abelkhan.Ichannel>();
             
@@ -175,37 +174,21 @@ namespace dbproxy
             {
                 _timer.poll();
 
-                lock (add_chs)
+                
+                while (true)
                 {
-                    foreach (var ch in add_chs)
+                    if (!abelkhan.event_queue.msgQue.TryDequeue(out Tuple<abelkhan.Ichannel, ArrayList> _event))
                     {
-                        chs.Add(ch);
+                        break;
                     }
-                    add_chs.Clear();
-                }
-
-                foreach (var ch in chs)
-                {
-                    while (true)
-                    {
-                        ArrayList ev = null;
-                        lock (ch)
-                        {
-                            ev = ch.pop();
-                        }
-                        if (ev == null)
-                        {
-                            break;
-                        }
-                        abelkhan.modulemng_handle._modulemng.process_event(ch, ev);
-                    }
+                    abelkhan.modulemng_handle._modulemng.process_event(_event.Item1, _event.Item2);
                 }
 
                 lock (remove_chs)
                 {
                     foreach (var ch in remove_chs)
                     {
-                        chs.Remove(ch);
+                        add_chs.Remove(ch);
                     }
                     remove_chs.Clear();
                 }
@@ -243,7 +226,6 @@ namespace dbproxy
         public static service.timerservice _timer;
         public static mongodbproxy _mongodbproxy;
 
-        private List<abelkhan.Ichannel> chs;
         private List<abelkhan.Ichannel> add_chs;
         public static List<abelkhan.Ichannel> remove_chs;
 

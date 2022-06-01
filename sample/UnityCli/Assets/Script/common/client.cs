@@ -128,7 +128,6 @@ namespace client
         private Dictionary<abelkhan.Ichannel, hubproxy> _ch_hubproxy_set;
 
         private List<abelkhan.Ichannel> add_chs;
-        private List<abelkhan.Ichannel> chs;
         private List<abelkhan.Ichannel> remove_chs;
 
         private abelkhan.gate_call_client_module _gate_call_client_module;
@@ -145,7 +144,6 @@ namespace client
             _ch_hubproxy_set = new Dictionary<abelkhan.Ichannel, hubproxy>();
 
             add_chs = new List<abelkhan.Ichannel>();
-            chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<abelkhan.Ichannel>();
 
             timer.addticktime(5 * 1000, heartbeats);
@@ -376,37 +374,21 @@ namespace client
         {
             Int64 tick_begin = timer.poll();
 
-            lock (add_chs)
+            
+            while (true)
             {
-                foreach (var ch in add_chs)
+                if (!abelkhan.event_queue.msgQue.TryDequeue(out Tuple<abelkhan.Ichannel, ArrayList> _event))
                 {
-                    chs.Add(ch);
+                    break;
                 }
-                add_chs.Clear();
-            }
-
-            foreach (var ch in chs)
-            {
-                while (true)
-                {
-                    ArrayList ev = null;
-                    lock (ch)
-                    {
-                        ev = ch.pop();
-                    }
-                    if (ev == null)
-                    {
-                        break;
-                    }
-                    abelkhan.modulemng_handle._modulemng.process_event(ch, ev);
-                }
+                abelkhan.modulemng_handle._modulemng.process_event(_event.Item1, _event.Item2);
             }
 
             lock (remove_chs)
             {
                 foreach (var ch in remove_chs)
                 {
-                    chs.Remove(ch);
+                    add_chs.Remove(ch);
                 }
                 remove_chs.Clear();
             }

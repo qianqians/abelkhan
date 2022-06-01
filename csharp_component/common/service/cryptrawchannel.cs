@@ -16,7 +16,7 @@ namespace abelkhan
         public cryptrawchannel(Socket _s)
         {
             s = _s;
-            _channel_onrecv = new channel_onrecv();
+            _channel_onrecv = new channel_onrecv(this);
             _channel_onrecv.on_recv_data += crypt.crypt_func;
 
             recvbuflength = 8 * 1024;
@@ -33,15 +33,6 @@ namespace abelkhan
             {
                 onDisconnect?.Invoke(this);
             }
-        }
-
-        public ArrayList pop()
-        {
-            if (_channel_onrecv.que.Count > 0)
-            {
-                return _channel_onrecv.que.Dequeue();
-            }
-            return null;
         }
 
         public void disconnect()

@@ -14,13 +14,12 @@ namespace abelkhan
     public class channel_onrecv
     {
         private MemoryStream recv_buf = new MemoryStream();
-
-        public readonly Queue<ArrayList> que = new Queue<ArrayList>();
-
         private MessagePackSerializer<ArrayList> serializer = MessagePackSerializer.Get<ArrayList>();
+        private Ichannel channel;
 
-        public channel_onrecv()
+        public channel_onrecv(Ichannel ch)
         {
+            channel = ch;
         }
 
         public event Action<byte[], int, int> on_recv_data;
@@ -57,10 +56,7 @@ namespace abelkhan
                     _tmp.Write(under_buf, offset, len);
                     _tmp.Position = 0;
                     var _event = serializer.Unpack(_tmp);
-                    lock (que)
-                    {
-                        que.Enqueue(_event);
-                    }
+                    event_queue.msgQue.Enqueue(Tuple.Create<Ichannel, ArrayList>(channel, _event));
                 }
 
                 offset += len;
