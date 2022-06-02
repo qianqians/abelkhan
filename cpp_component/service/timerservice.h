@@ -47,18 +47,13 @@ public:
 	{
 		Tick = msec_time();
 
-		while (true)
+		std::pair<int64_t, std::shared_ptr<timerimpl> > cb;
+		while (add_cbs.pop(cb))
 		{
-			std::pair<int64_t, std::shared_ptr<timerimpl> > cb;
-			if (!add_cbs.pop(cb)) {
-				break;
-			}
-
 			while (cbs.find(cb.first) != cbs.end())
 			{
 				cb.first++;
 			}
-
 			cbs.insert(cb);
 		}
 
