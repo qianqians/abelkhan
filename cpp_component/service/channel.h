@@ -115,7 +115,6 @@ public:
 					}
 					else {
 						spdlog::error("channel push error:{0}", e.what());
-						is_close = true;
 						break;
 					}
 				}
@@ -123,7 +122,6 @@ public:
 		}
 		catch (std::exception e) {
 			spdlog::error("channel push exception error:{0}", e.what());
-			is_close = true;
 		}
 	}
 
