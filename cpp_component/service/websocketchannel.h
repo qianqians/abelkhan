@@ -114,8 +114,6 @@ private:
 
 	bool is_close;
 
-	friend class webacceptservice;
-
 };
 
 }
