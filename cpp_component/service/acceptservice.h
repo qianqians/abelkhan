@@ -1,11 +1,11 @@
 #ifndef _acceptservice_h
 #define _acceptservice_h
 
+#include <stack>
 #include <functional>
 
 #include <boost/asio.hpp>
 
-#include "objpool.h"
 #include "channel.h"
 #include "gc_poll.h"
 
@@ -18,7 +18,7 @@ public:
 
 		_service = service;
 
-		boost::asio::ip::tcp::endpoint ep(boost::asio::ip::address::from_string(ip), port);
+		boost::asio::ip::tcp::endpoint ep(boost::asio::ip::address::from_string("0.0.0.0"), port);
 		_acceptor.open(ep.protocol());
 
 		boost::asio::socket_base::reuse_address opt(true);
@@ -37,7 +37,7 @@ public:
 			s->close();
 		}
 		else {
-			auto ch = _ch_pool.make_obj(s);
+			auto ch = make_channel(s);
 			ch->sigondisconn.connect(std::bind(&acceptservice::onChannelDisconn, this, std::placeholders::_1));
 			ch->sigdisconn.connect(std::bind(&acceptservice::ChannelDisconn, this, std::placeholders::_1));
 			ch->start();
@@ -54,21 +54,34 @@ public:
 		if (!sigchanneldisconnect.empty()) {
 			sigchanneldisconnect.emit(ch);
 		}
-		_ch_pool.recycle(ch);
+		ch_pool.push(ch);
 	}
 
 	void ChannelDisconn(std::shared_ptr<channel> ch) {
 		if (!sigchanneldisconnect.empty()) {
 			sigchanneldisconnect.emit(ch);
 		}
-		_ch_pool.recycle(ch);
+		ch_pool.push(ch);
 	}
+
+private:
+	std::shared_ptr<channel> make_channel(std::shared_ptr<boost::asio::ip::tcp::socket> s) {
+		if (ch_pool.empty()) {
+			return std::make_shared<channel>(s);
+		}
+
+		auto _ch = ch_pool.top();
+		_ch->s = s;
+		_ch->is_close = false;
+		return _ch;
+	}
+
 
 private:
 	std::shared_ptr<boost::asio::io_service> _service;
 	boost::asio::ip::tcp::acceptor _acceptor;
 
-	objpool<channel> _ch_pool;
+	std::stack<std::shared_ptr<channel> > ch_pool;
 
 };
 

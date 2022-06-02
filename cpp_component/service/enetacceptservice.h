@@ -12,10 +12,8 @@ namespace service
 class enetacceptservice {
 public:
 	enetacceptservice(std::string host, short port){
-		auto ip = DNS(host);
-
 		ENetAddress address;
-		if (enet_address_set_host_ip(&address, ip.c_str()) != 0) {
+		if (enet_address_set_host_ip(&address, "0.0.0.0") != 0) {
 			throw std::exception("enet_address_set_host_ip faild");
 			return;
 		}
