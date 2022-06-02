@@ -165,13 +165,13 @@ void gatemanager::client_direct_disconnect(std::shared_ptr<abelkhan::Ichannel> d
 	}
 
 	auto cuuid = it->second->_cuuid;
+	_directproxy_pool.recycle(it->second);
 
 	direct_clients.erase(cuuid);
 	ch_direct_clients.erase(it);
 
 	_hub->sig_direct_client_disconnect.emit(cuuid);
 
-	_directproxy_pool.recycle(it->second);
 
 	spdlog::trace("client_direct_disconnect direct_clients.size:{0}, ch_direct_clients.size:{1}!", direct_clients.size(), ch_direct_clients.size());
 }

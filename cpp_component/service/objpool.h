@@ -16,7 +16,6 @@ template<class T>
 class objpool {
 public:
 	void recycle(std::shared_ptr<T> obj) {
-		obj->~T();
 		_pool.push(obj);
 	}
 
@@ -24,6 +23,7 @@ public:
 	std::shared_ptr<T> make_obj(Args... p) {
 		std::shared_ptr<T> _obj;
 		if (_pool.pop(_obj)) {
+			_obj->~T();
 			new (_obj.get()) T(p...);
 			return _obj;
 		}

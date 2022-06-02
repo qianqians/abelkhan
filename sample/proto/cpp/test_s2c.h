@@ -32,7 +32,7 @@ namespace abelkhan
     class test_s2c_rsp_cb : public common::imodule, public std::enable_shared_from_this<test_s2c_rsp_cb>{
     public:
         std::mutex mutex_map_ping;
-        std::map<uint64_t, std::shared_ptr<test_s2c_ping_cb> > map_ping;
+        std::unordered_map<uint64_t, std::shared_ptr<test_s2c_ping_cb> > map_ping;
         test_s2c_rsp_cb() 
         {
         }
