@@ -7,6 +7,8 @@
 #include <vector>
 #include <mutex>
 
+#include <ringque.h>
+
 #include "msec_time.h"
 
 namespace service
@@ -21,8 +23,10 @@ public:
 	};
 
 private:
-	std::mutex m;
 	std::map<int64_t, std::shared_ptr<timerimpl> > cbs;
+
+	concurrent::ringque<std::pair<int64_t, std::shared_ptr<timerimpl> > > add_cbs;
+	std::vector<int64_t> remove;
 
 public:
 	timerservice() 
@@ -33,17 +37,9 @@ public:
 	std::shared_ptr<timerimpl> addticktimer(int64_t _tick, std::function< void(int64_t) > cb)
 	{
 		_tick += Tick;
-		while (cbs.find(_tick) != cbs.end())
-		{
-			_tick++;
-		}
-
 		auto timpl = std::make_shared<timerimpl>();
 		timpl->cb = cb;
-
-		std::lock_guard<std::mutex> l(m);
-		cbs.insert(std::make_pair(_tick, timpl));
-
+		add_cbs.push(std::make_pair(_tick, timpl));
 		return timpl;
 	}
 
@@ -51,8 +47,21 @@ public:
 	{
 		Tick = msec_time();
 
-		std::lock_guard<std::mutex> l(m);
-		std::vector<int64_t> remove;
+		while (true)
+		{
+			std::pair<int64_t, std::shared_ptr<timerimpl> > cb;
+			if (!add_cbs.pop(cb)) {
+				break;
+			}
+
+			while (cbs.find(cb.first) != cbs.end())
+			{
+				cb.first++;
+			}
+
+			cbs.insert(cb);
+		}
+
 		for (auto it = cbs.begin(); it != cbs.end(); it++)
 		{
 			if (it->first <= Tick)
@@ -71,6 +80,7 @@ public:
 		{
 			cbs.erase(key);
 		}
+		remove.clear();
 
 		return Tick;
 	}
