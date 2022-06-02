@@ -41,6 +41,15 @@ namespace abelkhan
             _socket.Close();
         }
 
+        public bool is_xor_key_crypt()
+        {
+            return false;
+        }
+
+        public void normal_send_crypt(byte[] data)
+        {
+        }
+
         public void send(byte[] data)
         {
             lock (lockobj)

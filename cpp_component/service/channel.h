@@ -42,6 +42,14 @@ public:
 		ch_encrypt_decrypt_ondata->set_xor_key_crypt();
 	}
 
+	bool is_xor_key_crypt() {
+		return ch_encrypt_decrypt_ondata->is_compress_and_encrypt;
+	}
+
+	void normal_crypt(char* data, size_t len) {
+		channel_encrypt_decrypt_ondata::xor_key_encrypt_decrypt(data, len);
+	}
+
 	virtual ~channel(){
 	}
 
@@ -86,7 +94,7 @@ public:
 		}
 	}
 
-	void send(char* data, size_t len)
+	void send(const char* data, size_t len)
 	{
 		if (is_close) {
 			return;
@@ -97,11 +105,6 @@ public:
 		}
 
 		try {
-			if (ch_encrypt_decrypt_ondata->is_compress_and_encrypt)
-			{
-				ch_encrypt_decrypt_ondata->xor_key_encrypt_decrypt(&data[4], len - 4);
-			}
-			
 			std::lock_guard<std::mutex> lock(_mutex);
 			size_t offset = 0;
 			while (offset < len) {

@@ -100,6 +100,7 @@ gatemanager::gatemanager(std::shared_ptr<service::enetacceptservice> conn_, std:
 
 	_data_size = 8 * 1024;
 	_data = (unsigned char*)malloc(_data_size);
+	_crypt_data = (unsigned char*)malloc(_data_size);
 }
 
 void gatemanager::connect_gate(std::string gate_name, std::string host, uint16_t port) {
@@ -283,17 +284,18 @@ void gatemanager::call_group_client(const std::vector<std::string>& cuuids, cons
 			_argv_array.push_back(_data_bin);
 
 			msgpack11::MsgPack::array event_;
-			event_.push_back("hub_call_client");
-			event_.push_back("call_client");
+			event_.push_back("hub_call_client_call_client");
 			event_.push_back(_argv_array);
 			msgpack11::MsgPack _pack(event_);
 			auto data = _pack.dump();
 
 			size_t len = data.size();
 			if (_data_size < (len + 4)) {
-				_data_size *= 2;
+				_data_size = ((len + 4 + _data_size - 1) / _data_size) * _data_size;
 				free(_data);
+				free(_crypt_data);
 				_data = (unsigned char*)malloc(_data_size);
+				_crypt_data = (unsigned char*)malloc(_data_size);
 			}
 			_data[0] = len & 0xff;
 			_data[1] = len >> 8 & 0xff;
@@ -302,8 +304,25 @@ void gatemanager::call_group_client(const std::vector<std::string>& cuuids, cons
 			memcpy(&_data[4], data.c_str(), data.size());
 			size_t datasize = len + 4;
 
+			memcpy(_crypt_data, _data, datasize);
+			service::channel_encrypt_decrypt_ondata::xor_key_encrypt_decrypt((char*)(&(_crypt_data[4])), len);
+
+			std::vector<std::shared_ptr<abelkhan::Ichannel> > crypt_chs;
+			std::vector<std::shared_ptr<abelkhan::Ichannel> > chs;
 			for (auto direct_proxy : directs) {
-				direct_proxy->_direct_ch->send((char*)_data, datasize);
+				if (direct_proxy->_direct_ch->is_xor_key_crypt()) {
+					crypt_chs.push_back(direct_proxy->_direct_ch);
+				}
+				else {
+					chs.push_back(direct_proxy->_direct_ch);
+				}
+			}
+
+			for (auto ch : crypt_chs) {
+				ch->send((char*)_crypt_data, datasize);
+			}
+			for (auto ch : chs) {
+				ch->send((char*)_data, datasize);
 			}
 		}
 	}

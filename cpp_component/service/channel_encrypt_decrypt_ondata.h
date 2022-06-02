@@ -27,7 +27,7 @@ public:
 		is_compress_and_encrypt = true;
 	}
 
-	void xor_key_encrypt_decrypt(char* data, size_t len) {
+	static void xor_key_encrypt_decrypt(char* data, size_t len) {
 		uint8_t xor_key[4] = { 0 };
 		xor_key[0] = len & 0xff;
 		xor_key[1] = (len >> 8) & 0xff;

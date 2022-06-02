@@ -35,12 +35,19 @@ public:
 	{
 	}
 
+	bool is_xor_key_crypt() {
+		return ch_encrypt_decrypt_ondata->is_compress_and_encrypt;
+	}
+
+	void normal_crypt(char* data, size_t len) {
+	}
+
 	void recv(char * data, size_t length)
 	{
 		ch_encrypt_decrypt_ondata->recv(data, length);
 	}
 
-	void send(char* data, size_t len)
+	void send(const char* data, size_t len)
 	{
 		try {
 			ENetPacket* packet = enet_packet_create(data, len, ENET_PACKET_FLAG_RELIABLE);

@@ -40,6 +40,18 @@ namespace test_csharp
                     log.log.trace("getObjectInfo info end!");
                 });
             };
+            _hub.on_client_disconnect += (string cuuid) =>
+            {
+                client_list.Remove(cuuid);
+            };
+            _hub.on_client_exception += (string cuuid) =>
+            {
+                client_list.Remove(cuuid);
+            };
+            _hub.on_direct_client_disconnect += (string cuuid) =>
+            {
+                client_list.Remove(cuuid);
+            };
 
             var _test_c2s_module = new abelkhan.test_c2s_module();
             _test_c2s_module.on_login += () => {

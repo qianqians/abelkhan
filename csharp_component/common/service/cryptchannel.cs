@@ -33,9 +33,18 @@ namespace abelkhan
             context.CloseAsync();
         }
 
-        public void send(byte[] data)
+        public bool is_xor_key_crypt()
+        {
+            return true;
+        }
+
+        public void normal_send_crypt(byte[] data)
         {
             crypt.crypt_func_send(data);
+        }
+
+        public void send(byte[] data)
+        {
             var len = data.Length;
             var initialMessage = Unpooled.Buffer((int)len);
             initialMessage.WriteBytes(data);

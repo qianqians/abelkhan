@@ -104,6 +104,7 @@ public:
 private:
 	size_t _data_size;
 	unsigned char* _data;
+	unsigned char* _crypt_data;
 
 	std::shared_ptr<service::enetacceptservice> _conn;
 	std::shared_ptr<hub_service> _hub;

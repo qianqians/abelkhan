@@ -79,7 +79,14 @@ public:
 		}
 	}
 
-	void send(char* data, size_t len)
+	bool is_xor_key_crypt() {
+		return ch_encrypt_decrypt_ondata->is_compress_and_encrypt;
+	}
+
+	void normal_crypt(char* data, size_t len) {
+	}
+
+	void send(const char* data, size_t len)
 	{
 		if (is_close) {
 			return;

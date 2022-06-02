@@ -23,6 +23,7 @@ class hub_svr_msg_handle {
 private:
 	size_t _data_size;
 	unsigned char* _data;
+	unsigned char* _crypt_data;
 
 	std::shared_ptr<clientmanager> _clientmanager;
 	std::shared_ptr<hubsvrmanager> _hubsvrmanager;
@@ -33,6 +34,7 @@ public:
 	hub_svr_msg_handle(std::shared_ptr<clientmanager> clientmanager_, std::shared_ptr<hubsvrmanager> hubsvrmanager_) {
 		_data_size = 8 * 1024;
 		_data = (unsigned char*)malloc(_data_size);
+		_crypt_data = (unsigned char*)malloc(_data_size);
 
 		_clientmanager = clientmanager_;
 		_hubsvrmanager = hubsvrmanager_;
@@ -80,17 +82,18 @@ public:
 		_argv_array.push_back(rpc_argv);
 
 		msgpack11::MsgPack::array event_;
-		event_.push_back("gate_call_client");
-		event_.push_back("call_client");
+		event_.push_back("gate_call_client_call_client");
 		event_.push_back(_argv_array);
 		msgpack11::MsgPack _pack(event_);
 		auto data = _pack.dump();
 
 		size_t len = data.size();
 		if (_data_size < (len + 4)) {
-			_data_size *= 2;
+			_data_size = ((len + 4 + _data_size - 1) / _data_size) * _data_size;
 			free(_data);
+			free(_crypt_data);
 			_data = (unsigned char*)malloc(_data_size);
+			_crypt_data = (unsigned char*)malloc(_data_size);
 		}
 		_data[0] = len & 0xff;
 		_data[1] = len >> 8 & 0xff;
@@ -99,15 +102,27 @@ public:
 		memcpy(&_data[4], data.c_str(), data.size());
 		size_t datasize = len + 4;
 
-		std::vector<std::shared_ptr<clientproxy> > clients;
+		memcpy(_crypt_data, _data, datasize);
+		service::channel_encrypt_decrypt_ondata::xor_key_encrypt_decrypt((char*)(&(_crypt_data[4])), len);
+
+		std::vector<std::shared_ptr<abelkhan::Ichannel> > crypt_clients;
+		std::vector<std::shared_ptr<abelkhan::Ichannel> > clients;
 		for (auto cuuid : cuuids) {
 			auto client_proxy = _clientmanager->get_client(cuuid);
 			if (client_proxy != nullptr) {
-				clients.push_back(client_proxy);
+				if (client_proxy->_ch->is_xor_key_crypt()) {
+					crypt_clients.push_back(client_proxy->_ch);
+				}
+				else {
+					clients.push_back(client_proxy->_ch);
+				}
 			}
 		}
+		for (auto _client : crypt_clients) {
+			_client->send((char*)_crypt_data, datasize);
+		}
 		for (auto _client : clients) {
-			_client->_ch->send((char*)_data, datasize);
+			_client->send((char*)_data, datasize);
 		}
 	}
 
@@ -120,17 +135,18 @@ public:
 		_argv_array.push_back(rpc_argv);
 
 		msgpack11::MsgPack::array event_;
-		event_.push_back("gate_call_client");
-		event_.push_back("call_client");
+		event_.push_back("gate_call_client_call_client");
 		event_.push_back(_argv_array);
 		msgpack11::MsgPack _pack(event_);
 		auto data = _pack.dump();
 
 		size_t len = data.size();
 		if (_data_size < (len + 4)) {
-			_data_size *= 2;
+			_data_size = ((len + 4 + _data_size - 1) / _data_size) * _data_size;
 			free(_data);
+			free(_crypt_data);
 			_data = (unsigned char*)malloc(_data_size);
+			_crypt_data = (unsigned char*)malloc(_data_size);
 		}
 		_data[0] = len & 0xff;
 		_data[1] = len >> 8 & 0xff;
@@ -139,8 +155,16 @@ public:
 		memcpy(&_data[4], data.c_str(), data.size());
 		size_t datasize = len + 4;
 
+		memcpy(_crypt_data, _data, datasize);
+		service::channel_encrypt_decrypt_ondata::xor_key_encrypt_decrypt((char*)(&(_crypt_data[4])), len);
+
 		_clientmanager->for_each_client([this, datasize](std::string cuuid, std::shared_ptr<clientproxy> _client) {
-			_client->_ch->send((char*)_data, datasize);
+			if (_client->_ch->is_xor_key_crypt()) {
+				_client->_ch->send((char*)_crypt_data, datasize);
+			}
+			else {
+				_client->_ch->send((char*)_data, datasize);
+			}
 		});
 	}
 };
