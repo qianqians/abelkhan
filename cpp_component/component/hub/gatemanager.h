@@ -17,6 +17,8 @@
 #include <hub.h>
 #include <gate.h>
 
+#include "objpool.h"
+
 namespace service {
 
 class enetacceptservice;
@@ -114,6 +116,8 @@ private:
 
 	std::unordered_map<std::string, std::shared_ptr<directproxy> > direct_clients;
 	std::unordered_map<std::shared_ptr<abelkhan::Ichannel>, std::shared_ptr<directproxy> > ch_direct_clients;
+
+	service::objpool<directproxy> _directproxy_pool;
 
 };
 

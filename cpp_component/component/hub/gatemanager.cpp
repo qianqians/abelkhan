@@ -148,12 +148,11 @@ void gatemanager::client_direct_connect(std::string client_uuid, std::shared_ptr
 	if (it != direct_clients.end()) {
 		ch_direct_clients.erase(it->second->_direct_ch);
 		direct_clients.erase(it);
-		return;
 	}
 
 	spdlog::trace("reg direct client:{0}", client_uuid);
 
-	auto _directproxy = std::make_shared<directproxy>(client_uuid, direct_ch);
+	auto _directproxy = _directproxy_pool.make_obj(client_uuid, direct_ch);
 	direct_clients.insert(std::make_pair(client_uuid, _directproxy));
 
 	ch_direct_clients.insert(std::make_pair(direct_ch, _directproxy));
@@ -171,6 +170,8 @@ void gatemanager::client_direct_disconnect(std::shared_ptr<abelkhan::Ichannel> d
 	ch_direct_clients.erase(it);
 
 	_hub->sig_direct_client_disconnect.emit(cuuid);
+
+	_directproxy_pool.recycle(it->second);
 
 	spdlog::trace("client_direct_disconnect direct_clients.size:{0}, ch_direct_clients.size:{1}!", direct_clients.size(), ch_direct_clients.size());
 }

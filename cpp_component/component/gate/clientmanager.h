@@ -21,6 +21,7 @@
 #include <abelkhan.h>
 #include <client.h>
 
+#include "objpool.h"
 #include "timerservice.h"
 #include "hubsvrmanager.h"
 #include "gc_poll.h"
@@ -96,7 +97,7 @@ public:
 
 	std::shared_ptr<clientproxy> reg_client(std::shared_ptr<abelkhan::Ichannel> ch) {
 		std::string cuuid = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
-		auto _client = std::make_shared<clientproxy>(cuuid, ch);
+		auto _client = _client_pool.make_obj(cuuid, ch);
 
 		client_map.insert(std::make_pair(cuuid, _client));
 		client_uuid_map.insert(std::make_pair(ch, _client));
@@ -120,6 +121,8 @@ public:
 		{
 			client_uuid_map.erase(_ch);
 		}
+
+		_client_pool.recycle(_client);
 	}
 
 	bool has_client(std::shared_ptr<abelkhan::Ichannel> ch) {
@@ -157,6 +160,8 @@ private:
 	std::unordered_map<std::shared_ptr<abelkhan::Ichannel>, std::shared_ptr<clientproxy> > client_uuid_map;
 
 	std::shared_ptr<hubsvrmanager> _hubsvrmanager;
+
+	service::objpool<clientproxy> _client_pool;
 
 };
 
