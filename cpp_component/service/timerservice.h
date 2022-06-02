@@ -5,6 +5,7 @@
 #include <functional>
 #include <map>
 #include <vector>
+#include <mutex>
 
 #include "msec_time.h"
 
@@ -20,6 +21,7 @@ public:
 	};
 
 private:
+	std::mutex m;
 	std::map<int64_t, std::shared_ptr<timerimpl> > cbs;
 
 public:
@@ -38,6 +40,8 @@ public:
 
 		auto timpl = std::make_shared<timerimpl>();
 		timpl->cb = cb;
+
+		std::lock_guard<std::mutex> l(m);
 		cbs.insert(std::make_pair(_tick, timpl));
 
 		return timpl;
@@ -47,6 +51,7 @@ public:
 	{
 		Tick = msec_time();
 
+		std::lock_guard<std::mutex> l(m);
 		std::vector<int64_t> remove;
 		for (auto it = cbs.begin(); it != cbs.end(); it++)
 		{
