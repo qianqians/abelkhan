@@ -124,9 +124,9 @@ public:
 	}
 
 private:
-	std::map<std::string, std::shared_ptr<hubproxy> > wait_destory_proxy;
-	std::map<std::string, std::shared_ptr<hubproxy> > hub_name_proxy;
-	std::map<std::shared_ptr<abelkhan::Ichannel>, std::string> hub_channel_name;
+	std::unordered_map<std::string, std::shared_ptr<hubproxy> > wait_destory_proxy;
+	std::unordered_map<std::string, std::shared_ptr<hubproxy> > hub_name_proxy;
+	std::unordered_map<std::shared_ptr<abelkhan::Ichannel>, std::string> hub_channel_name;
 
 };
 

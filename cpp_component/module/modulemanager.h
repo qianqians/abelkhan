@@ -11,7 +11,7 @@ namespace common
 
 class modulemanager {
 protected:
-	std::map<std::string, std::function< void(msgpack11::MsgPack::array) > > motheds;
+	std::unordered_map<std::string, std::function< void(msgpack11::MsgPack::array) > > motheds;
 
 public:
 	void add_mothed(std::string mothed_name, std::function< void(msgpack11::MsgPack::array) > mothed)

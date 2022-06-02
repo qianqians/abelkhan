@@ -117,17 +117,17 @@ namespace abelkhan
     class hub_call_dbproxy_rsp_cb : public Imodule, public std::enable_shared_from_this<hub_call_dbproxy_rsp_cb>{
     public:
         std::mutex mutex_map_reg_hub;
-        std::map<uint64_t, std::shared_ptr<hub_call_dbproxy_reg_hub_cb> > map_reg_hub;
+        std::unordered_map<uint64_t, std::shared_ptr<hub_call_dbproxy_reg_hub_cb> > map_reg_hub;
         std::mutex mutex_map_create_persisted_object;
-        std::map<uint64_t, std::shared_ptr<hub_call_dbproxy_create_persisted_object_cb> > map_create_persisted_object;
+        std::unordered_map<uint64_t, std::shared_ptr<hub_call_dbproxy_create_persisted_object_cb> > map_create_persisted_object;
         std::mutex mutex_map_updata_persisted_object;
-        std::map<uint64_t, std::shared_ptr<hub_call_dbproxy_updata_persisted_object_cb> > map_updata_persisted_object;
+        std::unordered_map<uint64_t, std::shared_ptr<hub_call_dbproxy_updata_persisted_object_cb> > map_updata_persisted_object;
         std::mutex mutex_map_find_and_modify;
-        std::map<uint64_t, std::shared_ptr<hub_call_dbproxy_find_and_modify_cb> > map_find_and_modify;
+        std::unordered_map<uint64_t, std::shared_ptr<hub_call_dbproxy_find_and_modify_cb> > map_find_and_modify;
         std::mutex mutex_map_remove_object;
-        std::map<uint64_t, std::shared_ptr<hub_call_dbproxy_remove_object_cb> > map_remove_object;
+        std::unordered_map<uint64_t, std::shared_ptr<hub_call_dbproxy_remove_object_cb> > map_remove_object;
         std::mutex mutex_map_get_object_count;
-        std::map<uint64_t, std::shared_ptr<hub_call_dbproxy_get_object_count_cb> > map_get_object_count;
+        std::unordered_map<uint64_t, std::shared_ptr<hub_call_dbproxy_get_object_count_cb> > map_get_object_count;
         hub_call_dbproxy_rsp_cb() : Imodule("hub_call_dbproxy_rsp_cb")
         {
         }

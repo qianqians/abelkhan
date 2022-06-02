@@ -258,7 +258,7 @@ void gatemanager::call_group_client(const std::vector<std::string>& cuuids, cons
 	memcpy(_data_bin.data(), data.data(), data.size());
 
 	std::vector<std::shared_ptr<directproxy> > directs;
-	std::map<std::shared_ptr<gateproxy>, std::vector<std::string> > gate_clients;
+	std::unordered_map<std::shared_ptr<gateproxy>, std::vector<std::string> > gate_clients;
 	for (auto cuuid : cuuids) {
 		auto it_direct_client = direct_clients.find(cuuid);
 		if (it_direct_client != direct_clients.end()) {

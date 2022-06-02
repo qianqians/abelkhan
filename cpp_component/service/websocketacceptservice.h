@@ -154,7 +154,7 @@ private:
 	std::string tmp_dh_file;
 
 	std::mutex _chs_mu;
-	std::map<void*, std::shared_ptr<webchannel> > _chs;
+	std::unordered_map<void*, std::shared_ptr<webchannel> > _chs;
 
 	objpool<webchannel> _wch_pool;
 

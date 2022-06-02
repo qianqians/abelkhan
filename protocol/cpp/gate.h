@@ -76,9 +76,9 @@ namespace abelkhan
     class client_call_gate_rsp_cb : public Imodule, public std::enable_shared_from_this<client_call_gate_rsp_cb>{
     public:
         std::mutex mutex_map_heartbeats;
-        std::map<uint64_t, std::shared_ptr<client_call_gate_heartbeats_cb> > map_heartbeats;
+        std::unordered_map<uint64_t, std::shared_ptr<client_call_gate_heartbeats_cb> > map_heartbeats;
         std::mutex mutex_map_get_hub_info;
-        std::map<uint64_t, std::shared_ptr<client_call_gate_get_hub_info_cb> > map_get_hub_info;
+        std::unordered_map<uint64_t, std::shared_ptr<client_call_gate_get_hub_info_cb> > map_get_hub_info;
         client_call_gate_rsp_cb() : Imodule("client_call_gate_rsp_cb")
         {
         }
@@ -235,7 +235,7 @@ namespace abelkhan
     class hub_call_gate_rsp_cb : public Imodule, public std::enable_shared_from_this<hub_call_gate_rsp_cb>{
     public:
         std::mutex mutex_map_reg_hub;
-        std::map<uint64_t, std::shared_ptr<hub_call_gate_reg_hub_cb> > map_reg_hub;
+        std::unordered_map<uint64_t, std::shared_ptr<hub_call_gate_reg_hub_cb> > map_reg_hub;
         hub_call_gate_rsp_cb() : Imodule("hub_call_gate_rsp_cb")
         {
         }

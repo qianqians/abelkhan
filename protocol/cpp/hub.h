@@ -81,7 +81,7 @@ namespace abelkhan
     class hub_call_hub_rsp_cb : public Imodule, public std::enable_shared_from_this<hub_call_hub_rsp_cb>{
     public:
         std::mutex mutex_map_reg_hub;
-        std::map<uint64_t, std::shared_ptr<hub_call_hub_reg_hub_cb> > map_reg_hub;
+        std::unordered_map<uint64_t, std::shared_ptr<hub_call_hub_reg_hub_cb> > map_reg_hub;
         hub_call_hub_rsp_cb() : Imodule("hub_call_hub_rsp_cb")
         {
         }
@@ -221,7 +221,7 @@ namespace abelkhan
     class client_call_hub_rsp_cb : public Imodule, public std::enable_shared_from_this<client_call_hub_rsp_cb>{
     public:
         std::mutex mutex_map_heartbeats;
-        std::map<uint64_t, std::shared_ptr<client_call_hub_heartbeats_cb> > map_heartbeats;
+        std::unordered_map<uint64_t, std::shared_ptr<client_call_hub_heartbeats_cb> > map_heartbeats;
         client_call_hub_rsp_cb() : Imodule("client_call_hub_rsp_cb")
         {
         }
