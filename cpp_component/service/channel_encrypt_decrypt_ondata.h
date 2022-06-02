@@ -74,12 +74,10 @@ public:
 
 	void recv(const char * data, size_t len)
 	{
-
-		while ((buff_offset + len) > buff_size)
+		if ((buff_offset + len) > buff_size)
 		{
-			buff_size *= 2;
+			buff_size = ((buff_offset + len + buff_size - 1) / buff_size) * buff_size;
 			auto new_buff = (char*)malloc(buff_size);
-			memset(new_buff, 0, buff_size);
 			memcpy(new_buff, buff, buff_offset);
 			free(buff);
 			buff = new_buff;
@@ -130,11 +128,7 @@ public:
 			buff_offset = tmp_buff_len - tmp_buff_offset;
 			if (tmp_buff_len > tmp_buff_offset)
 			{
-				auto new_buff = (char*)malloc(buff_size);
-				memset(new_buff, 0, buff_size);
-				memcpy(new_buff, &buff[tmp_buff_offset], buff_offset);
-				free(buff);
-				buff = new_buff;
+				memcpy(buff, &buff[tmp_buff_offset], buff_offset);
 			}
 		}
 		catch (std::exception e) {
