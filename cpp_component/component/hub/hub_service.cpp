@@ -256,9 +256,9 @@ uint32_t hub_service::poll() {
 		spdlog::error("hub_service::poll error:{0}", err.what());
 	}
 
-	tick = msec_time() - time_now;
+	tick = static_cast<uint32_t>(msec_time() - time_now);
 
-	return (int)tick;
+	return tick;
 }
 
 }

@@ -76,7 +76,7 @@ public:
 	{
 		if ((buff_offset + len) > buff_size)
 		{
-			buff_size = ((buff_offset + len + buff_size - 1) / buff_size) * buff_size;
+			buff_size = static_cast<int32_t>(((buff_offset + len + buff_size - 1) / buff_size) * buff_size);
 			auto new_buff = (char*)malloc(buff_size);
 			memcpy(new_buff, buff, buff_offset);
 			free(buff);
