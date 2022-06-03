@@ -186,8 +186,7 @@ void hub_service::connect_gate(std::string gate_name, std::string host, uint16_t
 }
 
 void hub_service::reg_hub(std::string hub_host, uint16_t hub_port) {
-	auto hub_ip = service::DNS(hub_host);
-	_hub_service->connect(hub_ip, hub_port, [this, hub_host, hub_port](std::shared_ptr<abelkhan::Ichannel> ch){
+	_hub_service->connect(hub_host, hub_port, [this, hub_host, hub_port](std::shared_ptr<abelkhan::Ichannel> ch){
 		spdlog::trace("hub host:{0} port:{1} reg_hub", hub_host, hub_port);
  		auto caller = std::make_shared<abelkhan::hub_call_hub_caller>(ch, service::_modulemng);
 		caller->reg_hub(name_info.name, hub_type)->callBack([hub_host, hub_port]() {

@@ -89,8 +89,9 @@ public:
 		}
 	}
 
-	void connect(std::string ip, short port, std::function<void(std::shared_ptr<abelkhan::Ichannel>)> cb)
+	void connect(std::string hub_host, short port, std::function<void(std::shared_ptr<abelkhan::Ichannel>)> cb)
 	{
+		auto ip = service::DNS(hub_host);
 		ENetAddress address;
 		if (enet_address_set_host_ip(&address, ip.c_str()) != 0) {
 			throw std::exception("enet_address_set_host_ip faild");
