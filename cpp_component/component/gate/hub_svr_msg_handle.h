@@ -118,9 +118,13 @@ public:
 				}
 			}
 		}
+
+#pragma omp parallel for
 		for (auto _client : crypt_clients) {
 			_client->send((char*)_crypt_data, datasize);
 		}
+
+#pragma omp parallel for
 		for (auto _client : clients) {
 			_client->send((char*)_data, datasize);
 		}
@@ -158,14 +162,26 @@ public:
 		memcpy(_crypt_data, _data, datasize);
 		service::channel_encrypt_decrypt_ondata::xor_key_encrypt_decrypt((char*)(&(_crypt_data[4])), len);
 
-		_clientmanager->for_each_client([this, datasize](std::string cuuid, std::shared_ptr<clientproxy> _client) {
+		std::vector<std::shared_ptr<abelkhan::Ichannel> > crypt_chs;
+		std::vector<std::shared_ptr<abelkhan::Ichannel> > chs;
+		_clientmanager->for_each_client([this, &crypt_chs, &chs, datasize](std::string cuuid, std::shared_ptr<clientproxy> _client) {
 			if (_client->_ch->is_xor_key_crypt()) {
-				_client->_ch->send((char*)_crypt_data, datasize);
+				crypt_chs.push_back(_client->_ch);
 			}
 			else {
-				_client->_ch->send((char*)_data, datasize);
+				chs.push_back(_client->_ch);
 			}
 		});
+
+#pragma omp parallel for
+		for (auto _client : crypt_chs) {
+			_client->send((char*)_crypt_data, datasize);
+		}
+
+#pragma omp parallel for
+		for (auto _client : chs) {
+			_client->send((char*)_data, datasize);
+		}
 	}
 };
 

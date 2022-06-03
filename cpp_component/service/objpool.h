@@ -25,6 +25,7 @@ public:
 		if (_pool.pop(_obj)) {
 			_obj->~T();
 			new (_obj.get()) T(p...);
+			new (&_obj) std::shared_ptr<T>(_obj.get());
 			return _obj;
 		}
 

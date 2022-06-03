@@ -3,6 +3,8 @@
  * 2020-1-10
  * gatemanager.cpp
  */
+#include <omp.h>
+
 #include <enetacceptservice.h>
 #include <modulemng_handle.h>
 
@@ -318,19 +320,21 @@ void gatemanager::call_group_client(const std::vector<std::string>& cuuids, cons
 				}
 			}
 
+#pragma omp parallel for
 			for (auto ch : crypt_chs) {
 				ch->send((char*)_crypt_data, datasize);
 			}
+
+#pragma omp parallel for
 			for (auto ch : chs) {
 				ch->send((char*)_data, datasize);
 			}
 		}
 	}
 
-	{
-		for (auto it : gate_clients) {
-			it.first->forward_hub_call_group_client(it.second, _data_bin);
-		}
+#pragma omp parallel for
+	for (auto it : gate_clients) {
+		it.first->forward_hub_call_group_client(it.second, _data_bin);
 	}
 }
 

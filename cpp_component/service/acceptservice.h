@@ -5,6 +5,7 @@
 
 #include <boost/asio.hpp>
 
+#include "objpool.h"
 #include "channel.h"
 #include "gc_poll.h"
 
@@ -36,7 +37,7 @@ public:
 			s->close();
 		}
 		else {
-			auto ch = std::make_shared<channel>(s);
+			auto ch = _ch_pool.make_obj(s);
 			ch->sigondisconn.connect(std::bind(&acceptservice::onChannelDisconn, this, std::placeholders::_1));
 			ch->sigdisconn.connect(std::bind(&acceptservice::ChannelDisconn, this, std::placeholders::_1));
 			ch->start();
@@ -53,17 +54,21 @@ public:
 		if (!sigchanneldisconnect.empty()) {
 			sigchanneldisconnect.emit(ch);
 		}
+		_ch_pool.recycle(ch);
 	}
 
 	void ChannelDisconn(std::shared_ptr<channel> ch) {
 		if (!sigchanneldisconnect.empty()) {
 			sigchanneldisconnect.emit(ch);
 		}
+		_ch_pool.recycle(ch);
 	}
 
 private:
 	std::shared_ptr<boost::asio::io_service> _service;
 	boost::asio::ip::tcp::acceptor _acceptor;
+
+	service::objpool<channel> _ch_pool;
 
 };
 
