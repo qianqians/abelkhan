@@ -7,6 +7,8 @@
 #ifndef _hub_svr_msg_handle_h
 #define _hub_svr_msg_handle_h
 
+#include <omp.h>
+
 #include <abelkhan.h>
 
 #include <hub.h>
