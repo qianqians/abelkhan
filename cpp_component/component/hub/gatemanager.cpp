@@ -99,10 +99,6 @@ gatemanager::gatemanager(std::shared_ptr<service::enetacceptservice> conn_, std:
 			}
 		}
 	});
-
-	_data_size = 8 * 1024;
-	_data = (unsigned char*)malloc(_data_size);
-	_crypt_data = (unsigned char*)malloc(_data_size);
 }
 
 void gatemanager::connect_gate(std::string gate_name, std::string host, uint16_t port) {
@@ -292,19 +288,14 @@ void gatemanager::call_group_client(const std::vector<std::string>& cuuids, cons
 			auto data = _pack.dump();
 
 			size_t len = data.size();
-			if (_data_size < (len + 4)) {
-				_data_size = ((len + 4 + _data_size - 1) / _data_size) * _data_size;
-				free(_data);
-				free(_crypt_data);
-				_data = (unsigned char*)malloc(_data_size);
-				_crypt_data = (unsigned char*)malloc(_data_size);
-			}
+			size_t datasize = len + 4;
+			auto _data = (unsigned char*)malloc(datasize);
+			auto _crypt_data = (unsigned char*)malloc(datasize);
 			_data[0] = len & 0xff;
 			_data[1] = len >> 8 & 0xff;
 			_data[2] = len >> 16 & 0xff;
 			_data[3] = len >> 24 & 0xff;
 			memcpy(&_data[4], data.c_str(), data.size());
-			size_t datasize = len + 4;
 
 			memcpy(_crypt_data, _data, datasize);
 			service::channel_encrypt_decrypt_ondata::xor_key_encrypt_decrypt((char*)(&(_crypt_data[4])), len);
@@ -329,6 +320,9 @@ void gatemanager::call_group_client(const std::vector<std::string>& cuuids, cons
 			for (auto ch : chs) {
 				ch->send((char*)_data, datasize);
 			}
+
+			free(_data);
+			free(_crypt_data);
 		}
 	}
 

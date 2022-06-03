@@ -23,10 +23,6 @@ namespace gate {
 
 class hub_svr_msg_handle {
 private:
-	size_t _data_size;
-	unsigned char* _data;
-	unsigned char* _crypt_data;
-
 	std::shared_ptr<clientmanager> _clientmanager;
 	std::shared_ptr<hubsvrmanager> _hubsvrmanager;
 
@@ -34,10 +30,6 @@ private:
 
 public:
 	hub_svr_msg_handle(std::shared_ptr<clientmanager> clientmanager_, std::shared_ptr<hubsvrmanager> hubsvrmanager_) {
-		_data_size = 8 * 1024;
-		_data = (unsigned char*)malloc(_data_size);
-		_crypt_data = (unsigned char*)malloc(_data_size);
-
 		_clientmanager = clientmanager_;
 		_hubsvrmanager = hubsvrmanager_;
 
@@ -51,7 +43,6 @@ public:
 	}
 
 	virtual ~hub_svr_msg_handle() {
-		free(_data);
 	}
 
 	void reg_hub(std::string hub_name, std::string hub_type) {
@@ -90,19 +81,15 @@ public:
 		auto data = _pack.dump();
 
 		size_t len = data.size();
-		if (_data_size < (len + 4)) {
-			_data_size = ((len + 4 + _data_size - 1) / _data_size) * _data_size;
-			free(_data);
-			free(_crypt_data);
-			_data = (unsigned char*)malloc(_data_size);
-			_crypt_data = (unsigned char*)malloc(_data_size);
-		}
+		size_t datasize = len + 4;
+		auto _data = (unsigned char*)malloc(datasize);
+		auto _crypt_data = (unsigned char*)malloc(datasize);
+
 		_data[0] = len & 0xff;
 		_data[1] = len >> 8 & 0xff;
 		_data[2] = len >> 16 & 0xff;
 		_data[3] = len >> 24 & 0xff;
 		memcpy(&_data[4], data.c_str(), data.size());
-		size_t datasize = len + 4;
 
 		memcpy(_crypt_data, _data, datasize);
 		service::channel_encrypt_decrypt_ondata::xor_key_encrypt_decrypt((char*)(&(_crypt_data[4])), len);
@@ -130,6 +117,9 @@ public:
 		for (auto _client : clients) {
 			_client->send((char*)_data, datasize);
 		}
+
+		free(_data);
+		free(_crypt_data);
 	}
 
 	void forward_hub_call_global_client(std::vector<uint8_t> rpc_argv) {
@@ -147,19 +137,15 @@ public:
 		auto data = _pack.dump();
 
 		size_t len = data.size();
-		if (_data_size < (len + 4)) {
-			_data_size = ((len + 4 + _data_size - 1) / _data_size) * _data_size;
-			free(_data);
-			free(_crypt_data);
-			_data = (unsigned char*)malloc(_data_size);
-			_crypt_data = (unsigned char*)malloc(_data_size);
-		}
+		size_t datasize = len + 4;
+		auto _data = (unsigned char*)malloc(datasize);
+		auto _crypt_data = (unsigned char*)malloc(datasize);
+
 		_data[0] = len & 0xff;
 		_data[1] = len >> 8 & 0xff;
 		_data[2] = len >> 16 & 0xff;
 		_data[3] = len >> 24 & 0xff;
 		memcpy(&_data[4], data.c_str(), data.size());
-		size_t datasize = len + 4;
 
 		memcpy(_crypt_data, _data, datasize);
 		service::channel_encrypt_decrypt_ondata::xor_key_encrypt_decrypt((char*)(&(_crypt_data[4])), len);
@@ -184,6 +170,9 @@ public:
 		for (auto _client : chs) {
 			_client->send((char*)_data, datasize);
 		}
+
+		free(_data);
+		free(_crypt_data);
 	}
 };
 
