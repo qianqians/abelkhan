@@ -1,5 +1,5 @@
 {
-  "ver": "2.1.14",
+  "ver": "2.2.0",
   "importer": "fbx",
   "imported": true,
   "uuid": "aade09ee-8f9d-413c-a9e8-8c686ea5e160",
@@ -166,6 +166,9 @@
     "useVertexColors": true,
     "dumpMaterials": true,
     "materialDumpDir": "db://assets/model/helloWorld/grass",
-    "legacyFbxImporter": true
+    "legacyFbxImporter": true,
+    "fbx": {
+      "smartMaterialEnabled": false
+    }
   }
 }
