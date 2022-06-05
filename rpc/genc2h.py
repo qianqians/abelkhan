@@ -19,7 +19,6 @@ def gen_cpp_import(_import):
 
 def gen_csharp_import(_import):
     code = "using System;\n"
-    code += "using System.Collections;\n"
     code += "using System.Collections.Generic;\n"
     code += "using System.Threading;\n"
     code += "using MsgPack.Serialization;\n\n"

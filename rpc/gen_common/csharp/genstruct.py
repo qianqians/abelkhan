@@ -27,20 +27,20 @@ def genstructprotocol(struct_name, elems, dependent_struct, dependent_enum):
         if type_ in tools.OriginalTypeList:
             code += "            _protocol.Add(\"" + value + "\", _struct." + value + ");\n"
         elif type_ == tools.TypeType.Custom:
-            code += "            _protocol.Add(\"" + value + "\", " + key + "." + key + "_to_protcol(_struct." + value + "));\n"
+            code += "            _protocol.Add(\"" + value + "\", new MsgPack.MessagePackObject(" + key + "." + key + "_to_protcol(_struct." + value + ")));\n"
         elif type_ == tools.TypeType.Array:
-            code += "            var _array_" + value + " = new ArrayList();"
+            code += "            var _array_" + value + " = new List<MsgPack.MessagePackObject>();\n"
             code += "            foreach(var v_ in _struct." + value + "){\n"
             array_type = key[:-2]
             array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
             if array_type_ in tools.OriginalTypeList:
                 code += "                _array_" + value + ".Add(v_);\n"
             elif array_type_ == tools.TypeType.Custom:
-                code += "                _array_" + value + ".Add(" + array_type + "." + array_type + "_to_protcol(v_));\n"
+                code += "                _array_" + value + ".Add( new MsgPack.MessagePackObject(" + array_type + "." + array_type + "_to_protcol(v_)));\n"
             elif array_type_ == tools.TypeType.Array:
                 raise Exception("not support nested array:%s in struct:%s" % (key, struct_name))
             code += "            }\n"
-            code += "            _protocol.Add(\"" + value + "\", _array_" + value + ");\n"
+            code += "            _protocol.Add(\"" + value + "\", new MsgPack.MessagePackObject(_array_" + value + "));\n"
     code += "            return _protocol;\n"
     code += "        }\n"
     return code
