@@ -16,7 +16,6 @@ class _import(object):
             self.keyworld = deleteNoneSpacelstrip(self.keyworld)
             if self.keyworld != '':
                 self.name = deleteNoneSpacelstrip(self.keyworld)
-                print(self.name)
                 return True
 
         self.keyworld += ch

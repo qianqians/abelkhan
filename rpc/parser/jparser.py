@@ -37,6 +37,7 @@ def batch(inputdir, commondir):
                 file = open(inputdir + '//' + filename, 'r', encoding='utf-8')
             genfilestr = file.readlines()
 
+            print("fname:" + fname)
             _import, module, enum, struct = parser(genfilestr)
             pretreatmentdata.append(postprocess.pretreatment(fname, _import, module, enum, struct))
             
@@ -53,6 +54,7 @@ def batch(inputdir, commondir):
                     file = open(commondir + '//' + filename, 'r', encoding='utf-8')
                 genfilestr = file.readlines()
 
+                print("fname:" + fname)
                 _import, module, enum, struct = parser(genfilestr)
                 pretreatmentdata_import.append(postprocess.pretreatment(fname, _import, {}, enum, struct))
         pretreatmentdata.extend(pretreatmentdata_import)
