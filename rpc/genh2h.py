@@ -26,7 +26,7 @@ def gen_csharp_import(_import):
     code += "namespace abelkhan\n{\n"
     return code
 
-def gen(inputdir, lang, outputdir):
+def gen(inputdir, commondir, lang, outputdir):
     syspath = "./gen/hub_call_hub/"
     if lang == 'cpp':
         sys.path.append("./gen_common/cpp")
@@ -50,7 +50,7 @@ def gen(inputdir, lang, outputdir):
     if not os.path.isdir(outputdir):
         os.mkdir(outputdir)
 
-    pretreatmentdata = jparser.batch(inputdir)
+    pretreatmentdata = jparser.batch(inputdir, commondir)
     for pretreatment in pretreatmentdata:
         if lang == "cpp":
             _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, pretreatment.name)).split('-'))
@@ -90,4 +90,7 @@ def gen(inputdir, lang, outputdir):
             file.close()
 
 if __name__ == '__main__':
-        gen(sys.argv[1], sys.argv[2], sys.argv[3])
+    if len(sys.argv) == 5:
+        gen(sys.argv[1], sys.argv[4], sys.argv[2], sys.argv[3])
+    else:
+        gen(sys.argv[1], None, sys.argv[2], sys.argv[3])

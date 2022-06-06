@@ -24,7 +24,7 @@ def parser(_str):
     machine.syntaxanalysis(deletenote.deletenote(_str))
     return machine.getimport(), machine.getmodule(), machine.getenum(), machine.getstruct()
 
-def batch(inputdir):
+def batch(inputdir, commondir):
     pretreatmentdata = []
     for filename in os.listdir(inputdir):
         fname = os.path.splitext(filename)[0]
@@ -40,6 +40,23 @@ def batch(inputdir):
             _import, module, enum, struct = parser(genfilestr)
             pretreatmentdata.append(postprocess.pretreatment(fname, _import, module, enum, struct))
             
+    if commondir is not None:
+        pretreatmentdata_import = []
+        for filename in os.listdir(commondir):
+            fname = os.path.splitext(filename)[0]
+            fex = os.path.splitext(filename)[1]
+            if fex == '.juggle':
+                from sys import version_info
+                if version_info.major == 2:
+                    file = open(commondir + '//' + filename, 'r')
+                elif version_info.major == 3:
+                    file = open(commondir + '//' + filename, 'r', encoding='utf-8')
+                genfilestr = file.readlines()
+
+                _import, module, enum, struct = parser(genfilestr)
+                pretreatmentdata_import.append(postprocess.pretreatment(fname, _import, {}, enum, struct))
+        pretreatmentdata.extend(pretreatmentdata_import)
+        
     postprocess.process(pretreatmentdata)
     return pretreatmentdata
     
