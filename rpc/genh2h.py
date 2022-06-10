@@ -85,7 +85,7 @@ def gen(inputdir, commondir, lang, outputdir):
             code += genmodule.genmodule(pretreatment)
             code += "\n}\n"
 
-            file = open(outputdir + '//' + pretreatment.name + ".cs", 'w')
+            file = open(outputdir + '//' + pretreatment.name + "_svr.cs", 'w')
             file.write(code)
             file.close()
 
