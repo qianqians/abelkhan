@@ -244,7 +244,7 @@ namespace client
         private class socketConnectTmp
         {
             public Socket s;
-            public string timeid;
+            public object timeid;
             public Action<bool, abelkhan.Ichannel> cb;
         }
 
