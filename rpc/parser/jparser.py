@@ -56,6 +56,8 @@ def batch(inputdir, commondir):
 
                 print("fname:" + fname)
                 _import, module, enum, struct = parser(genfilestr)
+                if len(module) > 0:
+                    raise Exception("fname:" + fname + " is common, could not define module")
                 pretreatmentdata_import.append(postprocess.pretreatment(fname, _import, {}, enum, struct))
         pretreatmentdata.extend(pretreatmentdata_import)
         

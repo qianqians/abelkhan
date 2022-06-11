@@ -253,9 +253,9 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                     array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
                     _array_type = tools.convert_type(array_type, dependent_struct, dependent_enum)
                     cb_code_section += "            var _" + _name + " = new List<" + _array_type + ">();\n"
-                    cb_code_section += "            var _protocol_array = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsList();\n"
+                    cb_code_section += "            var _protocol_array" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsList();\n"
                     _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    cb_code_section += "            foreach (var v_" + _v_uuid + " in _protocol_array){\n"
+                    cb_code_section += "            foreach (var v_" + _v_uuid + " in _protocol_array" + _name + "){\n"
                     if array_type_ == tools.TypeType.Int8:
                         cb_code_section += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsSByte());\n"
                     elif array_type_ == tools.TypeType.Int16:
@@ -344,9 +344,9 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                     array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
                     _array_type = tools.convert_type(array_type, dependent_struct, dependent_enum)
                     cb_code_section += "            var _" + _name + " = new List<" + _array_type + ">();\n"
-                    cb_code_section += "            var _protocol_array = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsList();\n"
+                    cb_code_section += "            var _protocol_array" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsList();\n"
                     _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    cb_code_section += "            foreach (var v_" + _v_uuid + " in _protocol_array){\n"
+                    cb_code_section += "            foreach (var v_" + _v_uuid + " in _protocol_array" + _name + "){\n"
                     if array_type_ == tools.TypeType.Int8:
                         cb_code_section += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsSByte());\n"
                     elif array_type_ == tools.TypeType.Int16:
@@ -452,9 +452,9 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
             code += "            hub.hub._hubs.call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n\n"
             code += "            var cb_" + func_name + "_obj = new " + module_name + "_" + func_name + "_cb(uuid_" + _cb_uuid_uuid + ", rsp_cb_" + module_name + "_handle);\n"
             code += "            lock(rsp_cb_" + module_name + "_handle.map_" + func_name + ")\n"
-            code += "            {"
+            code += "            {\n"
             code += "                rsp_cb_" + module_name + "_handle.map_" + func_name + ".Add(uuid_" + _cb_uuid_uuid + ", cb_" + func_name + "_obj);\n"
-            code += "            }"
+            code += "            }\n"
             code += "            return cb_" + func_name + "_obj;\n"
             code += "        }\n\n"
 
