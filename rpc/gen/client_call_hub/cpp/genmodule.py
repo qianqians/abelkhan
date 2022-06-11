@@ -75,9 +75,9 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                     array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
                     _array_type = tools.convert_type(array_type, dependent_struct, dependent_enum)
                     code_func += "            std::vector<" + _array_type + "> _" + _name + ";\n"
-                    code_func += "            auto _protocol_array = inArray[" + str(count) + "].array_items();\n"
+                    code_func += "            auto _protocol_array" + _name + " = inArray[" + str(count) + "].array_items();\n"
                     _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    code_func += "            for(auto it_" + _v_uuid + " : _protocol_array){\n"
+                    code_func += "            for(auto it_" + _v_uuid + " : _protocol_array" + _name + "){\n"
                     if array_type_ == tools.TypeType.Int8:
                         code_func += "                _" + _name + ".push_back(it_" + _v_uuid + ".int8_value());\n"
                     elif array_type_ == tools.TypeType.Int16:
@@ -175,9 +175,9 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                     array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
                     _array_type = tools.convert_type(array_type, dependent_struct, dependent_enum)
                     code_func += "            std::vector<" + _array_type + "> _" + _name + ";\n"
-                    code_func += "            auto _protocol_array = inArray[" + str(count) + "].array_items();\n"
+                    code_func += "            auto _protocol_array" + _name + " = inArray[" + str(count) + "].array_items();\n"
                     _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    code_func += "            for(auto it_" + _v_uuid + " : _protocol_array){\n"
+                    code_func += "            for(auto it_" + _v_uuid + " : _protocol_array" + _name + "){\n"
                     if array_type_ == tools.TypeType.Int8:
                         code_func += "                _" + _name + ".push_back(it_" + _v_uuid + ".int8_value());\n"
                     elif array_type_ == tools.TypeType.Int16:

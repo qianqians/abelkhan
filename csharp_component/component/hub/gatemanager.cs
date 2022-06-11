@@ -283,14 +283,16 @@ namespace hub
             {
                 _client.call_client(_rpc_bin);
             }
-
-            if (clients.ContainsKey(uuid))
-			{
-                clients[uuid].forward_hub_call_client(uuid, _rpc_bin);
-            }
             else
             {
-                log.log.trace("no-exist client:", uuid);
+                if (clients.ContainsKey(uuid))
+                {
+                    clients[uuid].forward_hub_call_client(uuid, _rpc_bin);
+                }
+                else
+                {
+                    log.log.trace("no-exist client:", uuid);
+                }
             }
         }
 
