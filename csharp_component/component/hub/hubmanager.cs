@@ -80,7 +80,7 @@ namespace hub
             }
         }
 
-        public void call_hub(string hub_name, string module_name, string func_name, params object[] _argvs)
+        public void call_hub(string hub_name, string func_name, ArrayList _argvs)
         {
             if (hubproxys.TryGetValue(hub_name, out hubproxy _proxy))
             {
@@ -90,7 +90,7 @@ namespace hub
                     _argvs_list.Add(o);
                 }
 
-                _proxy.caller_hub(module_name, func_name, _argvs_list);
+                _proxy.caller_hub(func_name, _argvs_list);
             }
             else
             {

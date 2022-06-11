@@ -18,13 +18,12 @@ namespace hub
             _hub_call_hub_caller = new abelkhan.hub_call_hub_caller(ch, abelkhan.modulemng_handle._modulemng);
         }
 
-        public void caller_hub(string module_name, string func_name, ArrayList argvs)
+        public void caller_hub(string func_name, ArrayList argvs)
         {
             var _serializer = MessagePackSerializer.Get<ArrayList>();
             using (var st = new MemoryStream())
             {
                 var _event = new ArrayList();
-                _event.Add(module_name);
                 _event.Add(func_name);
                 _event.Add(argvs);
 
