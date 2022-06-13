@@ -18,13 +18,13 @@ namespace hub
 
 		public void connect_hub(string client_cuuid)
         {
-			hub._gates.direct_client_connect(client_cuuid, _client_call_hub_module.current_ch);
+			hub._gates.direct_client_connect(client_cuuid, _client_call_hub_module.current_ch.Value);
         }
 
 		public void heartbeats()
         {
 			var rsp = (abelkhan.client_call_hub_heartbeats_rsp)_client_call_hub_module.rsp;
-			var _proxy = hub._gates.get_directproxy(_client_call_hub_module.current_ch);
+			var _proxy = hub._gates.get_directproxy(_client_call_hub_module.current_ch.Value);
 			if (_proxy != null)
             {
 				if (_proxy._theory_timetmp == 0)
@@ -42,7 +42,7 @@ namespace hub
 
 		public void call_hub(byte[] arpc_rgv)
 		{
-			var _proxy = hub._gates.get_directproxy(_client_call_hub_module.current_ch);
+			var _proxy = hub._gates.get_directproxy(_client_call_hub_module.current_ch.Value);
 			if (_proxy != null)
 			{
 				try
@@ -58,15 +58,15 @@ namespace hub
 						var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
 						var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
-						hub._gates.current_client_uuid = _proxy._cuuid;
+						hub._gates.current_client_uuid.Value = _proxy._cuuid;
 						hub._modules.process_module_mothed(func, argvs);
-						hub._gates.current_client_uuid = "";
+						hub._gates.current_client_uuid.Value = "";
 					}
 				}
 				catch (Exception e)
 				{
 					log.log.err("call_hub exception:{0}", e);
-					hub._gates.direct_client_exception(_client_call_hub_module.current_ch);
+					hub._gates.direct_client_exception(_client_call_hub_module.current_ch.Value);
 				}
 			}
 		}

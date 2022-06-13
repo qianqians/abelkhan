@@ -576,7 +576,7 @@ namespace abelkhan
             var _svr_name = ((MsgPack.MessagePackObject)inArray[2]).AsString();
             var _host = ((MsgPack.MessagePackObject)inArray[3]).AsString();
             var _port = ((MsgPack.MessagePackObject)inArray[4]).AsUInt16();
-            rsp = new center_reg_server_rsp(current_ch, _cb_uuid);
+            rsp = new center_reg_server_rsp(current_ch.Value, _cb_uuid);
             if (on_reg_server != null){
                 on_reg_server(_type, _svr_name, _host, _port);
             }
@@ -590,7 +590,7 @@ namespace abelkhan
             var _svr_name = ((MsgPack.MessagePackObject)inArray[2]).AsString();
             var _host = ((MsgPack.MessagePackObject)inArray[3]).AsString();
             var _port = ((MsgPack.MessagePackObject)inArray[4]).AsUInt16();
-            rsp = new center_reconn_reg_server_rsp(current_ch, _cb_uuid);
+            rsp = new center_reconn_reg_server_rsp(current_ch.Value, _cb_uuid);
             if (on_reconn_reg_server != null){
                 on_reconn_reg_server(_type, _svr_name, _host, _port);
             }
@@ -601,7 +601,7 @@ namespace abelkhan
         public void heartbeat(IList<MsgPack.MessagePackObject> inArray){
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var _tick = ((MsgPack.MessagePackObject)inArray[1]).AsUInt32();
-            rsp = new center_heartbeat_rsp(current_ch, _cb_uuid);
+            rsp = new center_heartbeat_rsp(current_ch.Value, _cb_uuid);
             if (on_heartbeat != null){
                 on_heartbeat(_tick);
             }

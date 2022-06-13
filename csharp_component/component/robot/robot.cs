@@ -411,7 +411,7 @@ namespace client
                 var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
                 var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
-                current_hub = current_robot.get_current_hubproxy(_hub_call_client_module.current_ch);
+                current_hub = current_robot.get_current_hubproxy(_hub_call_client_module.current_ch.Value);
                 modulemanager.process_module_mothed(func, argvs);
                 current_hub = "";
             }

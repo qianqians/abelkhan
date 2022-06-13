@@ -434,7 +434,7 @@ namespace abelkhan
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var _hub_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             var _hub_type = ((MsgPack.MessagePackObject)inArray[2]).AsString();
-            rsp = new hub_call_hub_reg_hub_rsp(current_ch, _cb_uuid);
+            rsp = new hub_call_hub_reg_hub_rsp(current_ch.Value, _cb_uuid);
             if (on_reg_hub != null){
                 on_reg_hub(_hub_name, _hub_type);
             }
@@ -510,7 +510,7 @@ namespace abelkhan
         public event Action on_heartbeats;
         public void heartbeats(IList<MsgPack.MessagePackObject> inArray){
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            rsp = new client_call_hub_heartbeats_rsp(current_ch, _cb_uuid);
+            rsp = new client_call_hub_heartbeats_rsp(current_ch.Value, _cb_uuid);
             if (on_heartbeats != null){
                 on_heartbeats();
             }

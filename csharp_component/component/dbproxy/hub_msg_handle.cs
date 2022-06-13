@@ -29,7 +29,7 @@ namespace dbproxy
             log.log.trace("hub {0} connected", hub_name);
                 
             var rsp = (abelkhan.hub_call_dbproxy_reg_hub_rsp)_hub_call_dbproxy_module.rsp;
-            hubproxy _hubproxy = _hubmanager.reg_hub(_hub_call_dbproxy_module.current_ch, hub_name);
+            hubproxy _hubproxy = _hubmanager.reg_hub(_hub_call_dbproxy_module.current_ch.Value, hub_name);
             rsp.rsp();
         }
 
@@ -37,7 +37,7 @@ namespace dbproxy
 		{
             log.log.trace("begin create_persisted_object");
 
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch);
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
             if (_hubproxy == null)
             {
                 log.log.err("hubproxy is null");
@@ -54,7 +54,7 @@ namespace dbproxy
 		{
             log.log.trace("begin updata_persisted_object");
 
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch);
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
             if (_hubproxy == null)
             {
                 log.log.err("hubproxy is null");
@@ -71,7 +71,7 @@ namespace dbproxy
         {
             log.log.trace("begin find_and_modify");
 
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch);
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
             if (_hubproxy == null)
             {
                 log.log.err("hubproxy is null");
@@ -88,7 +88,7 @@ namespace dbproxy
         {
             log.log.trace("begin remove_object");
 
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch);
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
             if (_hubproxy == null)
             {
                 log.log.err("hubproxy is null");
@@ -105,7 +105,7 @@ namespace dbproxy
         {
             log.log.trace("begin get_object_info");
 
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch);
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
             if (_hubproxy == null)
             {
                 log.log.err("hubproxy is null");
@@ -122,7 +122,7 @@ namespace dbproxy
         {
             log.log.trace("begin get_object_info");
 
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch);
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
             if (_hubproxy == null)
             {
                 log.log.err("hubproxy is null");

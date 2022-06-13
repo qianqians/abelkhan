@@ -27,12 +27,12 @@ namespace abelkhan
 
         private void confirm_gm(string gm_name)
         {
-            gmmng.reg_gm(gm_name, gm_center_module.current_ch);
+            gmmng.reg_gm(gm_name, gm_center_module.current_ch.Value);
         }
 
         private void close_clutter(string gmname)
         {
-            if (gmmng.check_gm(gmname, gm_center_module.current_ch))
+            if (gmmng.check_gm(gmname, gm_center_module.current_ch.Value))
             {
                 log.log.trace("close_clutter {0}", gmname);
 
@@ -54,7 +54,7 @@ namespace abelkhan
 
         private void reload(string gmname, string argvs)
         {
-            if (gmmng.check_gm(gmname, gm_center_module.current_ch))
+            if (gmmng.check_gm(gmname, gm_center_module.current_ch.Value))
             {
                 svrmng.for_each_hub((hubproxy _proxy) => {
                     _proxy.reload(argvs);

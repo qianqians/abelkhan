@@ -23,7 +23,7 @@ namespace hub
             log.log.trace("hub:{0},{1} registered!", hub_name, hub_type);
 
             var rsp = (abelkhan.hub_call_hub_reg_hub_rsp)_hub_call_hub_module.rsp;
-            _hubmanager.reg_hub(hub_name, hub_type, _hub_call_hub_module.current_ch);
+            _hubmanager.reg_hub(hub_name, hub_type, _hub_call_hub_module.current_ch.Value);
             rsp.rsp();
         }
 
@@ -39,7 +39,7 @@ namespace hub
                 var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
                 var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
-                _hubmanager.current_hubproxy = _hubmanager.get_hub(_hub_call_hub_module.current_ch);
+                _hubmanager.current_hubproxy = _hubmanager.get_hub(_hub_call_hub_module.current_ch.Value);
                 hub._modules.process_module_mothed(func, argvs);
                 _hubmanager.current_hubproxy = null;
             }

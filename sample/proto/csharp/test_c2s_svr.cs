@@ -78,7 +78,7 @@ namespace abelkhan
         public event Action on_get_svr_host;
         public void get_svr_host(IList<MsgPack.MessagePackObject> inArray){
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            rsp = new test_c2s_get_svr_host_rsp(hub.hub._gates.current_client_uuid, _cb_uuid);
+            rsp = new test_c2s_get_svr_host_rsp(hub.hub._gates.current_client_uuid.Value, _cb_uuid);
             if (on_get_svr_host != null){
                 on_get_svr_host();
             }
@@ -88,7 +88,7 @@ namespace abelkhan
         public event Action on_get_websocket_svr_host;
         public void get_websocket_svr_host(IList<MsgPack.MessagePackObject> inArray){
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            rsp = new test_c2s_get_websocket_svr_host_rsp(hub.hub._gates.current_client_uuid, _cb_uuid);
+            rsp = new test_c2s_get_websocket_svr_host_rsp(hub.hub._gates.current_client_uuid.Value, _cb_uuid);
             if (on_get_websocket_svr_host != null){
                 on_get_websocket_svr_host();
             }

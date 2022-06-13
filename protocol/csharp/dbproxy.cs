@@ -914,7 +914,7 @@ namespace abelkhan
         public void reg_hub(IList<MsgPack.MessagePackObject> inArray){
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var _hub_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
-            rsp = new hub_call_dbproxy_reg_hub_rsp(current_ch, _cb_uuid);
+            rsp = new hub_call_dbproxy_reg_hub_rsp(current_ch.Value, _cb_uuid);
             if (on_reg_hub != null){
                 on_reg_hub(_hub_name);
             }
@@ -927,7 +927,7 @@ namespace abelkhan
             var _db = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             var _collection = ((MsgPack.MessagePackObject)inArray[2]).AsString();
             var _object_info = ((MsgPack.MessagePackObject)inArray[3]).AsBinary();
-            rsp = new hub_call_dbproxy_create_persisted_object_rsp(current_ch, _cb_uuid);
+            rsp = new hub_call_dbproxy_create_persisted_object_rsp(current_ch.Value, _cb_uuid);
             if (on_create_persisted_object != null){
                 on_create_persisted_object(_db, _collection, _object_info);
             }
@@ -942,7 +942,7 @@ namespace abelkhan
             var _query_info = ((MsgPack.MessagePackObject)inArray[3]).AsBinary();
             var _updata_info = ((MsgPack.MessagePackObject)inArray[4]).AsBinary();
             var __upsert = ((MsgPack.MessagePackObject)inArray[5]).AsBoolean();
-            rsp = new hub_call_dbproxy_updata_persisted_object_rsp(current_ch, _cb_uuid);
+            rsp = new hub_call_dbproxy_updata_persisted_object_rsp(current_ch.Value, _cb_uuid);
             if (on_updata_persisted_object != null){
                 on_updata_persisted_object(_db, _collection, _query_info, _updata_info, __upsert);
             }
@@ -958,7 +958,7 @@ namespace abelkhan
             var _updata_info = ((MsgPack.MessagePackObject)inArray[4]).AsBinary();
             var __new = ((MsgPack.MessagePackObject)inArray[5]).AsBoolean();
             var __upsert = ((MsgPack.MessagePackObject)inArray[6]).AsBoolean();
-            rsp = new hub_call_dbproxy_find_and_modify_rsp(current_ch, _cb_uuid);
+            rsp = new hub_call_dbproxy_find_and_modify_rsp(current_ch.Value, _cb_uuid);
             if (on_find_and_modify != null){
                 on_find_and_modify(_db, _collection, _query_info, _updata_info, __new, __upsert);
             }
@@ -971,7 +971,7 @@ namespace abelkhan
             var _db = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             var _collection = ((MsgPack.MessagePackObject)inArray[2]).AsString();
             var _query_info = ((MsgPack.MessagePackObject)inArray[3]).AsBinary();
-            rsp = new hub_call_dbproxy_remove_object_rsp(current_ch, _cb_uuid);
+            rsp = new hub_call_dbproxy_remove_object_rsp(current_ch.Value, _cb_uuid);
             if (on_remove_object != null){
                 on_remove_object(_db, _collection, _query_info);
             }
@@ -999,7 +999,7 @@ namespace abelkhan
             var _db = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             var _collection = ((MsgPack.MessagePackObject)inArray[2]).AsString();
             var _query_info = ((MsgPack.MessagePackObject)inArray[3]).AsBinary();
-            rsp = new hub_call_dbproxy_get_object_count_rsp(current_ch, _cb_uuid);
+            rsp = new hub_call_dbproxy_get_object_count_rsp(current_ch.Value, _cb_uuid);
             if (on_get_object_count != null){
                 on_get_object_count(_db, _collection, _query_info);
             }

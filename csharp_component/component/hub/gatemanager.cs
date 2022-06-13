@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading;
 
 namespace hub
 {
@@ -33,7 +34,7 @@ namespace hub
 
     public class gatemanager
 	{
-        public string current_client_uuid;
+        public ThreadLocal<string> current_client_uuid;
 
         private Dictionary<string, gateproxy> clients;
 
@@ -49,7 +50,7 @@ namespace hub
         public gatemanager(abelkhan.enetservice _conn)
 		{
 			_gate_conn = _conn;
-			current_client_uuid = "";
+			current_client_uuid.Value = "";
 
 			clients = new Dictionary<string, gateproxy>();
 
