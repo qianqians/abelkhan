@@ -200,8 +200,8 @@ namespace abelkhan
         public void get_hub_info_rsp(IList<MsgPack.MessagePackObject> inArray){
             var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var _hub_info = new List<hub_info>();
-            var _protocol_array = ((MsgPack.MessagePackObject)inArray[1]).AsList();
-            foreach (var v_53b78086_1765_5879_87b4_63333838766a in _protocol_array){
+            var _protocol_arrayhub_info = ((MsgPack.MessagePackObject)inArray[1]).AsList();
+            foreach (var v_53b78086_1765_5879_87b4_63333838766a in _protocol_arrayhub_info){
                 _hub_info.Add(hub_info.protcol_to_hub_info(((MsgPack.MessagePackObject)v_53b78086_1765_5879_87b4_63333838766a).AsDictionary()));
             }
             var rsp = try_get_and_del_get_hub_info_cb(uuid);
@@ -610,8 +610,8 @@ namespace abelkhan
         public event Action<List<string>, byte[]> on_forward_hub_call_group_client;
         public void forward_hub_call_group_client(IList<MsgPack.MessagePackObject> inArray){
             var _client_uuids = new List<string>();
-            var _protocol_array = ((MsgPack.MessagePackObject)inArray[0]).AsList();
-            foreach (var v_dfd11414_89c9_5adb_8977_69b93b30195b in _protocol_array){
+            var _protocol_arrayclient_uuids = ((MsgPack.MessagePackObject)inArray[0]).AsList();
+            foreach (var v_dfd11414_89c9_5adb_8977_69b93b30195b in _protocol_arrayclient_uuids){
                 _client_uuids.Add(((MsgPack.MessagePackObject)v_dfd11414_89c9_5adb_8977_69b93b30195b).AsString());
             }
             var _rpc_argv = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();

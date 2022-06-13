@@ -99,7 +99,7 @@ public:
 	void call_global_client(const std::string& func, const msgpack11::MsgPack::array& argvs);
 
 public:
-	std::string current_client_cuuid;
+	thread_local static std::string current_client_cuuid;
 
 private:
 	std::shared_ptr<service::enetacceptservice> _conn;

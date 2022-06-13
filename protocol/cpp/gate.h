@@ -127,8 +127,8 @@ namespace abelkhan
         void get_hub_info_rsp(const msgpack11::MsgPack::array& inArray){
             auto uuid = inArray[0].uint64_value();
             std::vector<hub_info> _hub_info;
-            auto _protocol_array = inArray[1].array_items();
-            for(auto it_53b78086_1765_5879_87b4_63333838766a : _protocol_array){
+            auto _protocol_arrayhub_info = inArray[1].array_items();
+            for(auto it_53b78086_1765_5879_87b4_63333838766a : _protocol_arrayhub_info){
                 _hub_info.push_back(hub_info::protcol_to_hub_info(it_53b78086_1765_5879_87b4_63333838766a.object_items()));
             }
             auto rsp = try_get_and_del_get_hub_info_cb(uuid);
@@ -498,8 +498,8 @@ namespace abelkhan
         concurrent::signals<void(std::vector<std::string>, std::vector<uint8_t>)> sig_forward_hub_call_group_client;
         void forward_hub_call_group_client(const msgpack11::MsgPack::array& inArray){
             std::vector<std::string> _client_uuids;
-            auto _protocol_array = inArray[0].array_items();
-            for(auto it_dfd11414_89c9_5adb_8977_69b93b30195b : _protocol_array){
+            auto _protocol_arrayclient_uuids = inArray[0].array_items();
+            for(auto it_dfd11414_89c9_5adb_8977_69b93b30195b : _protocol_arrayclient_uuids){
                 _client_uuids.push_back(it_dfd11414_89c9_5adb_8977_69b93b30195b.string_value());
             }
             auto _rpc_argv = inArray[1].binary_items();
