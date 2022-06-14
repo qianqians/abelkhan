@@ -9,6 +9,7 @@
     <PackageReference Include="ENet.Managed" Version="5.0.4.18-alpha" />
     <PackageReference Include="Fleck" Version="1.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="StackExchange.Redis" Version="2.5.61" />
   </ItemGroup>
 
   <ItemGroup>

@@ -14,8 +14,8 @@
 #include <unordered_map>
 
 #include <hircluster.h>
-
 #include <spdlog/spdlog.h>
+#include <msgpack11.hpp>
 
 #include <ringque.h>
 
@@ -49,7 +49,7 @@ private:
 	std::unordered_map<std::string, std::shared_ptr<redismqchannel> > _ch_map;
 
 	concurrent::ringque<redismqbuff> send_data;
-	concurrent::ringque<redismqbuff> recv_data;
+	concurrent::ringque<std::pair<std::string, msgpack11::MsgPack> > recv_data;
 
 	redisClusterContext* ctx;
 
@@ -76,8 +76,18 @@ public:
 		});
 	}
 
+	void close() {
+		run_flag = false;
+		th.join();
+	}
+
 	std::shared_ptr<abelkhan::Ichannel> connect(std::string ch_name)
 	{
+		auto it = _ch_map.find(ch_name);
+		if (it != _ch_map.end()) {
+			return it->second;
+		}
+
 		auto ch = std::make_shared<redismqchannel>(ch_name, shared_from_this());
 		_ch_map.insert(std::make_pair(ch_name, ch));
 		return ch;
@@ -102,18 +112,17 @@ public:
 	}
 
 	void poll() {
-		redismqbuff data;
+		std::pair<std::string, msgpack11::MsgPack> data;
 		while (recv_data.pop(data)) {
-			auto it = _ch_map.find(data.ch_name);
+			auto it = _ch_map.find(data.first);
 			if (it != _ch_map.end()) {
-				it->second->recv(const_cast<char*>(data.buf), data.len);
+				it->second->recv(data.second);
 			}
 			else {
-				auto ch = std::make_shared<redismqchannel>(data.ch_name, shared_from_this());
-				ch->recv(const_cast<char*>(data.buf), data.len);
-				_ch_map.insert(std::make_pair(data.ch_name, ch));
+				auto ch = std::make_shared<redismqchannel>(data.first, shared_from_this());
+				ch->recv(data.second);
+				_ch_map.insert(std::make_pair(data.first, ch));
 			}
-			free(static_cast<void*>(data.buf));
 		}
 	}
 
@@ -123,22 +132,18 @@ private:
 			bool is_idle = true;
 			redismqbuff data;
 			if (send_data.pop(data)) {
-				while (true) {
-					auto _reply = (redisReply*)redisClusterCommand(ctx, "LPUSH %s %b", data.ch_name.c_str(), data.buf, data.len);
-					if (_reply->type == REDIS_REPLY_PUSH) {
-						freeReplyObject(_reply);
-						free(static_cast<void*>(data.buf));
-						break;
-					}
-					else {
-						spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
-						freeReplyObject(_reply);
-					}
+				auto _reply = (redisReply*)redisClusterCommand(ctx, "LPUSH %s %b", data.ch_name.c_str(), data.buf, data.len);
+				if (_reply->type == REDIS_REPLY_PUSH) {
 				}
+				else {
+					spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
+				}
+				freeReplyObject(_reply);
+				free(static_cast<void*>(data.buf));
 				is_idle = false;
 			}
 
-			while (true) {
+			{
 				auto _reply = (redisReply*)redisClusterCommand(ctx, "RPOP %s", listen_channle_name.c_str());
 
 				if (_reply->type == REDIS_REPLY_STRING) {
@@ -147,24 +152,19 @@ private:
 					auto _ch_name = std::string(&_buf[4], _ch_name_size);
 					auto _header_len = 4 + _ch_name_size;
 					auto _msg_len = (uint32_t)_reply->len - _header_len;
-					auto _msg_buf = (char*)malloc(_msg_len);
-					memcpy(_msg_buf, &_buf[_header_len], _msg_len);
-
-					redismqbuff buf;
-					buf.ch_name = _ch_name;
-					buf.buf = _msg_buf;
-					buf.len = _msg_len;
-					recv_data.push(buf);
+					
+					auto tmp_buff = (unsigned char*)_buf[_header_len];
+					uint32_t len = (uint32_t)tmp_buff[0] | ((uint32_t)tmp_buff[1] << 8) | ((uint32_t)tmp_buff[2] << 16) | ((uint32_t)tmp_buff[3] << 24);
+					std::string err;
+					auto obj = msgpack11::MsgPack::parse((const char*)tmp_buff, len, err);
+					recv_data.push(std::make_pair(_ch_name, obj));
 
 					is_idle = false;
-
-					freeReplyObject(_reply);
-					break;
 				}
 				else if(_reply->type != REDIS_REPLY_NIL) {
 					spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
-					freeReplyObject(_reply);
 				}
+				freeReplyObject(_reply);
 			}
 
 			if (is_idle) {

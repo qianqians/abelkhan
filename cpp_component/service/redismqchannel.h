@@ -36,28 +36,19 @@ public:
 	void normal_crypt(char* data, size_t len) {
 	}
 
-	void recv(char* data, size_t length)
+	void recv(msgpack11::MsgPack obj)
 	{
-		auto tmp_buff = (unsigned char*)data;
-		uint32_t len = (uint32_t)tmp_buff[0] | ((uint32_t)tmp_buff[1] << 8) | ((uint32_t)tmp_buff[2] << 16) | ((uint32_t)tmp_buff[3] << 24);
-
-		if ((len + 4) <= (uint32_t)length)
-		{
-			auto proto_buff = &tmp_buff[4];
-			std::string err;
-			auto obj = msgpack11::MsgPack::parse((const char*)proto_buff, len, err);
-			if (!obj.is_array()) {
-				spdlog::error("channel recv parse MsgPack error");
+		if (!obj.is_array()) {
+			spdlog::error("redismqchannel recv parse MsgPack error");
+		}
+		else {
+			try
+			{
+				_modulemng->process_event(shared_from_this(), obj.array_items());
 			}
-			else {
-				try
-				{
-					_modulemng->process_event(shared_from_this(), obj.array_items());
-				}
-				catch (std::exception e)
-				{
-					spdlog::error("channel do rpc callback error");
-				}
+			catch (std::exception e)
+			{
+				spdlog::error("redismqchannel do rpc callback error");
 			}
 		}
 	}
