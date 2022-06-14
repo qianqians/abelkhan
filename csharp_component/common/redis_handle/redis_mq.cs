@@ -1,6 +1,8 @@
 ﻿using StackExchange.Redis;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace abelkhan
@@ -10,10 +12,14 @@ namespace abelkhan
         private string _channelName;
         private redis_mq _redis_mq_handle;
 
+        public channel_onrecv _channel_onrecv;
+
         public redischannel(string channelName, redis_mq mq_handle)
         {
             _channelName = channelName;
             _redis_mq_handle = mq_handle;
+
+            _channel_onrecv = new channel_onrecv(this);
         }
 
         public void disconnect()
@@ -31,7 +37,7 @@ namespace abelkhan
 
         public void send(byte[] data)
         {
-
+            _redis_mq_handle.sendmsg(_channelName, data);
         }
 
     }
@@ -44,15 +50,23 @@ namespace abelkhan
 
         private string listen_channel_name;
         private bool run_flag = true;
-        private ConcurrentDictionary<string, redischannel> channels;
+        private Task th;
+
+        private Dictionary<string, redischannel> channels;
+
+        private ConcurrentQueue<Tuple<string, MemoryStream> > send_data;
 
         public redis_mq(string connUrl, string _listen_channel_name)
         {
             listen_channel_name = _listen_channel_name;
-            channels = new ConcurrentDictionary<string, redischannel>();
+            channels = new Dictionary<string, redischannel>();
 
             _connHelper = new RedisConnectionHelper(connUrl, "RedisForMQ");
             _connHelper.ConnectOnStartup(ref connectionMultiplexer, ref database);
+
+            send_data = new ConcurrentQueue<Tuple<string, MemoryStream> >();
+
+            th = new Task(th_poll);
         }
 
         void Recover(System.Exception e)
@@ -60,24 +74,107 @@ namespace abelkhan
             _connHelper.Recover(ref connectionMultiplexer, ref database, e);
         }
 
-        public void sendmsg(string ch_name, byte[] data)
+        public async void close()
         {
-            var _ch_name_size = ch_name.;
-            auto _totle_len = 4 + _ch_name_size + (uint32_t)len;
-            auto _totle_buf = (char*)malloc(_totle_len);
-            _totle_buf[0] = _ch_name_size & 0xff;
-            _totle_buf[1] = _ch_name_size >> 8 & 0xff;
-            _totle_buf[2] = _ch_name_size >> 16 & 0xff;
-            _totle_buf[3] = _ch_name_size >> 24 & 0xff;
-            memcpy(&_totle_buf[4], listen_channle_name.c_str(), _ch_name_size);
-            memcpy(&_totle_buf[4 + _ch_name_size], data, len);
-
-            redismqbuff buf;
-            buf.ch_name = channle_name;
-            buf.buf = _totle_buf;
-            buf.len = _totle_len;
-            send_data.push(buf);
+            run_flag = false;
+            await th;
         }
 
+        public redischannel connect(string ch_name)
+        {
+            lock (channels)
+            {
+                if (channels.TryGetValue(ch_name, out redischannel ch))
+                {
+                    return ch;
+                }
+
+                ch = new redischannel(ch_name, this);
+                channels.Add(ch_name, ch);
+                return ch;
+            }
+        }
+
+        public void sendmsg(string ch_name, byte[] data)
+        {
+            var b_listen_ch_name = System.Text.Encoding.UTF8.GetBytes(listen_channel_name);
+            var _listen_ch_name_size = b_listen_ch_name.Length;
+            var st = new MemoryStream();
+            st.WriteByte((byte)(_listen_ch_name_size & 0xff));
+            st.WriteByte((byte)(_listen_ch_name_size >> 8 & 0xff));
+            st.WriteByte((byte)(_listen_ch_name_size >> 16 & 0xff));
+            st.WriteByte((byte)(_listen_ch_name_size >> 24 & 0xff));
+            st.Write(b_listen_ch_name, 0, _listen_ch_name_size);
+            st.Write(data, 0, data.Length);
+            st.Position = 0;
+
+            send_data.Enqueue(Tuple.Create(ch_name, st));
+        }
+
+        private async void th_poll()
+        {
+            while (run_flag)
+            {
+                bool is_idle = true;
+                if (send_data.TryDequeue(out Tuple<string, MemoryStream> data))
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            await database.ListLeftPushAsync(data.Item1, data.Item2.ToArray(), flags: CommandFlags.FireAndForget);
+                            break;
+                        }
+                        catch (RedisTimeoutException ex)
+                        {
+                            log.log.err("ListLeftPushAsync error:{0}", ex);
+                            Recover(ex);
+                        }
+                    }
+                    is_idle = false;
+                }
+
+                while (true)
+                {
+                    try
+                    {
+                        byte[] pop_data = await database.ListRightPopAsync(listen_channel_name, flags: CommandFlags.FireAndForget);
+                        var _ch_name_size = (UInt32)pop_data[0] | ((UInt32)pop_data[1] << 8) | ((UInt32)pop_data[2] << 16) | ((UInt32)pop_data[3] << 24);
+                        var _ch_name = System.Text.Encoding.UTF8.GetString(pop_data, 0, (int)_ch_name_size);
+                        var _header_len = 4 + _ch_name_size;
+                        var _msg_len = pop_data.Length - _header_len;
+                        var _st = new MemoryStream();
+                        _st.Write(pop_data, (int)_header_len, (int)_msg_len);
+                        _st.Position = 0;
+
+                        lock (channels)
+                        {
+                            if (channels.TryGetValue(_ch_name, out redischannel ch))
+                            {
+                                ch._channel_onrecv.on_recv(_st.ToArray());
+                            }
+                            else
+                            {
+                                ch = new redischannel(_ch_name, this);
+                                channels.Add(_ch_name, ch);
+                                ch._channel_onrecv.on_recv(_st.ToArray());
+                            }
+                        }
+                        break;
+                    }
+                    catch (RedisTimeoutException ex)
+                    {
+                        log.log.err("ListLeftPushAsync error:{0}", ex);
+                        Recover(ex);
+                    }
+                }
+
+
+                if (is_idle)
+                {
+                    await Task.Delay(5);
+                }
+            }
+        }
     }
 }

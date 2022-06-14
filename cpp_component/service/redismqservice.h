@@ -46,6 +46,7 @@ private:
 	std::jthread th;
 	std::string listen_channle_name;
 	
+	std::mutex _mu_ch_map;
 	std::unordered_map<std::string, std::shared_ptr<redismqchannel> > _ch_map;
 
 	concurrent::ringque<redismqbuff> send_data;
@@ -83,6 +84,7 @@ public:
 
 	std::shared_ptr<abelkhan::Ichannel> connect(std::string ch_name)
 	{
+		std::lock_guard<std::mutex> l(_mu_ch_map);
 		auto it = _ch_map.find(ch_name);
 		if (it != _ch_map.end()) {
 			return it->second;
