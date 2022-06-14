@@ -119,20 +119,26 @@ public:
 
 private:
 	void thread_poll() {
-		bool is_idle = true;
 		while (run_flag) {
-			is_idle = true;
-
+			bool is_idle = true;
 			redismqbuff data;
 			if (send_data.pop(data)) {
-				auto _reply = redisClusterCommand(ctx, "LPUSH %s %b", data.ch_name.c_str(), data.buf, data.len);
-				freeReplyObject(_reply);
-				free(static_cast<void*>(data.buf));
-
+				while (true) {
+					auto _reply = (redisReply*)redisClusterCommand(ctx, "LPUSH %s %b", data.ch_name.c_str(), data.buf, data.len);
+					if (_reply->type == REDIS_REPLY_PUSH) {
+						freeReplyObject(_reply);
+						free(static_cast<void*>(data.buf));
+						break;
+					}
+					else {
+						spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
+						freeReplyObject(_reply);
+					}
+				}
 				is_idle = false;
 			}
 
-			{
+			while (true) {
 				auto _reply = (redisReply*)redisClusterCommand(ctx, "RPOP %s", listen_channle_name.c_str());
 
 				if (_reply->type == REDIS_REPLY_STRING) {
@@ -151,6 +157,13 @@ private:
 					recv_data.push(buf);
 
 					is_idle = false;
+
+					freeReplyObject(_reply);
+					break;
+				}
+				else if(_reply->type != REDIS_REPLY_NIL) {
+					spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
+					freeReplyObject(_reply);
 				}
 			}
 
