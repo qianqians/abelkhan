@@ -54,7 +54,6 @@ public:
 
 			std::lock_guard<std::mutex> lock(_mutex);
 			enet_peer_send(_peer, 0, packet);
-			enet_host_flush(_host);
 		}
 		catch (std::exception e) {
 			spdlog::error("enetchannel push exception error:{0}", e.what());

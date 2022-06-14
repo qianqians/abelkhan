@@ -87,6 +87,7 @@ public:
 				break;
 			}
 		}
+		enet_host_flush(_host);
 	}
 
 	void connect(std::string hub_host, short port, std::function<void(std::shared_ptr<abelkhan::Ichannel>)> cb)

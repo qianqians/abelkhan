@@ -7,3 +7,6 @@
 [submodule "cpp_component/3rdparty/hiredis-cluster"]
 	path = cpp_component/3rdparty/hiredis-cluster
 	url = git@github.com:Nordix/hiredis-cluster.git
+[submodule "cpp_component/3rdparty/hiredis"]
+	path = cpp_component/3rdparty/hiredis
+	url = git@github.com:redis/hiredis.git
