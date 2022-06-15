@@ -23,10 +23,11 @@ namespace hub
 
 			_center_call_hub_module = new abelkhan.center_call_hub_module(abelkhan.modulemng_handle._modulemng);
 			_center_call_hub_module.on_distribute_server_address += distribute_server_address;
+            _center_call_hub_module.on_distribute_server_mq += distribute_server_mq;
 			_center_call_hub_module.on_reload += reload;
 		}
 
-		private void close_server()
+        private void close_server()
 		{
             _hub.onCloseServer_event();
 		}
@@ -78,6 +79,27 @@ namespace hub
 				log.log.trace("recv distribute server address hub ip:{0}, port:{1}", host, port);
 				_hub.reg_hub(host, (short)port);
             }
+		}
+
+		private void distribute_server_mq(String type, String name)
+		{
+			log.log.trace("recv distribute server address");
+
+			if (type == "dbproxy")
+			{
+				log.log.err("dbproxy do not support mq model name:{0}", name);
+				throw new abelkhan.Exception(String.Format("dbproxy do not support mq model name:{0}", name));
+			}
+			if (type == "gate")
+			{
+				log.log.trace("recv distribute server address gate name:{0}", name);
+				hub._gates.connect_gate(name);
+			}
+			if (type == "hub")
+			{
+				log.log.trace("recv distribute server address hub name:{0}", name);
+				_hub.reg_hub(name);
+			}
 		}
 
 		private void reload(string argv)

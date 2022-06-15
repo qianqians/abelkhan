@@ -66,21 +66,36 @@ namespace hub
             add_chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<abelkhan.Ichannel>();
 
-            ManagedENet.Startup();
-            host = _config.get_value_string("host");
-            port = (ushort)_config.get_value_int("port");
-            _enetservice = new abelkhan.enetservice(Dns.GetHostAddresses(host)[0].ToString(), port);
-            _enetservice.on_connect += (ch) => {
-                lock (add_chs)
+            if (_config.has_key("host") && _config.has_key("port"))
+            {
+                ManagedENet.Startup();
+                host = _config.get_value_string("host");
+                port = (ushort)_config.get_value_int("port");
+                _enetservice = new abelkhan.enetservice(Dns.GetHostAddresses(host)[0].ToString(), port);
+                _enetservice.on_connect += (ch) =>
                 {
-                    add_chs.Add(ch);
-                }
-            };
-            _enetservice.start();
+                    lock (add_chs)
+                    {
+                        add_chs.Add(ch);
+                    }
+                };
+                _enetservice.start();
+                _gates = new gatemanager(_enetservice);
+            }
+            else if (_root_config.has_key("redismq_listen") && _root_config.get_value_bool("redismq_listen"))
+            {
+                var redismq_url = _root_config.get_value_string("redis_for_mq");
+                _redis_mq_service = new abelkhan.redis_mq(redismq_url, name);
+                _gates = new gatemanager(_redis_mq_service);
+            }
+            else
+            {
+                log.log.err("undefined hub msg listen model!");
+                throw new abelkhan.Exception("undefined hub msg listen model!");
+            }
 
             _closeHandle = new closehandle();
             _hubs = new hubmanager();
-            _gates = new gatemanager(_enetservice);
 
             _hubs.on_hubproxy += (_proxy) =>
             {
@@ -231,11 +246,20 @@ namespace hub
                 _cryptacceptservice.close();
             }
 
+            if (_redis_mq_service != null)
+            {
+                _redis_mq_service.close();
+            }
+
+            if (_enetservice != null)
+            {
+                _enetservice.stop();
+                ManagedENet.Shutdown();
+            }
+
             _timer.addticktime(3 * 1000, (tick) =>
             {
                 _closeHandle.is_close = true;
-                _enetservice.stop();
-                ManagedENet.Shutdown();
             });
         }
 
@@ -297,7 +321,14 @@ namespace hub
             });
         }
 
-		public Int64 poll()
+        public void reg_hub(String hub_name)
+        {
+            var ch = _redis_mq_service.connect(hub_name);
+            var _caller = new abelkhan.hub_call_hub_caller(ch, abelkhan.modulemng_handle._modulemng);
+            _caller.reg_hub(name, type);
+        }
+
+        public Int64 poll()
         {
             
             Int64 tick_begin = _timer.refresh();
@@ -368,6 +399,7 @@ namespace hub
         public static List<abelkhan.Ichannel> remove_chs;
 
         private abelkhan.enetservice _enetservice;
+        private abelkhan.redis_mq _redis_mq_service;
         private abelkhan.cryptacceptservice _cryptacceptservice;
         private abelkhan.websocketacceptservice _websocketacceptservice;
 

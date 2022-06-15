@@ -16,6 +16,7 @@ namespace abelkhan
         public string host;
         public ushort port;
         public long timetmp = service.timerservice.Tick;
+        public bool is_mq = false;
         public bool is_closed = false;
 
         public uint tick = 0;
@@ -30,6 +31,17 @@ namespace abelkhan
             host = _host;
             port = _port;
             ch = _ch;
+            is_mq = false;
+
+            _center_call_server_caller = new abelkhan.center_call_server_caller(_ch, abelkhan.modulemng_handle._modulemng);
+        }
+
+        public svrproxy(abelkhan.Ichannel _ch, string _type, string _name)
+        {
+            type = _type;
+            name = _name;
+            ch = _ch;
+            is_mq = true;
 
             _center_call_server_caller = new abelkhan.center_call_server_caller(_ch, abelkhan.modulemng_handle._modulemng);
         }
@@ -75,6 +87,11 @@ namespace abelkhan
             _center_call_hub_caller.distribute_server_address(type, name, host, port);
         }
 
+        public void distribute_server_mq(string type, string name)
+        {
+            _center_call_hub_caller.distribute_server_mq(type, name);
+        }
+
         public void reload(string argv)
         {
             _center_call_hub_caller.reload(argv);
@@ -113,6 +130,22 @@ namespace abelkhan
             if (type == "dbproxy")
             {
                 dbproxys.Add(_svrproxy);
+            }
+            _svrproxy.on_svr_close += on_svr_close;
+
+            if (!is_reconn)
+            {
+                new_svrproxys.Add(_svrproxy);
+            }
+        }
+
+        public void reg_svr(abelkhan.Ichannel ch, string type, string name, bool is_reconn = false)
+        {
+            var _svrproxy = new svrproxy(ch, type, name);
+            svrproxys.Add(ch, _svrproxy);
+            if (type == "dbproxy")
+            {
+                throw new abelkhan.Exception("dbproxy not redismq node");
             }
             _svrproxy.on_svr_close += on_svr_close;
 

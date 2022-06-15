@@ -256,12 +256,16 @@ void hub_service::try_connect_db(std::string dbproxy_name, std::string dbproxy_h
 			_extend_dbproxyproxy->reg_server(name_info.name);
 		});
 	}
-	
 }
 
 void hub_service::close_svr() {
 	_close_handle->is_closed = true;
-	enet_deinitialize();
+	if (_hub_redismq_service) {
+		_hub_redismq_service->close();
+	}
+	if (_hub_service) {
+		enet_deinitialize();
+	}
 	spdlog::shutdown();
 }
 

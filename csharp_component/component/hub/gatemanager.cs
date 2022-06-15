@@ -45,11 +45,12 @@ namespace hub
         private Dictionary<string, directproxy> direct_clients;
         private Dictionary<abelkhan.Ichannel, directproxy> ch_direct_clients;
 
-        private abelkhan.enetservice _gate_conn;
+        private abelkhan.enetservice _gate_enet_conn;
+        private abelkhan.redis_mq _gate_redismq_conn;
 
         public gatemanager(abelkhan.enetservice _conn)
 		{
-			_gate_conn = _conn;
+            _gate_enet_conn = _conn;
 			current_client_uuid.Value = "";
 
 			clients = new Dictionary<string, gateproxy>();
@@ -64,9 +65,26 @@ namespace hub
             hub._timer.addticktime(10 * 1000, heartbeat_client);
         }
 
-		public void connect_gate(String name, String host, ushort port)
+        public gatemanager(abelkhan.redis_mq _conn)
+        {
+            _gate_redismq_conn = _conn;
+            current_client_uuid.Value = "";
+
+            clients = new Dictionary<string, gateproxy>();
+
+            _wait_destory_gateproxys = new Dictionary<string, gateproxy>();
+            ch_gateproxys = new Dictionary<abelkhan.Ichannel, gateproxy>();
+            gates = new Dictionary<string, gateproxy>();
+
+            direct_clients = new Dictionary<string, directproxy>();
+            ch_direct_clients = new Dictionary<abelkhan.Ichannel, directproxy>();
+
+            hub._timer.addticktime(10 * 1000, heartbeat_client);
+        }
+
+        public void connect_gate(String name, String host, ushort port)
 		{
-			_gate_conn.connect(host, port, (ch)=> {
+            _gate_enet_conn.connect(host, port, (ch)=> {
                 var _proxy = new gateproxy(ch);
 
                 if (gates.TryGetValue(name, out gateproxy _old_proxy))
@@ -89,7 +107,34 @@ namespace hub
             });
 		}
 
-		public gateproxy get_gateproxy(abelkhan.Ichannel gate_ch)
+        public void connect_gate(String name)
+        {
+            var ch = _gate_redismq_conn.connect(name);
+            if (ch != null)
+            {
+                var _proxy = new gateproxy(ch);
+
+                if (gates.TryGetValue(name, out gateproxy _old_proxy))
+                {
+                    _wait_destory_gateproxys.Add(name, _old_proxy);
+                    gates[name] = _proxy;
+                }
+                else
+                {
+                    gates.Add(name, _proxy);
+                }
+
+                ch_gateproxys.Add(ch, _proxy);
+
+                lock (hub.add_chs)
+                {
+                    hub.add_chs.Add(ch);
+                }
+                _proxy.reg_hub();
+            }
+        }
+
+        public gateproxy get_gateproxy(abelkhan.Ichannel gate_ch)
 		{
 			if (ch_gateproxys.ContainsKey(gate_ch))
 			{
