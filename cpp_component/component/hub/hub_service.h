@@ -35,6 +35,7 @@ typedef io_context io_service;
 namespace service {
 
 class enetacceptservice;
+class redismqservice;
 class connectservice;
 class acceptservice;
 class webacceptservice;
@@ -59,9 +60,13 @@ public:
 
 	void connect_center();
 
-	void connect_gate(std::string uuid, std::string ip, uint16_t port);
+	void connect_gate(std::string gate_name, std::string ip, uint16_t port);
+	
+	void connect_gate(std::string gate_name);
 
 	void reg_hub(std::string hub_ip, uint16_t hub_port);
+
+	void reg_hub(std::string hub_name);
 
 	void try_connect_db(std::string dbproxy_name, std::string dbproxy_ip, uint16_t dbproxy_port);
 
@@ -130,6 +135,7 @@ private:
 	concurrent::signals<void(std::string, std::string) > sig_svr_be_closed;
 
 	std::shared_ptr<service::enetacceptservice> _hub_service;
+	std::shared_ptr<service::redismqservice> _hub_redismq_service;
 
 	std::shared_ptr<boost::asio::io_service> _io_service;
 	std::shared_ptr<service::connectservice> _center_service;

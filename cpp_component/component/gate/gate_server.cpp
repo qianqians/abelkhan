@@ -8,11 +8,12 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/lexical_cast.hpp>
 
- #include <acceptservice.h>
- #include <connectservice.h>
- #include <enetacceptservice.h>
- #include <websocketacceptservice.h>
- #include <modulemng_handle.h>
+#include <acceptservice.h>
+#include <connectservice.h>
+#include <enetacceptservice.h>
+#include <redismqservice.h>
+#include <websocketacceptservice.h>
+#include <modulemng_handle.h>
 
 #include "center_msg_handle.h"
 #include "hub_svr_msg_handle.h"
@@ -54,10 +55,6 @@ void gate_service::init() {
 		_log::InitLog(file_path, spdlog::level::level_enum::err);
 	}
 
-	if (enet_initialize() != 0)
-	{
-		spdlog::error("An error occurred while initializing ENet!");
-	}
 	ares_library_init(ARES_LIB_INIT_ALL);
 
 	auto this_ptr = shared_from_this();
@@ -71,9 +68,30 @@ void gate_service::init() {
 	_hub_svr_msg_handle = std::make_shared<hub_svr_msg_handle>(_clientmanager, _hubsvrmanager);
 	_client_msg_handle = std::make_shared<client_msg_handle>(_clientmanager, _hubsvrmanager, _timerservice);
 
-	inside_host = _config->get_value_string("inside_host");
-	inside_port = (short)_config->get_value_int("inside_port");
-	_hub_service = std::make_shared<service::enetacceptservice>(inside_host, inside_port);
+	if (_config->has_key("inside_host") && _config->has_key("inside_port")) {
+		if (enet_initialize() != 0)
+		{
+			spdlog::error("An error occurred while initializing ENet!");
+		}
+
+		inside_host = _config->get_value_string("inside_host");
+		inside_port = (short)_config->get_value_int("inside_port");
+		_hub_service = std::make_shared<service::enetacceptservice>(inside_host, inside_port);
+	}
+	else if (_root_config->has_key("redismq_listen") && _root_config->get_value_bool("redismq_listen")) {
+		auto redismq_url = _root_config->get_value_string("redis_for_mq");
+		if (_root_config->has_key("redis_for_mq_pwd")) {
+			auto password = _root_config->get_value_string("redis_for_mq_pwd");
+			_hub_redismq_service = std::make_shared<service::redismqservice>(gate_name_info.name, redismq_url, password);
+		}
+		else {
+			_hub_redismq_service = std::make_shared<service::redismqservice>(gate_name_info.name, redismq_url);
+		}
+		_hub_redismq_service->start();
+	}
+	else {
+		spdlog::error("undefined hub msg listen model!");
+	}
 
 	io_service = std::make_shared<boost::asio::io_service>();
 	_connectnetworkservice = std::make_shared<service::connectservice>(io_service);
@@ -168,7 +186,13 @@ uint32_t gate_service::poll(){
 
 		io_service->poll();
 
-		_hub_service->poll();
+		if (_hub_service != nullptr) {
+			_hub_service->poll();
+		}
+
+		if (_hub_redismq_service != nullptr) {
+			_hub_redismq_service->poll();
+		}
 
 		if (_websocket_service != nullptr) {
 			_websocket_service->poll();

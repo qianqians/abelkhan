@@ -34,6 +34,7 @@ class enetacceptservice;
 class connectservice;
 class acceptservice;
 class webacceptservice;
+class redismqservice;
 
 }
 
@@ -84,6 +85,7 @@ private:
 	std::string inside_host;
 	short inside_port;
 	std::shared_ptr<service::enetacceptservice> _hub_service;
+	std::shared_ptr<service::redismqservice> _hub_redismq_service;
 
 	std::string center_ip;
 	short center_port;

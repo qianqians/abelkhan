@@ -4,6 +4,7 @@
  * hub.cpp
  */
 #include <enetacceptservice.h>
+#include <redismqservice.h>
 #include <connectservice.h>
 #include <acceptservice.h>
 #include <websocketacceptservice.h>
@@ -65,13 +66,29 @@ void hub_service::init() {
 
 	_io_service = std::make_shared<boost::asio::io_service>();
 
-	if (enet_initialize() != 0)
-	{
-		spdlog::error("An error occurred while initializing ENet!");
+	if (_config->has_key("host") && _config->has_key("port")) {
+		if (enet_initialize() != 0)
+		{
+			spdlog::error("An error occurred while initializing ENet!");
+		}
+		auto host = _config->get_value_string("host");
+		auto port = _config->get_value_int("port");
+		_hub_service = std::make_shared<service::enetacceptservice>(host, (short)port);
 	}
-	auto host = _config->get_value_string("host");
-	auto port = _config->get_value_int("port");
-	_hub_service = std::make_shared<service::enetacceptservice>(host, (short)port);
+	else if (_root_config->has_key("redismq_listen") && _root_config->get_value_bool("redismq_listen")) {
+		auto redismq_url = _root_config->get_value_string("redis_for_mq");
+		if (_root_config->has_key("redis_for_mq_pwd")) {
+			auto password = _root_config->get_value_string("redis_for_mq_pwd");
+			_hub_redismq_service = std::make_shared<service::redismqservice>(name_info.name, redismq_url, password);
+		}
+		else {
+			_hub_redismq_service = std::make_shared<service::redismqservice>(name_info.name, redismq_url);
+		}
+		_hub_redismq_service->start();
+	}
+	else {
+		spdlog::error("undefined hub msg listen model!");
+	}
 
 	_timerservice = std::make_shared<service::timerservice>();
 	_close_handle = std::make_shared<closehandle>();
@@ -185,6 +202,10 @@ void hub_service::connect_gate(std::string gate_name, std::string host, uint16_t
 	_gatemng->connect_gate(gate_name, host, port);
 }
 
+void hub_service::connect_gate(std::string gate_name) {
+	_gatemng->connect_gate(gate_name);
+}
+
 void hub_service::reg_hub(std::string hub_host, uint16_t hub_port) {
 	_hub_service->connect(hub_host, hub_port, [this, hub_host, hub_port](std::shared_ptr<abelkhan::Ichannel> ch){
 		spdlog::trace("hub host:{0} port:{1} reg_hub", hub_host, hub_port);
@@ -196,6 +217,19 @@ void hub_service::reg_hub(std::string hub_host, uint16_t hub_port) {
 		})->timeout(5 * 1000, [hub_host, hub_port]() {
 			spdlog::trace("hub host:{0} port:{1} reg_hub timeout!", hub_host, hub_port);
 		});
+	});
+}
+
+void hub_service::reg_hub(std::string hub_name) {
+	auto ch = _hub_redismq_service->connect(hub_name);
+	spdlog::trace("hub hub_name:{0} reg_hub", hub_name);
+	auto caller = std::make_shared<abelkhan::hub_call_hub_caller>(ch, service::_modulemng);
+	caller->reg_hub(name_info.name, hub_type)->callBack([hub_name]() {
+		spdlog::trace("hub hub_name:{0} reg_hub sucessed!", hub_name);
+	}, [hub_name]() {
+		spdlog::trace("hub hub_name:{0} reg_hub faild!", hub_name);
+	})->timeout(5 * 1000, [hub_name]() {
+		spdlog::trace("hub hub_name:{0} reg_hub timeout!", hub_name);
 	});
 }
 
@@ -237,7 +271,13 @@ uint32_t hub_service::poll() {
 	try {
 		_io_service->poll();
 
-		_hub_service->poll();
+		if (_hub_service != nullptr) {
+			_hub_service->poll();
+		}
+
+		if (_hub_redismq_service != nullptr) {
+			_hub_redismq_service->poll();
+		}
 
 		if (_client_websocket_service != nullptr) {
 			_client_websocket_service->poll();

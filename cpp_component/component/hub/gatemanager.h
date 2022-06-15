@@ -22,6 +22,7 @@
 namespace service {
 
 class enetacceptservice;
+class redismqservice;
 
 }
 
@@ -76,7 +77,11 @@ class gatemanager {
 public:
 	gatemanager(std::shared_ptr<service::enetacceptservice> conn_, std::shared_ptr<hub_service> hub_);
 
+	gatemanager(std::shared_ptr<service::redismqservice> conn_, std::shared_ptr<hub_service> hub_);
+
 	void connect_gate(std::string gate_name, std::string ip, uint16_t port);
+
+	void connect_gate(std::string gate_name);
 
 	void client_connect(std::string client_uuid, std::shared_ptr<abelkhan::Ichannel> gate_ch);
 
@@ -98,11 +103,15 @@ public:
 
 	void call_global_client(const std::string& func, const msgpack11::MsgPack::array& argvs);
 
+private:
+	void Init();
+
 public:
 	thread_local static std::string current_client_cuuid;
 
 private:
-	std::shared_ptr<service::enetacceptservice> _conn;
+	std::shared_ptr<service::enetacceptservice> _conn_enet;
+	std::shared_ptr<service::redismqservice> _conn_redismq;
 	std::shared_ptr<hub_service> _hub;
 	
 	std::unordered_map<std::string, std::shared_ptr<gateproxy> > clients;

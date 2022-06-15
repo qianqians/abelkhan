@@ -6,6 +6,7 @@
 #include <omp.h>
 
 #include <enetacceptservice.h>
+#include <redismqservice.h>
 #include <modulemng_handle.h>
 
 #include "gatemanager.h"
@@ -58,9 +59,20 @@ void directproxy::call_client(const std::vector<uint8_t>& rpc_argv) {
 }
 
 gatemanager::gatemanager(std::shared_ptr<service::enetacceptservice> conn_, std::shared_ptr<hub_service> hub_) {
-	_conn = conn_;
+	_conn_enet = conn_;
 	_hub = hub_;
 
+	Init();
+}
+
+gatemanager::gatemanager(std::shared_ptr<service::redismqservice> conn_, std::shared_ptr<hub_service> hub_) {
+	_conn_redismq = conn_;
+	_hub = hub_;
+
+	Init();
+}
+
+void gatemanager::Init() {
 	_hub->sig_svr_be_closed.connect([this](std::string svr_type, std::string svr_name) {
 		if (svr_type != "gate") {
 			return;
@@ -104,7 +116,7 @@ gatemanager::gatemanager(std::shared_ptr<service::enetacceptservice> conn_, std:
 void gatemanager::connect_gate(std::string gate_name, std::string host, uint16_t port) {
 	spdlog::trace("connect_gate host:{0} port:{1}", host, port);
 	auto ip = service::DNS(host);
-	_conn->connect(ip, port, [this, host, port, gate_name](std::shared_ptr<abelkhan::Ichannel> ch) {
+	_conn_enet->connect(ip, port, [this, host, port, gate_name](std::shared_ptr<abelkhan::Ichannel> ch) {
 		spdlog::trace("gate host:{0}  port:{1} reg_hub", host, port);
 		
 		auto _gate_proxy = std::make_shared<gateproxy>(ch, _hub, gate_name);
@@ -120,6 +132,23 @@ void gatemanager::connect_gate(std::string gate_name, std::string host, uint16_t
 		});
 		_gate_proxy->reg_hub();
 	});
+}
+
+void gatemanager::connect_gate(std::string gate_name) {
+	spdlog::trace("connect_gate name:{0}", gate_name);
+	auto ch = _conn_redismq->connect(gate_name);
+	auto _gate_proxy = std::make_shared<gateproxy>(ch, _hub, gate_name);
+	_gate_proxy->sig_reg_hub_sucessed.connect([this, gate_name, ch, _gate_proxy]() {
+
+		auto it = gates.find(gate_name);
+		if (it != gates.end()) {
+			wait_destory_gates.insert(std::make_pair(it->first, it->second));
+		}
+
+		gates[gate_name] = _gate_proxy;
+		ch_gates[ch] = _gate_proxy;
+	});
+	_gate_proxy->reg_hub();
 }
 
 void gatemanager::client_connect(std::string client_uuid, std::shared_ptr<abelkhan::Ichannel> gate_ch) {

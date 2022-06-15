@@ -37,6 +37,8 @@ public:
 	int64_t _theory_timetmp = 0;
 	std::string _cuuid;
 	std::shared_ptr<abelkhan::Ichannel> _ch;
+
+	std::mutex _conn_hubproxys_mutex;
 	std::vector<std::shared_ptr<hubproxy> > conn_hubproxys;
 
 public:
@@ -47,6 +49,13 @@ public:
 	}
 
 	virtual ~clientproxy() {
+	}
+
+	void conn_hub(std::shared_ptr<hubproxy> hub_proxy) {
+		std::lock_guard<std::mutex> l(_conn_hubproxys_mutex);
+		if (std::find(conn_hubproxys.begin(), conn_hubproxys.end(), hub_proxy) == conn_hubproxys.end()) {
+			conn_hubproxys.push_back(hub_proxy);
+		}
 	}
 
 	void ntf_cuuid() {

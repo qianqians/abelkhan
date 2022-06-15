@@ -4,6 +4,10 @@ module center{
 	
 	reconn_reg_server req(string type, string svr_name, string host, uint16 port) rsp() err();
 	
+	reg_server_mq req(string type, string svr_name) rsp() err();
+	
+	reconn_reg_server_mq req(string type, string svr_name) rsp() err();
+	
 	heartbeat req(uint32 tick) rsp() err();
 	
 	closed ntf();
@@ -23,6 +27,8 @@ module center_call_server{
 module center_call_hub{
 
 	distribute_server_address ntf(string svr_type, string svr_name, string host, uint16 port);
+	
+	distribute_server_mq ntf(string svr_type, string svr_name);
 	
 	reload ntf(string argv);
 	

@@ -62,7 +62,11 @@ public:
 		auto hub_proxy = _hubsvrmanager->get_hub(ch);
 		auto client_proxy = _clientmanager->get_client(cuuid);
 		if (client_proxy) {
+			client_proxy->conn_hub(hub_proxy);
 			client_proxy->call_client(hub_proxy->_hub_name, rpc_argv);
+		}
+		else {
+			hub_proxy->client_disconnect(cuuid);
 		}
 	}
 
@@ -105,6 +109,9 @@ public:
 				else {
 					clients.push_back(client_proxy->_ch);
 				}
+			}
+			else {
+				hub_proxy->client_disconnect(cuuid);
 			}
 		}
 
