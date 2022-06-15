@@ -1,5 +1,5 @@
 # ablekhan
-abelkhan是一个轻量级的游戏服务器框架，基于c#开发，使用mongodb提供数据存储，支持ue、unity和cocos creator，目标是提供一个稳定、高效、可扩展的服务器框架。  
+abelkhan是一个轻量级的游戏服务器框架，基于c#和c++开发，使用mongodb提供数据存储，支持ue、unity和cocos creator，目标是提供一个稳定、高效、可扩展的服务器框架。  
 
 ## 架构
 * center 中心服务器
