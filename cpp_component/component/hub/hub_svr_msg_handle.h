@@ -13,6 +13,7 @@
 #include <hub.h>
 
 #include "hubsvrmanager.h"
+#include "gatemanager.h"
 #include "hub_service.h"
 
 namespace hub {
@@ -21,16 +22,19 @@ class hub_svr_msg_handle {
 private:
 	std::shared_ptr<hub::hub_service> _hub;
 	std::shared_ptr<hub::hubsvrmanager> _hubmng;
+	std::shared_ptr<hub::gatemanager> _gatemng;
 	std::shared_ptr<abelkhan::hub_call_hub_module> _hub_call_hub_module;
 
 public:
-	hub_svr_msg_handle(std::shared_ptr<hub::hub_service> hub_, std::shared_ptr<hub::hubsvrmanager> hubmng_) {
+	hub_svr_msg_handle(std::shared_ptr<hub::hub_service> hub_, std::shared_ptr<hub::hubsvrmanager> hubmng_, std::shared_ptr<hub::gatemanager> _gatemng_) {
 		_hub = hub_;
 		_hubmng = hubmng_;
+		_gatemng = _gatemng_;
 
 		_hub_call_hub_module = std::make_shared<abelkhan::hub_call_hub_module>();
 		_hub_call_hub_module->Init(service::_modulemng);
 		_hub_call_hub_module->sig_reg_hub.connect(std::bind(&hub_svr_msg_handle::reg_hub, this, std::placeholders::_1, std::placeholders::_2));
+		_hub_call_hub_module->sig_seep_client_gate.connect(std::bind(&hub_svr_msg_handle::client_seep, this, std::placeholders::_1, std::placeholders::_2));
 		_hub_call_hub_module->sig_hub_call_hub_mothed.connect(std::bind(&hub_svr_msg_handle::hub_call_hub_mothed, this, std::placeholders::_1));
 	}
 
@@ -38,6 +42,10 @@ public:
 		auto rsp = std::static_pointer_cast<abelkhan::hub_call_hub_reg_hub_rsp>(_hub_call_hub_module->rsp);
 		_hubmng->reg_hub(hub_name, hub_type, _hub_call_hub_module->current_ch);
 		rsp->rsp();
+	}
+
+	void client_seep(std::string client_uuid, std::string gate_name) {
+		_gatemng->client_seep(client_uuid, gate_name);
 	}
 
 	void hub_call_hub_mothed(std::vector<uint8_t> rpc_argvs) {

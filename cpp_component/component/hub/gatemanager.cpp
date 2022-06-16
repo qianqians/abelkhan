@@ -152,14 +152,25 @@ void gatemanager::connect_gate(std::string gate_name) {
 }
 
 void gatemanager::client_connect(std::string client_uuid, std::shared_ptr<abelkhan::Ichannel> gate_ch) {
-	if (ch_gates.find(gate_ch) == ch_gates.end()) {
-		spdlog::trace("unreg gate channel!");
+	auto it = ch_gates.find(gate_ch);
+	if (it == ch_gates.end()) {
+		spdlog::error("unreg gate channel!");
 		return;
 	}
 
 	spdlog::trace("reg client:{0}", client_uuid);
+	clients[client_uuid] = it->second;
+}
 
-	clients[client_uuid] = ch_gates[gate_ch];
+void gatemanager::client_seep(std::string client_uuid, std::string gate_name) {
+	auto it = gates.find(gate_name);
+	if (it == gates.end()) {
+		spdlog::trace("unreg gate name:{0}!", gate_name);
+		return;
+	}
+
+	spdlog::trace("client_seep client:{0}", client_uuid);
+	clients[client_uuid] = it->second;
 }
 
 void gatemanager::client_disconnect(std::string client_uuid) {

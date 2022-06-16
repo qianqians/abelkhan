@@ -51,25 +51,18 @@ namespace hub
         public gatemanager(abelkhan.enetservice _conn)
 		{
             _gate_enet_conn = _conn;
-			current_client_uuid.Value = "";
-
-			clients = new Dictionary<string, gateproxy>();
-
-            _wait_destory_gateproxys = new Dictionary<string, gateproxy>();
-            ch_gateproxys = new Dictionary<abelkhan.Ichannel, gateproxy>();
-			gates = new Dictionary<string, gateproxy>();
-
-            direct_clients = new Dictionary<string, directproxy>();
-            ch_direct_clients = new Dictionary<abelkhan.Ichannel, directproxy>();
-
-            hub._timer.addticktime(10 * 1000, heartbeat_client);
+            init();
         }
 
         public gatemanager(abelkhan.redis_mq _conn)
         {
             _gate_redismq_conn = _conn;
-            current_client_uuid.Value = "";
+            init();
+        }
 
+        private void init()
+        {
+            current_client_uuid.Value = "";
             clients = new Dictionary<string, gateproxy>();
 
             _wait_destory_gateproxys = new Dictionary<string, gateproxy>();
@@ -198,16 +191,28 @@ namespace hub
             }
         }
 
-        public void client_connect(String client_uuid, abelkhan.Ichannel gate_ch)
+        public void client_connect(string client_uuid, abelkhan.Ichannel gate_ch)
         {
-            if (!ch_gateproxys.ContainsKey(gate_ch))
+            if (!ch_gateproxys.TryGetValue(gate_ch, out gateproxy _proxy))
             {
                 log.log.err("invaild gate");
                 return;
             }
-            clients[client_uuid] = ch_gateproxys[gate_ch];
+            clients[client_uuid] = _proxy;
 
             log.log.trace("client {0} connected", client_uuid);
+        }
+
+        public void client_seep(string client_uuid, string gate_name)
+        {
+            if (!gates.TryGetValue(gate_name, out gateproxy _proxy))
+            {
+                log.log.err("invaild gate name:{0}", gate_name);
+                return;
+            }
+            clients[client_uuid] = _proxy;
+
+            log.log.trace("client {0} seep!", client_uuid);
         }
 
         public event Action<string> clientDisconnect;

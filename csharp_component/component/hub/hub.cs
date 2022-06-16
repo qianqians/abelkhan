@@ -177,7 +177,7 @@ namespace hub
                 }
             }
 
-            _hub_msg_handle = new hub_msg_handle(_hubs);
+            _hub_msg_handle = new hub_msg_handle(_hubs, _gates);
             _center_msg_handle = new center_msg_handle(this, _closeHandle, _centerproxy);
             _dbproxy_msg_handle = new dbproxy_msg_handle();
             _gate_msg_handle = new gate_msg_handle();

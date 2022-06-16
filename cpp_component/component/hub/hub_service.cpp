@@ -99,7 +99,7 @@ void hub_service::init() {
 	_dbproxy_msg_handle = std::make_shared<dbproxy_msg_handle>();
 	_direct_client_msg_handle = std::make_shared<direct_client_msg_handle>(_gatemng, shared_from_this());
 	_gate_msg_handle = std::make_shared<gate_msg_handle>(shared_from_this(), _gatemng);
-	_hub_svr_msg_handle = std::make_shared<hub_svr_msg_handle>(shared_from_this(), _hubmng);
+	_hub_svr_msg_handle = std::make_shared<hub_svr_msg_handle>(shared_from_this(), _hubmng, _gatemng);
 	
 	_center_service = std::make_shared<service::connectservice>(_io_service);
 	_dbproxy_service = std::make_shared<service::connectservice>(_io_service);
