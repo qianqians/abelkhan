@@ -6,6 +6,8 @@
 #ifndef _GATE_H_
 #define _GATE_H_
 
+#include <mutex>
+
 #include <abelkhan.h>
 #include <timerservice.h>
 #include <config.h>
@@ -96,6 +98,8 @@ private:
 
 	std::shared_ptr<service::acceptservice> _client_service;
 	std::shared_ptr<service::webacceptservice> _websocket_service;
+
+	std::mutex _run_mu;
 
 };
 

@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace abelkhan
@@ -163,6 +164,7 @@ namespace abelkhan
             return tick_end - tick_begin;
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void run()
         {
             while (!_closeHandle.is_close)

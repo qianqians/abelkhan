@@ -270,6 +270,10 @@ void hub_service::close_svr() {
 }
 
 void hub_service::run() {
+	if (!_run_mu.try_lock()) {
+		throw abelkhan::Exception("run mast at single thread!");
+	}
+
 	while (!_close_handle->is_closed) {
 		try {
 			auto tick_time = poll();
@@ -282,6 +286,8 @@ void hub_service::run() {
 			spdlog::error("error:{0}", e.what());
 		}
 	}
+
+	_run_mu.unlock();
 }
 
 uint32_t hub_service::poll() {

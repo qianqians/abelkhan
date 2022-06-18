@@ -46,10 +46,10 @@ int main(int argc, char* argv[]) {
     auto _test_c2s_module = std::make_shared<abelkhan::test_c2s_module>();
     _test_c2s_module->Init(_hub);
     _test_c2s_module->sig_login.connect([client_list, _hub]() {
-        spdlog::trace("client{0} login!", hub::gatemanager::current_client_cuuid);
-        client_list->push_back(hub::gatemanager::current_client_cuuid);
+        spdlog::trace("client{0} login!", _hub->_gatemng->current_client_cuuid);
+        client_list->push_back(_hub->_gatemng->current_client_cuuid);
 
-        BSON::Value doc = BSON::Object{ { "info", BSON::Array{"svr", "test_cpp", "cuuid", hub::gatemanager::current_client_cuuid}}};
+        BSON::Value doc = BSON::Object{ { "info", BSON::Array{"svr", "test_cpp", "cuuid", _hub->_gatemng->current_client_cuuid}}};
         _hub->_dbproxyproxy->getCollection("test", "test")->createPersistedObject(doc, [](auto ret) {
             spdlog::trace("createPersistedObject ret:{0}!", ret);
         });
@@ -70,18 +70,7 @@ int main(int argc, char* argv[]) {
 
     _hub->connect_center();
 
-    try {
-        while (1) {
-            auto tick_time = _hub->poll();
-
-            if (_hub->_close_handle->is_closed) {
-                break;
-            }
-        }
-    }
-    catch (std::exception e) {
-        spdlog::error("error:{0}", e.what());
-    }
+    _hub->run();
 
 	return 0;
 }

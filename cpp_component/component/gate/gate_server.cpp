@@ -176,6 +176,10 @@ void gate_service::heartbeat_center(std::shared_ptr<gate_service> _gate_service,
 }
 
 void gate_service::run() {
+	if (!_run_mu.try_lock()) {
+		throw abelkhan::Exception("run mast at single thread!");
+	}
+
 	while (!_closehandle->is_closed) {
 		try {
 			auto tick_time = poll();
@@ -188,6 +192,8 @@ void gate_service::run() {
 			spdlog::error("error:{0}", e.what());
 		}
 	}
+
+	_run_mu.unlock();
 }
 
 uint32_t gate_service::poll(){

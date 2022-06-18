@@ -95,7 +95,7 @@ namespace abelkhan
         concurrent::signals<void()> sig_get_svr_host;
         void get_svr_host(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
-            rsp = std::make_shared<test_c2s_get_svr_host_rsp>(hub_handle, hub::gatemanager::current_client_cuuid, _cb_uuid);
+            rsp = std::make_shared<test_c2s_get_svr_host_rsp>(hub_handle, hub_handle->_gatemng->current_client_cuuid, _cb_uuid);
             sig_get_svr_host.emit();
             rsp = nullptr;
         }
@@ -103,7 +103,7 @@ namespace abelkhan
         concurrent::signals<void()> sig_get_websocket_svr_host;
         void get_websocket_svr_host(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
-            rsp = std::make_shared<test_c2s_get_websocket_svr_host_rsp>(hub_handle, hub::gatemanager::current_client_cuuid, _cb_uuid);
+            rsp = std::make_shared<test_c2s_get_websocket_svr_host_rsp>(hub_handle, hub_handle->_gatemng->current_client_cuuid, _cb_uuid);
             sig_get_websocket_svr_host.emit();
             rsp = nullptr;
         }

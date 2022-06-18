@@ -213,7 +213,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                     code_func += "            }\n"
                 count += 1
 
-            code_func += "            rsp = std::make_shared<" + module_name + "_" + func_name + "_rsp>(hub_handle, hub::gatemanager::current_client_cuuid, _cb_uuid);\n"
+            code_func += "            rsp = std::make_shared<" + module_name + "_" + func_name + "_rsp>(hub_handle, hub_handle->_gatemng->current_client_cuuid, _cb_uuid);\n"
             code_func += "            sig_" + func_name + ".emit("
             count = 0
             for _type, _name, _parameter in i[2]:

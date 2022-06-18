@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace dbproxy
@@ -217,6 +218,7 @@ namespace dbproxy
             return tick;
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void run()
         {
             while (!_closeHandle.is_close())

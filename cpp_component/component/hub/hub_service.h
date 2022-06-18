@@ -8,6 +8,7 @@
 #define _hub_h
 
 #include <memory>
+#include <mutex>
 
 #include <abelkhan.h>
 #include <timerservice.h>
@@ -132,6 +133,7 @@ private:
 	friend class center_msg_handle;
 	friend class gatemanager;
 	friend class hubsvrmanager;
+
 	concurrent::signals<void(std::string, std::string) > sig_svr_be_closed;
 
 	std::shared_ptr<service::enetacceptservice> _hub_service;
@@ -153,6 +155,8 @@ private:
 	std::shared_ptr<centerproxy> _centerproxy;
 
 	uint32_t reconn_count;
+
+	std::mutex _run_mu;
 
 };
 

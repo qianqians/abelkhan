@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace hub
@@ -377,6 +378,7 @@ namespace hub
             return tick;
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void run()
         {
             while (!_closeHandle.is_close)

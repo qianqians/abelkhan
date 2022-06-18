@@ -15,18 +15,7 @@ int main(int argc, char* argv[]) {
         _gate->close_svr();
     });
 
-    try {
-        while (1) {
-            auto tick_time = _gate->poll();
-
-            if (_gate->_closehandle->is_closed) {
-                break;
-            }
-        }
-    }
-    catch (std::exception e) {
-        spdlog::error("error:{0}", e.what());
-    }
+    _gate->run();
 
 	return 0;
 }
