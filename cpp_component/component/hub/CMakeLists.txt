@@ -31,6 +31,7 @@ AUX_SOURCE_DIRECTORY(../../service service_DIR_SRC)
 set(module_header_path ..//..//module CACHE PATH "module include path")
 INCLUDE_DIRECTORIES(${module_header_path})
 file(GLOB module_header_files ../../module/ ../../module/*.h)
+AUX_SOURCE_DIRECTORY(../../module module_DIR_SRC)
 
 set(log_header_path ..//..//log CACHE PATH "log include path")
 INCLUDE_DIRECTORIES(${log_header_path})
@@ -56,6 +57,7 @@ SET(SRC_LIST
     ${service_DIR_SRC}
     ${protocol_DIR_SRC}
     ${time_DIR_SRC}
+	${module_DIR_SRC}
 )
 
 ADD_LIBRARY(hub ${SRC_LIST} ${header_files})

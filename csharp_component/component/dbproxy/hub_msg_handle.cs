@@ -28,7 +28,7 @@ namespace dbproxy
 		{
             log.log.trace("hub {0} connected", hub_name);
                 
-            var rsp = (abelkhan.hub_call_dbproxy_reg_hub_rsp)_hub_call_dbproxy_module.rsp;
+            var rsp = (abelkhan.hub_call_dbproxy_reg_hub_rsp)_hub_call_dbproxy_module.rsp.Value;
             hubproxy _hubproxy = _hubmanager.reg_hub(_hub_call_dbproxy_module.current_ch.Value, hub_name);
             rsp.rsp();
         }
@@ -43,7 +43,7 @@ namespace dbproxy
                 log.log.err("hubproxy is null");
                 return;
             }
-            var rsp = (abelkhan.hub_call_dbproxy_create_persisted_object_rsp)_hub_call_dbproxy_module.rsp;
+            var rsp = (abelkhan.hub_call_dbproxy_create_persisted_object_rsp)_hub_call_dbproxy_module.rsp.Value;
 
             dbproxy._dbevent.push_create_event(new create_event(_hubproxy, db, collection, object_info, rsp));
 
@@ -60,7 +60,7 @@ namespace dbproxy
                 log.log.err("hubproxy is null");
                 return;
             }
-            var rsp = (abelkhan.hub_call_dbproxy_updata_persisted_object_rsp)_hub_call_dbproxy_module.rsp;
+            var rsp = (abelkhan.hub_call_dbproxy_updata_persisted_object_rsp)_hub_call_dbproxy_module.rsp.Value;
 
             dbproxy._dbevent.push_updata_event(new update_event(_hubproxy, db, collection, query_data, object_data, upsert, rsp));
 
@@ -77,7 +77,7 @@ namespace dbproxy
                 log.log.err("hubproxy is null");
                 return;
             }
-            var rsp = (abelkhan.hub_call_dbproxy_find_and_modify_rsp)_hub_call_dbproxy_module.rsp;
+            var rsp = (abelkhan.hub_call_dbproxy_find_and_modify_rsp)_hub_call_dbproxy_module.rsp.Value;
 
             dbproxy._dbevent.push_find_and_modify_event(new find_and_modify_event(_hubproxy, db, collection, query_data, object_data, is_new, upsert, rsp));
 
@@ -94,7 +94,7 @@ namespace dbproxy
                 log.log.err("hubproxy is null");
                 return;
             }
-            var rsp = (abelkhan.hub_call_dbproxy_remove_object_rsp)_hub_call_dbproxy_module.rsp;
+            var rsp = (abelkhan.hub_call_dbproxy_remove_object_rsp)_hub_call_dbproxy_module.rsp.Value;
 
             dbproxy._dbevent.push_remove_event(new remove_event(_hubproxy, db, collection, query_data, rsp));
 
@@ -111,7 +111,7 @@ namespace dbproxy
                 log.log.err("hubproxy is null");
                 return;
             }
-            var rsp = (abelkhan.hub_call_dbproxy_get_object_count_rsp)_hub_call_dbproxy_module.rsp;
+            var rsp = (abelkhan.hub_call_dbproxy_get_object_count_rsp)_hub_call_dbproxy_module.rsp.Value;
 
             dbproxy._dbevent.push_count_event(new count_event(_hubproxy, db, collection, query_data, rsp));
 

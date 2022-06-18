@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using MsgPack.Serialization;
 
 namespace common
@@ -19,7 +20,12 @@ namespace common
 
 	public class imodule
 	{
-		public Response rsp;
+		public imodule()
+        {
+			rsp = new ThreadLocal<Response>();
+		}
+
+		public ThreadLocal<Response> rsp;
 	}
 }
 

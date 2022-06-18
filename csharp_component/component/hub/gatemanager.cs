@@ -62,6 +62,7 @@ namespace hub
 
         private void init()
         {
+            current_client_uuid = new ThreadLocal<string>();
             current_client_uuid.Value = "";
             clients = new Dictionary<string, gateproxy>();
 

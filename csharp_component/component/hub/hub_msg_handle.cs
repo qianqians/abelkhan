@@ -25,7 +25,7 @@ namespace hub
         {
             log.log.trace("hub:{0},{1} registered!", hub_name, hub_type);
 
-            var rsp = (abelkhan.hub_call_hub_reg_hub_rsp)_hub_call_hub_module.rsp;
+            var rsp = (abelkhan.hub_call_hub_reg_hub_rsp)_hub_call_hub_module.rsp.Value;
             _hubmanager.reg_hub(hub_name, hub_type, _hub_call_hub_module.current_ch.Value);
             rsp.rsp();
         }
@@ -34,7 +34,7 @@ namespace hub
         {
             log.log.trace("seep_client_gate client_uuid:{0}, gate_name:{1}!", client_uuid, gate_name);
 
-            var rsp = (abelkhan.hub_call_hub_seep_client_gate_rsp)_hub_call_hub_module.rsp;
+            var rsp = (abelkhan.hub_call_hub_seep_client_gate_rsp)_hub_call_hub_module.rsp.Value;
             var _proxy = _gatemanager.client_seep(client_uuid, gate_name);
             if (_proxy != null)
             {

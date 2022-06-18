@@ -12,8 +12,8 @@ endif()
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
-set(BOOST_INCLUDE_PATH ../../cpp_component/3rdparty/boost CACHE PATH "boost include path")
-INCLUDE_DIRECTORIES(${BOOST_INCLUDE_PATH})
+set(crossguid_INCLUDE_PATH ../../cpp_component/3rdparty/crossguid/include CACHE PATH "crossguid include path")
+INCLUDE_DIRECTORIES(${crossguid_INCLUDE_PATH})
 
 set(spdlog_INCLUDE_PATH ../../cpp_component/3rdparty/spdlog/include CACHE PATH "spdlog include path")
 INCLUDE_DIRECTORIES(${spdlog_INCLUDE_PATH})
@@ -77,6 +77,9 @@ SET(SRC_LIST
 
 ADD_EXECUTABLE(test ${SRC_LIST} ${header_files})
 target_link_libraries(test debug ${LIBS_DEBUG_PATH}/libssl64MDd optimized ${LIBS_RELEASE_PATH}/libssl64MD)
+target_link_libraries(test debug ${LIBS_DEBUG_PATH}/hiredis optimized ${LIBS_RELEASE_PATH}/hiredis)
+target_link_libraries(test debug ${LIBS_DEBUG_PATH}/hiredis_cluster optimized ${LIBS_RELEASE_PATH}/hiredis_cluster)
+target_link_libraries(test debug ${LIBS_DEBUG_PATH}/crossguid-dgb optimized ${LIBS_RELEASE_PATH}/crossguid)
 target_link_libraries(test debug ${LIBS_DEBUG_PATH}/libcrypto64MDd optimized ${LIBS_RELEASE_PATH}/libcrypto64MD)
 target_link_libraries(test debug ${LIBS_DEBUG_PATH}/spdlogd optimized ${LIBS_RELEASE_PATH}/spdlog)
 target_link_libraries(test debug ${LIBS_DEBUG_PATH}/enet optimized ${LIBS_RELEASE_PATH}/enet)

@@ -23,7 +23,7 @@ namespace hub
 
 		public void heartbeats()
         {
-			var rsp = (abelkhan.client_call_hub_heartbeats_rsp)_client_call_hub_module.rsp;
+			var rsp = (abelkhan.client_call_hub_heartbeats_rsp)_client_call_hub_module.rsp.Value;
 			var _proxy = hub._gates.get_directproxy(_client_call_hub_module.current_ch.Value);
 			if (_proxy != null)
             {

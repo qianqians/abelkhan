@@ -33,7 +33,7 @@ class Response
 
 class imodule {
 public:
-    std::shared_ptr<Response> rsp;
+    thread_local static std::shared_ptr<Response> rsp;
 };
 
 }

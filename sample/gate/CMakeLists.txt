@@ -4,8 +4,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
-set(BOOST_INCLUDE_PATH ../../cpp_component/3rdparty/boost CACHE PATH "boost include path")
-INCLUDE_DIRECTORIES(${BOOST_INCLUDE_PATH})
+set(crossguid_INCLUDE_PATH ../../cpp_component/3rdparty/crossguid/include CACHE PATH "crossguid include path")
+INCLUDE_DIRECTORIES(${crossguid_INCLUDE_PATH})
 
 set(spdlog_INCLUDE_PATH ../../cpp_component/3rdparty/spdlog/include CACHE PATH "spdlog include path")
 INCLUDE_DIRECTORIES(${spdlog_INCLUDE_PATH})
@@ -59,6 +59,17 @@ SET(header_files
 SET(SRC_LIST 
     ${DIR_SRC}
 )
+
+if (MSVC_VERSION GREATER_EQUAL "1900")
+    include(CheckCXXCompilerFlag)
+    CHECK_CXX_COMPILER_FLAG("/std:c++latest" _cpp_latest_flag_supported)
+    if (_cpp_latest_flag_supported)
+        add_compile_options("/std:c++latest")
+		add_compile_options(/wd4200)
+		add_compile_options(/wd4267)
+		add_compile_options(/wd4996)
+    endif()
+endif()
 
 ADD_EXECUTABLE(gate ${SRC_LIST} ${header_files})
 target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/libssl64MDd optimized ${LIBS_RELEASE_PATH}/libssl64MD)

@@ -28,10 +28,6 @@ INCLUDE_DIRECTORIES(${service_header_path})
 file(GLOB service_header_files ../../service/ ../../service/*.h)
 AUX_SOURCE_DIRECTORY(../../service service_DIR_SRC)
 
-set(module_header_path ..//..//module CACHE PATH "module include path")
-INCLUDE_DIRECTORIES(${module_header_path})
-file(GLOB module_header_files ../../module/ ../../module/*.h)
-
 set(log_header_path ..//..//log CACHE PATH "log include path")
 INCLUDE_DIRECTORIES(${log_header_path})
 file(GLOB log_header_files ../../log/ ../../log/*.h)
@@ -44,7 +40,6 @@ set(LIBS_RELEASE_PATH ${PROJECT_SOURCE_DIR}//..//..//lib CACHE PATH "lib release
 
 SET(header_files
     ${header_gate_files}
-    ${module_header_files}
     ${service_header_files}
     ${juggle_header_files}
     ${protocol_header_files}

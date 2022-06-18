@@ -46,11 +46,11 @@ namespace abelkhan
         public event Action on_ping;
         public void ping(IList<MsgPack.MessagePackObject> inArray){
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            rsp = new test_s2c_ping_rsp(_client_handle, _client_handle.current_hub, _cb_uuid);
+            rsp.Value = new test_s2c_ping_rsp(_client_handle, _client_handle.current_hub, _cb_uuid);
             if (on_ping != null){
                 on_ping();
             }
-            rsp = null;
+            rsp.Value = null;
         }
 
     }

@@ -571,11 +571,11 @@ namespace abelkhan
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var _hub_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             var _hub_type = ((MsgPack.MessagePackObject)inArray[2]).AsString();
-            rsp = new hub_call_hub_reg_hub_rsp(current_ch.Value, _cb_uuid);
+            rsp.Value = new hub_call_hub_reg_hub_rsp(current_ch.Value, _cb_uuid);
             if (on_reg_hub != null){
                 on_reg_hub(_hub_name, _hub_type);
             }
-            rsp = null;
+            rsp.Value = null;
         }
 
         public event Action<string, string> on_seep_client_gate;
@@ -583,11 +583,11 @@ namespace abelkhan
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var _client_uuid = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             var _gate_name = ((MsgPack.MessagePackObject)inArray[2]).AsString();
-            rsp = new hub_call_hub_seep_client_gate_rsp(current_ch.Value, _cb_uuid);
+            rsp.Value = new hub_call_hub_seep_client_gate_rsp(current_ch.Value, _cb_uuid);
             if (on_seep_client_gate != null){
                 on_seep_client_gate(_client_uuid, _gate_name);
             }
-            rsp = null;
+            rsp.Value = null;
         }
 
         public event Action<byte[]> on_hub_call_hub_mothed;
@@ -659,11 +659,11 @@ namespace abelkhan
         public event Action on_heartbeats;
         public void heartbeats(IList<MsgPack.MessagePackObject> inArray){
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            rsp = new client_call_hub_heartbeats_rsp(current_ch.Value, _cb_uuid);
+            rsp.Value = new client_call_hub_heartbeats_rsp(current_ch.Value, _cb_uuid);
             if (on_heartbeats != null){
                 on_heartbeats();
             }
-            rsp = null;
+            rsp.Value = null;
         }
 
         public event Action<byte[]> on_call_hub;

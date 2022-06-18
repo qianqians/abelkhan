@@ -30,7 +30,7 @@ namespace abelkhan
 
         private void reg_server(string type, string svr_name, string host, ushort port)
         {
-            var rsp = (abelkhan.center_reg_server_rsp)_center_module.rsp;
+            var rsp = (abelkhan.center_reg_server_rsp)_center_module.rsp.Value;
             rsp.rsp();
 
             _svrmng.for_each_hub((hubproxy _proxy) =>{
@@ -58,7 +58,7 @@ namespace abelkhan
 
         private void reg_server_mq(string type, string svr_name)
         {
-            var rsp = (abelkhan.center_reg_server_rsp)_center_module.rsp;
+            var rsp = (abelkhan.center_reg_server_rsp)_center_module.rsp.Value;
             rsp.rsp();
 
             _svrmng.for_each_hub((hubproxy _proxy) => {
@@ -86,7 +86,7 @@ namespace abelkhan
 
         private void on_reconn_reg_server(string type, string svr_name, string host, ushort port)
         {
-            var rsp = (abelkhan.center_reconn_reg_server_rsp)_center_module.rsp;
+            var rsp = (abelkhan.center_reconn_reg_server_rsp)_center_module.rsp.Value;
             rsp.rsp();
 
             _svrmng.for_each_new_hub((hubproxy _proxy) => {
@@ -113,7 +113,7 @@ namespace abelkhan
 
         private void on_reconn_reg_server_mq(string type, string svr_name)
         {
-            var rsp = (abelkhan.center_reconn_reg_server_rsp)_center_module.rsp;
+            var rsp = (abelkhan.center_reconn_reg_server_rsp)_center_module.rsp.Value;
             rsp.rsp();
 
             _svrmng.for_each_new_hub((hubproxy _proxy) => {
@@ -140,7 +140,7 @@ namespace abelkhan
 
         private void heartbeat(uint tick)
         {
-            var rsp = (abelkhan.center_heartbeat_rsp)_center_module.rsp;
+            var rsp = (abelkhan.center_heartbeat_rsp)_center_module.rsp.Value;
             rsp.rsp();
 
             var _svr_proxy = _svrmng.get_svr(_center_module.current_ch.Value);
