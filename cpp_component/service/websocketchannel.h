@@ -3,6 +3,9 @@
 
 #include <mutex>
 
+#define _WEBSOCKETPP_CPP11_INTERNAL_
+#include <asio.hpp>
+
 #include <websocketpp/config/asio.hpp>
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/connection.hpp>

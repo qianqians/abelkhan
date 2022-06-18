@@ -11,10 +11,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/lexical_cast.hpp>
+#include <crossguid/guid.hpp>
 
 #include <spdlog/spdlog.h>
 
@@ -105,7 +102,7 @@ public:
 	}
 
 	std::shared_ptr<clientproxy> reg_client(std::shared_ptr<abelkhan::Ichannel> ch) {
-		std::string cuuid = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
+		std::string cuuid = xg::newGuid().str();
 		auto _client = _client_pool.make_obj(cuuid, ch);
 
 		client_map.insert(std::make_pair(cuuid, _client));

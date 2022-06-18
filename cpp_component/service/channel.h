@@ -8,7 +8,7 @@
 #include <thread>
 #include <mutex>
 
-#include <boost/asio.hpp>
+#include <asio.hpp>
 #include <msgpack11.hpp>
 
 #include <signals.h>
@@ -24,7 +24,7 @@ namespace service
 
 class channel : public abelkhan::Ichannel, public std::enable_shared_from_this<channel> {
 public:
-	channel(std::shared_ptr<boost::asio::ip::tcp::socket> _s)
+	channel(std::shared_ptr<asio::ip::tcp::socket> _s)
 	{
 		s = _s;
 		is_close = false;
@@ -35,7 +35,7 @@ public:
 		ch_encrypt_decrypt_ondata = std::make_shared<channel_encrypt_decrypt_ondata>(shared_from_this());
 
 		memset(read_buff, 0, 8 * 1024);
-		s->async_read_some(boost::asio::buffer(read_buff, 8 * 1024), std::bind(&channel::onRecv, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
+		s->async_read_some(asio::buffer(read_buff, 8 * 1024), std::bind(&channel::onRecv, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
 	}
 
 	void set_xor_key_crypt() {
@@ -57,7 +57,7 @@ public:
 	concurrent::signals<void(std::shared_ptr<channel>)> sigdisconn;
 
 private:
-	static void onRecv(std::shared_ptr<channel> ch, const boost::system::error_code& error, std::size_t bytes_transferred){
+	static void onRecv(std::shared_ptr<channel> ch, const asio::error_code& error, std::size_t bytes_transferred){
 		if (ch->is_close) {
 			return;
 		}
@@ -77,7 +77,7 @@ private:
 		ch->ch_encrypt_decrypt_ondata->recv(ch->read_buff, bytes_transferred);
 
 		memset(ch->read_buff, 0, 8 * 1024);
-		ch->s->async_read_some(boost::asio::buffer(ch->read_buff, 8 * 1024), std::bind(&channel::onRecv, ch, std::placeholders::_1, std::placeholders::_2));
+		ch->s->async_read_some(asio::buffer(ch->read_buff, 8 * 1024), std::bind(&channel::onRecv, ch, std::placeholders::_1, std::placeholders::_2));
 	}
 
 public:
@@ -109,10 +109,10 @@ public:
 			size_t offset = 0;
 			while (offset < len) {
 				try {
-					offset += s->send(boost::asio::buffer(&data[offset], len - offset));
+					offset += s->send(asio::buffer(&data[offset], len - offset));
 				}
-				catch (boost::system::system_error e) {
-					if (e.code() == boost::asio::error::would_block) {
+				catch (asio::system_error e) {
+					if (e.code() == asio::error::would_block) {
 						std::this_thread::yield();
 						continue;
 					}
@@ -129,7 +129,7 @@ public:
 	}
 
 private:
-	std::shared_ptr<boost::asio::ip::tcp::socket> s;
+	std::shared_ptr<asio::ip::tcp::socket> s;
 
 	std::mutex _mutex;
 

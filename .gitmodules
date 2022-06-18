@@ -10,3 +10,6 @@
 [submodule "cpp_component/3rdparty/hiredis"]
 	path = cpp_component/3rdparty/hiredis
 	url = git@github.com:redis/hiredis.git
+[submodule "cpp_component/3rdparty/crossguid"]
+	path = cpp_component/3rdparty/crossguid
+	url = git@github.com:graeme-hill/crossguid.git

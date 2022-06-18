@@ -3,7 +3,7 @@
 
 #include <functional>
 
-#include <boost/asio.hpp>
+#include <asio.hpp>
 
 #include "objpool.h"
 #include "channel.h"
@@ -14,25 +14,25 @@ namespace service
 
 class acceptservice {
 public:
-	acceptservice(std::string ip, short port, std::shared_ptr<boost::asio::io_service> service) : _acceptor(*service){
+	acceptservice(std::string ip, short port, std::shared_ptr<asio::io_service> service) : _acceptor(*service){
 
 		_service = service;
 
-		boost::asio::ip::tcp::endpoint ep(boost::asio::ip::address::from_string("0.0.0.0"), port);
+		asio::ip::tcp::endpoint ep(asio::ip::address::from_string("0.0.0.0"), port);
 		_acceptor.open(ep.protocol());
 
-		boost::asio::socket_base::reuse_address opt(true);
+		asio::socket_base::reuse_address opt(true);
 		_acceptor.set_option(opt);
 
 		_acceptor.bind(ep);
 		_acceptor.listen();
 
-		auto s = std::make_shared<boost::asio::ip::tcp::socket>(*service);
+		auto s = std::make_shared<asio::ip::tcp::socket>(*service);
 		_acceptor.async_accept(*s, std::bind(&acceptservice::onAccept, this, s, std::placeholders::_1));
 	}
 
 	concurrent::signals<void(std::shared_ptr<abelkhan::Ichannel>)> sigchannelconnect;
-	void onAccept(std::shared_ptr<boost::asio::ip::tcp::socket> s, boost::system::error_code ec) {
+	void onAccept(std::shared_ptr<asio::ip::tcp::socket> s, asio::error_code ec) {
 		if (ec) {
 			s->close();
 		}
@@ -45,7 +45,7 @@ public:
 			sigchannelconnect.emit(ch);
 		}
 
-		s = std::make_shared<boost::asio::ip::tcp::socket>(*_service);
+		s = std::make_shared<asio::ip::tcp::socket>(*_service);
 		_acceptor.async_accept(*s, std::bind(&acceptservice::onAccept, this, s, std::placeholders::_1));
 	}
 
@@ -65,8 +65,8 @@ public:
 	}
 
 private:
-	std::shared_ptr<boost::asio::io_service> _service;
-	boost::asio::ip::tcp::acceptor _acceptor;
+	std::shared_ptr<asio::io_service> _service;
+	asio::ip::tcp::acceptor _acceptor;
 
 	service::objpool<channel> _ch_pool;
 

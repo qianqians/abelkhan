@@ -1,10 +1,7 @@
 #include "msec_time.h"
-#include <boost/date_time.hpp>
+#include <chrono>
 
 int64_t msec_time()
 {
-	boost::posix_time::ptime epoch(boost::gregorian::date(1970, boost::gregorian::Jan, 1));
-	boost::posix_time::time_duration time_from_epoch = boost::posix_time::microsec_clock::universal_time() - epoch;
-
-	return time_from_epoch.total_milliseconds();
+	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }

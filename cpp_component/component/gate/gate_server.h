@@ -19,14 +19,12 @@
 #include "hubsvrmanager.h"
 #include "timer_handle.h"
 
-namespace boost {
 namespace asio {
 
 class io_context;
 typedef io_context io_service;
 
 } // namespace asio
-} // namespace boost
 
 namespace service {
 
@@ -89,7 +87,7 @@ private:
 
 	std::string center_ip;
 	short center_port;
-	std::shared_ptr<boost::asio::io_service> io_service;
+	std::shared_ptr<asio::io_service> io_service;
 	std::shared_ptr<service::connectservice> _connectnetworkservice;
 	std::shared_ptr<centerproxy> _centerproxy;
 

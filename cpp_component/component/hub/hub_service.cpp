@@ -64,7 +64,7 @@ void hub_service::init() {
 		_log::InitLog(file_path, spdlog::level::level_enum::err);
 	}
 
-	_io_service = std::make_shared<boost::asio::io_service>();
+	_io_service = std::make_shared<asio::io_service>();
 
 	if (_config->has_key("host") && _config->has_key("port")) {
 		if (enet_initialize() != 0)

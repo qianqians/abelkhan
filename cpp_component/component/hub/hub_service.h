@@ -23,14 +23,12 @@
 #include "gatemanager.h"
 #include "dbproxyproxy.h"
 
-namespace boost {
 namespace asio {
 
 class io_context;
 typedef io_context io_service;
 
 } // namespace asio
-} // namespace boost
 
 namespace service {
 
@@ -137,7 +135,7 @@ private:
 	std::shared_ptr<service::enetacceptservice> _hub_service;
 	std::shared_ptr<service::redismqservice> _hub_redismq_service;
 
-	std::shared_ptr<boost::asio::io_service> _io_service;
+	std::shared_ptr<asio::io_service> _io_service;
 	std::shared_ptr<service::connectservice> _center_service;
 	std::shared_ptr<service::connectservice> _dbproxy_service;
 	std::shared_ptr<service::acceptservice> _client_tcp_service;

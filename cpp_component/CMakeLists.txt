@@ -14,8 +14,11 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 
-set(BOOST_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//3rdparty//boost CACHE PATH "boost include path")
-INCLUDE_DIRECTORIES(${BOOST_INCLUDE_PATH})
+set(asio_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//3rdparty//asio//include CACHE PATH "asio include path")
+INCLUDE_DIRECTORIES(${asio_INCLUDE_PATH})
+
+set(crossguid_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//3rdparty//crossguid//include CACHE PATH "crossguid include path")
+INCLUDE_DIRECTORIES(${crossguid_INCLUDE_PATH})
 
 set(websocketpp_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//3rdparty//websocketpp CACHE PATH "websocketpp include path")
 INCLUDE_DIRECTORIES(${websocketpp_INCLUDE_PATH})

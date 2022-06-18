@@ -9,10 +9,7 @@
 
 #include <functional>
 
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/lexical_cast.hpp>
+#include <crossguid/guid.hpp>
 
 #include <spdlog/spdlog.h>
 #include <bson/Value.h>
@@ -164,7 +161,7 @@ public:
 			query.resize(len);
 			memcpy(query.data(), _query_str.data(), len);
 
-			auto callbackid = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
+			auto callbackid = xg::newGuid().str();
 			_dbproxy->_dbproxy_caller->get_object_info(_db, _collection, query, 0, 0, "", false, callbackid);
 			dbproxyproxy::get_object_info_callback[callbackid] = cb;
 			dbproxyproxy::get_object_info_end_callback[callbackid] = end;
@@ -177,7 +174,7 @@ public:
 			query.resize(len);
 			memcpy(query.data(), _query_str.data(), len);
 
-			auto callbackid = boost::lexical_cast<std::string>(boost::uuids::random_generator()());
+			auto callbackid = xg::newGuid().str();
 			_dbproxy->_dbproxy_caller->get_object_info(_db, _collection, query, _skip, _limit, _sort, _Ascending_, callbackid);
 			dbproxyproxy::get_object_info_callback[callbackid] = cb;
 			dbproxyproxy::get_object_info_end_callback[callbackid] = end;

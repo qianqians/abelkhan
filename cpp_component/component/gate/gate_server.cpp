@@ -3,11 +3,6 @@
  * 2016-7-5
  * gate.cpp
  */
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/lexical_cast.hpp>
-
 #include <acceptservice.h>
 #include <connectservice.h>
 #include <enetacceptservice.h>
@@ -93,7 +88,7 @@ void gate_service::init() {
 		spdlog::error("undefined hub msg listen model!");
 	}
 
-	io_service = std::make_shared<boost::asio::io_service>();
+	io_service = std::make_shared<asio::io_service>();
 	_connectnetworkservice = std::make_shared<service::connectservice>(io_service);
 	center_ip = _center_config->get_value_string("host");
 	center_port = (short)_center_config->get_value_int("port");
