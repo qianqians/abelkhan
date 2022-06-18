@@ -31,6 +31,11 @@ void gateproxy::reg_hub() {
 		spdlog::trace("hub reg_hub to gate:{0} timeout", _gate_name);
 	});
 }
+
+std::shared_ptr<abelkhan::hub_call_gate_reverse_reg_client_hub_cb> gateproxy::reverse_reg_client_hub(std::string client_uuid) {
+	return _hub_call_gate_caller->reverse_reg_client_hub(client_uuid);
+}
+
 void gateproxy::disconnect_client(std::string& cuuid) {
 	_hub_call_gate_caller->disconnect_client(cuuid);
 }
@@ -162,15 +167,17 @@ void gatemanager::client_connect(std::string client_uuid, std::shared_ptr<abelkh
 	clients[client_uuid] = it->second;
 }
 
-void gatemanager::client_seep(std::string client_uuid, std::string gate_name) {
+std::shared_ptr<gateproxy> gatemanager::client_seep(std::string client_uuid, std::string gate_name) {
 	auto it = gates.find(gate_name);
 	if (it == gates.end()) {
 		spdlog::trace("unreg gate name:{0}!", gate_name);
-		return;
+		return nullptr;
 	}
 
 	spdlog::trace("client_seep client:{0}", client_uuid);
 	clients[client_uuid] = it->second;
+
+	return it->second;
 }
 
 void gatemanager::client_disconnect(std::string client_uuid) {

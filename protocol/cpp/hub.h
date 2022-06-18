@@ -4,6 +4,7 @@
 #include <abelkhan.h>
 #include <signals.h>
 
+#include "error.h"
 
 namespace abelkhan
 {
@@ -87,10 +88,10 @@ namespace abelkhan
         hub_call_hub_seep_client_gate_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_hub_rsp_cb> _module_rsp_cb);
     public:
         concurrent::signals<void()> sig_seep_client_gate_cb;
-        concurrent::signals<void()> sig_seep_client_gate_err;
+        concurrent::signals<void(framework_error)> sig_seep_client_gate_err;
         concurrent::signals<void()> sig_seep_client_gate_timeout;
 
-        std::shared_ptr<hub_call_hub_seep_client_gate_cb> callBack(std::function<void()> cb, std::function<void()> err);
+        std::shared_ptr<hub_call_hub_seep_client_gate_cb> callBack(std::function<void()> cb, std::function<void(framework_error err)> err);
         void timeout(uint64_t tick, std::function<void()> timeout_cb);
     };
 
@@ -155,9 +156,10 @@ namespace abelkhan
 
         void seep_client_gate_err(const msgpack11::MsgPack::array& inArray){
             auto uuid = inArray[0].uint64_value();
+            auto _err = (framework_error)inArray[1].int32_value();
             auto rsp = try_get_and_del_seep_client_gate_cb(uuid);
             if (rsp != nullptr){
-                rsp->sig_seep_client_gate_err.emit();
+                rsp->sig_seep_client_gate_err.emit(_err);
             }
         }
 
@@ -450,9 +452,10 @@ namespace abelkhan
             call_module_method("hub_call_hub_rsp_cb_seep_client_gate_rsp", _argv_78da410b_1845_3253_9a34_d7cda82883b6);
         }
 
-        void err(){
+        void err(framework_error err){
             msgpack11::MsgPack::array _argv_78da410b_1845_3253_9a34_d7cda82883b6;
             _argv_78da410b_1845_3253_9a34_d7cda82883b6.push_back(uuid_3068725f_71fe_3459_a18d_b3f1dc698c98);
+            _argv_78da410b_1845_3253_9a34_d7cda82883b6.push_back((int)err);
             call_module_method("hub_call_hub_rsp_cb_seep_client_gate_err", _argv_78da410b_1845_3253_9a34_d7cda82883b6);
         }
 

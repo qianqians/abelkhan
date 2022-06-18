@@ -33,6 +33,11 @@ namespace hub
 			});
 		}
 
+		public abelkhan.hub_call_gate_reverse_reg_client_hub_cb reverse_reg_client_hub(string client_uuid)
+        {
+			return _hub_call_gate_caller.reverse_reg_client_hub(client_uuid);
+		}
+
         public void disconnect_client(String uuid)
         {
 			_hub_call_gate_caller.disconnect_client(uuid);

@@ -45,6 +45,8 @@ public:
 
 	void reg_hub();
 
+	std::shared_ptr<abelkhan::hub_call_gate_reverse_reg_client_hub_cb> reverse_reg_client_hub(std::string client_uuid);
+
 	void disconnect_client(std::string& cuuid);
 
 	void forward_hub_call_client(const std::string& cuuid, const std::vector<uint8_t>& rpc_argv);
@@ -85,7 +87,7 @@ public:
 
 	void client_connect(std::string client_uuid, std::shared_ptr<abelkhan::Ichannel> gate_ch);
 
-	void client_seep(std::string client_uuid, std::string gate_name);
+	std::shared_ptr<gateproxy> client_seep(std::string client_uuid, std::string gate_name);
 
 	void client_disconnect(std::string client_uuid);
 

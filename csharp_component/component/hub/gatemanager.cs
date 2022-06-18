@@ -203,16 +203,18 @@ namespace hub
             log.log.trace("client {0} connected", client_uuid);
         }
 
-        public void client_seep(string client_uuid, string gate_name)
+        public gateproxy client_seep(string client_uuid, string gate_name)
         {
             if (!gates.TryGetValue(gate_name, out gateproxy _proxy))
             {
                 log.log.err("invaild gate name:{0}", gate_name);
-                return;
+                return null;
             }
             clients[client_uuid] = _proxy;
 
             log.log.trace("client {0} seep!", client_uuid);
+
+            return _proxy;
         }
 
         public event Action<string> clientDisconnect;

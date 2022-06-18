@@ -66,5 +66,25 @@ void hub_call_gate_reg_hub_cb::timeout(uint64_t tick, std::function<void()> time
     sig_reg_hub_timeout.connect(timeout_cb);
 }
 
+hub_call_gate_reverse_reg_client_hub_cb::hub_call_gate_reverse_reg_client_hub_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_gate_rsp_cb> _module_rsp_cb) {
+    cb_uuid = _cb_uuid;
+    module_rsp_cb = _module_rsp_cb;
+}
+
+std::shared_ptr<hub_call_gate_reverse_reg_client_hub_cb> hub_call_gate_reverse_reg_client_hub_cb::callBack(std::function<void()> cb, std::function<void(framework_error err)> err) {
+    sig_reverse_reg_client_hub_cb.connect(cb);
+    sig_reverse_reg_client_hub_err.connect(err);
+    return shared_from_this();
+}
+
+void hub_call_gate_reverse_reg_client_hub_cb::timeout(uint64_t tick, std::function<void()> timeout_cb) {
+    auto _module_rsp_cb = module_rsp_cb;
+    auto _cb_uuid = cb_uuid;
+    TinyTimer::add_timer(tick, [_module_rsp_cb, _cb_uuid](){
+        _module_rsp_cb->reverse_reg_client_hub_timeout(_cb_uuid);
+    });
+    sig_reverse_reg_client_hub_timeout.connect(timeout_cb);
+}
+
 
 }

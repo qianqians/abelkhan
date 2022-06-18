@@ -31,7 +31,7 @@ hub_call_hub_seep_client_gate_cb::hub_call_hub_seep_client_gate_cb(uint64_t _cb_
     module_rsp_cb = _module_rsp_cb;
 }
 
-std::shared_ptr<hub_call_hub_seep_client_gate_cb> hub_call_hub_seep_client_gate_cb::callBack(std::function<void()> cb, std::function<void()> err) {
+std::shared_ptr<hub_call_hub_seep_client_gate_cb> hub_call_hub_seep_client_gate_cb::callBack(std::function<void()> cb, std::function<void(framework_error err)> err) {
     sig_seep_client_gate_cb.connect(cb);
     sig_seep_client_gate_err.connect(err);
     return shared_from_this();

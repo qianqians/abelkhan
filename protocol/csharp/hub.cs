@@ -118,10 +118,10 @@ namespace abelkhan
         }
 
         public event Action on_seep_client_gate_cb;
-        public event Action on_seep_client_gate_err;
+        public event Action<framework_error> on_seep_client_gate_err;
         public event Action on_seep_client_gate_timeout;
 
-        public hub_call_hub_seep_client_gate_cb callBack(Action cb, Action err)
+        public hub_call_hub_seep_client_gate_cb callBack(Action cb, Action<framework_error> err)
         {
             on_seep_client_gate_cb += cb;
             on_seep_client_gate_err += err;
@@ -144,11 +144,11 @@ namespace abelkhan
             }
         }
 
-        public void call_err()
+        public void call_err(framework_error err)
         {
             if (on_seep_client_gate_err != null)
             {
-                on_seep_client_gate_err();
+                on_seep_client_gate_err(err);
             }
         }
 
@@ -223,10 +223,11 @@ namespace abelkhan
 
         public void seep_client_gate_err(IList<MsgPack.MessagePackObject> inArray){
             var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _err = (framework_error)((MsgPack.MessagePackObject)inArray[1]).AsInt32();
             var rsp = try_get_and_del_seep_client_gate_cb(uuid);
             if (rsp != null)
             {
-                rsp.call_err();
+                rsp.call_err(_err);
             }
         }
 
@@ -546,9 +547,10 @@ namespace abelkhan
             call_module_method("hub_call_hub_rsp_cb_seep_client_gate_rsp", _argv_78da410b_1845_3253_9a34_d7cda82883b6);
         }
 
-        public void err(){
+        public void err(framework_error err_ad2710a2_3dd2_3a8f_a4c8_a7ebbe1df696){
             var _argv_78da410b_1845_3253_9a34_d7cda82883b6 = new ArrayList();
             _argv_78da410b_1845_3253_9a34_d7cda82883b6.Add(uuid_3068725f_71fe_3459_a18d_b3f1dc698c98);
+            _argv_78da410b_1845_3253_9a34_d7cda82883b6.Add(err_ad2710a2_3dd2_3a8f_a4c8_a7ebbe1df696);
             call_module_method("hub_call_hub_rsp_cb_seep_client_gate_err", _argv_78da410b_1845_3253_9a34_d7cda82883b6);
         }
 

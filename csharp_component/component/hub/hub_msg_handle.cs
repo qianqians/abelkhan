@@ -34,7 +34,22 @@ namespace hub
         {
             log.log.trace("seep_client_gate client_uuid:{0}, gate_name:{1}!", client_uuid, gate_name);
 
-            _gatemanager.client_seep(client_uuid, gate_name);
+            var rsp = (abelkhan.hub_call_hub_seep_client_gate_rsp)_hub_call_hub_module.rsp;
+            var _proxy = _gatemanager.client_seep(client_uuid, gate_name);
+            if (_proxy != null)
+            {
+                _proxy.reverse_reg_client_hub(client_uuid).callBack(() => {
+                    rsp.rsp();
+                }, (err) => {
+                    rsp.err(err);
+                }).timeout(1000, () => {
+                    rsp.err(abelkhan.framework_error.enum_framework_timeout);
+                });
+            }
+            else
+            {
+                rsp.err(abelkhan.framework_error.enum_framework_gate_exception);
+            }
         }
 
         public void hub_call_hub_mothed(byte[] rpc_argvs)

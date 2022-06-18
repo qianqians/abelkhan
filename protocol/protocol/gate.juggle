@@ -1,3 +1,5 @@
+import error
+
 struct hub_info{
 	string hub_name;
 	string hub_type;
@@ -16,6 +18,8 @@ module client_call_gate{
 module hub_call_gate{
 
 	reg_hub req(string hub_name, string hub_type) rsp() err();
+	
+	reverse_reg_client_hub req(string client_uuid) rsp() err(framework_error err);
 
 	disconnect_client ntf(string client_uuid);
 

@@ -36,6 +36,7 @@ public:
 		_hub_call_gate_module = std::make_shared<abelkhan::hub_call_gate_module>();
 		_hub_call_gate_module->Init(service::_modulemng);
 		_hub_call_gate_module->sig_reg_hub.connect(std::bind(&hub_svr_msg_handle::reg_hub, this, std::placeholders::_1, std::placeholders::_2));
+		_hub_call_gate_module->sig_reverse_reg_client_hub.connect(std::bind(&hub_svr_msg_handle::reverse_reg_client_hub, this, std::placeholders::_1));
 		_hub_call_gate_module->sig_disconnect_client.connect(std::bind(&hub_svr_msg_handle::disconnect_client, this, std::placeholders::_1));
 		_hub_call_gate_module->sig_forward_hub_call_client.connect(std::bind(&hub_svr_msg_handle::forward_hub_call_client, this, std::placeholders::_1, std::placeholders::_2));
 		_hub_call_gate_module->sig_forward_hub_call_group_client.connect(std::bind(&hub_svr_msg_handle::forward_hub_call_group_client, this, std::placeholders::_1, std::placeholders::_2));
@@ -52,9 +53,24 @@ public:
 		rsp->rsp();
 	}
 
+	void reverse_reg_client_hub(std::string client_uuid) {
+		auto rsp = std::static_pointer_cast<abelkhan::hub_call_gate_reverse_reg_client_hub_rsp>(_hub_call_gate_module->rsp);
+		auto proxy = _clientmanager->get_client(client_uuid);
+		if (proxy) {
+			auto hub_proxy = _hubsvrmanager->get_hub(_hub_call_gate_module->current_ch);
+			proxy->conn_hub(hub_proxy);
+			rsp->rsp();
+		}
+		else {
+			rsp->err(abelkhan::framework_error::enum_framework_client_not_exist);
+		}
+	}
+
 	void disconnect_client(std::string cuuid) {
 		auto proxy = _clientmanager->get_client(cuuid);
-		proxy->_ch->disconnect();
+		if (proxy) {
+			proxy->_ch->disconnect();
+		}
 	}
 
 	void forward_hub_call_client(std::string cuuid, std::vector<uint8_t> rpc_argv) {

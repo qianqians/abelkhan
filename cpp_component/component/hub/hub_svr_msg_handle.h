@@ -45,7 +45,20 @@ public:
 	}
 
 	void client_seep(std::string client_uuid, std::string gate_name) {
-		_gatemng->client_seep(client_uuid, gate_name);
+		auto rsp = std::static_pointer_cast<abelkhan::hub_call_hub_seep_client_gate_rsp>(_hub_call_hub_module->rsp);
+		if (auto _gateproxy = _gatemng->client_seep(client_uuid, gate_name)) {
+			_gateproxy->reverse_reg_client_hub(client_uuid)->callBack([rsp]() {
+				rsp->rsp();
+			}, [rsp](abelkhan::framework_error err) {
+				rsp->err(err);
+			})->timeout(1000, [rsp]() {
+				rsp->err(abelkhan::framework_error::enum_framework_timeout);
+			});
+		}
+		else {
+			rsp->err(abelkhan::framework_error::enum_framework_gate_exception);
+		}
+
 	}
 
 	void hub_call_hub_mothed(std::vector<uint8_t> rpc_argvs) {
