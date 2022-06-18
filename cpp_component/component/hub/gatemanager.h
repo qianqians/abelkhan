@@ -47,6 +47,8 @@ public:
 
 	std::shared_ptr<abelkhan::hub_call_gate_reverse_reg_client_hub_cb> reverse_reg_client_hub(std::string client_uuid);
 
+	void unreg_client_hub(std::string client_uuid);
+
 	void disconnect_client(std::string& cuuid);
 
 	void forward_hub_call_client(const std::string& cuuid, const std::vector<uint8_t>& rpc_argv);

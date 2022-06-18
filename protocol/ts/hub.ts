@@ -1,4 +1,5 @@
 import * as abelkhan from "./abelkhan";
+import * as error from("./error");
 /*this enum code is codegen by abelkhan codegen for ts*/
 
 /*this struct code is codegen by abelkhan codegen for typescript*/
@@ -76,7 +77,7 @@ export class hub_call_hub_seep_client_gate_cb{
     private module_rsp_cb : hub_call_hub_rsp_cb;
 
     public event_seep_client_gate_handle_cb : ()=>void | null;
-    public event_seep_client_gate_handle_err : ()=>void | null;
+    public event_seep_client_gate_handle_err : (err:error.framework_error)=>void | null;
     public event_seep_client_gate_handle_timeout : ()=>void | null;
     constructor(_cb_uuid : number, _module_rsp_cb : hub_call_hub_rsp_cb){
         this.cb_uuid = _cb_uuid;
@@ -86,7 +87,7 @@ export class hub_call_hub_seep_client_gate_cb{
         this.event_seep_client_gate_handle_timeout = null;
     }
 
-    callBack(_cb:()=>void, _err:()=>void)
+    callBack(_cb:()=>void, _err:(err:error.framework_error)=>void)
     {
         this.event_seep_client_gate_handle_cb = _cb;
         this.event_seep_client_gate_handle_err = _err;
@@ -159,6 +160,7 @@ export class hub_call_hub_rsp_cb extends abelkhan.Imodule {
     public seep_client_gate_err(inArray:any[]){
         let uuid = inArray[0];
         let _argv_78da410b_1845_3253_9a34_d7cda82883b6:any[] = [];
+        _argv_78da410b_1845_3253_9a34_d7cda82883b6.push(inArray[1]);
         var rsp = this.try_get_and_del_seep_client_gate_cb(uuid);
         if (rsp && rsp.event_seep_client_gate_handle_err) {
             rsp.event_seep_client_gate_handle_err.apply(null, _argv_78da410b_1845_3253_9a34_d7cda82883b6);
@@ -442,8 +444,9 @@ export class hub_call_hub_seep_client_gate_rsp extends abelkhan.Icaller {
         this.call_module_method("hub_call_hub_rsp_cb_seep_client_gate_rsp", _argv_78da410b_1845_3253_9a34_d7cda82883b6);
     }
 
-    public err(){
+    public err(err:error.framework_error){
         let _argv_78da410b_1845_3253_9a34_d7cda82883b6:any[] = [this.uuid_3068725f_71fe_3459_a18d_b3f1dc698c98];
+        _argv_78da410b_1845_3253_9a34_d7cda82883b6.push(err);
         this.call_module_method("hub_call_hub_rsp_cb_seep_client_gate_err", _argv_78da410b_1845_3253_9a34_d7cda82883b6);
     }
 

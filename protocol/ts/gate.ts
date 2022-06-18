@@ -1,10 +1,6 @@
 import * as abelkhan from "./abelkhan";
+import * as error from("./error");
 /*this enum code is codegen by abelkhan codegen for ts*/
-
-export enum hub_gate_error{
-    enum_hub_gate_success = 0,
-    enum_hub_gate_client_not_exist = 1
-}
 
 /*this struct code is codegen by abelkhan codegen for typescript*/
 export class hub_info
@@ -259,7 +255,7 @@ export class hub_call_gate_reverse_reg_client_hub_cb{
     private module_rsp_cb : hub_call_gate_rsp_cb;
 
     public event_reverse_reg_client_hub_handle_cb : ()=>void | null;
-    public event_reverse_reg_client_hub_handle_err : (err:hub_gate_error)=>void | null;
+    public event_reverse_reg_client_hub_handle_err : (err:error.framework_error)=>void | null;
     public event_reverse_reg_client_hub_handle_timeout : ()=>void | null;
     constructor(_cb_uuid : number, _module_rsp_cb : hub_call_gate_rsp_cb){
         this.cb_uuid = _cb_uuid;
@@ -269,7 +265,7 @@ export class hub_call_gate_reverse_reg_client_hub_cb{
         this.event_reverse_reg_client_hub_handle_timeout = null;
     }
 
-    callBack(_cb:()=>void, _err:(err:hub_gate_error)=>void)
+    callBack(_cb:()=>void, _err:(err:error.framework_error)=>void)
     {
         this.event_reverse_reg_client_hub_handle_cb = _cb;
         this.event_reverse_reg_client_hub_handle_err = _err;
@@ -404,6 +400,12 @@ export class hub_call_gate_caller extends abelkhan.Icaller {
             rsp_cb_hub_call_gate_handle.map_reverse_reg_client_hub.set(uuid_5352b179_7aef_5875_a08f_06381972529f, cb_reverse_reg_client_hub_obj);
         }
         return cb_reverse_reg_client_hub_obj;
+    }
+
+    public unreg_client_hub(client_uuid:string){
+        let _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae:any[] = [];
+        _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae.push(client_uuid);
+        this.call_module_method("hub_call_gate_unreg_client_hub", _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae);
     }
 
     public disconnect_client(client_uuid:string){
@@ -560,7 +562,7 @@ export class hub_call_gate_reverse_reg_client_hub_rsp extends abelkhan.Icaller {
         this.call_module_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_rsp", _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c);
     }
 
-    public err(err:hub_gate_error){
+    public err(err:error.framework_error){
         let _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c:any[] = [this.uuid_ef84ff12_6e4a_39cd_896e_27f3ac82fa1a];
         _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c.push(err);
         this.call_module_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_err", _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c);
@@ -575,6 +577,7 @@ export class hub_call_gate_module extends abelkhan.Imodule {
         this.modules = modules;
         this.modules.reg_method("hub_call_gate_reg_hub", [this, this.reg_hub.bind(this)]);
         this.modules.reg_method("hub_call_gate_reverse_reg_client_hub", [this, this.reverse_reg_client_hub.bind(this)]);
+        this.modules.reg_method("hub_call_gate_unreg_client_hub", [this, this.unreg_client_hub.bind(this)]);
         this.modules.reg_method("hub_call_gate_disconnect_client", [this, this.disconnect_client.bind(this)]);
         this.modules.reg_method("hub_call_gate_forward_hub_call_client", [this, this.forward_hub_call_client.bind(this)]);
         this.modules.reg_method("hub_call_gate_forward_hub_call_group_client", [this, this.forward_hub_call_group_client.bind(this)]);
@@ -582,6 +585,7 @@ export class hub_call_gate_module extends abelkhan.Imodule {
 
         this.cb_reg_hub = null;
         this.cb_reverse_reg_client_hub = null;
+        this.cb_unreg_client_hub = null;
         this.cb_disconnect_client = null;
         this.cb_forward_hub_call_client = null;
         this.cb_forward_hub_call_group_client = null;
@@ -611,6 +615,15 @@ export class hub_call_gate_module extends abelkhan.Imodule {
             this.cb_reverse_reg_client_hub.apply(null, _argv_);
         }
         this.rsp = null;
+    }
+
+    public cb_unreg_client_hub : (client_uuid:string)=>void | null;
+    unreg_client_hub(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        if (this.cb_unreg_client_hub){
+            this.cb_unreg_client_hub.apply(null, _argv_);
+        }
     }
 
     public cb_disconnect_client : (client_uuid:string)=>void | null;

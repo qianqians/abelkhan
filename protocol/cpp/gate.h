@@ -380,6 +380,12 @@ namespace abelkhan
             return cb_reverse_reg_client_hub_obj;
         }
 
+        void unreg_client_hub(std::string client_uuid){
+            msgpack11::MsgPack::array _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae;
+            _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae.push_back(client_uuid);
+            call_module_method("hub_call_gate_unreg_client_hub", _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae);
+        }
+
         void disconnect_client(std::string client_uuid){
             msgpack11::MsgPack::array _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85;
             _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.push_back(client_uuid);
@@ -561,6 +567,7 @@ namespace abelkhan
         void Init(std::shared_ptr<modulemng> _modules){
             _modules->reg_method("hub_call_gate_reg_hub", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::reg_hub, this, std::placeholders::_1)));
             _modules->reg_method("hub_call_gate_reverse_reg_client_hub", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::reverse_reg_client_hub, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_gate_unreg_client_hub", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::unreg_client_hub, this, std::placeholders::_1)));
             _modules->reg_method("hub_call_gate_disconnect_client", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::disconnect_client, this, std::placeholders::_1)));
             _modules->reg_method("hub_call_gate_forward_hub_call_client", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::forward_hub_call_client, this, std::placeholders::_1)));
             _modules->reg_method("hub_call_gate_forward_hub_call_group_client", std::make_tuple(shared_from_this(), std::bind(&hub_call_gate_module::forward_hub_call_group_client, this, std::placeholders::_1)));
@@ -584,6 +591,12 @@ namespace abelkhan
             rsp = std::make_shared<hub_call_gate_reverse_reg_client_hub_rsp>(current_ch, _cb_uuid);
             sig_reverse_reg_client_hub.emit(_client_uuid);
             rsp = nullptr;
+        }
+
+        concurrent::signals<void(std::string)> sig_unreg_client_hub;
+        void unreg_client_hub(const msgpack11::MsgPack::array& inArray){
+            auto _client_uuid = inArray[0].string_value();
+            sig_unreg_client_hub.emit(_client_uuid);
         }
 
         concurrent::signals<void(std::string)> sig_disconnect_client;

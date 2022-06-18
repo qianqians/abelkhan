@@ -537,6 +537,12 @@ namespace abelkhan
             return cb_reverse_reg_client_hub_obj;
         }
 
+        public void unreg_client_hub(string client_uuid){
+            var _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae = new ArrayList();
+            _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae.Add(client_uuid);
+            call_module_method("hub_call_gate_unreg_client_hub", _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae);
+        }
+
         public void disconnect_client(string client_uuid){
             var _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85 = new ArrayList();
             _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.Add(client_uuid);
@@ -708,6 +714,7 @@ namespace abelkhan
             modules = _modules;
             modules.reg_method("hub_call_gate_reg_hub", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub));
             modules.reg_method("hub_call_gate_reverse_reg_client_hub", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reverse_reg_client_hub));
+            modules.reg_method("hub_call_gate_unreg_client_hub", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, unreg_client_hub));
             modules.reg_method("hub_call_gate_disconnect_client", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, disconnect_client));
             modules.reg_method("hub_call_gate_forward_hub_call_client", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, forward_hub_call_client));
             modules.reg_method("hub_call_gate_forward_hub_call_group_client", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, forward_hub_call_group_client));
@@ -735,6 +742,14 @@ namespace abelkhan
                 on_reverse_reg_client_hub(_client_uuid);
             }
             rsp = null;
+        }
+
+        public event Action<string> on_unreg_client_hub;
+        public void unreg_client_hub(IList<MsgPack.MessagePackObject> inArray){
+            var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            if (on_unreg_client_hub != null){
+                on_unreg_client_hub(_client_uuid);
+            }
         }
 
         public event Action<string> on_disconnect_client;

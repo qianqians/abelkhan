@@ -38,7 +38,12 @@ namespace hub
 			return _hub_call_gate_caller.reverse_reg_client_hub(client_uuid);
 		}
 
-        public void disconnect_client(String uuid)
+		public void unreg_client_hub(string client_uuid)
+        {
+			_hub_call_gate_caller.unreg_client_hub(client_uuid);
+		}
+
+		public void disconnect_client(String uuid)
         {
 			_hub_call_gate_caller.disconnect_client(uuid);
         }

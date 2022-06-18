@@ -20,6 +20,8 @@ module hub_call_gate{
 	reg_hub req(string hub_name, string hub_type) rsp() err();
 	
 	reverse_reg_client_hub req(string client_uuid) rsp() err(framework_error err);
+	
+	unreg_client_hub ntf(string client_uuid);
 
 	disconnect_client ntf(string client_uuid);
 

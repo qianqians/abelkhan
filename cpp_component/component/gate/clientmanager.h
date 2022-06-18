@@ -55,6 +55,14 @@ public:
 		}
 	}
 
+	void unreg_hub(std::shared_ptr<hubproxy> hub_proxy) {
+		std::lock_guard<std::mutex> l(_conn_hubproxys_mutex);
+		auto it = std::find(conn_hubproxys.begin(), conn_hubproxys.end(), hub_proxy);
+		if (it == conn_hubproxys.end()) {
+			conn_hubproxys.erase(it);
+		}
+	}
+
 	void ntf_cuuid() {
 		_gate_call_client_caller->ntf_cuuid(_cuuid);
 	}
