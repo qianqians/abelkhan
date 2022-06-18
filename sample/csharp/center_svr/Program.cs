@@ -15,21 +15,7 @@ namespace center_svr
 
             log.log.trace("Center start ok");
 
-            while (!_center._closeHandle.is_close)
-            {
-                try
-                {
-                    var tick = _center.poll();
-                    if (tick < 50)
-                    {
-                        Thread.Sleep(5);
-                    }
-                }
-                catch (System.Exception e)
-                {
-                    log.log.err("error:{0}", e.Message);
-                }
-            }
+            _center.run();
         }
     }
 }

@@ -166,7 +166,7 @@ namespace dbproxy
             _timer.addticktime(3 * 1000, heartbeath_center);
         }
 
-		public Int64 poll()
+		private Int64 poll()
         {
             Int64 tick_begin = _timer.refresh();
 
@@ -215,6 +215,23 @@ namespace dbproxy
             }
 
             return tick;
+        }
+
+        public void run()
+        {
+            while (!_closeHandle.is_close())
+            {
+                var tick = (uint)poll();
+
+                if (tick < 33)
+                {
+                    Thread.Sleep((int)(33 - tick));
+                }
+            }
+            log.log.info("server closed, dbproxy server:{0}", dbproxy.name);
+
+            _acceptservice.close();
+            dbproxy._dbevent.join_all();
         }
 
 		public static String name;

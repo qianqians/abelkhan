@@ -80,9 +80,9 @@ public:
 			auto func = InArray[0].string_value();
 			auto argvs = InArray[1].array_items();
 
-			gatemanager::current_client_cuuid = _proxy->_cuuid;
+			_gates->current_client_cuuid = _proxy->_cuuid;
 			_hub->modules.process_module_mothed(func, argvs);
-			gatemanager::current_client_cuuid = "";
+			_gates->current_client_cuuid = "";
 		}
 		catch (std::exception e) {
 			spdlog::trace("call_hub exception:{0}", e.what());

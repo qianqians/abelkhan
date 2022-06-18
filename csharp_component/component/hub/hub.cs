@@ -328,7 +328,7 @@ namespace hub
             _caller.reg_hub(name, type);
         }
 
-        public Int64 poll()
+        private Int64 poll()
         {
             
             Int64 tick_begin = _timer.refresh();
@@ -375,6 +375,20 @@ namespace hub
             }
 
             return tick;
+        }
+
+        public void run()
+        {
+            while (!_closeHandle.is_close)
+            {
+                var ticktime = poll();
+
+                if (ticktime < 33)
+                {
+                    Thread.Sleep((int)(33 - ticktime));
+                }
+            }
+            log.log.info("server closed, hub server:{0}", hub.name);
         }
 
         public class addressinfo

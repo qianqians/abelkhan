@@ -22,10 +22,9 @@ namespace common
 	{
 		public imodule()
         {
-			rsp = new ThreadLocal<Response>();
 		}
 
-		public ThreadLocal<Response> rsp;
+		public Response rsp = null;
 	}
 }
 

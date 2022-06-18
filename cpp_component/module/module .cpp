@@ -8,7 +8,4 @@
 
 namespace common
 {
-
-thread_local std::shared_ptr<Response> imodule::rsp;
-
 }

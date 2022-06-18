@@ -48,9 +48,12 @@ public:
 
 	void init();
 
-	uint32_t poll();
+	void run();
 
 	void close_svr();
+
+private:
+	uint32_t poll();
 
 private:
 	static void heartbeat_center(std::shared_ptr<gate_service> _gate_service, std::function<void()> reconn_func, int64_t tick);

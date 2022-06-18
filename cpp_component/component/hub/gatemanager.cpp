@@ -67,8 +67,6 @@ void directproxy::call_client(const std::vector<uint8_t>& rpc_argv) {
 	_hub_call_client_caller->call_client(rpc_argv);
 }
 
-thread_local std::string gatemanager::current_client_cuuid;
-
 gatemanager::gatemanager(std::shared_ptr<service::enetacceptservice> conn_, std::shared_ptr<hub_service> hub_) {
 	_conn_enet = conn_;
 	_hub = hub_;

@@ -64,33 +64,19 @@ namespace test_csharp
             };
             _test_c2s_module.on_get_svr_host += () => {
                 log.log.trace("get_svr_host!");
-                var rsp = (abelkhan.test_c2s_get_svr_host_rsp)_test_c2s_module.rsp.Value;
+                var rsp = (abelkhan.test_c2s_get_svr_host_rsp)_test_c2s_module.rsp;
                 rsp.rsp(hub.hub.tcp_outside_address.host, hub.hub.tcp_outside_address.port);
             };
             _test_c2s_module.on_get_websocket_svr_host += () => {
                 log.log.trace("get_websocket_svr_host!");
-                var rsp = (abelkhan.test_c2s_get_websocket_svr_host_rsp)_test_c2s_module.rsp.Value;
+                var rsp = (abelkhan.test_c2s_get_websocket_svr_host_rsp)_test_c2s_module.rsp;
                 rsp.rsp(hub.hub.websocket_outside_address.host, hub.hub.websocket_outside_address.port);
             };
 
             _test_s2c_caller = new abelkhan.test_s2c_caller();
             hub.hub._timer.addticktime(3000, heartbeat);
 
-            while (true)
-            {
-                var ticktime = _hub.poll();
-
-                if (hub.hub._closeHandle.is_close)
-                {
-                    log.log.info("server closed, hub server:{0}", hub.hub.name);
-                    break;
-                }
-
-                if (ticktime < 50)
-                {
-                    Thread.Sleep(5);
-                }
-            }
+            _hub.run();
         }
     }
 }

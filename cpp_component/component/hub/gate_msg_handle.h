@@ -66,9 +66,9 @@ public:
 			auto argvs = _event[1].array_items();
 
 			_gates->client_connect(cuuid, _gate_call_hub_module->current_ch);
-			gatemanager::current_client_cuuid = cuuid;
+			_gates->current_client_cuuid = cuuid;
 			_hub->modules.process_module_mothed(func_name, argvs);
-			gatemanager::current_client_cuuid = "";
+			_gates->current_client_cuuid = "";
 		}
 		catch (std::exception e) {
 			spdlog::trace("client_call_hub exception:{0}", e.what());

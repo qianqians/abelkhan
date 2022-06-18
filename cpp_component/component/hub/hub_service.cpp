@@ -269,6 +269,21 @@ void hub_service::close_svr() {
 	spdlog::shutdown();
 }
 
+void hub_service::run() {
+	while (!_close_handle->is_closed) {
+		try {
+			auto tick_time = poll();
+
+			if (tick_time < 33) {
+				std::this_thread::yield();
+			}
+		}
+		catch (std::exception e) {
+			spdlog::error("error:{0}", e.what());
+		}
+	}
+}
+
 uint32_t hub_service::poll() {
 	auto time_now = msec_time();
 

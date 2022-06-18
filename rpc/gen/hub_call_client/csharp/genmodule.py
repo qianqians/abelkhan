@@ -219,7 +219,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                     code_func += "            }\n"                                                     
                 count += 1
 
-            code_func += "            rsp.Value = new " + module_name + "_" + func_name + "_rsp(_client_handle, _client_handle.current_hub, _cb_uuid);\n"
+            code_func += "            rsp = new " + module_name + "_" + func_name + "_rsp(_client_handle, _client_handle.current_hub, _cb_uuid);\n"
             code_func += "            if (on_" + func_name + " != null){\n"
             code_func += "                on_" + func_name + "("
             count = 0
@@ -230,7 +230,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                     code_func += ", "
             code_func += ");\n"
             code_func += "            }\n"
-            code_func += "            rsp.Value = null;\n"
+            code_func += "            rsp = null;\n"
             code_func += "        }\n\n"
 
             rsp_code += "    public class " + module_name + "_" + func_name + "_rsp : common.Response {\n"

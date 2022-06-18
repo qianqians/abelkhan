@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using System.Threading;
 
 namespace abelkhan
 {
@@ -105,7 +106,7 @@ namespace abelkhan
         }
 
         public event Action<svrproxy> on_svr_disconnect;
-        public Int64 poll()
+        private Int64 poll()
         {
             var tick_begin = _timer.refresh();
             try
@@ -160,6 +161,25 @@ namespace abelkhan
             Int64 tick_end = _timer.refresh();
             _timetmp = tick_end;
             return tick_end - tick_begin;
+        }
+
+        public void run()
+        {
+            while (!_closeHandle.is_close)
+            {
+                try
+                {
+                    var tick = poll();
+                    if (tick < 33)
+                    {
+                        Thread.Sleep((int)(33 - tick));
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    log.log.err("error:{0}", e.Message);
+                }
+            }
         }
     }
 }

@@ -175,8 +175,23 @@ void gate_service::heartbeat_center(std::shared_ptr<gate_service> _gate_service,
 	_gate_service->_timerservice->addticktimer(3 * 1000, std::bind(&gate_service::heartbeat_center, _gate_service, reconn_func, std::placeholders::_1));
 }
 
+void gate_service::run() {
+	while (!_closehandle->is_closed) {
+		try {
+			auto tick_time = poll();
+
+			if (tick_time < 33) {
+				std::this_thread::yield();
+			}
+		}
+		catch (std::exception e) {
+			spdlog::error("error:{0}", e.what());
+		}
+	}
+}
+
 uint32_t gate_service::poll(){
-	clock_t begin = clock();
+	auto begin = msec_time();
 	try {
 
 		io_service->poll();
@@ -211,7 +226,7 @@ uint32_t gate_service::poll(){
 		spdlog::info("gc_poll, error:{0}!", e.what());
 	}
 
-	tick = clock() - begin;
+	tick = static_cast<uint32_t>(msec_time() - begin);
 	return tick;
 }
 

@@ -113,7 +113,7 @@ private:
 	void Init();
 
 public:
-	thread_local static std::string current_client_cuuid;
+	std::string current_client_cuuid;
 
 private:
 	std::shared_ptr<service::enetacceptservice> _conn_enet;
