@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace dbproxy
@@ -218,9 +217,14 @@ namespace dbproxy
             return tick;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
+        private object _run_mu = new object();
         public void run()
         {
+            if (!Monitor.TryEnter(_run_mu))
+            {
+                throw new abelkhan.Exception("run mast at single thread!");
+            }
+
             while (!_closeHandle.is_close())
             {
                 var tick = (uint)poll();
@@ -234,6 +238,8 @@ namespace dbproxy
 
             _acceptservice.close();
             dbproxy._dbevent.join_all();
+
+            Monitor.Exit(_run_mu);
         }
 
 		public static String name;

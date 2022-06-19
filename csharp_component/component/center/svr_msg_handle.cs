@@ -58,7 +58,7 @@ namespace abelkhan
 
         private void reg_server_mq(string type, string svr_name)
         {
-            var rsp = (abelkhan.center_reg_server_rsp)_center_module.rsp.Value;
+            var rsp = (abelkhan.center_reg_server_mq_rsp)_center_module.rsp.Value;
             rsp.rsp();
 
             _svrmng.for_each_hub((hubproxy _proxy) => {
@@ -113,7 +113,7 @@ namespace abelkhan
 
         private void on_reconn_reg_server_mq(string type, string svr_name)
         {
-            var rsp = (abelkhan.center_reconn_reg_server_rsp)_center_module.rsp.Value;
+            var rsp = (abelkhan.center_reconn_reg_server_mq_rsp)_center_module.rsp.Value;
             rsp.rsp();
 
             _svrmng.for_each_new_hub((hubproxy _proxy) => {

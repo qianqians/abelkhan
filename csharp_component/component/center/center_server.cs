@@ -6,8 +6,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
-using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace abelkhan
@@ -164,9 +162,14 @@ namespace abelkhan
             return tick_end - tick_begin;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
+        private object _run_mu = new object();
         public void run()
         {
+            if (!Monitor.TryEnter(_run_mu))
+            {
+                throw new abelkhan.Exception("run mast at single thread!");
+            }
+
             while (!_closeHandle.is_close)
             {
                 try
@@ -182,6 +185,8 @@ namespace abelkhan
                     log.log.err("error:{0}", e.Message);
                 }
             }
+
+            Monitor.Exit(_run_mu);
         }
     }
 }

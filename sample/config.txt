@@ -21,8 +21,6 @@
 	
 	"gate":{
 		"name":"gate",
-		"inside_host":"127.0.0.1",
-		"inside_port":2021,
 		"tcp_listen":true,
 		"tcp_outside_host":"127.0.0.1",
 		"tcp_outside_port":3001,
@@ -37,8 +35,6 @@
 	
 	"test_cpp":{
 		"name":"test_cpp",
-		"host":"127.0.0.1",
-		"port":2051,
 		"dbproxy":"dbproxy",
 		"tcp_listen":true,
 		"tcp_outside_host":"127.0.0.1",
@@ -54,8 +50,6 @@
 	
 	"test_csharp":{
 		"name":"test_csharp",
-		"host":"127.0.0.1",
-		"port":2052,
 		"dbproxy":"dbproxy",
 		"tcp_listen":true,
 		"tcp_outside_host":"127.0.0.1",
@@ -67,5 +61,9 @@
 		"log_level":"trace",
 		"log_file":"test_csharp.txt",
 		"log_dir":"./log/"
-	}
+	},
+	
+	"redismq_listen": true,
+	"redismq_is_cluster": false,
+	"redis_for_mq": "127.0.0.1:6379"
 }

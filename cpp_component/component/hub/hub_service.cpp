@@ -74,17 +74,20 @@ void hub_service::init() {
 		auto host = _config->get_value_string("host");
 		auto port = _config->get_value_int("port");
 		_hub_service = std::make_shared<service::enetacceptservice>(host, (short)port);
+		is_enet = true;
 	}
 	else if (_root_config->has_key("redismq_listen") && _root_config->get_value_bool("redismq_listen")) {
 		auto redismq_url = _root_config->get_value_string("redis_for_mq");
+		auto redismq_is_cluster = _root_config->get_value_bool("redismq_is_cluster");
 		if (_root_config->has_key("redis_for_mq_pwd")) {
 			auto password = _root_config->get_value_string("redis_for_mq_pwd");
-			_hub_redismq_service = std::make_shared<service::redismqservice>(name_info.name, redismq_url, password);
+			_hub_redismq_service = std::make_shared<service::redismqservice>(redismq_is_cluster, name_info.name, redismq_url, password);
 		}
 		else {
-			_hub_redismq_service = std::make_shared<service::redismqservice>(name_info.name, redismq_url);
+			_hub_redismq_service = std::make_shared<service::redismqservice>(redismq_is_cluster, name_info.name, redismq_url);
 		}
 		_hub_redismq_service->start();
+		is_enet = false;
 	}
 	else {
 		spdlog::error("undefined hub msg listen model!");
@@ -169,7 +172,12 @@ void hub_service::connect_center() {
 		spdlog::trace("connect center success");
 
 		_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
-		_centerproxy->reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
+		if (is_enet) {
+			_centerproxy->reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
+		}
+		else {
+			_centerproxy->reg_server(hub_type, name_info);
+		}
 
 		heartbeat(shared_from_this(), _timerservice->Tick);
 
@@ -192,7 +200,12 @@ void hub_service::reconnect_center() {
 		reconn_count = 0;
 
 		_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
-		_centerproxy->reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
+		if (is_enet) {
+			_centerproxy->reconn_reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
+		}
+		else {
+			_centerproxy->reconn_reg_server(hub_type, name_info);
+		}
 
 		spdlog::trace("end on connect center");
 	});

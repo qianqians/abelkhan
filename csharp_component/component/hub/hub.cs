@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
-using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace hub
@@ -82,12 +81,14 @@ namespace hub
                 };
                 _enetservice.start();
                 _gates = new gatemanager(_enetservice);
+                is_enet = true;
             }
             else if (_root_config.has_key("redismq_listen") && _root_config.get_value_bool("redismq_listen"))
             {
                 var redismq_url = _root_config.get_value_string("redis_for_mq");
                 _redis_mq_service = new abelkhan.redis_mq(redismq_url, name);
                 _gates = new gatemanager(_redis_mq_service);
+                is_enet = false;
             }
             else
             {
@@ -184,7 +185,14 @@ namespace hub
             _gate_msg_handle = new gate_msg_handle();
             _client_msg_handle = new client_msg_handle();
 
-            _centerproxy.reg_hub(host, port, name);
+            if (is_enet)
+            {
+                _centerproxy.reg_hub(host, port);
+            }
+            else
+            {
+                _centerproxy.reg_hub();
+            }
         }
 
         public Action onCenterCrash;
@@ -209,9 +217,19 @@ namespace hub
                 add_chs.Add(_center_ch);
             }
             _centerproxy = new centerproxy(_center_ch);
-            if (await _centerproxy.reconn_reg_dbproxy(host, port))
+            if (is_enet)
             {
-                reconn_count = 0;
+                if (await _centerproxy.reconn_reg_dbproxy(host, port))
+                {
+                    reconn_count = 0;
+                }
+            }
+            else
+            {
+                if (await _centerproxy.reconn_reg_dbproxy())
+                {
+                    reconn_count = 0;
+                }
             }
         }
 
@@ -378,9 +396,14 @@ namespace hub
             return tick;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
+        private object _run_mu = new object();
         public void run()
         {
+            if (!Monitor.TryEnter(_run_mu))
+            {
+                throw new abelkhan.Exception("run mast at single thread!");
+            }
+
             while (!_closeHandle.is_close)
             {
                 var ticktime = poll();
@@ -391,6 +414,8 @@ namespace hub
                 }
             }
             log.log.info("server closed, hub server:{0}", hub.name);
+
+            Monitor.Exit(_run_mu);
         }
 
         public class addressinfo
@@ -432,8 +457,8 @@ namespace hub
         private string center_host;
         private short center_port;
 
+        private bool is_enet = false;
         private uint reconn_count = 0;
-
         private centerproxy _centerproxy;
 
         private center_msg_handle _center_msg_handle;

@@ -152,8 +152,8 @@ private:
 	std::shared_ptr<gate_msg_handle> _gate_msg_handle;
 	std::shared_ptr<hub_svr_msg_handle> _hub_svr_msg_handle;
 
+	bool is_enet = false;
 	std::shared_ptr<centerproxy> _centerproxy;
-
 	uint32_t reconn_count;
 
 	std::mutex _run_mu;

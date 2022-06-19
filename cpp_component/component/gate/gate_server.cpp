@@ -63,26 +63,29 @@ void gate_service::init() {
 	_hub_svr_msg_handle = std::make_shared<hub_svr_msg_handle>(_clientmanager, _hubsvrmanager);
 	_client_msg_handle = std::make_shared<client_msg_handle>(_clientmanager, _hubsvrmanager, _timerservice);
 
+	bool is_enet = false;
 	if (_config->has_key("inside_host") && _config->has_key("inside_port")) {
 		if (enet_initialize() != 0)
 		{
 			spdlog::error("An error occurred while initializing ENet!");
 		}
-
 		inside_host = _config->get_value_string("inside_host");
 		inside_port = (short)_config->get_value_int("inside_port");
 		_hub_service = std::make_shared<service::enetacceptservice>(inside_host, inside_port);
+		is_enet = true; 
 	}
 	else if (_root_config->has_key("redismq_listen") && _root_config->get_value_bool("redismq_listen")) {
 		auto redismq_url = _root_config->get_value_string("redis_for_mq");
+		auto redismq_is_cluster = _root_config->get_value_bool("redismq_is_cluster");
 		if (_root_config->has_key("redis_for_mq_pwd")) {
 			auto password = _root_config->get_value_string("redis_for_mq_pwd");
-			_hub_redismq_service = std::make_shared<service::redismqservice>(gate_name_info.name, redismq_url, password);
+			_hub_redismq_service = std::make_shared<service::redismqservice>(redismq_is_cluster, gate_name_info.name, redismq_url, password);
 		}
 		else {
-			_hub_redismq_service = std::make_shared<service::redismqservice>(gate_name_info.name, redismq_url);
+			_hub_redismq_service = std::make_shared<service::redismqservice>(redismq_is_cluster, gate_name_info.name, redismq_url);
 		}
 		_hub_redismq_service->start();
+		is_enet = false;
 	}
 	else {
 		spdlog::error("undefined hub msg listen model!");
@@ -92,11 +95,17 @@ void gate_service::init() {
 	_connectnetworkservice = std::make_shared<service::connectservice>(io_service);
 	center_ip = _center_config->get_value_string("host");
 	center_port = (short)_center_config->get_value_int("port");
-	_connectnetworkservice->connect(center_ip, center_port, [this, this_ptr](auto _center_ch) {
+	_connectnetworkservice->connect(center_ip, center_port, [this, is_enet, this_ptr](auto _center_ch) {
 		_centerproxy = std::make_shared<centerproxy>(_center_ch, _timerservice);
-		_centerproxy->reg_server(inside_host, inside_port, gate_name_info);
 
-		heartbeat_center(shared_from_this(), [this_ptr]() {
+		if (is_enet) {
+			_centerproxy->reg_server(inside_host, inside_port, gate_name_info);
+		}
+		else {
+			_centerproxy->reg_server(gate_name_info);
+		}
+
+		heartbeat_center(shared_from_this(), [is_enet, this_ptr]() {
 			if (this_ptr->reconn_count > 5) {
 				spdlog::critical("connect center faild count:{0}!", this_ptr->reconn_count);
 				this_ptr->sig_center_crash.emit();
@@ -104,9 +113,14 @@ void gate_service::init() {
 
 			++this_ptr->reconn_count;
 
-			this_ptr->_connectnetworkservice->connect(this_ptr->center_ip, this_ptr->center_port, [this_ptr](auto _center_ch) {
+			this_ptr->_connectnetworkservice->connect(this_ptr->center_ip, this_ptr->center_port, [is_enet, this_ptr](auto _center_ch) {
 				this_ptr->_centerproxy = std::make_shared<centerproxy>(_center_ch, this_ptr->_timerservice);
-				this_ptr->_centerproxy->reg_server(this_ptr->inside_host, this_ptr->inside_port, this_ptr->gate_name_info);
+				if (is_enet) {
+					this_ptr->_centerproxy->reconn_reg_server(this_ptr->inside_host, this_ptr->inside_port, this_ptr->gate_name_info);
+				}
+				else {
+					this_ptr->_centerproxy->reconn_reg_server(this_ptr->gate_name_info);
+				}
 
 				this_ptr->reconn_count = 0;
 			});

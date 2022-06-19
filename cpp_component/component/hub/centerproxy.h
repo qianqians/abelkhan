@@ -47,6 +47,18 @@ public:
 		});
 	}
 
+	void reg_server(std::string sub_type, struct name_info& _info) {
+		spdlog::trace("begin connect center server!");
+		_center_caller->reg_server_mq("hub", _info.name)->callBack([this, &_info]() {
+			spdlog::trace("connect center sucessed!");
+			is_reg_sucess = true;
+			}, []() {
+				spdlog::trace("connect center failed!");
+			})->timeout(5 * 1000, []() {
+				spdlog::trace("connect center timeout!");
+				});
+	}
+
 	void reconn_reg_server(std::string host, short port, std::string sub_type, struct name_info& _info) {
 		spdlog::trace("begin connect center server!");
 		_center_caller->reconn_reg_server("hub", _info.name, host, port)->callBack([this, &_info]() {
@@ -57,6 +69,18 @@ public:
 		})->timeout(5 * 1000, []() {
 			spdlog::trace("connect center timeout!");
 		});
+	}
+
+	void reconn_reg_server(std::string sub_type, struct name_info& _info) {
+		spdlog::trace("begin connect center server!");
+		_center_caller->reconn_reg_server_mq("hub", _info.name)->callBack([this, &_info]() {
+			spdlog::trace("connect center sucessed!");
+			is_reg_sucess = true;
+			}, []() {
+				spdlog::trace("connect center failed!");
+			})->timeout(5 * 1000, []() {
+				spdlog::trace("connect center timeout!");
+				});
 	}
 	
 	void heartbeat(uint32_t tick) {
