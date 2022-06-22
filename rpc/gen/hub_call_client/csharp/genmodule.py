@@ -19,7 +19,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
     for i in funcs:
         func_name = i[0]
 
-        if i[1] == "ntf" or i[1] ==  "multicast" or i[1] == "broadcast":
+        if i[1] == "ntf" or i[1] == "multicast" or i[1] == "broadcast":
             code_constructor += "            _client_handle.modulemanager.add_mothed(\"" + module_name + "_" + func_name + "\", " + func_name + ");\n"
                 
             code_func += "        public event Action"

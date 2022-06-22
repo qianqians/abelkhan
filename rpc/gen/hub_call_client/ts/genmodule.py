@@ -19,7 +19,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
     for i in funcs:
         func_name = i[0]
 
-        if i[1] == "ntf":
+        if i[1] == "ntf" or i[1] == "multicast" or i[1] == "broadcast":
             code_constructor += "        this._client_handle._modulemng.add_method(\"" + module_name + "_" + func_name + "\", this." + func_name + ".bind(this));\n"
             code_constructor_cb += "        this.cb_" + func_name + " = null;\n"
                 
