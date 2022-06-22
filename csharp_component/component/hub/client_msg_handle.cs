@@ -58,9 +58,9 @@ namespace hub
 						var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
 						var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
-						hub._gates.current_client_uuid.Value = _proxy._cuuid;
+						hub._gates.current_client_uuid = _proxy._cuuid;
 						hub._modules.process_module_mothed(func, argvs);
-						hub._gates.current_client_uuid.Value = "";
+						hub._gates.current_client_uuid = "";
 					}
 				}
 				catch (Exception e)

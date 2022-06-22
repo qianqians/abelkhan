@@ -34,7 +34,7 @@ namespace hub
 
     public class gatemanager
 	{
-        public ThreadLocal<string> current_client_uuid;
+        public string current_client_uuid;
 
         private Dictionary<string, gateproxy> clients;
 
@@ -62,8 +62,6 @@ namespace hub
 
         private void init()
         {
-            current_client_uuid = new ThreadLocal<string>();
-            current_client_uuid.Value = "";
             clients = new Dictionary<string, gateproxy>();
 
             _wait_destory_gateproxys = new Dictionary<string, gateproxy>();
