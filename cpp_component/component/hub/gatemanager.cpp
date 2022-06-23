@@ -171,6 +171,14 @@ void gatemanager::client_connect(std::string client_uuid, std::shared_ptr<abelkh
 	clients[client_uuid] = it->second;
 }
 
+std::shared_ptr<gateproxy> gatemanager::get_client_gate(std::string client_uuid) {
+	auto it = clients.find(client_uuid);
+	if (it != clients.end()) {
+		return it->second;
+	}
+	return nullptr;
+}
+
 std::shared_ptr<gateproxy> gatemanager::client_seep(std::string client_uuid, std::string gate_name) {
 	auto it = gates.find(gate_name);
 	if (it == gates.end()) {

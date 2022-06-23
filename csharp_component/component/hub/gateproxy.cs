@@ -9,11 +9,14 @@ namespace hub
 	public class gateproxy
 	{
 		public abelkhan.Ichannel _ch;
+		public string _name;
 		private abelkhan.hub_call_gate_caller _hub_call_gate_caller;
 
-		public gateproxy(abelkhan.Ichannel ch)
+		public gateproxy(abelkhan.Ichannel ch, string name)
 		{
 			_ch = ch;
+			_name = name;
+
 			_hub_call_gate_caller = new abelkhan.hub_call_gate_caller(ch, abelkhan.modulemng_handle._modulemng);
 		}
 

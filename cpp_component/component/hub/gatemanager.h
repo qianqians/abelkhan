@@ -89,6 +89,8 @@ public:
 
 	void client_connect(std::string client_uuid, std::shared_ptr<abelkhan::Ichannel> gate_ch);
 
+	std::shared_ptr<gateproxy> get_client_gate(std::string client_uuid);
+
 	std::shared_ptr<gateproxy> client_seep(std::string client_uuid, std::string gate_name);
 
 	void client_disconnect(std::string client_uuid);

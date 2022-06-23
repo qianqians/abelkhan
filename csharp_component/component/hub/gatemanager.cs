@@ -77,7 +77,7 @@ namespace hub
         public void connect_gate(String name, String host, ushort port)
 		{
             _gate_enet_conn.connect(host, port, (ch)=> {
-                var _proxy = new gateproxy(ch);
+                var _proxy = new gateproxy(ch, name);
 
                 if (gates.TryGetValue(name, out gateproxy _old_proxy))
                 {
@@ -104,7 +104,7 @@ namespace hub
             var ch = _gate_redismq_conn.connect(name);
             if (ch != null)
             {
-                var _proxy = new gateproxy(ch);
+                var _proxy = new gateproxy(ch, name);
 
                 if (gates.TryGetValue(name, out gateproxy _old_proxy))
                 {
@@ -134,6 +134,16 @@ namespace hub
 			}
 			return null;
 		}
+
+        public string get_client_gate_name(string session_uuid)
+        {
+            clients.TryGetValue(session_uuid, out gateproxy _client_gate_proxy);
+            if (_client_gate_proxy != null)
+            {
+                return _client_gate_proxy._name;
+            }
+            return null;
+        }
 
         public event Action<string> on_gate_closed;
         public void gate_be_closed(string svr_name)
@@ -197,7 +207,10 @@ namespace hub
                 log.log.err("invaild gate");
                 return;
             }
-            clients[client_uuid] = _proxy;
+            if (!clients.ContainsKey(client_uuid))
+            {
+                clients.Add(client_uuid, _proxy);
+            }
 
             log.log.trace("client {0} connected", client_uuid);
         }
@@ -209,7 +222,10 @@ namespace hub
                 log.log.err("invaild gate name:{0}", gate_name);
                 return null;
             }
-            clients[client_uuid] = _proxy;
+            if (!clients.ContainsKey(client_uuid))
+            {
+                clients.Add(client_uuid, _proxy);
+            }
 
             log.log.trace("client {0} seep!", client_uuid);
 
