@@ -87,8 +87,8 @@ namespace hub
 
 			if (type == "dbproxy")
 			{
-				log.log.err("dbproxy do not support mq model name:{0}", name);
-				throw new abelkhan.Exception(String.Format("dbproxy do not support mq model name:{0}", name));
+				log.log.trace("recv distribute server address connect_dbproxy ip:{0}, port:{1}");
+				_hub.connect_dbproxy(name);
 			}
 			if (type == "gate")
 			{

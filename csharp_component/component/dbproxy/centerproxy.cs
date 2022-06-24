@@ -25,6 +25,22 @@ namespace dbproxy
 			});
 		}
 
+		public void reg_dbproxy()
+		{
+			log.log.trace("begin connect center server");
+
+			_center_caller.reg_server_mq("dbproxy", dbproxy.name).callBack(() =>
+			{
+				log.log.trace("connect center server sucessed");
+			}, () =>
+			{
+				log.log.trace("connect center server faild");
+			}).timeout(5 * 1000, () =>
+			{
+				log.log.trace("connect center server timeout");
+			});
+		}
+
 		public Task<bool> reconn_reg_dbproxy(String host, ushort port)
 		{
 			log.log.trace("begin connect center server");
@@ -32,6 +48,26 @@ namespace dbproxy
 			var task_ret = new TaskCompletionSource<bool>();
 
 			_center_caller.reconn_reg_server("dbproxy", dbproxy.name, host, port).callBack(() => {
+				log.log.trace("reconnect center server sucessed");
+				task_ret.SetResult(true);
+			}, () => {
+				log.log.err("reconnect center server faild");
+				task_ret.SetResult(false);
+			}).timeout(5 * 1000, () => {
+				log.log.err("reconnect center server timeout");
+				task_ret.SetResult(false);
+			});
+
+			return task_ret.Task;
+		}
+
+		public Task<bool> reconn_reg_dbproxy()
+		{
+			log.log.trace("begin connect center server");
+
+			var task_ret = new TaskCompletionSource<bool>();
+
+			_center_caller.reconn_reg_server_mq("dbproxy", dbproxy.name).callBack(() => {
 				log.log.trace("reconnect center server sucessed");
 				task_ret.SetResult(true);
 			}, () => {

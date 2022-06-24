@@ -68,6 +68,9 @@ private:
 		else if (type == "dbproxy") {
 			_hub->try_connect_db(name, ip, (uint16_t)port);
 		}
+		else {
+			spdlog::warn("unsupport distribute_server_mq type:{0}", type);
+		}
 	}
 
 	void distribute_server_mq(std::string type, std::string name) {
@@ -76,6 +79,9 @@ private:
 		}
 		else if (type == "hub") {
 			_hub->reg_hub(name);
+		}
+		else if (type == "dbproxy") {
+			_hub->try_connect_db(name);
 		}
 		else {
 			spdlog::warn("unsupport distribute_server_mq type:{0}", type);

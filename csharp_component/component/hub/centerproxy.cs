@@ -46,7 +46,7 @@ namespace hub
             });
         }
 
-        public Task<bool> reconn_reg_dbproxy(string host, ushort port)
+        public Task<bool> reconn_reg_hub(string host, ushort port)
         {
             log.log.trace("begin connect center server");
 
@@ -66,7 +66,7 @@ namespace hub
             return task_ret.Task;
         }
 
-        public Task<bool> reconn_reg_dbproxy()
+        public Task<bool> reconn_reg_hub()
         {
             log.log.trace("begin connect center server");
 

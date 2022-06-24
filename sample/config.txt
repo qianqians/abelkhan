@@ -1,5 +1,6 @@
 {
     "center":{
+		"name":"center",
         "host":"127.0.0.1",
         "port":1001,
         "gm_host":"127.0.0.1",

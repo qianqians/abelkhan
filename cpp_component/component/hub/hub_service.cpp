@@ -166,11 +166,8 @@ void hub_service::heartbeat(std::shared_ptr<hub_service> this_ptr, int64_t _tick
 void hub_service::connect_center() {
 	spdlog::trace("begin on connect center");
 
-	auto ip = _center_config->get_value_string("host");
-	auto port = (short)(_center_config->get_value_int("port"));
-	_center_service->connect(ip, port, [this](auto center_ch) {
-		spdlog::trace("connect center success");
-
+	if (_root_config->has_key("redismq_listen") && _root_config->get_value_bool("redismq_listen")) {
+		auto center_ch = _hub_redismq_service->connect(_center_config->get_value_string("name"));
 		_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
 		if (is_enet) {
 			_centerproxy->reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
@@ -178,11 +175,27 @@ void hub_service::connect_center() {
 		else {
 			_centerproxy->reg_server(hub_type, name_info);
 		}
-
 		heartbeat(shared_from_this(), _timerservice->Tick);
+	}
+	else {
+		auto ip = _center_config->get_value_string("host");
+		auto port = (short)(_center_config->get_value_int("port"));
+		_center_service->connect(ip, port, [this](auto center_ch) {
+			spdlog::trace("connect center success");
 
-		spdlog::trace("end on connect center");
-	});
+			_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
+			if (is_enet) {
+				_centerproxy->reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
+			}
+			else {
+				_centerproxy->reg_server(hub_type, name_info);
+			}
+
+			heartbeat(shared_from_this(), _timerservice->Tick);
+
+			spdlog::trace("end on connect center");
+		});
+	}
 }
 
 void hub_service::reconnect_center() {
@@ -194,11 +207,8 @@ void hub_service::reconnect_center() {
 
 	++reconn_count;
 
-	auto ip = _center_config->get_value_string("host");
-	auto port = (short)(_center_config->get_value_int("port"));
-	_center_service->connect(ip, port, [this](auto center_ch) {
-		reconn_count = 0;
-
+	if (_root_config->has_key("redismq_listen") && _root_config->get_value_bool("redismq_listen")) {
+		auto center_ch = _hub_redismq_service->connect(_center_config->get_value_string("name"));
 		_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
 		if (is_enet) {
 			_centerproxy->reconn_reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
@@ -206,9 +216,25 @@ void hub_service::reconnect_center() {
 		else {
 			_centerproxy->reconn_reg_server(hub_type, name_info);
 		}
+		reconn_count = 0;
+	}
+	else {
+		auto ip = _center_config->get_value_string("host");
+		auto port = (short)(_center_config->get_value_int("port"));
+		_center_service->connect(ip, port, [this](auto center_ch) {
+			reconn_count = 0;
 
-		spdlog::trace("end on connect center");
-	});
+			_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
+			if (is_enet) {
+				_centerproxy->reconn_reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
+			}
+			else {
+				_centerproxy->reconn_reg_server(hub_type, name_info);
+			}
+
+			spdlog::trace("end on connect center");
+		});
+	}
 }
 
 void hub_service::connect_gate(std::string gate_name, std::string host, uint16_t port) {
@@ -268,6 +294,27 @@ void hub_service::try_connect_db(std::string dbproxy_name, std::string dbproxy_h
 				});
 			_extend_dbproxyproxy->reg_server(name_info.name);
 		});
+	}
+}
+
+void hub_service::try_connect_db(std::string dbproxy_name) {
+	if (_config->has_key("dbproxy") && _config->get_value_string("dbproxy") == dbproxy_name) {
+		auto dbproxy_cfg = _root_config->get_value_dict(dbproxy_name);
+		auto ch = _hub_redismq_service->connect(dbproxy_name);
+		_dbproxyproxy = std::make_shared<dbproxyproxy>(ch);
+		_dbproxyproxy->sig_dbproxy_init.connect([this]() {
+			sig_dbproxy_init.emit();
+		});
+		_dbproxyproxy->reg_server(name_info.name);
+	}
+	else if (_config->has_key("extend_dbproxy") && _config->get_value_string("extend_dbproxy") == dbproxy_name) {
+		auto dbproxy_cfg = _root_config->get_value_dict(dbproxy_name);
+		auto ch = _hub_redismq_service->connect(dbproxy_name);
+		_extend_dbproxyproxy = std::make_shared<dbproxyproxy>(ch);
+		_extend_dbproxyproxy->sig_dbproxy_init.connect([this]() {
+			sig_dbproxy_init.emit();
+		});
+		_extend_dbproxyproxy->reg_server(name_info.name);
 	}
 }
 

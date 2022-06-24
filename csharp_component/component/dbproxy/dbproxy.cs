@@ -17,9 +17,9 @@ namespace dbproxy
 		{
 			is_busy = false;
 
-            abelkhan.config _config = new abelkhan.config(cfg_file);
-            abelkhan.config _center_config = _config.get_value_dict("center");
-            _config = _config.get_value_dict(cfg_name);
+            _root_config = new abelkhan.config(cfg_file);
+            _center_config = _root_config.get_value_dict("center");
+            var _config = _root_config.get_value_dict(cfg_name);
 
             name = cfg_name;
 
@@ -94,30 +94,57 @@ namespace dbproxy
             _dbevent = new dbevent();
             _dbevent.start();
 
-            host = _config.get_value_string("host");
-            port = (ushort)_config.get_value_int("port");
-			_acceptservice = new abelkhan.acceptservice(port);
-            _acceptservice.on_connect += (abelkhan.Ichannel ch) => {
+            if (_root_config.has_key("redismq_listen") && _root_config.get_value_bool("redismq_listen"))
+            {
+                var redismq_url = _root_config.get_value_string("redis_for_mq");
+                _redis_mq_service = new abelkhan.redis_mq(redismq_url, name);
+            }
+            else if (_config.has_key("host") && _config.has_key("port"))
+            {
+                host = _config.get_value_string("host");
+                port = (ushort)_config.get_value_int("port");
+                _acceptservice = new abelkhan.acceptservice(port);
+                _acceptservice.on_connect += (abelkhan.Ichannel ch) =>
+                {
+                    lock (add_chs)
+                    {
+                        add_chs.Add(ch);
+                    }
+                };
+                _acceptservice.start();
+            }
+            else
+            {
+                log.log.err("undefined hub msg listen model!");
+                throw new abelkhan.Exception("undefined hub msg listen model!");
+            }
+
+            _hub_msg_handle = new hub_msg_handle(_hubmanager, _closeHandle);
+            _center_msg_handle = new center_msg_handle(_closeHandle, _hubmanager);
+
+            if (_root_config.has_key("redismq_listen") && _root_config.get_value_bool("redismq_listen"))
+            {
+                var _center_ch = _redis_mq_service.connect(_center_config.get_value_string("name"));
                 lock (add_chs)
                 {
-                    add_chs.Add(ch);
+                    add_chs.Add(_center_ch);
                 }
-            };
-            _acceptservice.start();
-            _hub_msg_handle = new hub_msg_handle(_hubmanager, _closeHandle);
-
-            center_host = _center_config.get_value_string("host");
-			center_port = (short)_center_config.get_value_int("port");
-            var _socket = abelkhan.connectservice.connect(System.Net.Dns.GetHostAddresses(center_host)[0], center_port);
-            var _center_ch = new abelkhan.rawchannel(_socket);
-            lock (add_chs)
-            {
-                add_chs.Add(_center_ch);
+                _centerproxy = new centerproxy(_center_ch);
+                _centerproxy.reg_dbproxy();
             }
-            _centerproxy = new centerproxy(_center_ch);
-            _center_msg_handle = new center_msg_handle(_closeHandle, _hubmanager);
-            _centerproxy.reg_dbproxy(host, port);
-
+            else
+            {
+                center_host = _center_config.get_value_string("host");
+                center_port = (short)_center_config.get_value_int("port");
+                var _socket = abelkhan.connectservice.connect(System.Net.Dns.GetHostAddresses(center_host)[0], center_port);
+                var _center_ch = new abelkhan.rawchannel(_socket);
+                lock (add_chs)
+                {
+                    add_chs.Add(_center_ch);
+                }
+                _centerproxy = new centerproxy(_center_ch);
+                _centerproxy.reg_dbproxy(host, port);
+            }
             heartbeath_center(service.timerservice.Tick);
         }
 
@@ -136,16 +163,32 @@ namespace dbproxy
                 remove_chs.Add(_centerproxy._ch);
             }
 
-            var _socket = abelkhan.connectservice.connect(System.Net.Dns.GetHostAddresses(center_host)[0], center_port);
-            var _center_ch = new abelkhan.rawchannel(_socket);
-            lock (add_chs)
+            if (_root_config.has_key("redismq_listen") && _root_config.get_value_bool("redismq_listen"))
             {
-                add_chs.Add(_center_ch);
+                var _center_ch = _redis_mq_service.connect(_center_config.get_value_string("name"));
+                lock (add_chs)
+                {
+                    add_chs.Add(_center_ch);
+                }
+                _centerproxy = new centerproxy(_center_ch);
+                if (await _centerproxy.reconn_reg_dbproxy())
+                {
+                    reconn_count = 0;
+                }
             }
-            _centerproxy = new centerproxy(_center_ch);
-            if (await _centerproxy.reconn_reg_dbproxy(host, port))
+            else
             {
-                reconn_count = 0;
+                var _socket = abelkhan.connectservice.connect(System.Net.Dns.GetHostAddresses(center_host)[0], center_port);
+                var _center_ch = new abelkhan.rawchannel(_socket);
+                lock (add_chs)
+                {
+                    add_chs.Add(_center_ch);
+                }
+                _centerproxy = new centerproxy(_center_ch);
+                if (await _centerproxy.reconn_reg_dbproxy(host, port))
+                {
+                    reconn_count = 0;
+                }
             }
         }
 
@@ -250,6 +293,9 @@ namespace dbproxy
         public static hubmanager _hubmanager;
         public static service.timerservice _timer;
         public static mongodbproxy _mongodbproxy;
+        
+        public abelkhan.config _root_config;
+        public abelkhan.config _center_config;
 
         private List<abelkhan.Ichannel> add_chs;
         public static List<abelkhan.Ichannel> remove_chs;
@@ -266,6 +312,7 @@ namespace dbproxy
         private center_msg_handle _center_msg_handle;
 
         public abelkhan.acceptservice _acceptservice;
+        public abelkhan.redis_mq _redis_mq_service;
 		private centerproxy _centerproxy;
 
 	}

@@ -57,6 +57,8 @@ public:
 private:
 	uint32_t poll();
 
+	void init_center(std::shared_ptr<abelkhan::Ichannel> center_ch);
+
 private:
 	static void heartbeat_center(std::shared_ptr<gate_service> _gate_service, std::function<void()> reconn_func, int64_t tick);
 
@@ -72,6 +74,7 @@ public:
 private:
 	uint32_t reconn_count;
 	uint32_t tick;
+	bool is_enet = false;
 
 	std::shared_ptr<config::config> _root_config;
 	std::shared_ptr<config::config> _center_config;

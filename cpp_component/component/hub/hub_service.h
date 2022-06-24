@@ -69,6 +69,8 @@ public:
 
 	void try_connect_db(std::string dbproxy_name, std::string dbproxy_ip, uint16_t dbproxy_port);
 
+	void try_connect_db(std::string dbproxy_name);
+
 	void run();
 
 	void close_svr();
