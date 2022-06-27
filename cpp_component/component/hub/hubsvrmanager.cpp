@@ -10,7 +10,8 @@
 
 namespace hub {
 	
-hubproxy::hubproxy(std::string hub_name, std::string hub_type, std::shared_ptr<abelkhan::Ichannel> hub_ch) {
+hubproxy::hubproxy(std::shared_ptr<hub_service> _hub_, std::string hub_name, std::string hub_type, std::shared_ptr<abelkhan::Ichannel> hub_ch) {
+	_hub = _hub_;
 	_hub_name = hub_name;
 	_hub_type = hub_type;
 
@@ -32,8 +33,14 @@ void hubproxy::call_hub(const std::string& module_name, const std::string& func_
 	_hub_call_hub_caller->hub_call_hub_mothed(_data_bin);
 }
 
-void hubproxy::client_seep(std::string client_uuid, std::string gate_name) {
-	_hub_call_hub_caller->seep_client_gate(client_uuid, gate_name);
+void hubproxy::client_seep(std::string client_uuid) {
+	auto gate_proxy = _hub->_gatemng->get_client_gate(client_uuid);
+	if (gate_proxy != nullptr) {
+		_hub_call_hub_caller->seep_client_gate(client_uuid, gate_proxy->_gate_name);
+	}
+	else {
+		spdlog::error("client_seep client not connect at gate error! client_uuid:{0}", client_uuid);
+	}
 }
 
 hubsvrmanager::hubsvrmanager(std::shared_ptr<hub_service> _hub_) {
@@ -64,7 +71,7 @@ hubsvrmanager::hubsvrmanager(std::shared_ptr<hub_service> _hub_) {
 }
 
 void hubsvrmanager::reg_hub(std::string hub_name, std::string hub_type, std::shared_ptr<abelkhan::Ichannel> ch) {
-	auto _proxy = std::make_shared<hubproxy>(hub_name, hub_type, ch);
+	auto _proxy = std::make_shared<hubproxy>(_hub, hub_name, hub_type, ch);
 
 	auto it = hubproxys.find(hub_name);
 	if (it != hubproxys.end()) {

@@ -34,9 +34,9 @@ namespace hub
             }
         }
 
-        public void client_seep(string client_uuid, string gate_name)
+        public void client_seep(string client_uuid)
         {
-            _hub_call_hub_caller.seep_client_gate(client_uuid, gate_name);
+            _hub_call_hub_caller.seep_client_gate(client_uuid, hub._gates.get_client_gate_name(client_uuid));
         }
 
         public string name;

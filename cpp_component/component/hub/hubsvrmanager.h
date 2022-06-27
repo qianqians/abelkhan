@@ -18,13 +18,14 @@
 
 namespace hub {
 
+class hub_service;
 class hubproxy {
 public:
-	hubproxy(std::string hub_name, std::string hub_type, std::shared_ptr<abelkhan::Ichannel> hub_ch);
+	hubproxy(std::shared_ptr<hub_service> _hub_, std::string hub_name, std::string hub_type, std::shared_ptr<abelkhan::Ichannel> hub_ch);
 
 	void call_hub(const std::string& module_name, const std::string& func_name, const msgpack11::MsgPack::array& argvs);
 
-	void client_seep(std::string client_uuid, std::string gate_name);
+	void client_seep(std::string client_uuid);
 
 public:
 	std::string _hub_name;
@@ -33,11 +34,11 @@ public:
 	std::shared_ptr<abelkhan::Ichannel> _hub_ch;
 
 private:
+	std::shared_ptr<hub_service> _hub;
 	std::shared_ptr<abelkhan::hub_call_hub_caller> _hub_call_hub_caller;
 
 };
 
-class hub_service;
 class hubsvrmanager {
 public:
 	hubsvrmanager(std::shared_ptr<hub_service> _hub_);
