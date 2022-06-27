@@ -34,6 +34,11 @@ namespace hub
             }
         }
 
+        public void client_seep(string client_uuid, string gate_name)
+        {
+            _hub_call_hub_caller.seep_client_gate(client_uuid, gate_name);
+        }
+
         public string name;
         public string type;
         public abelkhan.Ichannel _ch;

@@ -32,6 +32,10 @@ void hubproxy::call_hub(const std::string& module_name, const std::string& func_
 	_hub_call_hub_caller->hub_call_hub_mothed(_data_bin);
 }
 
+void hubproxy::client_seep(std::string client_uuid, std::string gate_name) {
+	_hub_call_hub_caller->seep_client_gate(client_uuid, gate_name);
+}
+
 hubsvrmanager::hubsvrmanager(std::shared_ptr<hub_service> _hub_) {
 	_hub = _hub_;
 

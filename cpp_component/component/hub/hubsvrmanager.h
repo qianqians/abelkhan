@@ -24,6 +24,8 @@ public:
 
 	void call_hub(const std::string& module_name, const std::string& func_name, const msgpack11::MsgPack::array& argvs);
 
+	void client_seep(std::string client_uuid, std::string gate_name);
+
 public:
 	std::string _hub_name;
 	std::string _hub_type;
