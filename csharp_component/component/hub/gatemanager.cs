@@ -135,6 +135,16 @@ namespace hub
 			return null;
 		}
 
+        public gateproxy get_gateproxy(string session_uuid)
+        {
+            clients.TryGetValue(session_uuid, out gateproxy _client_gate_proxy);
+            if (_client_gate_proxy != null)
+            {
+                return _client_gate_proxy;
+            }
+            return null;
+        }
+
         public string get_client_gate_name(string session_uuid)
         {
             clients.TryGetValue(session_uuid, out gateproxy _client_gate_proxy);
