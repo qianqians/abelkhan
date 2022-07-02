@@ -146,7 +146,7 @@ namespace hub
                     add_chs.Add(_center_ch);
                 }
                 _centerproxy = new centerproxy(_center_ch);
-                _centerproxy.reconn_reg_hub(host, port);
+                _centerproxy.reg_hub(host, port);
             }
             heartbeat(service.timerservice.Tick);
 
@@ -198,15 +198,6 @@ namespace hub
             _dbproxy_msg_handle = new dbproxy_msg_handle();
             _gate_msg_handle = new gate_msg_handle();
             _client_msg_handle = new client_msg_handle();
-
-            if (is_enet)
-            {
-                _centerproxy.reg_hub(host, port);
-            }
-            else
-            {
-                _centerproxy.reg_hub();
-            }
         }
 
         public Action onCenterCrash;

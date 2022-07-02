@@ -1,4 +1,4 @@
-import error
+import framework_error
 
 module gate_call_hub{
 

@@ -67,6 +67,7 @@ namespace abelkhan
             send_data = new ConcurrentQueue<Tuple<string, MemoryStream> >();
 
             th = new Task(th_poll);
+            th.Start();
         }
 
         void Recover(System.Exception e)
@@ -138,29 +139,36 @@ namespace abelkhan
                 {
                     try
                     {
-                        byte[] pop_data = await database.ListRightPopAsync(listen_channel_name, flags: CommandFlags.FireAndForget);
-                        var _ch_name_size = (UInt32)pop_data[0] | ((UInt32)pop_data[1] << 8) | ((UInt32)pop_data[2] << 16) | ((UInt32)pop_data[3] << 24);
-                        var _ch_name = System.Text.Encoding.UTF8.GetString(pop_data, 0, (int)_ch_name_size);
-                        var _header_len = 4 + _ch_name_size;
-                        var _msg_len = pop_data.Length - _header_len;
-                        var _st = new MemoryStream();
-                        _st.Write(pop_data, (int)_header_len, (int)_msg_len);
-                        _st.Position = 0;
-
-                        lock (channels)
+                        byte[] pop_data = await database.ListRightPopAsync(listen_channel_name);
+                        if (pop_data != null)
                         {
-                            if (channels.TryGetValue(_ch_name, out redischannel ch))
+                            var _ch_name_size = (UInt32)pop_data[0] | ((UInt32)pop_data[1] << 8) | ((UInt32)pop_data[2] << 16) | ((UInt32)pop_data[3] << 24);
+                            var _ch_name = System.Text.Encoding.UTF8.GetString(pop_data, 4, (int)_ch_name_size);
+                            var _header_len = 4 + _ch_name_size;
+                            var _msg_len = pop_data.Length - _header_len;
+                            var _st = new MemoryStream();
+                            _st.Write(pop_data, (int)_header_len, (int)_msg_len);
+                            _st.Position = 0;
+
+                            lock (channels)
                             {
-                                ch._channel_onrecv.on_recv(_st.ToArray());
+                                if (channels.TryGetValue(_ch_name, out redischannel ch))
+                                {
+                                    ch._channel_onrecv.on_recv(_st.ToArray());
+                                }
+                                else
+                                {
+                                    ch = new redischannel(_ch_name, this);
+                                    channels.Add(_ch_name, ch);
+                                    ch._channel_onrecv.on_recv(_st.ToArray());
+                                }
                             }
-                            else
-                            {
-                                ch = new redischannel(_ch_name, this);
-                                channels.Add(_ch_name, ch);
-                                ch._channel_onrecv.on_recv(_st.ToArray());
-                            }
+                            is_idle = false;
                         }
-                        break;
+                        else
+                        {
+                            break;
+                        }
                     }
                     catch (RedisTimeoutException ex)
                     {
@@ -168,7 +176,6 @@ namespace abelkhan
                         Recover(ex);
                     }
                 }
-
 
                 if (is_idle)
                 {

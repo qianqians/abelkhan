@@ -74,6 +74,7 @@ void hub_service::init() {
 		auto host = _config->get_value_string("host");
 		auto port = _config->get_value_int("port");
 		_hub_service = std::make_shared<service::enetacceptservice>(host, (short)port);
+		_gatemng = std::make_shared<gatemanager>(_hub_service, shared_from_this());
 		is_enet = true;
 	}
 	else if (_root_config->has_key("redismq_listen") && _root_config->get_value_bool("redismq_listen")) {
@@ -86,7 +87,8 @@ void hub_service::init() {
 		else {
 			_hub_redismq_service = std::make_shared<service::redismqservice>(redismq_is_cluster, name_info.name, redismq_url);
 		}
-		_hub_redismq_service->start();
+		_hub_redismq_service->start(); 
+		_gatemng = std::make_shared<gatemanager>(_hub_redismq_service, shared_from_this());
 		is_enet = false;
 	}
 	else {
@@ -96,7 +98,6 @@ void hub_service::init() {
 	_timerservice = std::make_shared<service::timerservice>();
 	_close_handle = std::make_shared<closehandle>();
 	_hubmng = std::make_shared<hubsvrmanager>(shared_from_this());
-	_gatemng = std::make_shared<gatemanager>(_hub_service, shared_from_this());
 
 	_center_msg_handle = std::make_shared<center_msg_handle>(shared_from_this());
 	_dbproxy_msg_handle = std::make_shared<dbproxy_msg_handle>();

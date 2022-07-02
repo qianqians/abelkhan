@@ -195,7 +195,7 @@ namespace client
                 var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
                 var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
-                var _hubproxy = _ch_hubproxy_set[_hub_call_client_module.current_ch];
+                var _hubproxy = _ch_hubproxy_set[_hub_call_client_module.current_ch.Value];
 
                 current_hub = _hubproxy._hub_name;
                 modulemanager.process_module_mothed(func, argvs);
@@ -312,7 +312,7 @@ namespace client
         private class socketConnectTmp
         {
             public Socket s;
-            public string timeid;
+            public object timeid;
             public Action<bool, abelkhan.Ichannel> cb;
         }
 

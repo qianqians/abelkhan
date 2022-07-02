@@ -4,7 +4,7 @@
 #include <abelkhan.h>
 #include <signals.h>
 
-#include "error.h"
+#include "framework_error.h"
 
 namespace abelkhan
 {

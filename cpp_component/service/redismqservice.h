@@ -211,7 +211,7 @@ private:
 			redismqbuff data;
 			if (send_data.pop(data)) {
 				auto _reply = (redisReply*)redisCommand(_ctx, "LPUSH %s %b", data.ch_name.c_str(), data.buf, data.len);
-				if (_reply->type == REDIS_REPLY_PUSH) {
+				if (_reply->type == REDIS_REPLY_PUSH || _reply->type == REDIS_REPLY_INTEGER) {
 				}
 				else {
 					spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
@@ -231,10 +231,10 @@ private:
 					auto _header_len = 4 + _ch_name_size;
 					auto _msg_len = (uint32_t)_reply->len - _header_len;
 
-					auto tmp_buff = (unsigned char*)_buf[_header_len];
+					auto tmp_buff = (unsigned char*)&_buf[_header_len];
 					uint32_t len = (uint32_t)tmp_buff[0] | ((uint32_t)tmp_buff[1] << 8) | ((uint32_t)tmp_buff[2] << 16) | ((uint32_t)tmp_buff[3] << 24);
 					std::string err;
-					auto obj = msgpack11::MsgPack::parse((const char*)tmp_buff, len, err);
+					auto obj = msgpack11::MsgPack::parse((const char*)&tmp_buff[4], len, err);
 					recv_data.push(std::make_pair(_ch_name, obj));
 
 					is_idle = false;

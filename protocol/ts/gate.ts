@@ -1,5 +1,5 @@
 import * as abelkhan from "./abelkhan";
-import * as error from("./error");
+import * as framework_error from "./framework_error";
 /*this enum code is codegen by abelkhan codegen for ts*/
 
 /*this struct code is codegen by abelkhan codegen for typescript*/
@@ -255,7 +255,7 @@ export class hub_call_gate_reverse_reg_client_hub_cb{
     private module_rsp_cb : hub_call_gate_rsp_cb;
 
     public event_reverse_reg_client_hub_handle_cb : ()=>void | null;
-    public event_reverse_reg_client_hub_handle_err : (err:error.framework_error)=>void | null;
+    public event_reverse_reg_client_hub_handle_err : (err:framework_error.framework_error)=>void | null;
     public event_reverse_reg_client_hub_handle_timeout : ()=>void | null;
     constructor(_cb_uuid : number, _module_rsp_cb : hub_call_gate_rsp_cb){
         this.cb_uuid = _cb_uuid;
@@ -265,7 +265,7 @@ export class hub_call_gate_reverse_reg_client_hub_cb{
         this.event_reverse_reg_client_hub_handle_timeout = null;
     }
 
-    callBack(_cb:()=>void, _err:(err:error.framework_error)=>void)
+    callBack(_cb:()=>void, _err:(err:framework_error.framework_error)=>void)
     {
         this.event_reverse_reg_client_hub_handle_cb = _cb;
         this.event_reverse_reg_client_hub_handle_err = _err;
@@ -562,7 +562,7 @@ export class hub_call_gate_reverse_reg_client_hub_rsp extends abelkhan.Icaller {
         this.call_module_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_rsp", _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c);
     }
 
-    public err(err:error.framework_error){
+    public err(err:framework_error.framework_error){
         let _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c:any[] = [this.uuid_ef84ff12_6e4a_39cd_896e_27f3ac82fa1a];
         _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c.push(err);
         this.call_module_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_err", _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c);

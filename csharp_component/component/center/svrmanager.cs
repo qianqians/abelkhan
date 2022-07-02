@@ -145,7 +145,7 @@ namespace abelkhan
             svrproxys.Add(ch, _svrproxy);
             if (type == "dbproxy")
             {
-                throw new abelkhan.Exception("dbproxy not redismq node");
+                dbproxys.Add(_svrproxy);
             }
             _svrproxy.on_svr_close += on_svr_close;
 
@@ -157,6 +157,8 @@ namespace abelkhan
 
         public hubproxy reg_hub(abelkhan.Ichannel ch, string _type, string _name, bool is_reconn = false)
         {
+            log.log.trace("reg_hub name:{0}", _name);
+
             var _hubproxy = new hubproxy(ch, _type, _name);
             hubproxys.Add(ch, _hubproxy);
 

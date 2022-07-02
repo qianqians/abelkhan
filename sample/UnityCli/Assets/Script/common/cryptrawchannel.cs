@@ -42,6 +42,15 @@ namespace abelkhan
             Disconnect?.Invoke(this);
         }
 
+        public bool is_xor_key_crypt()
+        {
+            return true;
+        }
+
+        public void normal_send_crypt(byte[] data)
+        {
+        }
+
         private void onRead(IAsyncResult ar)
         {
             cryptrawchannel ch = ar.AsyncState as cryptrawchannel;

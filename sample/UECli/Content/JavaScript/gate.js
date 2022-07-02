@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.hub_call_gate_module = exports.hub_call_gate_reg_hub_rsp = exports.client_call_gate_module = exports.client_call_gate_get_hub_info_rsp = exports.client_call_gate_heartbeats_rsp = exports.hub_call_gate_caller = exports.rsp_cb_hub_call_gate_handle = exports.hub_call_gate_rsp_cb = exports.hub_call_gate_reg_hub_cb = exports.client_call_gate_caller = exports.rsp_cb_client_call_gate_handle = exports.client_call_gate_rsp_cb = exports.client_call_gate_get_hub_info_cb = exports.client_call_gate_heartbeats_cb = exports.protcol_to_hub_info = exports.hub_info_to_protcol = exports.hub_info = void 0;
+exports.hub_call_gate_module = exports.hub_call_gate_reverse_reg_client_hub_rsp = exports.hub_call_gate_reg_hub_rsp = exports.client_call_gate_module = exports.client_call_gate_get_hub_info_rsp = exports.client_call_gate_heartbeats_rsp = exports.hub_call_gate_caller = exports.rsp_cb_hub_call_gate_handle = exports.hub_call_gate_rsp_cb = exports.hub_call_gate_reverse_reg_client_hub_cb = exports.hub_call_gate_reg_hub_cb = exports.client_call_gate_caller = exports.rsp_cb_client_call_gate_handle = exports.client_call_gate_rsp_cb = exports.client_call_gate_get_hub_info_cb = exports.client_call_gate_heartbeats_cb = exports.protcol_to_hub_info = exports.hub_info_to_protcol = exports.hub_info = void 0;
 const abelkhan = require("./abelkhan");
 /*this enum code is codegen by abelkhan codegen for ts*/
 /*this struct code is codegen by abelkhan codegen for typescript*/
@@ -217,14 +217,42 @@ class hub_call_gate_reg_hub_cb {
     }
 }
 exports.hub_call_gate_reg_hub_cb = hub_call_gate_reg_hub_cb;
+class hub_call_gate_reverse_reg_client_hub_cb {
+    cb_uuid;
+    module_rsp_cb;
+    event_reverse_reg_client_hub_handle_cb;
+    event_reverse_reg_client_hub_handle_err;
+    event_reverse_reg_client_hub_handle_timeout;
+    constructor(_cb_uuid, _module_rsp_cb) {
+        this.cb_uuid = _cb_uuid;
+        this.module_rsp_cb = _module_rsp_cb;
+        this.event_reverse_reg_client_hub_handle_cb = null;
+        this.event_reverse_reg_client_hub_handle_err = null;
+        this.event_reverse_reg_client_hub_handle_timeout = null;
+    }
+    callBack(_cb, _err) {
+        this.event_reverse_reg_client_hub_handle_cb = _cb;
+        this.event_reverse_reg_client_hub_handle_err = _err;
+        return this;
+    }
+    timeout(tick, timeout_cb) {
+        setTimeout(() => { this.module_rsp_cb.reverse_reg_client_hub_timeout(this.cb_uuid); }, tick);
+        this.event_reverse_reg_client_hub_handle_timeout = timeout_cb;
+    }
+}
+exports.hub_call_gate_reverse_reg_client_hub_cb = hub_call_gate_reverse_reg_client_hub_cb;
 /*this cb code is codegen by abelkhan for ts*/
 class hub_call_gate_rsp_cb extends abelkhan.Imodule {
     map_reg_hub;
+    map_reverse_reg_client_hub;
     constructor(modules) {
         super("hub_call_gate_rsp_cb");
         this.map_reg_hub = new Map();
         modules.reg_method("hub_call_gate_rsp_cb_reg_hub_rsp", [this, this.reg_hub_rsp.bind(this)]);
         modules.reg_method("hub_call_gate_rsp_cb_reg_hub_err", [this, this.reg_hub_err.bind(this)]);
+        this.map_reverse_reg_client_hub = new Map();
+        modules.reg_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_rsp", [this, this.reverse_reg_client_hub_rsp.bind(this)]);
+        modules.reg_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_err", [this, this.reverse_reg_client_hub_err.bind(this)]);
     }
     reg_hub_rsp(inArray) {
         let uuid = inArray[0];
@@ -255,6 +283,36 @@ class hub_call_gate_rsp_cb extends abelkhan.Imodule {
         this.map_reg_hub.delete(uuid);
         return rsp;
     }
+    reverse_reg_client_hub_rsp(inArray) {
+        let uuid = inArray[0];
+        let _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c = [];
+        var rsp = this.try_get_and_del_reverse_reg_client_hub_cb(uuid);
+        if (rsp && rsp.event_reverse_reg_client_hub_handle_cb) {
+            rsp.event_reverse_reg_client_hub_handle_cb.apply(null, _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c);
+        }
+    }
+    reverse_reg_client_hub_err(inArray) {
+        let uuid = inArray[0];
+        let _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c = [];
+        _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c.push(inArray[1]);
+        var rsp = this.try_get_and_del_reverse_reg_client_hub_cb(uuid);
+        if (rsp && rsp.event_reverse_reg_client_hub_handle_err) {
+            rsp.event_reverse_reg_client_hub_handle_err.apply(null, _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c);
+        }
+    }
+    reverse_reg_client_hub_timeout(cb_uuid) {
+        let rsp = this.try_get_and_del_reverse_reg_client_hub_cb(cb_uuid);
+        if (rsp) {
+            if (rsp.event_reverse_reg_client_hub_handle_timeout) {
+                rsp.event_reverse_reg_client_hub_handle_timeout.apply(null);
+            }
+        }
+    }
+    try_get_and_del_reverse_reg_client_hub_cb(uuid) {
+        var rsp = this.map_reverse_reg_client_hub.get(uuid);
+        this.map_reverse_reg_client_hub.delete(uuid);
+        return rsp;
+    }
 }
 exports.hub_call_gate_rsp_cb = hub_call_gate_rsp_cb;
 exports.rsp_cb_hub_call_gate_handle = null;
@@ -277,6 +335,22 @@ class hub_call_gate_caller extends abelkhan.Icaller {
             exports.rsp_cb_hub_call_gate_handle.map_reg_hub.set(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, cb_reg_hub_obj);
         }
         return cb_reg_hub_obj;
+    }
+    reverse_reg_client_hub(client_uuid) {
+        let uuid_5352b179_7aef_5875_a08f_06381972529f = Math.round(this.uuid_9796175c_1119_3833_bf31_5ee139b40edc++);
+        let _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c = [uuid_5352b179_7aef_5875_a08f_06381972529f];
+        _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c.push(client_uuid);
+        this.call_module_method("hub_call_gate_reverse_reg_client_hub", _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c);
+        let cb_reverse_reg_client_hub_obj = new hub_call_gate_reverse_reg_client_hub_cb(uuid_5352b179_7aef_5875_a08f_06381972529f, exports.rsp_cb_hub_call_gate_handle);
+        if (exports.rsp_cb_hub_call_gate_handle) {
+            exports.rsp_cb_hub_call_gate_handle.map_reverse_reg_client_hub.set(uuid_5352b179_7aef_5875_a08f_06381972529f, cb_reverse_reg_client_hub_obj);
+        }
+        return cb_reverse_reg_client_hub_obj;
+    }
+    unreg_client_hub(client_uuid) {
+        let _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae = [];
+        _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae.push(client_uuid);
+        this.call_module_method("hub_call_gate_unreg_client_hub", _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae);
     }
     disconnect_client(client_uuid) {
         let _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85 = [];
@@ -405,17 +479,38 @@ class hub_call_gate_reg_hub_rsp extends abelkhan.Icaller {
     }
 }
 exports.hub_call_gate_reg_hub_rsp = hub_call_gate_reg_hub_rsp;
+class hub_call_gate_reverse_reg_client_hub_rsp extends abelkhan.Icaller {
+    uuid_ef84ff12_6e4a_39cd_896e_27f3ac82fa1a;
+    constructor(_ch, _uuid) {
+        super("hub_call_gate_rsp_cb", _ch);
+        this.uuid_ef84ff12_6e4a_39cd_896e_27f3ac82fa1a = _uuid;
+    }
+    rsp() {
+        let _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c = [this.uuid_ef84ff12_6e4a_39cd_896e_27f3ac82fa1a];
+        this.call_module_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_rsp", _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c);
+    }
+    err(err) {
+        let _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c = [this.uuid_ef84ff12_6e4a_39cd_896e_27f3ac82fa1a];
+        _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c.push(err);
+        this.call_module_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_err", _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c);
+    }
+}
+exports.hub_call_gate_reverse_reg_client_hub_rsp = hub_call_gate_reverse_reg_client_hub_rsp;
 class hub_call_gate_module extends abelkhan.Imodule {
     modules;
     constructor(modules) {
         super("hub_call_gate");
         this.modules = modules;
         this.modules.reg_method("hub_call_gate_reg_hub", [this, this.reg_hub.bind(this)]);
+        this.modules.reg_method("hub_call_gate_reverse_reg_client_hub", [this, this.reverse_reg_client_hub.bind(this)]);
+        this.modules.reg_method("hub_call_gate_unreg_client_hub", [this, this.unreg_client_hub.bind(this)]);
         this.modules.reg_method("hub_call_gate_disconnect_client", [this, this.disconnect_client.bind(this)]);
         this.modules.reg_method("hub_call_gate_forward_hub_call_client", [this, this.forward_hub_call_client.bind(this)]);
         this.modules.reg_method("hub_call_gate_forward_hub_call_group_client", [this, this.forward_hub_call_group_client.bind(this)]);
         this.modules.reg_method("hub_call_gate_forward_hub_call_global_client", [this, this.forward_hub_call_global_client.bind(this)]);
         this.cb_reg_hub = null;
+        this.cb_reverse_reg_client_hub = null;
+        this.cb_unreg_client_hub = null;
         this.cb_disconnect_client = null;
         this.cb_forward_hub_call_client = null;
         this.cb_forward_hub_call_group_client = null;
@@ -432,6 +527,25 @@ class hub_call_gate_module extends abelkhan.Imodule {
             this.cb_reg_hub.apply(null, _argv_);
         }
         this.rsp = null;
+    }
+    cb_reverse_reg_client_hub;
+    reverse_reg_client_hub(inArray) {
+        let _cb_uuid = inArray[0];
+        let _argv_ = [];
+        _argv_.push(inArray[1]);
+        this.rsp = new hub_call_gate_reverse_reg_client_hub_rsp(this.current_ch, _cb_uuid);
+        if (this.cb_reverse_reg_client_hub) {
+            this.cb_reverse_reg_client_hub.apply(null, _argv_);
+        }
+        this.rsp = null;
+    }
+    cb_unreg_client_hub;
+    unreg_client_hub(inArray) {
+        let _argv_ = [];
+        _argv_.push(inArray[0]);
+        if (this.cb_unreg_client_hub) {
+            this.cb_unreg_client_hub.apply(null, _argv_);
+        }
     }
     cb_disconnect_client;
     disconnect_client(inArray) {

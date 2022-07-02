@@ -10,7 +10,7 @@
   },
   {
     "__type__": "cc.Scene",
-    "_name": "scene",
+    "_name": "",
     "_objFlags": 0,
     "_parent": null,
     "_children": [
@@ -28,7 +28,7 @@
     "_globals": {
       "__id__": 8
     },
-    "_id": "ae97bab0-b0f5-49f5-89d4-60edd28d53fa"
+    "_id": "f46876e4-e81b-4931-b493-6d367be385e7"
   },
   {
     "__type__": "cc.Node",
@@ -213,7 +213,7 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "_id": "c1sAYBjnJI3YM4+mX9TU8m"
+    "_id": "8bb02HT19P5rjsJTlXLj/w"
   },
   {
     "__type__": "cc.SceneGlobals",
@@ -302,8 +302,8 @@
     "_maxReceived": 4,
     "_size": {
       "__type__": "cc.Vec2",
-      "x": 512,
-      "y": 512
+      "x": 1024,
+      "y": 1024
     }
   },
   {

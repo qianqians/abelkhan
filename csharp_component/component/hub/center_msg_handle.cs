@@ -87,7 +87,7 @@ namespace hub
 
 			if (type == "dbproxy")
 			{
-				log.log.trace("recv distribute server address connect_dbproxy ip:{0}, port:{1}");
+				log.log.trace("recv distribute server address connect_dbproxy name:{0}", name);
 				_hub.connect_dbproxy(name);
 			}
 			if (type == "gate")
