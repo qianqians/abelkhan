@@ -19,9 +19,8 @@ hubproxy::hubproxy(std::shared_ptr<hub_service> _hub_, std::string hub_name, std
 	_hub_call_hub_caller = std::make_shared<abelkhan::hub_call_hub_caller>(hub_ch, service::_modulemng);
 }
 
-void hubproxy::call_hub(const std::string& module_name, const std::string& func_name, const msgpack11::MsgPack::array& argvs) {
+void hubproxy::call_hub(const std::string& func_name, const msgpack11::MsgPack::array& argvs) {
 	msgpack11::MsgPack::array event_;
-	event_.push_back(module_name);
 	event_.push_back(func_name);
 	event_.push_back(argvs);
 	msgpack11::MsgPack _pack(event_);
@@ -85,14 +84,14 @@ void hubsvrmanager::reg_hub(std::string hub_name, std::string hub_type, std::sha
 	ch_hubproxys[ch] = _proxy;
 }
 
-void hubsvrmanager::call_hub(const std::string& hub_name, const std::string& module_name, const std::string& func_name, const msgpack11::MsgPack::array& argvs) {
+void hubsvrmanager::call_hub(const std::string& hub_name, const std::string& func_name, const msgpack11::MsgPack::array& argvs) {
 	auto it_hubproxy = hubproxys.find(hub_name);
 	if (it_hubproxy == hubproxys.end()) {
 		spdlog::error("unreg hub:{0}!", hub_name);
 		return;
 	}
 
-	it_hubproxy->second->call_hub(module_name, func_name, argvs);
+	it_hubproxy->second->call_hub(func_name, argvs);
 }
 
 std::shared_ptr<hubproxy> hubsvrmanager::get_hub(std::shared_ptr<abelkhan::Ichannel> ch) {

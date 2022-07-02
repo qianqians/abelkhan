@@ -23,7 +23,7 @@ class hubproxy {
 public:
 	hubproxy(std::shared_ptr<hub_service> _hub_, std::string hub_name, std::string hub_type, std::shared_ptr<abelkhan::Ichannel> hub_ch);
 
-	void call_hub(const std::string& module_name, const std::string& func_name, const msgpack11::MsgPack::array& argvs);
+	void call_hub(const std::string& func_name, const msgpack11::MsgPack::array& argvs);
 
 	void client_seep(std::string client_uuid);
 
@@ -45,7 +45,7 @@ public:
 
 	void reg_hub(std::string hub_name, std::string hub_type, std::shared_ptr<abelkhan::Ichannel> ch);
 
-	void call_hub(const std::string& hub_name, const std::string& module_name, const std::string& func_name, const msgpack11::MsgPack::array& argvs);
+	void call_hub(const std::string& hub_name, const std::string& func_name, const msgpack11::MsgPack::array& argvs);
 
 	std::shared_ptr<hubproxy> get_hub(std::shared_ptr<abelkhan::Ichannel> ch);
 
