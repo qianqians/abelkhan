@@ -131,6 +131,11 @@ namespace abelkhan
                             log.log.err("ListLeftPushAsync error:{0}", ex);
                             Recover(ex);
                         }
+                        catch (RedisConnectionException ex)
+                        {
+                            log.log.err("ListLeftPushAsync error:{0}", ex);
+                            Recover(ex);
+                        }
                     }
                     is_idle = false;
                 }
@@ -171,6 +176,11 @@ namespace abelkhan
                         }
                     }
                     catch (RedisTimeoutException ex)
+                    {
+                        log.log.err("ListLeftPushAsync error:{0}", ex);
+                        Recover(ex);
+                    }
+                    catch (RedisConnectionException ex)
                     {
                         log.log.err("ListLeftPushAsync error:{0}", ex);
                         Recover(ex);

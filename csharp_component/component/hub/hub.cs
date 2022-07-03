@@ -71,7 +71,6 @@ namespace hub
                 var redismq_url = _root_config.get_value_string("redis_for_mq");
                 _redis_mq_service = new abelkhan.redis_mq(redismq_url, name);
                 _gates = new gatemanager(_redis_mq_service);
-                is_enet = false;
             }
             else if (_config.has_key("host") && _config.has_key("port"))
             {
@@ -88,7 +87,6 @@ namespace hub
                 };
                 _enetservice.start();
                 _gates = new gatemanager(_enetservice);
-                is_enet = true;
             }
             else
             {
@@ -498,7 +496,6 @@ namespace hub
         private string center_host;
         private short center_port;
 
-        private bool is_enet = false;
         private uint reconn_count = 0;
         private centerproxy _centerproxy;
 
