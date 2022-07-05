@@ -279,7 +279,10 @@ namespace dbproxy
             }
             log.log.info("server closed, dbproxy server:{0}", dbproxy.name);
 
-            _acceptservice.close();
+            if (_acceptservice != null)
+            {
+                _acceptservice.close();
+            }
             dbproxy._dbevent.join_all();
 
             Monitor.Exit(_run_mu);
