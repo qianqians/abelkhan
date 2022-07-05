@@ -223,7 +223,7 @@ void gate_service::run() {
 			auto tick_time = poll();
 
 			if (tick_time < 33) {
-				std::this_thread::yield();
+				std::this_thread::sleep_for(std::chrono::milliseconds(33 - tick_time));
 			}
 		}
 		catch (std::exception e) {
