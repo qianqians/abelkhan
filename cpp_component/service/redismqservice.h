@@ -151,24 +151,9 @@ public:
 	}
 
 private:
-	void re_conn_redis() {
-		auto ip_port = concurrent::split(_redis_url, ":");
-		_ctx = redisConnect(ip_port[0].c_str(), std::stoi(ip_port[1]));
-		if (!_ctx) {
-			spdlog::error("redisConnect faild url:{0}!", _redis_url);
-			throw redismqserviceException("redisConnect faild!");
-		}
-
-		if (!_password.empty()) {
-			auto reply = (redisReply*)redisCommand(_ctx, "AUTH % s", _password.c_str());
-			if (reply->type == REDIS_REPLY_ERROR) {
-				spdlog::error("redisContext auth faild:{0}!", _password);
-				throw redismqserviceException("redisContext auth faild!");
-			}
-		}
-	}
-
 	void thread_poll_cluster() {
+		int sleep_time = 1;
+		int idle_count = 0;
 		while (run_flag) {
 			bool is_idle = true;
 			redismqbuff data;
@@ -182,6 +167,8 @@ private:
 				freeReplyObject(_reply);
 				free(static_cast<void*>(data.buf));
 				is_idle = false;
+				sleep_time = 1;
+				idle_count = 0;
 			}
 
 			{
@@ -201,6 +188,8 @@ private:
 					recv_data.push(std::make_pair(_ch_name, obj));
 
 					is_idle = false;
+					sleep_time = 1;
+					idle_count = 0;
 				}
 				else if(_reply->type != REDIS_REPLY_NIL) {
 					spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
@@ -209,7 +198,28 @@ private:
 			}
 
 			if (is_idle) {
-				std::this_thread::yield();
+				idle_count++;
+				if (sleep_time < 16) {
+					sleep_time *= idle_count;
+				}
+				std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
+			}
+		}
+	}
+	
+	void re_conn_redis() {
+		auto ip_port = concurrent::split(_redis_url, ":");
+		_ctx = redisConnect(ip_port[0].c_str(), std::stoi(ip_port[1]));
+		if (!_ctx) {
+			spdlog::error("redisConnect faild url:{0}!", _redis_url);
+			throw redismqserviceException("redisConnect faild!");
+		}
+
+		if (!_password.empty()) {
+			auto reply = (redisReply*)redisCommand(_ctx, "AUTH % s", _password.c_str());
+			if (reply->type == REDIS_REPLY_ERROR) {
+				spdlog::error("redisContext auth faild:{0}!", _password);
+				throw redismqserviceException("redisContext auth faild!");
 			}
 		}
 	}
@@ -278,19 +288,29 @@ private:
 	}
 
 	void thread_poll_single() {
+		int sleep_time = 1;
+		int idle_count = 0;
 		while (run_flag) {
 			bool is_idle = true;
 			redismqbuff data;
 			if (send_data.pop(data)) {
 				redis_mq_send_data(data);
 				is_idle = false;
+				sleep_time = 1;
+				idle_count = 0;
 			}
 
 			if (redis_mq_recv_data()){
-				is_idle = false;	
+				is_idle = false;
+				sleep_time = 1;
+				idle_count = 0;
 			}
 
 			if (is_idle) {
+				idle_count++;
+				if (sleep_time < 16) {
+					sleep_time *= idle_count;
+				}
 				std::this_thread::yield();
 			}
 		}
