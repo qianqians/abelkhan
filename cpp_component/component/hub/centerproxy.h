@@ -21,7 +21,7 @@ struct name_info {
 	std::string name;
 };
 
-class centerproxy {
+class centerproxy : public std::enable_shared_from_this<centerproxy> {
 public:
 	centerproxy(std::shared_ptr<abelkhan::Ichannel> ch, std::shared_ptr<service::timerservice> _timer) {
 		is_reg_sucess = false;
@@ -85,9 +85,10 @@ public:
 	
 	void heartbeat(uint32_t tick) {
 		spdlog::trace("heartbeat center!");
-		_center_caller->heartbeat(tick)->callBack([this] {
+		auto this_ptr = shared_from_this();
+		_center_caller->heartbeat(tick)->callBack([this_ptr] {
 			spdlog::trace("heartbeat center server sucessed");
-			timetmp = _timerservice->Tick;
+			this_ptr->timetmp = this_ptr->_timerservice->Tick;
 		}, [] {
 			spdlog::trace("heartbeat center server faild");
 		})->timeout(5 * 1000, [] {
