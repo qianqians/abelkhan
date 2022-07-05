@@ -311,7 +311,7 @@ private:
 				if (sleep_time < 16) {
 					sleep_time *= idle_count;
 				}
-				std::this_thread::yield();
+				std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
 			}
 		}
 	}
