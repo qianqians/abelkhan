@@ -26,6 +26,15 @@ namespace hub
             hubproxy _proxy = new hubproxy(hub_name, hub_type, ch);
             if (hubproxys.TryGetValue(hub_name, out hubproxy _old_proxy))
             {
+                if (wait_destory_hubproxys.Remove(hub_name, out hubproxy t_destory_hubproxy))
+                {
+                    lock (hub.remove_chs)
+                    {
+                        hub.remove_chs.Add(t_destory_hubproxy._ch);
+                    }
+
+                    ch_hubproxys.Remove(t_destory_hubproxy._ch);
+                }
                 wait_destory_hubproxys.Add(hub_name, _old_proxy);
                 hubproxys[hub_name] = _proxy;
                 on_hubproxy_reconn?.Invoke(_proxy);

@@ -126,7 +126,7 @@ namespace abelkhan
         public void reg_svr(abelkhan.Ichannel ch, string type, string name, string host, ushort port, bool is_reconn = false)
         {
             var _svrproxy = new svrproxy(ch, type, name, host, port);
-            svrproxys.Add(ch, _svrproxy);
+            svrproxys[ch] = _svrproxy;
             if (type == "dbproxy")
             {
                 dbproxys.Add(_svrproxy);
@@ -142,7 +142,7 @@ namespace abelkhan
         public void reg_svr(abelkhan.Ichannel ch, string type, string name, bool is_reconn = false)
         {
             var _svrproxy = new svrproxy(ch, type, name);
-            svrproxys.Add(ch, _svrproxy);
+            svrproxys[ch] = _svrproxy;
             if (type == "dbproxy")
             {
                 dbproxys.Add(_svrproxy);
@@ -160,7 +160,7 @@ namespace abelkhan
             log.log.trace("reg_hub name:{0}", _name);
 
             var _hubproxy = new hubproxy(ch, _type, _name);
-            hubproxys.Add(ch, _hubproxy);
+            hubproxys[ch] = _hubproxy;
 
             if (!is_reconn)
             {
