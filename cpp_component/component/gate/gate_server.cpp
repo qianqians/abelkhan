@@ -134,9 +134,9 @@ void gate_service::init() {
 			auto is_ssl = _config->get_value_bool("is_ssl");
 			std::string certificate, private_key, tmp_dh;
 			if (is_ssl) {
-				auto certificate = _config->get_value_string("certificate");
-				auto private_key = _config->get_value_string("private_key");
-				auto tmp_dh = _config->get_value_string("tmp_dh");
+				certificate = _config->get_value_string("certificate");
+				private_key = _config->get_value_string("private_key");
+				tmp_dh = _config->get_value_string("tmp_dh");
 			}
 			_websocket_service = std::make_shared<service::webacceptservice>(websocket_outside_host, websocket_outside_port, is_ssl, certificate, private_key, tmp_dh);
 			_websocket_service->sigchannelconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
