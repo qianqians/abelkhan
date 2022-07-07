@@ -68,6 +68,7 @@ public:
 			_gates->client_connect(cuuid, _gate_call_hub_module->current_ch);
 			_gates->current_client_cuuid = cuuid;
 			_hub->modules.process_module_mothed(func_name, argvs);
+			_hub->sig_client_msg.emit(cuuid);
 			_gates->current_client_cuuid = "";
 		}
 		catch (std::exception e) {

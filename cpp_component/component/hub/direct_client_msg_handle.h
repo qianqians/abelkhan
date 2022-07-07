@@ -82,6 +82,7 @@ public:
 
 			_gates->current_client_cuuid = _proxy->_cuuid;
 			_hub->modules.process_module_mothed(func, argvs);
+			_hub->sig_client_msg.emit(_proxy->_cuuid);
 			_gates->current_client_cuuid = "";
 		}
 		catch (std::exception e) {

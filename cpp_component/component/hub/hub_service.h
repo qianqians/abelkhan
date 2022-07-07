@@ -102,6 +102,7 @@ public:
 
 	concurrent::signals<void(std::string) > sig_client_disconnect;
 	concurrent::signals<void(std::string) > sig_client_exception;
+	concurrent::signals<void(std::string) > sig_client_msg;
 
 	concurrent::signals<void(std::string) > sig_direct_client_disconnect;
 	

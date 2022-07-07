@@ -196,6 +196,15 @@ namespace hub
             _dbproxy_msg_handle = new dbproxy_msg_handle();
             _gate_msg_handle = new gate_msg_handle();
             _client_msg_handle = new client_msg_handle();
+
+            _gate_msg_handle.on_client_msg += (uuid) =>
+            {
+                on_client_msg?.Invoke(uuid);
+            };
+            _client_msg_handle.on_client_msg += (uuid) =>
+            {
+                on_client_msg?.Invoke(uuid);
+            };
         }
 
         public Action onCenterCrash;
@@ -511,6 +520,7 @@ namespace hub
 
         public event Action<string> on_client_disconnect;
         public event Action<string> on_client_exception;
+        public event Action<string> on_client_msg;
 
         public event Action<string> on_direct_client_disconnect;
     }

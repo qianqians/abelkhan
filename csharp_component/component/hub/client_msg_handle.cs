@@ -40,6 +40,7 @@ namespace hub
 			rsp.rsp((ulong)service.timerservice.Tick);
 		}
 
+		public Action<string> on_client_msg;
 		public void call_hub(byte[] arpc_rgv)
 		{
 			var _proxy = hub._gates.get_directproxy(_client_call_hub_module.current_ch.Value);
@@ -60,6 +61,7 @@ namespace hub
 
 						hub._gates.current_client_uuid = _proxy._cuuid;
 						hub._modules.process_module_mothed(func, argvs);
+						on_client_msg?.Invoke(_proxy._cuuid);
 						hub._gates.current_client_uuid = "";
 					}
 				}

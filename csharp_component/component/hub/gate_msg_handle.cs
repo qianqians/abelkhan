@@ -27,24 +27,34 @@ namespace hub
             hub._gates.client_exception(client_uuid);
         }
 
+        public Action<string> on_client_msg;
         public void client_call_hub(String uuid, byte[] rpc_argv)
 		{
-            var _serializer = MessagePackSerializer.Get<ArrayList>();
-            using (var st = new MemoryStream())
+            try
             {
-                st.Write(rpc_argv);
-                st.Position = 0;
-                var _event = _serializer.Unpack(st);
+                var _serializer = MessagePackSerializer.Get<ArrayList>();
+                using (var st = new MemoryStream())
+                {
+                    st.Write(rpc_argv);
+                    st.Position = 0;
+                    var _event = _serializer.Unpack(st);
 
-                var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
-                var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
+                    var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
+                    var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
-                hub._gates.current_client_uuid = uuid;
-                hub._gates.client_connect(uuid, _gate_call_hub_module.current_ch.Value);
-                hub._modules.process_module_mothed(func, argvs);
-                hub._gates.current_client_uuid = "";
+                    hub._gates.current_client_uuid = uuid;
+                    hub._gates.client_connect(uuid, _gate_call_hub_module.current_ch.Value);
+                    hub._modules.process_module_mothed(func, argvs);
+                    on_client_msg?.Invoke(uuid);
+                    hub._gates.current_client_uuid = "";
+                }
             }
-		}
+            catch (Exception e)
+            {
+                log.log.err("call_hub exception:{0}", e);
+                hub._gates.client_exception(uuid);
+            }
+        }
 	}
 }
 
