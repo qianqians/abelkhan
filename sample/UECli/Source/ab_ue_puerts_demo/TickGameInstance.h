@@ -8,12 +8,21 @@
 #include "HAL/Runnable.h"
 #include "HAL/RunnableThread.h"
 #include "Runtime/Core/Public/Containers/Map.h"
+#include "Containers/Queue.h"
 #include "Runtime/Core/Public/Delegates/DelegateCombinations.h"
 #include "Runtime/NEtworking/Public/Networking.h"
 #include "Engine/GameInstance.h"
+
 #include "TickGameInstance.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FNotifyNetMsg, int32, socket, FArrayBuffer&, buffer);
+
+struct SocketInfo {
+	FIPv4Address addr;
+	uint16 port;
+	int32 index;
+	FSocket* socket;
+};
 
 class FReceiveThread : public FRunnable
 {
@@ -21,6 +30,7 @@ private:
 	FRunnableThread* thread = nullptr;
 	bool threadRuning;
 	UTickGameInstance* instance;
+	SocketInfo socket;
 
 public:
 	virtual uint32 Run() override;
@@ -28,7 +38,7 @@ public:
 	virtual void Stop() override;
 
 public:
-	FReceiveThread(UTickGameInstance* _instance);
+	FReceiveThread(UTickGameInstance* _instance, SocketInfo _socket);
 
 };
 
@@ -36,7 +46,7 @@ public:
  * 
  */
 UCLASS()
-class AB_UE_PUERTS_DEMO_API UTickGameInstance : public UGameInstance
+class AB_UE_PUERTS_DEMO_API UTickGameInstance : public UGameInstance, public FTickableGameObject
 {
 	GENERATED_BODY()
 
@@ -52,20 +62,28 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ClientSocket")
 	bool Send(int32 socket, FArrayBuffer buffer);
 
+	void Recv(int32 socketIndex, char* data, int32 len);
+
+	virtual void Tick(float DeltaTime);
+
+	virtual TStatId GetStatId() const;
+
+private:
 	UPROPERTY()
 	FNotifyNetMsg NotifyNetMsg;
 
 private:
-	struct SocketInfo {
-		FIPv4Address addr;
-		uint16 port;
+	TMap<int32, SocketInfo> socketMap;
+	//TQueue<SocketInfo, EQueueMode::Mpsc> newSocket;
+
+	struct NetData{
 		int32 index;
-		FSocket* socket;
+		char data[1024];
 		FArrayBuffer buffer;
 	};
-	TMap<int32, SocketInfo> socketMap;
+	TQueue<NetData, EQueueMode::Mpsc> netDataQue;
 
-	TSharedPtr<FReceiveThread> receiveThread;
+	TArray<TSharedPtr<FReceiveThread> > receiveThreads;
 
 	friend class FReceiveThread;
 

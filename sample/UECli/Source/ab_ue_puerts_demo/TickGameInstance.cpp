@@ -1,11 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "TickGameInstance.h"
 
-FReceiveThread::FReceiveThread(UTickGameInstance* _instance)
+#include "HAL/UnrealMemory.h"
+
+FReceiveThread::FReceiveThread(UTickGameInstance* _instance, SocketInfo _socket)
 {
 	instance = _instance;
+	socket = _socket;
 
 	threadRuning = true;
 	thread = FRunnableThread::Create(this, TEXT("ReceiveThread"), 0);
@@ -13,20 +15,21 @@ FReceiveThread::FReceiveThread(UTickGameInstance* _instance)
 
 uint32 FReceiveThread::Run()
 {
-	TArray<uint8> buff;
 	int32 readlen = 0;
 	while (threadRuning) {
-		for (auto s : instance->socketMap) {
-			buff.Init(0, 1024u);
-			s.Value.socket->Recv(buff.GetData(), buff.Num(), readlen);
-			if (readlen > 0) {
-				s.Value.buffer.Data = buff.GetData();
-				s.Value.buffer.Length = readlen;
-				if (instance->NotifyNetMsg.IsBound())
-				{
-					instance->NotifyNetMsg.Execute(s.Value.index, s.Value.buffer);
-				}
-			}
+		bool is_idel = true;
+		
+		TArray<uint8> buff;
+		buff.Init(0, 1024u);
+		readlen = 0;
+		socket.socket->Recv(buff.GetData(), buff.Num(), readlen);
+		if (readlen > 0) {
+			instance->Recv(socket.index, (char*)buff.GetData(), readlen);
+			is_idel = false;
+		}
+
+		if(is_idel) {
+			FPlatformProcess::Sleep(0.001);
 		}
 	}
 	return 1;
@@ -43,12 +46,13 @@ void FReceiveThread::Stop()
 
 void UTickGameInstance::OnStart()
 {
-	receiveThread = MakeShared<FReceiveThread>(this);
 }
 
 void UTickGameInstance::Shutdown()
 {
-	receiveThread->Stop();
+	for (auto receiveThread : receiveThreads) {
+		receiveThread->Stop();
+	}
 }
 
 
@@ -71,6 +75,9 @@ int32 UTickGameInstance::Connect(FString _ip, int32 _port)
 	info.index = socketMap.Num();
 	socketMap.Add(info.index, info);
 
+	auto receiveThread = MakeShared<FReceiveThread>(this, info);
+	receiveThreads.Add(receiveThread);
+
 	return info.index;
 }
 
@@ -90,4 +97,27 @@ bool UTickGameInstance::Send(int32 socket, FArrayBuffer buffer)
 	}
 
 	return true;
+}
+
+void UTickGameInstance::Recv(int32 socketIndex, char* data, int32 len) {
+	NetData netData;
+	netData.index = socketIndex;
+	FMemory::Memcpy(netData.data, data, len);
+	netData.buffer.Data = netData.data;
+	netData.buffer.Length = len;
+	netDataQue.Enqueue(netData);
+}
+
+void UTickGameInstance::Tick(float DeltaTime) {
+	NetData netData;
+	while (netDataQue.Dequeue(netData)) {
+		if (NotifyNetMsg.IsBound())
+		{
+			NotifyNetMsg.Execute(netData.index, netData.buffer);
+		}
+	}
+}
+
+TStatId UTickGameInstance::GetStatId() const {
+	return Super::GetStatID();
 }
