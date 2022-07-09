@@ -75,7 +75,9 @@ public:
 	void recv(const char * data, size_t len)
 	{
 		auto tmp_buffer = service::get_buffer(buff_offset + len);
-		memcpy(tmp_buffer, buff,  buff_offset);
+		if (buff_offset > 0) {
+			memcpy(tmp_buffer, buff, buff_offset);
+		}
 		memcpy(tmp_buffer + buff_offset, data, len);
 		buff_offset += (int32_t)len;
 
@@ -119,15 +121,15 @@ public:
 				}
 			}
 
-			auto tmp_offset = tmp_buff_len - tmp_buff_offset;
-			if (tmp_offset > 0)
+			buff_offset = tmp_buff_len - tmp_buff_offset;
+			if (buff_offset > 0)
 			{
-				if (tmp_offset > buff_offset) {
+				if (buff_offset > buff_size) {
+					buff_size = (buff_offset + 1023) / 1024 * 1024;
 					if (buff) {
 						free(buff);
 					}
-					buff = (char*)malloc(tmp_offset);
-					buff_offset = tmp_offset;
+					buff = (char*)malloc(buff_size);
 				}
 				memcpy(buff, &tmp_buffer[tmp_buff_offset], buff_offset);
 			}
