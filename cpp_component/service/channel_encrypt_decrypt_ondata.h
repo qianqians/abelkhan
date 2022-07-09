@@ -3,6 +3,7 @@
 
 #include <abelkhan.h>
 #include <log.h>
+#include <buffer.h>
 
 #include "modulemng_handle.h"
 
@@ -15,10 +16,9 @@ public:
 	{
 		ch = _ch;
 
-		buff_size = 16 * 1024;
+		buff_size = 0;
 		buff_offset = 0;
-		buff = (char*)malloc(buff_size);
-		memset(buff, 0, buff_size);
+		buff = nullptr;
 
 		is_compress_and_encrypt = false;
 	}
@@ -74,15 +74,9 @@ public:
 
 	void recv(const char * data, size_t len)
 	{
-		if ((buff_offset + len) > buff_size)
-		{
-			buff_size = static_cast<int32_t>(((buff_offset + len + buff_size - 1) / buff_size) * buff_size);
-			auto new_buff = (char*)malloc(buff_size);
-			memcpy(new_buff, buff, buff_offset);
-			free(buff);
-			buff = new_buff;
-		}
-		memcpy(buff + buff_offset, data, len);
+		auto tmp_buffer = service::get_buffer(buff_offset + len);
+		memcpy(tmp_buffer, buff,  buff_offset);
+		memcpy(tmp_buffer + buff_offset, data, len);
 		buff_offset += (int32_t)len;
 
 		try{
@@ -90,7 +84,7 @@ public:
 			int32_t tmp_buff_offset = 0;
 			while (tmp_buff_len > (tmp_buff_offset + 4))
 			{
-				auto tmp_buff = (unsigned char *)buff + tmp_buff_offset;
+				auto tmp_buff = (unsigned char *)tmp_buffer + tmp_buff_offset;
 				uint32_t len = (uint32_t)tmp_buff[0] | ((uint32_t)tmp_buff[1] << 8) | ((uint32_t)tmp_buff[2] << 16) | ((uint32_t)tmp_buff[3] << 24);
 
 				if ((len + tmp_buff_offset + 4) <= (uint32_t)tmp_buff_len)
@@ -125,10 +119,17 @@ public:
 				}
 			}
 
-			buff_offset = tmp_buff_len - tmp_buff_offset;
-			if (tmp_buff_len > tmp_buff_offset)
+			auto tmp_offset = tmp_buff_len - tmp_buff_offset;
+			if (tmp_offset > 0)
 			{
-				memcpy(buff, &buff[tmp_buff_offset], buff_offset);
+				if (tmp_offset > buff_offset) {
+					if (buff) {
+						free(buff);
+					}
+					buff = (char*)malloc(tmp_offset);
+					buff_offset = tmp_offset;
+				}
+				memcpy(buff, &tmp_buffer[tmp_buff_offset], buff_offset);
 			}
 		}
 		catch (std::exception e) {
