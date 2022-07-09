@@ -113,7 +113,7 @@ public:
 				}
 				catch (asio::system_error e) {
 					if (e.code() == asio::error::would_block) {
-						std::this_thread::yield();
+						std::this_thread::sleep_for(std::chrono::milliseconds(1));
 						continue;
 					}
 					else {
