@@ -74,11 +74,11 @@ public:
 
 	void recv(const char * data, size_t len)
 	{
-		auto tmp_buffer = service::get_buffer(buff_offset + len);
+		auto tmp_buffer = buff_offset > 0 ? service::get_buffer(buff_offset + len) : data;
 		if (buff_offset > 0) {
-			memcpy(tmp_buffer, buff, buff_offset);
+			memcpy((void*)tmp_buffer, buff, buff_offset);
+			memcpy((void*)(tmp_buffer + buff_offset), data, len);
 		}
-		memcpy(tmp_buffer + buff_offset, data, len);
 		buff_offset += (int32_t)len;
 
 		try{
