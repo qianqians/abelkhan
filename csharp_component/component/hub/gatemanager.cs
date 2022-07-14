@@ -45,14 +45,7 @@ namespace hub
         private Dictionary<string, directproxy> direct_clients;
         private Dictionary<abelkhan.Ichannel, directproxy> ch_direct_clients;
 
-        private abelkhan.enetservice _gate_enet_conn;
         private abelkhan.redis_mq _gate_redismq_conn;
-
-        public gatemanager(abelkhan.enetservice _conn)
-		{
-            _gate_enet_conn = _conn;
-            init();
-        }
 
         public gatemanager(abelkhan.redis_mq _conn)
         {
@@ -73,31 +66,6 @@ namespace hub
 
             hub._timer.addticktime(10 * 1000, heartbeat_client);
         }
-
-        public void connect_gate(String name, String host, ushort port)
-		{
-            _gate_enet_conn.connect(host, port, (ch)=> {
-                var _proxy = new gateproxy(ch, name);
-
-                if (gates.TryGetValue(name, out gateproxy _old_proxy))
-                {
-                    _wait_destory_gateproxys.Add(name, _old_proxy);
-                    gates[name] = _proxy;
-                }
-                else
-                {
-                    gates.Add(name, _proxy);
-                }
-
-                ch_gateproxys.Add(ch, _proxy);
-
-                lock (hub.add_chs)
-                {
-                    hub.add_chs.Add(ch);
-                }
-                _proxy.reg_hub();
-            });
-		}
 
         public void connect_gate(String name)
         {

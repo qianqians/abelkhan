@@ -23,9 +23,9 @@ namespace abelkhan
 
         public event Action<abelkhan.Ichannel> on_connect;
 
-        public enetservice(string ip, ushort port)
+        public enetservice(string _host, ushort port)
         {
-            var listenEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
+            var listenEndPoint = new IPEndPoint(Dns.GetHostAddresses(_host)[0], port);
             host = new ENetHost(listenEndPoint, 2048, 1);
 
             back_conns = new Dictionary<UInt64, enetchannel>();

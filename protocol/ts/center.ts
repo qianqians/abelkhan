@@ -3,66 +3,6 @@ import * as abelkhan from "./abelkhan";
 
 /*this struct code is codegen by abelkhan codegen for typescript*/
 /*this caller code is codegen by abelkhan codegen for typescript*/
-export class center_reg_server_cb{
-    private cb_uuid : number;
-    private module_rsp_cb : center_rsp_cb;
-
-    public event_reg_server_handle_cb : ()=>void | null;
-    public event_reg_server_handle_err : ()=>void | null;
-    public event_reg_server_handle_timeout : ()=>void | null;
-    constructor(_cb_uuid : number, _module_rsp_cb : center_rsp_cb){
-        this.cb_uuid = _cb_uuid;
-        this.module_rsp_cb = _module_rsp_cb;
-        this.event_reg_server_handle_cb = null;
-        this.event_reg_server_handle_err = null;
-        this.event_reg_server_handle_timeout = null;
-    }
-
-    callBack(_cb:()=>void, _err:()=>void)
-    {
-        this.event_reg_server_handle_cb = _cb;
-        this.event_reg_server_handle_err = _err;
-        return this;
-    }
-
-    timeout(tick:number, timeout_cb:()=>void)
-    {
-        setTimeout(()=>{ this.module_rsp_cb.reg_server_timeout(this.cb_uuid); }, tick);
-        this.event_reg_server_handle_timeout = timeout_cb;
-    }
-
-}
-
-export class center_reconn_reg_server_cb{
-    private cb_uuid : number;
-    private module_rsp_cb : center_rsp_cb;
-
-    public event_reconn_reg_server_handle_cb : ()=>void | null;
-    public event_reconn_reg_server_handle_err : ()=>void | null;
-    public event_reconn_reg_server_handle_timeout : ()=>void | null;
-    constructor(_cb_uuid : number, _module_rsp_cb : center_rsp_cb){
-        this.cb_uuid = _cb_uuid;
-        this.module_rsp_cb = _module_rsp_cb;
-        this.event_reconn_reg_server_handle_cb = null;
-        this.event_reconn_reg_server_handle_err = null;
-        this.event_reconn_reg_server_handle_timeout = null;
-    }
-
-    callBack(_cb:()=>void, _err:()=>void)
-    {
-        this.event_reconn_reg_server_handle_cb = _cb;
-        this.event_reconn_reg_server_handle_err = _err;
-        return this;
-    }
-
-    timeout(tick:number, timeout_cb:()=>void)
-    {
-        setTimeout(()=>{ this.module_rsp_cb.reconn_reg_server_timeout(this.cb_uuid); }, tick);
-        this.event_reconn_reg_server_handle_timeout = timeout_cb;
-    }
-
-}
-
 export class center_reg_server_mq_cb{
     private cb_uuid : number;
     private module_rsp_cb : center_rsp_cb;
@@ -155,19 +95,11 @@ export class center_heartbeat_cb{
 
 /*this cb code is codegen by abelkhan for ts*/
 export class center_rsp_cb extends abelkhan.Imodule {
-    public map_reg_server:Map<number, center_reg_server_cb>;
-    public map_reconn_reg_server:Map<number, center_reconn_reg_server_cb>;
     public map_reg_server_mq:Map<number, center_reg_server_mq_cb>;
     public map_reconn_reg_server_mq:Map<number, center_reconn_reg_server_mq_cb>;
     public map_heartbeat:Map<number, center_heartbeat_cb>;
     constructor(modules:abelkhan.modulemng){
         super("center_rsp_cb");
-        this.map_reg_server = new Map<number, center_reg_server_cb>();
-        modules.reg_method("center_rsp_cb_reg_server_rsp", [this, this.reg_server_rsp.bind(this)]);
-        modules.reg_method("center_rsp_cb_reg_server_err", [this, this.reg_server_err.bind(this)]);
-        this.map_reconn_reg_server = new Map<number, center_reconn_reg_server_cb>();
-        modules.reg_method("center_rsp_cb_reconn_reg_server_rsp", [this, this.reconn_reg_server_rsp.bind(this)]);
-        modules.reg_method("center_rsp_cb_reconn_reg_server_err", [this, this.reconn_reg_server_err.bind(this)]);
         this.map_reg_server_mq = new Map<number, center_reg_server_mq_cb>();
         modules.reg_method("center_rsp_cb_reg_server_mq_rsp", [this, this.reg_server_mq_rsp.bind(this)]);
         modules.reg_method("center_rsp_cb_reg_server_mq_err", [this, this.reg_server_mq_err.bind(this)]);
@@ -178,72 +110,6 @@ export class center_rsp_cb extends abelkhan.Imodule {
         modules.reg_method("center_rsp_cb_heartbeat_rsp", [this, this.heartbeat_rsp.bind(this)]);
         modules.reg_method("center_rsp_cb_heartbeat_err", [this, this.heartbeat_err.bind(this)]);
     }
-    public reg_server_rsp(inArray:any[]){
-        let uuid = inArray[0];
-        let _argv_86ab8166_c1a7_3809_8c9b_df444f746076:any[] = [];
-        var rsp = this.try_get_and_del_reg_server_cb(uuid);
-        if (rsp && rsp.event_reg_server_handle_cb) {
-            rsp.event_reg_server_handle_cb.apply(null, _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
-        }
-    }
-
-    public reg_server_err(inArray:any[]){
-        let uuid = inArray[0];
-        let _argv_86ab8166_c1a7_3809_8c9b_df444f746076:any[] = [];
-        var rsp = this.try_get_and_del_reg_server_cb(uuid);
-        if (rsp && rsp.event_reg_server_handle_err) {
-            rsp.event_reg_server_handle_err.apply(null, _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
-        }
-    }
-
-    public reg_server_timeout(cb_uuid : number){
-        let rsp = this.try_get_and_del_reg_server_cb(cb_uuid);
-        if (rsp){
-            if (rsp.event_reg_server_handle_timeout) {
-                rsp.event_reg_server_handle_timeout.apply(null);
-            }
-        }
-    }
-
-    private try_get_and_del_reg_server_cb(uuid : number){
-        var rsp = this.map_reg_server.get(uuid);
-        this.map_reg_server.delete(uuid);
-        return rsp;
-    }
-
-    public reconn_reg_server_rsp(inArray:any[]){
-        let uuid = inArray[0];
-        let _argv_a181e793_c43f_3b7f_b19e_178395e5927d:any[] = [];
-        var rsp = this.try_get_and_del_reconn_reg_server_cb(uuid);
-        if (rsp && rsp.event_reconn_reg_server_handle_cb) {
-            rsp.event_reconn_reg_server_handle_cb.apply(null, _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
-        }
-    }
-
-    public reconn_reg_server_err(inArray:any[]){
-        let uuid = inArray[0];
-        let _argv_a181e793_c43f_3b7f_b19e_178395e5927d:any[] = [];
-        var rsp = this.try_get_and_del_reconn_reg_server_cb(uuid);
-        if (rsp && rsp.event_reconn_reg_server_handle_err) {
-            rsp.event_reconn_reg_server_handle_err.apply(null, _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
-        }
-    }
-
-    public reconn_reg_server_timeout(cb_uuid : number){
-        let rsp = this.try_get_and_del_reconn_reg_server_cb(cb_uuid);
-        if (rsp){
-            if (rsp.event_reconn_reg_server_handle_timeout) {
-                rsp.event_reconn_reg_server_handle_timeout.apply(null);
-            }
-        }
-    }
-
-    private try_get_and_del_reconn_reg_server_cb(uuid : number){
-        var rsp = this.map_reconn_reg_server.get(uuid);
-        this.map_reconn_reg_server.delete(uuid);
-        return rsp;
-    }
-
     public reg_server_mq_rsp(inArray:any[]){
         let uuid = inArray[0];
         let _argv_08d68bf2_5282_3fde_ba14_da677a0a04b2:any[] = [];
@@ -356,40 +222,6 @@ export class center_caller extends abelkhan.Icaller {
         }
     }
 
-    public reg_server(type:string, svr_name:string, host:string, port:number){
-        let uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = Math.round(this.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066++);
-
-        let _argv_86ab8166_c1a7_3809_8c9b_df444f746076:any[] = [uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255];
-        _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(type);
-        _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(svr_name);
-        _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(host);
-        _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push(port);
-        this.call_module_method("center_reg_server", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
-
-        let cb_reg_server_obj = new center_reg_server_cb(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255, rsp_cb_center_handle);
-        if (rsp_cb_center_handle){
-            rsp_cb_center_handle.map_reg_server.set(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255, cb_reg_server_obj);
-        }
-        return cb_reg_server_obj;
-    }
-
-    public reconn_reg_server(type:string, svr_name:string, host:string, port:number){
-        let uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d = Math.round(this.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066++);
-
-        let _argv_a181e793_c43f_3b7f_b19e_178395e5927d:any[] = [uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d];
-        _argv_a181e793_c43f_3b7f_b19e_178395e5927d.push(type);
-        _argv_a181e793_c43f_3b7f_b19e_178395e5927d.push(svr_name);
-        _argv_a181e793_c43f_3b7f_b19e_178395e5927d.push(host);
-        _argv_a181e793_c43f_3b7f_b19e_178395e5927d.push(port);
-        this.call_module_method("center_reconn_reg_server", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
-
-        let cb_reconn_reg_server_obj = new center_reconn_reg_server_cb(uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d, rsp_cb_center_handle);
-        if (rsp_cb_center_handle){
-            rsp_cb_center_handle.map_reconn_reg_server.set(uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d, cb_reconn_reg_server_obj);
-        }
-        return cb_reconn_reg_server_obj;
-    }
-
     public reg_server_mq(type:string, svr_name:string){
         let uuid_76a34a7f_e1e5_5f58_931b_9a21db9858bf = Math.round(this.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066++);
 
@@ -496,15 +328,6 @@ export class center_call_hub_caller extends abelkhan.Icaller {
         }
     }
 
-    public distribute_server_address(svr_type:string, svr_name:string, host:string, port:number){
-        let _argv_b71bf35c_d65b_3682_98d1_b934f5276558:any[] = [];
-        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(svr_type);
-        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(svr_name);
-        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(host);
-        _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push(port);
-        this.call_module_method("center_call_hub_distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
-    }
-
     public distribute_server_mq(svr_type:string, svr_name:string){
         let _argv_b4cefb58_72e6_34e7_8f22_562a06a9b393:any[] = [];
         _argv_b4cefb58_72e6_34e7_8f22_562a06a9b393.push(svr_type);
@@ -558,44 +381,6 @@ export class gm_center_caller extends abelkhan.Icaller {
 
 }
 /*this module code is codegen by abelkhan codegen for typescript*/
-export class center_reg_server_rsp extends abelkhan.Icaller {
-    private uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda : number;
-    constructor(_ch:abelkhan.Ichannel, _uuid:number){
-        super("center_rsp_cb", _ch);
-        this.uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda = _uuid;
-    }
-
-    public rsp(){
-        let _argv_86ab8166_c1a7_3809_8c9b_df444f746076:any[] = [this.uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda];
-        this.call_module_method("center_rsp_cb_reg_server_rsp", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
-    }
-
-    public err(){
-        let _argv_86ab8166_c1a7_3809_8c9b_df444f746076:any[] = [this.uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda];
-        this.call_module_method("center_rsp_cb_reg_server_err", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
-    }
-
-}
-
-export class center_reconn_reg_server_rsp extends abelkhan.Icaller {
-    private uuid_39461677_ebd9_335f_830b_8d355adba2f0 : number;
-    constructor(_ch:abelkhan.Ichannel, _uuid:number){
-        super("center_rsp_cb", _ch);
-        this.uuid_39461677_ebd9_335f_830b_8d355adba2f0 = _uuid;
-    }
-
-    public rsp(){
-        let _argv_a181e793_c43f_3b7f_b19e_178395e5927d:any[] = [this.uuid_39461677_ebd9_335f_830b_8d355adba2f0];
-        this.call_module_method("center_rsp_cb_reconn_reg_server_rsp", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
-    }
-
-    public err(){
-        let _argv_a181e793_c43f_3b7f_b19e_178395e5927d:any[] = [this.uuid_39461677_ebd9_335f_830b_8d355adba2f0];
-        this.call_module_method("center_rsp_cb_reconn_reg_server_err", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
-    }
-
-}
-
 export class center_reg_server_mq_rsp extends abelkhan.Icaller {
     private uuid_7254d987_ac9c_3d73_831c_f43efb3268a9 : number;
     constructor(_ch:abelkhan.Ichannel, _uuid:number){
@@ -658,49 +443,15 @@ export class center_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("center");
         this.modules = modules;
-        this.modules.reg_method("center_reg_server", [this, this.reg_server.bind(this)]);
-        this.modules.reg_method("center_reconn_reg_server", [this, this.reconn_reg_server.bind(this)]);
         this.modules.reg_method("center_reg_server_mq", [this, this.reg_server_mq.bind(this)]);
         this.modules.reg_method("center_reconn_reg_server_mq", [this, this.reconn_reg_server_mq.bind(this)]);
         this.modules.reg_method("center_heartbeat", [this, this.heartbeat.bind(this)]);
         this.modules.reg_method("center_closed", [this, this.closed.bind(this)]);
 
-        this.cb_reg_server = null;
-        this.cb_reconn_reg_server = null;
         this.cb_reg_server_mq = null;
         this.cb_reconn_reg_server_mq = null;
         this.cb_heartbeat = null;
         this.cb_closed = null;
-    }
-
-    public cb_reg_server : (type:string, svr_name:string, host:string, port:number)=>void | null;
-    reg_server(inArray:any[]){
-        let _cb_uuid = inArray[0];
-        let _argv_:any[] = [];
-        _argv_.push(inArray[1]);
-        _argv_.push(inArray[2]);
-        _argv_.push(inArray[3]);
-        _argv_.push(inArray[4]);
-        this.rsp = new center_reg_server_rsp(this.current_ch, _cb_uuid);
-        if (this.cb_reg_server){
-            this.cb_reg_server.apply(null, _argv_);
-        }
-        this.rsp = null;
-    }
-
-    public cb_reconn_reg_server : (type:string, svr_name:string, host:string, port:number)=>void | null;
-    reconn_reg_server(inArray:any[]){
-        let _cb_uuid = inArray[0];
-        let _argv_:any[] = [];
-        _argv_.push(inArray[1]);
-        _argv_.push(inArray[2]);
-        _argv_.push(inArray[3]);
-        _argv_.push(inArray[4]);
-        this.rsp = new center_reconn_reg_server_rsp(this.current_ch, _cb_uuid);
-        if (this.cb_reconn_reg_server){
-            this.cb_reconn_reg_server.apply(null, _argv_);
-        }
-        this.rsp = null;
     }
 
     public cb_reg_server_mq : (type:string, svr_name:string)=>void | null;
@@ -798,25 +549,11 @@ export class center_call_hub_module extends abelkhan.Imodule {
     constructor(modules:abelkhan.modulemng){
         super("center_call_hub");
         this.modules = modules;
-        this.modules.reg_method("center_call_hub_distribute_server_address", [this, this.distribute_server_address.bind(this)]);
         this.modules.reg_method("center_call_hub_distribute_server_mq", [this, this.distribute_server_mq.bind(this)]);
         this.modules.reg_method("center_call_hub_reload", [this, this.reload.bind(this)]);
 
-        this.cb_distribute_server_address = null;
         this.cb_distribute_server_mq = null;
         this.cb_reload = null;
-    }
-
-    public cb_distribute_server_address : (svr_type:string, svr_name:string, host:string, port:number)=>void | null;
-    distribute_server_address(inArray:any[]){
-        let _argv_:any[] = [];
-        _argv_.push(inArray[0]);
-        _argv_.push(inArray[1]);
-        _argv_.push(inArray[2]);
-        _argv_.push(inArray[3]);
-        if (this.cb_distribute_server_address){
-            this.cb_distribute_server_address.apply(null, _argv_);
-        }
     }
 
     public cb_distribute_server_mq : (svr_type:string, svr_name:string)=>void | null;

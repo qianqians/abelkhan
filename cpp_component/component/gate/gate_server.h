@@ -74,7 +74,6 @@ public:
 private:
 	uint32_t reconn_count;
 	uint32_t tick;
-	bool is_enet = false;
 
 	std::shared_ptr<config::config> _root_config;
 	std::shared_ptr<config::config> _center_config;
@@ -88,9 +87,6 @@ private:
 	std::shared_ptr<hub_svr_msg_handle> _hub_svr_msg_handle;
 	std::shared_ptr<client_msg_handle> _client_msg_handle;
 
-	std::string inside_host;
-	short inside_port;
-	std::shared_ptr<service::enetacceptservice> _hub_service;
 	std::shared_ptr<service::redismqservice> _hub_redismq_service;
 
 	std::string center_ip;
@@ -101,6 +97,7 @@ private:
 
 	std::shared_ptr<service::acceptservice> _client_service;
 	std::shared_ptr<service::webacceptservice> _websocket_service;
+	std::shared_ptr<service::enetacceptservice> _hub_service;
 
 	std::mutex _run_mu;
 

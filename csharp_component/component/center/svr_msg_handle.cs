@@ -20,40 +20,10 @@ namespace abelkhan
             _closehandle = closehandle;
 
             _center_module = new center_module(abelkhan.modulemng_handle._modulemng);
-            _center_module.on_reg_server += reg_server;
             _center_module.on_reg_server_mq += reg_server_mq;
-            _center_module.on_reconn_reg_server += on_reconn_reg_server;
             _center_module.on_reconn_reg_server_mq += on_reconn_reg_server_mq;
             _center_module.on_heartbeat += heartbeat;
             _center_module.on_closed += closed;
-        }
-
-        private void reg_server(string type, string svr_name, string host, ushort port)
-        {
-            var rsp = (abelkhan.center_reg_server_rsp)_center_module.rsp.Value;
-            rsp.rsp();
-
-            _svrmng.for_each_hub((hubproxy _proxy) =>{
-                _proxy.distribute_server_address(type, svr_name, host, port);
-            });
-
-            if (type == "hub")
-            {
-                var _hubproxy = _svrmng.reg_hub(_center_module.current_ch.Value, type, svr_name);
-
-                _svrmng.for_each_svr((svrproxy _proxy) =>{
-                    if (_proxy.is_mq)
-                    {
-                        _hubproxy.distribute_server_mq(_proxy.type, _proxy.name);
-                    }
-                    else
-                    {
-                        _hubproxy.distribute_server_address(_proxy.type, _proxy.name, _proxy.host, _proxy.port);
-                    }
-                });
-            }
-
-            _svrmng.reg_svr(_center_module.current_ch.Value, type, svr_name, host, port);
         }
 
         private void reg_server_mq(string type, string svr_name)
@@ -70,45 +40,11 @@ namespace abelkhan
                 var _hubproxy = _svrmng.reg_hub(_center_module.current_ch.Value, type, svr_name);
 
                 _svrmng.for_each_svr((svrproxy _proxy) => {
-                    if (_proxy.is_mq)
-                    {
-                        _hubproxy.distribute_server_mq(_proxy.type, _proxy.name);
-                    }
-                    else
-                    {
-                        _hubproxy.distribute_server_address(_proxy.type, _proxy.name, _proxy.host, _proxy.port);
-                    }
+                    _hubproxy.distribute_server_mq(_proxy.type, _proxy.name);
                 });
             }
 
             _svrmng.reg_svr(_center_module.current_ch.Value, type, svr_name);
-        }
-
-        private void on_reconn_reg_server(string type, string svr_name, string host, ushort port)
-        {
-            var rsp = (abelkhan.center_reconn_reg_server_rsp)_center_module.rsp.Value;
-            rsp.rsp();
-
-            _svrmng.for_each_new_hub((hubproxy _proxy) => {
-                _proxy.distribute_server_address(type, svr_name, host, port);
-            });
-
-            if (type == "hub")
-            {
-                var _hubproxy = _svrmng.reg_hub(_center_module.current_ch.Value, type, svr_name, true);
-
-                _svrmng.for_each_new_svr((svrproxy _proxy) => {
-                    if (_proxy.is_mq)
-                    {
-                        _hubproxy.distribute_server_mq(_proxy.type, _proxy.name);
-                    }
-                    else
-                    {
-                        _hubproxy.distribute_server_address(_proxy.type, _proxy.name, _proxy.host, _proxy.port);
-                    }
-                });
-            }
-            _svrmng.reg_svr(_center_module.current_ch.Value, type, svr_name, host, port, true);
         }
 
         private void on_reconn_reg_server_mq(string type, string svr_name)
@@ -125,14 +61,7 @@ namespace abelkhan
                 var _hubproxy = _svrmng.reg_hub(_center_module.current_ch.Value, type, svr_name, true);
 
                 _svrmng.for_each_new_svr((svrproxy _proxy) => {
-                    if (_proxy.is_mq)
-                    {
-                        _hubproxy.distribute_server_mq(_proxy.type, _proxy.name);
-                    }
-                    else
-                    {
-                        _hubproxy.distribute_server_address(_proxy.type, _proxy.name, _proxy.host, _proxy.port);
-                    }
+                    _hubproxy.distribute_server_mq(_proxy.type, _proxy.name);
                 });
             }
             _svrmng.reg_svr(_center_module.current_ch.Value, type, svr_name, true);

@@ -83,8 +83,6 @@ public:
 
 	gatemanager(std::shared_ptr<service::redismqservice> conn_, std::shared_ptr<hub_service> hub_);
 
-	void connect_gate(std::string gate_name, std::string ip, uint16_t port);
-
 	void connect_gate(std::string gate_name);
 
 	void client_connect(std::string client_uuid, std::shared_ptr<abelkhan::Ichannel> gate_ch);

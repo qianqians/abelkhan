@@ -59,15 +59,9 @@ public:
 
 	void connect_center();
 
-	void connect_gate(std::string gate_name, std::string ip, uint16_t port);
-	
 	void connect_gate(std::string gate_name);
 
-	void reg_hub(std::string hub_ip, uint16_t hub_port);
-
 	void reg_hub(std::string hub_name);
-
-	void try_connect_db(std::string dbproxy_name, std::string dbproxy_ip, uint16_t dbproxy_port);
 
 	void try_connect_db(std::string dbproxy_name);
 
@@ -93,6 +87,7 @@ public:
 	};
 	std::shared_ptr<addressinfo> tcp_address_info = nullptr;
 	std::shared_ptr<addressinfo> websocket_address_info = nullptr;
+	std::shared_ptr<addressinfo> enet_address_info = nullptr;
 
 	uint32_t tick;
 	bool is_busy;
@@ -139,7 +134,6 @@ private:
 
 	concurrent::signals<void(std::string, std::string) > sig_svr_be_closed;
 
-	std::shared_ptr<service::enetacceptservice> _hub_service;
 	std::shared_ptr<service::redismqservice> _hub_redismq_service;
 
 	std::shared_ptr<asio::io_service> _io_service;
@@ -148,6 +142,7 @@ private:
 	std::shared_ptr<service::acceptservice> _client_tcp_service;
 
 	std::shared_ptr<service::webacceptservice> _client_websocket_service;
+	std::shared_ptr<service::enetacceptservice> _hub_service;
 
 	std::shared_ptr<center_msg_handle> _center_msg_handle;
 	std::shared_ptr<dbproxy_msg_handle> _dbproxy_msg_handle;
@@ -155,7 +150,6 @@ private:
 	std::shared_ptr<gate_msg_handle> _gate_msg_handle;
 	std::shared_ptr<hub_svr_msg_handle> _hub_svr_msg_handle;
 
-	bool is_enet = false;
 	std::shared_ptr<centerproxy> _centerproxy;
 	uint32_t reconn_count;
 

@@ -35,11 +35,16 @@ public:
 	{
 	}
 
+	void set_xor_key_crypt() {
+		ch_encrypt_decrypt_ondata->set_xor_key_crypt();
+	}
+
 	bool is_xor_key_crypt() {
 		return ch_encrypt_decrypt_ondata->is_compress_and_encrypt;
 	}
 
 	void normal_crypt(char* data, size_t len) {
+		ch_encrypt_decrypt_ondata->xor_key_encrypt_decrypt(data, len);
 	}
 
 	void recv(char * data, size_t length)

@@ -66,34 +66,17 @@ void hub_service::init() {
 
 	_io_service = std::make_shared<asio::io_service>();
 
-	if (_config->has_key("host") && _config->has_key("port")) {
-		if (enet_initialize() != 0)
-		{
-			spdlog::error("An error occurred while initializing ENet!");
-		}
-		auto host = _config->get_value_string("host");
-		auto port = _config->get_value_int("port");
-		_hub_service = std::make_shared<service::enetacceptservice>(host, (short)port);
-		_gatemng = std::make_shared<gatemanager>(_hub_service, shared_from_this());
-		is_enet = true;
-	}
-	else if (_root_config->has_key("redismq_listen") && _root_config->get_value_bool("redismq_listen")) {
-		auto redismq_url = _root_config->get_value_string("redis_for_mq");
-		auto redismq_is_cluster = _root_config->get_value_bool("redismq_is_cluster");
-		if (_root_config->has_key("redis_for_mq_pwd")) {
-			auto password = _root_config->get_value_string("redis_for_mq_pwd");
-			_hub_redismq_service = std::make_shared<service::redismqservice>(redismq_is_cluster, name_info.name, redismq_url, password);
-		}
-		else {
-			_hub_redismq_service = std::make_shared<service::redismqservice>(redismq_is_cluster, name_info.name, redismq_url);
-		}
-		_hub_redismq_service->start(); 
-		_gatemng = std::make_shared<gatemanager>(_hub_redismq_service, shared_from_this());
-		is_enet = false;
+	auto redismq_url = _root_config->get_value_string("redis_for_mq");
+	auto redismq_is_cluster = _root_config->get_value_bool("redismq_is_cluster");
+	if (_root_config->has_key("redis_for_mq_pwd")) {
+		auto password = _root_config->get_value_string("redis_for_mq_pwd");
+		_hub_redismq_service = std::make_shared<service::redismqservice>(redismq_is_cluster, name_info.name, redismq_url, password);
 	}
 	else {
-		spdlog::error("undefined hub msg listen model!");
+		_hub_redismq_service = std::make_shared<service::redismqservice>(redismq_is_cluster, name_info.name, redismq_url);
 	}
+	_hub_redismq_service->start();
+	_gatemng = std::make_shared<gatemanager>(_hub_redismq_service, shared_from_this());
 
 	_timerservice = std::make_shared<service::timerservice>();
 	_close_handle = std::make_shared<closehandle>();
@@ -149,6 +132,24 @@ void hub_service::init() {
 			});
 		}
 	}
+
+	if (_config->has_key("enet_listen")) {
+		auto is_enet_listen = _config->get_value_bool("enet_listen");
+		if (is_enet_listen) {
+			enet_address_info = std::make_shared<addressinfo>();
+			enet_address_info->host = _config->get_value_string("enet_outside_host");
+			enet_address_info->port = (unsigned short)_config->get_value_int("enet_outside_port");
+			_hub_service = std::make_shared<service::enetacceptservice>(enet_address_info->host, enet_address_info->port);
+			_hub_service->sig_connect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
+				std::static_pointer_cast<service::channel>(ch)->set_xor_key_crypt();
+			});
+			_hub_service->sig_disconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
+				service::gc_put([this, ch]() {
+					_gatemng->client_direct_disconnect(ch);
+				});
+			});
+		}
+	}
 }
 
 void hub_service::heartbeat(std::shared_ptr<hub_service> this_ptr, int64_t _tick) {
@@ -167,36 +168,11 @@ void hub_service::heartbeat(std::shared_ptr<hub_service> this_ptr, int64_t _tick
 void hub_service::connect_center() {
 	spdlog::trace("begin on connect center");
 
-	if (_root_config->has_key("redismq_listen") && _root_config->get_value_bool("redismq_listen")) {
-		auto center_ch = _hub_redismq_service->connect(_center_config->get_value_string("name"));
-		_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
-		if (is_enet) {
-			_centerproxy->reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
-		}
-		else {
-			_centerproxy->reg_server(hub_type, name_info);
-		}
+	auto center_ch = _hub_redismq_service->connect(_center_config->get_value_string("name"));
+	_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
+	_centerproxy->reg_server(name_info, [this]() {
 		heartbeat(shared_from_this(), _timerservice->Tick);
-	}
-	else {
-		auto ip = _center_config->get_value_string("host");
-		auto port = (short)(_center_config->get_value_int("port"));
-		_center_service->connect(ip, port, [this](auto center_ch) {
-			spdlog::trace("connect center success");
-
-			_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
-			if (is_enet) {
-				_centerproxy->reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
-			}
-			else {
-				_centerproxy->reg_server(hub_type, name_info);
-			}
-
-			heartbeat(shared_from_this(), _timerservice->Tick);
-
-			spdlog::trace("end on connect center");
-		});
-	}
+	});
 }
 
 void hub_service::reconnect_center() {
@@ -208,56 +184,15 @@ void hub_service::reconnect_center() {
 
 	++reconn_count;
 
-	if (_root_config->has_key("redismq_listen") && _root_config->get_value_bool("redismq_listen")) {
-		auto center_ch = _hub_redismq_service->connect(_center_config->get_value_string("name"));
-		_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
-		if (is_enet) {
-			_centerproxy->reconn_reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
-		}
-		else {
-			_centerproxy->reconn_reg_server(hub_type, name_info);
-		}
+	auto center_ch = _hub_redismq_service->connect(_center_config->get_value_string("name"));
+	_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
+	_centerproxy->reconn_reg_server(name_info, [this]() {
 		reconn_count = 0;
-	}
-	else {
-		auto ip = _center_config->get_value_string("host");
-		auto port = (short)(_center_config->get_value_int("port"));
-		_center_service->connect(ip, port, [this](auto center_ch) {
-			reconn_count = 0;
-
-			_centerproxy = std::make_shared<centerproxy>(center_ch, _timerservice);
-			if (is_enet) {
-				_centerproxy->reconn_reg_server(_config->get_value_string("host"), (short)_config->get_value_int("port"), hub_type, name_info);
-			}
-			else {
-				_centerproxy->reconn_reg_server(hub_type, name_info);
-			}
-
-			spdlog::trace("end on connect center");
-		});
-	}
-}
-
-void hub_service::connect_gate(std::string gate_name, std::string host, uint16_t port) {
-	_gatemng->connect_gate(gate_name, host, port);
+	});
 }
 
 void hub_service::connect_gate(std::string gate_name) {
 	_gatemng->connect_gate(gate_name);
-}
-
-void hub_service::reg_hub(std::string hub_host, uint16_t hub_port) {
-	_hub_service->connect(hub_host, hub_port, [this, hub_host, hub_port](std::shared_ptr<abelkhan::Ichannel> ch){
-		spdlog::trace("hub host:{0} port:{1} reg_hub", hub_host, hub_port);
- 		auto caller = std::make_shared<abelkhan::hub_call_hub_caller>(ch, service::_modulemng);
-		caller->reg_hub(name_info.name, hub_type)->callBack([hub_host, hub_port]() {
-			spdlog::trace("hub host:{0} port:{1} reg_hub sucessed!", hub_host, hub_port);
-		}, [hub_host, hub_port]() {
-			spdlog::trace("hub host:{0} port:{1} reg_hub faild!", hub_host, hub_port);
-		})->timeout(5 * 1000, [hub_host, hub_port]() {
-			spdlog::trace("hub host:{0} port:{1} reg_hub timeout!", hub_host, hub_port);
-		});
-	});
 }
 
 void hub_service::reg_hub(std::string hub_name) {
@@ -271,31 +206,6 @@ void hub_service::reg_hub(std::string hub_name) {
 	})->timeout(5 * 1000, [hub_name]() {
 		spdlog::trace("hub hub_name:{0} reg_hub timeout!", hub_name);
 	});
-}
-
-void hub_service::try_connect_db(std::string dbproxy_name, std::string dbproxy_host, uint16_t dbproxy_port) {
-	if (_config->has_key("dbproxy") && _config->get_value_string("dbproxy") == dbproxy_name) {
-		auto dbproxy_cfg = _root_config->get_value_dict(dbproxy_name);
-		auto _db_ip = service::DNS(dbproxy_host);
-		_dbproxy_service->connect(_db_ip, dbproxy_port, [this](std::shared_ptr<abelkhan::Ichannel> ch) {
-			_dbproxyproxy = std::make_shared<dbproxyproxy>(ch);
-			_dbproxyproxy->sig_dbproxy_init.connect([this]() {
-				sig_dbproxy_init.emit();
-			});
-			_dbproxyproxy->reg_server(name_info.name);
-		});
-	}
-	else if (_config->has_key("extend_dbproxy") && _config->get_value_string("extend_dbproxy") == dbproxy_name) {
-		auto dbproxy_cfg = _root_config->get_value_dict(dbproxy_name);
-		auto _db_ip = service::DNS(dbproxy_host);
-		_dbproxy_service->connect(_db_ip, dbproxy_port, [this](std::shared_ptr<abelkhan::Ichannel> ch) {
-			_extend_dbproxyproxy = std::make_shared<dbproxyproxy>(ch);
-			_extend_dbproxyproxy->sig_dbproxy_init.connect([this]() {
-				sig_dbproxy_init.emit();
-				});
-			_extend_dbproxyproxy->reg_server(name_info.name);
-		});
-	}
 }
 
 void hub_service::try_connect_db(std::string dbproxy_name) {

@@ -12,7 +12,6 @@ namespace abelkhan
 {
     public class center
     {
-        private acceptservice _accept_svr_service;
         private abelkhan.redis_mq _redis_mq_service;
         private svr_msg_handle _svr_msg_handle;
         public svrmanager _svrmanager;
@@ -81,31 +80,9 @@ namespace abelkhan
 
             _svrmanager = new svrmanager(_timer, this);
             _svr_msg_handle = new svr_msg_handle(_svrmanager, _closeHandle);
-            
-            if (_root_cfg.has_key("redismq_listen") && _root_cfg.get_value_bool("redismq_listen"))
-            {
-                var redismq_url = _root_cfg.get_value_string("redis_for_mq");
-                _redis_mq_service = new abelkhan.redis_mq(redismq_url, name);
-            }
-            else if (_config.has_key("host") && _config.has_key("port"))
-            {
-                var host = _config.get_value_string("host");
-                var port = _config.get_value_int("port");
-                _accept_svr_service = new acceptservice((ushort)port);
-                _accept_svr_service.on_connect += (abelkhan.Ichannel ch) =>
-                {
-                    lock (add_chs)
-                    {
-                        add_chs.Add(ch);
-                    }
-                };
-                _accept_svr_service.start();
-            }
-            else
-            {
-                log.log.err("undefined hub msg listen model!");
-                throw new abelkhan.Exception("undefined hub msg listen model!");
-            }
+
+            var redismq_url = _root_cfg.get_value_string("redis_for_mq");
+            _redis_mq_service = new abelkhan.redis_mq(redismq_url, name);
 
             _gmmanager = new gmmanager();
             _gm_msg_handle = new gm_msg_handle(_svrmanager, _gmmanager, _closeHandle);
@@ -161,7 +138,6 @@ namespace abelkhan
                     _svrmanager.close_db();
                     _closeHandle.is_close = true;
 
-                    _accept_svr_service.close();
                     _accept_gm_service.close();
                 }
             }
