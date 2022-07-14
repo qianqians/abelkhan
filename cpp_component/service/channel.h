@@ -33,9 +33,7 @@ public:
 	void start()
 	{
 		ch_encrypt_decrypt_ondata = std::make_shared<channel_encrypt_decrypt_ondata>(shared_from_this());
-
-		memset(read_buff, 0, 8 * 1024);
-		s->async_read_some(asio::buffer(read_buff, 8 * 1024), std::bind(&channel::onRecv, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
+		s->async_read_some(asio::buffer(read_buff, 2 * 1024), std::bind(&channel::onRecv, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
 	}
 
 	void set_xor_key_crypt() {
@@ -75,9 +73,7 @@ private:
 		}
 
 		ch->ch_encrypt_decrypt_ondata->recv(ch->read_buff, bytes_transferred);
-
-		memset(ch->read_buff, 0, 8 * 1024);
-		ch->s->async_read_some(asio::buffer(ch->read_buff, 8 * 1024), std::bind(&channel::onRecv, ch, std::placeholders::_1, std::placeholders::_2));
+		ch->s->async_read_some(asio::buffer(ch->read_buff, 2 * 1024), std::bind(&channel::onRecv, ch, std::placeholders::_1, std::placeholders::_2));
 	}
 
 public:
@@ -130,11 +126,10 @@ public:
 
 private:
 	std::shared_ptr<asio::ip::tcp::socket> s;
-
 	std::mutex _mutex;
 
 	std::shared_ptr<channel_encrypt_decrypt_ondata> ch_encrypt_decrypt_ondata;
-	char read_buff[8 * 1024];
+	char read_buff[2 * 1024];
 
 	bool is_close;
 

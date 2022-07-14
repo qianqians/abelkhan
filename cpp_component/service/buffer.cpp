@@ -21,7 +21,7 @@ char* get_buffer(size_t _buffer_size) {
 		if (buffer) {
 			free(buffer);
 		}
-		buffer_size = ((_buffer_size + 1023) / 1024) * 1024;
+		buffer_size = ((_buffer_size + 16383) / 16384) * 16384;
 		buffer = (char*)malloc(buffer_size);
 	}
 	return buffer;
