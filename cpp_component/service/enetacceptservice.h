@@ -3,6 +3,8 @@
 
 #include <unordered_map>
 
+#include <concurrent/signals.h>
+
 #include "DNS.h"
 #include "enetchannel.h"
 
@@ -39,6 +41,8 @@ public:
 					ch = std::make_shared<enetchannel>(_host, _event.peer);
 					ch->Init();
 					back_chs.insert(std::make_pair(peerHandle, ch));
+
+					sig_connect.emit(ch);
 				}
 				else {
 					ch = it_ch->second;
@@ -80,7 +84,11 @@ public:
 			case ENET_EVENT_TYPE_DISCONNECT:
 			{
 				uint64_t peerHandle = (uint64_t)_event.peer->address.host << 32 | _event.peer->address.port;
-				chs.erase(peerHandle);
+				auto it = chs.find(peerHandle);
+				if (it != chs.end()) {
+					sig_disconnect.emit(it->second);
+					chs.erase(it);
+				}
 			}
 			break;
 			default:
@@ -107,6 +115,10 @@ public:
 		std::string cb_handle = ip + ":" + std::to_string(port);
 		cbs.insert(std::make_pair(cb_handle, cb));
 	}
+
+public:
+	concurrent::signals<void(std::shared_ptr<abelkhan::Ichannel>)> sig_connect;
+	concurrent::signals<void(std::shared_ptr<abelkhan::Ichannel>)> sig_disconnect;
 
 private:
 	ENetHost * _host;

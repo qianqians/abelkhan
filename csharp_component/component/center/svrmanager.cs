@@ -24,18 +24,6 @@ namespace abelkhan
         public abelkhan.Ichannel ch;
         private abelkhan.center_call_server_caller _center_call_server_caller;
 
-        public svrproxy(abelkhan.Ichannel _ch, string _type, string _name, string _host, ushort _port)
-        {
-            type = _type;
-            name = _name;
-            host = _host;
-            port = _port;
-            ch = _ch;
-            is_mq = false;
-
-            _center_call_server_caller = new abelkhan.center_call_server_caller(_ch, abelkhan.modulemng_handle._modulemng);
-        }
-
         public svrproxy(abelkhan.Ichannel _ch, string _type, string _name)
         {
             type = _type;
@@ -82,11 +70,6 @@ namespace abelkhan
             _center_call_hub_caller = new abelkhan.center_call_hub_caller(ch, abelkhan.modulemng_handle._modulemng);
         }
 
-        public void distribute_server_address(string type, string name, string host, ushort port)
-        {
-            _center_call_hub_caller.distribute_server_address(type, name, host, port);
-        }
-
         public void distribute_server_mq(string type, string name)
         {
             _center_call_hub_caller.distribute_server_mq(type, name);
@@ -121,22 +104,6 @@ namespace abelkhan
             closed_svr_list = new List<svrproxy>();
 
             heartbeat_svr(service.timerservice.Tick);
-        }
-
-        public void reg_svr(abelkhan.Ichannel ch, string type, string name, string host, ushort port, bool is_reconn = false)
-        {
-            var _svrproxy = new svrproxy(ch, type, name, host, port);
-            svrproxys[ch] = _svrproxy;
-            if (type == "dbproxy")
-            {
-                dbproxys.Add(_svrproxy);
-            }
-            _svrproxy.on_svr_close += on_svr_close;
-
-            if (!is_reconn)
-            {
-                new_svrproxys.Add(_svrproxy);
-            }
         }
 
         public void reg_svr(abelkhan.Ichannel ch, string type, string name, bool is_reconn = false)

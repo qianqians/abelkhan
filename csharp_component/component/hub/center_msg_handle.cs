@@ -22,7 +22,6 @@ namespace hub
 			_center_call_server_module.on_svr_be_closed += svr_be_closed;
 
 			_center_call_hub_module = new abelkhan.center_call_hub_module(abelkhan.modulemng_handle._modulemng);
-			_center_call_hub_module.on_distribute_server_address += distribute_server_address;
             _center_call_hub_module.on_distribute_server_mq += distribute_server_mq;
 			_center_call_hub_module.on_reload += reload;
 		}
@@ -59,27 +58,6 @@ namespace hub
 				hub._hubs.hub_be_closed(svr_name);
 			}
         }
-
-		private void distribute_server_address(String type, String name, String host, ushort port)
-        {
-            log.log.trace("recv distribute server address");
-
-			if (type == "dbproxy") 
-			{
-				log.log.trace("recv distribute server address connect_dbproxy ip:{0}, port:{1}", host, port);
-				_hub.connect_dbproxy (name, host, (short)port);
-			}
-			if (type == "gate")
-			{
-				log.log.trace("recv distribute server address gate ip:{0}, port:{1}", host, port);
-				hub._gates.connect_gate(name, host, (ushort)port);
-			}
-            if (type == "hub")
-			{
-				log.log.trace("recv distribute server address hub ip:{0}, port:{1}", host, port);
-				_hub.reg_hub(host, (short)port);
-            }
-		}
 
 		private void distribute_server_mq(String type, String name)
 		{

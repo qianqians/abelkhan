@@ -12,40 +12,6 @@ namespace abelkhan
 /*this struct code is codegen by abelkhan codegen for cpp*/
 /*this caller code is codegen by abelkhan codegen for cpp*/
     class center_rsp_cb;
-    class center_reg_server_cb : public std::enable_shared_from_this<center_reg_server_cb>{
-    private:
-        uint64_t cb_uuid;
-        std::shared_ptr<center_rsp_cb> module_rsp_cb;
-
-    public:
-        center_reg_server_cb(uint64_t _cb_uuid, std::shared_ptr<center_rsp_cb> _module_rsp_cb);
-    public:
-        concurrent::signals<void()> sig_reg_server_cb;
-        concurrent::signals<void()> sig_reg_server_err;
-        concurrent::signals<void()> sig_reg_server_timeout;
-
-        std::shared_ptr<center_reg_server_cb> callBack(std::function<void()> cb, std::function<void()> err);
-        void timeout(uint64_t tick, std::function<void()> timeout_cb);
-    };
-
-    class center_rsp_cb;
-    class center_reconn_reg_server_cb : public std::enable_shared_from_this<center_reconn_reg_server_cb>{
-    private:
-        uint64_t cb_uuid;
-        std::shared_ptr<center_rsp_cb> module_rsp_cb;
-
-    public:
-        center_reconn_reg_server_cb(uint64_t _cb_uuid, std::shared_ptr<center_rsp_cb> _module_rsp_cb);
-    public:
-        concurrent::signals<void()> sig_reconn_reg_server_cb;
-        concurrent::signals<void()> sig_reconn_reg_server_err;
-        concurrent::signals<void()> sig_reconn_reg_server_timeout;
-
-        std::shared_ptr<center_reconn_reg_server_cb> callBack(std::function<void()> cb, std::function<void()> err);
-        void timeout(uint64_t tick, std::function<void()> timeout_cb);
-    };
-
-    class center_rsp_cb;
     class center_reg_server_mq_cb : public std::enable_shared_from_this<center_reg_server_mq_cb>{
     private:
         uint64_t cb_uuid;
@@ -99,10 +65,6 @@ namespace abelkhan
 /*this cb code is codegen by abelkhan for cpp*/
     class center_rsp_cb : public Imodule, public std::enable_shared_from_this<center_rsp_cb>{
     public:
-        std::mutex mutex_map_reg_server;
-        std::unordered_map<uint64_t, std::shared_ptr<center_reg_server_cb> > map_reg_server;
-        std::mutex mutex_map_reconn_reg_server;
-        std::unordered_map<uint64_t, std::shared_ptr<center_reconn_reg_server_cb> > map_reconn_reg_server;
         std::mutex mutex_map_reg_server_mq;
         std::unordered_map<uint64_t, std::shared_ptr<center_reg_server_mq_cb> > map_reg_server_mq;
         std::mutex mutex_map_reconn_reg_server_mq;
@@ -114,82 +76,12 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> modules){
-            modules->reg_method("center_rsp_cb_reg_server_rsp", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reg_server_rsp, this, std::placeholders::_1)));
-            modules->reg_method("center_rsp_cb_reg_server_err", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reg_server_err, this, std::placeholders::_1)));
-            modules->reg_method("center_rsp_cb_reconn_reg_server_rsp", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reconn_reg_server_rsp, this, std::placeholders::_1)));
-            modules->reg_method("center_rsp_cb_reconn_reg_server_err", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reconn_reg_server_err, this, std::placeholders::_1)));
             modules->reg_method("center_rsp_cb_reg_server_mq_rsp", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reg_server_mq_rsp, this, std::placeholders::_1)));
             modules->reg_method("center_rsp_cb_reg_server_mq_err", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reg_server_mq_err, this, std::placeholders::_1)));
             modules->reg_method("center_rsp_cb_reconn_reg_server_mq_rsp", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reconn_reg_server_mq_rsp, this, std::placeholders::_1)));
             modules->reg_method("center_rsp_cb_reconn_reg_server_mq_err", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::reconn_reg_server_mq_err, this, std::placeholders::_1)));
             modules->reg_method("center_rsp_cb_heartbeat_rsp", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::heartbeat_rsp, this, std::placeholders::_1)));
             modules->reg_method("center_rsp_cb_heartbeat_err", std::make_tuple(shared_from_this(), std::bind(&center_rsp_cb::heartbeat_err, this, std::placeholders::_1)));
-        }
-
-        void reg_server_rsp(const msgpack11::MsgPack::array& inArray){
-            auto uuid = inArray[0].uint64_value();
-            auto rsp = try_get_and_del_reg_server_cb(uuid);
-            if (rsp != nullptr){
-                rsp->sig_reg_server_cb.emit();
-            }
-        }
-
-        void reg_server_err(const msgpack11::MsgPack::array& inArray){
-            auto uuid = inArray[0].uint64_value();
-            auto rsp = try_get_and_del_reg_server_cb(uuid);
-            if (rsp != nullptr){
-                rsp->sig_reg_server_err.emit();
-            }
-        }
-
-        void reg_server_timeout(uint64_t cb_uuid){
-            auto rsp = try_get_and_del_reg_server_cb(cb_uuid);
-            if (rsp != nullptr){
-                rsp->sig_reg_server_timeout.emit();
-            }
-        }
-
-        std::shared_ptr<center_reg_server_cb> try_get_and_del_reg_server_cb(uint64_t uuid){
-            std::lock_guard<std::mutex> l(mutex_map_reg_server);
-            if (map_reg_server.find(uuid) != map_reg_server.end()) {
-                auto rsp = map_reg_server[uuid];
-                map_reg_server.erase(uuid);
-                return rsp;
-            }
-            return nullptr;
-        }
-
-        void reconn_reg_server_rsp(const msgpack11::MsgPack::array& inArray){
-            auto uuid = inArray[0].uint64_value();
-            auto rsp = try_get_and_del_reconn_reg_server_cb(uuid);
-            if (rsp != nullptr){
-                rsp->sig_reconn_reg_server_cb.emit();
-            }
-        }
-
-        void reconn_reg_server_err(const msgpack11::MsgPack::array& inArray){
-            auto uuid = inArray[0].uint64_value();
-            auto rsp = try_get_and_del_reconn_reg_server_cb(uuid);
-            if (rsp != nullptr){
-                rsp->sig_reconn_reg_server_err.emit();
-            }
-        }
-
-        void reconn_reg_server_timeout(uint64_t cb_uuid){
-            auto rsp = try_get_and_del_reconn_reg_server_cb(cb_uuid);
-            if (rsp != nullptr){
-                rsp->sig_reconn_reg_server_timeout.emit();
-            }
-        }
-
-        std::shared_ptr<center_reconn_reg_server_cb> try_get_and_del_reconn_reg_server_cb(uint64_t uuid){
-            std::lock_guard<std::mutex> l(mutex_map_reconn_reg_server);
-            if (map_reconn_reg_server.find(uuid) != map_reconn_reg_server.end()) {
-                auto rsp = map_reconn_reg_server[uuid];
-                map_reconn_reg_server.erase(uuid);
-                return rsp;
-            }
-            return nullptr;
         }
 
         void reg_server_mq_rsp(const msgpack11::MsgPack::array& inArray){
@@ -308,38 +200,6 @@ namespace abelkhan
                 rsp_cb_center_handle->Init(modules);
             }
             uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066.store(random());
-        }
-
-        std::shared_ptr<center_reg_server_cb> reg_server(std::string type, std::string svr_name, std::string host, uint16_t port){
-            auto uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066++;
-            msgpack11::MsgPack::array _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda;
-            _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255);
-            _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(type);
-            _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(svr_name);
-            _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(host);
-            _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda.push_back(port);
-            call_module_method("center_reg_server", _argv_e599dafa_7492_34c4_8e5a_7a0f00557fda);
-
-            auto cb_reg_server_obj = std::make_shared<center_reg_server_cb>(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255, rsp_cb_center_handle);
-            std::lock_guard<std::mutex> l(rsp_cb_center_handle->mutex_map_reg_server);
-            rsp_cb_center_handle->map_reg_server.insert(std::make_pair(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255, cb_reg_server_obj));
-            return cb_reg_server_obj;
-        }
-
-        std::shared_ptr<center_reconn_reg_server_cb> reconn_reg_server(std::string type, std::string svr_name, std::string host, uint16_t port){
-            auto uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d = uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066++;
-            msgpack11::MsgPack::array _argv_39461677_ebd9_335f_830b_8d355adba2f0;
-            _argv_39461677_ebd9_335f_830b_8d355adba2f0.push_back(uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d);
-            _argv_39461677_ebd9_335f_830b_8d355adba2f0.push_back(type);
-            _argv_39461677_ebd9_335f_830b_8d355adba2f0.push_back(svr_name);
-            _argv_39461677_ebd9_335f_830b_8d355adba2f0.push_back(host);
-            _argv_39461677_ebd9_335f_830b_8d355adba2f0.push_back(port);
-            call_module_method("center_reconn_reg_server", _argv_39461677_ebd9_335f_830b_8d355adba2f0);
-
-            auto cb_reconn_reg_server_obj = std::make_shared<center_reconn_reg_server_cb>(uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d, rsp_cb_center_handle);
-            std::lock_guard<std::mutex> l(rsp_cb_center_handle->mutex_map_reconn_reg_server);
-            rsp_cb_center_handle->map_reconn_reg_server.insert(std::make_pair(uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d, cb_reconn_reg_server_obj));
-            return cb_reconn_reg_server_obj;
         }
 
         std::shared_ptr<center_reg_server_mq_cb> reg_server_mq(std::string type, std::string svr_name){
@@ -467,15 +327,6 @@ namespace abelkhan
             uuid_adbd1e34_0c90_3426_aefa_4d734c07a706.store(random());
         }
 
-        void distribute_server_address(std::string svr_type, std::string svr_name, std::string host, uint16_t port){
-            msgpack11::MsgPack::array _argv_b71bf35c_d65b_3682_98d1_b934f5276558;
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(svr_type);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(svr_name);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(host);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.push_back(port);
-            call_module_method("center_call_hub_distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
-        }
-
         void distribute_server_mq(std::string svr_type, std::string svr_name){
             msgpack11::MsgPack::array _argv_b4cefb58_72e6_34e7_8f22_562a06a9b393;
             _argv_b4cefb58_72e6_34e7_8f22_562a06a9b393.push_back(svr_type);
@@ -540,54 +391,6 @@ namespace abelkhan
 
     };
 /*this module code is codegen by abelkhan codegen for cpp*/
-    class center_reg_server_rsp : public Response {
-    private:
-        uint64_t uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda;
-
-    public:
-        center_reg_server_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response("center_rsp_cb", _ch)
-        {
-            uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda = _uuid;
-        }
-
-        void rsp(){
-            msgpack11::MsgPack::array _argv_86ab8166_c1a7_3809_8c9b_df444f746076;
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push_back(uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda);
-            call_module_method("center_rsp_cb_reg_server_rsp", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
-        }
-
-        void err(){
-            msgpack11::MsgPack::array _argv_86ab8166_c1a7_3809_8c9b_df444f746076;
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.push_back(uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda);
-            call_module_method("center_rsp_cb_reg_server_err", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
-        }
-
-    };
-
-    class center_reconn_reg_server_rsp : public Response {
-    private:
-        uint64_t uuid_39461677_ebd9_335f_830b_8d355adba2f0;
-
-    public:
-        center_reconn_reg_server_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response("center_rsp_cb", _ch)
-        {
-            uuid_39461677_ebd9_335f_830b_8d355adba2f0 = _uuid;
-        }
-
-        void rsp(){
-            msgpack11::MsgPack::array _argv_a181e793_c43f_3b7f_b19e_178395e5927d;
-            _argv_a181e793_c43f_3b7f_b19e_178395e5927d.push_back(uuid_39461677_ebd9_335f_830b_8d355adba2f0);
-            call_module_method("center_rsp_cb_reconn_reg_server_rsp", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
-        }
-
-        void err(){
-            msgpack11::MsgPack::array _argv_a181e793_c43f_3b7f_b19e_178395e5927d;
-            _argv_a181e793_c43f_3b7f_b19e_178395e5927d.push_back(uuid_39461677_ebd9_335f_830b_8d355adba2f0);
-            call_module_method("center_rsp_cb_reconn_reg_server_err", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
-        }
-
-    };
-
     class center_reg_server_mq_rsp : public Response {
     private:
         uint64_t uuid_7254d987_ac9c_3d73_831c_f43efb3268a9;
@@ -667,36 +470,10 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_method("center_reg_server", std::make_tuple(shared_from_this(), std::bind(&center_module::reg_server, this, std::placeholders::_1)));
-            _modules->reg_method("center_reconn_reg_server", std::make_tuple(shared_from_this(), std::bind(&center_module::reconn_reg_server, this, std::placeholders::_1)));
             _modules->reg_method("center_reg_server_mq", std::make_tuple(shared_from_this(), std::bind(&center_module::reg_server_mq, this, std::placeholders::_1)));
             _modules->reg_method("center_reconn_reg_server_mq", std::make_tuple(shared_from_this(), std::bind(&center_module::reconn_reg_server_mq, this, std::placeholders::_1)));
             _modules->reg_method("center_heartbeat", std::make_tuple(shared_from_this(), std::bind(&center_module::heartbeat, this, std::placeholders::_1)));
             _modules->reg_method("center_closed", std::make_tuple(shared_from_this(), std::bind(&center_module::closed, this, std::placeholders::_1)));
-        }
-
-        concurrent::signals<void(std::string, std::string, std::string, uint16_t)> sig_reg_server;
-        void reg_server(const msgpack11::MsgPack::array& inArray){
-            auto _cb_uuid = inArray[0].uint64_value();
-            auto _type = inArray[1].string_value();
-            auto _svr_name = inArray[2].string_value();
-            auto _host = inArray[3].string_value();
-            auto _port = inArray[4].uint16_value();
-            rsp = std::make_shared<center_reg_server_rsp>(current_ch, _cb_uuid);
-            sig_reg_server.emit(_type, _svr_name, _host, _port);
-            rsp = nullptr;
-        }
-
-        concurrent::signals<void(std::string, std::string, std::string, uint16_t)> sig_reconn_reg_server;
-        void reconn_reg_server(const msgpack11::MsgPack::array& inArray){
-            auto _cb_uuid = inArray[0].uint64_value();
-            auto _type = inArray[1].string_value();
-            auto _svr_name = inArray[2].string_value();
-            auto _host = inArray[3].string_value();
-            auto _port = inArray[4].uint16_value();
-            rsp = std::make_shared<center_reconn_reg_server_rsp>(current_ch, _cb_uuid);
-            sig_reconn_reg_server.emit(_type, _svr_name, _host, _port);
-            rsp = nullptr;
         }
 
         concurrent::signals<void(std::string, std::string)> sig_reg_server_mq;
@@ -773,18 +550,8 @@ namespace abelkhan
         }
 
         void Init(std::shared_ptr<modulemng> _modules){
-            _modules->reg_method("center_call_hub_distribute_server_address", std::make_tuple(shared_from_this(), std::bind(&center_call_hub_module::distribute_server_address, this, std::placeholders::_1)));
             _modules->reg_method("center_call_hub_distribute_server_mq", std::make_tuple(shared_from_this(), std::bind(&center_call_hub_module::distribute_server_mq, this, std::placeholders::_1)));
             _modules->reg_method("center_call_hub_reload", std::make_tuple(shared_from_this(), std::bind(&center_call_hub_module::reload, this, std::placeholders::_1)));
-        }
-
-        concurrent::signals<void(std::string, std::string, std::string, uint16_t)> sig_distribute_server_address;
-        void distribute_server_address(const msgpack11::MsgPack::array& inArray){
-            auto _svr_type = inArray[0].string_value();
-            auto _svr_name = inArray[1].string_value();
-            auto _host = inArray[2].string_value();
-            auto _port = inArray[3].uint16_value();
-            sig_distribute_server_address.emit(_svr_type, _svr_name, _host, _port);
         }
 
         concurrent::signals<void(std::string, std::string)> sig_distribute_server_mq;

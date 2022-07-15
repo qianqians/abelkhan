@@ -66,33 +66,9 @@ namespace hub
             add_chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<abelkhan.Ichannel>();
 
-            if (_root_config.has_key("redismq_listen") && _root_config.get_value_bool("redismq_listen"))
-            {
-                var redismq_url = _root_config.get_value_string("redis_for_mq");
-                _redis_mq_service = new abelkhan.redis_mq(redismq_url, name);
-                _gates = new gatemanager(_redis_mq_service);
-            }
-            else if (_config.has_key("host") && _config.has_key("port"))
-            {
-                ManagedENet.Startup();
-                host = _config.get_value_string("host");
-                port = (ushort)_config.get_value_int("port");
-                _enetservice = new abelkhan.enetservice(Dns.GetHostAddresses(host)[0].ToString(), port);
-                _enetservice.on_connect += (ch) =>
-                {
-                    lock (add_chs)
-                    {
-                        add_chs.Add(ch);
-                    }
-                };
-                _enetservice.start();
-                _gates = new gatemanager(_enetservice);
-            }
-            else
-            {
-                log.log.err("undefined hub msg listen model!");
-                throw new abelkhan.Exception("undefined hub msg listen model!");
-            }
+            var redismq_url = _root_config.get_value_string("redis_for_mq");
+            _redis_mq_service = new abelkhan.redis_mq(redismq_url, name);
+            _gates = new gatemanager(_redis_mq_service);
 
             _closeHandle = new closehandle();
             _hubs = new hubmanager();
@@ -123,31 +99,16 @@ namespace hub
                 on_direct_client_disconnect?.Invoke(client_cuuid);
             };
 
-            if (_root_config.has_key("redismq_listen") && _root_config.get_value_bool("redismq_listen"))
+            var _center_ch = _redis_mq_service.connect(_center_config.get_value_string("name"));
+            lock (add_chs)
             {
-                var _center_ch = _redis_mq_service.connect(_center_config.get_value_string("name"));
-                lock (add_chs)
-                {
-                    add_chs.Add(_center_ch);
-                }
-                _centerproxy = new centerproxy(_center_ch);
-                _centerproxy.reg_hub();
+                add_chs.Add(_center_ch);
             }
-            else
-            {
-                center_host = _center_config.get_value_string("host");
-                center_port = (short)_center_config.get_value_int("port");
-                var _socket = abelkhan.connectservice.connect(System.Net.Dns.GetHostAddresses(center_host)[0], center_port);
-                var _center_ch = new abelkhan.rawchannel(_socket);
-                lock (add_chs)
-                {
-                    add_chs.Add(_center_ch);
-                }
-                _centerproxy = new centerproxy(_center_ch);
-                _centerproxy.reg_hub(host, port);
-            }
-            heartbeat(service.timerservice.Tick);
-
+            _centerproxy = new centerproxy(_center_ch);
+            _centerproxy.reg_hub(() => {
+                heartbeat(service.timerservice.Tick);
+            });
+           
             if (_config.has_key("tcp_listen"))
             {
                 var tcp_listen = _config.get_value_bool("tcp_listen");
@@ -191,6 +152,25 @@ namespace hub
                 }
             }
 
+            if (_config.has_key("enet_listen"))
+            {
+                var is_enet_listen = _config.get_value_bool("enet_listen");
+                if (is_enet_listen)
+                {
+                    enet_outside_address = new addressinfo();
+                    enet_outside_address.host = _config.get_value_string("enet_outside_host");
+                    enet_outside_address.port = (ushort)_config.get_value_int("enet_outside_port");
+                    _enetservice = new abelkhan.enetservice(enet_outside_address.host, enet_outside_address.port);
+                    _enetservice.on_connect += (ch) => {
+                        lock (add_chs)
+                        {
+                            add_chs.Add(ch);
+                        }
+                    };
+                    _enetservice.start();
+                }
+            }
+
             _hub_msg_handle = new hub_msg_handle(_hubs, _gates);
             _center_msg_handle = new center_msg_handle(this, _closeHandle, _centerproxy);
             _dbproxy_msg_handle = new dbproxy_msg_handle();
@@ -222,32 +202,15 @@ namespace hub
                 remove_chs.Add(_centerproxy._ch);
             }
 
-            if (_root_config.has_key("redismq_listen") && _root_config.get_value_bool("redismq_listen"))
+            var _center_ch = _redis_mq_service.connect(_center_config.get_value_string("name"));
+            lock (add_chs)
             {
-                var _center_ch = _redis_mq_service.connect(_center_config.get_value_string("name"));
-                lock (add_chs)
-                {
-                    add_chs.Add(_center_ch);
-                }
-                _centerproxy = new centerproxy(_center_ch);
-                if (await _centerproxy.reconn_reg_hub())
-                {
-                    reconn_count = 0;
-                }
+                add_chs.Add(_center_ch);
             }
-            else
+            _centerproxy = new centerproxy(_center_ch);
+            if (await _centerproxy.reconn_reg_hub())
             {
-                var _socket = abelkhan.connectservice.connect(System.Net.Dns.GetHostAddresses(center_host)[0], center_port);
-                var _center_ch = new abelkhan.rawchannel(_socket);
-                lock (add_chs)
-                {
-                    add_chs.Add(_center_ch);
-                }
-                _centerproxy = new centerproxy(_center_ch); 
-                if (await _centerproxy.reconn_reg_hub(host, port))
-                {
-                    reconn_count = 0;
-                }
+                reconn_count = 0;
             }
         }
 
@@ -306,38 +269,6 @@ namespace hub
             onReload?.Invoke(argv);
         }
 
-        public void connect_dbproxy(string dbproxy_name, string db_host, short db_port)
-		{
-            if (_config.has_key("dbproxy") && _config.get_value_string("dbproxy") == dbproxy_name)
-            {
-                var dbproxy_cfg = _root_config.get_value_dict(dbproxy_name);
-
-                var _socket = abelkhan.connectservice.connect(Dns.GetHostAddresses(db_host)[0], db_port);
-                var _db_ch = new abelkhan.rawchannel(_socket);
-                _dbproxy = new dbproxyproxy(_db_ch);
-                lock (add_chs)
-                {
-                    add_chs.Add(_db_ch);
-                }
-                _dbproxy.reg_hub(name);
-                _dbproxy.on_connect_dbproxy_sucessed += onConnectDBProxySucessed;
-            }
-            else if (_config.has_key("extend_dbproxy") && _config.get_value_string("extend_dbproxy") == dbproxy_name)
-            {
-                var dbproxy_cfg = _root_config.get_value_dict(dbproxy_name);
-                
-                var _socket = abelkhan.connectservice.connect(Dns.GetHostAddresses(db_host)[0], db_port);
-                var _db_ch = new abelkhan.rawchannel(_socket);
-                lock (add_chs)
-                {
-                    add_chs.Add(_db_ch);
-                }
-                _extend_dbproxy = new dbproxyproxy(_db_ch);
-                _extend_dbproxy.reg_hub(name);
-                _extend_dbproxy.on_connect_dbproxy_sucessed += onConnectExtendDBProxySucessed;
-            }
-        }
-
         public void connect_dbproxy(string dbproxy_name)
         {
             if (_config.has_key("dbproxy") && _config.get_value_string("dbproxy") == dbproxy_name)
@@ -378,14 +309,6 @@ namespace hub
         public void onConnectExtendDBProxySucessed()
         {
             onExtendDBProxyInit?.Invoke();
-        }
-
-        public void reg_hub(String hub_host, short hub_port)
-        {
-            _enetservice.connect(hub_host, (ushort)hub_port, (ch)=> {
-                var _caller = new abelkhan.hub_call_hub_caller(ch, abelkhan.modulemng_handle._modulemng);
-                _caller.reg_hub(name, type);
-            });
         }
 
         public void reg_hub(String hub_name)
@@ -477,6 +400,7 @@ namespace hub
         public static uint tick;
         public static addressinfo tcp_outside_address = null;
         public static addressinfo websocket_outside_address = null;
+        public static addressinfo enet_outside_address = null;
 
         public static abelkhan.config _config;
         public static abelkhan.config _root_config;
@@ -498,12 +422,6 @@ namespace hub
         public static dbproxyproxy _dbproxy;
         public static dbproxyproxy _extend_dbproxy;
         public static service.timerservice _timer;
-
-        private string host;
-        private ushort port;
-
-        private string center_host;
-        private short center_port;
 
         private uint reconn_count = 0;
         private centerproxy _centerproxy;

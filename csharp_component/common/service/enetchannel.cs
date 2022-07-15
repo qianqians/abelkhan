@@ -24,6 +24,7 @@ namespace abelkhan
             lockobj = new object();
 
             _channel_onrecv = new channel_onrecv(this);
+            _channel_onrecv.on_recv_data += crypt.crypt_func;
         }
 
         public void onrecv(ENetPacket packet)
@@ -38,11 +39,12 @@ namespace abelkhan
         
         public bool is_xor_key_crypt()
         {
-            return false;
+            return true;
         }
 
         public void normal_send_crypt(byte[] data)
         {
+            crypt.crypt_func_send(data);
         }
 
         public void send(byte[] data)

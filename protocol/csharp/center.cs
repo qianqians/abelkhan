@@ -10,118 +10,6 @@ namespace abelkhan
 
 /*this struct code is codegen by abelkhan codegen for c#*/
 /*this caller code is codegen by abelkhan codegen for c#*/
-    public class center_reg_server_cb
-    {
-        private UInt64 cb_uuid;
-        private center_rsp_cb module_rsp_cb;
-
-        public center_reg_server_cb(UInt64 _cb_uuid, center_rsp_cb _module_rsp_cb)
-        {
-            cb_uuid = _cb_uuid;
-            module_rsp_cb = _module_rsp_cb;
-        }
-
-        public event Action on_reg_server_cb;
-        public event Action on_reg_server_err;
-        public event Action on_reg_server_timeout;
-
-        public center_reg_server_cb callBack(Action cb, Action err)
-        {
-            on_reg_server_cb += cb;
-            on_reg_server_err += err;
-            return this;
-        }
-
-        public void timeout(UInt64 tick, Action timeout_cb)
-        {
-            TinyTimer.add_timer(tick, ()=>{
-                module_rsp_cb.reg_server_timeout(cb_uuid);
-            });
-            on_reg_server_timeout += timeout_cb;
-        }
-
-        public void call_cb()
-        {
-            if (on_reg_server_cb != null)
-            {
-                on_reg_server_cb();
-            }
-        }
-
-        public void call_err()
-        {
-            if (on_reg_server_err != null)
-            {
-                on_reg_server_err();
-            }
-        }
-
-        public void call_timeout()
-        {
-            if (on_reg_server_timeout != null)
-            {
-                on_reg_server_timeout();
-            }
-        }
-
-    }
-
-    public class center_reconn_reg_server_cb
-    {
-        private UInt64 cb_uuid;
-        private center_rsp_cb module_rsp_cb;
-
-        public center_reconn_reg_server_cb(UInt64 _cb_uuid, center_rsp_cb _module_rsp_cb)
-        {
-            cb_uuid = _cb_uuid;
-            module_rsp_cb = _module_rsp_cb;
-        }
-
-        public event Action on_reconn_reg_server_cb;
-        public event Action on_reconn_reg_server_err;
-        public event Action on_reconn_reg_server_timeout;
-
-        public center_reconn_reg_server_cb callBack(Action cb, Action err)
-        {
-            on_reconn_reg_server_cb += cb;
-            on_reconn_reg_server_err += err;
-            return this;
-        }
-
-        public void timeout(UInt64 tick, Action timeout_cb)
-        {
-            TinyTimer.add_timer(tick, ()=>{
-                module_rsp_cb.reconn_reg_server_timeout(cb_uuid);
-            });
-            on_reconn_reg_server_timeout += timeout_cb;
-        }
-
-        public void call_cb()
-        {
-            if (on_reconn_reg_server_cb != null)
-            {
-                on_reconn_reg_server_cb();
-            }
-        }
-
-        public void call_err()
-        {
-            if (on_reconn_reg_server_err != null)
-            {
-                on_reconn_reg_server_err();
-            }
-        }
-
-        public void call_timeout()
-        {
-            if (on_reconn_reg_server_timeout != null)
-            {
-                on_reconn_reg_server_timeout();
-            }
-        }
-
-    }
-
     public class center_reg_server_mq_cb
     {
         private UInt64 cb_uuid;
@@ -292,19 +180,11 @@ namespace abelkhan
 
 /*this cb code is codegen by abelkhan for c#*/
     public class center_rsp_cb : abelkhan.Imodule {
-        public Dictionary<UInt64, center_reg_server_cb> map_reg_server;
-        public Dictionary<UInt64, center_reconn_reg_server_cb> map_reconn_reg_server;
         public Dictionary<UInt64, center_reg_server_mq_cb> map_reg_server_mq;
         public Dictionary<UInt64, center_reconn_reg_server_mq_cb> map_reconn_reg_server_mq;
         public Dictionary<UInt64, center_heartbeat_cb> map_heartbeat;
         public center_rsp_cb(abelkhan.modulemng modules) : base("center_rsp_cb")
         {
-            map_reg_server = new Dictionary<UInt64, center_reg_server_cb>();
-            modules.reg_method("center_rsp_cb_reg_server_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server_rsp));
-            modules.reg_method("center_rsp_cb_reg_server_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server_err));
-            map_reconn_reg_server = new Dictionary<UInt64, center_reconn_reg_server_cb>();
-            modules.reg_method("center_rsp_cb_reconn_reg_server_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server_rsp));
-            modules.reg_method("center_rsp_cb_reconn_reg_server_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server_err));
             map_reg_server_mq = new Dictionary<UInt64, center_reg_server_mq_cb>();
             modules.reg_method("center_rsp_cb_reg_server_mq_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server_mq_rsp));
             modules.reg_method("center_rsp_cb_reg_server_mq_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server_mq_err));
@@ -314,78 +194,6 @@ namespace abelkhan
             map_heartbeat = new Dictionary<UInt64, center_heartbeat_cb>();
             modules.reg_method("center_rsp_cb_heartbeat_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeat_rsp));
             modules.reg_method("center_rsp_cb_heartbeat_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeat_err));
-        }
-
-        public void reg_server_rsp(IList<MsgPack.MessagePackObject> inArray){
-            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            var rsp = try_get_and_del_reg_server_cb(uuid);
-            if (rsp != null)
-            {
-                rsp.call_cb();
-            }
-        }
-
-        public void reg_server_err(IList<MsgPack.MessagePackObject> inArray){
-            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            var rsp = try_get_and_del_reg_server_cb(uuid);
-            if (rsp != null)
-            {
-                rsp.call_err();
-            }
-        }
-
-        public void reg_server_timeout(UInt64 cb_uuid){
-            var rsp = try_get_and_del_reg_server_cb(cb_uuid);
-            if (rsp != null){
-                rsp.call_timeout();
-            }
-        }
-
-        private center_reg_server_cb try_get_and_del_reg_server_cb(UInt64 uuid){
-            lock(map_reg_server)
-            {
-                if (map_reg_server.TryGetValue(uuid, out center_reg_server_cb rsp))
-                {
-                    map_reg_server.Remove(uuid);
-                }
-                return rsp;
-            }
-        }
-
-        public void reconn_reg_server_rsp(IList<MsgPack.MessagePackObject> inArray){
-            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            var rsp = try_get_and_del_reconn_reg_server_cb(uuid);
-            if (rsp != null)
-            {
-                rsp.call_cb();
-            }
-        }
-
-        public void reconn_reg_server_err(IList<MsgPack.MessagePackObject> inArray){
-            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            var rsp = try_get_and_del_reconn_reg_server_cb(uuid);
-            if (rsp != null)
-            {
-                rsp.call_err();
-            }
-        }
-
-        public void reconn_reg_server_timeout(UInt64 cb_uuid){
-            var rsp = try_get_and_del_reconn_reg_server_cb(cb_uuid);
-            if (rsp != null){
-                rsp.call_timeout();
-            }
-        }
-
-        private center_reconn_reg_server_cb try_get_and_del_reconn_reg_server_cb(UInt64 uuid){
-            lock(map_reconn_reg_server)
-            {
-                if (map_reconn_reg_server.TryGetValue(uuid, out center_reconn_reg_server_cb rsp))
-                {
-                    map_reconn_reg_server.Remove(uuid);
-                }
-                return rsp;
-            }
         }
 
         public void reg_server_mq_rsp(IList<MsgPack.MessagePackObject> inArray){
@@ -510,44 +318,6 @@ namespace abelkhan
             }
         }
 
-        public center_reg_server_cb reg_server(string type, string svr_name, string host, UInt16 port){
-            var uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255 = (UInt64)Interlocked.Increment(ref uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066);
-
-            var _argv_86ab8166_c1a7_3809_8c9b_df444f746076 = new ArrayList();
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255);
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(type);
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(svr_name);
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(host);
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(port);
-            call_module_method("center_reg_server", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
-
-            var cb_reg_server_obj = new center_reg_server_cb(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255, rsp_cb_center_handle);
-            lock(rsp_cb_center_handle.map_reg_server)
-            {
-                rsp_cb_center_handle.map_reg_server.Add(uuid_211efc4c_e5e2_5ec9_b83c_2b2434aa8255, cb_reg_server_obj);
-            }
-            return cb_reg_server_obj;
-        }
-
-        public center_reconn_reg_server_cb reconn_reg_server(string type, string svr_name, string host, UInt16 port){
-            var uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d = (UInt64)Interlocked.Increment(ref uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066);
-
-            var _argv_a181e793_c43f_3b7f_b19e_178395e5927d = new ArrayList();
-            _argv_a181e793_c43f_3b7f_b19e_178395e5927d.Add(uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d);
-            _argv_a181e793_c43f_3b7f_b19e_178395e5927d.Add(type);
-            _argv_a181e793_c43f_3b7f_b19e_178395e5927d.Add(svr_name);
-            _argv_a181e793_c43f_3b7f_b19e_178395e5927d.Add(host);
-            _argv_a181e793_c43f_3b7f_b19e_178395e5927d.Add(port);
-            call_module_method("center_reconn_reg_server", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
-
-            var cb_reconn_reg_server_obj = new center_reconn_reg_server_cb(uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d, rsp_cb_center_handle);
-            lock(rsp_cb_center_handle.map_reconn_reg_server)
-            {
-                rsp_cb_center_handle.map_reconn_reg_server.Add(uuid_9564c83b_b4e0_57f7_87dd_02fb4c7a2d0d, cb_reconn_reg_server_obj);
-            }
-            return cb_reconn_reg_server_obj;
-        }
-
         public center_reg_server_mq_cb reg_server_mq(string type, string svr_name){
             var uuid_76a34a7f_e1e5_5f58_931b_9a21db9858bf = (UInt64)Interlocked.Increment(ref uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066);
 
@@ -664,15 +434,6 @@ namespace abelkhan
             }
         }
 
-        public void distribute_server_address(string svr_type, string svr_name, string host, UInt16 port){
-            var _argv_b71bf35c_d65b_3682_98d1_b934f5276558 = new ArrayList();
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(svr_type);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(svr_name);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(host);
-            _argv_b71bf35c_d65b_3682_98d1_b934f5276558.Add(port);
-            call_module_method("center_call_hub_distribute_server_address", _argv_b71bf35c_d65b_3682_98d1_b934f5276558);
-        }
-
         public void distribute_server_mq(string svr_type, string svr_name){
             var _argv_b4cefb58_72e6_34e7_8f22_562a06a9b393 = new ArrayList();
             _argv_b4cefb58_72e6_34e7_8f22_562a06a9b393.Add(svr_type);
@@ -728,48 +489,6 @@ namespace abelkhan
 
     }
 /*this module code is codegen by abelkhan codegen for c#*/
-    public class center_reg_server_rsp : abelkhan.Response {
-        private UInt64 uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda;
-        public center_reg_server_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("center_rsp_cb", _ch)
-        {
-            uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda = _uuid;
-        }
-
-        public void rsp(){
-            var _argv_86ab8166_c1a7_3809_8c9b_df444f746076 = new ArrayList();
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda);
-            call_module_method("center_rsp_cb_reg_server_rsp", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
-        }
-
-        public void err(){
-            var _argv_86ab8166_c1a7_3809_8c9b_df444f746076 = new ArrayList();
-            _argv_86ab8166_c1a7_3809_8c9b_df444f746076.Add(uuid_e599dafa_7492_34c4_8e5a_7a0f00557fda);
-            call_module_method("center_rsp_cb_reg_server_err", _argv_86ab8166_c1a7_3809_8c9b_df444f746076);
-        }
-
-    }
-
-    public class center_reconn_reg_server_rsp : abelkhan.Response {
-        private UInt64 uuid_39461677_ebd9_335f_830b_8d355adba2f0;
-        public center_reconn_reg_server_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("center_rsp_cb", _ch)
-        {
-            uuid_39461677_ebd9_335f_830b_8d355adba2f0 = _uuid;
-        }
-
-        public void rsp(){
-            var _argv_a181e793_c43f_3b7f_b19e_178395e5927d = new ArrayList();
-            _argv_a181e793_c43f_3b7f_b19e_178395e5927d.Add(uuid_39461677_ebd9_335f_830b_8d355adba2f0);
-            call_module_method("center_rsp_cb_reconn_reg_server_rsp", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
-        }
-
-        public void err(){
-            var _argv_a181e793_c43f_3b7f_b19e_178395e5927d = new ArrayList();
-            _argv_a181e793_c43f_3b7f_b19e_178395e5927d.Add(uuid_39461677_ebd9_335f_830b_8d355adba2f0);
-            call_module_method("center_rsp_cb_reconn_reg_server_err", _argv_a181e793_c43f_3b7f_b19e_178395e5927d);
-        }
-
-    }
-
     public class center_reg_server_mq_rsp : abelkhan.Response {
         private UInt64 uuid_7254d987_ac9c_3d73_831c_f43efb3268a9;
         public center_reg_server_mq_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("center_rsp_cb", _ch)
@@ -838,40 +557,10 @@ namespace abelkhan
         public center_module(abelkhan.modulemng _modules) : base("center")
         {
             modules = _modules;
-            modules.reg_method("center_reg_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server));
-            modules.reg_method("center_reconn_reg_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server));
             modules.reg_method("center_reg_server_mq", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server_mq));
             modules.reg_method("center_reconn_reg_server_mq", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server_mq));
             modules.reg_method("center_heartbeat", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeat));
             modules.reg_method("center_closed", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, closed));
-        }
-
-        public event Action<string, string, string, UInt16> on_reg_server;
-        public void reg_server(IList<MsgPack.MessagePackObject> inArray){
-            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            var _type = ((MsgPack.MessagePackObject)inArray[1]).AsString();
-            var _svr_name = ((MsgPack.MessagePackObject)inArray[2]).AsString();
-            var _host = ((MsgPack.MessagePackObject)inArray[3]).AsString();
-            var _port = ((MsgPack.MessagePackObject)inArray[4]).AsUInt16();
-            rsp.Value = new center_reg_server_rsp(current_ch.Value, _cb_uuid);
-            if (on_reg_server != null){
-                on_reg_server(_type, _svr_name, _host, _port);
-            }
-            rsp.Value = null;
-        }
-
-        public event Action<string, string, string, UInt16> on_reconn_reg_server;
-        public void reconn_reg_server(IList<MsgPack.MessagePackObject> inArray){
-            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            var _type = ((MsgPack.MessagePackObject)inArray[1]).AsString();
-            var _svr_name = ((MsgPack.MessagePackObject)inArray[2]).AsString();
-            var _host = ((MsgPack.MessagePackObject)inArray[3]).AsString();
-            var _port = ((MsgPack.MessagePackObject)inArray[4]).AsUInt16();
-            rsp.Value = new center_reconn_reg_server_rsp(current_ch.Value, _cb_uuid);
-            if (on_reconn_reg_server != null){
-                on_reconn_reg_server(_type, _svr_name, _host, _port);
-            }
-            rsp.Value = null;
         }
 
         public event Action<string, string> on_reg_server_mq;
@@ -958,20 +647,8 @@ namespace abelkhan
         public center_call_hub_module(abelkhan.modulemng _modules) : base("center_call_hub")
         {
             modules = _modules;
-            modules.reg_method("center_call_hub_distribute_server_address", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, distribute_server_address));
             modules.reg_method("center_call_hub_distribute_server_mq", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, distribute_server_mq));
             modules.reg_method("center_call_hub_reload", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reload));
-        }
-
-        public event Action<string, string, string, UInt16> on_distribute_server_address;
-        public void distribute_server_address(IList<MsgPack.MessagePackObject> inArray){
-            var _svr_type = ((MsgPack.MessagePackObject)inArray[0]).AsString();
-            var _svr_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
-            var _host = ((MsgPack.MessagePackObject)inArray[2]).AsString();
-            var _port = ((MsgPack.MessagePackObject)inArray[3]).AsUInt16();
-            if (on_distribute_server_address != null){
-                on_distribute_server_address(_svr_type, _svr_name, _host, _port);
-            }
         }
 
         public event Action<string, string> on_distribute_server_mq;

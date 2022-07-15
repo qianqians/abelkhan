@@ -34,31 +34,10 @@ public:
 	virtual ~centerproxy(){
 	}
 
-	void reg_server(std::string host, short port, struct name_info &_name_info) {
-		_center_caller->reg_server("gate", _name_info.name, host, port)->callBack([this, &_name_info](){
+	void reg_server(struct name_info& _name_info, std::function<void()> conn_callback) {
+		_center_caller->reg_server_mq("gate", _name_info.name)->callBack([this, &_name_info, conn_callback]() {
 			is_reg_sucess = true;
-			spdlog::trace("connect center server sucess!");
-		}, [](){
-			spdlog::trace("connect center server faild!");
-		})->timeout(1000, []() {
-			spdlog::trace("connect center server timeout!");
-		});
-	}
-
-	void reg_server(struct name_info& _name_info) {
-		_center_caller->reg_server_mq("gate", _name_info.name)->callBack([this, &_name_info]() {
-			is_reg_sucess = true;
-			spdlog::trace("connect center server sucess!");
-			}, []() {
-				spdlog::trace("connect center server faild!");
-			})->timeout(1000, []() {
-				spdlog::trace("connect center server timeout!");
-				});
-	}
-
-	void reconn_reg_server(std::string host, short port, struct name_info& _name_info) {
-		_center_caller->reconn_reg_server("gate", _name_info.name, host, port)->callBack([this, &_name_info]() {
-			is_reg_sucess = true;
+			conn_callback();
 			spdlog::trace("connect center server sucess!");
 		}, []() {
 			spdlog::trace("connect center server faild!");
@@ -67,9 +46,10 @@ public:
 		});
 	}
 
-	void reconn_reg_server(struct name_info& _name_info) {
-		_center_caller->reconn_reg_server_mq("gate", _name_info.name)->callBack([this, &_name_info]() {
+	void reconn_reg_server(struct name_info& _name_info, std::function<void()> conn_callback) {
+		_center_caller->reconn_reg_server_mq("gate", _name_info.name)->callBack([this, &_name_info, conn_callback]() {
 			is_reg_sucess = true;
+			conn_callback();
 			spdlog::trace("connect center server sucess!");
 		}, []() {
 			spdlog::trace("connect center server faild!");

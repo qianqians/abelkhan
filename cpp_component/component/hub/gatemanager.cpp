@@ -123,27 +123,6 @@ void gatemanager::Init() {
 	});
 }
 
-void gatemanager::connect_gate(std::string gate_name, std::string host, uint16_t port) {
-	spdlog::trace("connect_gate host:{0} port:{1}", host, port);
-	auto ip = service::DNS(host);
-	_conn_enet->connect(ip, port, [this, host, port, gate_name](std::shared_ptr<abelkhan::Ichannel> ch) {
-		spdlog::trace("gate host:{0}  port:{1} reg_hub", host, port);
-		
-		auto _gate_proxy = std::make_shared<gateproxy>(ch, _hub, gate_name);
-		_gate_proxy->sig_reg_hub_sucessed.connect([this, gate_name, ch, _gate_proxy]() {
-
-			auto it = gates.find(gate_name);
-			if (it != gates.end()) {
-				wait_destory_gates.insert(std::make_pair(it->first, it->second));
-			}
-
-			gates[gate_name] = _gate_proxy;
-			ch_gates[ch] = _gate_proxy;
-		});
-		_gate_proxy->reg_hub();
-	});
-}
-
 void gatemanager::connect_gate(std::string gate_name) {
 	spdlog::trace("connect_gate name:{0}", gate_name);
 	auto ch = _conn_redismq->connect(gate_name);
