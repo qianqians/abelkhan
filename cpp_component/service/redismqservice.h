@@ -39,7 +39,7 @@ public:
 struct redismqbuff {
 	std::string ch_name;
 	char* buf;
-	uint32_t len;
+	size_t len;
 };
 
 class redismqservice : public std::enable_shared_from_this<redismqservice> {
@@ -158,8 +158,8 @@ private:
 			bool is_idle = true;
 			redismqbuff data;
 			if (send_data.pop(data)) {
-				auto _reply = (redisReply*)redisClusterCommand(_cluster_ctx, "LPUSH %s %b", data.ch_name.c_str(), data.buf, (size_t)data.len);
-				if (_reply->type == REDIS_REPLY_PUSH) {
+				auto _reply = (redisReply*)redisClusterCommand(_cluster_ctx, "LPUSH %s %b", data.ch_name.c_str(), data.buf, data.len);
+				if (_reply->type == REDIS_REPLY_PUSH || _reply->type == REDIS_REPLY_INTEGER) {
 				}
 				else {
 					spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
@@ -173,7 +173,6 @@ private:
 
 			{
 				auto _reply = (redisReply*)redisClusterCommand(_cluster_ctx, "RPOP %s", listen_channle_name.c_str());
-
 				if (_reply->type == REDIS_REPLY_STRING) {
 					auto _buf = _reply->str;
 					auto _ch_name_size = (uint32_t)_buf[0] | ((uint32_t)_buf[1] << 8) | ((uint32_t)_buf[2] << 16) | ((uint32_t)_buf[3] << 24);
@@ -226,7 +225,7 @@ private:
 
 	void redis_mq_send_data(redismqbuff data) {
 		while (true) {
-			auto _reply = (redisReply*)redisCommand(_ctx, "LPUSH %s %b", data.ch_name.c_str(), data.buf, (size_t)data.len);
+			auto _reply = (redisReply*)redisCommand(_ctx, "LPUSH %s %b", data.ch_name.c_str(), data.buf, data.len);
 			if (_reply) {
 				if (_reply->type == REDIS_REPLY_PUSH || _reply->type == REDIS_REPLY_INTEGER) {
 				}
