@@ -22,7 +22,7 @@ namespace dbproxy
 
 		private void close_server()
 		{
-            dbproxy._timer.addticktime(3 * 1000, close_server_impl);
+            dbproxy._timer.addticktime(3000, close_server_impl);
 		}
 
         private void close_server_impl(Int64 tick)
@@ -34,7 +34,7 @@ namespace dbproxy
         {
 			if (svr_type == "dbproxy" && svr_name == dbproxy.name)
             {
-				dbproxy._timer.addticktime(3 * 1000, close_server_impl);
+				dbproxy._timer.addticktime(3000, close_server_impl);
 			}
             else
             {

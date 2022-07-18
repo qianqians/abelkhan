@@ -154,7 +154,7 @@ void hub_service::init() {
 
 void hub_service::heartbeat(std::shared_ptr<hub_service> this_ptr, int64_t _tick) {
 	do {
-		if ((_tick - this_ptr->_centerproxy->timetmp) > 6 * 1000) {
+		if ((_tick - this_ptr->_centerproxy->timetmp) > 6000) {
 			this_ptr->reconnect_center();
 			break;
 		}
@@ -162,7 +162,7 @@ void hub_service::heartbeat(std::shared_ptr<hub_service> this_ptr, int64_t _tick
 
 	} while (false);
 
-	this_ptr->_timerservice->addticktimer(3 * 1000, std::bind(&hub_service::heartbeat, this_ptr, std::placeholders::_1));
+	this_ptr->_timerservice->addticktimer(3000, std::bind(&hub_service::heartbeat, this_ptr, std::placeholders::_1));
 }
 
 void hub_service::connect_center() {
@@ -203,7 +203,7 @@ void hub_service::reg_hub(std::string hub_name) {
 		spdlog::trace("hub hub_name:{0} reg_hub sucessed!", hub_name);
 	}, [hub_name]() {
 		spdlog::trace("hub hub_name:{0} reg_hub faild!", hub_name);
-	})->timeout(5 * 1000, [hub_name]() {
+	})->timeout(5000, [hub_name]() {
 		spdlog::trace("hub hub_name:{0} reg_hub timeout!", hub_name);
 	});
 }

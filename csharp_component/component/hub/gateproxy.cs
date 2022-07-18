@@ -30,7 +30,7 @@ namespace hub
 			}, () =>
 			{
 				log.log.trace("connect gate server faild");
-			}).timeout(5 * 1000, () =>
+			}).timeout(5000, () =>
 			{
 				log.log.trace("connect gate server timeout");
 			});

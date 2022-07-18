@@ -23,7 +23,7 @@ namespace dbproxy
 			}, () =>
 			{
 				log.log.trace("connect center server faild");
-			}).timeout(5 * 1000, () =>
+			}).timeout(5000, () =>
 			{
 				log.log.trace("connect center server timeout");
 			});
@@ -41,7 +41,7 @@ namespace dbproxy
 			}, () => {
 				log.log.err("reconnect center server faild");
 				task_ret.SetResult(false);
-			}).timeout(5 * 1000, () => {
+			}).timeout(5000, () => {
 				log.log.err("reconnect center server timeout");
 				task_ret.SetResult(false);
 			});

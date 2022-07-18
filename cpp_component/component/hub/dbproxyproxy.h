@@ -66,7 +66,7 @@ public:
 			}, [cb]() {
 				spdlog::trace("createPersistedObject faild!");
 				cb(EM_DB_RESULT::EM_DB_FAILD);
-			})->timeout(5 * 1000, [cb]() {
+			})->timeout(5000, [cb]() {
 				spdlog::trace("createPersistedObject timeout!");
 				cb(EM_DB_RESULT::EM_DB_TIMEOUT);
 			});
@@ -91,7 +91,7 @@ public:
 			}, [cb]() {
 				spdlog::trace("updataPersistedObject faild!");
 				cb(EM_DB_RESULT::EM_DB_FAILD);
-			})->timeout(5 * 1000, [cb]() {
+			})->timeout(5000, [cb]() {
 				spdlog::trace("updataPersistedObject timeout!");
 				cb(EM_DB_RESULT::EM_DB_TIMEOUT);
 			});
@@ -129,7 +129,7 @@ public:
 			}, [cb]() {
 				spdlog::trace("findAndModify faild!");
 				cb(EM_DB_RESULT::EM_DB_FAILD, BSON::Value());
-			})->timeout(5 * 1000, [cb]() {
+			})->timeout(5000, [cb]() {
 				spdlog::trace("findAndModify timeout!");
 				cb(EM_DB_RESULT::EM_DB_FAILD, BSON::Value());
 			});
@@ -148,7 +148,7 @@ public:
 			}, [cb]() {
 				spdlog::trace("getObjectCount faild!");
 				cb(EM_DB_RESULT::EM_DB_FAILD, 0);
-			})->timeout(5 * 1000, [cb]() {
+			})->timeout(5000, [cb]() {
 				spdlog::trace("getObjectCount timeout!");
 				cb(EM_DB_RESULT::EM_DB_TIMEOUT, 0);
 			});
@@ -193,7 +193,7 @@ public:
 			}, [cb]() {
 				spdlog::trace("removeObject faild!");
 				cb(EM_DB_RESULT::EM_DB_FAILD);
-			})->timeout(5 * 1000, [cb]() {
+			})->timeout(5000, [cb]() {
 				spdlog::trace("removeObject timeout!");
 				cb(EM_DB_RESULT::EM_DB_TIMEOUT);
 			});
@@ -215,7 +215,7 @@ public:
 			sig_dbproxy_init.emit();
 		}, []() {
 			spdlog::trace("connect dbproxy server faild!");
-		})->timeout(5 * 1000, []() {
+		})->timeout(5000, []() {
 			spdlog::trace("connect dbproxy server timeout!");
 		});
 	}

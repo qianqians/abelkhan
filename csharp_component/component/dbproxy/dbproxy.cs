@@ -142,7 +142,7 @@ namespace dbproxy
         {
             do
             {
-                if ((service.timerservice.Tick - _centerproxy.timetmp) > 6 * 1000)
+                if ((service.timerservice.Tick - _centerproxy.timetmp) > 6000)
                 {
                     reconnect_center();
                     break;
@@ -152,7 +152,7 @@ namespace dbproxy
 
             } while (false);
 
-            _timer.addticktime(3 * 1000, heartbeath_center);
+            _timer.addticktime(3000, heartbeath_center);
         }
 
 		private Int64 poll()

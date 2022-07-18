@@ -28,7 +28,7 @@ void gateproxy::reg_hub() {
 		sig_reg_hub_sucessed.emit();
 	}, [this]() {
 		spdlog::trace("hub reg_hub to gate:{0} faild", _gate_name);
-	})->timeout(5 * 1000, [this]() {
+	})->timeout(5000, [this]() {
 		spdlog::trace("hub reg_hub to gate:{0} timeout", _gate_name);
 	});
 }
@@ -243,10 +243,10 @@ void gatemanager::heartbeat_client(int64_t ticktime) {
 	std::vector<std::shared_ptr<directproxy> > exception_client;
 	for (auto item : direct_clients) {
 		auto proxy = item.second;
-		if (proxy->_timetmp > 0 && (proxy->_timetmp + 10 * 1000) < ticktime) {
+		if (proxy->_timetmp > 0 && (proxy->_timetmp + 10000) < ticktime) {
 			remove_client.push_back(proxy);
 		}
-		if (proxy->_timetmp > 0 && proxy->_theory_timetmp > 0 && (proxy->_theory_timetmp - proxy->_timetmp) > 10 * 1000) {
+		if (proxy->_timetmp > 0 && proxy->_theory_timetmp > 0 && (proxy->_theory_timetmp - proxy->_timetmp) > 10000) {
 			exception_client.push_back(proxy);
 		}
 	}

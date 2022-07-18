@@ -33,7 +33,7 @@ namespace hub
                 }
                 else
                 {
-					_proxy._theory_timetmp += 5 * 1000;
+					_proxy._theory_timetmp += 5000;
 				}
 				_proxy._timetmp = service.timerservice.Tick;
 			}

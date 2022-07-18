@@ -64,7 +64,7 @@ namespace hub
             direct_clients = new Dictionary<string, directproxy>();
             ch_direct_clients = new Dictionary<abelkhan.Ichannel, directproxy>();
 
-            hub._timer.addticktime(10 * 1000, heartbeat_client);
+            hub._timer.addticktime(10000, heartbeat_client);
         }
 
         public void connect_gate(String name)
@@ -266,11 +266,11 @@ namespace hub
             foreach (var item in direct_clients)
             {
                 var proxy = item.Value;
-                if (proxy._timetmp > 0 && (proxy._timetmp + 10 * 1000) < ticktime)
+                if (proxy._timetmp > 0 && (proxy._timetmp + 10000) < ticktime)
                 {
                     remove_client.Add(proxy);
                 }
-                if (proxy._timetmp > 0 && proxy._theory_timetmp > 0 && (proxy._theory_timetmp - proxy._timetmp) > 10 * 1000)
+                if (proxy._timetmp > 0 && proxy._theory_timetmp > 0 && (proxy._theory_timetmp - proxy._timetmp) > 10000)
                 {
                     exception_client.Add(proxy);
                 }
@@ -290,7 +290,7 @@ namespace hub
                 direct_client_exception(_client._direct_ch);
             }
 
-            hub._timer.addticktime(10 * 1000, heartbeat_client);
+            hub._timer.addticktime(10000, heartbeat_client);
         }
 
         public directproxy get_directproxy(abelkhan.Ichannel direct_ch)
