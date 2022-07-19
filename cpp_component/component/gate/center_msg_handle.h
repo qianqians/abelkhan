@@ -40,14 +40,14 @@ public:
 	}
 
 	void on_close_server() {
-		_timerservice->addticktimer(5 * 1000, [this](int64_t tick) {
+		_timerservice->addticktimer(5000, [this](int64_t tick) {
 			_gate_service->sig_close_server.emit();
 		});
 	}
 
 	void console_close_server(std::string svr_type, std::string svr_name) {
 		if (svr_type == "gate" && svr_name == _gate_service->gate_name_info.name) {
-			_timerservice->addticktimer(5 * 1000, [this](int64_t tick) {
+			_timerservice->addticktimer(5000, [this](int64_t tick) {
 				_gate_service->sig_close_server.emit();
 			});
 		}

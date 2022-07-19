@@ -51,7 +51,7 @@ public:
 				rsp->rsp();
 			}, [rsp](abelkhan::framework_error err) {
 				rsp->err(err);
-			})->timeout(1000, [rsp]() {
+			})->timeout(5000, [rsp]() {
 				rsp->err(abelkhan::framework_error::enum_framework_timeout);
 			});
 		}

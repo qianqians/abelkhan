@@ -218,7 +218,7 @@ namespace hub
         {
             do
             {
-                if ((service.timerservice.Tick - _centerproxy.timetmp) > 6 * 1000)
+                if ((service.timerservice.Tick - _centerproxy.timetmp) > 6000)
                 {
                     reconnect_center();
                     break;
@@ -228,7 +228,7 @@ namespace hub
 
             } while (false);
 
-            _timer.addticktime(3 * 1000, heartbeat);
+            _timer.addticktime(3000, heartbeat);
         }
 
         public event Action onCloseServer;
@@ -257,7 +257,7 @@ namespace hub
                 ManagedENet.Shutdown();
             }
 
-            _timer.addticktime(3 * 1000, (tick) =>
+            _timer.addticktime(3000, (tick) =>
             {
                 _closeHandle.is_close = true;
             });

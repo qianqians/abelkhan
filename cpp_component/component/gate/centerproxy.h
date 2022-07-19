@@ -41,7 +41,7 @@ public:
 			spdlog::trace("connect center server sucess!");
 		}, []() {
 			spdlog::trace("connect center server faild!");
-		})->timeout(1000, []() {
+		})->timeout(5000, []() {
 			spdlog::trace("connect center server timeout!");
 		});
 	}
@@ -53,7 +53,7 @@ public:
 			spdlog::trace("connect center server sucess!");
 		}, []() {
 			spdlog::trace("connect center server faild!");
-		})->timeout(1000, []() {
+		})->timeout(5000, []() {
 			spdlog::trace("connect center server timeout!");
 		});
 	}
@@ -66,7 +66,7 @@ public:
 			this_ptr->timetmp = this_ptr->_timerservice->Tick;
 		}, [] {
 			spdlog::trace("heartbeat center server faild");
-		})->timeout(5 * 1000, [] {
+		})->timeout(5000, [] {
 			spdlog::trace("heartbeat center server timeout");
 		});
 	}

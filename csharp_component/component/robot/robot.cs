@@ -24,7 +24,7 @@ namespace client
         {
             _client_call_gate_caller.heartbeats().callBack((ulong _svr_timetmp) => {
                 onGateTime?.Invoke(_svr_timetmp);
-            }, () => { }).timeout(5 * 1000, () => {
+            }, () => { }).timeout(5000, () => {
                 onGateDisconnect?.Invoke(_ch);
             });
         }
@@ -33,7 +33,7 @@ namespace client
         {
             _client_call_gate_caller.get_hub_info(hub_type).callBack((hub_info) => {
                 cb(hub_info);
-            }, () => { }).timeout(5 * 1000, () => {
+            }, () => { }).timeout(5000, () => {
                 onGateDisconnect?.Invoke(_ch);
             });
         }
@@ -83,7 +83,7 @@ namespace client
             _client_call_hub_caller.heartbeats().callBack((ulong _hub_timetmp) =>
             {
                 onHubTime?.Invoke(_hub_name, _hub_timetmp);
-            }, () => { }).timeout(5 * 1000, () =>
+            }, () => { }).timeout(5000, () =>
             {
                 onHubDisconnect?.Invoke(_ch);
             });
@@ -125,7 +125,7 @@ namespace client
             _hubproxy_set = new Dictionary<string, hubproxy>();
             _ch_hubproxy_set = new Dictionary<abelkhan.Ichannel, hubproxy>();
 
-            robot.timer.addticktime(5 * 1000, heartbeats);
+            robot.timer.addticktime(5000, heartbeats);
         }
 
         public string get_current_hubproxy(abelkhan.Ichannel current_ch)

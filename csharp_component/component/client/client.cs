@@ -24,7 +24,7 @@ namespace client
         {
             _client_call_gate_caller.heartbeats().callBack((ulong _svr_timetmp)=> {
                 onGateTime?.Invoke(_svr_timetmp);
-            }, ()=> {}).timeout(5 * 1000, ()=> {
+            }, ()=> {}).timeout(5000, ()=> {
                 onGateDisconnect?.Invoke(_ch);
             });
         }
@@ -35,7 +35,7 @@ namespace client
                 cb(hub_info);
             }, () => { 
                 
-            }).timeout(5 * 1000, ()=> {
+            }).timeout(5000, ()=> {
                 onGateDisconnect?.Invoke(_ch);
             });
         }
@@ -85,7 +85,7 @@ namespace client
             _client_call_hub_caller.heartbeats().callBack((ulong _hub_timetmp) =>
             {
                 onHubTime?.Invoke(_hub_name, _hub_timetmp);
-            }, () => { }).timeout(5 * 1000, () =>
+            }, () => { }).timeout(5000, () =>
             {
                 onHubDisconnect?.Invoke(_ch);
             });
@@ -146,7 +146,7 @@ namespace client
             add_chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<abelkhan.Ichannel>();
 
-            timer.addticktime(5 * 1000, heartbeats);
+            timer.addticktime(5000, heartbeats);
 
             _gate_call_client_module = new abelkhan.gate_call_client_module(abelkhan.modulemng_handle._modulemng);
             _gate_call_client_module.on_ntf_cuuid += ntf_cuuid;
@@ -215,7 +215,7 @@ namespace client
                 _hubproxy.Value.heartbeats();
             }
 
-            timer.addticktime(5 * 1000, heartbeats);
+            timer.addticktime(5000, heartbeats);
         }
 
         public void get_hub_info(string hub_type, Action<List<abelkhan.hub_info> > cb)

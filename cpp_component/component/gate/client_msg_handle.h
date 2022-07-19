@@ -47,7 +47,7 @@ public:
 				proxy->_theory_timetmp = _timerservice->Tick;
 			}
 			else {
-				proxy->_theory_timetmp += 5 * 1000;
+				proxy->_theory_timetmp += 5000;
 			}
 			proxy->_timetmp = _timerservice->Tick;
 		}

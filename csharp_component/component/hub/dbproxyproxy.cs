@@ -41,7 +41,7 @@ namespace hub
                 on_connect_dbproxy_sucessed?.Invoke();
             }, ()=> {
                 log.log.trace("connect dbproxy server faild");
-            }).timeout(5 * 1000, ()=> {
+            }).timeout(5000, ()=> {
                 log.log.trace("connect dbproxy server timeout");
             });
 		}
@@ -85,7 +85,7 @@ namespace hub
                         {
                             log.log.err("createPersistedObject faild");
                             _handle(EM_DB_RESULT.EM_DB_FAILD);
-                        }).timeout(5 * 1000, () =>
+                        }).timeout(5000, () =>
                         {
                             log.log.err("createPersistedObject timeout");
                             _handle(EM_DB_RESULT.EM_DB_TIMEOUT);
@@ -116,7 +116,7 @@ namespace hub
                         {
                             log.log.trace("updataPersistedObject faild!");
                             _handle(EM_DB_RESULT.EM_DB_FAILD);
-                        }).timeout(5 * 1000, () =>
+                        }).timeout(5000, () =>
                         {
                             log.log.trace("updataPersistedObject timeout!");
                             _handle(EM_DB_RESULT.EM_DB_TIMEOUT);
@@ -147,7 +147,7 @@ namespace hub
                         {
                             log.log.trace("findAndModifyObject faild!");
                             _handle(EM_DB_RESULT.EM_DB_FAILD, null);
-                        }).timeout(5 * 1000, () =>
+                        }).timeout(5000, () =>
                         {
                             log.log.trace("findAndModifyObject timeout!");
                             _handle(EM_DB_RESULT.EM_DB_TIMEOUT, null);
@@ -174,7 +174,7 @@ namespace hub
                         {
                             log.log.trace("getObjectCount faild!");
                             _handle(EM_DB_RESULT.EM_DB_FAILD, 0);
-                        }).timeout(5 * 1000, () =>
+                        }).timeout(5000, () =>
                         {
                             log.log.trace("getObjectCount timeout!");
                             _handle(EM_DB_RESULT.EM_DB_TIMEOUT, 0);
@@ -239,7 +239,7 @@ namespace hub
                         {
                             log.log.trace("removeObject faild!");
                             _handle(EM_DB_RESULT.EM_DB_FAILD);
-                        }).timeout(5 * 1000, () =>
+                        }).timeout(5000, () =>
                         {
                             log.log.trace("removeObject timeout!");
                             _handle(EM_DB_RESULT.EM_DB_TIMEOUT);
