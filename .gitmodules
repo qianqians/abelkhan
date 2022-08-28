@@ -13,3 +13,6 @@
 [submodule "cpp_component/3rdparty/crossguid"]
 	path = cpp_component/3rdparty/crossguid
 	url = git@github.com:graeme-hill/crossguid.git
+[submodule "cpp_component/3rdparty/libbson"]
+	path = cpp_component/3rdparty/libbson
+	url = git@github.com:qianqians/libbson.git
