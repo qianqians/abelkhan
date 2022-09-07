@@ -92,6 +92,7 @@ def genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum):
             array_type = key[:-2]
             array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
             _array_type = tools.convert_type(array_type, dependent_struct, dependent_enum)
+            code += "                    _struct" + _struct_uuid + "." + value + " = new();\n"
             code += "                    var _protocol_array = ((MsgPack.MessagePackObject)i.Value).AsList();\n"
             code += "                    foreach (var v_ in _protocol_array){\n"
             if array_type_ == tools.TypeType.Int8:
