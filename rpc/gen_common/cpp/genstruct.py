@@ -142,14 +142,41 @@ def genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum):
     code += "        }\n"
     return code
 
+def sort_struct_dependent(struct, dependent_struct, dependent_enum):
+    sorted_struct = []
+
+    for struct_name, elems in struct.items():
+        try:
+            current_struct_index = sorted_struct.index(struct_name)
+        except ValueError:
+            sorted_struct.append(struct_name)
+            current_struct_index = sorted_struct.index(struct_name)
+        for key, value, parameter in elems:
+            type_ = tools.check_type(key, dependent_struct, dependent_enum)
+            if type_ == tools.TypeType.Custom:
+                try:
+                    dependent_struct_index = sorted_struct.index(key)
+                except ValueError:
+                    sorted_struct.insert(current_struct_index, key)
+
+                current_struct_index = sorted_struct.index(struct_name)
+
+                if dependent_struct_index > current_struct_index:
+                    raise Exception("cycle dependent %s, %s" % (struct_name, key))
+
+    return sorted_struct
+
+
 def genstruct(pretreatment):
     dependent_struct = pretreatment.dependent_struct
     dependent_enum = pretreatment.dependent_enum
     
     struct = pretreatment.struct
+    sorted_struct = sort_struct_dependent(struct, dependent_struct, dependent_enum)
     
     code = "/*this struct code is codegen by abelkhan codegen for cpp*/\n"
-    for struct_name, elems in struct.items():
+    for struct_name in sorted_struct:
+        elems = struct[struct_name]
         code += genmainstruct(struct_name, elems, dependent_struct, dependent_enum, pretreatment.enum)
         code += genstructprotocol(struct_name, elems, dependent_struct, dependent_enum)
         code += genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum)
