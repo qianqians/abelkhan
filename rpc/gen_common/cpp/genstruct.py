@@ -48,7 +48,7 @@ def genstructprotocol(struct_name, elems, dependent_struct, dependent_enum):
             elif array_type_ == tools.TypeType.Array:
                 raise Exception("not support nested array:%s in struct:%s" % (key, struct_name))
             code += "            }\n"
-            code += "            _protocol.insert(std::make_pair(\"" + value + "\", _array_" + value + ");\n"
+            code += "            _protocol.insert(std::make_pair(\"" + value + "\", _array_" + value + "));\n"
     code += "            return _protocol;\n"
     code += "        }\n\n"
     return code
@@ -131,7 +131,7 @@ def genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum):
             elif array_type_ == tools.TypeType.Bin:
                 code += "                        _struct" + _struct_uuid + "." + value + ".push_back(it_.binary_items());\n"
             elif array_type_ == tools.TypeType.Custom:
-                code += "                        _struct" + _struct_uuid + "." + value + ".push_back(" + array_type + "::protcol_to_" + array_type + "(it_.array_items()));\n"
+                code += "                        _struct" + _struct_uuid + "." + value + ".push_back(" + array_type + "::protcol_to_" + array_type + "(it_.object_items()));\n"
             elif array_type_ == tools.TypeType.Array:
                 raise Exception("not support nested array:%s in struct:%s" % (key, struct_name))
             code += "            }\n"

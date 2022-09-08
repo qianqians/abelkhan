@@ -18,8 +18,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     cb_code_constructor += "        void Init(std::shared_ptr<hub::hub_service> _hub_service){\n"
     cb_code_section = ""
 
-    code = "    class " + module_name + "_hubproxy;\n"
-    code += "    class " + module_name + "_caller {\n"
+    code = "    class " + module_name + "_caller {\n"
     code += "    private:\n"
     code += "        static std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle;\n\n"
     code += "    private:\n"
@@ -41,66 +40,66 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "    };\n\n"
     cpp_code = "std::shared_ptr<" + module_name + "_rsp_cb> " + module_name + "_caller::rsp_cb_" + module_name + "_handle = nullptr;\n"
 
-    code += "    class " + module_name + "_hubproxy {\n"
-    code += "    public:\n"
-    code += "        std::string hub_name_" + _hub_uuid + ";\n\n"
-    code += "    private:\n"
+    code_hubproxy = "    class " + module_name + "_hubproxy {\n"
+    code_hubproxy += "    public:\n"
+    code_hubproxy += "        std::string hub_name_" + _hub_uuid + ";\n\n"
+    code_hubproxy += "    private:\n"
     _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
-    code += "        std::atomic<uint64_t> uuid_" + _uuid + ";\n"
-    code += "        std::shared_ptr<hub::hub_service> _hub_service;\n"
-    code += "        std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle;\n\n"
-    code += "    public:\n"
-    code += "        " + module_name + "_hubproxy(std::shared_ptr<hub::hub_service> hub_service_, std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle_)\n"
-    code += "        {\n"
-    code += "            _hub_service = hub_service_;\n"
-    code += "            rsp_cb_" + module_name + "_handle = rsp_cb_" + module_name + "_handle_;\n\n"
-    code += "            uuid_" + _uuid + ".store(random());\n"
-    code += "        }\n\n"
+    code_hubproxy += "        std::atomic<uint64_t> uuid_" + _uuid + ";\n"
+    code_hubproxy += "        std::shared_ptr<hub::hub_service> _hub_service;\n"
+    code_hubproxy += "        std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle;\n\n"
+    code_hubproxy += "    public:\n"
+    code_hubproxy += "        " + module_name + "_hubproxy(std::shared_ptr<hub::hub_service> hub_service_, std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle_)\n"
+    code_hubproxy += "        {\n"
+    code_hubproxy += "            _hub_service = hub_service_;\n"
+    code_hubproxy += "            rsp_cb_" + module_name + "_handle = rsp_cb_" + module_name + "_handle_;\n\n"
+    code_hubproxy += "            uuid_" + _uuid + ".store(random());\n"
+    code_hubproxy += "        }\n\n"
 
     for i in funcs:
         func_name = i[0]
 
         if i[1] == "ntf":
-            code += "        void " + func_name + "("
+            code_hubproxy += "        void " + func_name + "("
             count = 0
             for _type, _name, _parameter in i[2]:
                 if _parameter == None:
-                    code += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name 
+                    code_hubproxy += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name 
                 else:
-                    code += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name + " = " + tools.convert_parameter(_type, _parameter, dependent_enum, enum)
+                    code_hubproxy += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name + " = " + tools.convert_parameter(_type, _parameter, dependent_enum, enum)
                 count = count + 1
                 if count < len(i[2]):
-                    code += ", "
-            code += "){\n"
+                    code_hubproxy += ", "
+            code_hubproxy += "){\n"
             _argv_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
-            code += "            msgpack11::MsgPack::array _argv_" + _argv_uuid + ";\n"
+            code_hubproxy += "            msgpack11::MsgPack::array _argv_" + _argv_uuid + ";\n"
             for _type, _name, _parameter in i[2]:
                 type_ = tools.check_type(_type, dependent_struct, dependent_enum)
                 if type_ in tools.OriginalTypeList:
-                    code += "            _argv_" + _argv_uuid + ".push_back(" + _name + ");\n"
+                    code_hubproxy += "            _argv_" + _argv_uuid + ".push_back(" + _name + ");\n"
                 elif type_ == tools.TypeType.Enum:
-                    code += "            _argv_" + _argv_uuid + ".push_back((int)" + _name + ");\n"
+                    code_hubproxy += "            _argv_" + _argv_uuid + ".push_back((int)" + _name + ");\n"
                 elif type_ == tools.TypeType.Custom:
-                    code += "            _argv_" + _argv_uuid + ".push_back(" + _type + "::" + _type + "_to_protcol(" + _name + "));\n"
+                    code_hubproxy += "            _argv_" + _argv_uuid + ".push_back(" + _type + "::" + _type + "_to_protcol(" + _name + "));\n"
                 elif type_ == tools.TypeType.Array:
                     _array_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    code += "            msgpack11::MsgPack::array _array_" + _array_uuid + ";\n"
+                    code_hubproxy += "            msgpack11::MsgPack::array _array_" + _array_uuid + ";\n"
                     _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_X500, _name)).split('-'))
-                    code += "            for(auto v_" + _v_uuid + " : " + _name + "){\n"
+                    code_hubproxy += "            for(auto v_" + _v_uuid + " : " + _name + "){\n"
                     array_type = _type[:-2]
                     array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
                     if array_type_ in tools.OriginalTypeList:
-                        code += "                _array_" + _array_uuid + ".push_back(v_" + _v_uuid + ");\n"
+                        code_hubproxy += "                _array_" + _array_uuid + ".push_back(v_" + _v_uuid + ");\n"
                     elif array_type_ == tools.TypeType.Enum:
-                        code += "                _array_" + _array_uuid + ".push_back((int)v_" + _v_uuid + ");\n"
+                        code_hubproxy += "                _array_" + _array_uuid + ".push_back((int)v_" + _v_uuid + ");\n"
                     elif array_type_ == tools.TypeType.Custom:
-                        code += "                _array_" + _array_uuid + ".push_back(" + array_type + "::" + array_type + "_to_protcol(v_" + _v_uuid + "));\n"
+                        code_hubproxy += "                _array_" + _array_uuid + ".push_back(" + array_type + "::" + array_type + "_to_protcol(v_" + _v_uuid + "));\n"
                     elif array_type_ == tools.TypeType.Array:
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
-                    code += "            }\n"                                                     
-                    code += "            _argv_" + _argv_uuid + ".push_back(_array_" + _array_uuid + ");\n"
-            code += "            _hub_service->_hubmng->call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
-            code += "        }\n\n"
+                    code_hubproxy += "            }\n"                                                     
+                    code_hubproxy += "            _argv_" + _argv_uuid + ".push_back(_array_" + _array_uuid + ");\n"
+            code_hubproxy += "            _hub_service->_hubmng->call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
+            code_hubproxy += "        }\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
             cb_func += "    class " + module_name + "_rsp_cb;\n"
             cb_func += "    class " + module_name + "_" + func_name + "_cb : public std::enable_shared_from_this<" +  module_name + "_" + func_name + "_cb>{\n"
@@ -387,62 +386,62 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
             cb_code_section += "            return nullptr;\n"
             cb_code_section += "        }\n\n"
 
-            code += "        std::shared_ptr<" + module_name + "_"  + func_name + "_cb> " + func_name + "("
+            code_hubproxy += "        std::shared_ptr<" + module_name + "_"  + func_name + "_cb> " + func_name + "("
             count = 0
             for _type, _name, _parameter in i[2]:
                 if _parameter == None:
-                    code += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name 
+                    code_hubproxy += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name 
                 else:
-                    code += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name + " = " + tools.convert_parameter(_type, _parameter, dependent_enum, enum)
+                    code_hubproxy += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name + " = " + tools.convert_parameter(_type, _parameter, dependent_enum, enum)
                 count = count + 1
                 if count < len(i[2]):
-                    code += ", "
-            code += "){\n"
+                    code_hubproxy += ", "
+            code_hubproxy += "){\n"
             _cb_uuid_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_DNS, func_name)).split('-'))
-            code += "            auto uuid_" + _cb_uuid_uuid + " = uuid_" + _uuid + "++;\n"
+            code_hubproxy += "            auto uuid_" + _cb_uuid_uuid + " = uuid_" + _uuid + "++;\n"
             _argv_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_X500, func_name)).split('-'))
-            code += "            msgpack11::MsgPack::array _argv_" + _argv_uuid + ";\n"
-            code += "            _argv_" + _argv_uuid + ".push_back(uuid_" + _cb_uuid_uuid + ");\n"
+            code_hubproxy += "            msgpack11::MsgPack::array _argv_" + _argv_uuid + ";\n"
+            code_hubproxy += "            _argv_" + _argv_uuid + ".push_back(uuid_" + _cb_uuid_uuid + ");\n"
             for _type, _name, _parameter in i[2]:
                 type_ = tools.check_type(_type, dependent_struct, dependent_enum)
                 if type_ in tools.OriginalTypeList:
-                    code += "            _argv_" + _argv_uuid + ".push_back(" + _name + ");\n"
+                    code_hubproxy += "            _argv_" + _argv_uuid + ".push_back(" + _name + ");\n"
                 elif type_ == tools.TypeType.Enum:
-                    code += "            _argv_" + _argv_uuid + ".push_back((int)" + _name + ");\n"
+                    code_hubproxy += "            _argv_" + _argv_uuid + ".push_back((int)" + _name + ");\n"
                 elif type_ == tools.TypeType.Custom:
-                    code += "            _argv_" + _argv_uuid + ".push_back(" + _type + "::" + _type + "_to_protcol(" + _name + "));\n"
+                    code_hubproxy += "            _argv_" + _argv_uuid + ".push_back(" + _type + "::" + _type + "_to_protcol(" + _name + "));\n"
                 elif type_ == tools.TypeType.Array:
                     _array_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    code += "            msgpack11::MsgPack::array _array_" + _array_uuid + ";\n"
+                    code_hubproxy += "            msgpack11::MsgPack::array _array_" + _array_uuid + ";\n"
                     _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_X500, _name)).split('-'))
-                    code += "            for(auto v_" + _v_uuid + " : " + _name + "){\n"
+                    code_hubproxy += "            for(auto v_" + _v_uuid + " : " + _name + "){\n"
                     array_type = _type[:-2]
                     array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
                     if array_type_ in tools.OriginalTypeList:
-                        code += "                _array_" + _array_uuid + ".push_back(v_" + _v_uuid + ");\n"
+                        code_hubproxy += "                _array_" + _array_uuid + ".push_back(v_" + _v_uuid + ");\n"
                     elif array_type_ == tools.TypeType.Enum:
-                        code += "                _array_" + _array_uuid + ".push_back((int)v_" + _v_uuid + ");\n"
+                        code_hubproxy += "                _array_" + _array_uuid + ".push_back((int)v_" + _v_uuid + ");\n"
                     elif array_type_ == tools.TypeType.Custom:
-                        code += "                _array_" + _array_uuid + ".push_back(" + array_type + "::" + array_type + "_to_protcol(v_" + _v_uuid + "));\n"
+                        code_hubproxy += "                _array_" + _array_uuid + ".push_back(" + array_type + "::" + array_type + "_to_protcol(v_" + _v_uuid + "));\n"
                     elif array_type_ == tools.TypeType.Array:
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
-                    code += "            }\n"                                                     
-                    code += "            _argv_" + _argv_uuid + ".push_back(_array_" + _array_uuid + ");\n"
-            code += "            _hub_service->_hubmng->call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n\n"
-            code += "            auto cb_" + func_name + "_obj = std::make_shared<" + module_name + "_"  + func_name + "_cb>(uuid_" + _cb_uuid_uuid + ", rsp_cb_" + module_name + "_handle);\n"
-            code += "            std::lock_guard<std::mutex> l(rsp_cb_" + module_name + "_handle->mutex_map_" + func_name + ");\n"
-            code += "            rsp_cb_" + module_name + "_handle->map_" + func_name + ".insert(std::make_pair(uuid_" + _cb_uuid_uuid + ", cb_" + func_name + "_obj));\n"
-            code += "            return cb_" + func_name + "_obj;\n"
-            code += "        }\n\n"
+                    code_hubproxy += "            }\n"                                                     
+                    code_hubproxy += "            _argv_" + _argv_uuid + ".push_back(_array_" + _array_uuid + ");\n"
+            code_hubproxy += "            _hub_service->_hubmng->call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n\n"
+            code_hubproxy += "            auto cb_" + func_name + "_obj = std::make_shared<" + module_name + "_"  + func_name + "_cb>(uuid_" + _cb_uuid_uuid + ", rsp_cb_" + module_name + "_handle);\n"
+            code_hubproxy += "            std::lock_guard<std::mutex> l(rsp_cb_" + module_name + "_handle->mutex_map_" + func_name + ");\n"
+            code_hubproxy += "            rsp_cb_" + module_name + "_handle->map_" + func_name + ".insert(std::make_pair(uuid_" + _cb_uuid_uuid + ", cb_" + func_name + "_obj));\n"
+            code_hubproxy += "            return cb_" + func_name + "_obj;\n"
+            code_hubproxy += "        }\n\n"
 
         else:
             raise Exception("func:" + func_name + " wrong rpc type:" + str(i[1]) + ", must req or ntf")
 
     cb_code_constructor += "        }\n\n"
     cb_code_section += "    };\n\n"
-    code += "    };\n"
+    code_hubproxy += "    };\n"
 
-    h_code = cb_func + cb_code + cb_code_constructor + cb_code_section + code
+    h_code = cb_func + cb_code + cb_code_constructor + cb_code_section + code_hubproxy + code
 
     return h_code, cpp_code
 
