@@ -35,14 +35,15 @@ public:
 	}
 
 	void reg_server(struct name_info& _name_info, std::function<void()> conn_callback) {
+		spdlog::trace("reg_server begin:{0}", _timerservice->Tick);
 		_center_caller->reg_server_mq("gate", _name_info.name)->callBack([this, &_name_info, conn_callback]() {
 			is_reg_sucess = true;
 			conn_callback();
 			spdlog::trace("connect center server sucess!");
 		}, []() {
 			spdlog::trace("connect center server faild!");
-		})->timeout(5000, []() {
-			spdlog::trace("connect center server timeout!");
+		})->timeout(5000, [this]() {
+			spdlog::trace("connect center server timeout:{0}!", _timerservice->Tick);
 		});
 	}
 

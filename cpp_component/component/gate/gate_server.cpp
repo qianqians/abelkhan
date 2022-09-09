@@ -202,6 +202,7 @@ void gate_service::run() {
 		}
 	}
 
+	spdlog::shutdown();
 	_run_mu.unlock();
 }
 
@@ -249,7 +250,6 @@ void gate_service::close_svr() {
 	spdlog::info("server closed, gate server name:{0}!", gate_name_info.name);
 	_closehandle->is_closed = true;
 	enet_deinitialize();
-	spdlog::shutdown();
 }
 
 }

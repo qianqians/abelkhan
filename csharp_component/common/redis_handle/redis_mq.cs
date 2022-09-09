@@ -98,6 +98,8 @@ namespace abelkhan
 
         public void sendmsg(string ch_name, byte[] data)
         {
+            log.log.trace("send msg to:{0}", ch_name);
+
             var b_listen_ch_name = System.Text.Encoding.UTF8.GetBytes(listen_channel_name);
             var _listen_ch_name_size = b_listen_ch_name.Length;
             var st = new MemoryStream();
@@ -123,7 +125,7 @@ namespace abelkhan
                     {
                         try
                         {
-                            await database.ListLeftPushAsync(data.Item1, data.Item2.ToArray(), flags: CommandFlags.FireAndForget);
+                            await database.ListLeftPushAsync(data.Item1, data.Item2.ToArray());
                             break;
                         }
                         catch (RedisTimeoutException ex)

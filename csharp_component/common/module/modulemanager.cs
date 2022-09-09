@@ -25,7 +25,7 @@ namespace common
 			else
             {
                 log.log.err("do not have a mothed name:{0}", func_name);
-				throw new moduleException(String.Format("modulemanager.process_module_mothed unreg mothed name:%s!", func_name));
+				throw new moduleException(String.Format("modulemanager.process_module_mothed unreg mothed name:{0}!", func_name));
 			}
 		}
 

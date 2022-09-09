@@ -239,7 +239,6 @@ void hub_service::close_svr() {
 	if (_hub_service) {
 		enet_deinitialize();
 	}
-	spdlog::shutdown();
 }
 
 void hub_service::run() {
@@ -260,6 +259,7 @@ void hub_service::run() {
 		}
 	}
 
+	spdlog::shutdown();
 	_run_mu.unlock();
 }
 

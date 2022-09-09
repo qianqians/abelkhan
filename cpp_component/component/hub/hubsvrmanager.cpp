@@ -75,13 +75,15 @@ void hubsvrmanager::reg_hub(std::string hub_name, std::string hub_type, std::sha
 	auto it = hubproxys.find(hub_name);
 	if (it != hubproxys.end()) {
 		wait_destory_hubproxys.insert(std::make_pair(it->first, it->second));
+		hubproxys[hub_name] = _proxy;
+		ch_hubproxys[ch] = _proxy;
 		_hub->sig_hub_reconnect.emit(_proxy);
 	}
 	else {
+		hubproxys[hub_name] = _proxy;
+		ch_hubproxys[ch] = _proxy;
 		_hub->sig_hub_connect.emit(_proxy);
 	}
-	hubproxys[hub_name] = _proxy;
-	ch_hubproxys[ch] = _proxy;
 }
 
 void hubsvrmanager::call_hub(const std::string& hub_name, const std::string& func_name, const msgpack11::MsgPack::array& argvs) {

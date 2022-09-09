@@ -85,6 +85,7 @@ namespace hub
                 }
 
                 ch_gateproxys.Add(ch, _proxy);
+                log.log.info("connect gate:{0}", name);
 
                 lock (hub.add_chs)
                 {
@@ -126,6 +127,7 @@ namespace hub
         public event Action<string> on_gate_closed;
         public void gate_be_closed(string svr_name)
         {
+            log.log.info("gate_be_closed name:{0}", svr_name);
             if (_wait_destory_gateproxys.TryGetValue(svr_name, out gateproxy _old_proxy))
             {
                 var remove = new List<string>();
@@ -182,7 +184,7 @@ namespace hub
         {
             if (!ch_gateproxys.TryGetValue(gate_ch, out gateproxy _proxy))
             {
-                log.log.err("invaild gate");
+                log.log.err("invaild gate:{0}, ch_gateproxys.count:{1}", gate_ch, ch_gateproxys.Count);
                 return;
             }
             if (!clients.ContainsKey(client_uuid))
@@ -383,11 +385,14 @@ namespace hub
             _rpc_argv.Add(_argvs_list);
             _serializer.Pack(st, _rpc_argv);
             st.Position = 0;
+            var _rpc_bin = st.ToArray();
 
+            var _direct_rpc_argv = new ArrayList();
+            _direct_rpc_argv.Add(_rpc_bin);
             ArrayList _event = new ArrayList();
             _event.Add("hub_call_client_call_client");
-            _event.Add(st.ToArray());
-            _serializer.Pack(st_event, _rpc_argv);
+            _event.Add(_direct_rpc_argv);
+            _serializer.Pack(st_event, _event);
             st_event.Position = 0;
             var data = st_event.ToArray();
 
@@ -416,7 +421,7 @@ namespace hub
 
             foreach (var _proxy in tmp_gates)
 			{
-				_proxy.Key.forward_hub_call_group_client(_proxy.Value, buf);
+				_proxy.Key.forward_hub_call_group_client(_proxy.Value, _rpc_bin);
 			}
 		}
 
