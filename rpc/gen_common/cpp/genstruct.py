@@ -146,6 +146,8 @@ def sort_struct_dependent(struct, dependent_struct, dependent_enum):
     sorted_struct = []
 
     for struct_name, elems in struct.items():
+        current_struct_index = -1
+        dependent_struct_index = -1
         try:
             current_struct_index = sorted_struct.index(struct_name)
         except ValueError:
@@ -163,7 +165,6 @@ def sort_struct_dependent(struct, dependent_struct, dependent_enum):
 
                 if dependent_struct_index > current_struct_index:
                     raise Exception("cycle dependent %s, %s" % (struct_name, key))
-
     return sorted_struct
 
 
