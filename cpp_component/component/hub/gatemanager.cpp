@@ -185,12 +185,12 @@ void gatemanager::client_direct_connect(std::string client_uuid, std::shared_ptr
 	auto it = direct_clients.find(client_uuid);
 	if (it != direct_clients.end()) {
 		ch_direct_clients.erase(it->second->_direct_ch);
-		direct_clients.erase(it);
+		direct_clients.erase(client_uuid);
 	}
 
 	spdlog::trace("reg direct client:{0}", client_uuid);
 
-	auto _directproxy = _directproxy_pool.make_obj(client_uuid, direct_ch);
+	auto _directproxy = std::make_shared<directproxy>(client_uuid, direct_ch);
 	direct_clients.insert(std::make_pair(client_uuid, _directproxy));
 
 	ch_direct_clients.insert(std::make_pair(direct_ch, _directproxy));
@@ -203,7 +203,6 @@ void gatemanager::client_direct_disconnect(std::shared_ptr<abelkhan::Ichannel> d
 	}
 
 	auto cuuid = it->second->_cuuid;
-	_directproxy_pool.recycle(it->second);
 
 	direct_clients.erase(cuuid);
 	ch_direct_clients.erase(it);
@@ -243,10 +242,10 @@ void gatemanager::heartbeat_client(int64_t ticktime) {
 	std::vector<std::shared_ptr<directproxy> > exception_client;
 	for (auto item : direct_clients) {
 		auto proxy = item.second;
-		if (proxy->_timetmp > 0 && (proxy->_timetmp + 10000) < ticktime) {
+		if (proxy->_timetmp > 0 && (proxy->_timetmp + 10 * 1000) < ticktime) {
 			remove_client.push_back(proxy);
 		}
-		if (proxy->_timetmp > 0 && proxy->_theory_timetmp > 0 && (proxy->_theory_timetmp - proxy->_timetmp) > 10000) {
+		if (proxy->_timetmp > 0 && proxy->_theory_timetmp > 0 && (proxy->_theory_timetmp - proxy->_timetmp) > 10 * 1000) {
 			exception_client.push_back(proxy);
 		}
 	}

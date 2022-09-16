@@ -18,7 +18,6 @@
 #include <abelkhan.h>
 #include <client.h>
 
-#include "objpool.h"
 #include "timerservice.h"
 #include "hubsvrmanager.h"
 #include "gc_poll.h"
@@ -87,10 +86,10 @@ public:
 		std::vector<std::shared_ptr<clientproxy> > exception_client;
 		for (auto item : client_map) {
 			auto proxy = item.second;
-			if (proxy->_timetmp > 0 && (proxy->_timetmp + 10000) < ticktime) {
+			if (proxy->_timetmp > 0 && (proxy->_timetmp + 10 * 1000) < ticktime) {
 				remove_client.push_back(proxy);
 			}
-			if (proxy->_timetmp > 0 && proxy->_theory_timetmp > 0 && (proxy->_theory_timetmp - proxy->_timetmp) > 10000) {
+			if (proxy->_timetmp > 0 && proxy->_theory_timetmp > 0 && (proxy->_theory_timetmp - proxy->_timetmp) > 10 * 1000) {
 				exception_client.push_back(proxy);
 			}
 		}
@@ -111,7 +110,7 @@ public:
 
 	std::shared_ptr<clientproxy> reg_client(std::shared_ptr<abelkhan::Ichannel> ch) {
 		std::string cuuid = xg::newGuid().str();
-		auto _client = _client_pool.make_obj(cuuid, ch);
+		auto _client = std::make_shared<clientproxy>(cuuid, ch);
 
 		client_map.insert(std::make_pair(cuuid, _client));
 		client_uuid_map.insert(std::make_pair(ch, _client));
@@ -135,8 +134,6 @@ public:
 		{
 			client_uuid_map.erase(_ch);
 		}
-
-		_client_pool.recycle(_client);
 	}
 
 	bool has_client(std::shared_ptr<abelkhan::Ichannel> ch) {
@@ -174,8 +171,6 @@ private:
 	std::unordered_map<std::shared_ptr<abelkhan::Ichannel>, std::shared_ptr<clientproxy> > client_uuid_map;
 
 	std::shared_ptr<hubsvrmanager> _hubsvrmanager;
-
-	service::objpool<clientproxy> _client_pool;
 
 };
 
