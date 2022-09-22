@@ -66,6 +66,62 @@ namespace abelkhan
 
     }
 
+    public class hub_call_dbproxy_get_guid_cb
+    {
+        private UInt64 cb_uuid;
+        private hub_call_dbproxy_rsp_cb module_rsp_cb;
+
+        public hub_call_dbproxy_get_guid_cb(UInt64 _cb_uuid, hub_call_dbproxy_rsp_cb _module_rsp_cb)
+        {
+            cb_uuid = _cb_uuid;
+            module_rsp_cb = _module_rsp_cb;
+        }
+
+        public event Action<Int64> on_get_guid_cb;
+        public event Action on_get_guid_err;
+        public event Action on_get_guid_timeout;
+
+        public hub_call_dbproxy_get_guid_cb callBack(Action<Int64> cb, Action err)
+        {
+            on_get_guid_cb += cb;
+            on_get_guid_err += err;
+            return this;
+        }
+
+        public void timeout(UInt64 tick, Action timeout_cb)
+        {
+            TinyTimer.add_timer(tick, ()=>{
+                module_rsp_cb.get_guid_timeout(cb_uuid);
+            });
+            on_get_guid_timeout += timeout_cb;
+        }
+
+        public void call_cb(Int64 guid)
+        {
+            if (on_get_guid_cb != null)
+            {
+                on_get_guid_cb(guid);
+            }
+        }
+
+        public void call_err()
+        {
+            if (on_get_guid_err != null)
+            {
+                on_get_guid_err();
+            }
+        }
+
+        public void call_timeout()
+        {
+            if (on_get_guid_timeout != null)
+            {
+                on_get_guid_timeout();
+            }
+        }
+
+    }
+
     public class hub_call_dbproxy_create_persisted_object_cb
     {
         private UInt64 cb_uuid;
@@ -349,6 +405,7 @@ namespace abelkhan
 /*this cb code is codegen by abelkhan for c#*/
     public class hub_call_dbproxy_rsp_cb : abelkhan.Imodule {
         public Dictionary<UInt64, hub_call_dbproxy_reg_hub_cb> map_reg_hub;
+        public Dictionary<UInt64, hub_call_dbproxy_get_guid_cb> map_get_guid;
         public Dictionary<UInt64, hub_call_dbproxy_create_persisted_object_cb> map_create_persisted_object;
         public Dictionary<UInt64, hub_call_dbproxy_updata_persisted_object_cb> map_updata_persisted_object;
         public Dictionary<UInt64, hub_call_dbproxy_find_and_modify_cb> map_find_and_modify;
@@ -359,6 +416,9 @@ namespace abelkhan
             map_reg_hub = new Dictionary<UInt64, hub_call_dbproxy_reg_hub_cb>();
             modules.reg_method("hub_call_dbproxy_rsp_cb_reg_hub_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub_rsp));
             modules.reg_method("hub_call_dbproxy_rsp_cb_reg_hub_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub_err));
+            map_get_guid = new Dictionary<UInt64, hub_call_dbproxy_get_guid_cb>();
+            modules.reg_method("hub_call_dbproxy_rsp_cb_get_guid_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_guid_rsp));
+            modules.reg_method("hub_call_dbproxy_rsp_cb_get_guid_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_guid_err));
             map_create_persisted_object = new Dictionary<UInt64, hub_call_dbproxy_create_persisted_object_cb>();
             modules.reg_method("hub_call_dbproxy_rsp_cb_create_persisted_object_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, create_persisted_object_rsp));
             modules.reg_method("hub_call_dbproxy_rsp_cb_create_persisted_object_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, create_persisted_object_err));
@@ -407,6 +467,43 @@ namespace abelkhan
                 if (map_reg_hub.TryGetValue(uuid, out hub_call_dbproxy_reg_hub_cb rsp))
                 {
                     map_reg_hub.Remove(uuid);
+                }
+                return rsp;
+            }
+        }
+
+        public void get_guid_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _guid = ((MsgPack.MessagePackObject)inArray[1]).AsInt64();
+            var rsp = try_get_and_del_get_guid_cb(uuid);
+            if (rsp != null)
+            {
+                rsp.call_cb(_guid);
+            }
+        }
+
+        public void get_guid_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var rsp = try_get_and_del_get_guid_cb(uuid);
+            if (rsp != null)
+            {
+                rsp.call_err();
+            }
+        }
+
+        public void get_guid_timeout(UInt64 cb_uuid){
+            var rsp = try_get_and_del_get_guid_cb(cb_uuid);
+            if (rsp != null){
+                rsp.call_timeout();
+            }
+        }
+
+        private hub_call_dbproxy_get_guid_cb try_get_and_del_get_guid_cb(UInt64 uuid){
+            lock(map_get_guid)
+            {
+                if (map_get_guid.TryGetValue(uuid, out hub_call_dbproxy_get_guid_cb rsp))
+                {
+                    map_get_guid.Remove(uuid);
                 }
                 return rsp;
             }
@@ -624,6 +721,24 @@ namespace abelkhan
             return cb_reg_hub_obj;
         }
 
+        public hub_call_dbproxy_get_guid_cb get_guid(string db, string collection, string guid_key){
+            var uuid_efe126e5_91e4_5df4_975c_18c91b6a6634 = (UInt64)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
+
+            var _argv_8b362c4a_74a5_366e_a6af_37474d7fa521 = new ArrayList();
+            _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.Add(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634);
+            _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.Add(db);
+            _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.Add(collection);
+            _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.Add(guid_key);
+            call_module_method("hub_call_dbproxy_get_guid", _argv_8b362c4a_74a5_366e_a6af_37474d7fa521);
+
+            var cb_get_guid_obj = new hub_call_dbproxy_get_guid_cb(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634, rsp_cb_hub_call_dbproxy_handle);
+            lock(rsp_cb_hub_call_dbproxy_handle.map_get_guid)
+            {
+                rsp_cb_hub_call_dbproxy_handle.map_get_guid.Add(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634, cb_get_guid_obj);
+            }
+            return cb_get_guid_obj;
+        }
+
         public hub_call_dbproxy_create_persisted_object_cb create_persisted_object(string db, string collection, byte[] object_info){
             var uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb = (UInt64)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
 
@@ -789,6 +904,28 @@ namespace abelkhan
 
     }
 
+    public class hub_call_dbproxy_get_guid_rsp : abelkhan.Response {
+        private UInt64 uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948;
+        public hub_call_dbproxy_get_guid_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
+        {
+            uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948 = _uuid;
+        }
+
+        public void rsp(Int64 guid_25cce41a_8adf_3dfe_9b75_9eb957e9743c){
+            var _argv_8b362c4a_74a5_366e_a6af_37474d7fa521 = new ArrayList();
+            _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.Add(uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948);
+            _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.Add(guid_25cce41a_8adf_3dfe_9b75_9eb957e9743c);
+            call_module_method("hub_call_dbproxy_rsp_cb_get_guid_rsp", _argv_8b362c4a_74a5_366e_a6af_37474d7fa521);
+        }
+
+        public void err(){
+            var _argv_8b362c4a_74a5_366e_a6af_37474d7fa521 = new ArrayList();
+            _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.Add(uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948);
+            call_module_method("hub_call_dbproxy_rsp_cb_get_guid_err", _argv_8b362c4a_74a5_366e_a6af_37474d7fa521);
+        }
+
+    }
+
     public class hub_call_dbproxy_create_persisted_object_rsp : abelkhan.Response {
         private UInt64 uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b;
         public hub_call_dbproxy_create_persisted_object_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
@@ -902,6 +1039,7 @@ namespace abelkhan
         {
             modules = _modules;
             modules.reg_method("hub_call_dbproxy_reg_hub", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub));
+            modules.reg_method("hub_call_dbproxy_get_guid", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_guid));
             modules.reg_method("hub_call_dbproxy_create_persisted_object", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, create_persisted_object));
             modules.reg_method("hub_call_dbproxy_updata_persisted_object", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, updata_persisted_object));
             modules.reg_method("hub_call_dbproxy_find_and_modify", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, find_and_modify));
@@ -917,6 +1055,19 @@ namespace abelkhan
             rsp.Value = new hub_call_dbproxy_reg_hub_rsp(current_ch.Value, _cb_uuid);
             if (on_reg_hub != null){
                 on_reg_hub(_hub_name);
+            }
+            rsp.Value = null;
+        }
+
+        public event Action<string, string, string> on_get_guid;
+        public void get_guid(IList<MsgPack.MessagePackObject> inArray){
+            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _db = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _collection = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            var _guid_key = ((MsgPack.MessagePackObject)inArray[3]).AsString();
+            rsp.Value = new hub_call_dbproxy_get_guid_rsp(current_ch.Value, _cb_uuid);
+            if (on_get_guid != null){
+                on_get_guid(_db, _collection, _guid_key);
             }
             rsp.Value = null;
         }

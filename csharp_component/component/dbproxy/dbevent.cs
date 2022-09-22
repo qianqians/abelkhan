@@ -8,6 +8,37 @@ using System.Threading;
 namespace dbproxy
 {
     /*write event*/
+    public class get_guid_event
+    {
+        public get_guid_event(hubproxy _hubproxy_, string _db, string _collection, string _guid_key, abelkhan.hub_call_dbproxy_get_guid_rsp _rsp)
+        {
+            _hubproxy = _hubproxy_;
+            db = _db;
+            collection = _collection;
+            guid_key = _guid_key;
+            rsp = _rsp;
+        }
+
+        public async void do_event()
+        {
+            var guid = await dbproxy._mongodbproxy.get_guid(db, collection, guid_key);
+            if (guid >= 0)
+            {
+                rsp.rsp(guid);
+            }
+            else
+            {
+                rsp.err();
+            }
+        }
+
+        public hubproxy _hubproxy;
+        public string db;
+        public string collection;
+        public string guid_key;
+        public abelkhan.hub_call_dbproxy_get_guid_rsp rsp;
+    }
+
     public class create_event
     {
         public create_event(hubproxy _hubproxy_, string _db, string _collection, byte[] _msgpack_object_data, abelkhan.hub_call_dbproxy_create_persisted_object_rsp _rsp)
@@ -236,10 +267,19 @@ namespace dbproxy
     
     public class db_collection_write_event
     {
+        private Queue<get_guid_event> get_guid_event_list = new Queue<get_guid_event>();
         private Queue<create_event> create_event_list = new Queue<create_event>();
         private Queue<update_event> updata_event_list = new Queue<update_event>();
         private Queue<find_and_modify_event> find_and_modify_event_list = new Queue<find_and_modify_event>();
         private Queue<remove_event> remove_event_list = new Queue<remove_event>();
+
+        public void push_get_guid_event(get_guid_event _event)
+        {
+            lock (get_guid_event_list)
+            {
+                get_guid_event_list.Enqueue(_event);
+            }
+        }
 
         public void push_create_event(create_event _event)
         {
@@ -280,6 +320,15 @@ namespace dbproxy
                 while (!dbproxy._closeHandle.is_close())
                 {
                     bool do_nothing = true;
+                    lock (get_guid_event_list)
+                    {
+                        if (get_guid_event_list.Count > 0)
+                        {
+                            var _event = get_guid_event_list.Dequeue();
+                            _event.do_event();
+                            do_nothing = false;
+                        }
+                    }
                     lock (create_event_list)
                     {
                         if (create_event_list.Count > 0)
@@ -396,6 +445,16 @@ namespace dbproxy
 
                 th_list.Add(t);
             }
+        }
+
+        public void push_get_guid_event(get_guid_event _event)
+        {
+            if (!collection_write_event_list.ContainsKey(_event.collection))
+            {
+                start_write(_event.collection);
+            }
+
+            collection_write_event_list[_event.collection].push_get_guid_event(_event);
         }
 
         public void push_create_event(create_event _event)

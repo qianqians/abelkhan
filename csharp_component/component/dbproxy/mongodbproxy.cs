@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using MsgPack.Serialization;
@@ -72,6 +73,34 @@ namespace dbproxy
             catch(System.Exception e)
             {
                 log.log.err("create_index faild, {0}", e.Message);
+            }
+            finally
+            {
+                releaseMongoClient(_mongoclient);
+            }
+        }
+
+        public async void check_int_guid(string db, string collection, Int64 inside_guid, Int64 public_guid)
+        {
+            var _mongoclient = getMongoCLient();
+            var _db = _mongoclient.GetDatabase(db);
+            var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection) as MongoDB.Driver.IMongoCollection<MongoDB.Bson.BsonDocument>;
+
+            try
+            {
+                var _bson_query = MongoDB.Bson.BsonDocument.Parse("{\"Guid\":\"__guid__\"}");
+                var _query = new MongoDB.Driver.BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
+
+                var c = await _collection.FindAsync<MongoDB.Bson.BsonDocument>(_query);
+                if (c.MoveNext() && (c.Current == null || !c.Current.Any()))
+                {
+                    MongoDB.Bson.BsonDocument _d = new MongoDB.Bson.BsonDocument { { "Guid", "__guid__" }, { "inside_guid", inside_guid }, { "public_guid", public_guid } };
+                    await _collection.InsertOneAsync(_d);
+                }
+            }
+            catch (System.Exception e)
+            {
+                log.log.err("check_int_guid db: {0}, collection: {1}, inside_guid: {2}, public_guid: {3} faild, {4}", db, collection, inside_guid, public_guid, e);
             }
             finally
             {
@@ -280,6 +309,31 @@ namespace dbproxy
             return true;
 		}
 
-	}
+        public async Task<Int64> get_guid(string db, string collection, string guid_key)
+        {
+            var _mongoclient = getMongoCLient();
+            var _db = _mongoclient.GetDatabase(db);
+            var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection) as MongoDB.Driver.IMongoCollection<MongoDB.Bson.BsonDocument>;
+
+            try
+            {
+                var _bson_query = new MongoDB.Bson.BsonDocument("Guid", "__guid__");
+                var _query = new MongoDB.Driver.BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
+                var _bson_update_impl = new MongoDB.Bson.BsonDocument { { "$inc", new MongoDB.Bson.BsonDocument { { guid_key, 1 } } } };
+
+                var c = await _collection.FindOneAndUpdateAsync<MongoDB.Bson.BsonDocument>(_query, _bson_update_impl);
+                return c.GetValue(guid_key).ToInt64();
+            }
+            catch (System.Exception e)
+            {
+                log.log.err("get_guid data db: {0}, collection: {1}, guid_key: {2} faild, {3}", db, collection, guid_key, e);
+                return -1;
+            }
+            finally
+            {
+                releaseMongoClient(_mongoclient);
+            }
+        }
+    }
 }
 

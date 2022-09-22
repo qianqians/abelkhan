@@ -221,6 +221,26 @@ namespace hub
                 }
             }
 
+            public void getGuid(string guid_key, Action<EM_DB_RESULT, Int64> _handle)
+            {
+                lock (_dbproxy)
+                {
+                    _dbproxy._hub_call_dbproxy_caller.get_guid(_db, _collection, guid_key).callBack((guid) => 
+                    {
+                        log.log.trace("getGuid sucessed!");
+                        _handle(EM_DB_RESULT.EM_DB_SUCESSED, guid);
+                    }, () => 
+                    {
+                        log.log.trace("getGuid faild!");
+                        _handle(EM_DB_RESULT.EM_DB_FAILD, -1);
+                    }).timeout(5000, () => 
+                    {
+                        log.log.trace("getGuid timeout!");
+                        _handle(EM_DB_RESULT.EM_DB_TIMEOUT, -1);
+                    });
+                }
+            }
+
             public void removeObject(MongoDB.Bson.BsonDocument query_obj, Action<EM_DB_RESULT> _handle)
             {
                 using (var st = new MemoryStream())

@@ -82,6 +82,15 @@ namespace dbproxy
                     _mongodbproxy.create_index(db, collection, key, is_unique);
                 }
             }
+            if (_config.has_key("guid"))
+            {
+                var _guid_cfg = _config.get_value_dict("guid");
+                var _db = _guid_cfg.get_value_string("db");
+                var _collection = _guid_cfg.get_value_string("collection");
+                var inside_guid = _guid_cfg.get_value_int("inside_guid");
+                var public_guid = _guid_cfg.get_value_int("public_guid");
+                _mongodbproxy.check_int_guid(_db, _collection, inside_guid, public_guid);
+            }
             
             _timer = new service.timerservice();
             _timer.refresh();
@@ -142,7 +151,7 @@ namespace dbproxy
         {
             do
             {
-                if ((service.timerservice.Tick - _centerproxy.timetmp) > 6000)
+                if ((service.timerservice.Tick - _centerproxy.timetmp) > 6 * 1000)
                 {
                     reconnect_center();
                     break;
@@ -152,7 +161,7 @@ namespace dbproxy
 
             } while (false);
 
-            _timer.addticktime(3000, heartbeath_center);
+            _timer.addticktime(3 * 1000, heartbeath_center);
         }
 
 		private Int64 poll()

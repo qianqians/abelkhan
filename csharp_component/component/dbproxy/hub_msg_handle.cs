@@ -1,4 +1,5 @@
-﻿using System;
+﻿using abelkhan;
+using System;
 using System.Collections;
 
 namespace dbproxy
@@ -16,6 +17,7 @@ namespace dbproxy
 
             _hub_call_dbproxy_module = new abelkhan.hub_call_dbproxy_module(abelkhan.modulemng_handle._modulemng);
             _hub_call_dbproxy_module.on_reg_hub += reg_hub;
+            _hub_call_dbproxy_module.on_get_guid += get_guid;
             _hub_call_dbproxy_module.on_create_persisted_object += create_persisted_object;
             _hub_call_dbproxy_module.on_updata_persisted_object += updata_persisted_object;
             _hub_call_dbproxy_module.on_find_and_modify += find_and_modify;
@@ -24,7 +26,7 @@ namespace dbproxy
             _hub_call_dbproxy_module.on_get_object_info += get_object_info;
         }
 
-		public void reg_hub(string hub_name)
+        public void reg_hub(string hub_name)
 		{
             log.log.trace("hub {0} connected", hub_name);
                 
@@ -33,7 +35,24 @@ namespace dbproxy
             rsp.rsp();
         }
 
-		public void create_persisted_object(string db, string collection, byte[] object_info)
+        private void get_guid(string db, string collection, string guid_key)
+        {
+            log.log.trace("begin get_guid!");
+
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
+            if (_hubproxy == null)
+            {
+                log.log.err("hubproxy is null");
+                return;
+            }
+            var rsp = (abelkhan.hub_call_dbproxy_get_guid_rsp)_hub_call_dbproxy_module.rsp.Value;
+
+            dbproxy._dbevent.push_get_guid_event(new get_guid_event(_hubproxy, db, collection, guid_key, rsp));
+
+            log.log.trace("end get_guid");
+        }
+
+        public void create_persisted_object(string db, string collection, byte[] object_info)
 		{
             log.log.trace("begin create_persisted_object");
 

@@ -29,6 +29,23 @@ namespace abelkhan
     };
 
     class hub_call_dbproxy_rsp_cb;
+    class hub_call_dbproxy_get_guid_cb : public std::enable_shared_from_this<hub_call_dbproxy_get_guid_cb>{
+    private:
+        uint64_t cb_uuid;
+        std::shared_ptr<hub_call_dbproxy_rsp_cb> module_rsp_cb;
+
+    public:
+        hub_call_dbproxy_get_guid_cb(uint64_t _cb_uuid, std::shared_ptr<hub_call_dbproxy_rsp_cb> _module_rsp_cb);
+    public:
+        concurrent::signals<void(int64_t)> sig_get_guid_cb;
+        concurrent::signals<void()> sig_get_guid_err;
+        concurrent::signals<void()> sig_get_guid_timeout;
+
+        std::shared_ptr<hub_call_dbproxy_get_guid_cb> callBack(std::function<void(int64_t guid)> cb, std::function<void()> err);
+        void timeout(uint64_t tick, std::function<void()> timeout_cb);
+    };
+
+    class hub_call_dbproxy_rsp_cb;
     class hub_call_dbproxy_create_persisted_object_cb : public std::enable_shared_from_this<hub_call_dbproxy_create_persisted_object_cb>{
     private:
         uint64_t cb_uuid;
@@ -118,6 +135,8 @@ namespace abelkhan
     public:
         std::mutex mutex_map_reg_hub;
         std::unordered_map<uint64_t, std::shared_ptr<hub_call_dbproxy_reg_hub_cb> > map_reg_hub;
+        std::mutex mutex_map_get_guid;
+        std::unordered_map<uint64_t, std::shared_ptr<hub_call_dbproxy_get_guid_cb> > map_get_guid;
         std::mutex mutex_map_create_persisted_object;
         std::unordered_map<uint64_t, std::shared_ptr<hub_call_dbproxy_create_persisted_object_cb> > map_create_persisted_object;
         std::mutex mutex_map_updata_persisted_object;
@@ -135,6 +154,8 @@ namespace abelkhan
         void Init(std::shared_ptr<modulemng> modules){
             modules->reg_method("hub_call_dbproxy_rsp_cb_reg_hub_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::reg_hub_rsp, this, std::placeholders::_1)));
             modules->reg_method("hub_call_dbproxy_rsp_cb_reg_hub_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::reg_hub_err, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_dbproxy_rsp_cb_get_guid_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::get_guid_rsp, this, std::placeholders::_1)));
+            modules->reg_method("hub_call_dbproxy_rsp_cb_get_guid_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::get_guid_err, this, std::placeholders::_1)));
             modules->reg_method("hub_call_dbproxy_rsp_cb_create_persisted_object_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::create_persisted_object_rsp, this, std::placeholders::_1)));
             modules->reg_method("hub_call_dbproxy_rsp_cb_create_persisted_object_err", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::create_persisted_object_err, this, std::placeholders::_1)));
             modules->reg_method("hub_call_dbproxy_rsp_cb_updata_persisted_object_rsp", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_rsp_cb::updata_persisted_object_rsp, this, std::placeholders::_1)));
@@ -175,6 +196,40 @@ namespace abelkhan
             if (map_reg_hub.find(uuid) != map_reg_hub.end()) {
                 auto rsp = map_reg_hub[uuid];
                 map_reg_hub.erase(uuid);
+                return rsp;
+            }
+            return nullptr;
+        }
+
+        void get_guid_rsp(const msgpack11::MsgPack::array& inArray){
+            auto uuid = inArray[0].uint64_value();
+            auto _guid = inArray[1].int64_value();
+            auto rsp = try_get_and_del_get_guid_cb(uuid);
+            if (rsp != nullptr){
+                rsp->sig_get_guid_cb.emit(_guid);
+            }
+        }
+
+        void get_guid_err(const msgpack11::MsgPack::array& inArray){
+            auto uuid = inArray[0].uint64_value();
+            auto rsp = try_get_and_del_get_guid_cb(uuid);
+            if (rsp != nullptr){
+                rsp->sig_get_guid_err.emit();
+            }
+        }
+
+        void get_guid_timeout(uint64_t cb_uuid){
+            auto rsp = try_get_and_del_get_guid_cb(cb_uuid);
+            if (rsp != nullptr){
+                rsp->sig_get_guid_timeout.emit();
+            }
+        }
+
+        std::shared_ptr<hub_call_dbproxy_get_guid_cb> try_get_and_del_get_guid_cb(uint64_t uuid){
+            std::lock_guard<std::mutex> l(mutex_map_get_guid);
+            if (map_get_guid.find(uuid) != map_get_guid.end()) {
+                auto rsp = map_get_guid[uuid];
+                map_get_guid.erase(uuid);
                 return rsp;
             }
             return nullptr;
@@ -379,6 +434,21 @@ namespace abelkhan
             return cb_reg_hub_obj;
         }
 
+        std::shared_ptr<hub_call_dbproxy_get_guid_cb> get_guid(std::string db, std::string collection, std::string guid_key){
+            auto uuid_efe126e5_91e4_5df4_975c_18c91b6a6634 = uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
+            msgpack11::MsgPack::array _argv_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948;
+            _argv_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948.push_back(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634);
+            _argv_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948.push_back(db);
+            _argv_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948.push_back(collection);
+            _argv_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948.push_back(guid_key);
+            call_module_method("hub_call_dbproxy_get_guid", _argv_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948);
+
+            auto cb_get_guid_obj = std::make_shared<hub_call_dbproxy_get_guid_cb>(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634, rsp_cb_hub_call_dbproxy_handle);
+            std::lock_guard<std::mutex> l(rsp_cb_hub_call_dbproxy_handle->mutex_map_get_guid);
+            rsp_cb_hub_call_dbproxy_handle->map_get_guid.insert(std::make_pair(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634, cb_get_guid_obj));
+            return cb_get_guid_obj;
+        }
+
         std::shared_ptr<hub_call_dbproxy_create_persisted_object_cb> create_persisted_object(std::string db, std::string collection, std::vector<uint8_t> object_info){
             auto uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb = uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
             msgpack11::MsgPack::array _argv_c5ae7137_dfe0_316b_9f1d_5dffa222d32b;
@@ -541,6 +611,31 @@ namespace abelkhan
 
     };
 
+    class hub_call_dbproxy_get_guid_rsp : public Response {
+    private:
+        uint64_t uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948;
+
+    public:
+        hub_call_dbproxy_get_guid_rsp(std::shared_ptr<Ichannel> _ch, uint64_t _uuid) : Response("hub_call_dbproxy_rsp_cb", _ch)
+        {
+            uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948 = _uuid;
+        }
+
+        void rsp(int64_t guid){
+            msgpack11::MsgPack::array _argv_8b362c4a_74a5_366e_a6af_37474d7fa521;
+            _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.push_back(uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948);
+            _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.push_back(guid);
+            call_module_method("hub_call_dbproxy_rsp_cb_get_guid_rsp", _argv_8b362c4a_74a5_366e_a6af_37474d7fa521);
+        }
+
+        void err(){
+            msgpack11::MsgPack::array _argv_8b362c4a_74a5_366e_a6af_37474d7fa521;
+            _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.push_back(uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948);
+            call_module_method("hub_call_dbproxy_rsp_cb_get_guid_err", _argv_8b362c4a_74a5_366e_a6af_37474d7fa521);
+        }
+
+    };
+
     class hub_call_dbproxy_create_persisted_object_rsp : public Response {
     private:
         uint64_t uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b;
@@ -671,6 +766,7 @@ namespace abelkhan
 
         void Init(std::shared_ptr<modulemng> _modules){
             _modules->reg_method("hub_call_dbproxy_reg_hub", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::reg_hub, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_dbproxy_get_guid", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::get_guid, this, std::placeholders::_1)));
             _modules->reg_method("hub_call_dbproxy_create_persisted_object", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::create_persisted_object, this, std::placeholders::_1)));
             _modules->reg_method("hub_call_dbproxy_updata_persisted_object", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::updata_persisted_object, this, std::placeholders::_1)));
             _modules->reg_method("hub_call_dbproxy_find_and_modify", std::make_tuple(shared_from_this(), std::bind(&hub_call_dbproxy_module::find_and_modify, this, std::placeholders::_1)));
@@ -685,6 +781,17 @@ namespace abelkhan
             auto _hub_name = inArray[1].string_value();
             rsp = std::make_shared<hub_call_dbproxy_reg_hub_rsp>(current_ch, _cb_uuid);
             sig_reg_hub.emit(_hub_name);
+            rsp = nullptr;
+        }
+
+        concurrent::signals<void(std::string, std::string, std::string)> sig_get_guid;
+        void get_guid(const msgpack11::MsgPack::array& inArray){
+            auto _cb_uuid = inArray[0].uint64_value();
+            auto _db = inArray[1].string_value();
+            auto _collection = inArray[2].string_value();
+            auto _guid_key = inArray[3].string_value();
+            rsp = std::make_shared<hub_call_dbproxy_get_guid_rsp>(current_ch, _cb_uuid);
+            sig_get_guid.emit(_db, _collection, _guid_key);
             rsp = nullptr;
         }
 

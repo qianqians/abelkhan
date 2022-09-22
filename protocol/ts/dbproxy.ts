@@ -33,6 +33,36 @@ export class hub_call_dbproxy_reg_hub_cb{
 
 }
 
+export class hub_call_dbproxy_get_guid_cb{
+    private cb_uuid : number;
+    private module_rsp_cb : hub_call_dbproxy_rsp_cb;
+
+    public event_get_guid_handle_cb : (guid:number)=>void | null;
+    public event_get_guid_handle_err : ()=>void | null;
+    public event_get_guid_handle_timeout : ()=>void | null;
+    constructor(_cb_uuid : number, _module_rsp_cb : hub_call_dbproxy_rsp_cb){
+        this.cb_uuid = _cb_uuid;
+        this.module_rsp_cb = _module_rsp_cb;
+        this.event_get_guid_handle_cb = null;
+        this.event_get_guid_handle_err = null;
+        this.event_get_guid_handle_timeout = null;
+    }
+
+    callBack(_cb:(guid:number)=>void, _err:()=>void)
+    {
+        this.event_get_guid_handle_cb = _cb;
+        this.event_get_guid_handle_err = _err;
+        return this;
+    }
+
+    timeout(tick:number, timeout_cb:()=>void)
+    {
+        setTimeout(()=>{ this.module_rsp_cb.get_guid_timeout(this.cb_uuid); }, tick);
+        this.event_get_guid_handle_timeout = timeout_cb;
+    }
+
+}
+
 export class hub_call_dbproxy_create_persisted_object_cb{
     private cb_uuid : number;
     private module_rsp_cb : hub_call_dbproxy_rsp_cb;
@@ -186,6 +216,7 @@ export class hub_call_dbproxy_get_object_count_cb{
 /*this cb code is codegen by abelkhan for ts*/
 export class hub_call_dbproxy_rsp_cb extends abelkhan.Imodule {
     public map_reg_hub:Map<number, hub_call_dbproxy_reg_hub_cb>;
+    public map_get_guid:Map<number, hub_call_dbproxy_get_guid_cb>;
     public map_create_persisted_object:Map<number, hub_call_dbproxy_create_persisted_object_cb>;
     public map_updata_persisted_object:Map<number, hub_call_dbproxy_updata_persisted_object_cb>;
     public map_find_and_modify:Map<number, hub_call_dbproxy_find_and_modify_cb>;
@@ -196,6 +227,9 @@ export class hub_call_dbproxy_rsp_cb extends abelkhan.Imodule {
         this.map_reg_hub = new Map<number, hub_call_dbproxy_reg_hub_cb>();
         modules.reg_method("hub_call_dbproxy_rsp_cb_reg_hub_rsp", [this, this.reg_hub_rsp.bind(this)]);
         modules.reg_method("hub_call_dbproxy_rsp_cb_reg_hub_err", [this, this.reg_hub_err.bind(this)]);
+        this.map_get_guid = new Map<number, hub_call_dbproxy_get_guid_cb>();
+        modules.reg_method("hub_call_dbproxy_rsp_cb_get_guid_rsp", [this, this.get_guid_rsp.bind(this)]);
+        modules.reg_method("hub_call_dbproxy_rsp_cb_get_guid_err", [this, this.get_guid_err.bind(this)]);
         this.map_create_persisted_object = new Map<number, hub_call_dbproxy_create_persisted_object_cb>();
         modules.reg_method("hub_call_dbproxy_rsp_cb_create_persisted_object_rsp", [this, this.create_persisted_object_rsp.bind(this)]);
         modules.reg_method("hub_call_dbproxy_rsp_cb_create_persisted_object_err", [this, this.create_persisted_object_err.bind(this)]);
@@ -242,6 +276,40 @@ export class hub_call_dbproxy_rsp_cb extends abelkhan.Imodule {
     private try_get_and_del_reg_hub_cb(uuid : number){
         var rsp = this.map_reg_hub.get(uuid);
         this.map_reg_hub.delete(uuid);
+        return rsp;
+    }
+
+    public get_guid_rsp(inArray:any[]){
+        let uuid = inArray[0];
+        let _argv_8b362c4a_74a5_366e_a6af_37474d7fa521:any[] = [];
+        _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.push(inArray[1]);
+        var rsp = this.try_get_and_del_get_guid_cb(uuid);
+        if (rsp && rsp.event_get_guid_handle_cb) {
+            rsp.event_get_guid_handle_cb.apply(null, _argv_8b362c4a_74a5_366e_a6af_37474d7fa521);
+        }
+    }
+
+    public get_guid_err(inArray:any[]){
+        let uuid = inArray[0];
+        let _argv_8b362c4a_74a5_366e_a6af_37474d7fa521:any[] = [];
+        var rsp = this.try_get_and_del_get_guid_cb(uuid);
+        if (rsp && rsp.event_get_guid_handle_err) {
+            rsp.event_get_guid_handle_err.apply(null, _argv_8b362c4a_74a5_366e_a6af_37474d7fa521);
+        }
+    }
+
+    public get_guid_timeout(cb_uuid : number){
+        let rsp = this.try_get_and_del_get_guid_cb(cb_uuid);
+        if (rsp){
+            if (rsp.event_get_guid_handle_timeout) {
+                rsp.event_get_guid_handle_timeout.apply(null);
+            }
+        }
+    }
+
+    private try_get_and_del_get_guid_cb(uuid : number){
+        var rsp = this.map_get_guid.get(uuid);
+        this.map_get_guid.delete(uuid);
         return rsp;
     }
 
@@ -439,6 +507,22 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
         return cb_reg_hub_obj;
     }
 
+    public get_guid(db:string, collection:string, guid_key:string){
+        let uuid_efe126e5_91e4_5df4_975c_18c91b6a6634 = Math.round(this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++);
+
+        let _argv_8b362c4a_74a5_366e_a6af_37474d7fa521:any[] = [uuid_efe126e5_91e4_5df4_975c_18c91b6a6634];
+        _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.push(db);
+        _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.push(collection);
+        _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.push(guid_key);
+        this.call_module_method("hub_call_dbproxy_get_guid", _argv_8b362c4a_74a5_366e_a6af_37474d7fa521);
+
+        let cb_get_guid_obj = new hub_call_dbproxy_get_guid_cb(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634, rsp_cb_hub_call_dbproxy_handle);
+        if (rsp_cb_hub_call_dbproxy_handle){
+            rsp_cb_hub_call_dbproxy_handle.map_get_guid.set(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634, cb_get_guid_obj);
+        }
+        return cb_get_guid_obj;
+    }
+
     public create_persisted_object(db:string, collection:string, object_info:Uint8Array){
         let uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb = Math.round(this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++);
 
@@ -590,6 +674,26 @@ export class hub_call_dbproxy_reg_hub_rsp extends abelkhan.Icaller {
 
 }
 
+export class hub_call_dbproxy_get_guid_rsp extends abelkhan.Icaller {
+    private uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948 : number;
+    constructor(_ch:abelkhan.Ichannel, _uuid:number){
+        super("hub_call_dbproxy_rsp_cb", _ch);
+        this.uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948 = _uuid;
+    }
+
+    public rsp(guid:number){
+        let _argv_8b362c4a_74a5_366e_a6af_37474d7fa521:any[] = [this.uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948];
+        _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.push(guid);
+        this.call_module_method("hub_call_dbproxy_rsp_cb_get_guid_rsp", _argv_8b362c4a_74a5_366e_a6af_37474d7fa521);
+    }
+
+    public err(){
+        let _argv_8b362c4a_74a5_366e_a6af_37474d7fa521:any[] = [this.uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948];
+        this.call_module_method("hub_call_dbproxy_rsp_cb_get_guid_err", _argv_8b362c4a_74a5_366e_a6af_37474d7fa521);
+    }
+
+}
+
 export class hub_call_dbproxy_create_persisted_object_rsp extends abelkhan.Icaller {
     private uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b : number;
     constructor(_ch:abelkhan.Ichannel, _uuid:number){
@@ -693,6 +797,7 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
         super("hub_call_dbproxy");
         this.modules = modules;
         this.modules.reg_method("hub_call_dbproxy_reg_hub", [this, this.reg_hub.bind(this)]);
+        this.modules.reg_method("hub_call_dbproxy_get_guid", [this, this.get_guid.bind(this)]);
         this.modules.reg_method("hub_call_dbproxy_create_persisted_object", [this, this.create_persisted_object.bind(this)]);
         this.modules.reg_method("hub_call_dbproxy_updata_persisted_object", [this, this.updata_persisted_object.bind(this)]);
         this.modules.reg_method("hub_call_dbproxy_find_and_modify", [this, this.find_and_modify.bind(this)]);
@@ -701,6 +806,7 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
         this.modules.reg_method("hub_call_dbproxy_get_object_count", [this, this.get_object_count.bind(this)]);
 
         this.cb_reg_hub = null;
+        this.cb_get_guid = null;
         this.cb_create_persisted_object = null;
         this.cb_updata_persisted_object = null;
         this.cb_find_and_modify = null;
@@ -717,6 +823,20 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
         this.rsp = new hub_call_dbproxy_reg_hub_rsp(this.current_ch, _cb_uuid);
         if (this.cb_reg_hub){
             this.cb_reg_hub.apply(null, _argv_);
+        }
+        this.rsp = null;
+    }
+
+    public cb_get_guid : (db:string, collection:string, guid_key:string)=>void | null;
+    get_guid(inArray:any[]){
+        let _cb_uuid = inArray[0];
+        let _argv_:any[] = [];
+        _argv_.push(inArray[1]);
+        _argv_.push(inArray[2]);
+        _argv_.push(inArray[3]);
+        this.rsp = new hub_call_dbproxy_get_guid_rsp(this.current_ch, _cb_uuid);
+        if (this.cb_get_guid){
+            this.cb_get_guid.apply(null, _argv_);
         }
         this.rsp = null;
     }
