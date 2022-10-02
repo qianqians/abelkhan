@@ -38,15 +38,11 @@ namespace abelkhan
 
                 closeHandle.is_closing = true;
                 svrmng.for_each_svr((svrproxy _svrproxy) => {
-                    if (_svrproxy.type != "dbproxy")
-                    {
-                        _svrproxy.close_server();
-                    }
+                    _svrproxy.close_server();
                 });
 
                 if (svrmng.check_all_hub_closed())
                 {
-                    svrmng.close_db();
                     closeHandle.is_close = true;
                 }
             }

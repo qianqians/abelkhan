@@ -22,12 +22,21 @@ namespace dbproxy
 
 		private void close_server()
 		{
-            dbproxy._timer.addticktime(3000, close_server_impl);
-		}
+			_closehandle._is_closing = true;
+			check_close_server();
+        }
 
         private void close_server_impl(Int64 tick)
         {
             _closehandle._is_close = true;
+        }
+
+		private void check_close_server()
+		{
+            if (_closehandle._is_closing && _hubs.hub_num() <= 0)
+            {
+                dbproxy._timer.addticktime(3000, close_server_impl);
+            }
         }
 
 		private void console_close_server(string svr_type, string svr_name)
@@ -41,7 +50,8 @@ namespace dbproxy
 				if (svr_type == "hub")
 				{
 					_hubs.on_hub_closed(svr_name);
-				}
+                    check_close_server();
+                }
 			}
         }
 
@@ -52,7 +62,8 @@ namespace dbproxy
 			if (svr_type == "hub")
 			{
 				_hubs.on_hub_closed(svr_name);
-			}
+                check_close_server();
+            }
 		}
 
 
