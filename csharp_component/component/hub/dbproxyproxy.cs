@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
@@ -11,6 +10,7 @@ namespace hub
         public static Dictionary<String, Action> onGetObjectInfo_end_cb_set;
 
         public string db_name;
+        public abelkhan.Ichannel ch;
         private abelkhan.hub_call_dbproxy_caller _hub_call_dbproxy_caller;
 
         private System.Collections.Concurrent.ConcurrentDictionary<string, Collection> _Collections;
@@ -22,9 +22,10 @@ namespace hub
 		    EM_DB_TIMEOUT = 2,
 	    }
 
-        public dbproxyproxy(string _db_name, abelkhan.Ichannel ch)
+        public dbproxyproxy(string _db_name, abelkhan.Ichannel _ch)
 		{
             db_name = _db_name;
+            ch = _ch;
 
             _hub_call_dbproxy_caller = new abelkhan.hub_call_dbproxy_caller(ch, abelkhan.modulemng_handle._modulemng);
 

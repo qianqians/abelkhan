@@ -150,6 +150,8 @@ void hub_service::init() {
 			});
 		}
 	}
+
+	sig_svr_be_closed.connect(std::bind(&hub_service::svr_closed, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void hub_service::heartbeat(std::shared_ptr<hub_service> this_ptr, int64_t _tick) {
@@ -243,6 +245,12 @@ std::shared_ptr<dbproxyproxy> hub_service::get_dbproxy(std::string db_name) {
 		return _dbproxyproxys[db_name];
 	}
 	return nullptr;
+}
+
+void hub_service::svr_closed(std::string svr_type, std::string svr_name) {
+	if (svr_type == "dbproxy") {
+		_dbproxyproxys.erase(svr_name);
+	}
 }
 
 void hub_service::close_svr() {

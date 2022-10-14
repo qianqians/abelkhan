@@ -48,6 +48,7 @@ namespace hub
 			if (svr_type == "dbproxy")
             {
 				log.log.err("dbproxy exception closed!");
+
             }
 			else if (svr_type == "gate")
             {

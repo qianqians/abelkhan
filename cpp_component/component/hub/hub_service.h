@@ -79,6 +79,8 @@ public:
 private:
 	void reconnect_center();
 
+	void svr_closed(std::string svr_type, std::string svr_name);
+
 	uint32_t poll();
 
 	static void heartbeat(std::shared_ptr<hub_service> this_ptr, int64_t tick);

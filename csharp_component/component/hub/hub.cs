@@ -1,6 +1,7 @@
 ﻿using ENet.Managed;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -67,7 +68,7 @@ namespace hub
             remove_chs = new List<abelkhan.Ichannel>();
 
             _r = new Random();
-            _dbproxys = new Dictionary<string, dbproxyproxy>();
+            _dbproxys = new ConcurrentDictionary< string, dbproxyproxy>();
 
             var redismq_url = _root_config.get_value_string("redis_for_mq");
             _redis_mq_service = new abelkhan.redis_mq(redismq_url, name);
@@ -281,7 +282,7 @@ namespace hub
             }
             var _dbproxy = new dbproxyproxy(dbproxy_name, _db_ch);
             _dbproxy.reg_hub(name);
-            _dbproxys.Add(dbproxy_name, _dbproxy);
+            _dbproxys.TryAdd(dbproxy_name, _dbproxy);
 
             if (_dbproxys.Count == 1)
             {
@@ -302,6 +303,17 @@ namespace hub
         public static dbproxyproxy get_dbproxy(string db_name)
         {
             return _dbproxys[db_name];
+        }
+
+        public static void dbproxy_closed(string db_name)
+        {
+            if (_dbproxys.Remove(db_name, out dbproxyproxy _p))
+            {
+                lock (remove_chs)
+                {
+                    remove_chs.Add(_p.ch);
+                }
+            }
         }
 
         public event Action onDBProxyInit;
@@ -411,7 +423,7 @@ namespace hub
         public static List<abelkhan.Ichannel> remove_chs;
 
         private static Random _r;
-        private static Dictionary<string, dbproxyproxy> _dbproxys;
+        private static ConcurrentDictionary<string, dbproxyproxy> _dbproxys;
 
         private abelkhan.enetservice _enetservice;
         private abelkhan.redis_mq _redis_mq_service;
