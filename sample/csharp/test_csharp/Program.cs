@@ -31,7 +31,7 @@ namespace test_csharp
             client_list = new List<string>();
 
             _hub.onDBProxyInit += ()=> {
-                hub.hub._dbproxy.getCollection("test", "test").getObjectInfo(new MongoDB.Bson.BsonDocument(), (_array) => {
+                hub.hub.get_random_dbproxyproxy().getCollection("test", "test").getObjectInfo(new MongoDB.Bson.BsonDocument(), (_array) => {
                     foreach (var doc in _array)
                     {
                         log.log.trace("getObjectInfo info:{0}!", doc.ToString());
@@ -58,7 +58,7 @@ namespace test_csharp
                 log.log.trace("client:{0} login!", hub.hub._gates.current_client_uuid);
                 client_list.Add(hub.hub._gates.current_client_uuid);
 
-                hub.hub._dbproxy.getCollection("test", "test").createPersistedObject(new MongoDB.Bson.BsonDocument() { {"svr", "test_csharp"}, {"cuuid", hub.hub._gates.current_client_uuid } }, (ret)=> {
+                hub.hub.get_random_dbproxyproxy().getCollection("test", "test").createPersistedObject(new MongoDB.Bson.BsonDocument() { {"svr", "test_csharp"}, {"cuuid", hub.hub._gates.current_client_uuid } }, (ret)=> {
                     log.log.trace("createPersistedObject ret:{0}", ret);
                 });
             };

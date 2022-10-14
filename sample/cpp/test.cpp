@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
 
     _hub->sig_dbproxy_init.connect([_hub]() {
         BSON::Value query = BSON::Object{};
-        _hub->_dbproxyproxy->getCollection("test", "test")->getObjectInfo(query, [](auto _array) {
+        _hub->get_random_dbproxy()->getCollection("test", "test")->getObjectInfo(query, [](auto _array) {
             for (auto doc : _array) {
                 spdlog::trace("getObjectInfo doc:{0}!", doc.toJSON());
             }
@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
         client_list->push_back(_hub->_gatemng->current_client_cuuid);
 
         BSON::Value doc = BSON::Object{ { "info", BSON::Array{"svr", "test_cpp", "cuuid", _hub->_gatemng->current_client_cuuid}}};
-        _hub->_dbproxyproxy->getCollection("test", "test")->createPersistedObject(doc, [](auto ret) {
+        _hub->get_random_dbproxy()->getCollection("test", "test")->createPersistedObject(doc, [](auto ret) {
             spdlog::trace("createPersistedObject ret:{0}!", ret);
         });
     });

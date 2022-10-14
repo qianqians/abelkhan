@@ -29,7 +29,7 @@ std::shared_ptr<spdlog::logger> file_logger = nullptr;
 
 namespace hub{
 
-hub_service::hub_service(std::string config_file_path, std::string config_name, std::string hub_type_) {
+hub_service::hub_service(std::string config_file_path, std::string config_name, std::string hub_type_) : e(msec_time()) {
 	_config = std::make_shared<config::config>(config_file_path);
 	_center_config = _config->get_value_dict("center");
 	_root_config = _config;
@@ -211,24 +211,38 @@ void hub_service::reg_hub(std::string hub_name) {
 }
 
 void hub_service::try_connect_db(std::string dbproxy_name) {
-	if (_config->has_key("dbproxy") && _config->get_value_string("dbproxy") == dbproxy_name) {
-		auto dbproxy_cfg = _root_config->get_value_dict(dbproxy_name);
-		auto ch = _hub_redismq_service->connect(dbproxy_name);
-		_dbproxyproxy = std::make_shared<dbproxyproxy>(ch);
+	auto ch = _hub_redismq_service->connect(dbproxy_name);
+	auto _dbproxyproxy = std::make_shared<dbproxyproxy>(ch);
+	_dbproxyproxy->reg_server(name_info.name);
+	_dbproxyproxys.insert(std::make_pair(dbproxy_name, _dbproxyproxy));
+	if (_dbproxyproxys.size() == 1) {
 		_dbproxyproxy->sig_dbproxy_init.connect([this]() {
 			sig_dbproxy_init.emit();
 		});
-		_dbproxyproxy->reg_server(name_info.name);
 	}
-	else if (_config->has_key("extend_dbproxy") && _config->get_value_string("extend_dbproxy") == dbproxy_name) {
-		auto dbproxy_cfg = _root_config->get_value_dict(dbproxy_name);
-		auto ch = _hub_redismq_service->connect(dbproxy_name);
-		_extend_dbproxyproxy = std::make_shared<dbproxyproxy>(ch);
-		_extend_dbproxyproxy->sig_dbproxy_init.connect([this]() {
-			sig_dbproxy_init.emit();
-		});
-		_extend_dbproxyproxy->reg_server(name_info.name);
+}
+
+uint32_t hub_service::random(uint32_t max) {
+	return e() % max;
+}
+
+std::shared_ptr<dbproxyproxy> hub_service::get_random_dbproxy() {
+	auto index = random(_dbproxyproxys.size());
+	auto i = 0;
+	for (auto [k, v] : _dbproxyproxys) {
+		if (i == index) {
+			return v;
+		}
+		i++;
 	}
+	return nullptr;
+}
+
+std::shared_ptr<dbproxyproxy> hub_service::get_dbproxy(std::string db_name) {
+	if (_dbproxyproxys.find(db_name) != _dbproxyproxys.end()) {
+		return _dbproxyproxys[db_name];
+	}
+	return nullptr;
 }
 
 void hub_service::close_svr() {

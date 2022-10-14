@@ -10,6 +10,7 @@ namespace hub
         public static Dictionary<String, Action<MongoDB.Bson.BsonArray> > onGetObjectInfo_callback_set;
         public static Dictionary<String, Action> onGetObjectInfo_end_cb_set;
 
+        public string db_name;
         private abelkhan.hub_call_dbproxy_caller _hub_call_dbproxy_caller;
 
         private System.Collections.Concurrent.ConcurrentDictionary<string, Collection> _Collections;
@@ -21,8 +22,10 @@ namespace hub
 		    EM_DB_TIMEOUT = 2,
 	    }
 
-        public dbproxyproxy(abelkhan.Ichannel ch)
+        public dbproxyproxy(string _db_name, abelkhan.Ichannel ch)
 		{
+            db_name = _db_name;
+
             _hub_call_dbproxy_caller = new abelkhan.hub_call_dbproxy_caller(ch, abelkhan.modulemng_handle._modulemng);
 
             onGetObjectInfo_callback_set = new Dictionary<String, Action<MongoDB.Bson.BsonArray> >();

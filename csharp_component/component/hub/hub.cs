@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net;
+using System.Linq;
 using System.Threading;
 
 namespace hub
@@ -65,6 +65,9 @@ namespace hub
 
             add_chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<abelkhan.Ichannel>();
+
+            _r = new Random();
+            _dbproxys = new Dictionary<string, dbproxyproxy>();
 
             var redismq_url = _root_config.get_value_string("redis_for_mq");
             _redis_mq_service = new abelkhan.redis_mq(redismq_url, name);
@@ -271,44 +274,40 @@ namespace hub
 
         public void connect_dbproxy(string dbproxy_name)
         {
-            if (_config.has_key("dbproxy") && _config.get_value_string("dbproxy") == dbproxy_name)
+            var _db_ch = _redis_mq_service.connect(dbproxy_name);
+            lock (add_chs)
             {
-                var dbproxy_cfg = _root_config.get_value_dict(dbproxy_name);
+                add_chs.Add(_db_ch);
+            }
+            var _dbproxy = new dbproxyproxy(dbproxy_name, _db_ch);
+            _dbproxy.reg_hub(name);
+            _dbproxys.Add(dbproxy_name, _dbproxy);
 
-                var _db_ch = _redis_mq_service.connect(dbproxy_name);
-                lock (add_chs)
-                {
-                    add_chs.Add(_db_ch);
-                }
-                _dbproxy = new dbproxyproxy(_db_ch);
-                _dbproxy.reg_hub(name);
+            if (_dbproxys.Count == 1)
+            {
                 _dbproxy.on_connect_dbproxy_sucessed += onConnectDBProxySucessed;
             }
-            else if (_config.has_key("extend_dbproxy") && _config.get_value_string("extend_dbproxy") == dbproxy_name)
-            {
-                var dbproxy_cfg = _root_config.get_value_dict(dbproxy_name);
+        }
 
-                var _db_ch = _redis_mq_service.connect(dbproxy_name);
-                lock (add_chs)
-                {
-                    add_chs.Add(_db_ch);
-                }
-                _extend_dbproxy = new dbproxyproxy(_db_ch);
-                _extend_dbproxy.reg_hub(name);
-                _extend_dbproxy.on_connect_dbproxy_sucessed += onConnectExtendDBProxySucessed;
-            }
+        public static uint randmon_uint(uint max)
+        {
+            return (uint)(_r.NextDouble() * max);
+        }
+
+        public static dbproxyproxy get_random_dbproxyproxy()
+        {
+            return _dbproxys.Values.ToArray()[randmon_uint((uint)_dbproxys.Count)];
+        }
+
+        public static dbproxyproxy get_dbproxy(string db_name)
+        {
+            return _dbproxys[db_name];
         }
 
         public event Action onDBProxyInit;
         public void onConnectDBProxySucessed()
         {
             onDBProxyInit?.Invoke();
-        }
-
-        public event Action onExtendDBProxyInit;
-        public void onConnectExtendDBProxySucessed()
-        {
-            onExtendDBProxyInit?.Invoke();
         }
 
         public void reg_hub(String hub_name)
@@ -411,6 +410,9 @@ namespace hub
         public static List<abelkhan.Ichannel> add_chs;
         public static List<abelkhan.Ichannel> remove_chs;
 
+        private static Random _r;
+        private static Dictionary<string, dbproxyproxy> _dbproxys;
+
         private abelkhan.enetservice _enetservice;
         private abelkhan.redis_mq _redis_mq_service;
         private abelkhan.cryptacceptservice _cryptacceptservice;
@@ -419,8 +421,6 @@ namespace hub
         public static closehandle _closeHandle;
         public static hubmanager _hubs;
         public static gatemanager _gates;
-        public static dbproxyproxy _dbproxy;
-        public static dbproxyproxy _extend_dbproxy;
         public static service.timerservice _timer;
 
         private uint reconn_count = 0;

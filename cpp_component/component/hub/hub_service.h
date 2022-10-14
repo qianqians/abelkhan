@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <mutex>
+#include <random>
 
 #include <abelkhan.h>
 #include <timerservice.h>
@@ -65,6 +66,12 @@ public:
 
 	void try_connect_db(std::string dbproxy_name);
 
+	uint32_t random(uint32_t max);
+
+	std::shared_ptr<dbproxyproxy> get_random_dbproxy();
+
+	std::shared_ptr<dbproxyproxy> get_dbproxy(std::string db_name);
+
 	void run();
 
 	void close_svr();
@@ -108,14 +115,10 @@ public:
 	concurrent::signals<void(std::string)> sig_gate_closed;
 	
 	concurrent::signals<void() > sig_dbproxy_init;
-	concurrent::signals<void() > sig_extend_dbproxy_init;
 
 	concurrent::signals<void() > sig_center_crash;
 
 	common::modulemanager modules;
-
-	std::shared_ptr<dbproxyproxy> _dbproxyproxy;
-	std::shared_ptr<dbproxyproxy> _extend_dbproxyproxy;
 
 	std::shared_ptr<gatemanager> _gatemng;
 	std::shared_ptr<hubsvrmanager> _hubmng;
@@ -152,6 +155,10 @@ private:
 
 	std::shared_ptr<centerproxy> _centerproxy;
 	uint32_t reconn_count;
+
+	std::map<std::string, std::shared_ptr<dbproxyproxy> > _dbproxyproxys;
+
+	std::mt19937_64 e;
 
 	std::mutex _run_mu;
 
