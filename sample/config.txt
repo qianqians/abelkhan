@@ -36,7 +36,6 @@
 	
 	"test_cpp":{
 		"name":"test_cpp",
-		"dbproxy":"dbproxy",
 		"tcp_listen":true,
 		"tcp_outside_host":"127.0.0.1",
 		"tcp_outside_port":4001,
@@ -51,7 +50,6 @@
 	
 	"test_csharp":{
 		"name":"test_csharp",
-		"dbproxy":"dbproxy",
 		"tcp_listen":true,
 		"tcp_outside_host":"127.0.0.1",
 		"tcp_outside_port":4002,
