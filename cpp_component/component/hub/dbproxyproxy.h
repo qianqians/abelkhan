@@ -208,11 +208,13 @@ public:
 	concurrent::signals<void()> sig_dbproxy_init;
 	void reg_server(std::string hub_name) {
 		spdlog::trace("begin connect dbproxy server");
-		_dbproxy_caller->reg_hub(hub_name)->callBack([this]() {
+		auto this_ptr = shared_from_this();
+		_dbproxy_caller->reg_hub(hub_name)->callBack([this_ptr]() {
 			spdlog::trace("connect dbproxy server sucessed!");
-			_Collection = std::make_shared<Collection>(shared_from_this());
+			
+			this_ptr->_Collection = std::make_shared<Collection>(this_ptr);
+			this_ptr->sig_dbproxy_init.emit();
 
-			sig_dbproxy_init.emit();
 		}, []() {
 			spdlog::trace("connect dbproxy server faild!");
 		})->timeout(5000, []() {
