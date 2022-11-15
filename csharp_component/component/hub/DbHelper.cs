@@ -48,7 +48,7 @@ public class SaveDataHelper
 
     public MongoDB.Bson.BsonDocument data()
     {
-        var _data = new MongoDB.Bson.BsonDocument();
+        MongoDB.Bson.BsonDocument _data;
 
         if (set_data.Count > 0)
         {
@@ -57,6 +57,10 @@ public class SaveDataHelper
         else if (bson_data != null)
         {
             _data = bson_data;
+        }
+        else
+        {
+            _data = new MongoDB.Bson.BsonDocument();
         }
 
         return _data;
@@ -113,7 +117,7 @@ public class UpdateDataHelper
 
     public MongoDB.Bson.BsonDocument data()
     {
-        var _data = new MongoDB.Bson.BsonDocument();
+        MongoDB.Bson.BsonDocument _data = new ();
 
         if (set_data.Count > 0)
         {
