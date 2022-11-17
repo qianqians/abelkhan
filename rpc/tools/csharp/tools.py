@@ -145,6 +145,6 @@ def convert_type(typestr, dependent_struct, dependent_enum):
     raise Exception("non exist type:%s" % typestr)
     
 
-OriginalTypeList = [TypeType.Enum, TypeType.String, TypeType.Int8, TypeType.Int16, TypeType.Int32, TypeType.Int64,
+OriginalTypeList = [TypeType.String, TypeType.Int8, TypeType.Int16, TypeType.Int32, TypeType.Int64,
                     TypeType.Uint8, TypeType.Uint16, TypeType.Uint32, TypeType.Uint64, 
                     TypeType.Float, TypeType.Double, TypeType.Bool, TypeType.Bin]

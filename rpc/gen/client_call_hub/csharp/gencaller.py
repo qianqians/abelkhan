@@ -67,6 +67,8 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                 type_ = tools.check_type(_type, dependent_struct, dependent_enum)
                 if type_ in tools.OriginalTypeList:
                     code += "            _argv_" + _argv_uuid + ".Add(" + _name + ");\n"
+                elif type_ == tools.TypeType.Enum:
+                    code += "            _argv_" + _argv_uuid + ".Add(" + _name + ");\n"
                 elif type_ == tools.TypeType.Custom:
                     code += "            _argv_" + _argv_uuid + ".Add(" + _type + "." + _type + "_to_protcol(" + _name + "));\n"
                 elif type_ == tools.TypeType.Array:
@@ -77,6 +79,8 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                     array_type = _type[:-2]
                     array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
                     if array_type_ in tools.OriginalTypeList:
+                        code += "                _array_" + _array_uuid + ".Add(v_" + _v_uuid + ");\n"
+                    if array_type_ == tools.TypeType.Enum:
                         code += "                _array_" + _array_uuid + ".Add(v_" + _v_uuid + ");\n"
                     elif array_type_ == tools.TypeType.Custom:
                         code += "                _array_" + _array_uuid + ".Add(" + array_type + "." + array_type + "_to_protcol(v_" + _v_uuid + "));\n"
@@ -435,6 +439,8 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                 type_ = tools.check_type(_type, dependent_struct, dependent_enum)
                 if type_ in tools.OriginalTypeList:
                     code += "            _argv_" + _argv_uuid + ".Add(" + _name + ");\n"
+                elif type_ == tools.TypeType.Enum:
+                    code += "            _argv_" + _argv_uuid + ".Add(" + _name + ");\n"
                 elif type_ == tools.TypeType.Custom:
                     code += "            _argv_" + _argv_uuid + ".Add(" + _type + "." + _type + "_to_protcol(" + _name + "));\n"
                 elif type_ == tools.TypeType.Array:
@@ -445,6 +451,8 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                     array_type = _type[:-2]
                     array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
                     if array_type_ in tools.OriginalTypeList:
+                        code += "                _array_" + _array_uuid + ".Add(v_" + _v_uuid + ");\n"
+                    elif array_type_ == tools.TypeType.Enum:
                         code += "                _array_" + _array_uuid + ".Add(v_" + _v_uuid + ");\n"
                     elif array_type_ == tools.TypeType.Custom:
                         code += "                _array_" + _array_uuid + ".Add(" + array_type + "." + array_type + "_to_protcol(v_" + _v_uuid + "));\n"

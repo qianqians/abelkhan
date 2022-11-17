@@ -26,6 +26,8 @@ def genstructprotocol(struct_name, elems, dependent_struct, dependent_enum):
         type_ = tools.check_type(key, dependent_struct, dependent_enum)
         if type_ in tools.OriginalTypeList:
             code += "            _protocol.Add(\"" + value + "\", _struct." + value + ");\n"
+        elif type_ == tools.TypeType.Enum:
+            code += "            _protocol.Add(\"" + value + "\", (Int32)_struct." + value + ");\n"
         elif type_ == tools.TypeType.Custom:
             code += "            _protocol.Add(\"" + value + "\", new MsgPack.MessagePackObject(" + key + "." + key + "_to_protcol(_struct." + value + ")));\n"
         elif type_ == tools.TypeType.Array:
@@ -35,6 +37,8 @@ def genstructprotocol(struct_name, elems, dependent_struct, dependent_enum):
             array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
             if array_type_ in tools.OriginalTypeList:
                 code += "                _array_" + value + ".Add(v_);\n"
+            elif array_type_ == tools.TypeType.Enum:
+                code += "                _array_" + value + ".Add((Int32)v_);\n"
             elif array_type_ == tools.TypeType.Custom:
                 code += "                _array_" + value + ".Add( new MsgPack.MessagePackObject(" + array_type + "." + array_type + "_to_protcol(v_)));\n"
             elif array_type_ == tools.TypeType.Array:
@@ -112,7 +116,7 @@ def genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum):
             elif array_type_ == tools.TypeType.Uint64:
                 code += "                        _struct" + _struct_uuid + "." + value + ".Add(((MsgPack.MessagePackObject)v_).AsUInt64());\n"
             elif array_type_ == tools.TypeType.Enum:
-                code += "                        _struct" + _struct_uuid + "." + value + ".Add((" + _type_ + ")((MsgPack.MessagePackObject)v_).AsInt32());\n"
+                code += "                        _struct" + _struct_uuid + "." + value + ".Add((" + _array_type + ")((MsgPack.MessagePackObject)v_).AsInt32());\n"
             elif array_type_ == tools.TypeType.Float:
                 code += "                        _struct" + _struct_uuid + "." + value + ".Add(((MsgPack.MessagePackObject)v_).AsSingle());\n"
             elif array_type_ == tools.TypeType.Double:
