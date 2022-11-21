@@ -146,35 +146,40 @@ namespace abelkhan
 
     public class DBQueryHelper
     {
-        private readonly List<KeyValuePair<string, string> > query_condition = new ();
+        private readonly List<KeyValuePair<string, BsonValue> > query_condition = new ();
 
         public DBQueryHelper condition<T>(string key, T t)
         {
-            query_condition.Add(KeyValuePair.Create(key, t.ToString()));
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, t.ToString()));
             return this;
         }
 
         public DBQueryHelper condition(string key, string v)
         {
-            query_condition.Add(KeyValuePair.Create(key, "\"" + v + "\""));
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, v));
             return this;
         }
 
         public void gte<T>(string key, T t)
         {
-            query_condition.Add(KeyValuePair.Create(key, "{\"$gte\":" + t.ToString() + "}"));
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$gte", t.ToString())));
         }
 
         public void lte<T>(string key, T t)
         {
-            query_condition.Add(KeyValuePair.Create(key, "{\"$lte\":" + t.ToString() + "}"));
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$lte", t.ToString())));
         }
 
         public BsonDocument query()
         {
-            BsonDocument _query= new()
+            var _condition = new BsonArray();
+            foreach (var c in query_condition)
             {
-                { "$and", query_condition.ToBsonDocument() }
+                _condition.Add(new BsonDocument(c.Key, c.Value));
+            }
+            BsonDocument _query = new()
+            {
+                { "$and", _condition }
             };
 
             return _query;
