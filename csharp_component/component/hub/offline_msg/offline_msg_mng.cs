@@ -7,15 +7,13 @@ namespace offline_msg
 {
     public class offline_msg_mng
     {
-        private hub.dbproxyproxy _dbproxy;
         private string _db_name;
         private string _db_collection;
 
         private Dictionary<string, Action<offline_msg> > _callback_dict;
 
-        public offline_msg_mng(hub.dbproxyproxy dbproxy, string db_name, string db_collection)
+        public offline_msg_mng(string db_name, string db_collection)
         {
-            _dbproxy = dbproxy;
             _db_name = db_name;
             _db_collection = db_collection;
 
@@ -24,25 +22,25 @@ namespace offline_msg
 
         private hub.dbproxyproxy.Collection Collection
         {
-            get { return _dbproxy.getCollection(_db_name, _db_collection); }
+            get { return hub.hub.get_random_dbproxyproxy().getCollection(_db_name, _db_collection); }
         }
 
         public struct offline_msg
         {
             public string msg_guid;
-            public string role_account;
+            public string player_guid;
             public long send_timetmp;
             public string msg_type;
             public byte[] msg;
         }
 
-        private Task<List<offline_msg> > get_role_offline_msg(string account)
+        private Task<List<offline_msg> > get_role_offline_msg(string player_guid)
         {
             var task = new TaskCompletionSource<List<offline_msg> >();
 
             var ret_list = new List<offline_msg>();
             var _query = new abelkhan.DBQueryHelper();
-            _query.condition("role_account", account);
+            _query.condition("player_guid", player_guid);
             Collection.getObjectInfo(_query.query(), (_msg_array) => {
                 if (_msg_array.Count > 0)
                 {
@@ -61,9 +59,9 @@ namespace offline_msg
             return task.Task;
         }
 
-        public async Task process_offline_msg(string account)
+        public async Task process_offline_msg(string player_guid)
         {
-            var msg_list = await get_role_offline_msg(account);
+            var msg_list = await get_role_offline_msg(player_guid);
             foreach (var msg in msg_list)
             {
                 if (_callback_dict.TryGetValue(msg.msg_type, out Action<offline_msg> callback))
