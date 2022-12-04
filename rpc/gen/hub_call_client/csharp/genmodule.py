@@ -267,7 +267,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                 if type_ in tools.OriginalTypeList:
                     rsp_code += "            _argv_" + _argv_uuid + ".Add(" + _name + "_" + _name_uuid + ");\n"
                 elif type_ == tools.TypeType.Enum:
-                    rsp_code += "            _argv_" + _argv_uuid + ".Add(" + _name + "_" + _name_uuid + ");\n"
+                    rsp_code += "            _argv_" + _argv_uuid + ".Add((int)" + _name + "_" + _name_uuid + ");\n"
                 elif type_ == tools.TypeType.Custom:
                     rsp_code += "            _argv_" + _argv_uuid + ".Add(" + _type + "." + _type + "_to_protcol(" + _name + "_" + _name_uuid + "));\n"
                 elif type_ == tools.TypeType.Array:
@@ -280,7 +280,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                     if array_type_ in tools.OriginalTypeList:
                         rsp_code += "                _array_" + _array_uuid + ".Add(v_" + _v_uuid + ");\n"
                     elif array_type_ == tools.TypeType.Enum:
-                        rsp_code += "                _array_" + _array_uuid + ".Add(v_" + _v_uuid + ");\n"
+                        rsp_code += "                _array_" + _array_uuid + ".Add((int)v_" + _v_uuid + ");\n"
                     elif array_type_ == tools.TypeType.Custom:
                         rsp_code += "                _array_" + _array_uuid + ".Add(" + array_type + "." + array_type + "_to_protcol(v_" + _v_uuid + "));\n"
                     elif array_type_ == tools.TypeType.Array:
@@ -311,7 +311,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                 if type_ in tools.OriginalTypeList:
                     rsp_code += "            _argv_" + _argv_uuid + ".Add(" + _name + "_" + _name_uuid + ");\n"
                 elif type_ == tools.TypeType.Enum:
-                    rsp_code += "            _argv_" + _argv_uuid + ".Add(" + _name + "_" + _name_uuid + ");\n"
+                    rsp_code += "            _argv_" + _argv_uuid + ".Add((int)" + _name + "_" + _name_uuid + ");\n"
                 elif type_ == tools.TypeType.Custom:
                     rsp_code += "            _argv_" + _argv_uuid + ".Add(" + _type + "." + _type + "_to_protcol(" + _name + "_" + _name_uuid + "));\n"
                 elif type_ == tools.TypeType.Array:
@@ -324,7 +324,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                     if array_type_ in tools.OriginalTypeList:
                         rsp_code += "                _array_" + _array_uuid + ".Add(v_" + _v_uuid + ");\n"
                     elif array_type_ == tools.TypeType.Enum:
-                        rsp_code += "                _array_" + _array_uuid + ".Add(v_" + _v_uuid + ");\n"
+                        rsp_code += "                _array_" + _array_uuid + ".Add((int)v_" + _v_uuid + ");\n"
                     elif array_type_ == tools.TypeType.Custom:
                         rsp_code += "                _array_" + _array_uuid + ".Add(" + array_type + "." + array_type + "_to_protcol(v_" + _v_uuid + "));\n"
                     elif array_type_ == tools.TypeType.Array:
