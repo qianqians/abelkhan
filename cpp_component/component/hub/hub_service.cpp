@@ -36,7 +36,7 @@ hub_service::hub_service(std::string config_file_path, std::string config_name, 
 	_config = _config->get_value_dict(config_name);
 
 	reconn_count = 0;
-	name_info.name = config_name;
+	name_info.name = std::format("{0}_{1}", config_name, xg::newGuid().str());
 	hub_type = hub_type_;
 	tick = 0;
 	is_busy = false;

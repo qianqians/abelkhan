@@ -22,7 +22,7 @@ namespace hub
 			_center_config = _config.get_value_dict("center");
 			_root_config = _config;
             _config = _config.get_value_dict(_hub_name);
-            name = _hub_name;
+            name = $"{_hub_name}_{Guid.NewGuid().ToString("N")}";
             type = _hub_type;
 
             var log_level = _config.get_value_string("log_level");
