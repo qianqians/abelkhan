@@ -68,7 +68,7 @@ public:
 	}
 
 	void take_over_svr(std::string svr_name) {
-		_hub_redismq_service->take_over_svr(svr_name);
+		spdlog::info("gate not support take_over_svr svr_name:{0}", svr_name);
 	}
 
 };

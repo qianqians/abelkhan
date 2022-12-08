@@ -264,6 +264,10 @@ void hub_service::close_svr() {
 	}
 }
 
+void hub_service::set_support_take_over_svr(bool is_support) {
+	is_support_take_over_svr = is_support;
+}
+
 void hub_service::run() {
 	if (!_run_mu.try_lock()) {
 		throw abelkhan::Exception("run mast at single thread!");

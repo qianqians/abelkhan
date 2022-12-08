@@ -59,7 +59,9 @@ private:
 	}
 
 	void take_over_svr(std::string svr_name) {
-		_hub->_hub_redismq_service->take_over_svr(svr_name);
+		if (_hub->is_support_take_over_svr) {
+			_hub->_hub_redismq_service->take_over_svr(svr_name);
+		}
 	}
 
 	void distribute_server_mq(std::string type, std::string name) {

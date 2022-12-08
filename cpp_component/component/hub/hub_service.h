@@ -76,6 +76,8 @@ public:
 
 	void close_svr();
 
+	void set_support_take_over_svr(bool is_support);
+
 private:
 	void reconnect_center();
 
@@ -139,6 +141,7 @@ private:
 
 	concurrent::signals<void(std::string, std::string) > sig_svr_be_closed;
 
+	bool is_support_take_over_svr = true;
 	std::shared_ptr<service::redismqservice> _hub_redismq_service;
 
 	std::shared_ptr<asio::io_service> _io_service;

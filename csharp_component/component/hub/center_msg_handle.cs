@@ -64,7 +64,10 @@ namespace hub
 
 		private void take_over_svr(string svr_name)
 		{
-			hub._redis_mq_service.take_over_svr(svr_name);
+			if (hub.is_support_take_over_svr)
+            {
+                hub._redis_mq_service.take_over_svr(svr_name);
+            }
 		}
 
         private void distribute_server_mq(String type, String name)
