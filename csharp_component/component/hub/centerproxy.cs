@@ -18,7 +18,7 @@ namespace hub
         {
             log.log.trace("begin connect center server");
 
-            _center_caller.reg_server_mq("hub", hub.name).callBack(() =>
+            _center_caller.reg_server_mq("hub", hub.type, hub.name).callBack(() =>
             {
                 callback.Invoke();
                 log.log.trace("connect center server sucessed");
@@ -37,7 +37,7 @@ namespace hub
 
             var task_ret = new TaskCompletionSource<bool>();
 
-            _center_caller.reconn_reg_server_mq("hub", hub.name).callBack(() => {
+            _center_caller.reconn_reg_server_mq("hub", hub.type, hub.name).callBack(() => {
                 log.log.trace("reconnect center server sucessed");
                 task_ret.SetResult(true);
             }, () => {

@@ -48,7 +48,9 @@ namespace abelkhan
         private RedisConnectionHelper _connHelper;
         private IDatabase database;
 
-        private string listen_channel_name;
+        private string main_channel_name;
+        private List<string> listen_channel_names;
+        private List<string> wait_listen_channel_names;
         private bool run_flag = true;
         private Task th;
 
@@ -58,7 +60,9 @@ namespace abelkhan
 
         public redis_mq(string connUrl, string _listen_channel_name)
         {
-            listen_channel_name = _listen_channel_name;
+            main_channel_name = _listen_channel_name;
+            listen_channel_names = new() { _listen_channel_name };
+            wait_listen_channel_names = new ();
             channels = new Dictionary<string, redischannel>();
 
             _connHelper = new RedisConnectionHelper(connUrl, "RedisForMQ");
@@ -68,6 +72,14 @@ namespace abelkhan
 
             th = new Task(th_poll);
             th.Start();
+        }
+
+        public void take_over_svr(string svr_name)
+        {
+            lock (wait_listen_channel_names)
+            {
+                wait_listen_channel_names.Add(svr_name);
+            }
         }
 
         void Recover(System.Exception e)
@@ -100,7 +112,7 @@ namespace abelkhan
         {
             log.log.trace("send msg to:{0}", ch_name);
 
-            var b_listen_ch_name = System.Text.Encoding.UTF8.GetBytes(listen_channel_name);
+            var b_listen_ch_name = System.Text.Encoding.UTF8.GetBytes(main_channel_name);
             var _listen_ch_name_size = b_listen_ch_name.Length;
             var st = new MemoryStream();
             st.WriteByte((byte)(_listen_ch_name_size & 0xff));
@@ -142,12 +154,22 @@ namespace abelkhan
                     is_idle = false;
                 }
 
-                while (true)
+                try
                 {
-                    try
+                    lock (wait_listen_channel_names)
                     {
-                        byte[] pop_data = await database.ListRightPopAsync(listen_channel_name);
-                        if (pop_data != null)
+                        foreach(var name in wait_listen_channel_names)
+                        {
+                            listen_channel_names.Add(name);
+                        }
+                        wait_listen_channel_names.Clear();
+                    }
+
+                    byte[] pop_data = null;
+                    foreach (var listen_channel_name in listen_channel_names)
+                    {
+                        pop_data = await database.ListRightPopAsync(listen_channel_name);
+                        while (pop_data != null)
                         {
                             var _ch_name_size = (UInt32)pop_data[0] | ((UInt32)pop_data[1] << 8) | ((UInt32)pop_data[2] << 16) | ((UInt32)pop_data[3] << 24);
                             var _ch_name = System.Text.Encoding.UTF8.GetString(pop_data, 4, (int)_ch_name_size);
@@ -171,22 +193,20 @@ namespace abelkhan
                                 }
                             }
                             is_idle = false;
-                        }
-                        else
-                        {
-                            break;
+
+                            pop_data = await database.ListRightPopAsync(listen_channel_name);
                         }
                     }
-                    catch (RedisTimeoutException ex)
-                    {
-                        log.log.err("ListLeftPushAsync error:{0}", ex);
-                        Recover(ex);
-                    }
-                    catch (RedisConnectionException ex)
-                    {
-                        log.log.err("ListLeftPushAsync error:{0}", ex);
-                        Recover(ex);
-                    }
+                }
+                catch (RedisTimeoutException ex)
+                {
+                    log.log.err("ListLeftPushAsync error:{0}", ex);
+                    Recover(ex);
+                }
+                catch (RedisConnectionException ex)
+                {
+                    log.log.err("ListLeftPushAsync error:{0}", ex);
+                    Recover(ex);
                 }
 
                 if (is_idle)

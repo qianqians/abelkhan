@@ -251,7 +251,8 @@ namespace dbproxy
         public static hubmanager _hubmanager;
         public static service.timerservice _timer;
         public static mongodbproxy _mongodbproxy;
-        
+        public static abelkhan.redis_mq _redis_mq_service;
+
         public abelkhan.config _root_config;
         public abelkhan.config _center_config;
 
@@ -264,7 +265,6 @@ namespace dbproxy
         private center_msg_handle _center_msg_handle;
 
         public abelkhan.acceptservice _acceptservice;
-        public abelkhan.redis_mq _redis_mq_service;
 		private centerproxy _centerproxy;
 
 	}

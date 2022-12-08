@@ -222,11 +222,12 @@ export class center_caller extends abelkhan.Icaller {
         }
     }
 
-    public reg_server_mq(type:string, svr_name:string){
+    public reg_server_mq(type:string, hub_type:string, svr_name:string){
         let uuid_76a34a7f_e1e5_5f58_931b_9a21db9858bf = Math.round(this.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066++);
 
         let _argv_08d68bf2_5282_3fde_ba14_da677a0a04b2:any[] = [uuid_76a34a7f_e1e5_5f58_931b_9a21db9858bf];
         _argv_08d68bf2_5282_3fde_ba14_da677a0a04b2.push(type);
+        _argv_08d68bf2_5282_3fde_ba14_da677a0a04b2.push(hub_type);
         _argv_08d68bf2_5282_3fde_ba14_da677a0a04b2.push(svr_name);
         this.call_module_method("center_reg_server_mq", _argv_08d68bf2_5282_3fde_ba14_da677a0a04b2);
 
@@ -237,11 +238,12 @@ export class center_caller extends abelkhan.Icaller {
         return cb_reg_server_mq_obj;
     }
 
-    public reconn_reg_server_mq(type:string, svr_name:string){
+    public reconn_reg_server_mq(type:string, hub_type:string, svr_name:string){
         let uuid_0012a813_9a7b_57c8_a9d1_9a08790cad21 = Math.round(this.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066++);
 
         let _argv_a018be20_2048_315d_9832_8120b194980f:any[] = [uuid_0012a813_9a7b_57c8_a9d1_9a08790cad21];
         _argv_a018be20_2048_315d_9832_8120b194980f.push(type);
+        _argv_a018be20_2048_315d_9832_8120b194980f.push(hub_type);
         _argv_a018be20_2048_315d_9832_8120b194980f.push(svr_name);
         this.call_module_method("center_reconn_reg_server_mq", _argv_a018be20_2048_315d_9832_8120b194980f);
 
@@ -307,6 +309,12 @@ export class center_call_server_caller extends abelkhan.Icaller {
         _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push(svr_type);
         _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push(svr_name);
         this.call_module_method("center_call_server_svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
+    }
+
+    public take_over_svr(svr_name:string){
+        let _argv_8ea1cba0_190b_3582_a2d3_7349a0a04cf4:any[] = [];
+        _argv_8ea1cba0_190b_3582_a2d3_7349a0a04cf4.push(svr_name);
+        this.call_module_method("center_call_server_take_over_svr", _argv_8ea1cba0_190b_3582_a2d3_7349a0a04cf4);
     }
 
 }
@@ -454,12 +462,13 @@ export class center_module extends abelkhan.Imodule {
         this.cb_closed = null;
     }
 
-    public cb_reg_server_mq : (type:string, svr_name:string)=>void | null;
+    public cb_reg_server_mq : (type:string, hub_type:string, svr_name:string)=>void | null;
     reg_server_mq(inArray:any[]){
         let _cb_uuid = inArray[0];
         let _argv_:any[] = [];
         _argv_.push(inArray[1]);
         _argv_.push(inArray[2]);
+        _argv_.push(inArray[3]);
         this.rsp = new center_reg_server_mq_rsp(this.current_ch, _cb_uuid);
         if (this.cb_reg_server_mq){
             this.cb_reg_server_mq.apply(null, _argv_);
@@ -467,12 +476,13 @@ export class center_module extends abelkhan.Imodule {
         this.rsp = null;
     }
 
-    public cb_reconn_reg_server_mq : (type:string, svr_name:string)=>void | null;
+    public cb_reconn_reg_server_mq : (type:string, hub_type:string, svr_name:string)=>void | null;
     reconn_reg_server_mq(inArray:any[]){
         let _cb_uuid = inArray[0];
         let _argv_:any[] = [];
         _argv_.push(inArray[1]);
         _argv_.push(inArray[2]);
+        _argv_.push(inArray[3]);
         this.rsp = new center_reconn_reg_server_mq_rsp(this.current_ch, _cb_uuid);
         if (this.cb_reconn_reg_server_mq){
             this.cb_reconn_reg_server_mq.apply(null, _argv_);
@@ -509,10 +519,12 @@ export class center_call_server_module extends abelkhan.Imodule {
         this.modules.reg_method("center_call_server_close_server", [this, this.close_server.bind(this)]);
         this.modules.reg_method("center_call_server_console_close_server", [this, this.console_close_server.bind(this)]);
         this.modules.reg_method("center_call_server_svr_be_closed", [this, this.svr_be_closed.bind(this)]);
+        this.modules.reg_method("center_call_server_take_over_svr", [this, this.take_over_svr.bind(this)]);
 
         this.cb_close_server = null;
         this.cb_console_close_server = null;
         this.cb_svr_be_closed = null;
+        this.cb_take_over_svr = null;
     }
 
     public cb_close_server : ()=>void | null;
@@ -540,6 +552,15 @@ export class center_call_server_module extends abelkhan.Imodule {
         _argv_.push(inArray[1]);
         if (this.cb_svr_be_closed){
             this.cb_svr_be_closed.apply(null, _argv_);
+        }
+    }
+
+    public cb_take_over_svr : (svr_name:string)=>void | null;
+    take_over_svr(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        if (this.cb_take_over_svr){
+            this.cb_take_over_svr.apply(null, _argv_);
         }
     }
 

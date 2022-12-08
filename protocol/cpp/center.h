@@ -202,11 +202,12 @@ namespace abelkhan
             uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066.store(random());
         }
 
-        std::shared_ptr<center_reg_server_mq_cb> reg_server_mq(std::string type, std::string svr_name){
+        std::shared_ptr<center_reg_server_mq_cb> reg_server_mq(std::string type, std::string hub_type, std::string svr_name){
             auto uuid_76a34a7f_e1e5_5f58_931b_9a21db9858bf = uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066++;
             msgpack11::MsgPack::array _argv_7254d987_ac9c_3d73_831c_f43efb3268a9;
             _argv_7254d987_ac9c_3d73_831c_f43efb3268a9.push_back(uuid_76a34a7f_e1e5_5f58_931b_9a21db9858bf);
             _argv_7254d987_ac9c_3d73_831c_f43efb3268a9.push_back(type);
+            _argv_7254d987_ac9c_3d73_831c_f43efb3268a9.push_back(hub_type);
             _argv_7254d987_ac9c_3d73_831c_f43efb3268a9.push_back(svr_name);
             call_module_method("center_reg_server_mq", _argv_7254d987_ac9c_3d73_831c_f43efb3268a9);
 
@@ -216,11 +217,12 @@ namespace abelkhan
             return cb_reg_server_mq_obj;
         }
 
-        std::shared_ptr<center_reconn_reg_server_mq_cb> reconn_reg_server_mq(std::string type, std::string svr_name){
+        std::shared_ptr<center_reconn_reg_server_mq_cb> reconn_reg_server_mq(std::string type, std::string hub_type, std::string svr_name){
             auto uuid_0012a813_9a7b_57c8_a9d1_9a08790cad21 = uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066++;
             msgpack11::MsgPack::array _argv_4d058274_a122_382e_8084_b9067ed713c5;
             _argv_4d058274_a122_382e_8084_b9067ed713c5.push_back(uuid_0012a813_9a7b_57c8_a9d1_9a08790cad21);
             _argv_4d058274_a122_382e_8084_b9067ed713c5.push_back(type);
+            _argv_4d058274_a122_382e_8084_b9067ed713c5.push_back(hub_type);
             _argv_4d058274_a122_382e_8084_b9067ed713c5.push_back(svr_name);
             call_module_method("center_reconn_reg_server_mq", _argv_4d058274_a122_382e_8084_b9067ed713c5);
 
@@ -295,6 +297,12 @@ namespace abelkhan
             _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push_back(svr_type);
             _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.push_back(svr_name);
             call_module_method("center_call_server_svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
+        }
+
+        void take_over_svr(std::string svr_name){
+            msgpack11::MsgPack::array _argv_8ea1cba0_190b_3582_a2d3_7349a0a04cf4;
+            _argv_8ea1cba0_190b_3582_a2d3_7349a0a04cf4.push_back(svr_name);
+            call_module_method("center_call_server_take_over_svr", _argv_8ea1cba0_190b_3582_a2d3_7349a0a04cf4);
         }
 
     };
@@ -476,23 +484,25 @@ namespace abelkhan
             _modules->reg_method("center_closed", std::make_tuple(shared_from_this(), std::bind(&center_module::closed, this, std::placeholders::_1)));
         }
 
-        concurrent::signals<void(std::string, std::string)> sig_reg_server_mq;
+        concurrent::signals<void(std::string, std::string, std::string)> sig_reg_server_mq;
         void reg_server_mq(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
             auto _type = inArray[1].string_value();
-            auto _svr_name = inArray[2].string_value();
+            auto _hub_type = inArray[2].string_value();
+            auto _svr_name = inArray[3].string_value();
             rsp = std::make_shared<center_reg_server_mq_rsp>(current_ch, _cb_uuid);
-            sig_reg_server_mq.emit(_type, _svr_name);
+            sig_reg_server_mq.emit(_type, _hub_type, _svr_name);
             rsp = nullptr;
         }
 
-        concurrent::signals<void(std::string, std::string)> sig_reconn_reg_server_mq;
+        concurrent::signals<void(std::string, std::string, std::string)> sig_reconn_reg_server_mq;
         void reconn_reg_server_mq(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
             auto _type = inArray[1].string_value();
-            auto _svr_name = inArray[2].string_value();
+            auto _hub_type = inArray[2].string_value();
+            auto _svr_name = inArray[3].string_value();
             rsp = std::make_shared<center_reconn_reg_server_mq_rsp>(current_ch, _cb_uuid);
-            sig_reconn_reg_server_mq.emit(_type, _svr_name);
+            sig_reconn_reg_server_mq.emit(_type, _hub_type, _svr_name);
             rsp = nullptr;
         }
 
@@ -521,6 +531,7 @@ namespace abelkhan
             _modules->reg_method("center_call_server_close_server", std::make_tuple(shared_from_this(), std::bind(&center_call_server_module::close_server, this, std::placeholders::_1)));
             _modules->reg_method("center_call_server_console_close_server", std::make_tuple(shared_from_this(), std::bind(&center_call_server_module::console_close_server, this, std::placeholders::_1)));
             _modules->reg_method("center_call_server_svr_be_closed", std::make_tuple(shared_from_this(), std::bind(&center_call_server_module::svr_be_closed, this, std::placeholders::_1)));
+            _modules->reg_method("center_call_server_take_over_svr", std::make_tuple(shared_from_this(), std::bind(&center_call_server_module::take_over_svr, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void()> sig_close_server;
@@ -540,6 +551,12 @@ namespace abelkhan
             auto _svr_type = inArray[0].string_value();
             auto _svr_name = inArray[1].string_value();
             sig_svr_be_closed.emit(_svr_type, _svr_name);
+        }
+
+        concurrent::signals<void(std::string)> sig_take_over_svr;
+        void take_over_svr(const msgpack11::MsgPack::array& inArray){
+            auto _svr_name = inArray[0].string_value();
+            sig_take_over_svr.emit(_svr_name);
         }
 
     };

@@ -18,7 +18,9 @@ namespace dbproxy
 			_center_call_server_module.on_close_server += close_server;
 			_center_call_server_module.on_console_close_server += console_close_server;
 			_center_call_server_module.on_svr_be_closed += svr_be_closed;
-		}
+			_center_call_server_module.on_take_over_svr += take_over_svr;
+
+        }
 
 		private void close_server()
 		{
@@ -66,7 +68,10 @@ namespace dbproxy
             }
 		}
 
-
-	}
+		private void take_over_svr(string svr_name)
+		{
+			dbproxy._redis_mq_service.take_over_svr(svr_name);
+        }
+    }
 }
 

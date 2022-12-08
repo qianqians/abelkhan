@@ -26,7 +26,7 @@ namespace abelkhan
             _center_module.on_closed += closed;
         }
 
-        private void reg_server_mq(string type, string svr_name)
+        private void reg_server_mq(string type, string hub_type, string svr_name)
         {
             var rsp = (abelkhan.center_reg_server_mq_rsp)_center_module.rsp.Value;
             rsp.rsp();
@@ -37,17 +37,17 @@ namespace abelkhan
 
             if (type == "hub")
             {
-                var _hubproxy = _svrmng.reg_hub(_center_module.current_ch.Value, type, svr_name);
+                var _hubproxy = _svrmng.reg_hub(_center_module.current_ch.Value, hub_type, svr_name);
 
                 _svrmng.for_each_svr((svrproxy _proxy) => {
                     _hubproxy.distribute_server_mq(_proxy.type, _proxy.name);
                 });
             }
 
-            _svrmng.reg_svr(_center_module.current_ch.Value, type, svr_name);
+            _svrmng.reg_svr(_center_module.current_ch.Value, type, hub_type, svr_name);
         }
 
-        private void on_reconn_reg_server_mq(string type, string svr_name)
+        private void on_reconn_reg_server_mq(string type, string hub_type, string svr_name)
         {
             var rsp = (abelkhan.center_reconn_reg_server_mq_rsp)_center_module.rsp.Value;
             rsp.rsp();
@@ -58,13 +58,13 @@ namespace abelkhan
 
             if (type == "hub")
             {
-                var _hubproxy = _svrmng.reg_hub(_center_module.current_ch.Value, type, svr_name, true);
+                var _hubproxy = _svrmng.reg_hub(_center_module.current_ch.Value, hub_type, svr_name, true);
 
                 _svrmng.for_each_new_svr((svrproxy _proxy) => {
                     _hubproxy.distribute_server_mq(_proxy.type, _proxy.name);
                 });
             }
-            _svrmng.reg_svr(_center_module.current_ch.Value, type, svr_name, true);
+            _svrmng.reg_svr(_center_module.current_ch.Value, type, hub_type, svr_name, true);
         }
 
         private void heartbeat(uint tick)

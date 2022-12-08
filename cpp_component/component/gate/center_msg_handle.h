@@ -23,20 +23,23 @@ private:
 	std::shared_ptr<gate_service> _gate_service;
 	std::shared_ptr<hubsvrmanager> _hubsvrmanager;
 	std::shared_ptr<service::timerservice> _timerservice;
+	std::shared_ptr<service::redismqservice> _hub_redismq_service;
 
 	std::shared_ptr<abelkhan::center_call_server_module> _center_call_server_module;
 
 public:
-	center_msg_handle(std::shared_ptr<gate::gate_service> gate_service_, std::shared_ptr<hubsvrmanager> hubsvrmanager_, std::shared_ptr<service::timerservice> timerservice_) {
+	center_msg_handle(std::shared_ptr<gate::gate_service> gate_service_, std::shared_ptr<hubsvrmanager> hubsvrmanager_, std::shared_ptr<service::timerservice> timerservice_, std::shared_ptr<service::redismqservice> hub_redismq_service_) {
 		_gate_service = gate_service_;
 		_hubsvrmanager = hubsvrmanager_;
 		_timerservice = timerservice_;
+		_hub_redismq_service = hub_redismq_service_;
 
 		_center_call_server_module = std::make_shared<abelkhan::center_call_server_module>();
 		_center_call_server_module->Init(service::_modulemng);
 		_center_call_server_module->sig_close_server.connect(std::bind(&center_msg_handle::on_close_server, this));
 		_center_call_server_module->sig_console_close_server.connect(std::bind(&center_msg_handle::console_close_server, this, std::placeholders::_1, std::placeholders::_2));
 		_center_call_server_module->sig_svr_be_closed.connect(std::bind(&center_msg_handle::svr_be_closed, this, std::placeholders::_1, std::placeholders::_2));
+		_center_call_server_module->sig_take_over_svr.connect(std::bind(&center_msg_handle::take_over_svr, this, std::placeholders::_1));
 	}
 
 	void on_close_server() {
@@ -62,6 +65,10 @@ public:
 				_hubsvrmanager->unreg_hub(svr_name);
 			});
 		}
+	}
+
+	void take_over_svr(std::string svr_name) {
+		_hub_redismq_service->take_over_svr(svr_name);
 	}
 
 };

@@ -37,6 +37,7 @@ hub_service::hub_service(std::string config_file_path, std::string config_name, 
 
 	reconn_count = 0;
 	name_info.name = std::format("{0}_{1}", config_name, xg::newGuid().str());
+	name_info.type = hub_type_;
 	hub_type = hub_type_;
 	tick = 0;
 	is_busy = false;

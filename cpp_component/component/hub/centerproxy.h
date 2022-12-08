@@ -18,6 +18,7 @@
 namespace hub{
 
 struct name_info {
+	std::string type;
 	std::string name;
 };
 
@@ -37,7 +38,7 @@ public:
 
 	void reg_server(struct name_info& _info, std::function<void()> callback) {
 		spdlog::trace("begin connect center server!");
-		_center_caller->reg_server_mq("hub", _info.name)->callBack([this, &_info, callback]() {
+		_center_caller->reg_server_mq("hub", _info.type, _info.name)->callBack([this, &_info, callback]() {
 			spdlog::trace("connect center sucessed!");
 			is_reg_sucess = true;
 			callback();
@@ -50,7 +51,7 @@ public:
 
 	void reconn_reg_server(struct name_info& _info, std::function<void()> callback) {
 		spdlog::trace("begin connect center server!");
-		_center_caller->reconn_reg_server_mq("hub", _info.name)->callBack([this, &_info, callback]() {
+		_center_caller->reconn_reg_server_mq("hub", _info.type, _info.name)->callBack([this, &_info, callback]() {
 			spdlog::trace("connect center sucessed!");
 			is_reg_sucess = true;
 			callback();

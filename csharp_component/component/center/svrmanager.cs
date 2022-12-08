@@ -12,6 +12,7 @@ namespace abelkhan
     public class svrproxy
     {
         public string type;
+        public string hub_type;
         public string name;
         public string host;
         public ushort port;
@@ -24,9 +25,10 @@ namespace abelkhan
         public abelkhan.Ichannel ch;
         private abelkhan.center_call_server_caller _center_call_server_caller;
 
-        public svrproxy(abelkhan.Ichannel _ch, string _type, string _name)
+        public svrproxy(abelkhan.Ichannel _ch, string _type, string _hub_type, string _name)
         {
             type = _type;
+            hub_type = _hub_type;
             name = _name;
             ch = _ch;
             is_mq = true;
@@ -50,6 +52,11 @@ namespace abelkhan
             _center_call_server_caller.console_close_server(type, name);
         }
 
+        public void take_over_svr(string svr_name)
+        {
+            _center_call_server_caller.take_over_svr(svr_name);
+        }
+
         public void server_be_closed(string type, string name)
         {
             _center_call_server_caller.svr_be_closed(type, name);
@@ -61,12 +68,14 @@ namespace abelkhan
         public string type;
         public string name;
         public bool is_closed;
+        public abelkhan.Ichannel ch;
         private abelkhan.center_call_hub_caller _center_call_hub_caller;
 
-        public hubproxy(abelkhan.Ichannel ch, string _type, string _name)
+        public hubproxy(abelkhan.Ichannel _ch, string _type, string _name)
         {
             type = _type;
             name = _name;
+            ch = _ch;
             _center_call_hub_caller = new abelkhan.center_call_hub_caller(ch, abelkhan.modulemng_handle._modulemng);
         }
 
@@ -88,6 +97,7 @@ namespace abelkhan
         private List<hubproxy> new_hubproxys;
         public Dictionary<abelkhan.Ichannel, svrproxy> svrproxys;
         private Dictionary<abelkhan.Ichannel, hubproxy> hubproxys;
+        private Dictionary<string, List<hubproxy>> type_hubproxys;
         private service.timerservice _timer;
         private center _center;
 
@@ -101,14 +111,15 @@ namespace abelkhan
             new_hubproxys = new List<hubproxy>();
             svrproxys = new Dictionary<abelkhan.Ichannel, svrproxy>();
             hubproxys = new Dictionary<Ichannel, hubproxy>();
+            type_hubproxys = new Dictionary<string, List<hubproxy> >();
             closed_svr_list = new List<svrproxy>();
 
             heartbeat_svr(service.timerservice.Tick);
         }
 
-        public void reg_svr(abelkhan.Ichannel ch, string type, string name, bool is_reconn = false)
+        public void reg_svr(abelkhan.Ichannel ch, string type, string hub_type, string name, bool is_reconn = false)
         {
-            var _svrproxy = new svrproxy(ch, type, name);
+            var _svrproxy = new svrproxy(ch, type, hub_type, name);
             svrproxys[ch] = _svrproxy;
             if (type == "dbproxy")
             {
@@ -122,12 +133,19 @@ namespace abelkhan
             }
         }
 
-        public hubproxy reg_hub(abelkhan.Ichannel ch, string _type, string _name, bool is_reconn = false)
+        public hubproxy reg_hub(abelkhan.Ichannel ch, string hub_type, string _name, bool is_reconn = false)
         {
             log.log.trace("reg_hub name:{0}", _name);
 
-            var _hubproxy = new hubproxy(ch, _type, _name);
+            var _hubproxy = new hubproxy(ch, hub_type, _name);
             hubproxys[ch] = _hubproxy;
+
+            if (!type_hubproxys.TryGetValue(hub_type, out List<hubproxy> hubproxy_list))
+            {
+                hubproxy_list = new ();
+                type_hubproxys[hub_type] = hubproxy_list;
+            }
+            hubproxy_list.Add(_hubproxy);
 
             if (!is_reconn)
             {
@@ -154,7 +172,11 @@ namespace abelkhan
 
                 if (hubproxys.ContainsKey(_proxy.ch))
                 {
-                    hubproxys.Remove(_proxy.ch);
+                    hubproxys.Remove(_proxy.ch, out hubproxy _hubproxy);
+                    if (type_hubproxys.TryGetValue(_proxy.hub_type, out List<hubproxy> hub_list))
+                    {
+                        hub_list.Remove(_hubproxy);
+                    }
                 }
 
                 if (new_svrproxys.Contains(_proxy))
@@ -171,6 +193,12 @@ namespace abelkhan
                     }
                 }
             }
+            
+            foreach (var _proxy in closed_svr_list)
+            {
+                on_svr_close_callback(_proxy);
+            }
+
             closed_svr_list.Clear();
         }
         
@@ -193,6 +221,31 @@ namespace abelkhan
             for_each_svr((_proxy_tmp)=> {
                 _proxy_tmp.server_be_closed(_proxy.type, _proxy.name);
             });
+        }
+
+        private Random _r = new ();
+        private int randmon_uint(int max)
+        {
+            return (int)(_r.NextDouble() * max);
+        }
+
+        public void on_svr_close_callback(svrproxy _proxy)
+        {
+            svrproxy _replace = null;
+
+            if (_proxy.type == "dbproxy")
+            {
+                _replace = dbproxys[randmon_uint(dbproxys.Count)];
+            }
+            else if (_proxy.type == "hub")
+            {
+                if (type_hubproxys.TryGetValue(_proxy.hub_type, out List<hubproxy> type_hub_list))
+                {
+                    var _replace_hubproxy = type_hub_list[randmon_uint(type_hub_list.Count)];
+                    svrproxys.TryGetValue(_replace_hubproxy.ch, out _replace);
+                }
+            }
+            _replace?.take_over_svr(_proxy.name);
         }
 
         public void console_close_server(string type, string name)

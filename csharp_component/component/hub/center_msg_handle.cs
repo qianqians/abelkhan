@@ -1,4 +1,5 @@
-﻿using System;
+﻿using abelkhan;
+using System;
 
 namespace hub
 {
@@ -20,8 +21,9 @@ namespace hub
 			_center_call_server_module.on_close_server += close_server;
 			_center_call_server_module.on_console_close_server += console_close_server;
 			_center_call_server_module.on_svr_be_closed += svr_be_closed;
+			_center_call_server_module.on_take_over_svr += take_over_svr;
 
-			_center_call_hub_module = new abelkhan.center_call_hub_module(abelkhan.modulemng_handle._modulemng);
+            _center_call_hub_module = new abelkhan.center_call_hub_module(abelkhan.modulemng_handle._modulemng);
             _center_call_hub_module.on_distribute_server_mq += distribute_server_mq;
 			_center_call_hub_module.on_reload += reload;
 		}
@@ -60,7 +62,12 @@ namespace hub
 			}
         }
 
-		private void distribute_server_mq(String type, String name)
+		private void take_over_svr(string svr_name)
+		{
+			hub._redis_mq_service.take_over_svr(svr_name);
+		}
+
+        private void distribute_server_mq(String type, String name)
 		{
 			log.log.trace("recv distribute server address");
 

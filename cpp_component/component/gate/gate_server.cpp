@@ -59,10 +59,6 @@ void gate_service::init() {
 	_clientmanager = std::make_shared<clientmanager>(_hubsvrmanager);
 	_closehandle = std::make_shared<closehandle>();
 
-	_center_msg_handle = std::make_shared<center_msg_handle>(this_ptr, _hubsvrmanager, _timerservice);
-	_hub_svr_msg_handle = std::make_shared<hub_svr_msg_handle>(_clientmanager, _hubsvrmanager);
-	_client_msg_handle = std::make_shared<client_msg_handle>(_clientmanager, _hubsvrmanager, _timerservice);
-
 	auto redismq_url = _root_config->get_value_string("redis_for_mq");
 	auto redismq_is_cluster = _root_config->get_value_bool("redismq_is_cluster");
 	if (_root_config->has_key("redis_for_mq_pwd")) {
@@ -73,6 +69,10 @@ void gate_service::init() {
 		_hub_redismq_service = std::make_shared<service::redismqservice>(redismq_is_cluster, gate_name_info.name, redismq_url);
 	}
 	_hub_redismq_service->start();
+
+	_center_msg_handle = std::make_shared<center_msg_handle>(this_ptr, _hubsvrmanager, _timerservice, _hub_redismq_service);
+	_hub_svr_msg_handle = std::make_shared<hub_svr_msg_handle>(_clientmanager, _hubsvrmanager);
+	_client_msg_handle = std::make_shared<client_msg_handle>(_clientmanager, _hubsvrmanager, _timerservice);
 
 	io_service = std::make_shared<asio::io_service>();
 

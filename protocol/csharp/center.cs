@@ -318,12 +318,13 @@ namespace abelkhan
             }
         }
 
-        public center_reg_server_mq_cb reg_server_mq(string type, string svr_name){
+        public center_reg_server_mq_cb reg_server_mq(string type, string hub_type, string svr_name){
             var uuid_76a34a7f_e1e5_5f58_931b_9a21db9858bf = (UInt64)Interlocked.Increment(ref uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066);
 
             var _argv_08d68bf2_5282_3fde_ba14_da677a0a04b2 = new ArrayList();
             _argv_08d68bf2_5282_3fde_ba14_da677a0a04b2.Add(uuid_76a34a7f_e1e5_5f58_931b_9a21db9858bf);
             _argv_08d68bf2_5282_3fde_ba14_da677a0a04b2.Add(type);
+            _argv_08d68bf2_5282_3fde_ba14_da677a0a04b2.Add(hub_type);
             _argv_08d68bf2_5282_3fde_ba14_da677a0a04b2.Add(svr_name);
             call_module_method("center_reg_server_mq", _argv_08d68bf2_5282_3fde_ba14_da677a0a04b2);
 
@@ -335,12 +336,13 @@ namespace abelkhan
             return cb_reg_server_mq_obj;
         }
 
-        public center_reconn_reg_server_mq_cb reconn_reg_server_mq(string type, string svr_name){
+        public center_reconn_reg_server_mq_cb reconn_reg_server_mq(string type, string hub_type, string svr_name){
             var uuid_0012a813_9a7b_57c8_a9d1_9a08790cad21 = (UInt64)Interlocked.Increment(ref uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066);
 
             var _argv_a018be20_2048_315d_9832_8120b194980f = new ArrayList();
             _argv_a018be20_2048_315d_9832_8120b194980f.Add(uuid_0012a813_9a7b_57c8_a9d1_9a08790cad21);
             _argv_a018be20_2048_315d_9832_8120b194980f.Add(type);
+            _argv_a018be20_2048_315d_9832_8120b194980f.Add(hub_type);
             _argv_a018be20_2048_315d_9832_8120b194980f.Add(svr_name);
             call_module_method("center_reconn_reg_server_mq", _argv_a018be20_2048_315d_9832_8120b194980f);
 
@@ -411,6 +413,12 @@ namespace abelkhan
             _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.Add(svr_type);
             _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac.Add(svr_name);
             call_module_method("center_call_server_svr_be_closed", _argv_660fcd53_cd77_3915_a5d5_06e86302e8ac);
+        }
+
+        public void take_over_svr(string svr_name){
+            var _argv_8ea1cba0_190b_3582_a2d3_7349a0a04cf4 = new ArrayList();
+            _argv_8ea1cba0_190b_3582_a2d3_7349a0a04cf4.Add(svr_name);
+            call_module_method("center_call_server_take_over_svr", _argv_8ea1cba0_190b_3582_a2d3_7349a0a04cf4);
         }
 
     }
@@ -563,26 +571,28 @@ namespace abelkhan
             modules.reg_method("center_closed", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, closed));
         }
 
-        public event Action<string, string> on_reg_server_mq;
+        public event Action<string, string, string> on_reg_server_mq;
         public void reg_server_mq(IList<MsgPack.MessagePackObject> inArray){
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var _type = ((MsgPack.MessagePackObject)inArray[1]).AsString();
-            var _svr_name = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            var _hub_type = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            var _svr_name = ((MsgPack.MessagePackObject)inArray[3]).AsString();
             rsp.Value = new center_reg_server_mq_rsp(current_ch.Value, _cb_uuid);
             if (on_reg_server_mq != null){
-                on_reg_server_mq(_type, _svr_name);
+                on_reg_server_mq(_type, _hub_type, _svr_name);
             }
             rsp.Value = null;
         }
 
-        public event Action<string, string> on_reconn_reg_server_mq;
+        public event Action<string, string, string> on_reconn_reg_server_mq;
         public void reconn_reg_server_mq(IList<MsgPack.MessagePackObject> inArray){
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var _type = ((MsgPack.MessagePackObject)inArray[1]).AsString();
-            var _svr_name = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            var _hub_type = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            var _svr_name = ((MsgPack.MessagePackObject)inArray[3]).AsString();
             rsp.Value = new center_reconn_reg_server_mq_rsp(current_ch.Value, _cb_uuid);
             if (on_reconn_reg_server_mq != null){
-                on_reconn_reg_server_mq(_type, _svr_name);
+                on_reconn_reg_server_mq(_type, _hub_type, _svr_name);
             }
             rsp.Value = null;
         }
@@ -614,6 +624,7 @@ namespace abelkhan
             modules.reg_method("center_call_server_close_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, close_server));
             modules.reg_method("center_call_server_console_close_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, console_close_server));
             modules.reg_method("center_call_server_svr_be_closed", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, svr_be_closed));
+            modules.reg_method("center_call_server_take_over_svr", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, take_over_svr));
         }
 
         public event Action on_close_server;
@@ -638,6 +649,14 @@ namespace abelkhan
             var _svr_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             if (on_svr_be_closed != null){
                 on_svr_be_closed(_svr_type, _svr_name);
+            }
+        }
+
+        public event Action<string> on_take_over_svr;
+        public void take_over_svr(IList<MsgPack.MessagePackObject> inArray){
+            var _svr_name = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            if (on_take_over_svr != null){
+                on_take_over_svr(_svr_name);
             }
         }
 

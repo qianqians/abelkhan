@@ -422,11 +422,12 @@ namespace hub
         public static List<abelkhan.Ichannel> add_chs;
         public static List<abelkhan.Ichannel> remove_chs;
 
+        public static abelkhan.redis_mq _redis_mq_service;
+
         private static Random _r;
         private static ConcurrentDictionary<string, dbproxyproxy> _dbproxys;
 
         private abelkhan.enetservice _enetservice;
-        private abelkhan.redis_mq _redis_mq_service;
         private abelkhan.cryptacceptservice _cryptacceptservice;
         private abelkhan.websocketacceptservice _websocketacceptservice;
 

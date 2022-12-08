@@ -701,7 +701,7 @@ namespace abelkhan
         public void err(framework_error err_ad2710a2_3dd2_3a8f_a4c8_a7ebbe1df696){
             var _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c = new ArrayList();
             _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c.Add(uuid_ef84ff12_6e4a_39cd_896e_27f3ac82fa1a);
-            _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c.Add(err_ad2710a2_3dd2_3a8f_a4c8_a7ebbe1df696);
+            _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c.Add((int)err_ad2710a2_3dd2_3a8f_a4c8_a7ebbe1df696);
             call_module_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_err", _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c);
         }
 

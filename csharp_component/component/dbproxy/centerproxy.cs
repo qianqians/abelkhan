@@ -16,7 +16,7 @@ namespace dbproxy
 		{
 			log.log.trace("begin connect center server");
 
-			_center_caller.reg_server_mq("dbproxy", dbproxy.name).callBack(() =>
+			_center_caller.reg_server_mq("dbproxy", "dbproxy", dbproxy.name).callBack(() =>
 			{
 				callback.Invoke();
 				log.log.trace("connect center server sucessed");
@@ -35,7 +35,7 @@ namespace dbproxy
 
 			var task_ret = new TaskCompletionSource<bool>();
 
-			_center_caller.reconn_reg_server_mq("dbproxy", dbproxy.name).callBack(() => {
+			_center_caller.reconn_reg_server_mq("dbproxy", "dbproxy", dbproxy.name).callBack(() => {
 				log.log.trace("reconnect center server sucessed");
 				task_ret.SetResult(true);
 			}, () => {
