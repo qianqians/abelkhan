@@ -54,17 +54,9 @@ public:
 				_gate_service->sig_close_server.emit();
 			});
 		}
-		else {
-			svr_be_closed(svr_type, svr_name);
-		}
 	}
 
 	void svr_be_closed(std::string svr_type, std::string svr_name) {
-		if (svr_type == "hub") {
-			service::gc_put([this, svr_name]() {
-				_hubsvrmanager->unreg_hub(svr_name);
-			});
-		}
 	}
 
 	void take_over_svr(std::string svr_name) {

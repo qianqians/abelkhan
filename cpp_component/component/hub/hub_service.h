@@ -115,7 +115,6 @@ public:
 	concurrent::signals<void(std::shared_ptr<hubproxy>) > sig_hub_reconnect;
 	concurrent::signals<void(std::shared_ptr<hubproxy>) > sig_hub_connect;
 
-	concurrent::signals<void(std::string, std::string)> sig_hub_closed;
 	concurrent::signals<void(std::string)> sig_gate_closed;
 	
 	concurrent::signals<void() > sig_dbproxy_init;

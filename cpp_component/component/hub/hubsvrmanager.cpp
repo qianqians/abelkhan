@@ -44,29 +44,6 @@ void hubproxy::client_seep(std::string client_uuid) {
 
 hubsvrmanager::hubsvrmanager(std::shared_ptr<hub_service> _hub_) {
 	_hub = _hub_;
-
-	_hub->sig_svr_be_closed.connect([this](std::string svr_type, std::string hub_name) {
-		if (svr_type != "hub") {
-			return;
-		}
-
-		auto old_it = wait_destory_hubproxys.find(hub_name);
-		if (old_it != wait_destory_hubproxys.end()) {
-			ch_hubproxys.erase(old_it->second->_hub_ch);
-			wait_destory_hubproxys.erase(old_it);
-		}
-		else {
-			auto it = hubproxys.find(hub_name);
-			if (it != hubproxys.end()) {
-				auto _proxy = it->second;
-
-				ch_hubproxys.erase(_proxy->_hub_ch);
-				hubproxys.erase(it);
-
-				_hub->sig_hub_closed.emit(_proxy->_hub_name, _proxy->_hub_type);
-			}
-		}
-	});
 }
 
 void hubsvrmanager::reg_hub(std::string hub_name, std::string hub_type, std::shared_ptr<abelkhan::Ichannel> ch) {
@@ -74,7 +51,6 @@ void hubsvrmanager::reg_hub(std::string hub_name, std::string hub_type, std::sha
 
 	auto it = hubproxys.find(hub_name);
 	if (it != hubproxys.end()) {
-		wait_destory_hubproxys.insert(std::make_pair(it->first, it->second));
 		hubproxys[hub_name] = _proxy;
 		ch_hubproxys[ch] = _proxy;
 		_hub->sig_hub_reconnect.emit(_proxy);

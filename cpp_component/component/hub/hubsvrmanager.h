@@ -53,7 +53,6 @@ public:
 	std::shared_ptr<hubproxy> current_hubproxy = nullptr;
 
 private:
-	std::unordered_map<std::string, std::shared_ptr<hubproxy> > wait_destory_hubproxys;
 	std::unordered_map<std::string, std::shared_ptr<hubproxy> > hubproxys;
 	std::unordered_map<std::shared_ptr<abelkhan::Ichannel>, std::shared_ptr<hubproxy> > ch_hubproxys;
 

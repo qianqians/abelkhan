@@ -85,10 +85,6 @@ namespace hub
             {
                 on_hubproxy_reconn?.Invoke(_proxy);
             };
-            _hubs.on_hub_closed += (string name, string type) =>
-            {
-                on_hub_closed?.Invoke(name, type);
-            };
 
             _gates.clientDisconnect += (client_cuuid) =>
             {
@@ -453,7 +449,6 @@ namespace hub
 
         public event Action<hubproxy> on_hubproxy;
         public event Action<hubproxy> on_hubproxy_reconn;
-        public event Action<string, string> on_hub_closed;
 
         public event Action<string> on_client_disconnect;
         public event Action<string> on_client_exception;

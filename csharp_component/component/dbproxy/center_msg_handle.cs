@@ -35,7 +35,7 @@ namespace dbproxy
 
 		private void check_close_server()
 		{
-            if (_closehandle._is_closing && _hubs.hub_num() <= 0)
+            if (_closehandle._is_closing && _hubs.all_hub_closed())
             {
                 dbproxy._timer.addticktime(3000, close_server_impl);
             }

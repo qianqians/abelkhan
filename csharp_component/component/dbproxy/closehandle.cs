@@ -11,7 +11,7 @@ namespace dbproxy
         }
 
 		public bool is_close(){
-			return (dbproxy._hubmanager.hub_num() <= 0) && _is_close;
+			return dbproxy._hubmanager.all_hub_closed() && _is_close;
 		}
 
 		public bool _is_close;

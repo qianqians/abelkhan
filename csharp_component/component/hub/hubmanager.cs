@@ -8,13 +8,11 @@ namespace hub
     {
         public hubproxy current_hubproxy = null;
 
-        private Dictionary<String, hubproxy> wait_destory_hubproxys;
         private Dictionary<String, hubproxy> hubproxys;
         private Dictionary<abelkhan.Ichannel, hubproxy> ch_hubproxys;
 
         public hubmanager()
         {
-            wait_destory_hubproxys = new Dictionary<string, hubproxy>();
             hubproxys = new Dictionary<string, hubproxy>();
             ch_hubproxys = new Dictionary<abelkhan.Ichannel, hubproxy>();
         }
@@ -26,16 +24,6 @@ namespace hub
             hubproxy _proxy = new hubproxy(hub_name, hub_type, ch);
             if (hubproxys.TryGetValue(hub_name, out hubproxy _old_proxy))
             {
-                if (wait_destory_hubproxys.Remove(hub_name, out hubproxy t_destory_hubproxy))
-                {
-                    lock (hub.remove_chs)
-                    {
-                        hub.remove_chs.Add(t_destory_hubproxy._ch);
-                    }
-
-                    ch_hubproxys.Remove(t_destory_hubproxy._ch);
-                }
-                wait_destory_hubproxys.Add(hub_name, _old_proxy);
                 hubproxys[hub_name] = _proxy;
                 on_hubproxy_reconn?.Invoke(_proxy);
             }
@@ -61,32 +49,8 @@ namespace hub
             return null;
         }
 
-        public event Action<string, string> on_hub_closed;
         public void hub_be_closed(string hub_name)
         {
-            if (wait_destory_hubproxys.TryGetValue(hub_name, out hubproxy _old_proxy))
-            {
-                lock (hub.remove_chs)
-                {
-                    hub.remove_chs.Add(_old_proxy._ch);
-                }
-
-                ch_hubproxys.Remove(_old_proxy._ch);
-                wait_destory_hubproxys.Remove(hub_name);
-            }
-            else
-            {
-                if (hubproxys.Remove(hub_name, out hubproxy _proxy))
-                {
-                    lock (hub.remove_chs)
-                    {
-                        hub.remove_chs.Add(_proxy._ch);
-                    }
-
-                    ch_hubproxys.Remove(_proxy._ch);
-                    on_hub_closed?.Invoke(_proxy.name, _proxy.type);
-                }
-            }
         }
 
         public void call_hub(string hub_name, string func_name, ArrayList _argvs)
