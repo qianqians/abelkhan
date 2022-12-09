@@ -15,7 +15,9 @@ namespace dbproxy
 		{
 			hubproxys_name = new Dictionary<string, hubproxy> ();
 			hubproxys = new Dictionary<abelkhan.Ichannel, hubproxy> ();
-		}
+			closed_hub_list = new List<string>();
+
+        }
 
 		public hubproxy reg_hub(abelkhan.Ichannel ch, String name)
 		{
