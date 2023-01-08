@@ -237,7 +237,7 @@ namespace abelkhan
 
     public class test_c2s_hubproxy {
         public string hub_name_c233fb06_7c62_3839_a7d5_edade25b16c5;
-        private Int64 uuid_c233fb06_7c62_3839_a7d5_edade25b16c5 = (Int64)RandomUUID.random();
+        private Int32 uuid_c233fb06_7c62_3839_a7d5_edade25b16c5 = (Int32)RandomUUID.random();
 
         public client.client _client_handle;
         public test_c2s_rsp_cb rsp_cb_test_c2s_handle;

@@ -29,7 +29,7 @@ namespace abelkhan
         static std::shared_ptr<gate_call_hub_rsp_cb> rsp_cb_gate_call_hub_handle;
 
     private:
-        std::atomic<uint64_t> uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1;
+        std::atomic<uint32_t> uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1;
 
     public:
         gate_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("gate_call_hub", _ch)
@@ -187,7 +187,7 @@ namespace abelkhan
         static std::shared_ptr<hub_call_hub_rsp_cb> rsp_cb_hub_call_hub_handle;
 
     private:
-        std::atomic<uint64_t> uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f;
+        std::atomic<uint32_t> uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f;
 
     public:
         hub_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("hub_call_hub", _ch)
@@ -251,7 +251,7 @@ namespace abelkhan
         static std::shared_ptr<hub_call_client_rsp_cb> rsp_cb_hub_call_client_handle;
 
     private:
-        std::atomic<uint64_t> uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb;
+        std::atomic<uint32_t> uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb;
 
     public:
         hub_call_client_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("hub_call_client", _ch)
@@ -342,7 +342,7 @@ namespace abelkhan
         static std::shared_ptr<client_call_hub_rsp_cb> rsp_cb_client_call_hub_handle;
 
     private:
-        std::atomic<uint64_t> uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263;
+        std::atomic<uint32_t> uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263;
 
     public:
         client_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("client_call_hub", _ch)

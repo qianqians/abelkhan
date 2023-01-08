@@ -58,7 +58,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     cp_code += "    public:\n"
     cp_code += "        std::string client_uuid_" + _client_uuid + ";\n"
     _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
-    cp_code += "        std::atomic<uint64_t> uuid_" + _uuid + ";\n\n"
+    cp_code += "        std::atomic<uint32_t> uuid_" + _uuid + ";\n\n"
     cp_code += "        std::shared_ptr<hub::hub_service> _hub_handle;\n"
     cp_code += "        std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle;\n\n"
     cp_code += "        " + module_name + "_clientproxy(std::shared_ptr<hub::hub_service> hub_service_, std::shared_ptr<" + module_name + "_rsp_cb> rsp_cb_" + module_name + "_handle_)\n"

@@ -46,7 +46,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     cp_code = "    public class " + module_name + "_clientproxy {\n"
     cp_code += "        public string client_uuid_" + _client_uuid + ";\n"
     _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
-    cp_code += "        private Int64 uuid_" + _uuid + " = (Int64)RandomUUID.random();\n\n"
+    cp_code += "        private Int32 uuid_" + _uuid + " = (Int32)RandomUUID.random();\n\n"
     cp_code += "        public " + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle;\n\n"
     cp_code += "        public " + module_name + "_clientproxy(" + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle_)\n"
     cp_code += "        {\n"

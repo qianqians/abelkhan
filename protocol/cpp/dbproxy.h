@@ -409,7 +409,7 @@ namespace abelkhan
         static std::shared_ptr<hub_call_dbproxy_rsp_cb> rsp_cb_hub_call_dbproxy_handle;
 
     private:
-        std::atomic<uint64_t> uuid_e713438c_e791_3714_ad31_4ccbddee2554;
+        std::atomic<uint32_t> uuid_e713438c_e791_3714_ad31_4ccbddee2554;
 
     public:
         hub_call_dbproxy_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("hub_call_dbproxy", _ch)
@@ -560,7 +560,7 @@ namespace abelkhan
         static std::shared_ptr<dbproxy_call_hub_rsp_cb> rsp_cb_dbproxy_call_hub_handle;
 
     private:
-        std::atomic<uint64_t> uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8;
+        std::atomic<uint32_t> uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8;
 
     public:
         dbproxy_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("dbproxy_call_hub", _ch)

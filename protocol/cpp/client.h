@@ -28,7 +28,7 @@ namespace abelkhan
         static std::shared_ptr<gate_call_client_rsp_cb> rsp_cb_gate_call_client_handle;
 
     private:
-        std::atomic<uint64_t> uuid_b84dd831_2e79_3280_a337_a69dd489e75f;
+        std::atomic<uint32_t> uuid_b84dd831_2e79_3280_a337_a69dd489e75f;
 
     public:
         gate_call_client_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("gate_call_client", _ch)

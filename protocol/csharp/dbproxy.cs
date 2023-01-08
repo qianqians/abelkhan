@@ -695,7 +695,7 @@ namespace abelkhan
 
     public class hub_call_dbproxy_caller : abelkhan.Icaller {
         public static hub_call_dbproxy_rsp_cb rsp_cb_hub_call_dbproxy_handle = null;
-        private Int64 uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (Int64)RandomUUID.random();
+        private Int32 uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (Int32)RandomUUID.random();
 
         public hub_call_dbproxy_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("hub_call_dbproxy", _ch)
         {
@@ -706,7 +706,7 @@ namespace abelkhan
         }
 
         public hub_call_dbproxy_reg_hub_cb reg_hub(string hub_name){
-            var uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = (UInt64)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
+            var uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = (UInt32)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
 
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106);
@@ -722,7 +722,7 @@ namespace abelkhan
         }
 
         public hub_call_dbproxy_get_guid_cb get_guid(string db, string collection, string guid_key){
-            var uuid_efe126e5_91e4_5df4_975c_18c91b6a6634 = (UInt64)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
+            var uuid_efe126e5_91e4_5df4_975c_18c91b6a6634 = (UInt32)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
 
             var _argv_8b362c4a_74a5_366e_a6af_37474d7fa521 = new ArrayList();
             _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.Add(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634);
@@ -740,7 +740,7 @@ namespace abelkhan
         }
 
         public hub_call_dbproxy_create_persisted_object_cb create_persisted_object(string db, string collection, byte[] object_info){
-            var uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb = (UInt64)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
+            var uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb = (UInt32)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
 
             var _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607 = new ArrayList();
             _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.Add(uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb);
@@ -758,7 +758,7 @@ namespace abelkhan
         }
 
         public hub_call_dbproxy_updata_persisted_object_cb updata_persisted_object(string db, string collection, byte[] query_info, byte[] updata_info, bool _upsert){
-            var uuid_7864a402_2d75_5c02_b24b_50287a06732f = (UInt64)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
+            var uuid_7864a402_2d75_5c02_b24b_50287a06732f = (UInt32)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
 
             var _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425 = new ArrayList();
             _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.Add(uuid_7864a402_2d75_5c02_b24b_50287a06732f);
@@ -778,7 +778,7 @@ namespace abelkhan
         }
 
         public hub_call_dbproxy_find_and_modify_cb find_and_modify(string db, string collection, byte[] query_info, byte[] updata_info, bool _new, bool _upsert){
-            var uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a = (UInt64)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
+            var uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a = (UInt32)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
 
             var _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58 = new ArrayList();
             _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.Add(uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a);
@@ -799,7 +799,7 @@ namespace abelkhan
         }
 
         public hub_call_dbproxy_remove_object_cb remove_object(string db, string collection, byte[] query_info){
-            var uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f = (UInt64)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
+            var uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f = (UInt32)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
 
             var _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da = new ArrayList();
             _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.Add(uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f);
@@ -830,7 +830,7 @@ namespace abelkhan
         }
 
         public hub_call_dbproxy_get_object_count_cb get_object_count(string db, string collection, byte[] query_info){
-            var uuid_975425f5_8baf_5905_beeb_4454e78907f6 = (UInt64)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
+            var uuid_975425f5_8baf_5905_beeb_4454e78907f6 = (UInt32)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
 
             var _argv_2632cded_162c_3a9b_86ee_462b614cbeea = new ArrayList();
             _argv_2632cded_162c_3a9b_86ee_462b614cbeea.Add(uuid_975425f5_8baf_5905_beeb_4454e78907f6);
@@ -858,7 +858,7 @@ namespace abelkhan
 
     public class dbproxy_call_hub_caller : abelkhan.Icaller {
         public static dbproxy_call_hub_rsp_cb rsp_cb_dbproxy_call_hub_handle = null;
-        private Int64 uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8 = (Int64)RandomUUID.random();
+        private Int32 uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8 = (Int32)RandomUUID.random();
 
         public dbproxy_call_hub_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("dbproxy_call_hub", _ch)
         {

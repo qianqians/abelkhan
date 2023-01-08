@@ -20,7 +20,7 @@ namespace abelkhan
 
     public class gate_call_client_caller : abelkhan.Icaller {
         public static gate_call_client_rsp_cb rsp_cb_gate_call_client_handle = null;
-        private Int64 uuid_b84dd831_2e79_3280_a337_a69dd489e75f = (Int64)RandomUUID.random();
+        private Int32 uuid_b84dd831_2e79_3280_a337_a69dd489e75f = (Int32)RandomUUID.random();
 
         public gate_call_client_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("gate_call_client", _ch)
         {

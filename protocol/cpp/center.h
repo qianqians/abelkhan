@@ -190,7 +190,7 @@ namespace abelkhan
         static std::shared_ptr<center_rsp_cb> rsp_cb_center_handle;
 
     private:
-        std::atomic<uint64_t> uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066;
+        std::atomic<uint32_t> uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066;
 
     public:
         center_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("center", _ch)
@@ -268,7 +268,7 @@ namespace abelkhan
         static std::shared_ptr<center_call_server_rsp_cb> rsp_cb_center_call_server_handle;
 
     private:
-        std::atomic<uint64_t> uuid_8c11e5bb_e9ff_3a0b_a436_65a9922a8da5;
+        std::atomic<uint32_t> uuid_8c11e5bb_e9ff_3a0b_a436_65a9922a8da5;
 
     public:
         center_call_server_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("center_call_server", _ch)
@@ -323,7 +323,7 @@ namespace abelkhan
         static std::shared_ptr<center_call_hub_rsp_cb> rsp_cb_center_call_hub_handle;
 
     private:
-        std::atomic<uint64_t> uuid_adbd1e34_0c90_3426_aefa_4d734c07a706;
+        std::atomic<uint32_t> uuid_adbd1e34_0c90_3426_aefa_4d734c07a706;
 
     public:
         center_call_hub_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("center_call_hub", _ch)
@@ -366,7 +366,7 @@ namespace abelkhan
         static std::shared_ptr<gm_center_rsp_cb> rsp_cb_gm_center_handle;
 
     private:
-        std::atomic<uint64_t> uuid_130fb971_5ae0_3446_b480_f9ee83dbeb28;
+        std::atomic<uint32_t> uuid_130fb971_5ae0_3446_b480_f9ee83dbeb28;
 
     public:
         gm_center_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("gm_center", _ch)
