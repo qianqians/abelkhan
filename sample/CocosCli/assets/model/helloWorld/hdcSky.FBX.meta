@@ -1,5 +1,5 @@
 {
-  "ver": "2.2.0",
+  "ver": "2.3.1",
   "importer": "fbx",
   "imported": true,
   "uuid": "929e58ce-66a4-4e04-9036-4244456a1220",
@@ -45,7 +45,7 @@
       "displayName": "",
       "id": "d6067",
       "name": "hdcSky.texture",
-      "ver": "1.0.21",
+      "ver": "1.0.22",
       "imported": true,
       "files": [
         ".json"

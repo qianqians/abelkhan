@@ -1,5 +1,5 @@
 {
-  "ver": "2.2.0",
+  "ver": "2.3.1",
   "importer": "fbx",
   "imported": true,
   "uuid": "e3553cad-2f15-4293-859a-8f43c780f289",
@@ -201,7 +201,7 @@
         "isUuid": false,
         "imageUuidOrDatabaseUri": "db://assets/model/helloWorld/soldier.png"
       },
-      "ver": "1.0.21",
+      "ver": "1.0.22",
       "imported": true,
       "files": [
         ".json"
@@ -225,7 +225,7 @@
         "isUuid": true,
         "imageUuidOrDatabaseUri": "e3553cad-2f15-4293-859a-8f43c780f289@e94f1"
       },
-      "ver": "1.0.21",
+      "ver": "1.0.22",
       "imported": true,
       "files": [
         ".json"

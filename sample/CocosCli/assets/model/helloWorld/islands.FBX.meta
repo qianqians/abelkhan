@@ -1,5 +1,5 @@
 {
-  "ver": "2.2.0",
+  "ver": "2.3.1",
   "importer": "fbx",
   "imported": true,
   "uuid": "0ab3142a-6968-4073-95af-026bc3b23623",
@@ -243,7 +243,7 @@
         "isUuid": true,
         "imageUuidOrDatabaseUri": "0ab3142a-6968-4073-95af-026bc3b23623@baeab"
       },
-      "ver": "1.0.21",
+      "ver": "1.0.22",
       "imported": true,
       "files": [
         ".json"
@@ -267,7 +267,7 @@
         "isUuid": true,
         "imageUuidOrDatabaseUri": "0ab3142a-6968-4073-95af-026bc3b23623@eeccb"
       },
-      "ver": "1.0.21",
+      "ver": "1.0.22",
       "imported": true,
       "files": [
         ".json"
@@ -291,7 +291,7 @@
         "isUuid": true,
         "imageUuidOrDatabaseUri": "0ab3142a-6968-4073-95af-026bc3b23623@3b6f8"
       },
-      "ver": "1.0.21",
+      "ver": "1.0.22",
       "imported": true,
       "files": [
         ".json"
