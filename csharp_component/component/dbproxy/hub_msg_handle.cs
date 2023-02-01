@@ -1,6 +1,9 @@
 ﻿using abelkhan;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography;
 
 namespace dbproxy
 {
@@ -35,7 +38,7 @@ namespace dbproxy
             rsp.rsp();
         }
 
-        private void get_guid(string db, string collection, string guid_key)
+        private async void get_guid(string db, string collection, string guid_key)
         {
             log.log.trace("begin get_guid!");
 
@@ -47,12 +50,28 @@ namespace dbproxy
             }
             var rsp = (abelkhan.hub_call_dbproxy_get_guid_rsp)_hub_call_dbproxy_module.rsp.Value;
 
-            dbproxy._dbevent.push_get_guid_event(new get_guid_event(_hubproxy, db, collection, guid_key, rsp));
+            try
+            {
+                var guid = await dbproxy._mongodbproxy.get_guid(db, collection, guid_key);
+                if (guid > 0) 
+                {
+                    rsp.rsp(guid);
+                }
+                else
+                {
+                    rsp.err();
+                }
+            }
+            catch(System.Exception ex)
+            {
+                log.log.err("ex:{0}", ex);
+                rsp.err();
+            } 
 
             log.log.trace("end get_guid");
         }
 
-        public void create_persisted_object(string db, string collection, byte[] object_info)
+        public async void create_persisted_object(string db, string collection, byte[] object_info)
 		{
             log.log.trace("begin create_persisted_object");
 
@@ -64,12 +83,28 @@ namespace dbproxy
             }
             var rsp = (abelkhan.hub_call_dbproxy_create_persisted_object_rsp)_hub_call_dbproxy_module.rsp.Value;
 
-            dbproxy._dbevent.push_create_event(new create_event(_hubproxy, db, collection, object_info, rsp));
+            try
+            {
+                var is_create_sucess = await dbproxy._mongodbproxy.save(db, collection, object_info);
+                if (is_create_sucess)
+                {
+                    rsp.rsp();
+                }
+                else
+                {
+                    rsp.err();
+                }
+            }
+            catch(System.Exception ex)
+            {
+                log.log.err("ex:{0}", ex);
+                rsp.err();
+            }
 
             log.log.trace("end create_persisted_object");
         }
 
-		public void updata_persisted_object(string db, string collection, byte[] query_data, byte[] object_data, bool upsert)
+		public async void updata_persisted_object(string db, string collection, byte[] query_data, byte[] object_data, bool upsert)
 		{
             log.log.trace("begin updata_persisted_object");
 
@@ -81,12 +116,28 @@ namespace dbproxy
             }
             var rsp = (abelkhan.hub_call_dbproxy_updata_persisted_object_rsp)_hub_call_dbproxy_module.rsp.Value;
 
-            dbproxy._dbevent.push_updata_event(new update_event(_hubproxy, db, collection, query_data, object_data, upsert, rsp));
+            try
+            {
+                var is_update_sucessed = await dbproxy._mongodbproxy.update(db, collection, query_data, object_data, upsert);
+                if (is_update_sucessed)
+                {
+                    rsp.rsp();
+                }
+                else
+                {
+                    rsp.err();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                log.log.err("ex:{0}", ex);
+                rsp.err();
+            }
 
             log.log.trace("end updata_persisted_object");
         }
 
-        public void find_and_modify(string db, string collection, byte[] query_data, byte[] object_data, bool is_new, bool upsert)
+        public async void find_and_modify(string db, string collection, byte[] query_data, byte[] object_data, bool is_new, bool upsert)
         {
             log.log.trace("begin find_and_modify");
 
@@ -98,12 +149,35 @@ namespace dbproxy
             }
             var rsp = (abelkhan.hub_call_dbproxy_find_and_modify_rsp)_hub_call_dbproxy_module.rsp.Value;
 
-            dbproxy._dbevent.push_find_and_modify_event(new find_and_modify_event(_hubproxy, db, collection, query_data, object_data, is_new, upsert, rsp));
+            try
+            {
+                var obj = await dbproxy._mongodbproxy.find_and_modify(db, collection, query_data, object_data, is_new, upsert);
+                if (obj != null)
+                {
+                    using (var st = new MemoryStream())
+                    {
+                        var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
+                        MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, obj);
+                        st.Position = 0;
+
+                        rsp.rsp(st.ToArray());
+                    }
+                }
+                else
+                {
+                    rsp.err();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                log.log.err("ex:{0}", ex);
+                rsp.err();
+            }
 
             log.log.trace("end find_and_modify");
         }
 
-        public void remove_object(string db, string collection, byte[] query_data)
+        public async void remove_object(string db, string collection, byte[] query_data)
         {
             log.log.trace("begin remove_object");
 
@@ -115,12 +189,28 @@ namespace dbproxy
             }
             var rsp = (abelkhan.hub_call_dbproxy_remove_object_rsp)_hub_call_dbproxy_module.rsp.Value;
 
-            dbproxy._dbevent.push_remove_event(new remove_event(_hubproxy, db, collection, query_data, rsp));
+            try
+            {
+                var is_remove_sucessed = await dbproxy._mongodbproxy.remove(db, collection, query_data);
+                if (is_remove_sucessed)
+                {
+                    rsp.rsp();
+                }
+                else
+                {
+                    rsp.err();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                log.log.err("ex:{0}", ex);
+                rsp.err();
+            }
 
             log.log.trace("end remove_object");
         }
 
-        public void get_object_count(string db, string collection, byte[] query_data)
+        public async void get_object_count(string db, string collection, byte[] query_data)
         {
             log.log.trace("begin get_object_info");
 
@@ -132,12 +222,21 @@ namespace dbproxy
             }
             var rsp = (abelkhan.hub_call_dbproxy_get_object_count_rsp)_hub_call_dbproxy_module.rsp.Value;
 
-            dbproxy._dbevent.push_count_event(new count_event(_hubproxy, db, collection, query_data, rsp));
+            try
+            {
+                var count = await dbproxy._mongodbproxy.count(db, collection, query_data);
+                rsp.rsp((uint)count);
+            }
+            catch (System.Exception ex)
+            {
+                log.log.err("ex:{0}", ex);
+                rsp.err();
+            }
 
             log.log.trace("end get_object_info");
         }
 
-		public void get_object_info(string db, string collection, byte[] query_data, int _skip, int _limit, string _sort, bool _Ascending_, string callbackid)
+		public async void get_object_info(string db, string collection, byte[] query_data, int _skip, int _limit, string _sort, bool _Ascending_, string callbackid)
         {
             log.log.trace("begin get_object_info");
 
@@ -148,7 +247,43 @@ namespace dbproxy
                 return;
             }
 
-            dbproxy._dbevent.push_find_event(new find_event(_hubproxy, db, collection, query_data, _skip, _limit, _sort, _Ascending_, callbackid));
+            try
+            {
+                var _list = await dbproxy._mongodbproxy.find(db, collection, query_data, _limit, _skip, _sort, _Ascending_);
+
+                int count = 0;
+                if (_list.Count == 0)
+                {
+                    _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _list } });
+                }
+                else
+                {
+                    var _datalist = new MongoDB.Bson.BsonArray();
+                    foreach (var data in _list)
+                    {
+                        _datalist.Add(data);
+
+                        count++;
+
+                        if (count >= 100)
+                        {
+                            _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _datalist } });
+
+                            count = 0;
+                            _datalist = new MongoDB.Bson.BsonArray();
+                        }
+                    }
+                    if (count > 0 && count < 100)
+                    {
+                        _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _datalist } });
+                    }
+                }
+                _hubproxy.ack_get_object_info_end(callbackid);
+            }
+            catch (System.Exception ex)
+            {
+                log.log.err("ex:{0}", ex);
+            }
 
             log.log.trace("end get_object_info");
         }

@@ -100,8 +100,6 @@ namespace dbproxy
             
             _closeHandle = new closehandle();
             _hubmanager = new hubmanager();
-            _dbevent = new dbevent();
-            _dbevent.start();
 
             var redismq_url = _root_config.get_value_string("redis_for_mq");
             _redis_mq_service = new abelkhan.redis_mq(redismq_url, name);
@@ -238,7 +236,6 @@ namespace dbproxy
             {
                 _acceptservice.close();
             }
-            dbproxy._dbevent.join_all();
 
             Monitor.Exit(_run_mu);
         }
@@ -247,7 +244,6 @@ namespace dbproxy
 		public static bool is_busy;
         public static uint tick;
 		public static closehandle _closeHandle;
-        public static dbevent _dbevent;
         public static hubmanager _hubmanager;
         public static service.timerservice _timer;
         public static mongodbproxy _mongodbproxy;
