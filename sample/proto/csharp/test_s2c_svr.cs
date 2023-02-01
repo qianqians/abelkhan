@@ -116,7 +116,7 @@ namespace abelkhan
 
     public class test_s2c_clientproxy {
         public string client_uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43;
-        private Int64 uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43 = (Int64)RandomUUID.random();
+        private Int32 uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43 = (Int32)RandomUUID.random();
 
         public test_s2c_rsp_cb rsp_cb_test_s2c_handle;
 

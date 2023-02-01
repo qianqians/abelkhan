@@ -20,7 +20,7 @@ namespace abelkhan
 
     public class gate_call_hub_caller : abelkhan.Icaller {
         public static gate_call_hub_rsp_cb rsp_cb_gate_call_hub_handle = null;
-        private Int64 uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1 = (Int64)RandomUUID.random();
+        private Int32 uuid_e1565384_c90b_3a02_ae2e_d0d91b2758d1 = (Int32)RandomUUID.random();
 
         public gate_call_hub_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("gate_call_hub", _ch)
         {
@@ -253,7 +253,7 @@ namespace abelkhan
 
     public class hub_call_hub_caller : abelkhan.Icaller {
         public static hub_call_hub_rsp_cb rsp_cb_hub_call_hub_handle = null;
-        private Int64 uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f = (Int64)RandomUUID.random();
+        private Int32 uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f = (Int32)RandomUUID.random();
 
         public hub_call_hub_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("hub_call_hub", _ch)
         {
@@ -264,7 +264,7 @@ namespace abelkhan
         }
 
         public hub_call_hub_reg_hub_cb reg_hub(string hub_name, string hub_type){
-            var uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = (UInt64)Interlocked.Increment(ref uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f);
+            var uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = (UInt32)Interlocked.Increment(ref uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f);
 
             var _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = new ArrayList();
             _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106);
@@ -281,7 +281,7 @@ namespace abelkhan
         }
 
         public hub_call_hub_seep_client_gate_cb seep_client_gate(string client_uuid, string gate_name){
-            var uuid_31169fc3_4fd4_512f_b157_203819bcbd47 = (UInt64)Interlocked.Increment(ref uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f);
+            var uuid_31169fc3_4fd4_512f_b157_203819bcbd47 = (UInt32)Interlocked.Increment(ref uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f);
 
             var _argv_78da410b_1845_3253_9a34_d7cda82883b6 = new ArrayList();
             _argv_78da410b_1845_3253_9a34_d7cda82883b6.Add(uuid_31169fc3_4fd4_512f_b157_203819bcbd47);
@@ -314,7 +314,7 @@ namespace abelkhan
 
     public class hub_call_client_caller : abelkhan.Icaller {
         public static hub_call_client_rsp_cb rsp_cb_hub_call_client_handle = null;
-        private Int64 uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb = (Int64)RandomUUID.random();
+        private Int32 uuid_44e0e3b5_d5d3_3ab4_87a3_bdf8d8aefeeb = (Int32)RandomUUID.random();
 
         public hub_call_client_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("hub_call_client", _ch)
         {
@@ -438,7 +438,7 @@ namespace abelkhan
 
     public class client_call_hub_caller : abelkhan.Icaller {
         public static client_call_hub_rsp_cb rsp_cb_client_call_hub_handle = null;
-        private Int64 uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263 = (Int64)RandomUUID.random();
+        private Int32 uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263 = (Int32)RandomUUID.random();
 
         public client_call_hub_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("client_call_hub", _ch)
         {
@@ -455,7 +455,7 @@ namespace abelkhan
         }
 
         public client_call_hub_heartbeats_cb heartbeats(){
-            var uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = (UInt64)Interlocked.Increment(ref uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263);
+            var uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = (UInt32)Interlocked.Increment(ref uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263);
 
             var _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = new ArrayList();
             _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.Add(uuid_a514ca5f_2c67_5668_aac0_354397bdce36);

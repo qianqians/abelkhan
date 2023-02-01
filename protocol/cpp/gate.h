@@ -170,7 +170,7 @@ namespace abelkhan
         static std::shared_ptr<client_call_gate_rsp_cb> rsp_cb_client_call_gate_handle;
 
     private:
-        std::atomic<uint64_t> uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2;
+        std::atomic<uint32_t> uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2;
 
     public:
         client_call_gate_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("client_call_gate", _ch)
@@ -341,7 +341,7 @@ namespace abelkhan
         static std::shared_ptr<hub_call_gate_rsp_cb> rsp_cb_hub_call_gate_handle;
 
     private:
-        std::atomic<uint64_t> uuid_9796175c_1119_3833_bf31_5ee139b40edc;
+        std::atomic<uint32_t> uuid_9796175c_1119_3833_bf31_5ee139b40edc;
 
     public:
         hub_call_gate_caller(std::shared_ptr<Ichannel> _ch, std::shared_ptr<modulemng> modules) : Icaller("hub_call_gate", _ch)

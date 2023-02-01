@@ -81,7 +81,7 @@ namespace abelkhan
 {
     public:
         std::string client_uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43;
-        std::atomic<uint64_t> uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43;
+        std::atomic<uint32_t> uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43;
 
         std::shared_ptr<hub::hub_service> _hub_handle;
         std::shared_ptr<test_s2c_rsp_cb> rsp_cb_test_s2c_handle;
