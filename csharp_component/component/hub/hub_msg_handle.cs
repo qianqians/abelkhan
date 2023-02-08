@@ -54,20 +54,19 @@ namespace hub
 
         public void hub_call_hub_mothed(byte[] rpc_argvs)
         {
-            using (var st = new MemoryStream()) {
-                st.Write(rpc_argvs);
-                st.Position = 0;
+            using var st = new MemoryStream();
+            st.Write(rpc_argvs);
+            st.Position = 0;
 
-                var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
-                var _event = _serialization.Unpack(st);
+            var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+            var _event = _serialization.Unpack(st);
 
-                var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
-                var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
+            var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
+            var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
-                _hubmanager.current_hubproxy = _hubmanager.get_hub(_hub_call_hub_module.current_ch.Value);
-                hub._modules.process_module_mothed(func, argvs);
-                _hubmanager.current_hubproxy = null;
-            }
+            _hubmanager.current_hubproxy = _hubmanager.get_hub(_hub_call_hub_module.current_ch.Value);
+            hub._modules.process_module_mothed(func, argvs);
+            _hubmanager.current_hubproxy = null;
         }
 
     }

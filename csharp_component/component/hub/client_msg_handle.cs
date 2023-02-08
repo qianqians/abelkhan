@@ -48,23 +48,21 @@ namespace hub
 			{
 				try
 				{
-					using (var st = new MemoryStream())
-					{
-						st.Write(arpc_rgv);
-						st.Position = 0;
+					using var st = new MemoryStream();
+                    st.Write(arpc_rgv);
+                    st.Position = 0;
 
-						var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
-						var _event = _serialization.Unpack(st);
+                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+                    var _event = _serialization.Unpack(st);
 
-						var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
-						var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
+                    var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
+                    var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
-						hub._gates.current_client_uuid = _proxy._cuuid;
-						hub._modules.process_module_mothed(func, argvs);
-						on_client_msg?.Invoke(_proxy._cuuid);
-						hub._gates.current_client_uuid = "";
-					}
-				}
+                    hub._gates.current_client_uuid = _proxy._cuuid;
+                    hub._modules.process_module_mothed(func, argvs);
+                    on_client_msg?.Invoke(_proxy._cuuid);
+                    hub._gates.current_client_uuid = "";
+                }
 				catch (Exception e)
 				{
 					log.log.err("call_hub exception:{0}", e);

@@ -68,7 +68,7 @@ namespace hub
             remove_chs = new List<abelkhan.Ichannel>();
 
             _r = new Random();
-            _dbproxys = new ConcurrentDictionary< string, dbproxyproxy>();
+            _dbproxys = new ConcurrentDictionary<string, dbproxyproxy>();
 
             var redismq_url = _root_config.get_value_string("redis_for_mq");
             _redis_mq_service = new abelkhan.redis_mq(redismq_url, name);
@@ -293,7 +293,7 @@ namespace hub
 
         public static uint randmon_uint(uint max)
         {
-            return (uint)(_r.NextDouble() * max);
+            return (uint)_r.NextInt64((int)max);
         }
 
         public static dbproxyproxy get_random_dbproxyproxy()

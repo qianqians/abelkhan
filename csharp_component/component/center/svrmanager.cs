@@ -235,14 +235,20 @@ namespace abelkhan
 
             if (_proxy.type == "dbproxy")
             {
-                _replace = dbproxys[randmon_uint(dbproxys.Count)];
+                if (dbproxys.Count > 0)
+                {
+                    _replace = dbproxys[randmon_uint(dbproxys.Count)];
+                }
             }
             else if (_proxy.type == "hub")
             {
                 if (type_hubproxys.TryGetValue(_proxy.hub_type, out List<hubproxy> type_hub_list))
                 {
-                    var _replace_hubproxy = type_hub_list[randmon_uint(type_hub_list.Count)];
-                    svrproxys.TryGetValue(_replace_hubproxy.ch, out _replace);
+                    if (type_hub_list.Count > 0)
+                    {
+                        var _replace_hubproxy = type_hub_list[randmon_uint(type_hub_list.Count)];
+                        svrproxys.TryGetValue(_replace_hubproxy.ch, out _replace);
+                    }
                 }
             }
             _replace?.take_over_svr(_proxy.name);

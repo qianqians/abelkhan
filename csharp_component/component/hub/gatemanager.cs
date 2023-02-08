@@ -36,25 +36,21 @@ namespace hub
 	{
         public string current_client_uuid;
 
-        private Dictionary<string, gateproxy> clients;
+        private readonly Dictionary<string, gateproxy> clients;
 
-        private Dictionary<string, gateproxy> _wait_destory_gateproxys;
-        private Dictionary<abelkhan.Ichannel, gateproxy> ch_gateproxys;
-        private Dictionary<string, gateproxy> gates;
+        private readonly Dictionary<string, gateproxy> _wait_destory_gateproxys;
+        private readonly Dictionary<abelkhan.Ichannel, gateproxy> ch_gateproxys;
+        private readonly Dictionary<string, gateproxy> gates;
 
-        private Dictionary<string, directproxy> direct_clients;
-        private Dictionary<abelkhan.Ichannel, directproxy> ch_direct_clients;
+        private readonly Dictionary<string, directproxy> direct_clients;
+        private readonly Dictionary<abelkhan.Ichannel, directproxy> ch_direct_clients;
 
-        private abelkhan.redis_mq _gate_redismq_conn;
+        private readonly abelkhan.redis_mq _gate_redismq_conn;
 
         public gatemanager(abelkhan.redis_mq _conn)
         {
             _gate_redismq_conn = _conn;
-            init();
-        }
 
-        private void init()
-        {
             clients = new Dictionary<string, gateproxy>();
 
             _wait_destory_gateproxys = new Dictionary<string, gateproxy>();
@@ -128,7 +124,7 @@ namespace hub
         public void gate_be_closed(string svr_name)
         {
             log.log.info("gate_be_closed name:{0}", svr_name);
-            if (_wait_destory_gateproxys.TryGetValue(svr_name, out gateproxy _old_proxy))
+            if (_wait_destory_gateproxys.Remove(svr_name, out gateproxy _old_proxy))
             {
                 var remove = new List<string>();
                 foreach (var it in clients)
@@ -144,7 +140,6 @@ namespace hub
                 }
 
                 ch_gateproxys.Remove(_old_proxy._ch);
-                _wait_destory_gateproxys.Remove(svr_name);
 
                 lock (hub.remove_chs)
                 {
@@ -215,9 +210,8 @@ namespace hub
         public event Action<string> clientDisconnect;
         public void client_disconnect(String client_uuid)
         {
-            if (clients.ContainsKey(client_uuid))
+            if (clients.Remove(client_uuid))
             {
-                clients.Remove(client_uuid);
                 clientDisconnect?.Invoke(client_uuid);
             }
         }
@@ -318,11 +312,13 @@ namespace hub
 
         public void call_client(String uuid, String func, ArrayList _argvs_list)
 		{
-            var st = new MemoryStream();
+            using var st = new MemoryStream();
             var _serializer = MessagePackSerializer.Get<ArrayList>();
-            ArrayList _event = new ArrayList();
-            _event.Add(func);
-            _event.Add(_argvs_list);
+            ArrayList _event = new ArrayList
+            {
+                func,
+                _argvs_list
+            };
             _serializer.Pack(st, _event);
             st.Position = 0;
             var _rpc_bin = st.ToArray();
@@ -374,28 +370,33 @@ namespace hub
                 }
             }
 
-            var st = new MemoryStream();
-            var st_event = new MemoryStream();
-            var st_send = new MemoryStream();
-            var st_send_crypt = new MemoryStream();
             var _serializer = MessagePackSerializer.Get<ArrayList>();
 
-            ArrayList _rpc_argv = new ArrayList();
-            _rpc_argv.Add(func);
-            _rpc_argv.Add(_argvs_list);
+            using var st = new MemoryStream();
+            ArrayList _rpc_argv = new ArrayList
+            {
+                func,
+                _argvs_list
+            };
             _serializer.Pack(st, _rpc_argv);
             st.Position = 0;
             var _rpc_bin = st.ToArray();
 
-            var _direct_rpc_argv = new ArrayList();
-            _direct_rpc_argv.Add(_rpc_bin);
-            ArrayList _event = new ArrayList();
-            _event.Add("hub_call_client_call_client");
-            _event.Add(_direct_rpc_argv);
+            using var st_event = new MemoryStream();
+            var _direct_rpc_argv = new ArrayList
+            {
+                _rpc_bin
+            };
+            ArrayList _event = new ArrayList
+            {
+                "hub_call_client_call_client",
+                _direct_rpc_argv
+            };
             _serializer.Pack(st_event, _event);
             st_event.Position = 0;
             var data = st_event.ToArray();
 
+            using var st_send = new MemoryStream();
             var _tmplenght = data.Length;
             st_send.WriteByte((byte)(_tmplenght & 0xff));
             st_send.WriteByte((byte)((_tmplenght >> 8) & 0xff));
@@ -405,6 +406,7 @@ namespace hub
             st_send.Position = 0;
             var buf = st_send.ToArray();
 
+            using var st_send_crypt = new MemoryStream();
             st_send_crypt.Write(st_send.GetBuffer());
             st_send_crypt.Position = 0;
             var crypt_buf = st_send_crypt.ToArray();
@@ -420,18 +422,20 @@ namespace hub
             }
 
             foreach (var _proxy in tmp_gates)
-			{
-				_proxy.Key.forward_hub_call_group_client(_proxy.Value, _rpc_bin);
-			}
-		}
+            {
+                _proxy.Key.forward_hub_call_group_client(_proxy.Value, _rpc_bin);
+            }
+        }
 
 		public void call_global_client(String func, ArrayList _argvs_list)
 		{
             var st = new MemoryStream();
             var _serializer = MessagePackSerializer.Get<ArrayList>();
-            ArrayList _event = new ArrayList();
-            _event.Add(func);
-            _event.Add(_argvs_list);
+            ArrayList _event = new ArrayList
+            {
+                func,
+                _argvs_list
+            };
             _serializer.Pack(st, _event);
             st.Position = 0;
             var _rpc_bin = st.ToArray();

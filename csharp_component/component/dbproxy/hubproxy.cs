@@ -18,14 +18,13 @@ namespace dbproxy
 
 		public void ack_get_object_info(string callbackid, MongoDB.Bson.BsonDocument object_info)
 		{
-			using (var stream = new MemoryStream()) {
-				var write = new MongoDB.Bson.IO.BsonBinaryWriter(stream);
-				MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, object_info);
-				stream.Position = 0;
+			using var stream = new MemoryStream();
+            var write = new MongoDB.Bson.IO.BsonBinaryWriter(stream);
+            MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, object_info);
+            stream.Position = 0;
 
-				_caller.ack_get_object_info(callbackid, stream.ToArray());
-			}
-		}
+            _caller.ack_get_object_info(callbackid, stream.ToArray());
+        }
 
 		public void ack_get_object_info_end(string callbackid)
 		{

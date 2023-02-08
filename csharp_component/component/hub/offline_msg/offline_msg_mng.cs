@@ -61,17 +61,24 @@ namespace offline_msg
 
         public async Task process_offline_msg(string player_guid)
         {
-            var msg_list = await get_role_offline_msg(player_guid);
-            foreach (var msg in msg_list)
+            try
             {
-                if (_callback_dict.TryGetValue(msg.msg_type, out Action<offline_msg> callback))
+                var msg_list = await get_role_offline_msg(player_guid);
+                foreach (var msg in msg_list)
                 {
-                    callback.Invoke(msg);
+                    if (_callback_dict.TryGetValue(msg.msg_type, out Action<offline_msg> callback))
+                    {
+                        callback.Invoke(msg);
+                    }
+                    else
+                    {
+                        log.log.err("unsuport msg.msg_type:{0}", msg.msg_type);
+                    }
                 }
-                else
-                {
-                    log.log.err("unsuport msg.msg_type:{0}", msg.msg_type);
-                }
+            }
+            catch(Exception ex)
+            {
+                log.log.err("process_offline_msg ex:{0}", ex);
             }
         }
 

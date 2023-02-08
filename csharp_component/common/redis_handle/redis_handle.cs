@@ -30,7 +30,7 @@ namespace abelkhan
                 {
                     return database.StringSetAsync(key, data);
                 }
-                catch (StackExchange.Redis.RedisTimeoutException e)
+                catch (RedisTimeoutException e)
                 {
                     Recover(e);
                 }
@@ -50,7 +50,7 @@ namespace abelkhan
                 {
                     return database.StringGetAsync(key);
                 }
-                catch (StackExchange.Redis.RedisTimeoutException e)
+                catch (RedisTimeoutException e)
                 {
                     Recover(e);
                 }
@@ -75,7 +75,48 @@ namespace abelkhan
                 {
                     return database.KeyDelete(key);
                 }
-                catch (StackExchange.Redis.RedisTimeoutException e)
+                catch (RedisTimeoutException e)
+                {
+                    Recover(e);
+                }
+            }
+        }
+
+        public async Task Lock(string key, string token, uint timeout)
+        {
+            var wait_time = 8;
+            while (true)
+            {
+                try
+                {
+                    var ret = await database.LockTakeAsync(key, token, System.TimeSpan.FromMilliseconds(timeout));
+                    if (!ret)
+                    {
+                        var task = new TaskCompletionSource();
+                        var tasks = new Task[1] { task.Task };
+                        Task.WaitAny(tasks, wait_time);
+                        wait_time *= 2;
+                        continue;
+                    }
+                    break;
+                }
+                catch (RedisTimeoutException e)
+                {
+                    Recover(e);
+                }
+            }
+        }
+
+        public async Task UnLock(string key, string token)
+        {
+            while (true)
+            {
+                try
+                {
+                    await database.LockReleaseAsync(key, token);
+                    break;
+                }
+                catch (RedisTimeoutException e)
                 {
                     Recover(e);
                 }

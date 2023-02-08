@@ -41,16 +41,16 @@ namespace client
         public void call_hub(string hub, string func, ArrayList argv)
         {
             var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
-            using (MemoryStream st = new MemoryStream())
+            using var st = new MemoryStream();
+            var _event = new ArrayList
             {
-                var _event = new ArrayList();
-                _event.Add(func);
-                _event.Add(argv);
-                _serialization.Pack(st, _event);
-                st.Position = 0;
+                func,
+                argv
+            };
+            _serialization.Pack(st, _event);
+            st.Position = 0;
 
-                _client_call_gate_caller.forward_client_call_hub(hub, st.ToArray());
-            }
+            _client_call_gate_caller.forward_client_call_hub(hub, st.ToArray());
         }
     }
 
@@ -92,16 +92,16 @@ namespace client
         public void call_hub(string func, ArrayList argv)
         {
             var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
-            using (MemoryStream st = new MemoryStream())
+            using var st = new MemoryStream();
+            var _event = new ArrayList
             {
-                var _event = new ArrayList();
-                _event.Add(func);
-                _event.Add(argv);
-                _serialization.Pack(st, _event);
-                st.Position = 0;
+                func,
+                argv
+            };
+            _serialization.Pack(st, _event);
+            st.Position = 0;
 
-                _client_call_hub_caller.call_hub(st.ToArray());
-            }
+            _client_call_hub_caller.call_hub(st.ToArray());
         }
     }
 
@@ -381,40 +381,36 @@ namespace client
 
         private void gate_call_client(string hub_name, byte[] rpc_argv)
         {
-            using (var st = new MemoryStream())
-            {
-                st.Write(rpc_argv, 0, rpc_argv.Length);
-                st.Position = 0;
+            using var st = new MemoryStream();
+            st.Write(rpc_argv, 0, rpc_argv.Length);
+            st.Position = 0;
 
-                var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
-                var _event = _serialization.Unpack(st);
+            var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+            var _event = _serialization.Unpack(st);
 
-                var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
-                var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
+            var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
+            var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
-                current_hub = hub_name;
-                modulemanager.process_module_mothed(func, argvs);
-                current_hub = "";
-            }
+            current_hub = hub_name;
+            modulemanager.process_module_mothed(func, argvs);
+            current_hub = "";
         }
 
         private void hub_call_client(byte[] rpc_argv)
         {
-            using (var st = new MemoryStream())
-            {
-                st.Write(rpc_argv, 0, rpc_argv.Length);
-                st.Position = 0;
+            using var st = new MemoryStream();
+            st.Write(rpc_argv, 0, rpc_argv.Length);
+            st.Position = 0;
 
-                var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
-                var _event = _serialization.Unpack(st);
+            var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+            var _event = _serialization.Unpack(st);
 
-                var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
-                var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
+            var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
+            var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
-                current_hub = current_robot.get_current_hubproxy(_hub_call_client_module.current_ch.Value);
-                modulemanager.process_module_mothed(func, argvs);
-                current_hub = "";
-            }
+            current_hub = current_robot.get_current_hubproxy(_hub_call_client_module.current_ch.Value);
+            modulemanager.process_module_mothed(func, argvs);
+            current_hub = "";
         }
 
         public Int64 poll()

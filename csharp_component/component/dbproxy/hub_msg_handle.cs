@@ -154,14 +154,12 @@ namespace dbproxy
                 var obj = await dbproxy._mongodbproxy.find_and_modify(db, collection, query_data, object_data, is_new, upsert);
                 if (obj != null)
                 {
-                    using (var st = new MemoryStream())
-                    {
-                        var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
-                        MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, obj);
-                        st.Position = 0;
+                    using var st = new MemoryStream();
+                    var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
+                    MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, obj);
+                    st.Position = 0;
 
-                        rsp.rsp(st.ToArray());
-                    }
+                    rsp.rsp(st.ToArray());
                 }
                 else
                 {

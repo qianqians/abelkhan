@@ -21,17 +21,17 @@ namespace hub
         public void caller_hub(string func_name, ArrayList argvs)
         {
             var _serializer = MessagePackSerializer.Get<ArrayList>();
-            using (var st = new MemoryStream())
+            using var st = new MemoryStream();
+            var _event = new ArrayList
             {
-                var _event = new ArrayList();
-                _event.Add(func_name);
-                _event.Add(argvs);
+                func_name,
+                argvs
+            };
 
-                _serializer.Pack(st, _event);
-                st.Position = 0;
+            _serializer.Pack(st, _event);
+            st.Position = 0;
 
-                _hub_call_hub_caller.hub_call_hub_mothed(st.ToArray());
-            }
+            _hub_call_hub_caller.hub_call_hub_mothed(st.ToArray());
         }
 
         public void client_seep(string client_uuid)
