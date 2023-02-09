@@ -413,9 +413,9 @@ namespace client
             current_hub = "";
         }
 
-        public Int64 poll()
+        public long poll()
         {
-            Int64 tick_begin = timer.poll();
+            long tick_begin = timer.poll();
 
             while (true)
             {
@@ -439,7 +439,7 @@ namespace client
 			
             abelkhan.TinyTimer.poll();
 
-            Int64 tick_end = timer.refresh();
+            long tick_end = timer.refresh();
 
             return tick_end - tick_begin;
         }

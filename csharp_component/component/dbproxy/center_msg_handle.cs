@@ -28,7 +28,7 @@ namespace dbproxy
 			check_close_server();
         }
 
-        private void close_server_impl(Int64 tick)
+        private void close_server_impl(long tick)
         {
             _closehandle._is_close = true;
         }

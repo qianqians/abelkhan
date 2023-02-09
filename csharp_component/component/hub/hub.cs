@@ -330,10 +330,10 @@ namespace hub
             _caller.reg_hub(name, type);
         }
 
-        private Int64 poll()
+        private long poll()
         {
             
-            Int64 tick_begin = _timer.refresh();
+            long tick_begin = _timer.refresh();
 
             try
             {
@@ -368,7 +368,7 @@ namespace hub
                 log.log.err("{0}", e);
             }
 
-            Int64 tick_end = _timer.refresh();
+            long tick_end = _timer.refresh();
             tick = (uint)(tick_end - tick_begin);
 
             if (tick > 50)
@@ -379,7 +379,7 @@ namespace hub
             return tick;
         }
 
-        private object _run_mu = new object();
+        private readonly object _run_mu = new();
         public void run()
         {
             if (!Monitor.TryEnter(_run_mu))
@@ -407,9 +407,10 @@ namespace hub
             public ushort port;
         }
 
-		public static string name;
-        public static string type;
         public static uint tick;
+
+        public static string name;
+        public static string type;
         public static addressinfo tcp_outside_address = null;
         public static addressinfo websocket_outside_address = null;
         public static addressinfo enet_outside_address = null;
@@ -429,23 +430,23 @@ namespace hub
         private static Random _r;
         private static ConcurrentDictionary<string, dbproxyproxy> _dbproxys;
 
-        private abelkhan.enetservice _enetservice;
-        private abelkhan.cryptacceptservice _cryptacceptservice;
-        private abelkhan.websocketacceptservice _websocketacceptservice;
-
         public static closehandle _closeHandle;
         public static hubmanager _hubs;
         public static gatemanager _gates;
         public static service.timerservice _timer;
 
+        private readonly abelkhan.enetservice _enetservice;
+        private readonly abelkhan.cryptacceptservice _cryptacceptservice;
+        private readonly abelkhan.websocketacceptservice _websocketacceptservice;
+
         private uint reconn_count = 0;
         private centerproxy _centerproxy;
 
-        private center_msg_handle _center_msg_handle;
-        private dbproxy_msg_handle _dbproxy_msg_handle;
-        private hub_msg_handle _hub_msg_handle;
-        private gate_msg_handle _gate_msg_handle;
-        private client_msg_handle _client_msg_handle;
+        private readonly center_msg_handle _center_msg_handle;
+        private readonly dbproxy_msg_handle _dbproxy_msg_handle;
+        private readonly hub_msg_handle _hub_msg_handle;
+        private readonly gate_msg_handle _gate_msg_handle;
+        private readonly client_msg_handle _client_msg_handle;
 
         public event Action<hubproxy> on_hubproxy;
         public event Action<hubproxy> on_hubproxy_reconn;

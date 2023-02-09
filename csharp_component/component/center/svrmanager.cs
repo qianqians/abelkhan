@@ -202,7 +202,7 @@ namespace abelkhan
             closed_svr_list.Clear();
         }
         
-        public void heartbeat_svr(Int64 tick)
+        public void heartbeat_svr(long tick)
         {
             foreach (var _proxy in svrproxys)
             {

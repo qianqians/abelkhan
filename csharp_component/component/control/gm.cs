@@ -51,9 +51,9 @@ namespace gm
             timer = new service.timerservice();
         }
 
-        public Int64 poll()
+        public long poll()
         {
-            Int64 tick_begin = timer.poll();
+            long tick_begin = timer.poll();
 
             try
             {
@@ -75,7 +75,7 @@ namespace gm
                 log.log.err("{0}", e);
             }
 
-            Int64 tick_end = timer.refresh();
+            long tick_end = timer.refresh();
 
             return tick_end - tick_begin;
         }

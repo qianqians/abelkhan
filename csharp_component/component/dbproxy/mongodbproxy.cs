@@ -70,7 +70,7 @@ namespace dbproxy
             }
         }
 
-        public async void check_int_guid(string db, string collection, Int64 inside_guid, Int64 public_guid)
+        public async void check_int_guid(string db, string collection, long inside_guid, long public_guid)
         {
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
@@ -298,7 +298,7 @@ namespace dbproxy
             return true;
 		}
 
-        public async Task<Int64> get_guid(string db, string collection, string guid_key)
+        public async Task<long> get_guid(string db, string collection, string guid_key)
         {
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);

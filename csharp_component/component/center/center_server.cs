@@ -20,7 +20,7 @@ namespace abelkhan
         private gmmanager _gmmanager;
         private List<abelkhan.Ichannel> add_chs;
         public List<abelkhan.Ichannel> remove_chs;
-        private Int64 _timetmp;
+        private long _timetmp;
 
         public closehandle _closeHandle;
         public service.timerservice _timer;
@@ -99,7 +99,7 @@ namespace abelkhan
         }
 
         public event Action<svrproxy> on_svr_disconnect;
-        private Int64 poll()
+        private long poll()
         {
             var tick_begin = _timer.refresh();
             try
@@ -150,7 +150,7 @@ namespace abelkhan
                 log.log.err("System.Exception:{0}", e);
             }
 
-            Int64 tick_end = _timer.refresh();
+            long tick_end = _timer.refresh();
             _timetmp = tick_end;
             return tick_end - tick_begin;
         }

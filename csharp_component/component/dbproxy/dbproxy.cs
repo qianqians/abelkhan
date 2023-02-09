@@ -145,7 +145,7 @@ namespace dbproxy
             }
         }
 
-        private void heartbeath_center(Int64 tick)
+        private void heartbeath_center(long tick)
         {
             do
             {
@@ -162,9 +162,9 @@ namespace dbproxy
             _timer.addticktime(3 * 1000, heartbeath_center);
         }
 
-		private Int64 poll()
+		private long poll()
         {
-            Int64 tick_begin = _timer.refresh();
+            long tick_begin = _timer.refresh();
 
             try
             {

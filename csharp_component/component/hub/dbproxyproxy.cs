@@ -215,7 +215,7 @@ namespace hub
                 }
             }
 
-            public void getGuid(string guid_key, Action<EM_DB_RESULT, Int64> _handle)
+            public void getGuid(string guid_key, Action<EM_DB_RESULT, long> _handle)
             {
                 lock (_dbproxy)
                 {
