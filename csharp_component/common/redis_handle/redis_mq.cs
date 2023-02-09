@@ -188,7 +188,7 @@ namespace abelkhan
                     var pop_data = (byte[])(await database.ListRightPopAsync(listen_channel_name));
                     while (pop_data != null)
                     {
-                        is_busy = false;
+                        is_busy = true;
 
                         var _ch_name_size = (UInt32)pop_data[0] | ((UInt32)pop_data[1] << 8) | ((UInt32)pop_data[2] << 16) | ((UInt32)pop_data[3] << 24);
                         var _ch_name = System.Text.Encoding.UTF8.GetString(pop_data, 4, (int)_ch_name_size);

@@ -55,7 +55,7 @@ namespace log
             output(new System.Diagnostics.StackFrame(1), service.timerservice.Tick, "err", log, agrvs);
         }
 
-        static void output(StackFrame sf, Int64 tmptime, string level, string log, params object[] agrvs)
+        static void output(StackFrame sf, long tmptime, string level, string log, params object[] agrvs)
         {
             log = string.Format(log, agrvs);
 

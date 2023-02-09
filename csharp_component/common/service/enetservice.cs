@@ -15,9 +15,9 @@ namespace abelkhan
     public class enetservice
     {
         private ENetHost host;
-        private Dictionary<UInt64, enetchannel> back_conns;
-        private Dictionary<UInt64, enetchannel> conns;
-        private Dictionary<UInt64, Action<enetchannel> > conn_cbs;
+        private Dictionary<ulong, enetchannel> back_conns;
+        private Dictionary<ulong, enetchannel> conns;
+        private Dictionary<ulong, Action<enetchannel> > conn_cbs;
         private Task run_t;
         private bool run_flag = true;
 
@@ -28,9 +28,9 @@ namespace abelkhan
             var listenEndPoint = new IPEndPoint(Dns.GetHostAddresses(_host)[0], port);
             host = new ENetHost(listenEndPoint, 2048, 1);
 
-            back_conns = new Dictionary<UInt64, enetchannel>();
-            conns = new Dictionary<UInt64, enetchannel>();
-            conn_cbs = new Dictionary<UInt64, Action<enetchannel> >();
+            back_conns = new Dictionary<ulong, enetchannel>();
+            conns = new Dictionary<ulong, enetchannel>();
+            conn_cbs = new Dictionary<ulong, Action<enetchannel> >();
         }
 
         private void poll()
@@ -47,8 +47,8 @@ namespace abelkhan
                         var ep = Event.Peer.GetRemoteEndPoint();
 
                         var ip_bytes = ep.Address.GetAddressBytes();
-                        var ip_addr = (UInt64)(ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24);
-                        var peerHandle = ip_addr << 32 | (UInt64)((UInt32)ep.Port);
+                        var ip_addr = (ulong)(ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24);
+                        var peerHandle = ip_addr << 32 | (ulong)((UInt32)ep.Port);
 
                         log.log.trace("enetservice poll raddr:{0}", peerHandle);
                         if (!back_conns.TryGetValue(peerHandle, out enetchannel ch))
@@ -87,8 +87,8 @@ namespace abelkhan
                         var ep = Event.Peer.GetRemoteEndPoint();
 
                         var ip_bytes = ep.Address.GetAddressBytes();
-                        var ip_addr = (UInt64)(ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24);
-                        var peerHandle = ip_addr << 32 | (UInt64)((UInt32)ep.Port);
+                        var ip_addr = (ulong)(ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24);
+                        var peerHandle = ip_addr << 32 | (ulong)((UInt32)ep.Port);
 
                         if (conns.TryGetValue(peerHandle, out enetchannel ch))
                         {
@@ -128,8 +128,8 @@ namespace abelkhan
             IPEndPoint connectEndPoint = new IPEndPoint(Dns.GetHostAddresses(ulr_host)[0], port);
 
             var ip_bytes = connectEndPoint.Address.GetAddressBytes();
-            var ip_addr = (UInt64)(ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24);
-            var peerHandle = ip_addr << 32 | (UInt64)((UInt32)connectEndPoint.Port);
+            var ip_addr = (ulong)(ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24);
+            var peerHandle = ip_addr << 32 | (ulong)((UInt32)connectEndPoint.Port);
 
             conn_cbs.Add(peerHandle, cb);
 
