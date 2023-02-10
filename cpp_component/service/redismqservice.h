@@ -163,59 +163,73 @@ public:
 	}
 
 private:
+	void refresh_listen_list() {
+		std::lock_guard<std::mutex> l(_mu_wait_listen_channel_names);
+		for (auto svr_name : wait_listen_channel_names) {
+			listen_channel_names.push_back(svr_name);
+		}
+		wait_listen_channel_names.clear();
+	}
+
+	void redis_cluster_send_data(redismqbuff data) {
+		auto _reply = (redisReply*)redisClusterCommand(_cluster_ctx, "LPUSH %s %b", data.ch_name.c_str(), data.buf, data.len);
+		if (_reply->type == REDIS_REPLY_PUSH || _reply->type == REDIS_REPLY_INTEGER) {
+		}
+		else {
+			spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
+		}
+		freeReplyObject(_reply);
+		free(static_cast<void*>(data.buf));
+	}
+
+	bool redis_cluster_recv_data() {
+		auto ret = false;
+
+		for (auto channel_name : listen_channel_names) {
+			auto _reply = (redisReply*)redisClusterCommand(_cluster_ctx, "RPOP %s", channel_name.c_str());
+			if (_reply->type == REDIS_REPLY_STRING) {
+				auto _buf = _reply->str;
+				auto _ch_name_size = (uint32_t)_buf[0] | ((uint32_t)_buf[1] << 8) | ((uint32_t)_buf[2] << 16) | ((uint32_t)_buf[3] << 24);
+				auto _ch_name = std::string(&_buf[4], _ch_name_size);
+				auto _header_len = 4 + _ch_name_size;
+				auto _msg_len = (uint32_t)_reply->len - _header_len;
+
+				auto tmp_buff = (unsigned char*)_buf[_header_len];
+				uint32_t len = (uint32_t)tmp_buff[0] | ((uint32_t)tmp_buff[1] << 8) | ((uint32_t)tmp_buff[2] << 16) | ((uint32_t)tmp_buff[3] << 24);
+				std::string err;
+				auto obj = msgpack11::MsgPack::parse((const char*)tmp_buff, len, err);
+				recv_data.push(std::make_pair(_ch_name, obj));
+
+				ret = true;
+			}
+			else if (_reply->type != REDIS_REPLY_NIL) {
+				spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
+			}
+			freeReplyObject(_reply);
+		}
+
+		return ret;
+	}
+
 	void thread_poll_cluster() {
 		int sleep_time = 1;
 		int idle_count = 0;
 		while (run_flag) {
 			bool is_idle = true;
+			
 			redismqbuff data;
 			if (send_data.pop(data)) {
-				auto _reply = (redisReply*)redisClusterCommand(_cluster_ctx, "LPUSH %s %b", data.ch_name.c_str(), data.buf, data.len);
-				if (_reply->type == REDIS_REPLY_PUSH || _reply->type == REDIS_REPLY_INTEGER) {
-				}
-				else {
-					spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
-				}
-				freeReplyObject(_reply);
-				free(static_cast<void*>(data.buf));
+				redis_cluster_send_data(data);
 				is_idle = false;
 				sleep_time = 1;
 				idle_count = 0;
 			}
 
-			{
-				{
-					std::lock_guard<std::mutex> l(_mu_wait_listen_channel_names);
-					for (auto svr_name : wait_listen_channel_names) {
-						listen_channel_names.push_back(svr_name);
-					}
-					wait_listen_channel_names.clear();
-				}
-
-				for (auto channel_name : listen_channel_names) {
-					auto _reply = (redisReply*)redisClusterCommand(_cluster_ctx, "RPOP %s", channel_name.c_str());
-					if (_reply->type == REDIS_REPLY_STRING) {
-						auto _buf = _reply->str;
-						auto _ch_name_size = (uint32_t)_buf[0] | ((uint32_t)_buf[1] << 8) | ((uint32_t)_buf[2] << 16) | ((uint32_t)_buf[3] << 24);
-						auto _ch_name = std::string(&_buf[4], _ch_name_size);
-						auto _header_len = 4 + _ch_name_size;
-						auto _msg_len = (uint32_t)_reply->len - _header_len;
-
-						auto tmp_buff = (unsigned char*)_buf[_header_len];
-						uint32_t len = (uint32_t)tmp_buff[0] | ((uint32_t)tmp_buff[1] << 8) | ((uint32_t)tmp_buff[2] << 16) | ((uint32_t)tmp_buff[3] << 24);
-						std::string err;
-						auto obj = msgpack11::MsgPack::parse((const char*)tmp_buff, len, err);
-						recv_data.push(std::make_pair(_ch_name, obj));
-
-						is_idle = false;
-						sleep_time = 1;
-						idle_count = 0;
-					}
-					else if (_reply->type != REDIS_REPLY_NIL) {
-						spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
-					}
-					freeReplyObject(_reply);
-				}
+			refresh_listen_list();
+			if (redis_cluster_recv_data()) {
+				is_idle = false;
+				sleep_time = 1;
+				idle_count = 0;
 			}
 
 			if (is_idle) {
@@ -323,6 +337,7 @@ private:
 				idle_count = 0;
 			}
 
+			refresh_listen_list();
 			if (redis_mq_recv_data()){
 				is_idle = false;
 				sleep_time = 1;
