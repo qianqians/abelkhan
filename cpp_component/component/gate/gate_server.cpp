@@ -74,14 +74,13 @@ void gate_service::init() {
 	_hub_svr_msg_handle = std::make_shared<hub_svr_msg_handle>(_clientmanager, _hubsvrmanager);
 	_client_msg_handle = std::make_shared<client_msg_handle>(_clientmanager, _hubsvrmanager, _timerservice);
 
-	io_service = std::make_shared<asio::io_service>();
-
 	auto _center_ch = _hub_redismq_service->connect(_center_config->get_value_string("name"));
 	init_center(_center_ch);
 
 	if (_config->has_key("tcp_listen")) {
 		auto is_tcp_listen = _config->get_value_bool("tcp_listen");
 		if (is_tcp_listen) {
+			io_service = std::make_shared<asio::io_service>();
 			auto tcp_outside_host = _config->get_value_string("tcp_outside_host");
 			auto tcp_outside_port = (short)_config->get_value_int("tcp_outside_port");
 			_client_service = std::make_shared<service::acceptservice>(tcp_outside_host, tcp_outside_port, io_service);
@@ -127,16 +126,17 @@ void gate_service::init() {
 	if (_config->has_key("enet_listen")) {
 		auto is_enet_listen = _config->get_value_bool("enet_listen");
 		if (is_enet_listen) {
+			enet_initialize();
 			auto enet_outside_host = _config->get_value_string("enet_outside_host");
 			auto enet_outside_port = (short)_config->get_value_int("enet_outside_port");
-			_hub_service = std::make_shared<service::enetacceptservice>(enet_outside_host, enet_outside_port);
-			_hub_service->sig_connect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
+			_enet_service = std::make_shared<service::enetacceptservice>(enet_outside_host, enet_outside_port);
+			_enet_service->sig_connect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
 				std::static_pointer_cast<service::enetchannel>(ch)->set_xor_key_crypt();
 
 				auto _client = _clientmanager->reg_client(ch);
 				_client->ntf_cuuid();
 				});
-			_hub_service->sig_disconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
+			_enet_service->sig_disconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
 				service::gc_put([this, ch]() {
 					_clientmanager->unreg_client(ch);
 				});
@@ -210,10 +210,12 @@ uint32_t gate_service::poll(){
 	auto begin = msec_time();
 	try {
 
-		io_service->poll();
+		if (io_service != nullptr) {
+			io_service->poll();
+		}
 
-		if (_hub_service != nullptr) {
-			_hub_service->poll();
+		if (_enet_service != nullptr) {
+			_enet_service->poll();
 		}
 
 		if (_hub_redismq_service != nullptr) {
@@ -249,7 +251,10 @@ uint32_t gate_service::poll(){
 void gate_service::close_svr() {
 	spdlog::info("server closed, gate server name:{0}!", gate_name_info.name);
 	_closehandle->is_closed = true;
-	enet_deinitialize();
+	_hub_redismq_service->close();
+	if (_enet_service != nullptr) {
+		enet_deinitialize();
+	}
 }
 
 }

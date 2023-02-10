@@ -44,7 +44,6 @@ hub_service::hub_service(std::string config_file_path, std::string config_name, 
 }
 
 void hub_service::init() {
-	enet_initialize();
 	ares_library_init(ARES_LIB_INIT_ALL);
 
 	auto file_path = _config->get_value_string("log_dir") + _config->get_value_string("log_file");
@@ -137,14 +136,15 @@ void hub_service::init() {
 	if (_config->has_key("enet_listen")) {
 		auto is_enet_listen = _config->get_value_bool("enet_listen");
 		if (is_enet_listen) {
+			enet_initialize();
 			enet_address_info = std::make_shared<addressinfo>();
 			enet_address_info->host = _config->get_value_string("enet_outside_host");
 			enet_address_info->port = (unsigned short)_config->get_value_int("enet_outside_port");
-			_hub_service = std::make_shared<service::enetacceptservice>(enet_address_info->host, enet_address_info->port);
-			_hub_service->sig_connect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
+			_enet_service = std::make_shared<service::enetacceptservice>(enet_address_info->host, enet_address_info->port);
+			_enet_service->sig_connect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
 				std::static_pointer_cast<service::channel>(ch)->set_xor_key_crypt();
 			});
-			_hub_service->sig_disconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
+			_enet_service->sig_disconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
 				service::gc_put([this, ch]() {
 					_gatemng->client_direct_disconnect(ch);
 				});
@@ -259,7 +259,7 @@ void hub_service::close_svr() {
 	if (_hub_redismq_service) {
 		_hub_redismq_service->close();
 	}
-	if (_hub_service) {
+	if (_enet_service) {
 		enet_deinitialize();
 	}
 }
@@ -296,8 +296,8 @@ uint32_t hub_service::poll() {
 	try {
 		_io_service->poll();
 
-		if (_hub_service != nullptr) {
-			_hub_service->poll();
+		if (_enet_service != nullptr) {
+			_enet_service->poll();
 		}
 
 		if (_hub_redismq_service != nullptr) {

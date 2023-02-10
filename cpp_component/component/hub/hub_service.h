@@ -149,7 +149,7 @@ private:
 	std::shared_ptr<service::acceptservice> _client_tcp_service;
 
 	std::shared_ptr<service::webacceptservice> _client_websocket_service;
-	std::shared_ptr<service::enetacceptservice> _hub_service;
+	std::shared_ptr<service::enetacceptservice> _enet_service;
 
 	std::shared_ptr<center_msg_handle> _center_msg_handle;
 	std::shared_ptr<dbproxy_msg_handle> _dbproxy_msg_handle;

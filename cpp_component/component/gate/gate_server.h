@@ -97,7 +97,7 @@ private:
 
 	std::shared_ptr<service::acceptservice> _client_service;
 	std::shared_ptr<service::webacceptservice> _websocket_service;
-	std::shared_ptr<service::enetacceptservice> _hub_service;
+	std::shared_ptr<service::enetacceptservice> _enet_service;
 
 	std::mutex _run_mu;
 
