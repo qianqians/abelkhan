@@ -146,11 +146,23 @@ public:
 
 	void start() {
 		th_recv = std::jthread([this]() {
-			if (_write_cluster_ctx) {
+			if (_recv_cluster_ctx) {
 				thread_poll_cluster();
 			}
-			else if (_write_ctx) {
+			else if (_recv_ctx) {
 				thread_poll_single();
+			}
+			else {
+				spdlog::error("have no init redis context!");
+				throw redismqserviceException("have no init redis context!");
+			}
+		});
+		th_send = std::jthread([this]() {
+			if (_write_cluster_ctx) {
+				thread_send_cluster();
+			}
+			else if (_write_ctx) {
+				thread_send_single();
 			}
 			else {
 				spdlog::error("have no init redis context!");
@@ -203,7 +215,7 @@ private:
 		auto ret = false;
 
 		for (auto channel_name : listen_channel_names) {
-			auto _reply = (redisReply*)redisClusterCommand(_write_cluster_ctx, "RPOP %s", channel_name.c_str());
+			auto _reply = (redisReply*)redisClusterCommand(_recv_cluster_ctx, "RPOP %s", channel_name.c_str());
 			if (_reply->type == REDIS_REPLY_STRING) {
 				auto _buf = _reply->str;
 				auto _ch_name_size = (uint32_t)_buf[0] | ((uint32_t)_buf[1] << 8) | ((uint32_t)_buf[2] << 16) | ((uint32_t)_buf[3] << 24);
