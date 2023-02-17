@@ -49,7 +49,8 @@ namespace abelkhan
         private IDatabase database;
 
         private readonly string main_channel_name;
-        private readonly Task th;
+        private readonly Task th_send;
+        private readonly Task th_recv;
         private bool run_flag = true;
 
         private readonly List<string> listen_channel_names;
@@ -70,8 +71,10 @@ namespace abelkhan
 
             send_data = new ConcurrentQueue<Tuple<string, MemoryStream> >();
 
-            th = new Task(th_poll, TaskCreationOptions.LongRunning);
-            th.Start();
+            th_send = new Task(th_send_poll, TaskCreationOptions.LongRunning);
+            th_send.Start();
+            th_recv = new Task(th_recv_poll, TaskCreationOptions.LongRunning);
+            th_recv.Start();
         }
 
         public void take_over_svr(string svr_name)
@@ -90,7 +93,8 @@ namespace abelkhan
         public async void close()
         {
             run_flag = false;
-            await th;
+            await th_send;
+            await th_recv;
         }
 
         public redischannel connect(string ch_name)
@@ -126,25 +130,6 @@ namespace abelkhan
             send_data.Enqueue(Tuple.Create(ch_name, st));
         }
 
-        private void list_channel_name()
-        {
-            try
-            {
-                lock (wait_listen_channel_names)
-                {
-                    foreach (var name in wait_listen_channel_names)
-                    {
-                        listen_channel_names.Add(name);
-                    }
-                    wait_listen_channel_names.Clear();
-                }
-            }
-            catch(System.Exception ex)
-            {
-                log.log.err("list_channel_name error:{0}", ex);
-            }
-        }
-
         private async Task<bool> sendmsg_mq()
         {
             bool is_busy = false;
@@ -176,7 +161,26 @@ namespace abelkhan
             }
 
             return is_busy;
-        } 
+        }
+
+        private void list_channel_name()
+        {
+            try
+            {
+                lock (wait_listen_channel_names)
+                {
+                    foreach (var name in wait_listen_channel_names)
+                    {
+                        listen_channel_names.Add(name);
+                    }
+                    wait_listen_channel_names.Clear();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                log.log.err("list_channel_name error:{0}", ex);
+            }
+        }
 
         private async Task<bool> recvmsg_mq()
         {
@@ -232,15 +236,25 @@ namespace abelkhan
             return is_busy;
         }
 
-        private async void th_poll()
+        private async void th_send_poll()
         {
             while (run_flag)
             {
                 var is_send_busy = await sendmsg_mq();
+                if (!is_send_busy)
+                {
+                    await Task.Delay(5);
+                }
+            }
+        }
+
+        private async void th_recv_poll()
+        {
+            while (run_flag)
+            {
                 list_channel_name();
                 var is_recv_busy = await recvmsg_mq();
-
-                if (!is_send_busy && !is_recv_busy)
+                if (!is_recv_busy)
                 {
                     await Task.Delay(5);
                 }
