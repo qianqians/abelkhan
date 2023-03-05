@@ -1,4 +1,5 @@
-﻿using MsgPack.Serialization;
+﻿using abelkhan;
+using MsgPack.Serialization;
 using System;
 using System.Collections;
 using System.IO;
@@ -33,7 +34,7 @@ namespace hub
             try
             {
                 var _serializer = MessagePackSerializer.Get<ArrayList>();
-                using var st = new MemoryStream();
+                using var st = MemoryStreamPool.mstMgr.GetStream();
                 st.Write(rpc_argv);
                 st.Position = 0;
                 var _event = _serializer.Unpack(st);
@@ -47,7 +48,7 @@ namespace hub
                 on_client_msg?.Invoke(uuid);
                 hub._gates.current_client_uuid = "";
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 log.log.err("call_hub exception:{0}", e);
                 hub._gates.client_exception(uuid);

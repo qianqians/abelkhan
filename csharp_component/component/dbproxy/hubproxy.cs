@@ -1,4 +1,5 @@
-﻿using MsgPack.Serialization;
+﻿using abelkhan;
+using MsgPack.Serialization;
 using System;
 using System.Collections;
 using System.IO;
@@ -18,7 +19,7 @@ namespace dbproxy
 
 		public void ack_get_object_info(string callbackid, MongoDB.Bson.BsonDocument object_info)
 		{
-			using var stream = new MemoryStream();
+			using var stream = MemoryStreamPool.mstMgr.GetStream();
             var write = new MongoDB.Bson.IO.BsonBinaryWriter(stream);
             MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, object_info);
             stream.Position = 0;

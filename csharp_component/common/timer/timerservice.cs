@@ -8,8 +8,8 @@ namespace service
 	{
 		public timerservice()
 		{
-            tickHandledict = new SortedList<long, List<HandleImpl> >();
-            addtickHandle = new Dictionary<long, List<HandleImpl> >();
+            tickHandledict = new SortedList<long, HandleImpl>();
+            addtickHandle = new Dictionary<long, HandleImpl>();
 
             daytimeHandledict = new Dictionary<day_time, List<HandleImpl>>();
             adddaytimeHandle = new Dictionary<day_time, List<HandleImpl>>();
@@ -53,11 +53,9 @@ namespace service
             {
                 foreach (var item in addtickHandle)
                 {
-                    if (!tickHandledict.ContainsKey(item.Key))
-                    {
-                        tickHandledict.Add(item.Key, new List<HandleImpl>());
-                    }
-                    tickHandledict[item.Key].AddRange(item.Value);
+                    var process = item.Key;
+                    while (tickHandledict.ContainsKey(process)) { process++; }
+                    tickHandledict.Add(process, item.Value);
                 }
                 addtickHandle.Clear();
             }
@@ -74,22 +72,20 @@ namespace service
                 {
                     list.Add(item.Key);
 
-                    foreach (var impl in item.Value)
+                    var impl = item.Value;
+                    if (impl.is_del)
                     {
-                        if (impl.is_del)
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        var handle = impl.handle as Action<long>;
-                        try
-                        {
-                            handle(Tick);
-                        }
-                        catch (System.Exception e)
-                        {
-                            log.log.err("System.Exceptio{0}", e);
-                        }
+                    var handle = impl.handle as Action<long>;
+                    try
+                    {
+                        handle(Tick);
+                    }
+                    catch (System.Exception e)
+                    {
+                        log.log.err("System.Exceptio{0}", e);
                     }
                 }
                 else
@@ -156,7 +152,7 @@ namespace service
                 daytimeHandledict.Remove(item);
             }
 
-            addticktime(333, polldaytimehandleimpl);
+            addticktime(888, polldaytimehandleimpl);
         }
 
         private void addtimehandleimpl()
@@ -212,7 +208,7 @@ namespace service
                 timeHandledict.Remove(item);
             }
 
-            addticktime(333, polltimehandleimpl);
+            addticktime(888, polltimehandleimpl);
         }
 
         private void addmonthtimehandleimpl()
@@ -268,7 +264,7 @@ namespace service
                 monthtimeHandledict.Remove(item);
             }
 
-            addticktime(333, pollmonthtimehandleimpl);
+            addticktime(888, pollmonthtimehandleimpl);
         }
 
         private void addloopdaytimehandleimpl()
@@ -353,7 +349,7 @@ namespace service
                 loopdaytimeHandledict.Remove(item);
             }
 
-            addticktime(333, pollloopdaytimehandleimpl);
+            addticktime(888, pollloopdaytimehandleimpl);
         }
 
         private void addloopweekdaytimehandleimpl()
@@ -438,7 +434,7 @@ namespace service
                 loopweekdaytimeHandledict.Remove(item);
             }
 
-            addticktime(333, pollloopweekdaytimehandleimpl);
+            addticktime(888, pollloopweekdaytimehandleimpl);
         }
 
         public long poll()
@@ -457,11 +453,8 @@ namespace service
 
             lock (addtickHandle)
             {
-                if (!addtickHandle.ContainsKey(process))
-                {
-                    addtickHandle.Add(process, new List<HandleImpl>());
-                }
-                addtickHandle[process].Add(impl);
+                while (addtickHandle.ContainsKey(process)){ process++; }
+                addtickHandle.Add(process, impl);
             }
 
             return impl;
@@ -709,8 +702,8 @@ namespace service
             }
         }
 
-        private readonly SortedList<long, List<HandleImpl>> tickHandledict;
-        private readonly Dictionary<long, List<HandleImpl>> addtickHandle;
+        private readonly SortedList<long, HandleImpl> tickHandledict;
+        private readonly Dictionary<long, HandleImpl> addtickHandle;
 
         private readonly Dictionary<month_day_time, List<HandleImpl>> monthtimeHandledict;
         private readonly Dictionary<month_day_time, List<HandleImpl>> addmonthtimeHandle;

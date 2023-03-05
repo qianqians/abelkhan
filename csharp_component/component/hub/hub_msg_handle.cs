@@ -1,4 +1,5 @@
-﻿using System;
+﻿using abelkhan;
+using System;
 using System.Collections;
 using System.IO;
 
@@ -56,7 +57,7 @@ namespace hub
         {
             try
             {
-                using var st = new MemoryStream();
+                using var st = MemoryStreamPool.mstMgr.GetStream();
                 st.Write(rpc_argvs);
                 st.Position = 0;
 

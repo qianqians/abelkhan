@@ -1,4 +1,5 @@
-﻿using System;
+﻿using abelkhan;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -73,7 +74,7 @@ namespace hub
 
             public void createPersistedObject(MongoDB.Bson.BsonDocument object_info, Action<EM_DB_RESULT> _handle)
             {
-                using var st = new MemoryStream();
+                using var st = MemoryStreamPool.mstMgr.GetStream();
                 var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
                 MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, object_info);
                 st.Position = 0;
@@ -98,12 +99,12 @@ namespace hub
 
             public void updataPersistedObject(MongoDB.Bson.BsonDocument query_info, MongoDB.Bson.BsonDocument updata_info, bool is_upsert, Action<EM_DB_RESULT> _handle)
             {
-                using var st_query = new MemoryStream();
+                using var st_query = MemoryStreamPool.mstMgr.GetStream();
                 var write_query = new MongoDB.Bson.IO.BsonBinaryWriter(st_query);
                 MongoDB.Bson.Serialization.BsonSerializer.Serialize(write_query, query_info);
                 st_query.Position = 0;
 
-                using var st_update = new MemoryStream();
+                using var st_update = MemoryStreamPool.mstMgr.GetStream();
                 var write_update = new MongoDB.Bson.IO.BsonBinaryWriter(st_update);
                 MongoDB.Bson.Serialization.BsonSerializer.Serialize(write_update, updata_info);
                 st_update.Position = 0;
@@ -128,11 +129,11 @@ namespace hub
 
             public void findAndModifyObject(MongoDB.Bson.BsonDocument query_info, MongoDB.Bson.BsonDocument updata_info, bool _new, bool is_upsert, Action<EM_DB_RESULT, MongoDB.Bson.BsonDocument> _handle)
             {
-                using var st_query = new MemoryStream();
+                using var st_query = MemoryStreamPool.mstMgr.GetStream();
                 var write_query = new MongoDB.Bson.IO.BsonBinaryWriter(st_query);
                 MongoDB.Bson.Serialization.BsonSerializer.Serialize(write_query, query_info);
 
-                using var st_update = new MemoryStream();
+                using var st_update = MemoryStreamPool.mstMgr.GetStream();
                 var write_update = new MongoDB.Bson.IO.BsonBinaryWriter(st_update);
                 MongoDB.Bson.Serialization.BsonSerializer.Serialize(write_update, updata_info);
 
@@ -158,7 +159,7 @@ namespace hub
 
             public void getObjectCount(MongoDB.Bson.BsonDocument query_json, Action<EM_DB_RESULT, uint> _handle)
             {
-                using var st = new MemoryStream();
+                using var st = MemoryStreamPool.mstMgr.GetStream();
                 var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
                 MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, query_json);
                 st.Position = 0;
@@ -183,7 +184,7 @@ namespace hub
 
             public void getObjectInfo(MongoDB.Bson.BsonDocument query_obj, Action<MongoDB.Bson.BsonArray> _handle, Action _end)
             {
-                using var st = new MemoryStream();
+                using var st = MemoryStreamPool.mstMgr.GetStream();
                 var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
                 MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, query_obj);
                 st.Position = 0;
@@ -200,7 +201,7 @@ namespace hub
 
             public void getObjectInfoEx(MongoDB.Bson.BsonDocument query_obj, int skip, int limit, string sort, bool _Ascending, Action<MongoDB.Bson.BsonArray> _handle, Action _end)
             {
-                using var st = new MemoryStream();
+                using var st = MemoryStreamPool.mstMgr.GetStream();
                 var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
                 MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, query_obj);
                 st.Position = 0;
@@ -237,7 +238,7 @@ namespace hub
 
             public void removeObject(MongoDB.Bson.BsonDocument query_obj, Action<EM_DB_RESULT> _handle)
             {
-                using var st = new MemoryStream();
+                using var st = MemoryStreamPool.mstMgr.GetStream();
                 var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
                 MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, query_obj);
                 st.Position = 0;

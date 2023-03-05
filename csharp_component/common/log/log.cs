@@ -94,8 +94,15 @@ namespace log
                     }
                 }
 
-                Console.WriteLine(strlog);
                 fs.WriteLine(strlog);
+            }
+        }
+
+        public static void close()
+        {
+            if (fs != null)
+            {
+                fs.Close();
             }
         }
 

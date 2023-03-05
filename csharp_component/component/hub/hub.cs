@@ -262,6 +262,8 @@ namespace hub
                 ManagedENet.Shutdown();
             }
 
+            log.log.close();
+
             _timer.addticktime(3000, (tick) =>
             {
                 _closeHandle.is_close = true;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using abelkhan;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -41,7 +42,7 @@ namespace client
         public void call_hub(string hub, string func, ArrayList argv)
         {
             var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
-            using var st = new MemoryStream();
+            using var st = MemoryStreamPool.mstMgr.GetStream();
             var _event = new ArrayList
             {
                 func,
@@ -92,7 +93,7 @@ namespace client
         public void call_hub(string func, ArrayList argv)
         {
             var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
-            using var st = new MemoryStream();
+            using var st = MemoryStreamPool.mstMgr.GetStream();
             var _event = new ArrayList
             {
                 func,
@@ -292,7 +293,7 @@ namespace client
                     _s_cli.cb(true, ch);
                 }
             }
-            catch (Exception)
+            catch (System.Exception)
             {
                 _s_cli.cb(false, null);
             }
@@ -381,7 +382,7 @@ namespace client
 
         private void gate_call_client(string hub_name, byte[] rpc_argv)
         {
-            using var st = new MemoryStream();
+            using var st = MemoryStreamPool.mstMgr.GetStream();
             st.Write(rpc_argv, 0, rpc_argv.Length);
             st.Position = 0;
 
@@ -398,7 +399,7 @@ namespace client
 
         private void hub_call_client(byte[] rpc_argv)
         {
-            using var st = new MemoryStream();
+            using var st = MemoryStreamPool.mstMgr.GetStream();
             st.Write(rpc_argv, 0, rpc_argv.Length);
             st.Position = 0;
 

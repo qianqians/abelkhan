@@ -1,4 +1,5 @@
-﻿using System;
+﻿using abelkhan;
+using System;
 using System.Collections;
 using System.IO;
 
@@ -48,7 +49,7 @@ namespace hub
 			{
 				try
 				{
-					using var st = new MemoryStream();
+					using var st = MemoryStreamPool.mstMgr.GetStream();
                     st.Write(arpc_rgv);
                     st.Position = 0;
 
@@ -63,7 +64,7 @@ namespace hub
                     on_client_msg?.Invoke(_proxy._cuuid);
                     hub._gates.current_client_uuid = "";
                 }
-				catch (Exception e)
+				catch (System.Exception e)
 				{
 					log.log.err("call_hub exception:{0}", e);
 					hub._gates.direct_client_exception(_client_call_hub_module.current_ch.Value);

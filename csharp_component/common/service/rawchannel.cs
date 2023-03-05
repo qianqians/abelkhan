@@ -50,7 +50,7 @@ namespace abelkhan
                 int read = ch.s.EndReceive(ar);
                 if (read > 0)
                 {
-                    using var st = new MemoryStream();
+                    using var st = MemoryStreamPool.mstMgr.GetStream();
                     st.Write(recvbuf, 0, read);
                     st.Position = 0;
                     _channel_onrecv.on_recv(st.ToArray());

@@ -236,6 +236,7 @@ namespace dbproxy
             {
                 _acceptservice.close();
             }
+            log.log.close();
 
             Monitor.Exit(_run_mu);
         }

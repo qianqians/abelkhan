@@ -1,4 +1,5 @@
-﻿using MsgPack.Serialization;
+﻿using abelkhan;
+using MsgPack.Serialization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -312,7 +313,7 @@ namespace hub
 
         public void call_client(String uuid, String func, ArrayList _argvs_list)
 		{
-            using var st = new MemoryStream();
+            using var st = MemoryStreamPool.mstMgr.GetStream();
             var _serializer = MessagePackSerializer.Get<ArrayList>();
             ArrayList _event = new ArrayList
             {
@@ -372,7 +373,7 @@ namespace hub
 
             var _serializer = MessagePackSerializer.Get<ArrayList>();
 
-            using var st = new MemoryStream();
+            using var st = MemoryStreamPool.mstMgr.GetStream();
             ArrayList _rpc_argv = new ArrayList
             {
                 func,
@@ -382,7 +383,7 @@ namespace hub
             st.Position = 0;
             var _rpc_bin = st.ToArray();
 
-            using var st_event = new MemoryStream();
+            using var st_event = MemoryStreamPool.mstMgr.GetStream();
             var _direct_rpc_argv = new ArrayList
             {
                 _rpc_bin
@@ -396,7 +397,7 @@ namespace hub
             st_event.Position = 0;
             var data = st_event.ToArray();
 
-            using var st_send = new MemoryStream();
+            using var st_send = MemoryStreamPool.mstMgr.GetStream();
             var _tmplenght = data.Length;
             st_send.WriteByte((byte)(_tmplenght & 0xff));
             st_send.WriteByte((byte)((_tmplenght >> 8) & 0xff));
@@ -406,7 +407,7 @@ namespace hub
             st_send.Position = 0;
             var buf = st_send.ToArray();
 
-            using var st_send_crypt = new MemoryStream();
+            using var st_send_crypt = MemoryStreamPool.mstMgr.GetStream();
             st_send_crypt.Write(st_send.GetBuffer());
             st_send_crypt.Position = 0;
             var crypt_buf = st_send_crypt.ToArray();
@@ -429,7 +430,7 @@ namespace hub
 
 		public void call_global_client(String func, ArrayList _argvs_list)
 		{
-            var st = new MemoryStream();
+            var st = MemoryStreamPool.mstMgr.GetStream();
             var _serializer = MessagePackSerializer.Get<ArrayList>();
             ArrayList _event = new ArrayList
             {

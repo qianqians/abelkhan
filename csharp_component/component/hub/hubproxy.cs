@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using MsgPack.Serialization;
 using System.IO;
+using abelkhan;
 
 namespace hub
 {
@@ -21,7 +22,7 @@ namespace hub
         public void caller_hub(string func_name, ArrayList argvs)
         {
             var _serializer = MessagePackSerializer.Get<ArrayList>();
-            using var st = new MemoryStream();
+            using var st = MemoryStreamPool.mstMgr.GetStream();
             var _event = new ArrayList
             {
                 func_name,

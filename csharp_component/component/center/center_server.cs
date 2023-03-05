@@ -139,6 +139,8 @@ namespace abelkhan
                     _closeHandle.is_close = true;
 
                     _accept_gm_service.close();
+
+                    log.log.close();
                 }
             }
             catch (abelkhan.Exception e)
