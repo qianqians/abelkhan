@@ -90,11 +90,10 @@ namespace abelkhan
             _connHelper.Recover(ref connectionMultiplexer, ref database, e);
         }
 
-        public async void close()
+        public void close()
         {
             run_flag = false;
-            await th_send;
-            await th_recv;
+            Task.WaitAll(th_send, th_recv);
         }
 
         public redischannel connect(string ch_name)
