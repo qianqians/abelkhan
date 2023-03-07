@@ -7,11 +7,14 @@ namespace hub
 {
 	public class client_msg_handle
 	{
-		private abelkhan.client_call_hub_module _client_call_hub_module;
+		private readonly abelkhan.client_call_hub_module _client_call_hub_module;
+		private readonly MsgPack.Serialization.MessagePackSerializer<ArrayList> _serialization;
 
-		public client_msg_handle()
+        public client_msg_handle()
 		{
-			_client_call_hub_module = new abelkhan.client_call_hub_module(abelkhan.modulemng_handle._modulemng);
+            _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+
+            _client_call_hub_module = new abelkhan.client_call_hub_module(abelkhan.modulemng_handle._modulemng);
 			_client_call_hub_module.on_connect_hub += connect_hub;
 			_client_call_hub_module.on_heartbeats += heartbeats;
 			_client_call_hub_module.on_call_hub += call_hub;
@@ -53,7 +56,6 @@ namespace hub
                     st.Write(arpc_rgv);
                     st.Position = 0;
 
-                    var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
                     var _event = _serialization.Unpack(st);
 
                     var func = ((MsgPack.MessagePackObject)_event[0]).AsString();

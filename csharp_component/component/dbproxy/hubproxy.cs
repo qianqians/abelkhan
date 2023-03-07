@@ -32,8 +32,8 @@ namespace dbproxy
 			_caller.ack_get_object_info_end(callbackid);
 		}
 
-        private abelkhan.dbproxy_call_hub_caller _caller;
-		private MessagePackSerializer<ArrayList> _serializer;
+        private readonly abelkhan.dbproxy_call_hub_caller _caller;
+		private readonly MessagePackSerializer<ArrayList> _serializer;
 	}
 }
 

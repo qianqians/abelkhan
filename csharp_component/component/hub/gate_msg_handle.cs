@@ -8,10 +8,13 @@ namespace hub
 {
 	public class gate_msg_handle
 	{
-        public abelkhan.gate_call_hub_module _gate_call_hub_module;
+        private readonly abelkhan.gate_call_hub_module _gate_call_hub_module;
+        private readonly MessagePackSerializer<ArrayList> _serializer;
 
         public gate_msg_handle()
 		{
+            _serializer = MessagePackSerializer.Get<ArrayList>();
+
             _gate_call_hub_module = new abelkhan.gate_call_hub_module(abelkhan.modulemng_handle._modulemng);
             _gate_call_hub_module.on_client_disconnect += client_disconnect;
             _gate_call_hub_module.on_client_exception += client_exception;
@@ -33,7 +36,6 @@ namespace hub
 		{
             try
             {
-                var _serializer = MessagePackSerializer.Get<ArrayList>();
                 using var st = MemoryStreamPool.mstMgr.GetStream();
                 st.Write(rpc_argv);
                 st.Position = 0;

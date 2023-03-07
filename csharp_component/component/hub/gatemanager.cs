@@ -46,6 +46,8 @@ namespace hub
         private readonly Dictionary<string, directproxy> direct_clients;
         private readonly Dictionary<abelkhan.Ichannel, directproxy> ch_direct_clients;
 
+        private readonly MessagePackSerializer<ArrayList> _serializer = MessagePackSerializer.Get<ArrayList>();
+
         private readonly abelkhan.redis_mq _gate_redismq_conn;
 
         public gatemanager(abelkhan.redis_mq _conn)
@@ -314,7 +316,6 @@ namespace hub
         public void call_client(String uuid, String func, ArrayList _argvs_list)
 		{
             using var st = MemoryStreamPool.mstMgr.GetStream();
-            var _serializer = MessagePackSerializer.Get<ArrayList>();
             ArrayList _event = new ArrayList
             {
                 func,
@@ -370,8 +371,6 @@ namespace hub
                     tmp_gates[_proxy].Add(_uuid);
                 }
             }
-
-            var _serializer = MessagePackSerializer.Get<ArrayList>();
 
             using var st = MemoryStreamPool.mstMgr.GetStream();
             ArrayList _rpc_argv = new ArrayList
@@ -431,7 +430,6 @@ namespace hub
 		public void call_global_client(String func, ArrayList _argvs_list)
 		{
             var st = MemoryStreamPool.mstMgr.GetStream();
-            var _serializer = MessagePackSerializer.Get<ArrayList>();
             ArrayList _event = new ArrayList
             {
                 func,

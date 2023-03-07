@@ -9,7 +9,8 @@ namespace hub
 {
     public class hubproxy
     {
-        private abelkhan.hub_call_hub_caller _hub_call_hub_caller;
+        private readonly abelkhan.hub_call_hub_caller _hub_call_hub_caller;
+        private readonly MessagePackSerializer<ArrayList> _serializer = MessagePackSerializer.Get<ArrayList>();
 
         public hubproxy(string hub_name, string hub_type, abelkhan.Ichannel ch)
         {
@@ -21,7 +22,6 @@ namespace hub
 
         public void caller_hub(string func_name, ArrayList argvs)
         {
-            var _serializer = MessagePackSerializer.Get<ArrayList>();
             using var st = MemoryStreamPool.mstMgr.GetStream();
             var _event = new ArrayList
             {

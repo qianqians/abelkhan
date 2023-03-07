@@ -7,9 +7,10 @@ namespace hub
 {
     public class hub_msg_handle
     {
-        private hubmanager _hubmanager;
-        private gatemanager _gatemanager;
-        private abelkhan.hub_call_hub_module _hub_call_hub_module;
+        private readonly hubmanager _hubmanager;
+        private readonly gatemanager _gatemanager;
+        private readonly abelkhan.hub_call_hub_module _hub_call_hub_module;
+        private readonly MsgPack.Serialization.MessagePackSerializer<ArrayList> _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
 
         public hub_msg_handle(hubmanager _hubmanager_, gatemanager _gatemanager_)
         {
@@ -61,7 +62,6 @@ namespace hub
                 st.Write(rpc_argvs);
                 st.Position = 0;
 
-                var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
                 var _event = _serialization.Unpack(st);
 
                 var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
