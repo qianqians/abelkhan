@@ -64,5 +64,6 @@
 	
 	"redismq_listen": true,
 	"redismq_is_cluster": false,
-	"redis_for_mq": "127.0.0.1:6379"
+	"redis_for_mq": "127.0.0.1:6379",
+	"redis_for_cache": "127.0.0.1:6379"
 }
