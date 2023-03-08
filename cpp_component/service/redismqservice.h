@@ -103,8 +103,8 @@ public:
 			}
 		}
 		else {
-			_write_ctx = re_conn_redis();
-			_recv_ctx = re_conn_redis();
+			_write_ctx = conn_redis();
+			_recv_ctx = conn_redis();
 		}
 	}
 
@@ -289,7 +289,7 @@ private:
 		}
 	}
 	
-	redisContext* re_conn_redis() {
+	redisContext* conn_redis() {
 		auto ip_port = concurrent::split(_redis_url, ":");
 		auto _ctx = redisConnect(ip_port[0].c_str(), std::stoi(ip_port[1]));
 		if (!_ctx) {
@@ -307,6 +307,20 @@ private:
 		return _ctx;
 	}
 
+	bool re_conn_redis(redisContext* _ctx) {
+		if (redisReconnect(_ctx) == REDIS_OK) {
+			if (!_password.empty()) {
+				auto reply = (redisReply*)redisCommand(_ctx, "AUTH % s", _password.c_str());
+				if (reply->type == REDIS_REPLY_ERROR) {
+					spdlog::error("redisContext auth faild:{0}!", _password);
+					throw redismqserviceException("redisContext auth faild!");
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
 	void redis_mq_send_data(std::string ch_name, char* data, size_t len) {
 		while (true) {
 			auto _reply = (redisReply*)redisCommand(_write_ctx, "LPUSH %s %b", ch_name.c_str(), data, len);
@@ -320,12 +334,15 @@ private:
 				break;
 			}
 			else {
-				try {
-					redisFree(_write_ctx);
-					_write_ctx = re_conn_redis();
-				}
-				catch (redismqserviceException ex) {
-					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				int wait_time = 8;
+				while (!re_conn_redis(_write_ctx)) {
+					try {
+						std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
+					}
+					catch (redismqserviceException ex) {
+						std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
+					}
+					wait_time *= 2;
 				}
 			}
 		}
@@ -358,12 +375,15 @@ private:
 				freeReplyObject(_reply);
 			}
 			else {
-				try {
-					redisFree(_recv_ctx);
-					_recv_ctx = re_conn_redis();
-				}
-				catch (redismqserviceException ex) {
-					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				int wait_time = 8;
+				while (!re_conn_redis(_recv_ctx)) {
+					try {
+						std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
+					}
+					catch (redismqserviceException ex) {
+						std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
+					}
+					wait_time *= 2;
 				}
 			}
 		}
