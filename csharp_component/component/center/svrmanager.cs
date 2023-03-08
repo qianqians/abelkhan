@@ -6,6 +6,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace abelkhan
 {
@@ -14,8 +17,6 @@ namespace abelkhan
         public string type;
         public string hub_type;
         public string name;
-        public string host;
-        public ushort port;
         public long timetmp = service.timerservice.Tick;
         public bool is_mq = false;
         public bool is_closed = false;
@@ -92,19 +93,26 @@ namespace abelkhan
 
     public class svrmanager
     {
-        private List<svrproxy> dbproxys;
-        private List<svrproxy> new_svrproxys;
-        private List<hubproxy> new_hubproxys;
-        public Dictionary<abelkhan.Ichannel, svrproxy> svrproxys;
-        private Dictionary<abelkhan.Ichannel, hubproxy> hubproxys;
-        private Dictionary<string, List<hubproxy>> type_hubproxys;
-        private service.timerservice _timer;
-        private center _center;
+        private readonly List<svrproxy> dbproxys;
+        private readonly List<svrproxy> new_svrproxys;
+        private readonly List<hubproxy> new_hubproxys;
+        private readonly Dictionary<abelkhan.Ichannel, hubproxy> hubproxys;
+        private readonly Dictionary<string, List<hubproxy>> type_hubproxys;
+        private readonly redis_handle _redis_handle;
 
-        public svrmanager(service.timerservice timer, center _center_proxy)
+        private readonly service.timerservice _timer;
+        private readonly center _center;
+        private readonly redis_mq _redis_mq_service;
+
+        public readonly Dictionary<abelkhan.Ichannel, svrproxy> svrproxys;
+
+        public svrmanager(service.timerservice timer, center _center_proxy, redis_mq redis_mq_service)
         {
             _timer = timer;
             _center = _center_proxy;
+            _redis_mq_service = redis_mq_service;
+
+            _redis_handle = new redis_handle(_center._root_cfg.get_value_string("redis_for_cache"));
 
             dbproxys = new List<svrproxy>();
             new_svrproxys = new List<svrproxy>();
@@ -114,7 +122,60 @@ namespace abelkhan
             type_hubproxys = new Dictionary<string, List<hubproxy> >();
             closed_svr_list = new List<svrproxy>();
 
+            load_svr_info();
             heartbeat_svr(service.timerservice.Tick);
+        }
+
+        private class svr_info
+        {
+            public string type;
+            public string hub_type;
+            public string name;
+            public long timetmp = service.timerservice.Tick;
+        }
+
+        private async void load_svr_info()
+        {
+            var svr_info_list = await _redis_handle.GetData<List<svr_info> >("svr_info_list");
+            foreach(var _svr_info in svr_info_list)
+            {
+                var _ch = _redis_mq_service.connect(_svr_info.name);
+
+                var _svrproxy = new svrproxy(_ch, _svr_info.type, _svr_info.hub_type, _svr_info.name);
+                _svrproxy.timetmp = _svr_info.timetmp;
+                svrproxys[_ch] = _svrproxy;
+                if (_svr_info.type == "dbproxy")
+                {
+                    dbproxys.Add(_svrproxy);
+                }
+                _svrproxy.on_svr_close += on_svr_close;
+
+                var _hubproxy = new hubproxy(_ch, _svr_info.hub_type, _svr_info.name);
+                hubproxys[_ch] = _hubproxy;
+
+                if (!type_hubproxys.TryGetValue(_svr_info.hub_type, out List<hubproxy> hubproxy_list))
+                {
+                    hubproxy_list = new();
+                    type_hubproxys[_svr_info.hub_type] = hubproxy_list;
+                }
+                hubproxy_list.Add(_hubproxy);
+            }
+        }
+
+        private async Task<bool> store_svr_info()
+        {
+            var svr_info_list = new List<svr_info>();
+            foreach(var svr in svrproxys)
+            {
+                svr_info_list.Add(new svr_info()
+                {
+                    type = svr.Value.type,
+                    hub_type = svr.Value.hub_type,
+                    name = svr.Value.name,
+                    timetmp = svr.Value.timetmp
+                });
+            }
+            return await _redis_handle.SetData("svr_info_list", svr_info_list);
         }
 
         public void reg_svr(abelkhan.Ichannel ch, string type, string hub_type, string name, bool is_reconn = false)
@@ -202,7 +263,7 @@ namespace abelkhan
             closed_svr_list.Clear();
         }
         
-        public void heartbeat_svr(long tick)
+        public async void heartbeat_svr(long tick)
         {
             foreach (var _proxy in svrproxys)
             {
@@ -211,6 +272,9 @@ namespace abelkhan
                     on_svr_close(_proxy.Value);
                 }
             }
+
+            await store_svr_info();
+
             _timer.addticktime(6000, heartbeat_svr);
         }
 

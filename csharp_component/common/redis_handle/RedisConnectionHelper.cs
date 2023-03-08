@@ -43,7 +43,7 @@ public class RedisConnectionHelper
         }
         catch (StackExchange.Redis.RedisConnectionException conex)
         {
-            log.log.err("Can NOT connect to Redis! connectRetry={0},connectTimeout={1}ms", connectRetry, connectTimeout);
+            log.log.err("Can NOT connect to Redis! connectRetry={0}, connectTimeout={1}ms", connectRetry, connectTimeout);
             throw conex;
         }
     }
@@ -66,7 +66,7 @@ public class RedisConnectionHelper
             }
             catch (StackExchange.Redis.RedisConnectionException)
             {
-                log.log.err("Exit due to Recover-Failure! RecoverCount={0},connectRetry={0},connectTimeout={1}ms", _recoverCnt, connectRetry, connectTimeout);
+                log.log.err("Exit due to Recover-Failure! RecoverCount={0}, connectRetry={1}, connectTimeout={2}ms", _recoverCnt, connectRetry, connectTimeout);
                 Thread.Sleep(10);
                 Environment.Exit(1);
             }

@@ -23,7 +23,8 @@ namespace abelkhan
         private long _timetmp;
 
         public closehandle _closeHandle;
-        public service.timerservice _timer;
+        public service.timerservice _timer; 
+        public abelkhan.config _root_cfg;
 
         static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
@@ -33,9 +34,9 @@ namespace abelkhan
 
         public center(string cfg_file, string cfg_name)
         {
-            var _root_cfg = new config(cfg_file);
+            _root_cfg = new config(cfg_file);
             var _config = _root_cfg.get_value_dict(cfg_name);
-            var name = cfg_name;
+            var name = _config.get_value_string("name");
 
             var log_level = _config.get_value_string("log_level");
             if (log_level == "trace")
@@ -78,11 +79,11 @@ namespace abelkhan
             remove_chs = new List<Ichannel>();
             _closeHandle = new closehandle();
 
-            _svrmanager = new svrmanager(_timer, this);
-            _svr_msg_handle = new svr_msg_handle(_svrmanager, _closeHandle);
-
             var redismq_url = _root_cfg.get_value_string("redis_for_mq");
             _redis_mq_service = new abelkhan.redis_mq(redismq_url, name);
+
+            _svrmanager = new svrmanager(_timer, this, _redis_mq_service);
+            _svr_msg_handle = new svr_msg_handle(_svrmanager, _closeHandle);
 
             _gmmanager = new gmmanager();
             _gm_msg_handle = new gm_msg_handle(_svrmanager, _gmmanager, _closeHandle);
@@ -139,7 +140,6 @@ namespace abelkhan
                     _closeHandle.is_close = true;
 
                     _accept_gm_service.close();
-
                     log.log.close();
                 }
             }
