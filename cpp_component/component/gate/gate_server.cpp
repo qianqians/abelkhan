@@ -170,7 +170,7 @@ void gate_service::init_center(std::shared_ptr<abelkhan::Ichannel> _center_ch) {
 
 void gate_service::heartbeat_center(std::shared_ptr<gate_service> _gate_service, std::function<void()> reconn_func, int64_t tick) {
 	do {
-		if ((tick - _gate_service->_centerproxy->timetmp) > 6 * 1000) {
+		if ((tick - _gate_service->_centerproxy->timetmp) > 9000) {
 			reconn_func();
 			break;
 		}
@@ -180,7 +180,7 @@ void gate_service::heartbeat_center(std::shared_ptr<gate_service> _gate_service,
 	} while (false);
 
 	if (!_gate_service->_closehandle->is_closed) {
-		_gate_service->_timerservice->addticktimer(3 * 1000, std::bind(&gate_service::heartbeat_center, _gate_service, reconn_func, std::placeholders::_1));
+		_gate_service->_timerservice->addticktimer(3000, std::bind(&gate_service::heartbeat_center, _gate_service, reconn_func, std::placeholders::_1));
 	}
 }
 

@@ -267,7 +267,7 @@ namespace abelkhan
         {
             foreach (var _proxy in svrproxys)
             {
-                if ((service.timerservice.Tick - _proxy.Value.timetmp) > 6000)
+                if ((service.timerservice.Tick - _proxy.Value.timetmp) > 9000)
                 {
                     on_svr_close(_proxy.Value);
                 }

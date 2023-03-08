@@ -58,7 +58,7 @@ namespace dbproxy
 
 			}, () => {
 				log.log.err("heartbeat center server faild");
-			}).timeout(5*1000, () => {
+			}).timeout(5000, () => {
 				log.log.err("heartbeat center server timeout");
 			});
 			log.log.trace("begin heartbeath center server tick:{0}!", service.timerservice.Tick);

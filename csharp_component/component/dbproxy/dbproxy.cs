@@ -149,7 +149,7 @@ namespace dbproxy
         {
             do
             {
-                if ((service.timerservice.Tick - _centerproxy.timetmp) > 6 * 1000)
+                if ((service.timerservice.Tick - _centerproxy.timetmp) > 9000)
                 {
                     reconnect_center();
                     break;
