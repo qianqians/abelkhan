@@ -137,28 +137,31 @@ namespace abelkhan
         private async void load_svr_info()
         {
             var svr_info_list = await _redis_handle.GetData<List<svr_info> >("svr_info_list");
-            foreach(var _svr_info in svr_info_list)
+            if (svr_info_list != null)
             {
-                var _ch = _redis_mq_service.connect(_svr_info.name);
-
-                var _svrproxy = new svrproxy(_ch, _svr_info.type, _svr_info.hub_type, _svr_info.name);
-                _svrproxy.timetmp = _svr_info.timetmp;
-                svrproxys[_ch] = _svrproxy;
-                if (_svr_info.type == "dbproxy")
+                foreach (var _svr_info in svr_info_list)
                 {
-                    dbproxys.Add(_svrproxy);
-                }
-                _svrproxy.on_svr_close += on_svr_close;
+                    var _ch = _redis_mq_service.connect(_svr_info.name);
 
-                var _hubproxy = new hubproxy(_ch, _svr_info.hub_type, _svr_info.name);
-                hubproxys[_ch] = _hubproxy;
+                    var _svrproxy = new svrproxy(_ch, _svr_info.type, _svr_info.hub_type, _svr_info.name);
+                    _svrproxy.timetmp = _svr_info.timetmp;
+                    svrproxys[_ch] = _svrproxy;
+                    if (_svr_info.type == "dbproxy")
+                    {
+                        dbproxys.Add(_svrproxy);
+                    }
+                    _svrproxy.on_svr_close += on_svr_close;
 
-                if (!type_hubproxys.TryGetValue(_svr_info.hub_type, out List<hubproxy> hubproxy_list))
-                {
-                    hubproxy_list = new();
-                    type_hubproxys[_svr_info.hub_type] = hubproxy_list;
+                    var _hubproxy = new hubproxy(_ch, _svr_info.hub_type, _svr_info.name);
+                    hubproxys[_ch] = _hubproxy;
+
+                    if (!type_hubproxys.TryGetValue(_svr_info.hub_type, out List<hubproxy> hubproxy_list))
+                    {
+                        hubproxy_list = new();
+                        type_hubproxys[_svr_info.hub_type] = hubproxy_list;
+                    }
+                    hubproxy_list.Add(_hubproxy);
                 }
-                hubproxy_list.Add(_hubproxy);
             }
         }
 
