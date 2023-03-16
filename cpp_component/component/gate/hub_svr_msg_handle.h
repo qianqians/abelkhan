@@ -42,7 +42,7 @@ public:
 		_hub_call_gate_module->sig_disconnect_client.connect(std::bind(&hub_svr_msg_handle::disconnect_client, this, std::placeholders::_1));
 		_hub_call_gate_module->sig_forward_hub_call_client.connect(std::bind(&hub_svr_msg_handle::forward_hub_call_client, this, std::placeholders::_1, std::placeholders::_2));
 		_hub_call_gate_module->sig_forward_hub_call_group_client.connect(std::bind(&hub_svr_msg_handle::forward_hub_call_group_client, this, std::placeholders::_1, std::placeholders::_2));
-		_hub_call_gate_module->sig_forward_hub_call_global_client;
+		_hub_call_gate_module->sig_forward_hub_call_global_client.connect(std::bind(&hub_svr_msg_handle::forward_hub_call_global_client, this, std::placeholders::_1));
 	}
 
 	virtual ~hub_svr_msg_handle() {
