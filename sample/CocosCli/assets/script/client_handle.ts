@@ -125,7 +125,7 @@ class gateproxy {
         });
     }
 
-    public get_hub_info(hub_type:string, cb:(info:gate.hub_info[])=>void) {
+    public get_hub_info(hub_type:string, cb:(info:gate.hub_info)=>void) {
         let that = this;
         this._client_call_gate_caller.get_hub_info(hub_type).callBack((hub_info) => {
             cb(hub_info);
@@ -274,7 +274,7 @@ export class client
         });
     }
 
-    public get_hub_info(hub_type:string, cb:(info:gate.hub_info[])=>void)
+    public get_hub_info(hub_type:string, cb:(info:gate.hub_info)=>void)
     {
         this._gateproxy?.get_hub_info(hub_type, cb);
     }

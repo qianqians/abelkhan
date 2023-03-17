@@ -36,6 +36,11 @@ namespace hub
 			});
 		}
 
+		public void tick_hub_health()
+		{
+			_hub_call_gate_caller.tick_hub_health(hub.tick);
+        }
+
 		public abelkhan.hub_call_gate_reverse_reg_client_hub_cb reverse_reg_client_hub(string client_uuid)
         {
 			return _hub_call_gate_caller.reverse_reg_client_hub(client_uuid);

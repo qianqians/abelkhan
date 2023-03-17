@@ -30,7 +30,7 @@ client_call_gate_get_hub_info_cb::client_call_gate_get_hub_info_cb(uint64_t _cb_
     module_rsp_cb = _module_rsp_cb;
 }
 
-std::shared_ptr<client_call_gate_get_hub_info_cb> client_call_gate_get_hub_info_cb::callBack(std::function<void(std::vector<hub_info> hub_info)> cb, std::function<void()> err) {
+std::shared_ptr<client_call_gate_get_hub_info_cb> client_call_gate_get_hub_info_cb::callBack(std::function<void(hub_info hub_info)> cb, std::function<void()> err) {
     sig_get_hub_info_cb.connect(cb);
     sig_get_hub_info_err.connect(err);
     return shared_from_this();

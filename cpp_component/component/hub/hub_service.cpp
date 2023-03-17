@@ -157,6 +157,8 @@ void hub_service::init() {
 
 void hub_service::heartbeat(std::shared_ptr<hub_service> this_ptr, int64_t _tick) {
 	do {
+		this_ptr->_gatemng->heartbeat_tick_hub_health();
+
 		if ((_tick - this_ptr->_centerproxy->timetmp) > 6 * 1000) {
 			this_ptr->reconnect_center();
 			break;

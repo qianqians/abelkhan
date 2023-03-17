@@ -43,6 +43,8 @@ public:
 
 	void reg_hub();
 
+	void tick_hub_health(uint32_t tick_time);
+
 	std::shared_ptr<abelkhan::hub_call_gate_reverse_reg_client_hub_cb> reverse_reg_client_hub(std::string client_uuid);
 
 	void unreg_client_hub(std::string client_uuid);
@@ -77,9 +79,9 @@ public:
 
 class gatemanager {
 public:
-	gatemanager(std::shared_ptr<service::enetacceptservice> conn_, std::shared_ptr<hub_service> hub_);
-
 	gatemanager(std::shared_ptr<service::redismqservice> conn_, std::shared_ptr<hub_service> hub_);
+
+	void heartbeat_tick_hub_health();
 
 	void connect_gate(std::string gate_name);
 
@@ -99,8 +101,6 @@ public:
 
 	void disconnect_client(std::string uuid);
 
-	void heartbeat_client(int64_t ticktime);
-
 	void call_client(const std::string& uuid, const std::string& func, const msgpack11::MsgPack::array& argvs);
 
 	void call_group_client(const std::vector<std::string>& uuids, const std::string& func, const msgpack11::MsgPack::array& argvs);
@@ -114,7 +114,6 @@ public:
 	std::string current_client_cuuid;
 
 private:
-	std::shared_ptr<service::enetacceptservice> _conn_enet;
 	std::shared_ptr<service::redismqservice> _conn_redismq;
 	std::shared_ptr<hub_service> _hub;
 	

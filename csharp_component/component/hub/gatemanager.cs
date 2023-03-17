@@ -63,6 +63,7 @@ namespace hub
             direct_clients = new Dictionary<string, directproxy>();
             ch_direct_clients = new Dictionary<abelkhan.Ichannel, directproxy>();
 
+            hub._timer.addticktime(10000, heartbeat_tick_hub_health);
             hub._timer.addticktime(10000, heartbeat_client);
         }
 
@@ -256,6 +257,16 @@ namespace hub
             {
                 clientException?.Invoke(_proxy._cuuid);
             }
+        }
+
+        void heartbeat_tick_hub_health(long ticktime)
+        {
+            foreach(var (_, proxy) in ch_gateproxys)
+            {
+                proxy.tick_hub_health();
+            }
+
+            hub._timer.addticktime(10000, heartbeat_tick_hub_health);
         }
 
         void heartbeat_client(long ticktime)

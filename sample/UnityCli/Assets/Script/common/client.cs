@@ -29,7 +29,7 @@ namespace client
             });
         }
 
-        public void get_hub_info(string hub_type, Action<List<abelkhan.hub_info> > cb)
+        public void get_hub_info(string hub_type, Action<abelkhan.hub_info> cb)
         {
             _client_call_gate_caller.get_hub_info(hub_type).callBack((hub_info) => {
                 cb(hub_info);
@@ -218,7 +218,7 @@ namespace client
             timer.addticktime(5 * 1000, heartbeats);
         }
 
-        public void get_hub_info(string hub_type, Action<List<abelkhan.hub_info> > cb)
+        public void get_hub_info(string hub_type, Action<abelkhan.hub_info> cb)
         {
             _gateproxy?.get_hub_info(hub_type, cb);
         }

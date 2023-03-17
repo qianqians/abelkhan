@@ -9,7 +9,7 @@ module client_call_gate{
 	
 	heartbeats req() rsp(uint64 timetmp) err();
 	
-	get_hub_info req(string hub_type) rsp(hub_info[] hub_info) err();
+	get_hub_info req(string hub_type) rsp(hub_info hub_info) err();
 	
 	forward_client_call_hub ntf(string hub_name, bin rpc_argv);
 
@@ -18,6 +18,8 @@ module client_call_gate{
 module hub_call_gate{
 
 	reg_hub req(string hub_name, string hub_type) rsp() err();
+	
+	tick_hub_health ntf(uint32 tick_time);
 	
 	reverse_reg_client_hub req(string client_uuid) rsp() err(framework_error err);
 	

@@ -37,6 +37,7 @@ public:
 		_hub_call_gate_module = std::make_shared<abelkhan::hub_call_gate_module>();
 		_hub_call_gate_module->Init(service::_modulemng);
 		_hub_call_gate_module->sig_reg_hub.connect(std::bind(&hub_svr_msg_handle::reg_hub, this, std::placeholders::_1, std::placeholders::_2));
+		_hub_call_gate_module->sig_tick_hub_health.connect(std::bind(&hub_svr_msg_handle::tick_hub_health, this, std::placeholders::_1));
 		_hub_call_gate_module->sig_reverse_reg_client_hub.connect(std::bind(&hub_svr_msg_handle::reverse_reg_client_hub, this, std::placeholders::_1));
 		_hub_call_gate_module->sig_unreg_client_hub.connect(std::bind(&hub_svr_msg_handle::unreg_client_hub, this, std::placeholders::_1));
 		_hub_call_gate_module->sig_disconnect_client.connect(std::bind(&hub_svr_msg_handle::disconnect_client, this, std::placeholders::_1));
@@ -53,6 +54,13 @@ public:
 		auto ch = _hub_call_gate_module->current_ch;
 		auto proxy = _hubsvrmanager->reg_hub(hub_name, hub_type, ch);
 		rsp->rsp();
+	}
+
+	void tick_hub_health(uint32_t tick_time) {
+		auto hub_proxy = _hubsvrmanager->get_hub(_hub_call_gate_module->current_ch);
+		if (hub_proxy) {
+			hub_proxy->_tick_time = tick_time;
+		}
 	}
 
 	void reverse_reg_client_hub(std::string client_uuid) {

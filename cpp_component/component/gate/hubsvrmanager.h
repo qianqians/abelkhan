@@ -22,6 +22,7 @@ class hubproxy {
 public:
 	std::string _hub_name;
 	std::string _hub_type;
+	uint32_t _tick_time;
 	std::shared_ptr<abelkhan::Ichannel> _ch;
 
 private:
@@ -103,18 +104,27 @@ public:
 		return get_hub(hub_channel_name[hub_channel]);
 	}
 
-	std::vector<abelkhan::hub_info> get_hub_list(std::string hub_type) {
-		std::vector<abelkhan::hub_info> list;
+	abelkhan::hub_info get_hub_list(std::string hub_type) {
+		abelkhan::hub_info _info;
+
+		uint32_t tick_time_tmp = INT32_MAX;
 		for (auto it : hub_name_proxy) {
 			if (it.second->_hub_type != hub_type) {
 				continue;
 			}
-			abelkhan::hub_info _info;
-			_info.hub_name = it.second->_hub_name;
-			_info.hub_type = it.second->_hub_type;
-			list.push_back(_info);
+			if (it.second->_tick_time > 100) {
+				continue;
+			}
+			
+			if (it.second->_tick_time < tick_time_tmp) {
+				tick_time_tmp = it.second->_tick_time;
+
+				_info.hub_name = it.second->_hub_name;
+				_info.hub_type = it.second->_hub_type;
+			}
 		}
-		return list;
+		
+		return _info;
 	}
 
 	void for_each_hub(std::function<void(std::string hub_name, std::shared_ptr<hubproxy> proxy)> fn){

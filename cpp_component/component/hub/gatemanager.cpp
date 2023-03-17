@@ -33,6 +33,10 @@ void gateproxy::reg_hub() {
 	});
 }
 
+void gateproxy::tick_hub_health(uint32_t tick_time) {
+	_hub_call_gate_caller->tick_hub_health(tick_time);
+}
+
 std::shared_ptr<abelkhan::hub_call_gate_reverse_reg_client_hub_cb> gateproxy::reverse_reg_client_hub(std::string client_uuid) {
 	return _hub_call_gate_caller->reverse_reg_client_hub(client_uuid);
 }
@@ -66,13 +70,6 @@ directproxy::directproxy(std::string cuuid_, std::shared_ptr<abelkhan::Ichannel>
 
 void directproxy::call_client(const std::vector<uint8_t>& rpc_argv) {
 	_hub_call_client_caller->call_client(rpc_argv);
-}
-
-gatemanager::gatemanager(std::shared_ptr<service::enetacceptservice> conn_, std::shared_ptr<hub_service> hub_) {
-	_conn_enet = conn_;
-	_hub = hub_;
-
-	Init();
 }
 
 gatemanager::gatemanager(std::shared_ptr<service::redismqservice> conn_, std::shared_ptr<hub_service> hub_) {
@@ -121,6 +118,12 @@ void gatemanager::Init() {
 			}
 		}
 	});
+}
+
+void gatemanager::heartbeat_tick_hub_health() {
+	for (auto [ch, proxy] : ch_gates) {
+		proxy->tick_hub_health(_hub->tick);
+	}
 }
 
 void gatemanager::connect_gate(std::string gate_name) {
@@ -234,28 +237,6 @@ void gatemanager::disconnect_client(std::string uuid) {
 		it_direct->second->_direct_ch->disconnect();
 		ch_direct_clients.erase(it_direct->second->_direct_ch);
 		direct_clients.erase(it_direct);
-	}
-}
-
-void gatemanager::heartbeat_client(int64_t ticktime) {
-	std::vector<std::shared_ptr<directproxy> > remove_client;
-	std::vector<std::shared_ptr<directproxy> > exception_client;
-	for (auto item : direct_clients) {
-		auto proxy = item.second;
-		if (proxy->_timetmp > 0 && (proxy->_timetmp + 10 * 1000) < ticktime) {
-			remove_client.push_back(proxy);
-		}
-		if (proxy->_timetmp > 0 && proxy->_theory_timetmp > 0 && (proxy->_theory_timetmp - proxy->_timetmp) > 10 * 1000) {
-			exception_client.push_back(proxy);
-		}
-	}
-
-	for (auto _client : remove_client) {
-		client_direct_disconnect(_client->_direct_ch);
-	}
-
-	for (auto _client : exception_client) {
-		_hub->sig_client_exception.emit(_client->_cuuid);
 	}
 }
 

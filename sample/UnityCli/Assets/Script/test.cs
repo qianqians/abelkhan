@@ -25,23 +25,20 @@ public class test : MonoBehaviour
         _client.connect_gate("127.0.0.1", 3001, 3000);
         _client.onGateConnect += () => {
             Debug.Log("connect gate sucessed!");
-            _client.get_hub_info("test", (hub_info_list)=> {
+            _client.get_hub_info("test", (hub_info)=> {
                 Debug.Log("get_hub_info sucessed!");
-                foreach (var hub_info in hub_info_list)
+                _test_c2s_caller.get_hub(hub_info.hub_name).login();
+                _test_c2s_caller.get_hub(hub_info.hub_name).get_svr_host().callBack((ip, port) =>
                 {
-                    _test_c2s_caller.get_hub(hub_info.hub_name).login();
-                    _test_c2s_caller.get_hub(hub_info.hub_name).get_svr_host().callBack((ip, port) =>
-                    {
-                        Debug.Log("get_svr_host sucessed!");
-                        Debug.Log(string.Format("connect_hub name:{0}, type:{1}, ip:{2}, port:{3}!", hub_info.hub_name, hub_info.hub_type, ip, port));
-                        _client.connect_hub(hub_info.hub_name, hub_info.hub_type, ip, port, 3000);
-                    }, () =>
-                    {
-                        Debug.Log("get_svr_host faild!");
-                    }).timeout(3000, ()=> {
-                        Debug.Log("get_svr_host timeout!");
-                    });
-                }
+                    Debug.Log("get_svr_host sucessed!");
+                    Debug.Log(string.Format("connect_hub name:{0}, type:{1}, ip:{2}, port:{3}!", hub_info.hub_name, hub_info.hub_type, ip, port));
+                    _client.connect_hub(hub_info.hub_name, hub_info.hub_type, ip, port, 3000);
+                }, () =>
+                {
+                    Debug.Log("get_svr_host faild!");
+                }).timeout(3000, ()=> {
+                    Debug.Log("get_svr_host timeout!");
+                });
             });
         };
         _client.onGateConnectFaild += () => {

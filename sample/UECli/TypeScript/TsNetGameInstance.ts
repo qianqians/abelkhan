@@ -32,21 +32,19 @@ class TsNetGameInstance extends UE.TickGameInstance
         if (this._cli.connect_gate("127.0.0.1", 3001)){
             this._cli.onGateConnect = ()=>{
                 console.log("connect gate sucessed!");
-                this._cli.get_hub_info("test", (hub_info_list)=>{
-                    for (let hub_info of hub_info_list){
-                        this._test_c2s_caller.get_hub(hub_info.hub_name).login();
-                        this._test_c2s_caller.get_hub(hub_info.hub_name).get_svr_host().callBack((ip, port) =>
-                        {
-                            console.log("get_svr_host sucessed!");
-                            console.log("connect_hub name:{0}, type:{1}, ip:{2}, port:{3}!", hub_info.hub_name, hub_info.hub_type, ip, port);
-                            this._cli.connect_hub(hub_info.hub_name, hub_info.hub_type, ip, port);
-                        }, () =>
-                        {
-                            console.log("get_svr_host faild!");
-                        }).timeout(3000, ()=> {
-                            console.log("get_svr_host timeout!");
-                        });
-                    }
+                this._cli.get_hub_info("test", (hub_info)=>{
+                    this._test_c2s_caller.get_hub(hub_info.hub_name).login();
+                    this._test_c2s_caller.get_hub(hub_info.hub_name).get_svr_host().callBack((ip, port) =>
+                    {
+                        console.log("get_svr_host sucessed!");
+                        console.log("connect_hub name:{0}, type:{1}, ip:{2}, port:{3}!", hub_info.hub_name, hub_info.hub_type, ip, port);
+                        this._cli.connect_hub(hub_info.hub_name, hub_info.hub_type, ip, port);
+                    }, () =>
+                    {
+                        console.log("get_svr_host faild!");
+                    }).timeout(3000, ()=> {
+                        console.log("get_svr_host timeout!");
+                    });
                 });
             };
         }

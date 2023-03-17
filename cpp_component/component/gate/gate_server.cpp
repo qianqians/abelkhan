@@ -85,6 +85,11 @@ void gate_service::init() {
 			auto tcp_outside_port = (short)_config->get_value_int("tcp_outside_port");
 			_client_service = std::make_shared<service::acceptservice>(tcp_outside_host, tcp_outside_port, io_service);
 			_client_service->sigchannelconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
+				if (tick > 100) {
+					ch->disconnect();
+					return;
+				}
+				
 				std::static_pointer_cast<service::channel>(ch)->set_xor_key_crypt();
 
 				auto _client = _clientmanager->reg_client(ch);
@@ -112,6 +117,11 @@ void gate_service::init() {
 			}
 			_websocket_service = std::make_shared<service::webacceptservice>(websocket_outside_host, websocket_outside_port, is_ssl, certificate, private_key, tmp_dh);
 			_websocket_service->sigchannelconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
+				if (tick > 100) {
+					ch->disconnect();
+					return;
+				}
+
 				auto _client = _clientmanager->reg_client(ch);
 				_client->ntf_cuuid();
 			});
@@ -131,6 +141,11 @@ void gate_service::init() {
 			auto enet_outside_port = (short)_config->get_value_int("enet_outside_port");
 			_enet_service = std::make_shared<service::enetacceptservice>(enet_outside_host, enet_outside_port);
 			_enet_service->sig_connect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
+				if (tick > 100) {
+					ch->disconnect();
+					return;
+				}
+
 				std::static_pointer_cast<service::enetchannel>(ch)->set_xor_key_crypt();
 
 				auto _client = _clientmanager->reg_client(ch);
