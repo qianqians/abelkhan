@@ -386,6 +386,19 @@ namespace abelkhan
             return _all_closed;
         }
 
+        public bool check_all_db_closed()
+        {
+            bool _all_closed = true;
+            foreach (var _proxy in dbproxys)
+            {
+                if (!_proxy.is_closed)
+                {
+                    _all_closed = false;
+                }
+            }
+            return _all_closed;
+        }
+
         public void close_db()
         {
             foreach (var _proxy in dbproxys)

@@ -262,8 +262,6 @@ namespace hub
                 ManagedENet.Shutdown();
             }
 
-            log.log.close();
-
             _timer.addticktime(3000, (tick) =>
             {
                 _closeHandle.is_close = true;
@@ -399,6 +397,7 @@ namespace hub
                 }
             }
             log.log.info("server closed, hub server:{0}", hub.name);
+            log.log.close();
 
             Monitor.Exit(_run_mu);
         }

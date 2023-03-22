@@ -137,10 +137,13 @@ namespace abelkhan
                 if (_closeHandle.is_closing && _svrmanager.check_all_hub_closed())
                 {
                     _svrmanager.close_db();
-                    _closeHandle.is_close = true;
 
-                    _accept_gm_service.close();
-                    log.log.close();
+                    if (_svrmanager.check_all_db_closed())
+                    {
+                        _closeHandle.is_close = true;
+
+                        _accept_gm_service.close();
+                    }
                 }
             }
             catch (abelkhan.Exception e)
@@ -180,6 +183,7 @@ namespace abelkhan
                     log.log.err("error:{0}", e.Message);
                 }
             }
+            log.log.close();
 
             Monitor.Exit(_run_mu);
         }

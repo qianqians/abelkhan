@@ -64,6 +64,12 @@ namespace dbproxy
 			log.log.trace("begin heartbeath center server tick:{0}!", service.timerservice.Tick);
 		}
 
+		public void closed()
+		{
+            _center_caller.closed();
+
+        }
+
 		public bool is_reg_sucess;
 		public long timetmp = service.timerservice.Tick;
 		public abelkhan.Ichannel _ch;

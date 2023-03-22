@@ -5,14 +5,16 @@ namespace dbproxy
 	public class center_msg_handle
 	{
 		private closehandle _closehandle;
-		private hubmanager _hubs;
+		private centerproxy _centerproxy;
+        private hubmanager _hubs;
 
 		private abelkhan.center_call_server_module _center_call_server_module;
 
-		public center_msg_handle(closehandle _closehandle_, hubmanager _hubs_)
+		public center_msg_handle(closehandle _closehandle_, centerproxy _centerproxy_, hubmanager _hubs_)
 		{
 			_closehandle = _closehandle_;
-			_hubs = _hubs_;
+            _centerproxy = _centerproxy_;
+            _hubs = _hubs_;
 
 			_center_call_server_module = new abelkhan.center_call_server_module(abelkhan.modulemng_handle._modulemng);
 			_center_call_server_module.on_close_server += close_server;
@@ -37,6 +39,7 @@ namespace dbproxy
 		{
             if (_closehandle._is_closing && _hubs.all_hub_closed())
             {
+				_centerproxy.closed();
                 dbproxy._timer.addticktime(3000, close_server_impl);
             }
         }

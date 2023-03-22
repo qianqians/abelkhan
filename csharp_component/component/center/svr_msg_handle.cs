@@ -98,7 +98,11 @@ namespace abelkhan
             if (_closehandle.is_closing && _svrmng.check_all_hub_closed())
             {
                 _svrmng.close_db();
-                _closehandle.is_close = true;
+
+                if (_svrmng.check_all_db_closed())
+                {
+                    _closehandle.is_close = true;
+                }
             }
         }
     }

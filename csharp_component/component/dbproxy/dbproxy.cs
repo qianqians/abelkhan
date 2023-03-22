@@ -104,9 +104,6 @@ namespace dbproxy
             var redismq_url = _root_config.get_value_string("redis_for_mq");
             _redis_mq_service = new abelkhan.redis_mq(redismq_url, name);
 
-            _hub_msg_handle = new hub_msg_handle(_hubmanager, _closeHandle);
-            _center_msg_handle = new center_msg_handle(_closeHandle, _hubmanager);
-
             var _center_ch = _redis_mq_service.connect(_center_config.get_value_string("name"));
             lock (add_chs)
             {
@@ -116,6 +113,9 @@ namespace dbproxy
             _centerproxy.reg_dbproxy(() => {
                 heartbeath_center(service.timerservice.Tick);
             });
+
+            _hub_msg_handle = new hub_msg_handle(_hubmanager, _closeHandle);
+            _center_msg_handle = new center_msg_handle(_closeHandle, _centerproxy, _hubmanager);
         }
 
         public Action onCenterCrash;
@@ -159,7 +159,7 @@ namespace dbproxy
 
             } while (false);
 
-            _timer.addticktime(3 * 1000, heartbeath_center);
+            _timer.addticktime(3000, heartbeath_center);
         }
 
 		private long poll()
