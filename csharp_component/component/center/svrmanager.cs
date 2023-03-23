@@ -399,12 +399,20 @@ namespace abelkhan
             return _all_closed;
         }
 
+        private bool is_ntf_db_close = false;
         public void close_db()
         {
+            if (is_ntf_db_close)
+            {
+                return;
+            }
+
             foreach (var _proxy in dbproxys)
             {
                 _proxy.close_server();
             }
+
+            is_ntf_db_close = true;
         }
 
         public void for_each_svr(Action<svrproxy> fn)
