@@ -41,17 +41,15 @@ public:
 	std::shared_ptr<abelkhan::Ichannel> _ch;
 	int index1 = 0;
 	int index2 = 0;
-	abelkhan::gate_call_client_caller* _gate_call_client_caller;
+	abelkhan::gate_call_client_caller _gate_call_client_caller;
 
 	std::shared_ptr<clientmanager> _cli_mgr = nullptr;
 
 public:
-	clientproxy() {
-		_gate_call_client_caller = new abelkhan::gate_call_client_caller(nullptr, service::_modulemng);
+	clientproxy() : _gate_call_client_caller(nullptr, service::_modulemng) {
 	}
 
-	clientproxy(const clientproxy & _) {
-		_gate_call_client_caller = new abelkhan::gate_call_client_caller(nullptr, service::_modulemng);
+	clientproxy(const clientproxy & _) : _gate_call_client_caller(nullptr, service::_modulemng) {
 	}
 
 	void init(std::string& cuuid, std::shared_ptr<abelkhan::Ichannel> ch, int _index1, int _index2, std::shared_ptr<clientmanager> cli_mgr) {
@@ -60,7 +58,7 @@ public:
 
 		_cuuid = cuuid;
 		_ch = ch;
-		_gate_call_client_caller->reset_channel(ch);
+		_gate_call_client_caller.reset_channel(ch);
 
 		index1 = _index1;
 		index2 = _index2;
@@ -87,11 +85,11 @@ public:
 	}
 
 	void ntf_cuuid() {
-		_gate_call_client_caller->ntf_cuuid(_cuuid);
+		_gate_call_client_caller.ntf_cuuid(_cuuid);
 	}
 
 	void call_client(std::string hub_name, std::vector<uint8_t>& data) {
-		_gate_call_client_caller->call_client(hub_name, data);
+		_gate_call_client_caller.call_client(hub_name, data);
 	}
 
 	void send_buf(char* _data, int datasize);
