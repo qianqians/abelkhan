@@ -135,24 +135,37 @@ public:
 		msgpack11::MsgPack _pack(event_);
 		auto data = _pack.dump();
 
-		size_t len = data.size();
-		size_t datasize = len + 4;
-		auto _data = gate::gc_get_buffer(datasize);
+		if (!clients.empty()) {
+			size_t len = data.size();
+			size_t datasize = len + 4;
+			auto _data = gate::gc_get_buffer(datasize);
 
-		_data[0] = len & 0xff;
-		_data[1] = len >> 8 & 0xff;
-		_data[2] = len >> 16 & 0xff;
-		_data[3] = len >> 24 & 0xff;
-		memcpy(&_data[4], data.c_str(), data.size());
+			_data[0] = len & 0xff;
+			_data[1] = len >> 8 & 0xff;
+			_data[2] = len >> 16 & 0xff;
+			_data[3] = len >> 24 & 0xff;
+			memcpy(&_data[4], data.c_str(), data.size());
 #pragma omp parallel for
-		for (auto _client : clients) {
-			_client->send_buf((char*)_data, datasize);
+			for (auto _client : clients) {
+				_client->send_buf((char*)_data, datasize);
+			}
 		}
 
-		service::channel_encrypt_decrypt_ondata::xor_key_encrypt_decrypt((char*)(&(_data[4])), len);
+		if (!crypt_clients.empty()) {
+			size_t len = data.size();
+			size_t datasize = len + 4;
+			auto _data = gate::gc_get_buffer(datasize);
+
+			_data[0] = len & 0xff;
+			_data[1] = len >> 8 & 0xff;
+			_data[2] = len >> 16 & 0xff;
+			_data[3] = len >> 24 & 0xff;
+			memcpy(&_data[4], data.c_str(), data.size());
+			service::channel_encrypt_decrypt_ondata::xor_key_encrypt_decrypt((char*)(&(_data[4])), len);
 #pragma omp parallel for
-		for (auto _client : crypt_clients) {
-			_client->send_buf((char*)_data, datasize);
+			for (auto _client : crypt_clients) {
+				_client->send_buf((char*)_data, datasize);
+			}
 		}
 	}
 
@@ -181,24 +194,37 @@ public:
 		msgpack11::MsgPack _pack(event_);
 		auto data = _pack.dump();
 
-		size_t len = data.size();
-		size_t datasize = len + 4;
-		auto _data = gate::gc_get_buffer(datasize);
+		if (!chs.empty()) {
+			size_t len = data.size();
+			size_t datasize = len + 4;
+			auto _data = gate::gc_get_buffer(datasize);
 
-		_data[0] = len & 0xff;
-		_data[1] = len >> 8 & 0xff;
-		_data[2] = len >> 16 & 0xff;
-		_data[3] = len >> 24 & 0xff;
-		memcpy(&_data[4], data.c_str(), data.size());
+			_data[0] = len & 0xff;
+			_data[1] = len >> 8 & 0xff;
+			_data[2] = len >> 16 & 0xff;
+			_data[3] = len >> 24 & 0xff;
+			memcpy(&_data[4], data.c_str(), data.size());
 #pragma omp parallel for
-		for (auto _client : chs) {
-			_client->send_buf((char*)_data, datasize);
+			for (auto _client : chs) {
+				_client->send_buf((char*)_data, datasize);
+			}
 		}
 
-		service::channel_encrypt_decrypt_ondata::xor_key_encrypt_decrypt((char*)(&(_data[4])), len);
+		if (!crypt_chs.empty()) {
+			size_t len = data.size();
+			size_t datasize = len + 4;
+			auto _data = gate::gc_get_buffer(datasize);
+
+			_data[0] = len & 0xff;
+			_data[1] = len >> 8 & 0xff;
+			_data[2] = len >> 16 & 0xff;
+			_data[3] = len >> 24 & 0xff;
+			memcpy(&_data[4], data.c_str(), data.size());
+			service::channel_encrypt_decrypt_ondata::xor_key_encrypt_decrypt((char*)(&(_data[4])), len);
 #pragma omp parallel for
-		for (auto _client : crypt_chs) {
-			_client->send_buf((char*)_data, datasize);
+			for (auto _client : crypt_chs) {
+				_client->send_buf((char*)_data, datasize);
+			}
 		}
 	}
 };
