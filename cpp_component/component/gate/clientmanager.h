@@ -28,8 +28,6 @@ namespace gate {
 class clientmanager;
 class clientproxy {
 private:
-	std::shared_ptr<abelkhan::gate_call_client_caller> _gate_call_client_caller;
-
 	concurrent::ringque<std::pair<char*, int> > wait_send_buf;
 
 public:
@@ -43,16 +41,17 @@ public:
 	std::shared_ptr<abelkhan::Ichannel> _ch;
 	int index1 = 0;
 	int index2 = 0;
+	abelkhan::gate_call_client_caller* _gate_call_client_caller;
 
 	std::shared_ptr<clientmanager> _cli_mgr = nullptr;
 
 public:
 	clientproxy() {
-		_gate_call_client_caller = std::make_shared<abelkhan::gate_call_client_caller>(nullptr, service::_modulemng);
+		_gate_call_client_caller = new abelkhan::gate_call_client_caller(nullptr, service::_modulemng);
 	}
 
 	clientproxy(const clientproxy & _) {
-		_gate_call_client_caller = std::make_shared<abelkhan::gate_call_client_caller>(nullptr, service::_modulemng);
+		_gate_call_client_caller = new abelkhan::gate_call_client_caller(nullptr, service::_modulemng);
 	}
 
 	void init(std::string& cuuid, std::shared_ptr<abelkhan::Ichannel> ch, int _index1, int _index2, std::shared_ptr<clientmanager> cli_mgr) {
