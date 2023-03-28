@@ -26,26 +26,25 @@ public:
 	std::shared_ptr<abelkhan::Ichannel> _ch;
 
 private:
-	std::shared_ptr<abelkhan::gate_call_hub_caller> _gate_call_hub_caller;
+	abelkhan::gate_call_hub_caller _gate_call_hub_caller;
 
 public:
-	hubproxy(std::string& hub_name, std::string& hub_type, std::shared_ptr<abelkhan::Ichannel> ch) {
+	hubproxy(std::string& hub_name, std::string& hub_type, std::shared_ptr<abelkhan::Ichannel> ch) : _gate_call_hub_caller(ch, service::_modulemng) {
 		_hub_name = hub_name;
 		_hub_type = hub_type;
 		_ch = ch;
-		_gate_call_hub_caller = std::make_shared<abelkhan::gate_call_hub_caller>(ch, service::_modulemng);
 	}
 
 	void client_disconnect(std::string& client_cuuid) {
-		_gate_call_hub_caller->client_disconnect(client_cuuid);
+		_gate_call_hub_caller.client_disconnect(client_cuuid);
 	}
 
 	void client_exception(std::string& client_cuuid) {
-		_gate_call_hub_caller->client_exception(client_cuuid);
+		_gate_call_hub_caller.client_exception(client_cuuid);
 	}
 
 	void client_call_hub(std::string& client_cuuid, std::vector<uint8_t>& data) {
-		_gate_call_hub_caller->client_call_hub(client_cuuid, data);
+		_gate_call_hub_caller.client_call_hub(client_cuuid, data);
 	}
 };
 
