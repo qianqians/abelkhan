@@ -24,7 +24,7 @@ namespace abelkhan
 
     };
 
-    class gate_call_hub_caller : Icaller {
+    class gate_call_hub_caller : public Icaller {
     private:
         static std::shared_ptr<gate_call_hub_rsp_cb> rsp_cb_gate_call_hub_handle;
 
@@ -182,7 +182,7 @@ namespace abelkhan
 
     };
 
-    class hub_call_hub_caller : Icaller {
+    class hub_call_hub_caller : public Icaller {
     private:
         static std::shared_ptr<hub_call_hub_rsp_cb> rsp_cb_hub_call_hub_handle;
 
@@ -246,7 +246,7 @@ namespace abelkhan
 
     };
 
-    class hub_call_client_caller : Icaller {
+    class hub_call_client_caller : public Icaller {
     private:
         static std::shared_ptr<hub_call_client_rsp_cb> rsp_cb_hub_call_client_handle;
 
@@ -337,7 +337,7 @@ namespace abelkhan
 
     };
 
-    class client_call_hub_caller : Icaller {
+    class client_call_hub_caller : public Icaller {
     private:
         static std::shared_ptr<client_call_hub_rsp_cb> rsp_cb_client_call_hub_handle;
 

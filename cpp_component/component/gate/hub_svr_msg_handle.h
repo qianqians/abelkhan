@@ -15,8 +15,8 @@
 #include <gate.h>
 
 #include <modulemng_handle.h>
-#include <buffer.h>
 
+#include "gc_buffer.h"
 #include "hubsvrmanager.h"
 #include "clientmanager.h"
 
@@ -108,16 +108,16 @@ public:
 		auto ch = _hub_call_gate_module->current_ch;
 		auto hub_proxy = _hubsvrmanager->get_hub(ch);
 
-		std::vector<std::shared_ptr<abelkhan::Ichannel> > crypt_clients;
-		std::vector<std::shared_ptr<abelkhan::Ichannel> > clients;
+		std::vector<std::shared_ptr<clientproxy> > crypt_clients;
+		std::vector<std::shared_ptr<clientproxy> > clients;
 		for (auto cuuid : cuuids) {
 			auto client_proxy = _clientmanager->get_client(cuuid);
 			if (client_proxy != nullptr) {
-				if (client_proxy->_ch->is_xor_key_crypt()) {
-					crypt_clients.push_back(client_proxy->_ch);
+				if (client_proxy->is_xor_key_crypt()) {
+					crypt_clients.push_back(client_proxy);
 				}
 				else {
-					clients.push_back(client_proxy->_ch);
+					clients.push_back(client_proxy);
 				}
 			}
 			else {
@@ -137,7 +137,7 @@ public:
 
 		size_t len = data.size();
 		size_t datasize = len + 4;
-		auto _data = service::get_buffer(datasize);
+		auto _data = gate::gc_get_buffer(datasize);
 
 		_data[0] = len & 0xff;
 		_data[1] = len >> 8 & 0xff;
@@ -146,13 +146,13 @@ public:
 		memcpy(&_data[4], data.c_str(), data.size());
 #pragma omp parallel for
 		for (auto _client : clients) {
-			_client->send((char*)_data, datasize);
+			_client->send_buf((char*)_data, datasize);
 		}
 
 		service::channel_encrypt_decrypt_ondata::xor_key_encrypt_decrypt((char*)(&(_data[4])), len);
 #pragma omp parallel for
 		for (auto _client : crypt_clients) {
-			_client->send((char*)_data, datasize);
+			_client->send_buf((char*)_data, datasize);
 		}
 	}
 
@@ -160,14 +160,14 @@ public:
 		auto ch = _hub_call_gate_module->current_ch;
 		auto hub_proxy = _hubsvrmanager->get_hub(ch);
 
-		std::vector<std::shared_ptr<abelkhan::Ichannel> > crypt_chs;
-		std::vector<std::shared_ptr<abelkhan::Ichannel> > chs;
+		std::vector<std::shared_ptr<clientproxy> > crypt_chs;
+		std::vector<std::shared_ptr<clientproxy> > chs;
 		_clientmanager->for_each_client([this, &crypt_chs, &chs](std::string cuuid, std::shared_ptr<clientproxy> _client) {
-			if (_client->_ch->is_xor_key_crypt()) {
-				crypt_chs.push_back(_client->_ch);
+			if (_client->is_xor_key_crypt()) {
+				crypt_chs.push_back(_client);
 			}
 			else {
-				chs.push_back(_client->_ch);
+				chs.push_back(_client);
 			}
 		});
 
@@ -183,7 +183,7 @@ public:
 
 		size_t len = data.size();
 		size_t datasize = len + 4;
-		auto _data = service::get_buffer(datasize);
+		auto _data = gate::gc_get_buffer(datasize);
 
 		_data[0] = len & 0xff;
 		_data[1] = len >> 8 & 0xff;
@@ -192,13 +192,13 @@ public:
 		memcpy(&_data[4], data.c_str(), data.size());
 #pragma omp parallel for
 		for (auto _client : chs) {
-			_client->send((char*)_data, datasize);
+			_client->send_buf((char*)_data, datasize);
 		}
 
 		service::channel_encrypt_decrypt_ondata::xor_key_encrypt_decrypt((char*)(&(_data[4])), len);
 #pragma omp parallel for
 		for (auto _client : crypt_chs) {
-			_client->send((char*)_data, datasize);
+			_client->send_buf((char*)_data, datasize);
 		}
 	}
 };

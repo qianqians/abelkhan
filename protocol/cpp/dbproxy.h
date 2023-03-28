@@ -404,7 +404,7 @@ namespace abelkhan
 
     };
 
-    class hub_call_dbproxy_caller : Icaller {
+    class hub_call_dbproxy_caller : public Icaller {
     private:
         static std::shared_ptr<hub_call_dbproxy_rsp_cb> rsp_cb_hub_call_dbproxy_handle;
 
@@ -555,7 +555,7 @@ namespace abelkhan
 
     };
 
-    class dbproxy_call_hub_caller : Icaller {
+    class dbproxy_call_hub_caller : public Icaller {
     private:
         static std::shared_ptr<dbproxy_call_hub_rsp_cb> rsp_cb_dbproxy_call_hub_handle;
 

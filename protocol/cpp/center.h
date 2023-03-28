@@ -185,7 +185,7 @@ namespace abelkhan
 
     };
 
-    class center_caller : Icaller {
+    class center_caller : public Icaller {
     private:
         static std::shared_ptr<center_rsp_cb> rsp_cb_center_handle;
 
@@ -263,7 +263,7 @@ namespace abelkhan
 
     };
 
-    class center_call_server_caller : Icaller {
+    class center_call_server_caller : public Icaller {
     private:
         static std::shared_ptr<center_call_server_rsp_cb> rsp_cb_center_call_server_handle;
 
@@ -318,7 +318,7 @@ namespace abelkhan
 
     };
 
-    class center_call_hub_caller : Icaller {
+    class center_call_hub_caller : public Icaller {
     private:
         static std::shared_ptr<center_call_hub_rsp_cb> rsp_cb_center_call_hub_handle;
 
@@ -361,7 +361,7 @@ namespace abelkhan
 
     };
 
-    class gm_center_caller : Icaller {
+    class gm_center_caller : public Icaller {
     private:
         static std::shared_ptr<gm_center_rsp_cb> rsp_cb_gm_center_handle;
 

@@ -3,6 +3,8 @@
  * 2016-7-5
  * gate.cpp
  */
+#include <gc.h>
+
 #include <acceptservice.h>
 #include <connectservice.h>
 #include <enetacceptservice.h>
@@ -22,6 +24,8 @@ std::shared_ptr<spdlog::logger> file_logger = nullptr;
 namespace gate {
 
 gate_service::gate_service(std::string config_file_path, std::string config_name) {
+	GC_init();
+
 	_root_config = std::make_shared<config::config>(config_file_path);
 	_center_config = _root_config->get_value_dict("center");
 	_config = _root_config->get_value_dict(config_name);
@@ -217,6 +221,7 @@ void gate_service::run() {
 		}
 	}
 
+	GC_deinit();
 	spdlog::shutdown();
 	_run_mu.unlock();
 }
@@ -241,8 +246,9 @@ uint32_t gate_service::poll(){
 			_websocket_service->poll();
 		}
 
-		abelkhan::TinyTimer::poll();
+		_clientmanager->client_proxy_send();
 
+		abelkhan::TinyTimer::poll();
 		_timerservice->poll();
 
 		_log::file_logger->flush();
