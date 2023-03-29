@@ -189,6 +189,9 @@ public:
 	}
 
 	static void recycle_client_proxy(std::shared_ptr<clientmanager> _cli_mgr, clientproxy * _proxy) {
+		_proxy->_ch = nullptr;
+		_proxy->_cli_mgr = nullptr;
+
 		_cli_mgr->client_proxy_recycle_pool[_proxy->index1].push(_proxy->index2);
 	}
 
