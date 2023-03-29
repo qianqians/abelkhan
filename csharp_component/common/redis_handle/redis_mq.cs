@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.IO;
 
 namespace abelkhan
 {
@@ -90,10 +91,11 @@ namespace abelkhan
             _connHelper.Recover(ref connectionMultiplexer, ref database, e);
         }
 
-        public void close()
+        public async void close()
         {
             run_flag = false;
-            Task.WaitAll(th_send, th_recv);
+            await th_send;
+            await th_recv;
         }
 
         public redischannel connect(string ch_name)
@@ -117,7 +119,7 @@ namespace abelkhan
 
             var b_listen_ch_name = System.Text.Encoding.UTF8.GetBytes(main_channel_name);
             var _listen_ch_name_size = b_listen_ch_name.Length;
-            var st = MemoryStreamPool.mstMgr.GetStream();
+            var st = constant.constant.rcStMgr.GetStream();
             st.WriteByte((byte)(_listen_ch_name_size & 0xff));
             st.WriteByte((byte)(_listen_ch_name_size >> 8 & 0xff));
             st.WriteByte((byte)(_listen_ch_name_size >> 16 & 0xff));
@@ -198,7 +200,7 @@ namespace abelkhan
                         var _header_len = 4 + _ch_name_size;
                         var _msg_len = pop_data.Length - _header_len;
 
-                        using var _st = MemoryStreamPool.mstMgr.GetStream();
+                        using var _st = constant.constant.rcStMgr.GetStream();
                         _st.Write(pop_data, (int)_header_len, (int)_msg_len);
                         _st.Position = 0;
 
@@ -244,7 +246,14 @@ namespace abelkhan
                 if (!is_send_busy)
                 {
                     await Task.Delay(idle_wait);
-                    idle_wait *= 2;
+                    if (idle_wait > 32)
+                    {
+                        idle_wait = 2;
+                    }
+                    else
+                    {
+                        idle_wait *= 2;
+                    }
                 }
                 else
                 {
@@ -263,7 +272,14 @@ namespace abelkhan
                 if (!is_recv_busy)
                 {
                     await Task.Delay(idle_wait);
-                    idle_wait *= 2;
+                    if (idle_wait > 32)
+                    {
+                        idle_wait = 2;
+                    }
+                    else
+                    {
+                        idle_wait *= 2;
+                    }
                 }
                 else
                 {
