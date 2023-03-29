@@ -173,9 +173,9 @@ namespace abelkhan
                 try
                 {
                     var tick = poll();
-                    if (tick < 33)
+                    if (tick < 333)
                     {
-                        Thread.Sleep((int)(33 - tick));
+                        Thread.Sleep((int)(333 - tick));
                     }
                 }
                 catch (System.Exception e)

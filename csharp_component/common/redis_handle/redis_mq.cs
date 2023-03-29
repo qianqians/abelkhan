@@ -237,25 +237,37 @@ namespace abelkhan
 
         private async void th_send_poll()
         {
+            var idle_wait = 2;
             while (run_flag)
             {
                 var is_send_busy = await sendmsg_mq();
                 if (!is_send_busy)
                 {
-                    await Task.Delay(5);
+                    await Task.Delay(idle_wait);
+                    idle_wait *= 2;
+                }
+                else
+                {
+                    idle_wait = 2;
                 }
             }
         }
 
         private async void th_recv_poll()
         {
+            var idle_wait = 2;
             while (run_flag)
             {
                 list_channel_name();
                 var is_recv_busy = await recvmsg_mq();
                 if (!is_recv_busy)
                 {
-                    await Task.Delay(5);
+                    await Task.Delay(idle_wait);
+                    idle_wait *= 2;
+                }
+                else
+                {
+                    idle_wait = 2;
                 }
             }
         }
