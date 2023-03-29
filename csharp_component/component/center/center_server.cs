@@ -12,19 +12,18 @@ namespace abelkhan
 {
     public class center
     {
-        private abelkhan.redis_mq _redis_mq_service;
-        private svr_msg_handle _svr_msg_handle;
-        public svrmanager _svrmanager;
-        private acceptservice _accept_gm_service;
-        private gm_msg_handle _gm_msg_handle;
-        private gmmanager _gmmanager;
-        private List<abelkhan.Ichannel> add_chs;
-        public List<abelkhan.Ichannel> remove_chs;
-        private long _timetmp;
+        private readonly abelkhan.redis_mq _redis_mq_service;
+        private readonly acceptservice _accept_gm_service;
+        private readonly gmmanager _gmmanager;
+        private readonly List<abelkhan.Ichannel> add_chs;
+        private readonly svr_msg_handle _svr_msg_handle;
+        private readonly gm_msg_handle _gm_msg_handle;
 
-        public closehandle _closeHandle;
-        public service.timerservice _timer; 
-        public abelkhan.config _root_cfg;
+        public readonly svrmanager _svrmanager;
+        public readonly List<abelkhan.Ichannel> remove_chs;
+        public readonly closehandle _closeHandle;
+        public readonly service.timerservice _timer; 
+        public readonly abelkhan.config _root_cfg;
 
         static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
@@ -73,7 +72,6 @@ namespace abelkhan
             AppDomain.CurrentDomain.UnhandledException += UnhandledException;
 
             _timer = new service.timerservice();
-            _timetmp = _timer.refresh();
 
             add_chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<Ichannel>();
@@ -156,7 +154,6 @@ namespace abelkhan
             }
 
             long tick_end = _timer.refresh();
-            _timetmp = tick_end;
             return tick_end - tick_begin;
         }
 

@@ -232,10 +232,6 @@ namespace dbproxy
             }
             log.log.info("server closed, dbproxy server:{0}", dbproxy.name);
 
-            if (_acceptservice != null)
-            {
-                _acceptservice.close();
-            }
             log.log.close();
 
             Monitor.Exit(_run_mu);
@@ -250,18 +246,17 @@ namespace dbproxy
         public static mongodbproxy _mongodbproxy;
         public static abelkhan.redis_mq _redis_mq_service;
 
-        public abelkhan.config _root_config;
-        public abelkhan.config _center_config;
+        public readonly abelkhan.config _root_config;
+        public readonly abelkhan.config _center_config;
 
-        private List<abelkhan.Ichannel> add_chs;
-        public static List<abelkhan.Ichannel> remove_chs;
+        private readonly List<abelkhan.Ichannel> add_chs;
+        private readonly List<abelkhan.Ichannel> remove_chs;
+
+        private readonly hub_msg_handle _hub_msg_handle;
+        private readonly center_msg_handle _center_msg_handle;
 
         private uint reconn_count = 0;
 
-        private hub_msg_handle _hub_msg_handle;
-        private center_msg_handle _center_msg_handle;
-
-        public abelkhan.acceptservice _acceptservice;
 		private centerproxy _centerproxy;
 
 	}
