@@ -196,12 +196,13 @@ public:
 	}
 
 	std::shared_ptr<clientproxy> reg_client(std::shared_ptr<abelkhan::Ichannel> ch) {
-		std::string cuuid = xg::newGuid().str();
+		auto cuuid = xg::newGuid().str();
+		auto _cli_mgr = shared_from_this();
 
 		auto [index1, index2] = pop_client_proxy_from_pool();
 		auto client_proxy = &client_proxy_pool[index1][index2];
-		client_proxy->init(cuuid, ch, index1, index2, shared_from_this());
-		auto _client = std::shared_ptr<clientproxy>(client_proxy, std::bind(&clientmanager::recycle_client_proxy, shared_from_this(), std::placeholders::_1));
+		client_proxy->init(cuuid, ch, index1, index2, _cli_mgr);
+		auto _client = std::shared_ptr<clientproxy>(client_proxy, std::bind(&clientmanager::recycle_client_proxy, _cli_mgr, std::placeholders::_1));
 
 		client_map.insert(std::make_pair(cuuid, _client));
 		client_uuid_map.insert(std::make_pair(ch, _client));
