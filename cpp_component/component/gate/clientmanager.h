@@ -7,6 +7,8 @@
 #ifndef _clientmanager_h
 #define _clientmanager_h
 
+#include <omp.h>
+
 #include <vector>
 #include <queue>
 #include <set>
@@ -233,7 +235,10 @@ public:
 	}
 
 	void client_proxy_send() {
+		omp_set_nested(1);
+#pragma omp parallel for
 		for (int index1 = 0; index1 < wait_send_cli.size(); index1++) {
+#pragma omp parallel for
 			for (int index2 : wait_send_cli[index1]) {
 				auto client_proxy = &client_proxy_pool[index1][index2];
 				client_proxy->done_send();
