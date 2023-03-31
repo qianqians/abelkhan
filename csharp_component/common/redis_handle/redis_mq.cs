@@ -168,13 +168,16 @@ namespace abelkhan
         {
             try
             {
-                lock (wait_listen_channel_names)
+                if (wait_listen_channel_names.Count > 0)
                 {
-                    foreach (var name in wait_listen_channel_names)
+                    lock (wait_listen_channel_names)
                     {
-                        listen_channel_names.Add(name);
+                        foreach (var name in wait_listen_channel_names)
+                        {
+                            listen_channel_names.Add(name);
+                        }
+                        wait_listen_channel_names.Clear();
                     }
-                    wait_listen_channel_names.Clear();
                 }
             }
             catch (System.Exception ex)
