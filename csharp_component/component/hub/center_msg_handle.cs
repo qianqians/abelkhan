@@ -5,11 +5,11 @@ namespace hub
 {
 	public class center_msg_handle
 	{
-		private hub _hub;
-		private closehandle _closehandle;
-		private centerproxy _centerproxy;
-		private abelkhan.center_call_server_module _center_call_server_module;
-		private abelkhan.center_call_hub_module _center_call_hub_module;
+		private readonly hub _hub;
+		private readonly closehandle _closehandle;
+		private readonly centerproxy _centerproxy;
+		private readonly abelkhan.center_call_server_module _center_call_server_module;
+		private readonly abelkhan.center_call_hub_module _center_call_hub_module;
 
 		public center_msg_handle(hub _hub_, closehandle _closehandle_, centerproxy _centerproxy_)
 		{

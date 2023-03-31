@@ -5,7 +5,7 @@ namespace hub
 {
 	public class centerproxy
     {
-        private abelkhan.center_caller _center_caller;
+        private readonly abelkhan.center_caller _center_caller;
 
         public centerproxy(abelkhan.Ichannel ch)
 		{
@@ -73,7 +73,7 @@ namespace hub
 
         public long timetmp = service.timerservice.Tick;
         public bool is_reg_center_sucess;
-        public abelkhan.Ichannel _ch;
+        public readonly abelkhan.Ichannel _ch;
 
     }
 }

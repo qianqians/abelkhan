@@ -8,9 +8,10 @@ namespace hub
 {
 	public class gateproxy
 	{
-		public abelkhan.Ichannel _ch;
-		public string _name;
-		private abelkhan.hub_call_gate_caller _hub_call_gate_caller;
+		public readonly abelkhan.Ichannel _ch;
+		public readonly string _name;
+
+		private readonly abelkhan.hub_call_gate_caller _hub_call_gate_caller;
 
 		public gateproxy(abelkhan.Ichannel ch, string name)
 		{

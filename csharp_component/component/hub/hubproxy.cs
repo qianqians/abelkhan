@@ -40,8 +40,8 @@ namespace hub
             _hub_call_hub_caller.seep_client_gate(client_uuid, hub._gates.get_client_gate_name(client_uuid));
         }
 
-        public string name;
-        public string type;
-        public abelkhan.Ichannel _ch;
+        public readonly string name;
+        public readonly string type;
+        public readonly abelkhan.Ichannel _ch;
     }
 }

@@ -42,11 +42,8 @@ namespace hub
 
         public hubproxy get_hub(abelkhan.Ichannel ch)
         {
-            if (ch_hubproxys.TryGetValue(ch, out hubproxy _proxy))
-            {
-                return _proxy;
-            }
-            return null;
+            ch_hubproxys.TryGetValue(ch, out hubproxy _proxy);
+            return _proxy;
         }
 
         public void hub_be_closed(string hub_name)
