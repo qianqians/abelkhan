@@ -43,12 +43,8 @@ namespace dbproxy
 
 		public hubproxy get_hub(abelkhan.Ichannel ch)
 		{
-			if (hubproxys.ContainsKey (ch)) 
-			{
-				return hubproxys [ch];
-			}
-
-			return null;
+			hubproxys.TryGetValue(ch, out hubproxy _proxy);
+            return _proxy;
 		}
 
 		public bool all_hub_closed()

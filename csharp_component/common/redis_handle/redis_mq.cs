@@ -119,7 +119,7 @@ namespace abelkhan
 
             var b_listen_ch_name = System.Text.Encoding.UTF8.GetBytes(main_channel_name);
             var _listen_ch_name_size = b_listen_ch_name.Length;
-            var st = constant.constant.rcStMgr.GetStream();
+            var st = MemoryStreamPool.mstMgr.GetStream();
             st.WriteByte((byte)(_listen_ch_name_size & 0xff));
             st.WriteByte((byte)(_listen_ch_name_size >> 8 & 0xff));
             st.WriteByte((byte)(_listen_ch_name_size >> 16 & 0xff));
@@ -200,7 +200,7 @@ namespace abelkhan
                         var _header_len = 4 + _ch_name_size;
                         var _msg_len = pop_data.Length - _header_len;
 
-                        using var _st = constant.constant.rcStMgr.GetStream();
+                        using var _st = MemoryStreamPool.mstMgr.GetStream();
                         _st.Write(pop_data, (int)_header_len, (int)_msg_len);
                         _st.Position = 0;
 

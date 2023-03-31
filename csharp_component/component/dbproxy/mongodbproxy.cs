@@ -221,7 +221,6 @@ namespace dbproxy
                 }
 
                 var c = await _collection.FindAsync<MongoDB.Bson.BsonDocument>(_bson_query, _opt);
-
                 while (c.MoveNext())
                 {
                     var _c = c.Current;

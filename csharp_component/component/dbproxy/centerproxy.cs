@@ -72,8 +72,9 @@ namespace dbproxy
 
 		public bool is_reg_sucess;
 		public long timetmp = service.timerservice.Tick;
-		public abelkhan.Ichannel _ch;
-		private abelkhan.center_caller _center_caller;
+		public readonly abelkhan.Ichannel _ch;
+
+		private readonly abelkhan.center_caller _center_caller;
 	}
 }
 

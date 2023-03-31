@@ -49,23 +49,26 @@ namespace service
 
         private void addtickhandleimpl()
         {
-            lock (addtickHandle)
+            if (addtickHandle.Count > 0)
             {
-                foreach (var item in addtickHandle)
+                lock (addtickHandle)
                 {
-                    var process = item.Key;
-                    while (tickHandledict.ContainsKey(process)) { process++; }
-                    tickHandledict.Add(process, item.Value);
+                    foreach (var item in addtickHandle)
+                    {
+                        var process = item.Key;
+                        while (tickHandledict.ContainsKey(process)) { process++; }
+                        tickHandledict.Add(process, item.Value);
+                    }
+                    addtickHandle.Clear();
                 }
-                addtickHandle.Clear();
             }
         }
 
+        private readonly List<long> list = new List<long>();
         private void polltickhandleimpl()
         {
             addtickhandleimpl();
 
-            List<long> list = new List<long>();
             foreach (var item in tickHandledict)
             {
                 if (item.Key <= Tick)
@@ -93,9 +96,14 @@ namespace service
                     break;
                 }
             }
-            foreach (var item in list)
+
+            if (list.Count > 0)
             {
-                tickHandledict.Remove(item);
+                foreach (var item in list)
+                {
+                    tickHandledict.Remove(item);
+                }
+                list.Clear();
             }
         }
 

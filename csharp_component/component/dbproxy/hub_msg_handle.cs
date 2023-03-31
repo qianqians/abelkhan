@@ -42,31 +42,33 @@ namespace dbproxy
         {
             log.log.trace("begin get_guid!");
 
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
-            if (_hubproxy == null)
-            {
-                log.log.err("hubproxy is null");
-                return;
-            }
             var rsp = (abelkhan.hub_call_dbproxy_get_guid_rsp)_hub_call_dbproxy_module.rsp.Value;
-
-            try
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
+            if (_hubproxy != null)
             {
-                var guid = await dbproxy._mongodbproxy.get_guid(db, collection, guid_key);
-                if (guid > 0) 
+                try
                 {
-                    rsp.rsp(guid);
+                    var guid = await dbproxy._mongodbproxy.get_guid(db, collection, guid_key);
+                    if (guid > 0)
+                    {
+                        rsp.rsp(guid);
+                    }
+                    else
+                    {
+                        rsp.err();
+                    }
                 }
-                else
+                catch (System.Exception ex)
                 {
+                    log.log.err("ex:{0}", ex);
                     rsp.err();
                 }
             }
-            catch(System.Exception ex)
+            else
             {
-                log.log.err("ex:{0}", ex);
+                log.log.err("hubproxy is null");
                 rsp.err();
-            } 
+            }
 
             log.log.trace("end get_guid");
         }
@@ -75,29 +77,31 @@ namespace dbproxy
 		{
             log.log.trace("begin create_persisted_object");
 
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
-            if (_hubproxy == null)
-            {
-                log.log.err("hubproxy is null");
-                return;
-            }
             var rsp = (abelkhan.hub_call_dbproxy_create_persisted_object_rsp)_hub_call_dbproxy_module.rsp.Value;
-
-            try
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
+            if (_hubproxy != null)
             {
-                var is_create_sucess = await dbproxy._mongodbproxy.save(db, collection, object_info);
-                if (is_create_sucess)
+                try
                 {
-                    rsp.rsp();
+                    var is_create_sucess = await dbproxy._mongodbproxy.save(db, collection, object_info);
+                    if (is_create_sucess)
+                    {
+                        rsp.rsp();
+                    }
+                    else
+                    {
+                        rsp.err();
+                    }
                 }
-                else
+                catch (System.Exception ex)
                 {
+                    log.log.err("ex:{0}", ex);
                     rsp.err();
                 }
             }
-            catch(System.Exception ex)
+            else
             {
-                log.log.err("ex:{0}", ex);
+                log.log.err("hubproxy is null");
                 rsp.err();
             }
 
@@ -108,29 +112,31 @@ namespace dbproxy
 		{
             log.log.trace("begin updata_persisted_object");
 
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
-            if (_hubproxy == null)
-            {
-                log.log.err("hubproxy is null");
-                return;
-            }
             var rsp = (abelkhan.hub_call_dbproxy_updata_persisted_object_rsp)_hub_call_dbproxy_module.rsp.Value;
-
-            try
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
+            if (_hubproxy != null)
             {
-                var is_update_sucessed = await dbproxy._mongodbproxy.update(db, collection, query_data, object_data, upsert);
-                if (is_update_sucessed)
+                try
                 {
-                    rsp.rsp();
+                    var is_update_sucessed = await dbproxy._mongodbproxy.update(db, collection, query_data, object_data, upsert);
+                    if (is_update_sucessed)
+                    {
+                        rsp.rsp();
+                    }
+                    else
+                    {
+                        rsp.err();
+                    }
                 }
-                else
+                catch (System.Exception ex)
                 {
+                    log.log.err("ex:{0}", ex);
                     rsp.err();
                 }
             }
-            catch (System.Exception ex)
+            else
             {
-                log.log.err("ex:{0}", ex);
+                log.log.err("hubproxy is null");
                 rsp.err();
             }
 
@@ -141,34 +147,36 @@ namespace dbproxy
         {
             log.log.trace("begin find_and_modify");
 
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
-            if (_hubproxy == null)
-            {
-                log.log.err("hubproxy is null");
-                return;
-            }
             var rsp = (abelkhan.hub_call_dbproxy_find_and_modify_rsp)_hub_call_dbproxy_module.rsp.Value;
-
-            try
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
+            if (_hubproxy != null)
             {
-                var obj = await dbproxy._mongodbproxy.find_and_modify(db, collection, query_data, object_data, is_new, upsert);
-                if (obj != null)
+                try
                 {
-                    using var st = MemoryStreamPool.mstMgr.GetStream();
-                    var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
-                    MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, obj);
-                    st.Position = 0;
+                    var obj = await dbproxy._mongodbproxy.find_and_modify(db, collection, query_data, object_data, is_new, upsert);
+                    if (obj != null)
+                    {
+                        using var st = MemoryStreamPool.mstMgr.GetStream();
+                        var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
+                        MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, obj);
+                        st.Position = 0;
 
-                    rsp.rsp(st.ToArray());
+                        rsp.rsp(st.ToArray());
+                    }
+                    else
+                    {
+                        rsp.err();
+                    }
                 }
-                else
+                catch (System.Exception ex)
                 {
+                    log.log.err("ex:{0}", ex);
                     rsp.err();
                 }
             }
-            catch (System.Exception ex)
+            else
             {
-                log.log.err("ex:{0}", ex);
+                log.log.err("hubproxy is null");
                 rsp.err();
             }
 
@@ -179,29 +187,31 @@ namespace dbproxy
         {
             log.log.trace("begin remove_object");
 
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
-            if (_hubproxy == null)
-            {
-                log.log.err("hubproxy is null");
-                return;
-            }
             var rsp = (abelkhan.hub_call_dbproxy_remove_object_rsp)_hub_call_dbproxy_module.rsp.Value;
-
-            try
+            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
+            if (_hubproxy != null)
             {
-                var is_remove_sucessed = await dbproxy._mongodbproxy.remove(db, collection, query_data);
-                if (is_remove_sucessed)
+                try
                 {
-                    rsp.rsp();
+                    var is_remove_sucessed = await dbproxy._mongodbproxy.remove(db, collection, query_data);
+                    if (is_remove_sucessed)
+                    {
+                        rsp.rsp();
+                    }
+                    else
+                    {
+                        rsp.err();
+                    }
                 }
-                else
+                catch (System.Exception ex)
                 {
+                    log.log.err("ex:{0}", ex);
                     rsp.err();
                 }
             }
-            catch (System.Exception ex)
+            else
             {
-                log.log.err("ex:{0}", ex);
+                log.log.err("hubproxy is null");
                 rsp.err();
             }
 
@@ -212,22 +222,24 @@ namespace dbproxy
         {
             log.log.trace("begin get_object_info");
 
+            var rsp = (abelkhan.hub_call_dbproxy_get_object_count_rsp)_hub_call_dbproxy_module.rsp.Value;
             hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
-            if (_hubproxy == null)
+            if (_hubproxy != null)
+            {
+                try
+                {
+                    var count = await dbproxy._mongodbproxy.count(db, collection, query_data);
+                    rsp.rsp((uint)count);
+                }
+                catch (System.Exception ex)
+                {
+                    log.log.err("ex:{0}", ex);
+                    rsp.err();
+                }
+            }
+            else
             {
                 log.log.err("hubproxy is null");
-                return;
-            }
-            var rsp = (abelkhan.hub_call_dbproxy_get_object_count_rsp)_hub_call_dbproxy_module.rsp.Value;
-
-            try
-            {
-                var count = await dbproxy._mongodbproxy.count(db, collection, query_data);
-                rsp.rsp((uint)count);
-            }
-            catch (System.Exception ex)
-            {
-                log.log.err("ex:{0}", ex);
                 rsp.err();
             }
 
@@ -239,48 +251,50 @@ namespace dbproxy
             log.log.trace("begin get_object_info");
 
             hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
-            if (_hubproxy == null)
+            if (_hubproxy != null)
             {
-                log.log.err("hubproxy is null");
-                return;
-            }
-
-            try
-            {
-                var _list = await dbproxy._mongodbproxy.find(db, collection, query_data, _limit, _skip, _sort, _Ascending_);
-
-                int count = 0;
-                if (_list.Count == 0)
+                try
                 {
-                    _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _list } });
-                }
-                else
-                {
-                    var _datalist = new MongoDB.Bson.BsonArray();
-                    foreach (var data in _list)
+                    var _list = await dbproxy._mongodbproxy.find(db, collection, query_data, _limit, _skip, _sort, _Ascending_);
+
+                    int count = 0;
+                    if (_list.Count == 0)
                     {
-                        _datalist.Add(data);
+                        _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _list } });
+                    }
+                    else
+                    {
+                        var _datalist = new MongoDB.Bson.BsonArray();
+                        foreach (var data in _list)
+                        {
+                            _datalist.Add(data);
 
-                        count++;
+                            count++;
 
-                        if (count >= 100)
+                            if (count >= 100)
+                            {
+                                _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _datalist } });
+
+                                count = 0;
+                                _datalist = new MongoDB.Bson.BsonArray();
+                            }
+                        }
+                        if (count > 0 && count < 100)
                         {
                             _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _datalist } });
-
-                            count = 0;
-                            _datalist = new MongoDB.Bson.BsonArray();
                         }
                     }
-                    if (count > 0 && count < 100)
-                    {
-                        _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _datalist } });
-                    }
+                    _hubproxy.ack_get_object_info_end(callbackid);
                 }
-                _hubproxy.ack_get_object_info_end(callbackid);
+                catch (System.Exception ex)
+                {
+                    log.log.err("ex:{0}", ex);
+                }
             }
-            catch (System.Exception ex)
+            else
             {
-                log.log.err("ex:{0}", ex);
+                log.log.err("hubproxy is null");
+                _hubproxy.ack_get_object_info_end(callbackid);
             }
 
             log.log.trace("end get_object_info");

@@ -8,7 +8,7 @@ namespace dbproxy
 {
 	public class hubproxy
 	{
-		public abelkhan.Ichannel _ch;
+		public readonly abelkhan.Ichannel _ch;
 		public hubproxy(abelkhan.Ichannel ch)
 		{
 			_serializer = MessagePackSerializer.Get<ArrayList>();
