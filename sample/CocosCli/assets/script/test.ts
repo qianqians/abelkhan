@@ -52,7 +52,7 @@ export class Test extends Component {
                 this._test_c2s_caller.get_hub(hub_info.hub_name).get_websocket_svr_host().callBack((ip, port) =>
                 {
                     console.log("get_svr_host sucessed!");
-                    console.log("connect_hub name:{0}, type:{1}, ip:{2}, port:{3}!", hub_info.hub_name, hub_info.hub_type, ip, port);
+                    console.log(`connect_hub name:${hub_info.hub_name}, type:${hub_info.hub_type}, ip:${ip}, port:${port}!`);
                     this._cli.connect_hub(hub_info.hub_name, hub_info.hub_type, "ws://" + ip + ":" + port);
                 }, () =>
                 {
