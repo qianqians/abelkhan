@@ -348,13 +348,16 @@ namespace hub
                     abelkhan.modulemng_handle._modulemng.process_event(_event.Item1, _event.Item2);
                 }
 
-                lock (remove_chs)
+                if (remove_chs.Count > 0)
                 {
-                    foreach (var ch in remove_chs)
+                    lock (remove_chs)
                     {
-                        add_chs.Remove(ch);
+                        foreach (var ch in remove_chs)
+                        {
+                            add_chs.Remove(ch);
+                        }
+                        remove_chs.Clear();
                     }
-                    remove_chs.Clear();
                 }
 
                 abelkhan.TinyTimer.poll();

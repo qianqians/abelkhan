@@ -1,15 +1,106 @@
 ﻿import uuid 
+import json
+from threading import Timer
+from collections.abc import Callable
+import hub
 import abelkhan
+import redis_mq
+import centerproxy
 
-class hub(object):
-	def __init__(self, config_file:str, _hub_name:str, _hub_type:str) -> None:
-		self.name = f"{_hub_name}_{uuid.uuid1().hex}"
-		self.type = _hub_type
-		
-		self.add_chs : list[abelkhan.Ichannel] = []
-		self.remove_chs : list[abelkhan.Ichannel] = []
-	
-	'''{
+class hub_svr(object):
+    def __init__(self, config_file:str, _hub_name:str, _hub_type:str) -> None:
+        self.name = f"{_hub_name}_{uuid.uuid1().hex}"
+        self.type = _hub_type
+
+        self.__is_closed__ = False
+
+        self.add_chs : list[abelkhan.Ichannel] = []
+        self.remove_chs : list[abelkhan.Ichannel] = []
+
+        self.modulemng = abelkhan.modulemng()
+
+        self.cfg = self.__open_config__(config_file)
+        self.center_cfg = self.cfg.get("center")
+
+        self.redis_mq_service = redis_mq.redis_mq(self.self.get("redis_for_mq"), self.modulemng)
+
+        self.reconn_count = 0
+        _center_ch = self.redis_mq_service.connect(self.center_cfg.get("name"))
+        self.add_chs.append(_center_ch)
+        self.centerproxy = centerproxy.centerproxy(_center_ch, self.modulemng, self)
+        self.centerproxy.reg_hub(self.heartbeat)
+
+        self.onCenterCrash : Callable[[]] = None
+        self.onCloseServer : Callable[[]] = None
+        self.onReload : Callable[[str]] = None
+
+    def __open_config__(self, config_file:str) -> dict:
+        f = open(config_file)
+        config = f.read()
+        return json.loads(config)
+
+    def heartbeat(self):
+        t = Timer(3000, self.heartbeat)
+        t.start()
+
+        if (abelkhan.timetmp() - self.centerproxy.timetmp) > 9000:
+            self.reconnect_center()
+
+        self.centerproxy.heartbeat()
+
+    def reset_reconn_count(self):
+        self.reconn_count = 0
+
+    def reconnect_center(self):
+        if self.reconn_count > 5:
+            if self.onCenterCrash:
+                self.onCenterCrash()
+
+        self.reconn_count += 1
+        self.remove_chs.append(self.centerproxy.ch)
+
+        _center_ch = self.redis_mq_service.connect(self.center_cfg.get("name"))
+        self.add_chs.append(_center_ch)
+        self.centerproxy = centerproxy.centerproxy(_center_ch, self.modulemng, self)
+        self.centerproxy.reconn_reg_hub(lambda : self.reset_reconn_count())
+
+    def onCloseServer_event(self):
+        if self.onCloseServer:
+            self.onCloseServer()
+
+    def __set_closed__(self):
+        self.__is_closed__ = True
+
+    def closeSvr(self):
+        self.centerproxy.closed()
+
+        t = Timer(3000, self.__set_closed__)
+        t.start()
+
+    def onReload_event(self, argv:str):
+        if self.onReload:
+            self.onReload(argv)
+
+    def reg_hub(self, hub_name:str):
+        ch = self.redis_mq_service.connect(hub_name)
+        _caller = hub.hub_call_hub_caller(ch, self.modulemng)
+        _caller.reg_hub(self.name, self.type)
+    
+    def poll(self):
+        _tick_begin = abelkhan.timetmp()
+
+        try:
+            self.redis_mq_service.recvmsg_mq()
+
+            for ch in self.remove_chs:
+                del self.add_chs[self.add_chs.index(ch)]
+                
+        except Exception as ex:
+            print(ex)
+
+        return abelkhan.timetmp() - _tick_begin
+
+'''{
         static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Exception ex = e.ExceptionObject as Exception;
@@ -187,11 +278,6 @@ class hub(object):
             };
         }
 
-        public void set_support_take_over_svr(bool is_support)
-        {
-            is_support_take_over_svr = is_support;
-        }
-
         public Action onCenterCrash;
         private async void reconnect_center()
         {
@@ -272,49 +358,6 @@ class hub(object):
         public void onReload_event(string argv)
         {
             onReload?.Invoke(argv);
-        }
-
-        public void connect_dbproxy(string dbproxy_name)
-        {
-            var _db_ch = _redis_mq_service.connect(dbproxy_name);
-            lock (add_chs)
-            {
-                add_chs.Add(_db_ch);
-            }
-            var _dbproxy = new dbproxyproxy(dbproxy_name, _db_ch);
-            _dbproxy.reg_hub(name);
-            _dbproxys.TryAdd(dbproxy_name, _dbproxy);
-
-            if (_dbproxys.Count == 1)
-            {
-                _dbproxy.on_connect_dbproxy_sucessed += onConnectDBProxySucessed;
-            }
-        }
-
-        public static uint randmon_uint(uint max)
-        {
-            return (uint)_r.NextInt64((int)max);
-        }
-
-        public static dbproxyproxy get_random_dbproxyproxy()
-        {
-            return _dbproxys.Values.ToArray()[randmon_uint((uint)_dbproxys.Count)];
-        }
-
-        public static dbproxyproxy get_dbproxy(string db_name)
-        {
-            return _dbproxys[db_name];
-        }
-
-        public static void dbproxy_closed(string db_name)
-        {
-            if (_dbproxys.Remove(db_name, out dbproxyproxy _p))
-            {
-                lock (remove_chs)
-                {
-                    remove_chs.Add(_p.ch);
-                }
-            }
         }
 
         public event Action onDBProxyInit;

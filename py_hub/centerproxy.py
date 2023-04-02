@@ -18,7 +18,7 @@ class centerproxy(object):
         print("begin connect center server")
 
         self.center_caller.reg_server_mq("hub", self.hub.type, self.hub.name).callBack(
-            lambda : callback(),
+            callback,
             lambda : print("connect center server faild")
         ).timeout(5000, lambda : print("connect center server timeout"))
 
@@ -26,7 +26,7 @@ class centerproxy(object):
         print("begin connect center server")
 
         self.center_caller.reconn_reg_server_mq("hub", self.hub.type, self.hub.name).callBack(
-            lambda : callback(),
+            callback,
             lambda : print("reconnect center server faild")
         ).timeout(5000, lambda : print("reconnect center server timeout"))
 

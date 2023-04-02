@@ -1,291 +1,91 @@
 ﻿import abelkhan
 import redis
+import msgpack
 
+class redis_mq:
+     pass
 
 class redischannel(abelkhan.Ichannel):
-    pass
+    def __init__(self, channelName, mq_handle:redis_mq) -> None:
+        super(redischannel, self).__init__()
+         
+        self.channelName = channelName
+        self.redis_mq_handle = mq_handle
 
-'''    {
-        private readonly string _channelName;
-        private readonly redis_mq _redis_mq_handle;
+    def disconnect(self):
+        pass
 
-        public readonly channel_onrecv _channel_onrecv;
+    def send(self, data:bytes):
+        self.redis_mq_handle.sendmsg(self.channelName, data)
 
-        public redischannel(string channelName, redis_mq mq_handle)
-        {
-            _channelName = channelName;
-            _redis_mq_handle = mq_handle;
+class redis_mq(object):
+    def __init__(self, connUrl:str, _listen_channel_name:str, _modulemng:abelkhan.modulemng) -> None:
+        self.connUrl = connUrl
+        self.r = redis.Redis.from_url(connUrl)
+        
+        self.main_channel_name = _listen_channel_name
+        self.listen_channel_names = [_listen_channel_name]
+        self.wait_listen_channel_names : list[str] = []
 
-            _channel_onrecv = new channel_onrecv(this);
-        }
+        self.channels : dict[str, abelkhan.Ichannel] = {}
 
-        public void disconnect()
-        {
-        }
+        self.modulemng = _modulemng
 
-        public bool is_xor_key_crypt()
-        {
-            return false;
-        }
+    def take_over_svr(self, svr_name:str):
+        self.wait_listen_channel_names.append(svr_name)
 
-        public void normal_send_crypt(byte[] data)
-        {
-        }
+    def recover(self):
+        self.r = redis.Redis.from_url(self.connUrl)
 
-        public void send(byte[] data)
-        {
-            _redis_mq_handle.sendmsg(_channelName, data);
-        }
+    def connect(self, ch_name:str) -> redischannel:
+        _ch = self.channels.get(ch_name)
+        if _ch:
+            return _ch
+            
+        _ch = redischannel(ch_name, self)
+        self.channels[ch_name] = _ch
 
-    }
+        return _ch
+    
+    def sendmsg(self, ch_name:str, data:bytes):
+        b_listen_ch_name = bytes(self.main_channel_name)
+        _listen_ch_name_size = len(b_listen_ch_name)
+        b_buf = bytes([(_listen_ch_name_size & 0xff), (_listen_ch_name_size >> 8 & 0xff), (_listen_ch_name_size >> 16 & 0xff), (_listen_ch_name_size >> 24 & 0xff)])
+        b_buf = b_buf + b_listen_ch_name + data
+        
+        while True:
+            try:
+                self.r.lpush(ch_name, b_buf)
+                break
+            except Exception as ex:
+                print(ex)
+                self.recover()
 
-    public class redis_mq
-    {
-        private readonly RedisConnectionHelper _connHelper;
-        private ConnectionMultiplexer connectionMultiplexer;
-        private IDatabase database;
+    def list_channel_name(self):
+        for _name in self.wait_listen_channel_names:
+            self.listen_channel_names.append(_name)
+        self.wait_listen_channel_names.clear()
 
-        private readonly string main_channel_name;
-        private readonly Task th_send;
-        private readonly Task th_recv;
-        private bool run_flag = true;
+    def recvmsg_mq(self):
+        self.list_channel_name()
 
-        private readonly List<string> listen_channel_names;
-        private readonly List<string> wait_listen_channel_names;
+        for listen_channel_name in self.listen_channel_names:
+            try:
+                pop_data = self.r.rpop(listen_channel_name)
+                while pop_data:
+                    _ch_name_size = pop_data[0] | pop_data[1] << 8 | pop_data[2] << 16 | pop_data[3] << 24
+                    _header_len = 4 + _ch_name_size
+                    _ch_name = str(pop_data[4:_header_len])
 
-        private readonly ConcurrentDictionary<string, redischannel> channels;
-        private readonly ConcurrentQueue<Tuple<string, MemoryStream> > send_data;
+                    _ch = self.channels.get(_ch_name)
+                    if not _ch:
+                        _ch = redischannel(_ch_name, self)
+                        self.channels[_ch_name] = _ch
+                    
+                    self.modulemng.process_event(_ch, msgpack.loads(pop_data[_header_len:]))
 
-        public redis_mq(string connUrl, string _listen_channel_name)
-        {
-            main_channel_name = _listen_channel_name;
-            listen_channel_names = new() { _listen_channel_name };
-            wait_listen_channel_names = new ();
-            channels = new ConcurrentDictionary<string, redischannel>();
+                    pop_data = self.r.rpop(listen_channel_name)
 
-            _connHelper = new RedisConnectionHelper(connUrl, "RedisForMQ");
-            _connHelper.ConnectOnStartup(ref connectionMultiplexer, ref database);
-
-            send_data = new ConcurrentQueue<Tuple<string, MemoryStream> >();
-
-            th_send = new Task(th_send_poll, TaskCreationOptions.LongRunning);
-            th_send.Start();
-            th_recv = new Task(th_recv_poll, TaskCreationOptions.LongRunning);
-            th_recv.Start();
-        }
-
-        public void take_over_svr(string svr_name)
-        {
-            lock (wait_listen_channel_names)
-            {
-                wait_listen_channel_names.Add(svr_name);
-            }
-        }
-
-        void Recover(System.Exception e)
-        {
-            _connHelper.Recover(ref connectionMultiplexer, ref database, e);
-        }
-
-        public async void close()
-        {
-            run_flag = false;
-            await th_send;
-            await th_recv;
-        }
-
-        public redischannel connect(string ch_name)
-        {
-            lock (channels)
-            {
-                if (channels.TryGetValue(ch_name, out redischannel ch))
-                {
-                    return ch;
-                }
-
-                ch = new redischannel(ch_name, this);
-                channels.TryAdd(ch_name, ch);
-                return ch;
-            }
-        }
-
-        public void sendmsg(string ch_name, byte[] data)
-        {
-            log.log.trace("send msg to:{0}", ch_name);
-
-            var b_listen_ch_name = System.Text.Encoding.UTF8.GetBytes(main_channel_name);
-            var _listen_ch_name_size = b_listen_ch_name.Length;
-            var st = MemoryStreamPool.mstMgr.GetStream();
-            st.WriteByte((byte)(_listen_ch_name_size & 0xff));
-            st.WriteByte((byte)(_listen_ch_name_size >> 8 & 0xff));
-            st.WriteByte((byte)(_listen_ch_name_size >> 16 & 0xff));
-            st.WriteByte((byte)(_listen_ch_name_size >> 24 & 0xff));
-            st.Write(b_listen_ch_name, 0, _listen_ch_name_size);
-            st.Write(data, 0, data.Length);
-            st.Position = 0;
-
-            send_data.Enqueue(Tuple.Create(ch_name, st));
-        }
-
-        private async Task<bool> sendmsg_mq()
-        {
-            bool is_busy = false;
-            if (send_data.TryDequeue(out Tuple<string, MemoryStream> data))
-            {
-                while (true)
-                {
-                    try
-                    {
-                        await database.ListLeftPushAsync(data.Item1, data.Item2.ToArray());
-                        break;
-                    }
-                    catch (RedisTimeoutException ex)
-                    {
-                        log.log.err("ListLeftPushAsync error:{0}", ex);
-                        Recover(ex);
-                    }
-                    catch (RedisConnectionException ex)
-                    {
-                        log.log.err("ListLeftPushAsync error:{0}", ex);
-                        Recover(ex);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        log.log.err("sendmsg_mq error:{0}", ex);
-                    }
-                }
-                is_busy = true;
-            }
-
-            return is_busy;
-        }
-
-        private void list_channel_name()
-        {
-            try
-            {
-                if (wait_listen_channel_names.Count > 0)
-                {
-                    lock (wait_listen_channel_names)
-                    {
-                        foreach (var name in wait_listen_channel_names)
-                        {
-                            listen_channel_names.Add(name);
-                        }
-                        wait_listen_channel_names.Clear();
-                    }
-                }
-            }
-            catch (System.Exception ex)
-            {
-                log.log.err("list_channel_name error:{0}", ex);
-            }
-        }
-
-        private async Task<bool> recvmsg_mq()
-        {
-            bool is_busy = false;
-            try
-            {
-                foreach (var listen_channel_name in listen_channel_names)
-                {
-                    var pop_data = (byte[])(await database.ListRightPopAsync(listen_channel_name));
-                    while (pop_data != null)
-                    {
-                        is_busy = true;
-
-                        var _ch_name_size = (UInt32)pop_data[0] | ((UInt32)pop_data[1] << 8) | ((UInt32)pop_data[2] << 16) | ((UInt32)pop_data[3] << 24);
-                        var _ch_name = System.Text.Encoding.UTF8.GetString(pop_data, 4, (int)_ch_name_size);
-                        var _header_len = 4 + _ch_name_size;
-                        var _msg_len = pop_data.Length - _header_len;
-
-                        using var _st = MemoryStreamPool.mstMgr.GetStream();
-                        _st.Write(pop_data, (int)_header_len, (int)_msg_len);
-                        _st.Position = 0;
-
-                        if (channels.TryGetValue(_ch_name, out redischannel ch))
-                        {
-                            ch._channel_onrecv.on_recv(_st.ToArray());
-                        }
-                        else
-                        {
-                            ch = new redischannel(_ch_name, this);
-                            channels.TryAdd(_ch_name, ch);
-                            ch._channel_onrecv.on_recv(_st.ToArray());
-                        }
-
-                        pop_data = await database.ListRightPopAsync(listen_channel_name);
-                    }
-                }
-            }
-            catch (RedisTimeoutException ex)
-            {
-                log.log.err("ListLeftPushAsync error:{0}", ex);
-                Recover(ex);
-            }
-            catch (RedisConnectionException ex)
-            {
-                log.log.err("ListLeftPushAsync error:{0}", ex);
-                Recover(ex);
-            }
-            catch (System.Exception ex)
-            {
-                log.log.err("recvmsg_mq error:{0}", ex);
-            }
-
-            return is_busy;
-        }
-
-        private async void th_send_poll()
-        {
-            var idle_wait = 2;
-            while (run_flag)
-            {
-                var is_send_busy = await sendmsg_mq();
-                if (!is_send_busy)
-                {
-                    await Task.Delay(idle_wait);
-                    if (idle_wait > 32)
-                    {
-                        idle_wait = 2;
-                    }
-                    else
-                    {
-                        idle_wait *= 2;
-                    }
-                }
-                else
-                {
-                    idle_wait = 2;
-                }
-            }
-        }
-
-        private async void th_recv_poll()
-        {
-            var idle_wait = 2;
-            while (run_flag)
-            {
-                list_channel_name();
-                var is_recv_busy = await recvmsg_mq();
-                if (!is_recv_busy)
-                {
-                    await Task.Delay(idle_wait);
-                    if (idle_wait > 32)
-                    {
-                        idle_wait = 2;
-                    }
-                    else
-                    {
-                        idle_wait *= 2;
-                    }
-                }
-                else
-                {
-                    idle_wait = 2;
-                }
-            }
-        }
-    }
-}
-'''
+            except Exception as ex:
+                print(ex)
+                self.recover()
