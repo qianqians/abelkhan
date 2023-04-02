@@ -8,8 +8,8 @@ namespace hub
     {
         public hubproxy current_hubproxy = null;
 
-        private Dictionary<String, hubproxy> hubproxys;
-        private Dictionary<abelkhan.Ichannel, hubproxy> ch_hubproxys;
+        private readonly Dictionary<String, hubproxy> hubproxys;
+        private readonly Dictionary<abelkhan.Ichannel, hubproxy> ch_hubproxys;
 
         public hubmanager()
         {

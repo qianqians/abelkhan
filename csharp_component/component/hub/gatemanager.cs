@@ -11,10 +11,10 @@ namespace hub
 {
     public class directproxy
     {
-        private abelkhan.hub_call_client_caller _hub_call_client_caller;
+        private readonly abelkhan.hub_call_client_caller _hub_call_client_caller;
 
-        public string _cuuid;
-        public abelkhan.Ichannel _direct_ch;
+        public readonly string _cuuid;
+        public readonly abelkhan.Ichannel _direct_ch;
 
         public long _timetmp = 0;
         public long _theory_timetmp = 0;
