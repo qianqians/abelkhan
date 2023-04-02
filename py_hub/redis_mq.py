@@ -1,15 +1,11 @@
-﻿using StackExchange.Redis;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.IO;
+﻿import abelkhan
+import redis
 
-namespace abelkhan
-{
-    public class redischannel : Ichannel
-    {
+
+class redischannel(abelkhan.Ichannel):
+    pass
+
+'''    {
         private readonly string _channelName;
         private readonly redis_mq _redis_mq_handle;
 
@@ -292,3 +288,4 @@ namespace abelkhan
         }
     }
 }
+'''
