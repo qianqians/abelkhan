@@ -88,7 +88,7 @@ namespace abelkhan
             var gm_host = _config.get_value_string("gm_host");
             var gm_port = _config.get_value_int("gm_port");
             _accept_gm_service = new acceptservice((ushort)gm_port);
-            _accept_gm_service.on_connect += (abelkhan.Ichannel ch) =>{
+            acceptservice.on_connect += (abelkhan.Ichannel ch) =>{
                 lock (add_chs)
                 {
                     add_chs.Add(ch);

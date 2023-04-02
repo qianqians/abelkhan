@@ -3,32 +3,28 @@
  * 2020/6/2
  * qianqians
  */
-using System;
-using System.IO;
-using System.Collections;
-using System.Collections.Generic;
-using DotNetty.Transport.Channels;
-using DotNetty.Buffers;
+using Microsoft.AspNetCore.Connections;
+using System.Buffers;
 
 namespace abelkhan
 {
     public class channel : abelkhan.Ichannel
     {
-        private IChannelHandlerContext context;
+        private ConnectionContext connection;
         private object lockobj;
 
         public channel_onrecv _channel_onrecv;
 
-        public channel(IChannelHandlerContext _context)
+        public channel(ConnectionContext _connection)
         {
-            context = _context;
+            connection = _connection;
             lockobj = new object();
             _channel_onrecv = new channel_onrecv(this);
         }
 
         public void disconnect()
         {
-            context.CloseAsync();
+            connection.Abort();
         }
 
         public bool is_xor_key_crypt()
@@ -42,13 +38,9 @@ namespace abelkhan
 
         public void send(byte[] data)
         {
-            var len = data.Length;
-            var initialMessage = Unpooled.Buffer((int)len);
-            initialMessage.WriteBytes(data);
-
             lock (lockobj)
             {
-                context.WriteAndFlushAsync(initialMessage);
+                connection.Transport.Output.Write(data);
             }
         }
     }

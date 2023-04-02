@@ -1,4 +1,5 @@
-﻿using ENet.Managed;
+﻿using abelkhan;
+using ENet.Managed;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -12,7 +13,7 @@ namespace hub
 	{
         static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Exception ex = e.ExceptionObject as Exception;
+            System.Exception ex = e.ExceptionObject as System.Exception;
             log.log.err("unhandle exception:{0}", ex.ToString());
         }
 
@@ -118,7 +119,7 @@ namespace hub
                     tcp_outside_address.host = _config.get_value_string("tcp_outside_host");
                     tcp_outside_address.port = (ushort)_config.get_value_int("tcp_outside_port");
                     _cryptacceptservice = new abelkhan.cryptacceptservice(tcp_outside_address.port);
-                    _cryptacceptservice.on_connect += (ch) => {
+                    cryptacceptservice.on_connect += (ch) => {
                         lock (add_chs)
                         {
                             add_chs.Add(ch);
