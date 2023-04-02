@@ -1,80 +1,42 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿import abelkhan
+import center
+from collections.abc import Callable
+import hub_server
 
-namespace hub
-{
-	public class centerproxy
-    {
-        private readonly abelkhan.center_caller _center_caller;
+class centerproxy(object):
+    def __init__(self, _ch:abelkhan.Ichannel, _modulemng:abelkhan.modulemng, _hub:hub_server.hub) -> None:
+        self.timetmp = abelkhan.timetmp()
+        self.is_reg_center_sucess = False
+        self.ch = _ch
+        self.center_caller = center.center_caller(self.ch, _modulemng)
+        self.hub = _hub
 
-        public centerproxy(abelkhan.Ichannel ch)
-		{
-			is_reg_center_sucess = false;
-            _ch = ch;
-            _center_caller = new abelkhan.center_caller(ch, abelkhan.modulemng_handle._modulemng);
-        }
+    def __refresh_timetmp__(self):
+        self.timetmp = abelkhan.timetmp()
 
-        public void reg_hub(Action callback)
-        {
-            log.log.trace("begin connect center server");
+    def reg_hub(self, callback:Callable[[]]) -> None:
+        print("begin connect center server")
 
-            _center_caller.reg_server_mq("hub", hub.type, hub.name).callBack(() =>
-            {
-                callback.Invoke();
-                log.log.trace("connect center server sucessed");
-            }, () =>
-            {
-                log.log.trace("connect center server faild");
-            }).timeout(5000, () =>
-            {
-                log.log.trace("connect center server timeout");
-            });
-        }
+        self.center_caller.reg_server_mq("hub", self.hub.type, self.hub.name).callBack(
+            lambda : callback(),
+            lambda : print("connect center server faild")
+        ).timeout(5000, lambda : print("connect center server timeout"))
 
-        public Task<bool> reconn_reg_hub()
-        {
-            log.log.trace("begin connect center server");
+    def reconn_reg_hub(self, callback:Callable[[]]) -> None:
+        print("begin connect center server")
 
-            var task_ret = new TaskCompletionSource<bool>();
+        self.center_caller.reconn_reg_server_mq("hub", self.hub.type, self.hub.name).callBack(
+            lambda : callback(),
+            lambda : print("reconnect center server faild")
+        ).timeout(5000, lambda : print("reconnect center server timeout"))
 
-            _center_caller.reconn_reg_server_mq("hub", hub.type, hub.name).callBack(() => {
-                log.log.trace("reconnect center server sucessed");
-                task_ret.SetResult(true);
-            }, () => {
-                log.log.err("reconnect center server faild");
-                task_ret.SetResult(false);
-            }).timeout(5000, () => {
-                log.log.err("reconnect center server timeout");
-                task_ret.SetResult(false);
-            });
+    def heartbeat(self) -> None:
+        print("begin heartbeath center server tick:!", abelkhan.timetmp())
 
-            return task_ret.Task;
-        }
+        self.center_caller.heartbeat(abelkhan.timetmp()).callBack(
+            lambda : self.__refresh_timetmp__(),
+            lambda : print("heartbeat center server faild")
+        ).timeout(5000, lambda : print("heartbeat center server timeout"))
 
-        public void heartbeat()
-        {
-            _center_caller.heartbeat(hub.tick).callBack(() => {
-                log.log.trace("heartbeat center server sucessed");
-
-                timetmp = service.timerservice.Tick;
-
-            }, () => {
-                log.log.err("heartbeat center server faild");
-            }).timeout(5000, () => {
-                log.log.err("heartbeat center server timeout");
-            });
-            log.log.trace("begin heartbeath center server tick:{0}!", service.timerservice.Tick);
-        }
-
-        public void closed()
-        {
-            _center_caller.closed();
-        }
-
-        public long timetmp = service.timerservice.Tick;
-        public bool is_reg_center_sucess;
-        public readonly abelkhan.Ichannel _ch;
-
-    }
-}
-
+    def closed(self):
+        self.center_caller.closed()

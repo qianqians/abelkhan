@@ -3,7 +3,7 @@ from threading import Timer
 from collections.abc import Callable
 from enum import Enum
 
-fromframework_error import *
+from framework_error import *
 # this enum code is codegen by abelkhan codegen for python
 
 #this struct code is codegen by abelkhan codegen for python
@@ -94,13 +94,13 @@ class client_call_gate_heartbeats_cb:
         self.event_heartbeats_handle_err = None
         self.event_heartbeats_handle_timeout = None
 
-    def callBack(self, _cb:Callable[[long]], _err:Callable[[]]):
+    def callBack(self, _cb:Callable[[int]], _err:Callable[[]]):
         self.event_heartbeats_handle_cb = _cb
         self.event_heartbeats_handle_err = _err
         return self
 
     def timeout(self, tick:int, timeout_cb:Callable[...]):
-        t = Timer(tick, lambda self : self.module_rsp_cb.heartbeats_timeout(self.cb_uuid))
+        t = Timer(tick, lambda : self.module_rsp_cb.heartbeats_timeout(self.cb_uuid))
         t.start()
         self.event_heartbeats_handle_timeout = timeout_cb
 
@@ -118,7 +118,7 @@ class client_call_gate_get_hub_info_cb:
         return self
 
     def timeout(self, tick:int, timeout_cb:Callable[...]):
-        t = Timer(tick, lambda self : self.module_rsp_cb.get_hub_info_timeout(self.cb_uuid))
+        t = Timer(tick, lambda : self.module_rsp_cb.get_hub_info_timeout(self.cb_uuid))
         t.start()
         self.event_get_hub_info_handle_timeout = timeout_cb
 
@@ -236,7 +236,7 @@ class hub_call_gate_reg_hub_cb:
         return self
 
     def timeout(self, tick:int, timeout_cb:Callable[...]):
-        t = Timer(tick, lambda self : self.module_rsp_cb.reg_hub_timeout(self.cb_uuid))
+        t = Timer(tick, lambda : self.module_rsp_cb.reg_hub_timeout(self.cb_uuid))
         t.start()
         self.event_reg_hub_handle_timeout = timeout_cb
 
@@ -254,7 +254,7 @@ class hub_call_gate_reverse_reg_client_hub_cb:
         return self
 
     def timeout(self, tick:int, timeout_cb:Callable[...]):
-        t = Timer(tick, lambda self : self.module_rsp_cb.reverse_reg_client_hub_timeout(self.cb_uuid))
+        t = Timer(tick, lambda : self.module_rsp_cb.reverse_reg_client_hub_timeout(self.cb_uuid))
         t.start()
         self.event_reverse_reg_client_hub_handle_timeout = timeout_cb
 
@@ -284,7 +284,7 @@ class hub_call_gate_caller(Icaller):
             rsp_cb_hub_call_gate_handle.map_reg_hub[uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106] = cb_reg_hub_obj
         return cb_reg_hub_obj
 
-    def tick_hub_health(self, tick_time:long):
+    def tick_hub_health(self, tick_time:int):
         _argv_e81472b5_19a4_36bc_9cd9_b8fe87a10079 = []
         _argv_e81472b5_19a4_36bc_9cd9_b8fe87a10079.append(tick_time)
         self.call_module_method("hub_call_gate_tick_hub_health", _argv_e81472b5_19a4_36bc_9cd9_b8fe87a10079)
@@ -339,7 +339,7 @@ class client_call_gate_heartbeats_rsp(Response):
         super(client_call_gate_heartbeats_rsp, self).__init(_ch, _uuid)
         self.uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56 = _uuid
 
-    def rsp(self, timetmp:long):
+    def rsp(self, timetmp:int):
         _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = [self.uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56]
         _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4.append(timetmp)
         self.call_module_method("client_call_gate_rsp_cb_heartbeats_rsp", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4)
@@ -436,7 +436,7 @@ class hub_call_gate_module(Imodule):
         self.modules.reg_method("hub_call_gate_forward_hub_call_global_client", [self, self.forward_hub_call_global_client])
 
         self.cb_reg_hub : Callable[[str, str]] = None
-        self.cb_tick_hub_health : Callable[[long]] = None
+        self.cb_tick_hub_health : Callable[[int]] = None
         self.cb_reverse_reg_client_hub : Callable[[str]] = None
         self.cb_unreg_client_hub : Callable[[str]] = None
         self.cb_disconnect_client : Callable[[str]] = None

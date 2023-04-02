@@ -101,7 +101,7 @@ class center_reg_server_mq_cb:
         return self
 
     def timeout(self, tick:int, timeout_cb:Callable[...]):
-        t = Timer(tick, lambda self : self.module_rsp_cb.reg_server_mq_timeout(self.cb_uuid))
+        t = Timer(tick, lambda : self.module_rsp_cb.reg_server_mq_timeout(self.cb_uuid))
         t.start()
         self.event_reg_server_mq_handle_timeout = timeout_cb
 
@@ -119,7 +119,7 @@ class center_reconn_reg_server_mq_cb:
         return self
 
     def timeout(self, tick:int, timeout_cb:Callable[...]):
-        t = Timer(tick, lambda self : self.module_rsp_cb.reconn_reg_server_mq_timeout(self.cb_uuid))
+        t = Timer(tick, lambda : self.module_rsp_cb.reconn_reg_server_mq_timeout(self.cb_uuid))
         t.start()
         self.event_reconn_reg_server_mq_handle_timeout = timeout_cb
 
@@ -137,7 +137,7 @@ class center_heartbeat_cb:
         return self
 
     def timeout(self, tick:int, timeout_cb:Callable[...]):
-        t = Timer(tick, lambda self : self.module_rsp_cb.heartbeat_timeout(self.cb_uuid))
+        t = Timer(tick, lambda : self.module_rsp_cb.heartbeat_timeout(self.cb_uuid))
         t.start()
         self.event_heartbeat_handle_timeout = timeout_cb
 
@@ -184,7 +184,7 @@ class center_caller(Icaller):
             rsp_cb_center_handle.map_reconn_reg_server_mq[uuid_0012a813_9a7b_57c8_a9d1_9a08790cad21] = cb_reconn_reg_server_mq_obj
         return cb_reconn_reg_server_mq_obj
 
-    def heartbeat(self, tick:long):
+    def heartbeat(self, tick:int):
         self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066 = (self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb0661) & 0x7fffffff
         uuid_9654538a_9916_57dc_8ea5_806086d7a378 = self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066
 
@@ -349,7 +349,7 @@ class center_module(Imodule):
 
         self.cb_reg_server_mq : Callable[[str, str, str]] = None
         self.cb_reconn_reg_server_mq : Callable[[str, str, str]] = None
-        self.cb_heartbeat : Callable[[long]] = None
+        self.cb_heartbeat : Callable[[int]] = None
         self.cb_closed : Callable[[]] = None
 
     def reg_server_mq(self, inArray:list):

@@ -3,7 +3,7 @@
 # build by qianqians
 # juggle abelkhan
 import random
-import struct
+import time
 import msgpack
 from abc import ABCMeta,abstractmethod
 from collections.abc import Callable
@@ -15,6 +15,9 @@ class AbelkhanError(RuntimeError):
 
 def RandomUUID():
     random.randint(0, int.max)
+
+def timetmp():
+    return int(round(time.time() * 1000))
     
 class Ichannel(object):
     __metaclass__ = ABCMeta
@@ -40,7 +43,7 @@ class Icaller(object):
         _len1 = (_tmp_len >> 8) & 0xff
         _len2 = (_tmp_len >> 16) & 0xff
         _len3 = (_tmp_len >> 24) & 0xff
-        _send_buf = struct.pack("BBBB", _len0, _len1, _len2, _len3) + _data
+        _send_buf = bytes([_len0, _len1, _len2, _len3]) + _data
         
         self.ch.send(_send_buf)
     

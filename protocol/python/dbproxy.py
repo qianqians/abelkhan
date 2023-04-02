@@ -204,7 +204,7 @@ class hub_call_dbproxy_reg_hub_cb:
         return self
 
     def timeout(self, tick:int, timeout_cb:Callable[...]):
-        t = Timer(tick, lambda self : self.module_rsp_cb.reg_hub_timeout(self.cb_uuid))
+        t = Timer(tick, lambda : self.module_rsp_cb.reg_hub_timeout(self.cb_uuid))
         t.start()
         self.event_reg_hub_handle_timeout = timeout_cb
 
@@ -216,13 +216,13 @@ class hub_call_dbproxy_get_guid_cb:
         self.event_get_guid_handle_err = None
         self.event_get_guid_handle_timeout = None
 
-    def callBack(self, _cb:Callable[[long]], _err:Callable[[]]):
+    def callBack(self, _cb:Callable[[int]], _err:Callable[[]]):
         self.event_get_guid_handle_cb = _cb
         self.event_get_guid_handle_err = _err
         return self
 
     def timeout(self, tick:int, timeout_cb:Callable[...]):
-        t = Timer(tick, lambda self : self.module_rsp_cb.get_guid_timeout(self.cb_uuid))
+        t = Timer(tick, lambda : self.module_rsp_cb.get_guid_timeout(self.cb_uuid))
         t.start()
         self.event_get_guid_handle_timeout = timeout_cb
 
@@ -240,7 +240,7 @@ class hub_call_dbproxy_create_persisted_object_cb:
         return self
 
     def timeout(self, tick:int, timeout_cb:Callable[...]):
-        t = Timer(tick, lambda self : self.module_rsp_cb.create_persisted_object_timeout(self.cb_uuid))
+        t = Timer(tick, lambda : self.module_rsp_cb.create_persisted_object_timeout(self.cb_uuid))
         t.start()
         self.event_create_persisted_object_handle_timeout = timeout_cb
 
@@ -258,7 +258,7 @@ class hub_call_dbproxy_updata_persisted_object_cb:
         return self
 
     def timeout(self, tick:int, timeout_cb:Callable[...]):
-        t = Timer(tick, lambda self : self.module_rsp_cb.updata_persisted_object_timeout(self.cb_uuid))
+        t = Timer(tick, lambda : self.module_rsp_cb.updata_persisted_object_timeout(self.cb_uuid))
         t.start()
         self.event_updata_persisted_object_handle_timeout = timeout_cb
 
@@ -276,7 +276,7 @@ class hub_call_dbproxy_find_and_modify_cb:
         return self
 
     def timeout(self, tick:int, timeout_cb:Callable[...]):
-        t = Timer(tick, lambda self : self.module_rsp_cb.find_and_modify_timeout(self.cb_uuid))
+        t = Timer(tick, lambda : self.module_rsp_cb.find_and_modify_timeout(self.cb_uuid))
         t.start()
         self.event_find_and_modify_handle_timeout = timeout_cb
 
@@ -294,7 +294,7 @@ class hub_call_dbproxy_remove_object_cb:
         return self
 
     def timeout(self, tick:int, timeout_cb:Callable[...]):
-        t = Timer(tick, lambda self : self.module_rsp_cb.remove_object_timeout(self.cb_uuid))
+        t = Timer(tick, lambda : self.module_rsp_cb.remove_object_timeout(self.cb_uuid))
         t.start()
         self.event_remove_object_handle_timeout = timeout_cb
 
@@ -306,13 +306,13 @@ class hub_call_dbproxy_get_object_count_cb:
         self.event_get_object_count_handle_err = None
         self.event_get_object_count_handle_timeout = None
 
-    def callBack(self, _cb:Callable[[long]], _err:Callable[[]]):
+    def callBack(self, _cb:Callable[[int]], _err:Callable[[]]):
         self.event_get_object_count_handle_cb = _cb
         self.event_get_object_count_handle_err = _err
         return self
 
     def timeout(self, tick:int, timeout_cb:Callable[...]):
-        t = Timer(tick, lambda self : self.module_rsp_cb.get_object_count_timeout(self.cb_uuid))
+        t = Timer(tick, lambda : self.module_rsp_cb.get_object_count_timeout(self.cb_uuid))
         t.start()
         self.event_get_object_count_handle_timeout = timeout_cb
 
@@ -500,7 +500,7 @@ class hub_call_dbproxy_get_guid_rsp(Response):
         super(hub_call_dbproxy_get_guid_rsp, self).__init(_ch, _uuid)
         self.uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948 = _uuid
 
-    def rsp(self, guid:long):
+    def rsp(self, guid:int):
         _argv_8b362c4a_74a5_366e_a6af_37474d7fa521 = [self.uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948]
         _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.append(guid)
         self.call_module_method("hub_call_dbproxy_rsp_cb_get_guid_rsp", _argv_8b362c4a_74a5_366e_a6af_37474d7fa521)
@@ -567,7 +567,7 @@ class hub_call_dbproxy_get_object_count_rsp(Response):
         super(hub_call_dbproxy_get_object_count_rsp, self).__init(_ch, _uuid)
         self.uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2 = _uuid
 
-    def rsp(self, count:long):
+    def rsp(self, count:int):
         _argv_2632cded_162c_3a9b_86ee_462b614cbeea = [self.uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2]
         _argv_2632cded_162c_3a9b_86ee_462b614cbeea.append(count)
         self.call_module_method("hub_call_dbproxy_rsp_cb_get_object_count_rsp", _argv_2632cded_162c_3a9b_86ee_462b614cbeea)

@@ -1,15 +1,11 @@
-﻿using ENet.Managed;
-using System;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+﻿import uuid 
 
-namespace hub
-{
-	public class hub
-	{
+class hub(object):
+	def __init__(self, config_file:str, _hub_name:str, _hub_type:str) -> None:
+		self.name = f"{_hub_name}_{uuid.uuid1().hex}"
+		self.type = _hub_type
+		
+	'''{
         static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Exception ex = e.ExceptionObject as Exception;
@@ -459,4 +455,4 @@ namespace hub
         public event Action<string> on_direct_client_disconnect;
     }
 }
-
+'''
