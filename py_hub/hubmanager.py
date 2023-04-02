@@ -1,71 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections;
+﻿import hubproxy
+import abelkhan
+import hub_server
+from collections.abc import Callable
 
-namespace hub
-{
-    public class hubmanager
-    {
-        public hubproxy current_hubproxy = null;
+class hubmanager(object):
+    def __init__(self, _modulemng:abelkhan.modulemng, _hub:hub_server.hub) -> None:
+        self.modulemng = _modulemng
+        self.hub = _hub
 
-        private Dictionary<String, hubproxy> hubproxys;
-        private Dictionary<abelkhan.Ichannel, hubproxy> ch_hubproxys;
+        self.current_hubproxy : hubproxy.hubproxy = None
+        self.hubproxys : dict[str, hubproxy.hubproxy] = {}
+        self.ch_hubproxys : dict[abelkhan.Ichannel, hubproxy.hubproxy] = {}
 
-        public hubmanager()
-        {
-            hubproxys = new Dictionary<string, hubproxy>();
-            ch_hubproxys = new Dictionary<abelkhan.Ichannel, hubproxy>();
-        }
+        self.on_hubproxy : Callable[[hubproxy.hubproxy]] = None
+        self.on_hubproxy_reconn : Callable[[hubproxy.hubproxy]] = None
 
-        public event Action<hubproxy> on_hubproxy;
-        public event Action<hubproxy> on_hubproxy_reconn;
-        public void reg_hub(string hub_name, string hub_type, abelkhan.Ichannel ch)
-        {
-            hubproxy _proxy = new hubproxy(hub_name, hub_type, ch);
-            if (hubproxys.TryGetValue(hub_name, out hubproxy _old_proxy))
-            {
-                hubproxys[hub_name] = _proxy;
-                on_hubproxy_reconn?.Invoke(_proxy);
-            }
-            else
-            {
-                hubproxys.Add(hub_name, _proxy);
-                on_hubproxy?.Invoke(_proxy);
-            }
-            ch_hubproxys[ch] = _proxy;
+    def reg_hub(self, hub_name:str, hub_type:str, ch:abelkhan.Ichannel):
+        _proxy = hubproxy.hubproxy(hub_name, hub_type, ch, self.modulemng)
 
-            lock (hub.add_chs)
-            {
-                hub.add_chs.Add(ch);
-            }
-        }
+        _old_proxy = self.hubproxys.get(hub_name)
+        self.hubproxys[hub_name] = _proxy
+        if _old_proxy:
+            if self.on_hubproxy_reconn:
+                self.on_hubproxy_reconn(_proxy)
+        else:
+            if self.on_hubproxy:
+                self.on_hubproxy(_proxy)
+        self.ch_hubproxys[ch] = _proxy
 
-        public hubproxy get_hub(abelkhan.Ichannel ch)
-        {
-            ch_hubproxys.TryGetValue(ch, out hubproxy _proxy);
-            return _proxy;
-        }
+        self.hub.add_chs.append(ch)
 
-        public void hub_be_closed(string hub_name)
-        {
-        }
-
-        public void call_hub(string hub_name, string func_name, ArrayList _argvs)
-        {
-            if (hubproxys.TryGetValue(hub_name, out hubproxy _proxy))
-            {
-                ArrayList _argvs_list = new ArrayList();
-                foreach (var o in _argvs)
-                {
-                    _argvs_list.Add(o);
-                }
-
-                _proxy.caller_hub(func_name, _argvs_list);
-            }
-            else
-            {
-                log.log.err("unreg hub:{0}!", hub_name);
-            }
-        }
-    }
-}
+    def get_hub(self, ch:abelkhan.Ichannel):
+        return self.ch_hubproxys.get(ch)
+    
+    def call_hub(self, hub_name:str, func_name:str, _argvs:list):
+        _proxy = self.hubproxys.get(hub_name)
+        if _proxy:
+            _proxy.caller_hub(func_name, _argvs)
+        else:
+            print(f"unreg hub:{hub_name}!")

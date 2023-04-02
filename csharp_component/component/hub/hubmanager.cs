@@ -54,13 +54,7 @@ namespace hub
         {
             if (hubproxys.TryGetValue(hub_name, out hubproxy _proxy))
             {
-                ArrayList _argvs_list = new ArrayList();
-                foreach (var o in _argvs)
-                {
-                    _argvs_list.Add(o);
-                }
-
-                _proxy.caller_hub(func_name, _argvs_list);
+                _proxy.caller_hub(func_name, _argvs);
             }
             else
             {

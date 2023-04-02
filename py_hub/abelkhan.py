@@ -58,9 +58,9 @@ class Imodule(object):
 
 class modulemng(object):
     def __init__(self) -> None:
-        self.method_set = {}
+        self.method_set : dict[str, Callable[[list]]] = {}
         
-    def reg_method(self, method_name:str, method:tuple[Imodule, Callable[...]]):
+    def reg_method(self, method_name:str, method:tuple[Imodule, Callable[[list]]]):
         self.method_set[method_name] = method
     
     def process_event(self, _ch:Ichannel, _event:list):

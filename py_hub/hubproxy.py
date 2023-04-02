@@ -1,8 +1,6 @@
 ﻿import msgpack
 import abelkhan
 import hub
-from collections.abc import Callable
-import hub_server
 
 class hubproxy(object):
     def __init__(self, hub_name:str, hub_type:str, _ch:abelkhan.Ichannel, _modulemng:abelkhan.modulemng) -> None:

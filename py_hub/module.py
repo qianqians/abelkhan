@@ -1,30 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using MsgPack.Serialization;
+﻿class moduleException(Exception):
+	def __init__(self, err:str) -> None:
+		super(moduleException, self).__init__(err)
+		self.err = err
 
-namespace common
-{
-	public class moduleException : System.Exception
-	{
-		public moduleException(string _err) : base(_err)
-		{
-		}
-	}
-
-	public class Response
-	{
-	}
-
-	public class imodule
-	{
-		public imodule()
-        {
-		}
-
-		public Response rsp = null;
-	}
-}
-
+class Response(object):
+	def __init__(self) -> None:
+		pass
+	
+class imodule(object):
+	def __init__(self) -> None:
+		self.rsp : Response = None

@@ -1,10 +1,14 @@
 ﻿import uuid 
+import abelkhan
 
 class hub(object):
 	def __init__(self, config_file:str, _hub_name:str, _hub_type:str) -> None:
 		self.name = f"{_hub_name}_{uuid.uuid1().hex}"
 		self.type = _hub_type
 		
+		self.add_chs : list[abelkhan.Ichannel] = []
+		self.remove_chs : list[abelkhan.Ichannel] = []
+	
 	'''{
         static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
