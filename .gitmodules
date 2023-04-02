@@ -16,6 +16,3 @@
 [submodule "cpp_component/3rdparty/libbson"]
 	path = cpp_component/3rdparty/libbson
 	url = git@github.com:qianqians/libbson.git
-[submodule "cpp_component/3rdparty/bdwgc"]
-	path = cpp_component/3rdparty/bdwgc
-	url = git@github.com:ivmai/bdwgc.git

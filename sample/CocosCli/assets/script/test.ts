@@ -56,9 +56,9 @@ export class Test extends Component {
                     this._cli.connect_hub(hub_info.hub_name, hub_info.hub_type, "ws://" + ip + ":" + port);
                 }, () =>
                 {
-                    console.log("get_svr_host faild!");
+                    console.log(`get_svr_host faild! hub_info.hub_name:${hub_info.hub_name}`);
                 }).timeout(3000, ()=> {
-                    console.log("get_svr_host timeout!");
+                    console.log(`get_svr_host timeout! hub_info.hub_name:${hub_info.hub_name}`);
                 });
             });
         };

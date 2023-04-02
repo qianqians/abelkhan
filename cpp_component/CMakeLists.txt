@@ -1,18 +1,17 @@
 PROJECT(abelkhan_cpp)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6) 
 
+set(CMAKE_CXX_STANDARD 23)
+
 if (MSVC_VERSION GREATER_EQUAL "1900")
-    include(CheckCXXCompilerFlag)
-    CHECK_CXX_COMPILER_FLAG("/std:c++latest" _cpp_latest_flag_supported)
-    if (_cpp_latest_flag_supported)
-        add_compile_options("/std:c++latest")
-		add_compile_options(/wd4200)
-		add_compile_options(/wd4267)
-		add_compile_options(/wd4996)
-    endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+	add_compile_options(/wd4200)
+	add_compile_options(/wd4267)
+	add_compile_options(/wd4996)
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+set(gc_header_path ${PROJECT_SOURCE_DIR}//3rdparty//bdwgc//include CACHE PATH "gc include path")
+INCLUDE_DIRECTORIES(${gc_header_path})
 
 set(asio_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//3rdparty//asio//include CACHE PATH "asio include path")
 INCLUDE_DIRECTORIES(${asio_INCLUDE_PATH})

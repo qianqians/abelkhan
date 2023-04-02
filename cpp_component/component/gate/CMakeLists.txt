@@ -4,9 +4,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
-set(gc_header_path ..//..//3rdparty//bdwgc//include CACHE PATH "gc include path")
-INCLUDE_DIRECTORIES(${gc_header_path})
-
 set(protocol_header_path ..//..//..//protocol//cpp CACHE PATH "protocol include path")
 INCLUDE_DIRECTORIES(${protocol_header_path})
 file(GLOB protcol_header_files ../../../protocol/cpp/ ../../../protocol/cpp/*.h)

@@ -15,7 +15,6 @@ namespace abelkhan
         private WebSocketServer _server;
 
         public event Action<abelkhan.Ichannel> on_connect;
-        //public event Action<websocketchannel> on_disconnect;
         public websocketacceptservice(ushort port, bool is_ssl, string pfx)
         {
             if (!is_ssl)
@@ -32,7 +31,6 @@ namespace abelkhan
             {
                 var ch = new websocketchannel(socket);
                 ch.on_connect += on_connect;
-                //ch.on_disconnect += on_disconnect;
             });
         }
 

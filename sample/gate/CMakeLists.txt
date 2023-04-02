@@ -4,6 +4,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
+set(gc_INCLUDE_PATH ../../cpp_component/3rdparty/bdwgc/include CACHE PATH "gc include path")
+INCLUDE_DIRECTORIES(${gc_INCLUDE_PATH})
+
 set(crossguid_INCLUDE_PATH ../../cpp_component/3rdparty/crossguid/include CACHE PATH "crossguid include path")
 INCLUDE_DIRECTORIES(${crossguid_INCLUDE_PATH})
 
@@ -84,6 +87,7 @@ target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/json11 optimized ${LIBS_RELE
 target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/cares optimized ${LIBS_RELEASE_PATH}/cares)
 target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/bson optimized ${LIBS_RELEASE_PATH}/bson)
 target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/gate optimized ${LIBS_RELEASE_PATH}/gate)
+target_link_libraries(gate debug ${LIBS_DEBUG_PATH}/gc optimized ${LIBS_RELEASE_PATH}/gc)
 target_link_libraries(gate Crypt32 )
 target_link_libraries(gate ws2_32)
 target_link_libraries(gate winmm)
