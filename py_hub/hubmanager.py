@@ -4,7 +4,7 @@ import hub_server
 from collections.abc import Callable
 
 class hubmanager(object):
-    def __init__(self, _modulemng:abelkhan.modulemng, _hub:hub_server.hub) -> None:
+    def __init__(self, _modulemng:abelkhan.modulemng, _hub:hub_server.hub_svr) -> None:
         self.modulemng = _modulemng
         self.hub = _hub
 

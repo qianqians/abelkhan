@@ -1,11 +1,13 @@
 ﻿import uuid 
 import json
+import time
 from threading import Timer
 from collections.abc import Callable
 import hub
 import abelkhan
 import redis_mq
 import centerproxy
+import hubmanager
 
 class hub_svr(object):
     def __init__(self, config_file:str, _hub_name:str, _hub_type:str) -> None:
@@ -30,6 +32,9 @@ class hub_svr(object):
         self.centerproxy = centerproxy.centerproxy(_center_ch, self.modulemng, self)
         self.centerproxy.reg_hub(self.heartbeat)
 
+        self.hubs = hubmanager.hubmanager(self.modulemng, self)
+        self.is_support_take_over_svr = True
+
         self.onCenterCrash : Callable[[]] = None
         self.onCloseServer : Callable[[]] = None
         self.onReload : Callable[[str]] = None
@@ -38,6 +43,9 @@ class hub_svr(object):
         f = open(config_file)
         config = f.read()
         return json.loads(config)
+    
+    def set_support_take_over_svr(self, is_support:bool) -> None:
+        self.is_support_take_over_svr = is_support
 
     def heartbeat(self):
         t = Timer(3000, self.heartbeat)
@@ -94,12 +102,20 @@ class hub_svr(object):
 
             for ch in self.remove_chs:
                 del self.add_chs[self.add_chs.index(ch)]
-                
+
         except Exception as ex:
             print(ex)
 
         return abelkhan.timetmp() - _tick_begin
 
+    def run(self):
+        while not self.__is_closed__:
+            _tick = self.poll()
+
+            if _tick < 33:
+                time.sleep(float(33 - _tick) / 1000)
+
+        print(f"hub server{self.name} stop!")
 '''{
         static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {

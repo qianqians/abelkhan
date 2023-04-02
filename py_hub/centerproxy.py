@@ -4,7 +4,7 @@ from collections.abc import Callable
 import hub_server
 
 class centerproxy(object):
-    def __init__(self, _ch:abelkhan.Ichannel, _modulemng:abelkhan.modulemng, _hub:hub_server.hub) -> None:
+    def __init__(self, _ch:abelkhan.Ichannel, _modulemng:abelkhan.modulemng, _hub:hub_server.hub_svr) -> None:
         self.timetmp = abelkhan.timetmp()
         self.is_reg_center_sucess = False
         self.ch = _ch
