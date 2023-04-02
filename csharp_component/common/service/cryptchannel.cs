@@ -3,14 +3,18 @@
  * qianqians
  * 2020/6/4
  */
-using Microsoft.AspNetCore.Connections;
 using System.Buffers;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Connections;
 
 namespace abelkhan
 {
     public class cryptchannel : abelkhan.Ichannel
     {
         private ConnectionContext connection;
+        private int need_flush = 0;
         private object lockobj;
 
         public channel_onrecv _channel_onrecv;
@@ -39,11 +43,17 @@ namespace abelkhan
             crypt.crypt_func_send(data);
         }
 
-        public void send(byte[] data)
+        public async void send(byte[] data)
         {
             lock (lockobj)
             {
-                connection.Transport.Output.Write(data);
+                Interlocked.Exchange(ref need_flush, 1);
+                connection.Transport.Output.WriteAsync(data);
+            }
+            var _need_flush = Interlocked.Exchange(ref need_flush, 0);
+            if (_need_flush == 1)
+            {
+                await connection.Transport.Output.FlushAsync();
             }
         }
     }

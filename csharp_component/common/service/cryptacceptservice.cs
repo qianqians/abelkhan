@@ -48,9 +48,7 @@ namespace abelkhan
                 {
                     log.log.err("channel_onrecv.on_recv error:{0}!", e);
 
-                    ch.disconnect();
                     cryptacceptservice.onDisconnect(ch);
-
                     break;
                 }
             }
@@ -71,7 +69,7 @@ namespace abelkhan
             port = _port;
         }
 
-        public static event Action<abelkhan.Ichannel> on_connect;
+        public static event Action<cryptchannel> on_connect;
         public static void onConnect(cryptchannel ch)
         {
             on_connect?.Invoke(ch);
@@ -96,7 +94,7 @@ namespace abelkhan
 
                     })
                     .UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseStartup<Startup>();
+                    .UseStartup<TcpStartup>();
             });
 
             _h = hostBuilder.Build();

@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace hub
 {
@@ -331,6 +332,7 @@ namespace hub
             _caller.reg_hub(name, type);
         }
 
+        private List<Task> wait_task = new ();
         private long poll()
         {
             

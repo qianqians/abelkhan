@@ -47,8 +47,6 @@ namespace abelkhan
                 catch (System.Exception e)
                 {
                     log.log.err("channel_onrecv.on_recv error:{0}!", e);
-                    
-                    ch.disconnect();
                     break;
                 }
             }
@@ -57,7 +55,7 @@ namespace abelkhan
         }
     }
 
-    public class Startup
+    public class TcpStartup
     {
         public void ConfigureServices(IServiceCollection services)
         {
@@ -107,7 +105,7 @@ namespace abelkhan
 
                     })
                     .UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseStartup<Startup>();
+                    .UseStartup<TcpStartup>();
             });
 
             _h = hostBuilder.Build();

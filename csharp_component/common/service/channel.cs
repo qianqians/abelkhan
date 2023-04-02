@@ -36,12 +36,13 @@ namespace abelkhan
         {
         }
 
-        public void send(byte[] data)
+        public async void send(byte[] data)
         {
             lock (lockobj)
             {
                 connection.Transport.Output.Write(data);
             }
+            await connection.Transport.Output.FlushAsync();
         }
     }
 }

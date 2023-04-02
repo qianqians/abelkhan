@@ -37,7 +37,7 @@ public class test : MonoBehaviour
                 {
                     Debug.Log("get_svr_host faild!");
                 }).timeout(3000, ()=> {
-                    Debug.Log("get_svr_host timeout!");
+                    Debug.Log(string.Format("get_svr_host timeout! name:{0}, type:{1}", hub_info.hub_name, hub_info.hub_type));
                 });
             });
         };
