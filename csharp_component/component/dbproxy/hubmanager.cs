@@ -41,10 +41,9 @@ namespace dbproxy
 			}
         }
 
-		public hubproxy get_hub(abelkhan.Ichannel ch)
+		public bool get_hub(abelkhan.Ichannel ch, out hubproxy _proxy)
 		{
-			hubproxys.TryGetValue(ch, out hubproxy _proxy);
-            return _proxy;
+            return hubproxys.TryGetValue(ch, out _proxy);
 		}
 
 		public bool all_hub_closed()

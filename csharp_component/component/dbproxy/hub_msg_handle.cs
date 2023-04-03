@@ -43,8 +43,7 @@ namespace dbproxy
             log.log.trace("begin get_guid!");
 
             var rsp = (abelkhan.hub_call_dbproxy_get_guid_rsp)_hub_call_dbproxy_module.rsp.Value;
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
-            if (_hubproxy != null)
+            if (dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value, out hubproxy _hubproxy))
             {
                 try
                 {
@@ -78,8 +77,7 @@ namespace dbproxy
             log.log.trace("begin create_persisted_object");
 
             var rsp = (abelkhan.hub_call_dbproxy_create_persisted_object_rsp)_hub_call_dbproxy_module.rsp.Value;
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
-            if (_hubproxy != null)
+            if (dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value, out hubproxy _hubproxy))
             {
                 try
                 {
@@ -113,8 +111,7 @@ namespace dbproxy
             log.log.trace("begin updata_persisted_object");
 
             var rsp = (abelkhan.hub_call_dbproxy_updata_persisted_object_rsp)_hub_call_dbproxy_module.rsp.Value;
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
-            if (_hubproxy != null)
+            if (dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value, out hubproxy _hubproxy))
             {
                 try
                 {
@@ -148,8 +145,7 @@ namespace dbproxy
             log.log.trace("begin find_and_modify");
 
             var rsp = (abelkhan.hub_call_dbproxy_find_and_modify_rsp)_hub_call_dbproxy_module.rsp.Value;
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
-            if (_hubproxy != null)
+            if (dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value, out hubproxy _hubproxy))
             {
                 try
                 {
@@ -188,8 +184,7 @@ namespace dbproxy
             log.log.trace("begin remove_object");
 
             var rsp = (abelkhan.hub_call_dbproxy_remove_object_rsp)_hub_call_dbproxy_module.rsp.Value;
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
-            if (_hubproxy != null)
+            if (dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value, out hubproxy _hubproxy))
             {
                 try
                 {
@@ -223,8 +218,7 @@ namespace dbproxy
             log.log.trace("begin get_object_info");
 
             var rsp = (abelkhan.hub_call_dbproxy_get_object_count_rsp)_hub_call_dbproxy_module.rsp.Value;
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
-            if (_hubproxy != null)
+            if (dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value, out hubproxy _hubproxy))
             {
                 try
                 {
@@ -250,8 +244,7 @@ namespace dbproxy
         {
             log.log.trace("begin get_object_info");
 
-            hubproxy _hubproxy = dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value);
-            if (_hubproxy != null)
+            if (dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value, out hubproxy _hubproxy))
             {
                 try
                 {

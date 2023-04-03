@@ -95,23 +95,14 @@ namespace hub
             }
         }
 
-        public gateproxy get_gateproxy(abelkhan.Ichannel gate_ch)
+        public bool get_gateproxy(abelkhan.Ichannel gate_ch, out gateproxy proxy)
 		{
-			if (ch_gateproxys.ContainsKey(gate_ch))
-			{
-				return ch_gateproxys[gate_ch];
-			}
-			return null;
+			return ch_gateproxys.TryGetValue(gate_ch, out proxy);
 		}
 
-        public gateproxy get_gateproxy(string session_uuid)
+        public bool get_gateproxy(string session_uuid, out gateproxy proxy)
         {
-            clients.TryGetValue(session_uuid, out gateproxy _client_gate_proxy);
-            if (_client_gate_proxy != null)
-            {
-                return _client_gate_proxy;
-            }
-            return null;
+            return clients.TryGetValue(session_uuid, out proxy);
         }
 
         public string get_client_gate_name(string session_uuid)
@@ -305,13 +296,9 @@ namespace hub
             hub._timer.addticktime(10000, heartbeat_client);
         }
 
-        public directproxy get_directproxy(abelkhan.Ichannel direct_ch)
+        public bool get_directproxy(abelkhan.Ichannel direct_ch, out directproxy _proxy)
         {
-            if (ch_direct_clients.TryGetValue(direct_ch, out directproxy _proxy))
-            {
-                return _proxy;
-            }
-            return null;
+            return ch_direct_clients.TryGetValue(direct_ch, out _proxy);
         }
 
         public void disconnect_client(String uuid)

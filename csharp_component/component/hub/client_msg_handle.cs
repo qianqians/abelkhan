@@ -28,8 +28,7 @@ namespace hub
 		public void heartbeats()
         {
 			var rsp = (abelkhan.client_call_hub_heartbeats_rsp)_client_call_hub_module.rsp.Value;
-			var _proxy = hub._gates.get_directproxy(_client_call_hub_module.current_ch.Value);
-			if (_proxy != null)
+			if (hub._gates.get_directproxy(_client_call_hub_module.current_ch.Value, out directproxy _proxy))
             {
 				if (_proxy._theory_timetmp == 0)
                 {
@@ -47,8 +46,7 @@ namespace hub
 		public Action<string> on_client_msg;
 		public void call_hub(byte[] arpc_rgv)
 		{
-			var _proxy = hub._gates.get_directproxy(_client_call_hub_module.current_ch.Value);
-			if (_proxy != null)
+			if (hub._gates.get_directproxy(_client_call_hub_module.current_ch.Value, out directproxy _proxy))
 			{
 				try
 				{
