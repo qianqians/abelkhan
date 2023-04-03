@@ -56,8 +56,15 @@ public:
 
 	void get_hub_info(std::string hub_type) {
 		auto rsp = std::static_pointer_cast<abelkhan::client_call_gate_get_hub_info_rsp>(_client_call_gate_module->rsp);
-		auto _info = _hubsvrmanager->get_hub_list(hub_type);
-		rsp->rsp(_info);
+
+		abelkhan::hub_info _info;
+		auto relust = _hubsvrmanager->get_hub_list(hub_type, _info);
+		if (relust) {
+			rsp->rsp(_info);
+		}
+		else {
+			rsp->err();
+		}
 	}
 
 	void forward_client_call_hub(std::string hub_name, std::vector<uint8_t> rpc_argv) {

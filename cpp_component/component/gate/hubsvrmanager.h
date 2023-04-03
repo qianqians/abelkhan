@@ -103,8 +103,8 @@ public:
 		return get_hub(hub_channel_name[hub_channel]);
 	}
 
-	abelkhan::hub_info get_hub_list(std::string hub_type) {
-		abelkhan::hub_info _info;
+	bool get_hub_list(std::string hub_type, abelkhan::hub_info& _info) {
+		auto result = false;
 
 		uint32_t tick_time_tmp = INT32_MAX;
 		for (auto it : hub_name_proxy) {
@@ -120,10 +120,12 @@ public:
 
 				_info.hub_name = it.second->_hub_name;
 				_info.hub_type = it.second->_hub_type;
+
+				result = true;
 			}
 		}
 		
-		return _info;
+		return result;
 	}
 
 	void for_each_hub(std::function<void(std::string hub_name, std::shared_ptr<hubproxy> proxy)> fn){
