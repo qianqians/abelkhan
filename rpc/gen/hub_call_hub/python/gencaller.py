@@ -96,10 +96,9 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
             cb_func += "class " + module_name + "_" + func_name + "_cb(object):\n"
             cb_func += "    def __init__(self, _cb_uuid:int):\n"
             cb_func += "        self.cb_uuid = _cb_uuid\n"
-
-            cb_func += " on_" + func_name + "_cb;\n"
-            cb_func += " on_" + func_name + "_err;\n"
-            cb_func += "        public event Action on_" + func_name + "_timeout;\n\n"
+            cb_func += "        self.on_" + func_name + "_cb:" + rsp_fn + " = None\n"
+            cb_func += "        self.on_" + func_name + "_err:" + err_fn + " = None\n"
+            cb_func += "        self.on_" + func_name + "_timeout:Callable[...] = None\n\n"
 
             cb_func += "        public " + module_name + "_" + func_name + "_cb callBack(Action"
             if len(i[4]) > 0:
