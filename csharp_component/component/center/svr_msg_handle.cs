@@ -72,8 +72,7 @@ namespace abelkhan
             var rsp = (abelkhan.center_heartbeat_rsp)_center_module.rsp.Value;
             rsp.rsp();
 
-            var _svr_proxy = _svrmng.get_svr(_center_module.current_ch.Value);
-            if (_svr_proxy != null)
+            if (_svrmng.get_svr(_center_module.current_ch.Value, out svrproxy _svr_proxy))
             {
                 _svr_proxy.timetmp = service.timerservice.Tick;
                 _svr_proxy.tick = tick;
@@ -82,15 +81,13 @@ namespace abelkhan
 
         private void closed()
         {
-            var _svr_proxy = _svrmng.get_svr(_center_module.current_ch.Value);
-            if (_svr_proxy != null)
+            if (_svrmng.get_svr(_center_module.current_ch.Value, out svrproxy _svr_proxy))
             {
                 _svr_proxy.is_closed = true;
                 _svr_proxy.closed_svr();
             }
 
-            var _hub_proxy = _svrmng.get_hub(_center_module.current_ch.Value);
-            if (_hub_proxy != null)
+            if (_svrmng.get_hub(_center_module.current_ch.Value, out hubproxy _hub_proxy))
             {
                 _hub_proxy.is_closed = true;
             }

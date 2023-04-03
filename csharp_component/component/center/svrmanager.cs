@@ -459,16 +459,14 @@ namespace abelkhan
             }
         }
 
-        public svrproxy get_svr(abelkhan.Ichannel ch)
+        public bool get_svr(abelkhan.Ichannel ch, out svrproxy _proxy)
         {
-            svrproxys.TryGetValue(ch, out svrproxy _proxy);
-            return _proxy;
+            return svrproxys.TryGetValue(ch, out _proxy);
         }
 
-        public hubproxy get_hub(abelkhan.Ichannel ch)
+        public bool get_hub(abelkhan.Ichannel ch, out hubproxy _proxy)
         {
-            hubproxys.TryGetValue(ch, out hubproxy _proxy);
-            return _proxy;
+            return hubproxys.TryGetValue(ch, out _proxy);
         }
     }
 }
