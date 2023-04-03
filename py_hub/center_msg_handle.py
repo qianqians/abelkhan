@@ -2,7 +2,6 @@
 import center
 import hub_server
 
-
 class center_msg_handle(object):
     def __init__(self, _hub:hub_server.hub_svr, _modulemng:abelkhan.modulemng) -> None:
         self.hub = _hub

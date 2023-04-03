@@ -10,84 +10,72 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     cb_func = ""
 
     cb_code = "#this cb code is codegen by abelkhan for python\n"
-    cb_code += "class " + module_name + "_rsp_cb(imodule) {\n"
+    cb_code += "class " + module_name + "_rsp_cb(imodule):\n"
     cb_code_constructor = "    def __init__(self):\n"
     cb_code_section = ""
 
-    code = "    public class " + module_name + "_caller {\n"
-    code += "        public static " + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle = null;\n"
-    code += "        private " + module_name + "_hubproxy _hubproxy;\n"
-    code += "        public " + module_name + "_caller()\n"
-    code += "        {\n"
-    code += "            if (rsp_cb_" + module_name + "_handle == null)\n            {\n"
-    code += "                rsp_cb_" + module_name + "_handle = new " + module_name + "_rsp_cb();\n"
-    code += "            }\n"
-    code += "            _hubproxy = new " + module_name + "_hubproxy(rsp_cb_" + module_name + "_handle);\n"
-    code += "        }\n\n"
-    code += "        public " + module_name + "_hubproxy get_hub(string hub_name) {\n"
     _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
-    code += "            _hubproxy.hub_name_" + _hub_uuid + " = hub_name;\n"
-    code += "            return _hubproxy;\n"
-    code += "        }\n\n"
-    code += "    }\n\n"
-
-    code += "    public class " + module_name + "_hubproxy {\n"
-    code += "        public string hub_name_" + _hub_uuid + ";\n"
     _uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, module_name)).split('-'))
-    code += "        private Int32 uuid_" + _uuid + " = (Int32)RandomUUID.random();\n\n"
-    code += "        private " + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle;\n\n"
-    code += "        public " + module_name + "_hubproxy(" + module_name + "_rsp_cb rsp_cb_" + module_name + "_handle_)\n"
-    code += "        {\n"
-    code += "            rsp_cb_" + module_name + "_handle = rsp_cb_" + module_name + "_handle_;\n"
-    code += "        }\n\n"
 
+    code = "rsp_cb_" + module_name + "_handle : " + module_name + "_rsp_cb  = None\n"
+    code += "class " + module_name + "_hubproxy(object):\n"
+    code += "    def __init__(self, _hubs:hubmanager):\n"
+    code += "        self.hubs = _hubs\n"
+    code += "        self.hub_name_" + _hub_uuid + " = \"\"\n"
+    code += "        self.uuid_" + _uuid + " = RandomUUID()\n"
+
+    code_end = "class " + module_name + "_caller(object):\n"
+    code_end += "    def __init__(self, _hubs:hubmanager):\n"
+    code_end += "        global rsp_cb_" + module_name + "_handle\n"
+    code_end += "        if rsp_cb_" + module_name + "_handle == None:\n "
+    code_end += "            rsp_cb_" + module_name + "_handle = " + module_name + "_rsp_cb()\n\n"
+    code_end += "        self.hubs = _hubs\n"
+    code_end += "        self._hubproxy = " + module_name + "_hubproxy(self.hubs)\n\n"
+    code_end += "    def get_hub(self, hub_name:str):\n"
+    code_end += "            _hubproxy.hub_name_" + _hub_uuid + " = hub_name;\n"
+    code_end += "            return _hubproxy\n\n"
 
     for i in funcs:
         func_name = i[0]
 
         if i[1] == "ntf":
-            code += "        public void " + func_name + "("
+            code += "    def " + func_name + "(self, "
             count = 0
             for _type, _name, _parameter in i[2]:
                 if _parameter == None:
-                    code += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name 
+                    code += _name + ":" + tools.convert_type(_type, dependent_struct, dependent_enum)
                 else:
-                    code += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name + " = " + tools.convert_parameter(_type, _parameter, dependent_enum, enum)
+                    code += _name + ":" + tools.convert_type(_type, dependent_struct, dependent_enum) + " = " + tools.convert_parameter(_type, _parameter, dependent_enum, enum)
                 count = count + 1
                 if count < len(i[2]):
                     code += ", "
-            code += "){\n"
+            code += "):\n"
             _argv_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
-            code += "            var _argv_" + _argv_uuid + " = new ArrayList();\n"
+            code += "        _argv_" + _argv_uuid + " = []\n"
             for _type, _name, _parameter in i[2]:
                 type_ = tools.check_type(_type, dependent_struct, dependent_enum)
                 if type_ in tools.OriginalTypeList:
-                    code += "            _argv_" + _argv_uuid + ".Add(" + _name + ");\n"
-                elif type_ == tools.TypeType.Enum:
-                    code += "            _argv_" + _argv_uuid + ".Add((int)" + _name + ");\n"
+                    code += "        _argv_" + _argv_uuid + ".append(" + _name + ")\n"
                 elif type_ == tools.TypeType.Custom:
-                    code += "            _argv_" + _argv_uuid + ".Add(" + _type + "." + _type + "_to_protcol(" + _name + "));\n"
+                    code += "        _argv_" + _argv_uuid + ".append(" + _type + "_to_protcol(" + _name + "))\n"
                 elif type_ == tools.TypeType.Array:
                     _array_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    code += "            var _array_" + _array_uuid + " = new ArrayList();\n"
-                    _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_X500, _name)).split('-'))
-                    code += "            foreach(var v_" + _v_uuid + " in " + _name + "){\n"
+                    code += "        _array_" + _array_uuid + " = []\n"
+                    _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_DNS, _name)).split('-'))
+                    code += "        for v_" + _v_uuid + " in " + _name + ":\n"
                     array_type = _type[:-2]
                     array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
                     if array_type_ in tools.OriginalTypeList:
-                        code += "                _array_" + _array_uuid + ".Add(v_" + _v_uuid + ");\n"
-                    elif array_type_ == tools.TypeType.Enum:
-                        code += "                _array_" + _array_uuid + ".Add((int)v_" + _v_uuid + ");\n"
+                        code += "            _array_" + _array_uuid + ".append(v_" + _v_uuid + ")\n"
                     elif array_type_ == tools.TypeType.Custom:
-                        code += "                _array_" + _array_uuid + ".Add(" + array_type + "." + array_type + "_to_protcol(v_" + _v_uuid + "));\n"
+                        code += "            _array_" + _array_uuid + ".append(" + array_type + "_to_protcol(v_" + _v_uuid + "))\n"
                     elif array_type_ == tools.TypeType.Array:
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
-                    code += "            }\n"                                                     
-                    code += "            _argv_" + _argv_uuid + ".Add(_array_" + _array_uuid + ");\n"
-            code += "            hub.hub._hubs.call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
+                    code += "        _argv_" + _argv_uuid + ".append(_array_" + _array_uuid + ")\n"
+            code += "        self.hubs.call_hub(self.hub_name_" + _hub_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
             code += "        }\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
-            cb_func += "    public class " + module_name + "_" + func_name + "_cb\n    {\n"
+            cb_func += "class " + module_name + "_" + func_name + "_cb(object):\n"
             cb_func += "        private UInt64 cb_uuid;\n"
             cb_func += "        private " + module_name + "_rsp_cb module_rsp_cb;\n\n"
             cb_func += "        public " + module_name + "_" + func_name + "_cb(UInt64 _cb_uuid, " + module_name + "_rsp_cb _module_rsp_cb)\n"
@@ -472,7 +460,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     cb_code_section += "    }\n\n"
     code += "    }\n"
 
-    return cb_func + cb_code + cb_code_constructor + cb_code_section + code
+    return cb_func + cb_code + cb_code_constructor + cb_code_section + code + code_end
 
 def gencaller(pretreatment):
     dependent_struct = pretreatment.dependent_struct

@@ -153,7 +153,7 @@ class center_caller(Icaller):
             rsp_cb_center_handle = center_rsp_cb(modules)
 
     def reg_server_mq(self, type:str, hub_type:str, svr_name:str):
-        self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066 = (self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb0661) & 0x7fffffff
+        self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066 = (self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066 + 1) & 0x7fffffff
         uuid_76a34a7f_e1e5_5f58_931b_9a21db9858bf = self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066
 
         _argv_08d68bf2_5282_3fde_ba14_da677a0a04b2 = [uuid_76a34a7f_e1e5_5f58_931b_9a21db9858bf]
@@ -169,7 +169,7 @@ class center_caller(Icaller):
         return cb_reg_server_mq_obj
 
     def reconn_reg_server_mq(self, type:str, hub_type:str, svr_name:str):
-        self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066 = (self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb0661) & 0x7fffffff
+        self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066 = (self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066 + 1) & 0x7fffffff
         uuid_0012a813_9a7b_57c8_a9d1_9a08790cad21 = self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066
 
         _argv_a018be20_2048_315d_9832_8120b194980f = [uuid_0012a813_9a7b_57c8_a9d1_9a08790cad21]
@@ -185,7 +185,7 @@ class center_caller(Icaller):
         return cb_reconn_reg_server_mq_obj
 
     def heartbeat(self, tick:int):
-        self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066 = (self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb0661) & 0x7fffffff
+        self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066 = (self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066 + 1) & 0x7fffffff
         uuid_9654538a_9916_57dc_8ea5_806086d7a378 = self.uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066
 
         _argv_af04a217_eafb_393c_9e34_0303485bef77 = [uuid_9654538a_9916_57dc_8ea5_806086d7a378]

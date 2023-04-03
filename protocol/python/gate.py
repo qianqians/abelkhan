@@ -134,7 +134,7 @@ class client_call_gate_caller(Icaller):
             rsp_cb_client_call_gate_handle = client_call_gate_rsp_cb(modules)
 
     def heartbeats(self, ):
-        self.uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2 = (self.uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b21) & 0x7fffffff
+        self.uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2 = (self.uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2 + 1) & 0x7fffffff
         uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = self.uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2
 
         _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = [uuid_a514ca5f_2c67_5668_aac0_354397bdce36]
@@ -147,7 +147,7 @@ class client_call_gate_caller(Icaller):
         return cb_heartbeats_obj
 
     def get_hub_info(self, hub_type:str):
-        self.uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2 = (self.uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b21) & 0x7fffffff
+        self.uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2 = (self.uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2 + 1) & 0x7fffffff
         uuid_e9d2753f_7d38_512d_80ff_7aae13508048 = self.uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2
 
         _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24 = [uuid_e9d2753f_7d38_512d_80ff_7aae13508048]
@@ -270,7 +270,7 @@ class hub_call_gate_caller(Icaller):
             rsp_cb_hub_call_gate_handle = hub_call_gate_rsp_cb(modules)
 
     def reg_hub(self, hub_name:str, hub_type:str):
-        self.uuid_9796175c_1119_3833_bf31_5ee139b40edc = (self.uuid_9796175c_1119_3833_bf31_5ee139b40edc1) & 0x7fffffff
+        self.uuid_9796175c_1119_3833_bf31_5ee139b40edc = (self.uuid_9796175c_1119_3833_bf31_5ee139b40edc + 1) & 0x7fffffff
         uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = self.uuid_9796175c_1119_3833_bf31_5ee139b40edc
 
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = [uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106]
@@ -290,7 +290,7 @@ class hub_call_gate_caller(Icaller):
         self.call_module_method("hub_call_gate_tick_hub_health", _argv_e81472b5_19a4_36bc_9cd9_b8fe87a10079)
 
     def reverse_reg_client_hub(self, client_uuid:str):
-        self.uuid_9796175c_1119_3833_bf31_5ee139b40edc = (self.uuid_9796175c_1119_3833_bf31_5ee139b40edc1) & 0x7fffffff
+        self.uuid_9796175c_1119_3833_bf31_5ee139b40edc = (self.uuid_9796175c_1119_3833_bf31_5ee139b40edc + 1) & 0x7fffffff
         uuid_5352b179_7aef_5875_a08f_06381972529f = self.uuid_9796175c_1119_3833_bf31_5ee139b40edc
 
         _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c = [uuid_5352b179_7aef_5875_a08f_06381972529f]

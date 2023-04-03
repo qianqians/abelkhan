@@ -144,7 +144,7 @@ class hub_call_hub_caller(Icaller):
             rsp_cb_hub_call_hub_handle = hub_call_hub_rsp_cb(modules)
 
     def reg_hub(self, hub_name:str, hub_type:str):
-        self.uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f = (self.uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f1) & 0x7fffffff
+        self.uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f = (self.uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f + 1) & 0x7fffffff
         uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = self.uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f
 
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = [uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106]
@@ -159,7 +159,7 @@ class hub_call_hub_caller(Icaller):
         return cb_reg_hub_obj
 
     def seep_client_gate(self, client_uuid:str, gate_name:str):
-        self.uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f = (self.uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f1) & 0x7fffffff
+        self.uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f = (self.uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f + 1) & 0x7fffffff
         uuid_31169fc3_4fd4_512f_b157_203819bcbd47 = self.uuid_c5ce2cc4_e178_3cb8_ba26_976964de368f
 
         _argv_78da410b_1845_3253_9a34_d7cda82883b6 = [uuid_31169fc3_4fd4_512f_b157_203819bcbd47]
@@ -265,7 +265,7 @@ class client_call_hub_caller(Icaller):
         self.call_module_method("client_call_hub_connect_hub", _argv_dc2ee339_bef5_3af9_a492_592ba4f08559)
 
     def heartbeats(self, ):
-        self.uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263 = (self.uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d7052631) & 0x7fffffff
+        self.uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263 = (self.uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263 + 1) & 0x7fffffff
         uuid_a514ca5f_2c67_5668_aac0_354397bdce36 = self.uuid_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263
 
         _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = [uuid_a514ca5f_2c67_5668_aac0_354397bdce36]

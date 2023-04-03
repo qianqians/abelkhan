@@ -328,7 +328,7 @@ class hub_call_dbproxy_caller(Icaller):
             rsp_cb_hub_call_dbproxy_handle = hub_call_dbproxy_rsp_cb(modules)
 
     def reg_hub(self, hub_name:str):
-        self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (self.uuid_e713438c_e791_3714_ad31_4ccbddee25541) & 0x7fffffff
+        self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 + 1) & 0x7fffffff
         uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = self.uuid_e713438c_e791_3714_ad31_4ccbddee2554
 
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = [uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106]
@@ -342,7 +342,7 @@ class hub_call_dbproxy_caller(Icaller):
         return cb_reg_hub_obj
 
     def get_guid(self, db:str, collection:str, guid_key:str):
-        self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (self.uuid_e713438c_e791_3714_ad31_4ccbddee25541) & 0x7fffffff
+        self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 + 1) & 0x7fffffff
         uuid_efe126e5_91e4_5df4_975c_18c91b6a6634 = self.uuid_e713438c_e791_3714_ad31_4ccbddee2554
 
         _argv_8b362c4a_74a5_366e_a6af_37474d7fa521 = [uuid_efe126e5_91e4_5df4_975c_18c91b6a6634]
@@ -358,7 +358,7 @@ class hub_call_dbproxy_caller(Icaller):
         return cb_get_guid_obj
 
     def create_persisted_object(self, db:str, collection:str, object_info:bytes):
-        self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (self.uuid_e713438c_e791_3714_ad31_4ccbddee25541) & 0x7fffffff
+        self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 + 1) & 0x7fffffff
         uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb = self.uuid_e713438c_e791_3714_ad31_4ccbddee2554
 
         _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607 = [uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb]
@@ -374,7 +374,7 @@ class hub_call_dbproxy_caller(Icaller):
         return cb_create_persisted_object_obj
 
     def updata_persisted_object(self, db:str, collection:str, query_info:bytes, updata_info:bytes, _upsert:bool):
-        self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (self.uuid_e713438c_e791_3714_ad31_4ccbddee25541) & 0x7fffffff
+        self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 + 1) & 0x7fffffff
         uuid_7864a402_2d75_5c02_b24b_50287a06732f = self.uuid_e713438c_e791_3714_ad31_4ccbddee2554
 
         _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425 = [uuid_7864a402_2d75_5c02_b24b_50287a06732f]
@@ -392,7 +392,7 @@ class hub_call_dbproxy_caller(Icaller):
         return cb_updata_persisted_object_obj
 
     def find_and_modify(self, db:str, collection:str, query_info:bytes, updata_info:bytes, _new:bool, _upsert:bool):
-        self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (self.uuid_e713438c_e791_3714_ad31_4ccbddee25541) & 0x7fffffff
+        self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 + 1) & 0x7fffffff
         uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a = self.uuid_e713438c_e791_3714_ad31_4ccbddee2554
 
         _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58 = [uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a]
@@ -411,7 +411,7 @@ class hub_call_dbproxy_caller(Icaller):
         return cb_find_and_modify_obj
 
     def remove_object(self, db:str, collection:str, query_info:bytes):
-        self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (self.uuid_e713438c_e791_3714_ad31_4ccbddee25541) & 0x7fffffff
+        self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 + 1) & 0x7fffffff
         uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f = self.uuid_e713438c_e791_3714_ad31_4ccbddee2554
 
         _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da = [uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f]
@@ -439,7 +439,7 @@ class hub_call_dbproxy_caller(Icaller):
         self.call_module_method("hub_call_dbproxy_get_object_info", _argv_1f17e6de_d423_391b_a599_7268e665a53f)
 
     def get_object_count(self, db:str, collection:str, query_info:bytes):
-        self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (self.uuid_e713438c_e791_3714_ad31_4ccbddee25541) & 0x7fffffff
+        self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 + 1) & 0x7fffffff
         uuid_975425f5_8baf_5905_beeb_4454e78907f6 = self.uuid_e713438c_e791_3714_ad31_4ccbddee2554
 
         _argv_2632cded_162c_3a9b_86ee_462b614cbeea = [uuid_975425f5_8baf_5905_beeb_4454e78907f6]
