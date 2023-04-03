@@ -47,8 +47,8 @@ namespace abelkhan
         {
             lock (lockobj)
             {
-                Interlocked.Exchange(ref need_flush, 1);
                 connection.Transport.Output.WriteAsync(data);
+                Interlocked.Exchange(ref need_flush, 1);
             }
             var _need_flush = Interlocked.Exchange(ref need_flush, 0);
             if (_need_flush == 1)

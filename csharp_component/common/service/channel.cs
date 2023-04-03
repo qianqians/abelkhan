@@ -5,12 +5,14 @@
  */
 using Microsoft.AspNetCore.Connections;
 using System.Buffers;
+using System.Threading;
 
 namespace abelkhan
 {
     public class channel : abelkhan.Ichannel
     {
         private ConnectionContext connection;
+        private int need_flush = 0;
         private object lockobj;
 
         public channel_onrecv _channel_onrecv;
@@ -40,9 +42,14 @@ namespace abelkhan
         {
             lock (lockobj)
             {
-                connection.Transport.Output.Write(data);
+                connection.Transport.Output.WriteAsync(data);
+                Interlocked.Exchange(ref need_flush, 1);
             }
-            await connection.Transport.Output.FlushAsync();
+            var _need_flush = Interlocked.Exchange(ref need_flush, 0);
+            if (_need_flush == 1)
+            {
+                await connection.Transport.Output.FlushAsync();
+            }
         }
     }
 }
