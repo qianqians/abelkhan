@@ -114,22 +114,28 @@ namespace abelkhan
                     abelkhan.modulemng_handle._modulemng.process_event(_event.Item1, _event.Item2);
                 }
 
-                lock (_svrmanager.closed_svr_list)
+                if (_svrmanager.closed_svr_list.Count > 0)
                 {
-                    foreach (var _proxy in _svrmanager.closed_svr_list)
+                    lock (_svrmanager.closed_svr_list)
                     {
-                        on_svr_disconnect?.Invoke(_proxy);
+                        foreach (var _proxy in _svrmanager.closed_svr_list)
+                        {
+                            on_svr_disconnect?.Invoke(_proxy);
+                        }
                     }
+                    _svrmanager.remove_closed_svr();
                 }
-                _svrmanager.remove_closed_svr();
 
-                lock (remove_chs)
+                if (remove_chs.Count > 0)
                 {
-                    foreach (var _ch in remove_chs)
+                    lock (remove_chs)
                     {
-                        add_chs.Remove(_ch);
+                        foreach (var _ch in remove_chs)
+                        {
+                            add_chs.Remove(_ch);
+                        }
+                        remove_chs.Clear();
                     }
-                    remove_chs.Clear();
                 }
 
                 if (_closeHandle.is_closing && _svrmanager.check_all_hub_closed())

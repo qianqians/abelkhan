@@ -14,17 +14,17 @@ namespace abelkhan
 {
     public class svrproxy
     {
-        public string type;
-        public string hub_type;
-        public string name;
+        public readonly string type;
+        public readonly string hub_type;
+        public readonly string name;
+        public readonly abelkhan.Ichannel ch;
+
         public long timetmp = service.timerservice.Tick;
         public bool is_mq = false;
         public bool is_closed = false;
-
         public uint tick = 0;
 
-        public abelkhan.Ichannel ch;
-        private abelkhan.center_call_server_caller _center_call_server_caller;
+        private readonly abelkhan.center_call_server_caller _center_call_server_caller;
 
         public svrproxy(abelkhan.Ichannel _ch, string _type, string _hub_type, string _name)
         {
@@ -66,11 +66,12 @@ namespace abelkhan
 
     public class hubproxy
     {
-        public string type;
-        public string name;
+        public readonly string type;
+        public readonly string name;
+        public readonly abelkhan.Ichannel ch;
         public bool is_closed;
-        public abelkhan.Ichannel ch;
-        private abelkhan.center_call_hub_caller _center_call_hub_caller;
+
+        private readonly abelkhan.center_call_hub_caller _center_call_hub_caller;
 
         public hubproxy(abelkhan.Ichannel _ch, string _type, string _name)
         {
