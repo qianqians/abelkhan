@@ -9,10 +9,9 @@ import tools
 def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum):
     cb_func = ""
 
-    cb_code = "/*this cb code is codegen by abelkhan for c#*/\n"
-    cb_code += "    public class " + module_name + "_rsp_cb : common.imodule {\n"
-    cb_code_constructor = "        public " + module_name + "_rsp_cb()\n"
-    cb_code_constructor += "        {\n"
+    cb_code = "#this cb code is codegen by abelkhan for python\n"
+    cb_code += "class " + module_name + "_rsp_cb(imodule) {\n"
+    cb_code_constructor = "    def __init__(self):\n"
     cb_code_section = ""
 
     code = "    public class " + module_name + "_caller {\n"
