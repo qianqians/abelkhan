@@ -194,9 +194,9 @@ class hub_call_dbproxy_reg_hub_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : hub_call_dbproxy_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_reg_hub_handle_cb = None
-        self.event_reg_hub_handle_err = None
-        self.event_reg_hub_handle_timeout = None
+        self.event_reg_hub_handle_cb:Callable[[]] = None
+        self.event_reg_hub_handle_err:Callable[[]] = None
+        self.event_reg_hub_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[]], _err:Callable[[]]):
         self.event_reg_hub_handle_cb = _cb
@@ -212,9 +212,9 @@ class hub_call_dbproxy_get_guid_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : hub_call_dbproxy_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_get_guid_handle_cb = None
-        self.event_get_guid_handle_err = None
-        self.event_get_guid_handle_timeout = None
+        self.event_get_guid_handle_cb:Callable[[int]] = None
+        self.event_get_guid_handle_err:Callable[[]] = None
+        self.event_get_guid_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[int]], _err:Callable[[]]):
         self.event_get_guid_handle_cb = _cb
@@ -230,9 +230,9 @@ class hub_call_dbproxy_create_persisted_object_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : hub_call_dbproxy_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_create_persisted_object_handle_cb = None
-        self.event_create_persisted_object_handle_err = None
-        self.event_create_persisted_object_handle_timeout = None
+        self.event_create_persisted_object_handle_cb:Callable[[]] = None
+        self.event_create_persisted_object_handle_err:Callable[[]] = None
+        self.event_create_persisted_object_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[]], _err:Callable[[]]):
         self.event_create_persisted_object_handle_cb = _cb
@@ -248,9 +248,9 @@ class hub_call_dbproxy_updata_persisted_object_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : hub_call_dbproxy_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_updata_persisted_object_handle_cb = None
-        self.event_updata_persisted_object_handle_err = None
-        self.event_updata_persisted_object_handle_timeout = None
+        self.event_updata_persisted_object_handle_cb:Callable[[]] = None
+        self.event_updata_persisted_object_handle_err:Callable[[]] = None
+        self.event_updata_persisted_object_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[]], _err:Callable[[]]):
         self.event_updata_persisted_object_handle_cb = _cb
@@ -266,9 +266,9 @@ class hub_call_dbproxy_find_and_modify_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : hub_call_dbproxy_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_find_and_modify_handle_cb = None
-        self.event_find_and_modify_handle_err = None
-        self.event_find_and_modify_handle_timeout = None
+        self.event_find_and_modify_handle_cb:Callable[[bytes]] = None
+        self.event_find_and_modify_handle_err:Callable[[]] = None
+        self.event_find_and_modify_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[bytes]], _err:Callable[[]]):
         self.event_find_and_modify_handle_cb = _cb
@@ -284,9 +284,9 @@ class hub_call_dbproxy_remove_object_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : hub_call_dbproxy_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_remove_object_handle_cb = None
-        self.event_remove_object_handle_err = None
-        self.event_remove_object_handle_timeout = None
+        self.event_remove_object_handle_cb:Callable[[]] = None
+        self.event_remove_object_handle_err:Callable[[]] = None
+        self.event_remove_object_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[]], _err:Callable[[]]):
         self.event_remove_object_handle_cb = _cb
@@ -302,9 +302,9 @@ class hub_call_dbproxy_get_object_count_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : hub_call_dbproxy_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_get_object_count_handle_cb = None
-        self.event_get_object_count_handle_err = None
-        self.event_get_object_count_handle_timeout = None
+        self.event_get_object_count_handle_cb:Callable[[int]] = None
+        self.event_get_object_count_handle_err:Callable[[]] = None
+        self.event_get_object_count_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[int]], _err:Callable[[]]):
         self.event_get_object_count_handle_cb = _cb

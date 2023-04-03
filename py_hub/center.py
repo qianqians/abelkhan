@@ -91,9 +91,9 @@ class center_reg_server_mq_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : center_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_reg_server_mq_handle_cb = None
-        self.event_reg_server_mq_handle_err = None
-        self.event_reg_server_mq_handle_timeout = None
+        self.event_reg_server_mq_handle_cb:Callable[[]] = None
+        self.event_reg_server_mq_handle_err:Callable[[]] = None
+        self.event_reg_server_mq_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[]], _err:Callable[[]]):
         self.event_reg_server_mq_handle_cb = _cb
@@ -109,9 +109,9 @@ class center_reconn_reg_server_mq_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : center_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_reconn_reg_server_mq_handle_cb = None
-        self.event_reconn_reg_server_mq_handle_err = None
-        self.event_reconn_reg_server_mq_handle_timeout = None
+        self.event_reconn_reg_server_mq_handle_cb:Callable[[]] = None
+        self.event_reconn_reg_server_mq_handle_err:Callable[[]] = None
+        self.event_reconn_reg_server_mq_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[]], _err:Callable[[]]):
         self.event_reconn_reg_server_mq_handle_cb = _cb
@@ -127,9 +127,9 @@ class center_heartbeat_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : center_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_heartbeat_handle_cb = None
-        self.event_heartbeat_handle_err = None
-        self.event_heartbeat_handle_timeout = None
+        self.event_heartbeat_handle_cb:Callable[[]] = None
+        self.event_heartbeat_handle_err:Callable[[]] = None
+        self.event_heartbeat_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[]], _err:Callable[[]]):
         self.event_heartbeat_handle_cb = _cb

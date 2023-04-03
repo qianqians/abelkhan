@@ -90,9 +90,9 @@ class client_call_gate_heartbeats_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : client_call_gate_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_heartbeats_handle_cb = None
-        self.event_heartbeats_handle_err = None
-        self.event_heartbeats_handle_timeout = None
+        self.event_heartbeats_handle_cb:Callable[[int]] = None
+        self.event_heartbeats_handle_err:Callable[[]] = None
+        self.event_heartbeats_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[int]], _err:Callable[[]]):
         self.event_heartbeats_handle_cb = _cb
@@ -108,9 +108,9 @@ class client_call_gate_get_hub_info_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : client_call_gate_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_get_hub_info_handle_cb = None
-        self.event_get_hub_info_handle_err = None
-        self.event_get_hub_info_handle_timeout = None
+        self.event_get_hub_info_handle_cb:Callable[[hub_info]] = None
+        self.event_get_hub_info_handle_err:Callable[[]] = None
+        self.event_get_hub_info_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[hub_info]], _err:Callable[[]]):
         self.event_get_hub_info_handle_cb = _cb
@@ -226,9 +226,9 @@ class hub_call_gate_reg_hub_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : hub_call_gate_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_reg_hub_handle_cb = None
-        self.event_reg_hub_handle_err = None
-        self.event_reg_hub_handle_timeout = None
+        self.event_reg_hub_handle_cb:Callable[[]] = None
+        self.event_reg_hub_handle_err:Callable[[]] = None
+        self.event_reg_hub_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[]], _err:Callable[[]]):
         self.event_reg_hub_handle_cb = _cb
@@ -244,9 +244,9 @@ class hub_call_gate_reverse_reg_client_hub_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : hub_call_gate_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_reverse_reg_client_hub_handle_cb = None
-        self.event_reverse_reg_client_hub_handle_err = None
-        self.event_reverse_reg_client_hub_handle_timeout = None
+        self.event_reverse_reg_client_hub_handle_cb:Callable[[]] = None
+        self.event_reverse_reg_client_hub_handle_err:Callable[[framework_error.framework_error]] = None
+        self.event_reverse_reg_client_hub_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[]], _err:Callable[[framework_error.framework_error]]):
         self.event_reverse_reg_client_hub_handle_cb = _cb

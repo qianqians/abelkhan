@@ -75,40 +75,30 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
             code += "        self.hubs.call_hub(self.hub_name_" + _hub_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
             code += "        }\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
-            cb_func += "class " + module_name + "_" + func_name + "_cb(object):\n"
-            cb_func += "        private UInt64 cb_uuid;\n"
-            cb_func += "        private " + module_name + "_rsp_cb module_rsp_cb;\n\n"
-            cb_func += "        public " + module_name + "_" + func_name + "_cb(UInt64 _cb_uuid, " + module_name + "_rsp_cb _module_rsp_cb)\n"
-            cb_func += "        {\n"
-            cb_func += "            cb_uuid = _cb_uuid;\n"
-            cb_func += "            module_rsp_cb = _module_rsp_cb;\n"
-            cb_func += "        }\n\n"
-            cb_func += "        public event Action"
-            if len(i[4]) > 0:
-                cb_func += "<"
+            rsp_fn = "Callable[["
             count = 0
             for _type, _name, _parameter in i[4]:
-                cb_func += tools.convert_type(_type, dependent_struct, dependent_enum)
-                count = count + 1
+                rsp_fn += tools.convert_type(_type, dependent_struct, dependent_enum)
+                count += 1
                 if count < len(i[4]):
-                    cb_func += ", "
-            if len(i[4]) > 0:
-                cb_func += ">"
-            cb_func += " on_" + func_name + "_cb;\n"
-
-            cb_func += "        public event Action"
-            if len(i[6]) > 0:
-                cb_func += "<"
+                    rsp_fn += ", "
+            rsp_fn += "]]"
+            
+            err_fn = "Callable[["
             count = 0
             for _type, _name, _parameter in i[6]:
-                cb_func += tools.convert_type(_type, dependent_struct, dependent_enum)
-                count = count + 1
+                err_fn += tools.convert_type(_type, dependent_struct, dependent_enum)
+                count += 1
                 if count < len(i[6]):
-                    cb_func += ", "
-            if len(i[6]) > 0:
-                cb_func += ">"
-            cb_func += " on_" + func_name + "_err;\n"
+                    err_fn += ", "
+            err_fn += "]]"
 
+            cb_func += "class " + module_name + "_" + func_name + "_cb(object):\n"
+            cb_func += "    def __init__(self, _cb_uuid:int):\n"
+            cb_func += "        self.cb_uuid = _cb_uuid\n"
+
+            cb_func += " on_" + func_name + "_cb;\n"
+            cb_func += " on_" + func_name + "_err;\n"
             cb_func += "        public event Action on_" + func_name + "_timeout;\n\n"
 
             cb_func += "        public " + module_name + "_" + func_name + "_cb callBack(Action"

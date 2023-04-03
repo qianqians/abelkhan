@@ -100,9 +100,9 @@ class hub_call_hub_reg_hub_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : hub_call_hub_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_reg_hub_handle_cb = None
-        self.event_reg_hub_handle_err = None
-        self.event_reg_hub_handle_timeout = None
+        self.event_reg_hub_handle_cb:Callable[[]] = None
+        self.event_reg_hub_handle_err:Callable[[]] = None
+        self.event_reg_hub_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[]], _err:Callable[[]]):
         self.event_reg_hub_handle_cb = _cb
@@ -118,9 +118,9 @@ class hub_call_hub_seep_client_gate_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : hub_call_hub_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_seep_client_gate_handle_cb = None
-        self.event_seep_client_gate_handle_err = None
-        self.event_seep_client_gate_handle_timeout = None
+        self.event_seep_client_gate_handle_cb:Callable[[]] = None
+        self.event_seep_client_gate_handle_err:Callable[[framework_error.framework_error]] = None
+        self.event_seep_client_gate_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[]], _err:Callable[[framework_error.framework_error]]):
         self.event_seep_client_gate_handle_cb = _cb
@@ -234,9 +234,9 @@ class client_call_hub_heartbeats_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : client_call_hub_rsp_cb):
         self.cb_uuid = _cb_uuid
         self.module_rsp_cb = _module_rsp_cb
-        self.event_heartbeats_handle_cb = None
-        self.event_heartbeats_handle_err = None
-        self.event_heartbeats_handle_timeout = None
+        self.event_heartbeats_handle_cb:Callable[[int]] = None
+        self.event_heartbeats_handle_err:Callable[[]] = None
+        self.event_heartbeats_handle_timeout:Callable[...] = None
 
     def callBack(self, _cb:Callable[[int]], _err:Callable[[]]):
         self.event_heartbeats_handle_cb = _cb
