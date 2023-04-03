@@ -173,6 +173,19 @@ namespace hub
                 }
             }
 
+            if (_config.has_key("http_listen"))
+            {
+                var is_http_listen = _config.get_value_bool("http_listen");
+                if (is_http_listen)
+                {
+                    http_outside_address = new addressinfo();
+                    http_outside_address.host = _config.get_value_string("http_outside_host");
+                    http_outside_address.port = (ushort)_config.get_value_int("http_outside_port");
+                    _httpservice = new service.HttpService(http_outside_address.host, http_outside_address.port);
+                    _httpservice.run();
+                }
+            }
+
             _hub_msg_handle = new hub_msg_handle(_hubs, _gates);
             _center_msg_handle = new center_msg_handle(this, _closeHandle, _centerproxy);
             _dbproxy_msg_handle = new dbproxy_msg_handle();
@@ -262,6 +275,11 @@ namespace hub
             {
                 _enetservice.stop();
                 ManagedENet.Shutdown();
+            }
+
+            if (_httpservice != null)
+            {
+                _httpservice.close();
             }
 
             _timer.addticktime(3000, (tick) =>
@@ -421,6 +439,7 @@ namespace hub
         public static addressinfo tcp_outside_address = null;
         public static addressinfo websocket_outside_address = null;
         public static addressinfo enet_outside_address = null;
+        public static addressinfo http_outside_address = null;
 
         public static abelkhan.config _config;
         public static abelkhan.config _root_config;
@@ -445,6 +464,7 @@ namespace hub
         private readonly abelkhan.enetservice _enetservice;
         private readonly abelkhan.cryptacceptservice _cryptacceptservice;
         private readonly abelkhan.websocketacceptservice _websocketacceptservice;
+        private readonly service.HttpService _httpservice;
 
         private uint reconn_count = 0;
         private centerproxy _centerproxy;
