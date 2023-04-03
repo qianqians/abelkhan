@@ -461,22 +461,14 @@ namespace abelkhan
 
         public svrproxy get_svr(abelkhan.Ichannel ch)
         {
-            if (svrproxys.TryGetValue(ch, out svrproxy _proxy))
-            {
-                return _proxy;
-            }
-
-            return null;
+            svrproxys.TryGetValue(ch, out svrproxy _proxy);
+            return _proxy;
         }
 
         public hubproxy get_hub(abelkhan.Ichannel ch)
         {
-            if (hubproxys.TryGetValue(ch, out hubproxy _proxy))
-            {
-                return _proxy;
-            }
-
-            return null;
+            hubproxys.TryGetValue(ch, out hubproxy _proxy);
+            return _proxy;
         }
     }
 }
