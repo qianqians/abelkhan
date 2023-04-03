@@ -1,5 +1,5 @@
 #coding:utf-8
-# 2019-12-26
+# 2023-3-31
 # build by qianqians
 # tools
 
@@ -41,24 +41,53 @@ def convert_parameter(typestr, parameter, dependent_enum, enum):
     elif typestr == 'string':
         return parameter
     elif typestr == 'float':
-        return parameter
+        return "float(" + parameter + ")"
     elif typestr == 'double':
-        return parameter
+        return "float(" + parameter + ")"
     elif typestr == 'bool':
         return parameter
     elif check_in_dependent(typestr, dependent_enum):
-        _import = get_import(typestr, dependent_enum)
         enum_elems = enum[typestr]
         for key, value in enum_elems:
             if key == parameter:
-                if _import == "":
-                    return typestr + '.' + parameter
-                else:
-                    return _import + '.' + typestr + '.' + parameter
+                return typestr + '.' + parameter
         raise Exception("parameter:%s not %s member" % (parameter, typestr))
     elif typestr == 'bin':
-        str_parameter = "Uint8Array.from(%s)"%parameter
+        value = parameter[1:-1]
+        str_parameter = "bytes([%s])"%value
         return str_parameter
+
+def get_type_default(typestr, dependent_enum):
+    if typestr == 'int8':
+        return "0"
+    elif typestr == 'int16':
+        return "0"
+    elif typestr == 'int32':
+        return "0"
+    elif typestr == 'int64':
+        return "0"
+    elif typestr == 'uint8':
+        return "0"
+    elif typestr == 'uint16':
+        return "0"
+    elif typestr == 'uint32':
+        return "0"
+    elif typestr == 'uint64':
+        return "0"
+    elif typestr == 'string':
+        return ""
+    elif typestr == 'float':
+        return "0.0"
+    elif typestr == 'double':
+        return "0.0"
+    elif typestr == 'bool':
+        return "False"
+    elif check_in_dependent(typestr, dependent_enum):
+        return "0"
+    elif typestr == 'bin':
+        return "None"
+    else:
+        return "None"
 
 def check_in_dependent(typestr, dependent):
     for _type, _import in dependent:
@@ -110,31 +139,31 @@ def check_type(typestr, dependent_struct, dependent_enum):
 
 def convert_type(typestr, dependent_struct, dependent_enum):
     if typestr == 'int8':
-        return 'number'
+        return 'int'
     elif typestr == 'int16':
-        return 'number'
+        return 'int'
     elif typestr == 'int32':
-        return 'number'
+        return 'int'
     elif typestr == 'int64':
-        return 'number'
+        return 'int'
     elif typestr == 'uint8':
-        return 'number'
+        return 'int'
     elif typestr == 'uint16':
-        return 'number'
+        return 'int'
     elif typestr == 'uint32':
-        return 'number'
+        return 'int'
     elif typestr == 'uint64':
-        return 'number'
+        return 'int'
     elif typestr == 'string':
-        return 'string'
+        return 'str'
     elif typestr == 'float':
-        return 'number'
+        return 'float'
     elif typestr == 'double':
-        return 'number'
+        return 'float'
     elif typestr == 'bool':
-        return 'boolean'
+        return 'bool'
     elif typestr == 'bin':
-        return 'Uint8Array'
+        return 'bytes'
     elif check_in_dependent(typestr, dependent_struct):
         _import = get_import(typestr, dependent_struct)
         if _import == "":
@@ -150,10 +179,11 @@ def convert_type(typestr, dependent_struct, dependent_enum):
     elif typestr[len(typestr)-2] == '[' and typestr[len(typestr)-1] == ']':
         array_type = typestr[:-2]
         array_type = convert_type(array_type, dependent_struct, dependent_enum)
-        return array_type+'[]'
+        return 'list[' + array_type+']'
 
     raise Exception("non exist type:%s" % typestr)
     
+
 OriginalTypeList = [TypeType.Enum, TypeType.String, TypeType.Int8, TypeType.Int16, TypeType.Int32, TypeType.Int64,
                     TypeType.Uint8, TypeType.Uint16, TypeType.Uint32, TypeType.Uint64, 
                     TypeType.Float, TypeType.Double, TypeType.Bool, TypeType.Bin]
