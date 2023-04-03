@@ -216,7 +216,7 @@ namespace abelkhan
 
     public class test_c2s_caller {
         public static test_c2s_rsp_cb rsp_cb_test_c2s_handle = null;
-        private test_c2s_hubproxy _hubproxy;
+        private ThreadLocal<test_c2s_hubproxy> _hubproxy;
         public test_c2s_caller(client.client _client_handle) 
         {
             if (rsp_cb_test_c2s_handle == null)
@@ -224,13 +224,17 @@ namespace abelkhan
                 rsp_cb_test_c2s_handle = new test_c2s_rsp_cb(_client_handle.modulemanager);
             }
 
-            _hubproxy = new test_c2s_hubproxy(_client_handle, rsp_cb_test_c2s_handle);
+            _hubproxy = new ThreadLocal<test_c2s_hubproxy>();
         }
 
         public test_c2s_hubproxy get_hub(string hub_name)
         {
-            _hubproxy.hub_name_c233fb06_7c62_3839_a7d5_edade25b16c5 = hub_name;
-            return _hubproxy;
+            if (_hubproxy.Value == null)
+{
+                _hubproxy.Value = new test_c2s_hubproxy(_client_handle, rsp_cb_test_c2s_handle);
+            }
+            _hubproxy.Value.hub_name_c233fb06_7c62_3839_a7d5_edade25b16c5 = hub_name;
+            return _hubproxy.Value;
         }
 
     }

@@ -163,8 +163,8 @@ namespace abelkhan
 
     public class test_s2c_caller {
         public static test_s2c_rsp_cb rsp_cb_test_s2c_handle = null;
-        private test_s2c_clientproxy _clientproxy;
-        private test_s2c_multicast _multicast;
+        private ThreadLocal<test_s2c_clientproxy> _clientproxy;
+        private ThreadLocal<test_s2c_multicast> _multicast;
         private test_s2c_broadcast _broadcast;
 
         public test_s2c_caller() 
@@ -174,19 +174,27 @@ namespace abelkhan
                 rsp_cb_test_s2c_handle = new test_s2c_rsp_cb();
             }
 
-            _clientproxy = new test_s2c_clientproxy(rsp_cb_test_s2c_handle);
-            _multicast = new test_s2c_multicast(rsp_cb_test_s2c_handle);
+            _clientproxy = new ThreadLocal<test_s2c_clientproxy>();
+            _multicast = new ThreadLocal<test_s2c_multicast>();
             _broadcast = new test_s2c_broadcast(rsp_cb_test_s2c_handle);
         }
 
         public test_s2c_clientproxy get_client(string client_uuid) {
-            _clientproxy.client_uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43 = client_uuid;
-            return _clientproxy;
+            if (_clientproxy.Value == null)
+{
+                _clientproxy.Value = new test_s2c_clientproxy(rsp_cb_test_s2c_handle);
+            }
+            _clientproxy.Value.client_uuid_a1cf7490_107a_3422_8f39_e02b73ef3c43 = client_uuid;
+            return _clientproxy.Value;
         }
 
         public test_s2c_multicast get_multicast(List<string> client_uuids) {
-            _multicast.client_uuids_a1cf7490_107a_3422_8f39_e02b73ef3c43 = client_uuids;
-            return _multicast;
+            if (_multicast.Value == null)
+{
+                _multicast.Value = new test_s2c_multicast(rsp_cb_test_s2c_handle);
+            }
+            _multicast.Value.client_uuids_a1cf7490_107a_3422_8f39_e02b73ef3c43 = client_uuids;
+            return _multicast.Value;
         }
 
         public test_s2c_broadcast get_broadcast() {
