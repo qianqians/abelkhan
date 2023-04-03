@@ -67,9 +67,16 @@ namespace hub
                 var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
                 var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
-                _hubmanager.current_hubproxy = _hubmanager.get_hub(_hub_call_hub_module.current_ch.Value);
-                hub._modules.process_module_mothed(func, argvs);
-                _hubmanager.current_hubproxy = null;
+                if (_hubmanager.get_hub(_hub_call_hub_module.current_ch.Value, out hubproxy _proxy))
+                {
+                    _hubmanager.current_hubproxy = _proxy;
+                    hub._modules.process_module_mothed(func, argvs);
+                    _hubmanager.current_hubproxy = null;
+                }
+                else
+                {
+                    log.log.err("hub_call_hub_mothed not exist hubproxy!");
+                }
             }
             catch(System.Exception ex)
             {
