@@ -3,6 +3,7 @@
  * 2020/6/2
  * qianqians
  */
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,6 +25,8 @@ namespace abelkhan
         public readonly closehandle _closeHandle;
         public readonly service.timerservice _timer; 
         public readonly abelkhan.config _root_cfg;
+        
+        public event Action<svrproxy> on_svr_disconnect;
 
         static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
@@ -82,6 +85,10 @@ namespace abelkhan
 
             _svrmanager = new svrmanager(_timer, this, _redis_mq_service);
             _svr_msg_handle = new svr_msg_handle(_svrmanager, _closeHandle);
+            _svrmanager.on_svr_disconnect += (proxy) =>
+            {
+                on_svr_disconnect?.Invoke(proxy);
+            };
 
             _gmmanager = new gmmanager();
             _gm_msg_handle = new gm_msg_handle(_svrmanager, _gmmanager, _closeHandle);
@@ -97,7 +104,6 @@ namespace abelkhan
             _accept_gm_service.start();
         }
 
-        public event Action<svrproxy> on_svr_disconnect;
         private long poll()
         {
             var tick_begin = _timer.refresh();
@@ -112,18 +118,6 @@ namespace abelkhan
                         break;
                     }
                     abelkhan.modulemng_handle._modulemng.process_event(_event.Item1, _event.Item2);
-                }
-
-                if (_svrmanager.closed_svr_list.Count > 0)
-                {
-                    lock (_svrmanager.closed_svr_list)
-                    {
-                        foreach (var _proxy in _svrmanager.closed_svr_list)
-                        {
-                            on_svr_disconnect?.Invoke(_proxy);
-                        }
-                    }
-                    _svrmanager.remove_closed_svr();
                 }
 
                 if (remove_chs.Count > 0)

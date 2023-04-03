@@ -4,6 +4,7 @@
  * qianqians
  */
 
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -266,7 +267,8 @@ namespace abelkhan
 
             closed_svr_list.Clear();
         }
-        
+
+        public event Action<svrproxy> on_svr_disconnect;
         public async void heartbeat_svr(long tick)
         {
             foreach (var _proxy in svrproxys)
@@ -275,6 +277,15 @@ namespace abelkhan
                 {
                     on_svr_close(_proxy.Value);
                 }
+            }
+
+            if (closed_svr_list.Count > 0)
+            {
+                foreach (var _proxy in closed_svr_list)
+                {
+                    on_svr_disconnect?.Invoke(_proxy);
+                }
+                remove_closed_svr();
             }
 
             await store_svr_info();
