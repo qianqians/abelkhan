@@ -19,17 +19,12 @@ namespace abelkhan
 {
     public class AcceptConnectionHandler : ConnectionHandler
     {
-        private readonly ILogger<AcceptConnectionHandler> _logger;
-
-        public AcceptConnectionHandler(ILogger<AcceptConnectionHandler> logger)
+        public AcceptConnectionHandler()
         {
-            _logger = logger;
         }
 
         public override async Task OnConnectedAsync(ConnectionContext connection)
         {
-            _logger.LogInformation(connection.ConnectionId + " connected");
-
             var ch = new channel(connection);
             acceptservice.onConnect(ch);
 
@@ -50,8 +45,6 @@ namespace abelkhan
                     break;
                 }
             }
-
-            _logger.LogInformation(connection.ConnectionId + " disconnected");
         }
     }
 
@@ -94,12 +87,11 @@ namespace abelkhan
                     .UseKestrel()
                     .ConfigureKestrel((context, options) =>
                     {
-
-                        options.ListenLocalhost(port, (builder) =>
+                        log.log.trace("ConfigureKestrel options.ListenAnyIP! port:{0}", port);
+                        options.ListenAnyIP(port, (builder) =>
                         {
                             builder.UseConnectionHandler<AcceptConnectionHandler>();
                         });
-
                     })
                     .UseStartup<TcpStartup>();
             });

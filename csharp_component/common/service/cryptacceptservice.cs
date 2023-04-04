@@ -19,17 +19,12 @@ namespace abelkhan
 {
     public class CryptAcceptConnectionHandler : ConnectionHandler
     {
-        private readonly ILogger<CryptAcceptConnectionHandler> _logger;
-
-        public CryptAcceptConnectionHandler(ILogger<CryptAcceptConnectionHandler> logger)
+        public CryptAcceptConnectionHandler()
         {
-            _logger = logger;
         }
 
         public override async Task OnConnectedAsync(ConnectionContext connection)
         {
-            _logger.LogInformation(connection.ConnectionId + " connected");
-
             var ch = new cryptchannel(connection);
             cryptacceptservice.onConnect(ch);
 
@@ -52,8 +47,6 @@ namespace abelkhan
                     break;
                 }
             }
-
-            _logger.LogInformation(connection.ConnectionId + " disconnected");
         }
     }
 
@@ -88,12 +81,11 @@ namespace abelkhan
                     .UseKestrel()
                     .ConfigureKestrel((context, options) =>
                     {
-
-                        options.ListenLocalhost(port, (builder) =>
+                        log.log.trace("ConfigureKestrel options.ListenAnyIP! port:{0}", port);
+                        options.ListenAnyIP(port, (builder) =>
                         {
                             builder.UseConnectionHandler<CryptAcceptConnectionHandler>();
                         });
-
                     })
                     .UseStartup<TcpStartup>();
             });
