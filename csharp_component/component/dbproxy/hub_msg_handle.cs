@@ -146,34 +146,26 @@ namespace dbproxy
             log.log.trace("begin find_and_modify");
 
             var rsp = (abelkhan.hub_call_dbproxy_find_and_modify_rsp)_hub_call_dbproxy_module.rsp.Value;
-            if (dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value, out _))
+            try
             {
-                try
+                var obj = await dbproxy._mongodbproxy.find_and_modify(db, collection, query_data, object_data, is_new, upsert);
+                if (obj != null)
                 {
-                    var obj = await dbproxy._mongodbproxy.find_and_modify(db, collection, query_data, object_data, is_new, upsert);
-                    if (obj != null)
-                    {
-                        using var st = MemoryStreamPool.mstMgr.GetStream();
-                        var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
-                        MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, obj);
-                        st.Position = 0;
+                    using var st = MemoryStreamPool.mstMgr.GetStream();
+                    var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
+                    MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, obj);
+                    st.Position = 0;
 
-                        rsp.rsp(st.ToArray());
-                    }
-                    else
-                    {
-                        rsp.err();
-                    }
+                    rsp.rsp(st.ToArray());
                 }
-                catch (System.Exception ex)
+                else
                 {
-                    log.log.err("ex:{0}", ex);
                     rsp.err();
                 }
             }
-            else
+            catch (System.Exception ex)
             {
-                log.log.err("hubproxy is null");
+                log.log.err("ex:{0}", ex);
                 rsp.err();
             }
 
@@ -185,29 +177,21 @@ namespace dbproxy
             log.log.trace("begin remove_object");
 
             var rsp = (abelkhan.hub_call_dbproxy_remove_object_rsp)_hub_call_dbproxy_module.rsp.Value;
-            if (dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value, out _))
+            try
             {
-                try
+                var is_remove_sucessed = await dbproxy._mongodbproxy.remove(db, collection, query_data);
+                if (is_remove_sucessed)
                 {
-                    var is_remove_sucessed = await dbproxy._mongodbproxy.remove(db, collection, query_data);
-                    if (is_remove_sucessed)
-                    {
-                        rsp.rsp();
-                    }
-                    else
-                    {
-                        rsp.err();
-                    }
+                    rsp.rsp();
                 }
-                catch (System.Exception ex)
+                else
                 {
-                    log.log.err("ex:{0}", ex);
                     rsp.err();
                 }
             }
-            else
+            catch (System.Exception ex)
             {
-                log.log.err("hubproxy is null");
+                log.log.err("ex:{0}", ex);
                 rsp.err();
             }
 
@@ -219,22 +203,14 @@ namespace dbproxy
             log.log.trace("begin get_object_info");
 
             var rsp = (abelkhan.hub_call_dbproxy_get_object_count_rsp)_hub_call_dbproxy_module.rsp.Value;
-            if (dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value, out _))
+            try
             {
-                try
-                {
-                    var count = await dbproxy._mongodbproxy.count(db, collection, query_data);
-                    rsp.rsp((uint)count);
-                }
-                catch (System.Exception ex)
-                {
-                    log.log.err("ex:{0}", ex);
-                    rsp.err();
-                }
+                var count = await dbproxy._mongodbproxy.count(db, collection, query_data);
+                rsp.rsp((uint)count);
             }
-            else
+            catch (System.Exception ex)
             {
-                log.log.err("hubproxy is null");
+                log.log.err("ex:{0}", ex);
                 rsp.err();
             }
 
