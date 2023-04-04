@@ -81,9 +81,10 @@ namespace abelkhan
                     .UseKestrel()
                     .ConfigureKestrel((context, options) =>
                     {
-                        log.log.trace("ConfigureKestrel options.ListenAnyIP! port:{0}", port);
+                        log.log.trace("cryptacceptservice ConfigureKestrel options.ListenAnyIP! port:{0}", port);
                         options.ListenAnyIP(port, (builder) =>
                         {
+                            log.log.trace("cryptacceptservice ListenAnyIP builder.UseConnectionHandler! port:{0}", port);
                             builder.UseConnectionHandler<CryptAcceptConnectionHandler>();
                         });
                     })
