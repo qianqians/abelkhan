@@ -1,0 +1,4 @@
+module hub_hub {
+	test1 ntf(string id1, int32 id2, bool _is);
+    test2 req(string id) rsp(string token) err(int32 err);
+}

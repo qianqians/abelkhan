@@ -32,7 +32,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
             
         if i[1] == "ntf":
 
-            code_func += "    def " + func_name + "(self, inArray:list){\n"
+            code_func += "    def " + func_name + "(self, inArray:list):\n"
             count = 0 
             for _type, _name, _parameter in i[2]:
                 type_ = tools.check_type(_type, dependent_struct, dependent_enum)
@@ -63,7 +63,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
             code_func += ")\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
             
-            code_func += "    def " + func_name + "(self, inArray:list){\n"
+            code_func += "    def " + func_name + "(self, inArray:list):\n"
             code_func += "        _cb_uuid = inArray[0]\n"
             count = 1 
             for _type, _name, _parameter in i[2]:
@@ -84,7 +84,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                     elif array_type_ == tools.TypeType.Array:
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                 count += 1
-            code_func += "        rsp = " + module_name + "_" + func_name + "_rsp(self.hubs.current_hubproxy.name, _cb_uuid, self.hubs)\n"
+            code_func += "        self.rsp = " + module_name + "_" + func_name + "_rsp(self.hubs.current_hubproxy.name, _cb_uuid, self.hubs)\n"
             code_func += "        if self.on_" + func_name + ":\n"
             code_func += "            self.on_" + func_name + "("
             count = 0
@@ -94,7 +94,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                 if count < len(i[2]):
                     code_func += ", "
             code_func += ")\n"
-            code_func += "        rsp = None\n\n"
+            code_func += "        self.rsp = None\n\n"
 
             _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
             _rsp_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_X500, func_name)).split('-'))
@@ -104,7 +104,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
             rsp_code += "        self._hub_name_" + _hub_uuid + " = hub_name\n"
             rsp_code += "        self.uuid_" + _rsp_uuid + " = _uuid\n\n"
 
-            rsp_code += "    def rsp("
+            rsp_code += "    def rsp(self, "
             count = 0
             for _type, _name, _parameter in i[4]:
                 if _parameter == None:
@@ -137,9 +137,9 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                     elif array_type_ == tools.TypeType.Array:
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     rsp_code += "        _argv_" + _argv_uuid + ".append(_array_" + _array_uuid + ")\n"
-            rsp_code += "        self.hubs.call_hub(_hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb_" + func_name + "_rsp\", _argv_" + _argv_uuid + ")\n\n"
+            rsp_code += "        self.hubs.call_hub(self._hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb_" + func_name + "_rsp\", _argv_" + _argv_uuid + ")\n\n"
 
-            rsp_code += "    def err("
+            rsp_code += "    def err(self, "
             count = 0
             for _type, _name, _parameter in i[6]:
                 if _parameter == None:
@@ -172,7 +172,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
                     elif array_type_ == tools.TypeType.Array:
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     rsp_code += "        _argv_" + _argv_uuid + ".append(_array_" + _array_uuid + ")\n"
-            rsp_code += "        self.hubs..call_hub(_hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb_" + func_name + "_err\", _argv_" + _argv_uuid + ")\n\n"
+            rsp_code += "        self.hubs.call_hub(self._hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb_" + func_name + "_err\", _argv_" + _argv_uuid + ")\n\n"
 
         else:
             raise Exception("func:%s wrong rpc type:%s must req or ntf" % (func_name, str(i[1])))
@@ -189,7 +189,7 @@ def genmodule(pretreatment):
     
     modules = pretreatment.module
         
-    code = "/*this module code is codegen by abelkhan codegen for c#*/\n"
+    code = "#this module code is codegen by abelkhan codegen for python\n"
     for module_name, funcs in modules.items():
         code += gen_module_module(module_name, funcs, dependent_struct, dependent_enum, pretreatment.enum)
                 

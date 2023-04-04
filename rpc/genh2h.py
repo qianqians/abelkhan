@@ -30,6 +30,7 @@ def gen_python_import(_import):
     code = "from abelkhan import *\n"
     code += "from threading import Timer\n"
     code += "from collections.abc import Callable\n"
+    code += "from module import *\n"
     code += "from enum import Enum\n"
     code += "import modulemanager\n"
     code += "import hubmanager\n"

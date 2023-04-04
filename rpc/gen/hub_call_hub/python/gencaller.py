@@ -23,7 +23,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code += "    def __init__(self, _hubs:hubmanager):\n"
     code += "        self.hubs = _hubs\n"
     code += "        self.hub_name_" + _hub_uuid + " = \"\"\n"
-    code += "        self.uuid_" + _uuid + " = RandomUUID()\n"
+    code += "        self.uuid_" + _uuid + " = RandomUUID()\n\n"
 
     code_end = "class " + module_name + "_caller(object):\n"
     code_end += "    def __init__(self, _hubs:hubmanager):\n"
@@ -33,8 +33,8 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code_end += "        self.hubs = _hubs\n"
     code_end += "        self._hubproxy = " + module_name + "_hubproxy(self.hubs)\n\n"
     code_end += "    def get_hub(self, hub_name:str):\n"
-    code_end += "            _hubproxy.hub_name_" + _hub_uuid + " = hub_name\n"
-    code_end += "            return _hubproxy\n\n"
+    code_end += "        self._hubproxy.hub_name_" + _hub_uuid + " = hub_name\n"
+    code_end += "        return self._hubproxy\n\n"
 
     for i in funcs:
         func_name = i[0]
@@ -101,9 +101,9 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
             cb_func += "        self.on_" + func_name + "_err:" + err_fn + " = None\n"
             cb_func += "        self.on_" + func_name + "_timeout:Callable[...] = None\n\n"
 
-            cb_func += "    def callBack(self, _cb:" + rsp_fn + ", _err:" + err_fn + ") -> " + module_name + "_" + func_name + "_cb:"
-            cb_func += "        self.on_" + func_name + "_cb += cb\n"
-            cb_func += "        self.on_" + func_name + "_err += err\n"
+            cb_func += "    def callBack(self, _cb:" + rsp_fn + ", _err:" + err_fn + "):\n"
+            cb_func += "        self.on_" + func_name + "_cb += _cb\n"
+            cb_func += "        self.on_" + func_name + "_err += _err\n"
             cb_func += "        return self\n\n"
 
             cb_func += "    def timeout(self, tick:int, timeout_cb:Callable[...]):\n"
@@ -188,7 +188,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
             cb_code_section += "        if rsp and rsp.on_" + func_name + "_timeout:\n"
             cb_code_section += "            rsp.on_" + func_name + "_timeout()\n\n"
 
-            cb_code_section += "    def try_get_and_del_" + func_name + "_cb(self, uuid:int) -> " + module_name + "_" + func_name + "_cb:\n"
+            cb_code_section += "    def try_get_and_del_" + func_name + "_cb(self, uuid:int):\n"
             cb_code_section += "        rsp = self.map_" + func_name + ".get(uuid)\n"
             cb_code_section += "        del self.map_" + func_name + "[uuid]\n"
             cb_code_section += "        return rsp\n\n"
@@ -200,13 +200,13 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
             count = 0
             for _type, _name, _parameter in i[2]:
                 if _parameter == None:
-                    code += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name 
+                    code += _name + ":" + tools.convert_type(_type, dependent_struct, dependent_enum)
                 else:
-                    code += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name + " = " + tools.convert_parameter(_type, _parameter, dependent_enum, enum)
+                    code += _name + ":" + tools.convert_type(_type, dependent_struct, dependent_enum) + " = " + tools.convert_parameter(_type, _parameter, dependent_enum, enum)
                 count = count + 1
                 if count < len(i[2]):
                     code += ", "
-            code += ") -> " + module_name + "_" + func_name + "_cb:\n"
+            code += "):\n"
             code += "        self.uuid_" + _uuid + " = (self.uuid_" + _uuid + " + 1) & 0x7fffffff\n"
             code += "        uuid_" + _cb_uuid_uuid + " = self.uuid_" + _uuid + "\n\n"
             code += "        _argv_" + _argv_uuid + " = [uuid_" + _cb_uuid_uuid + "]\n"
@@ -243,7 +243,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     
     cb_code_constructor += "\n"
 
-    return cb_func + cb_code + cb_code_constructor + cb_code_section + code + code_end
+    return cb_code + cb_code_constructor + cb_code_section + cb_func + code + code_end
 
 def gencaller(pretreatment):
     dependent_struct = pretreatment.dependent_struct
@@ -251,7 +251,7 @@ def gencaller(pretreatment):
     
     modules = pretreatment.module
     
-    code = "/*this caller code is codegen by abelkhan codegen for c#*/\n"
+    code = "#this caller code is codegen by abelkhan codegen for python\n"
     for module_name, funcs in modules.items():
         code += gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, pretreatment.enum)
         
