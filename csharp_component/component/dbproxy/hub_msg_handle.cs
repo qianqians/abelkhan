@@ -43,32 +43,24 @@ namespace dbproxy
             log.log.trace("begin get_guid!");
 
             var rsp = (abelkhan.hub_call_dbproxy_get_guid_rsp)_hub_call_dbproxy_module.rsp.Value;
-            if (dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value, out _))
+            try
             {
-                try
+                var guid = await dbproxy._mongodbproxy.get_guid(db, collection, guid_key);
+                if (guid > 0)
                 {
-                    var guid = await dbproxy._mongodbproxy.get_guid(db, collection, guid_key);
-                    if (guid > 0)
-                    {
-                        rsp.rsp(guid);
-                    }
-                    else
-                    {
-                        rsp.err();
-                    }
+                    rsp.rsp(guid);
                 }
-                catch (System.Exception ex)
+                else
                 {
-                    log.log.err("ex:{0}", ex);
                     rsp.err();
                 }
             }
-            else
+            catch (System.Exception ex)
             {
-                log.log.err("hubproxy is null");
+                log.log.err("ex:{0}", ex);
                 rsp.err();
             }
-            
+
 
             log.log.trace("end get_guid");
         }
@@ -78,32 +70,24 @@ namespace dbproxy
             log.log.trace("begin create_persisted_object");
 
             var rsp = (abelkhan.hub_call_dbproxy_create_persisted_object_rsp)_hub_call_dbproxy_module.rsp.Value;
-            if (dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value, out _))
+            try
             {
-                try
+                var is_create_sucess = await dbproxy._mongodbproxy.save(db, collection, object_info);
+                if (is_create_sucess)
                 {
-                    var is_create_sucess = await dbproxy._mongodbproxy.save(db, collection, object_info);
-                    if (is_create_sucess)
-                    {
-                        rsp.rsp();
-                    }
-                    else
-                    {
-                        rsp.err();
-                    }
+                    rsp.rsp();
                 }
-                catch (System.Exception ex)
+                else
                 {
-                    log.log.err("ex:{0}", ex);
                     rsp.err();
                 }
             }
-            else
+            catch (System.Exception ex)
             {
-                log.log.err("hubproxy is null");
+                log.log.err("ex:{0}", ex);
                 rsp.err();
             }
-            
+
             log.log.trace("end create_persisted_object");
         }
 
@@ -112,29 +96,21 @@ namespace dbproxy
             log.log.trace("begin updata_persisted_object");
 
             var rsp = (abelkhan.hub_call_dbproxy_updata_persisted_object_rsp)_hub_call_dbproxy_module.rsp.Value;
-            if (dbproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value, out _))
+            try
             {
-                try
+                var is_update_sucessed = await dbproxy._mongodbproxy.update(db, collection, query_data, object_data, upsert);
+                if (is_update_sucessed)
                 {
-                    var is_update_sucessed = await dbproxy._mongodbproxy.update(db, collection, query_data, object_data, upsert);
-                    if (is_update_sucessed)
-                    {
-                        rsp.rsp();
-                    }
-                    else
-                    {
-                        rsp.err();
-                    }
+                    rsp.rsp();
                 }
-                catch (System.Exception ex)
+                else
                 {
-                    log.log.err("ex:{0}", ex);
                     rsp.err();
                 }
-            }   
-            else
+            }
+            catch (System.Exception ex)
             {
-                log.log.err("hubproxy is null");
+                log.log.err("ex:{0}", ex);
                 rsp.err();
             }
 
