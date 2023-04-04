@@ -62,7 +62,7 @@ class hub_hub_test2_cb(object):
 
 rsp_cb_hub_hub_handle : hub_hub_rsp_cb  = None
 class hub_hub_hubproxy(object):
-    def __init__(self, _hubs:hubmanager):
+    def __init__(self, _hubs:hubmanager.hubmanager):
         self.hubs = _hubs
         self.hub_name_2707e093_e344_3ec7_8063_8b86e948eca8 = ""
         self.uuid_2707e093_e344_3ec7_8063_8b86e948eca8 = RandomUUID()
@@ -89,7 +89,7 @@ class hub_hub_hubproxy(object):
         return cb_test2_obj
 
 class hub_hub_caller(object):
-    def __init__(self, _hubs:hubmanager):
+    def __init__(self, _hubs:hubmanager.hubmanager):
         global rsp_cb_hub_hub_handle
         if rsp_cb_hub_hub_handle == None:
              rsp_cb_hub_hub_handle = hub_hub_rsp_cb()
@@ -103,7 +103,7 @@ class hub_hub_caller(object):
 
 #this module code is codegen by abelkhan codegen for python
 class hub_hub_test2_rsp(Response):
-    def __init__(self, hub_name:str, _uuid:int, _hubs:hubmanager):
+    def __init__(self, hub_name:str, _uuid:int, _hubs:hubmanager.hubmanager):
         self.hubs = _hubs
         self._hub_name_f1917643_06b2_3e6d_ab77_0a5044067d0a = hub_name
         self.uuid_8a9af2f3_f1e2_3090_a9fd_bbf7656b7029 = _uuid
@@ -119,7 +119,7 @@ class hub_hub_test2_rsp(Response):
         self.hubs.call_hub(self._hub_name_f1917643_06b2_3e6d_ab77_0a5044067d0a, "hub_hub_rsp_cb_test2_err", _argv_f1917643_06b2_3e6d_ab77_0a5044067d0a)
 
 class hub_hub_module(imodule):
-    def __init__(self, _modulemanager:modulemanager.modulemanager, _hubs:hubmanager):
+    def __init__(self, _modulemanager:modulemanager.modulemanager, _hubs:hubmanager.hubmanager):
         self.modulemanager = _modulemanager
         self.hubs = _hubs
         self.on_test1:Callable[[str, int, bool]] = None

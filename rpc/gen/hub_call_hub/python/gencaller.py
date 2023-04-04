@@ -20,13 +20,13 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
 
     code = "rsp_cb_" + module_name + "_handle : " + module_name + "_rsp_cb  = None\n"
     code += "class " + module_name + "_hubproxy(object):\n"
-    code += "    def __init__(self, _hubs:hubmanager):\n"
+    code += "    def __init__(self, _hubs:hubmanager.hubmanager):\n"
     code += "        self.hubs = _hubs\n"
     code += "        self.hub_name_" + _hub_uuid + " = \"\"\n"
     code += "        self.uuid_" + _uuid + " = RandomUUID()\n\n"
 
     code_end = "class " + module_name + "_caller(object):\n"
-    code_end += "    def __init__(self, _hubs:hubmanager):\n"
+    code_end += "    def __init__(self, _hubs:hubmanager.hubmanager):\n"
     code_end += "        global rsp_cb_" + module_name + "_handle\n"
     code_end += "        if rsp_cb_" + module_name + "_handle == None:\n "
     code_end += "            rsp_cb_" + module_name + "_handle = " + module_name + "_rsp_cb()\n\n"

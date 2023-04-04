@@ -8,7 +8,7 @@ import tools
 
 def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum):
     code_constructor = "class " + module_name + "_module(imodule):\n"
-    code_constructor += "    def __init__(self, _modulemanager:modulemanager.modulemanager, _hubs:hubmanager):\n"
+    code_constructor += "    def __init__(self, _modulemanager:modulemanager.modulemanager, _hubs:hubmanager.hubmanager):\n"
     code_constructor += "        self.modulemanager = _modulemanager\n"
     code_constructor += "        self.hubs = _hubs\n"
         
@@ -99,7 +99,7 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
             _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
             _rsp_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_X500, func_name)).split('-'))
             rsp_code += "class " + module_name + "_" + func_name + "_rsp(Response):\n"
-            rsp_code += "    def __init__(self, hub_name:str, _uuid:int, _hubs:hubmanager):\n"
+            rsp_code += "    def __init__(self, hub_name:str, _uuid:int, _hubs:hubmanager.hubmanager):\n"
             rsp_code += "        self.hubs = _hubs\n"
             rsp_code += "        self._hub_name_" + _hub_uuid + " = hub_name\n"
             rsp_code += "        self.uuid_" + _rsp_uuid + " = _uuid\n\n"
