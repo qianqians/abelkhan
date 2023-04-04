@@ -134,7 +134,7 @@ namespace abelkhan
         private async Task<bool> sendmsg_mq()
         {
             bool is_busy = false;
-            if (send_data.TryDequeue(out Tuple<string, MemoryStream> data))
+            while (send_data.TryDequeue(out Tuple<string, MemoryStream> data))
             {
                 while (true)
                 {
