@@ -5,68 +5,17 @@
  */
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using Microsoft.AspNetCore.Connections;
-using Microsoft.Extensions.Logging;
 using System.Buffers;
+using System.Net.Sockets;
+using System.Net;
+using System.IO.Pipelines;
 
 namespace abelkhan
 {
-    public class AcceptConnectionHandler : ConnectionHandler
-    {
-        public AcceptConnectionHandler()
-        {
-        }
-
-        public override async Task OnConnectedAsync(ConnectionContext connection)
-        {
-            var ch = new channel(connection);
-            acceptservice.onConnect(ch);
-
-            while (true)
-            {
-                try
-                {
-                    var result = await connection.Transport.Input.ReadAsync();
-                    var buffer = result.Buffer;
-
-                    ch._channel_onrecv.on_recv(buffer.ToArray());
-
-                    connection.Transport.Input.AdvanceTo(buffer.End);
-                }
-                catch (System.Exception e)
-                {
-                    log.log.err("channel_onrecv.on_recv error:{0}!", e);
-                    break;
-                }
-            }
-        }
-    }
-
-    public class TcpStartup
-    {
-        public void ConfigureServices(IServiceCollection services)
-        {
-        }
-
-        public void Configure(IApplicationBuilder app, IHostEnvironment env)
-        {
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Hello World!");
-            });
-        }
-    }
-
     public class acceptservice
     {
+        private bool run = true;
         private ushort port;
-        private IHost _h;
         private Task _t;
 
         public acceptservice(ushort _port)
@@ -80,25 +29,47 @@ namespace abelkhan
             on_connect?.Invoke(ch);
         }
 
-        private void RunServerAsync()
+        private async Task ProcessLinesAsync(Socket socket)
         {
-            var hostBuilder = new HostBuilder().ConfigureWebHost((webHostBuilder) => {
-                webHostBuilder
-                    .UseKestrel()
-                    .ConfigureKestrel((context, options) =>
-                    {
-                        log.log.trace("acceptservice ConfigureKestrel options.ListenAnyIP! port:{0}", port);
-                        options.ListenAnyIP(port, (builder) =>
-                        {
-                            log.log.trace("acceptservice ListenAnyIP builder.UseConnectionHandler! port:{0}", port);
-                            builder.UseConnectionHandler<AcceptConnectionHandler>();
-                        });
-                    })
-                    .UseStartup<TcpStartup>();
-            });
+            var ch = new channel(socket);
+            acceptservice.onConnect(ch);
 
-            _h = hostBuilder.Build();
-            _h.Run();
+            var stream = new NetworkStream(socket);
+            var reader = PipeReader.Create(stream);
+
+            while (run)
+            {
+
+                try
+                {
+                    ReadResult result = await reader.ReadAsync();
+                    ReadOnlySequence<byte> buffer = result.Buffer;
+
+                    ch._channel_onrecv.on_recv(buffer.ToArray());
+
+                    reader.AdvanceTo(buffer.Start, buffer.End);
+                }
+                catch (System.Exception e)
+                {
+                    log.log.err("channel_onrecv.on_recv error:{0}!", e);
+                    break;
+                }
+            }
+
+            await reader.CompleteAsync();
+        }
+
+        private async void RunServerAsync()
+        {
+            var listenSocket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+            listenSocket.Bind(new IPEndPoint(IPAddress.Loopback, port));
+            listenSocket.Listen(128);
+
+            while (run)
+            {
+                var socket = await listenSocket.AcceptAsync();
+                _ = ProcessLinesAsync(socket);
+            }
         }
 
         public void start()
@@ -109,7 +80,8 @@ namespace abelkhan
 
         public async void close()
         {
-            await _h.StopAsync();
+            run = false;
+            await _t;
         }
     }
 }

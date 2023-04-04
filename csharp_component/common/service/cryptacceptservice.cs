@@ -5,56 +5,17 @@
  */
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using Microsoft.AspNetCore.Connections;
-using Microsoft.Extensions.Logging;
 using System.Buffers;
+using System.Net.Sockets;
+using System.Net;
+using System.IO.Pipelines;
 
 namespace abelkhan
 {
-    public class CryptAcceptConnectionHandler : ConnectionHandler
-    {
-        public CryptAcceptConnectionHandler()
-        {
-        }
-
-        public override async Task OnConnectedAsync(ConnectionContext connection)
-        {
-            var ch = new cryptchannel(connection);
-            cryptacceptservice.onConnect(ch);
-
-            while (true)
-            {
-                try
-                {
-                    var result = await connection.Transport.Input.ReadAsync();
-                    var buffer = result.Buffer;
-
-                    ch._channel_onrecv.on_recv(buffer.ToArray());
-
-                    connection.Transport.Input.AdvanceTo(buffer.End);
-                }
-                catch (System.Exception e)
-                {
-                    log.log.err("channel_onrecv.on_recv error:{0}!", e);
-
-                    cryptacceptservice.onDisconnect(ch);
-                    break;
-                }
-            }
-        }
-    }
-
-
     public class cryptacceptservice
     {
+        private bool run = true;
         private ushort port;
-        private IHost _h;
         private Task _t;
 
         public cryptacceptservice(ushort _port)
@@ -74,25 +35,47 @@ namespace abelkhan
             on_disconnect?.Invoke(ch);
         }
 
-        private void RunServerAsync()
+        private async Task ProcessLinesAsync(Socket socket)
         {
-            var hostBuilder = new HostBuilder().ConfigureWebHost((webHostBuilder) => {
-                webHostBuilder
-                    .UseKestrel()
-                    .ConfigureKestrel((context, options) =>
-                    {
-                        log.log.trace("cryptacceptservice ConfigureKestrel options.ListenAnyIP! port:{0}", port);
-                        options.ListenAnyIP(port, (builder) =>
-                        {
-                            log.log.trace("cryptacceptservice ListenAnyIP builder.UseConnectionHandler! port:{0}", port);
-                            builder.UseConnectionHandler<CryptAcceptConnectionHandler>();
-                        });
-                    })
-                    .UseStartup<TcpStartup>();
-            });
+            var ch = new channel(socket);
+            acceptservice.onConnect(ch);
 
-            _h = hostBuilder.Build();
-            _h.Run();
+            var stream = new NetworkStream(socket);
+            var reader = PipeReader.Create(stream);
+
+            while (run)
+            {
+
+                try
+                {
+                    ReadResult result = await reader.ReadAsync();
+                    ReadOnlySequence<byte> buffer = result.Buffer;
+
+                    ch._channel_onrecv.on_recv(buffer.ToArray());
+
+                    reader.AdvanceTo(buffer.Start, buffer.End);
+                }
+                catch (System.Exception e)
+                {
+                    log.log.err("channel_onrecv.on_recv error:{0}!", e);
+                    break;
+                }
+            }
+
+            await reader.CompleteAsync();
+        }
+
+        private async void RunServerAsync()
+        {
+            var listenSocket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+            listenSocket.Bind(new IPEndPoint(IPAddress.Loopback, port));
+            listenSocket.Listen(128);
+
+            while (run)
+            {
+                var socket = await listenSocket.AcceptAsync();
+                _ = ProcessLinesAsync(socket);
+            }
         }
 
         public void start()
@@ -103,7 +86,8 @@ namespace abelkhan
 
         public async void close()
         {
-            await _h.StopAsync();
+            run = false;
+            await _t;
         }
     }
 }

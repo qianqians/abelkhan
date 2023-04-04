@@ -5,28 +5,28 @@
  */
 using Microsoft.AspNetCore.Connections;
 using System.Buffers;
+using System.Net.Sockets;
 using System.Threading;
 
 namespace abelkhan
 {
     public class channel : abelkhan.Ichannel
     {
-        private ConnectionContext connection;
-        private int need_flush = 0;
-        private object lockobj;
+        private readonly Socket s;
+        private readonly object lockobj;
 
         public channel_onrecv _channel_onrecv;
 
-        public channel(ConnectionContext _connection)
+        public channel(Socket socket)
         {
-            connection = _connection;
+            s = socket;
             lockobj = new object();
             _channel_onrecv = new channel_onrecv(this);
         }
 
         public void disconnect()
         {
-            connection.Abort();
+            s.Close();
         }
 
         public bool is_xor_key_crypt()
@@ -38,17 +38,11 @@ namespace abelkhan
         {
         }
 
-        public async void send(byte[] data)
+        public void send(byte[] data)
         {
             lock (lockobj)
             {
-                connection.Transport.Output.WriteAsync(data);
-                Interlocked.Exchange(ref need_flush, 1);
-            }
-            var _need_flush = Interlocked.Exchange(ref need_flush, 0);
-            if (_need_flush == 1)
-            {
-                await connection.Transport.Output.FlushAsync();
+                s.Send(data);
             }
         }
     }
