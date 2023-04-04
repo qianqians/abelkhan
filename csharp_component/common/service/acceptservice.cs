@@ -63,11 +63,6 @@ namespace abelkhan
 
         public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
             app.Run(async (context) =>
             {
                 await context.Response.WriteAsync("Hello World!");
@@ -97,14 +92,15 @@ namespace abelkhan
             var hostBuilder = new HostBuilder().ConfigureWebHost((webHostBuilder) => {
                 webHostBuilder
                     .UseKestrel()
-                    .ConfigureKestrel((context, options) => {
+                    .ConfigureKestrel((context, options) =>
+                    {
 
-                        options.ListenLocalhost(port, (builder) => {
+                        options.ListenLocalhost(port, (builder) =>
+                        {
                             builder.UseConnectionHandler<AcceptConnectionHandler>();
                         });
 
                     })
-                    .UseContentRoot(Directory.GetCurrentDirectory())
                     .UseStartup<TcpStartup>();
             });
 

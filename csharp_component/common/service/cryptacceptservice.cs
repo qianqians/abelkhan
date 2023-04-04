@@ -86,14 +86,15 @@ namespace abelkhan
             var hostBuilder = new HostBuilder().ConfigureWebHost((webHostBuilder) => {
                 webHostBuilder
                     .UseKestrel()
-                    .ConfigureKestrel((context, options) => {
+                    .ConfigureKestrel((context, options) =>
+                    {
 
-                        options.ListenLocalhost(port, (builder) => {
+                        options.ListenLocalhost(port, (builder) =>
+                        {
                             builder.UseConnectionHandler<CryptAcceptConnectionHandler>();
                         });
 
                     })
-                    .UseContentRoot(Directory.GetCurrentDirectory())
                     .UseStartup<TcpStartup>();
             });
 
