@@ -26,6 +26,18 @@ def gen_csharp_import(_import):
     code += "namespace abelkhan\n{\n"
     return code
 
+def gen_python_import(_import):
+    code = "from abelkhan import *\n"
+    code += "from threading import Timer\n"
+    code += "from collections.abc import Callable\n"
+    code += "from enum import Enum\n"
+    code += "import modulemanager\n"
+    code += "import hubmanager\n"
+    for _i in _import:
+        code += "from " + _i + " import *\n"
+    code += "\n"
+    return code
+
 def gen(inputdir, commondir, lang, outputdir):
     syspath = "./gen/hub_call_hub/"
     if lang == 'cpp':
@@ -40,6 +52,14 @@ def gen(inputdir, commondir, lang, outputdir):
         sys.path.append("./gen_common/csharp")
         sys.path.append("./tools/csharp")
         syspath += "csharp/"
+        sys.path.append(syspath)
+        import gencaller
+        import genmodule
+        sys.path.remove(syspath)
+    elif lang == 'python':
+        sys.path.append("./gen_common/python")
+        sys.path.append("./tools/python")
+        syspath += "python/"
         sys.path.append(syspath)
         import gencaller
         import genmodule
@@ -86,6 +106,18 @@ def gen(inputdir, commondir, lang, outputdir):
             code += "\n}\n"
 
             file = open(outputdir + '//' + pretreatment.name + "_svr.cs", 'w')
+            file.write(code)
+            file.close()
+            
+        elif lang == 'python':
+            code = gen_python_import(pretreatment._import)
+            code += genenum.genenum(pretreatment)
+            code += genstruct.genstruct(pretreatment)
+            code += gencaller.gencaller(pretreatment)
+            code += genmodule.genmodule(pretreatment)
+            code += "\n"
+
+            file = open(outputdir + '//' + pretreatment.name + ".py", 'w')
             file.write(code)
             file.close()
 

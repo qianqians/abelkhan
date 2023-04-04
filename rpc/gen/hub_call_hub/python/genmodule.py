@@ -7,9 +7,10 @@ import uuid
 import tools
 
 def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum):
-    code_constructor = "    public class " + module_name + "_module : common.imodule {\n"
-    code_constructor += "        public " + module_name + "_module() \n"
-    code_constructor += "        {\n"
+    code_constructor = "class " + module_name + "_module(imodule):\n"
+    code_constructor += "    def __init__(self, _modulemanager:modulemanager.modulemanager, _hubs:hubmanager):\n"
+    code_constructor += "        self.modulemanager = _modulemanager\n"
+    code_constructor += "        self.hubs = _hubs\n"
         
     code_constructor_cb = ""
     rsp_code = ""
@@ -17,325 +18,167 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
     for i in funcs:
         func_name = i[0]
 
+        func_type = "Callable[["
+        count = 0
+        for _type, _name, _parameter in i[2]:
+            func_type += tools.convert_type(_type, dependent_struct, dependent_enum)
+            count += 1
+            if count < len(i[2]):
+                func_type += ", "
+        func_type += "]]"
+        
+        code_constructor += "        self.on_" + func_name + ":" + func_type + " = None\n"
+        code_constructor += "        self.modulemanager.add_mothed(\"" + module_name + "_" + func_name + "\", self." + func_name + ")\n"
+            
         if i[1] == "ntf":
-            code_constructor += "            hub.hub._modules.add_mothed(\"" + module_name + "_" + func_name + "\", " + func_name + ");\n"
-                
-            code_func += "        public event Action"
-            if len(i[2]) > 0:
-                code_func += "<"
-            count = 0
-            for _type, _name, _parameter in i[2]:
-                code_func += tools.convert_type(_type, dependent_struct, dependent_enum)
-                count += 1
-                if count < len(i[2]):
-                    code_func += ", "
-            if len(i[2]) > 0:
-                code_func += ">"
-            code_func += " on_" + func_name + ";\n"
 
-            code_func += "        public void " + func_name + "(IList<MsgPack.MessagePackObject> inArray){\n"
+            code_func += "    def " + func_name + "(self, inArray:list){\n"
             count = 0 
             for _type, _name, _parameter in i[2]:
                 type_ = tools.check_type(_type, dependent_struct, dependent_enum)
-                _type_ = tools.convert_type(_type, dependent_struct, dependent_enum)
-                if type_ == tools.TypeType.Int8:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsSByte();\n"
-                elif type_ == tools.TypeType.Int16:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt16();\n"
-                elif type_ == tools.TypeType.Int32:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt32();\n"
-                elif type_ == tools.TypeType.Int64:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt64();\n"
-                elif type_ == tools.TypeType.Uint8:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsByte();\n"
-                elif type_ == tools.TypeType.Uint16:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsUInt16();\n"
-                elif type_ == tools.TypeType.Uint32:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsUInt32();\n"
-                elif type_ == tools.TypeType.Uint64:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsUInt64();\n"
-                elif type_ == tools.TypeType.Enum:
-                    code_func += "            var _" + _name + " = (" + _type_ + ")((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt32();\n"
-                elif type_ == tools.TypeType.Float:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsSingle();\n"
-                elif type_ == tools.TypeType.Double:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsDouble();\n"
-                elif type_ == tools.TypeType.Bool:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsBoolean();\n"
-                elif type_ == tools.TypeType.String:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsString();\n"
-                elif type_ == tools.TypeType.Bin:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsBinary();\n"
+                if type_ in tools.OriginalTypeList:
+                    code_func += "        _" + _name + " = inArray[" + str(count) + "]\n"
                 elif type_ == tools.TypeType.Custom:
-                    code_func += "            var _" + _name + " = " + _type + ".protcol_to_" + _type + "(((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsDictionary());\n"
+                    code_func += "        _" + _name + " = protcol_to_" + _type + "(inArray[" + str(count) + "])\n"
                 elif type_ == tools.TypeType.Array:
+                    code_func += "        _" + _name + " = []\n"
+                    code_func += "        for v_ in inArray[" + str(count) + "]:\n"
                     array_type = _type[:-2]
                     array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
-                    _array_type = tools.convert_type(array_type, dependent_struct, dependent_enum)
-                    code_func += "            var _" + _name + " = new List<" + _array_type + ">();\n"
-                    code_func += "            var _protocol_array" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsList();\n"
-                    _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    code_func += "            foreach (var v_" + _v_uuid + " in _protocol_array" + _name + "){\n"
-                    if array_type_ == tools.TypeType.Int8:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsSByte());\n"
-                    elif array_type_ == tools.TypeType.Int16:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt16());\n"
-                    elif array_type_ == tools.TypeType.Int32:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt32());\n"
-                    elif array_type_ == tools.TypeType.Int64:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt64());\n"
-                    elif array_type_ == tools.TypeType.Uint8:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsByte());\n"
-                    elif array_type_ == tools.TypeType.Uint16:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsUInt16());\n"
-                    elif array_type_ == tools.TypeType.Uint32:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsUInt32());\n"
-                    elif array_type_ == tools.TypeType.Uint64:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsUInt64());\n"
-                    elif array_type_ == tools.TypeType.Enum:
-                        code_func += "                _" + _name + ".Add((" + _array_type + ")((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt32());\n"
-                    elif array_type_ == tools.TypeType.Float:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsSingle());\n"
-                    elif array_type_ == tools.TypeType.Double:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsDouble());\n"
-                    elif array_type_ == tools.TypeType.Bool:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsBoolean());\n"
-                    elif array_type_ == tools.TypeType.String:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsString());\n"
-                    elif array_type_ == tools.TypeType.Bin:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsBinary());\n"
+                    if array_type_ in tools.OriginalTypeList:
+                        code_func += "            _" + _name + ".append(v_)\n"
                     elif array_type_ == tools.TypeType.Custom:
-                        code_func += "                _" + _name + ".Add(" + array_type + ".protcol_to_" + array_type + "(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsDictionary()));\n"
+                        code_func += "            _" + _name + ".append(protcol_to_" + array_type + "(v_))\n"
                     elif array_type_ == tools.TypeType.Array:
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
-                    code_func += "            }\n"                                                     
                 count += 1
-
-            code_func += "            if (on_" + func_name + " != null){\n"
-            code_func += "                on_" + func_name + "("
+            code_func += "        if self.on_" + func_name + ":\n"
+            code_func += "            self.on_" + func_name + "("
             count = 0
             for _type, _name, _parameter in i[2]:
                 code_func += "_" + _name
                 count = count + 1
                 if count < len(i[2]):
                     code_func += ", "
-            code_func += ");\n"
-            code_func += "            }\n"
-            code_func += "        }\n\n"
+            code_func += ")\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
-            code_constructor += "            hub.hub._modules.add_mothed(\"" + module_name + "_" + func_name + "\", " + func_name + ");\n"
             
-            code_func += "        public event Action"
-            if len(i[2]) > 0:
-                code_func += "<"
-            count = 0
-            for _type, _name, _parameter in i[2]:
-                code_func += tools.convert_type(_type, dependent_struct, dependent_enum)
-                count += 1
-                if count < len(i[2]):
-                    code_func += ", "
-            if len(i[2]) > 0:
-                code_func += ">"
-            code_func += " on_" + func_name + ";\n"
-            
-            code_func += "        public void " + func_name + "(IList<MsgPack.MessagePackObject> inArray){\n"
-            code_func += "            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();\n"
+            code_func += "    def " + func_name + "(self, inArray:list){\n"
+            code_func += "        _cb_uuid = inArray[0]\n"
             count = 1 
             for _type, _name, _parameter in i[2]:
                 type_ = tools.check_type(_type, dependent_struct, dependent_enum)
-                _type_ = tools.convert_type(_type, dependent_struct, dependent_enum)
-                if type_ == tools.TypeType.Int8:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsSByte();\n"
-                elif type_ == tools.TypeType.Int16:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt16();\n"
-                elif type_ == tools.TypeType.Int32:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt32();\n"
-                elif type_ == tools.TypeType.Int64:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt64();\n"
-                elif type_ == tools.TypeType.Uint8:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsByte();\n"
-                elif type_ == tools.TypeType.Uint16:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsUInt16();\n"
-                elif type_ == tools.TypeType.Uint32:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsUInt32();\n"
-                elif type_ == tools.TypeType.Uint64:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsUInt64();\n"
-                elif type_ == tools.TypeType.Enum:
-                    code_func += "            var _" + _name + " = (" + _type_ + ")((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsInt32();\n"
-                elif type_ == tools.TypeType.Float:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsSingle();\n"
-                elif type_ == tools.TypeType.Double:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsDouble();\n"
-                elif type_ == tools.TypeType.Bool:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsBoolean();\n"
-                elif type_ == tools.TypeType.String:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsString();\n"
-                elif type_ == tools.TypeType.Bin:
-                    code_func += "            var _" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsBinary();\n"
+                if type_ in tools.OriginalTypeList:
+                    code_func += "        _" + _name + " = inArray[" + str(count) + "]\n"
                 elif type_ == tools.TypeType.Custom:
-                    code_func += "            var _" + _name + " = " + _type + ".protcol_to_" + _type + "(((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsDictionary());\n"
+                    code_func += "        _" + _name + " = protcol_to_" + _type + "(inArray[" + str(count) + "])\n"
                 elif type_ == tools.TypeType.Array:
+                    code_func += "        _" + _name + " = []"
+                    code_func += "        for v_ in inArray[" + str(count) + "]:\n"
                     array_type = _type[:-2]
                     array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
-                    _array_type = tools.convert_type(array_type, dependent_struct, dependent_enum)
-                    code_func += "            var _" + _name + " = new List<" + _array_type + ">();\n"
-                    code_func += "            var _protocol_array" + _name + " = ((MsgPack.MessagePackObject)inArray[" + str(count) + "]).AsList();\n"
-                    _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    code_func += "            foreach (var v_" + _v_uuid + " in _protocol_array" + _name + "){\n"
-                    if array_type_ == tools.TypeType.Int8:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsSByte());\n"
-                    elif array_type_ == tools.TypeType.Int16:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt16());\n"
-                    elif array_type_ == tools.TypeType.Int32:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt32());\n"
-                    elif array_type_ == tools.TypeType.Int64:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt64());\n"
-                    elif array_type_ == tools.TypeType.Uint8:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsByte());\n"
-                    elif array_type_ == tools.TypeType.Uint16:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsUInt16());\n"
-                    elif array_type_ == tools.TypeType.Uint32:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsUInt32());\n"
-                    elif array_type_ == tools.TypeType.Uint64:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsUInt64());\n"
-                    elif array_type_ == tools.TypeType.Enum:
-                        code_func += "                _" + _name + ".Add((" + _array_type + ")((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsInt32());\n"
-                    elif array_type_ == tools.TypeType.Float:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsSingle());\n"
-                    elif array_type_ == tools.TypeType.Double:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsDouble());\n"
-                    elif array_type_ == tools.TypeType.Bool:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsBoolean());\n"
-                    elif array_type_ == tools.TypeType.String:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsString());\n"
-                    elif array_type_ == tools.TypeType.Bin:
-                        code_func += "                _" + _name + ".Add(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsBinary());\n"
+                    if array_type_ in tools.OriginalTypeList:
+                        code_func += "            _" + _name + ".append(v_)\n"
                     elif array_type_ == tools.TypeType.Custom:
-                        code_func += "                _" + _name + ".Add(" + array_type + ".protcol_to_" + array_type + "(((MsgPack.MessagePackObject)v_" + _v_uuid + ").AsDictionary()));\n"
+                        code_func += "            _" + _name + ".append(protcol_to_" + array_type + "(v_))\n"
                     elif array_type_ == tools.TypeType.Array:
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
-                    code_func += "            }\n"                                                     
                 count += 1
-
-            code_func += "            rsp = new " + module_name + "_" + func_name + "_rsp(hub.hub._hubs.current_hubproxy.name, _cb_uuid);\n"
-            code_func += "            if (on_" + func_name + " != null){\n"
-            code_func += "                on_" + func_name + "("
+            code_func += "        rsp = " + module_name + "_" + func_name + "_rsp(self.hubs.current_hubproxy.name, _cb_uuid, self.hubs)\n"
+            code_func += "        if self.on_" + func_name + ":\n"
+            code_func += "            self.on_" + func_name + "("
             count = 0
             for _type, _name, _parameter in i[2]:
                 code_func += "_" + _name
                 count = count + 1
                 if count < len(i[2]):
                     code_func += ", "
-            code_func += ");\n"
-            code_func += "            }\n"
-            code_func += "            rsp = null;\n"
-            code_func += "        }\n\n"
+            code_func += ")\n"
+            code_func += "        rsp = None\n\n"
 
-            rsp_code += "    public class " + module_name + "_" + func_name + "_rsp : common.Response {\n"
             _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
-            rsp_code += "        private string _hub_name_" + _hub_uuid + ";\n"
             _rsp_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_X500, func_name)).split('-'))
-            rsp_code += "        private UInt64 uuid_" + _rsp_uuid + ";\n"
-            rsp_code += "        public " + module_name + "_" + func_name + "_rsp(string hub_name, UInt64 _uuid) \n"
-            rsp_code += "        {\n"
-            rsp_code += "            _hub_name_" + _hub_uuid + " = hub_name;\n"
-            rsp_code += "            uuid_" + _rsp_uuid + " = _uuid;\n"
-            rsp_code += "        }\n\n"
+            rsp_code += "class " + module_name + "_" + func_name + "_rsp(Response):\n"
+            rsp_code += "    def __init__(self, hub_name:str, _uuid:int, _hubs:hubmanager):\n"
+            rsp_code += "        self.hubs = _hubs\n"
+            rsp_code += "        self._hub_name_" + _hub_uuid + " = hub_name\n"
+            rsp_code += "        self.uuid_" + _rsp_uuid + " = _uuid\n\n"
 
-            rsp_code += "        public void rsp("
+            rsp_code += "    def rsp("
             count = 0
             for _type, _name, _parameter in i[4]:
-                _name_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, _name)).split('-'))
                 if _parameter == None:
-                    rsp_code += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name + "_" + _name_uuid
+                    rsp_code += _name + ":" + tools.convert_type(_type, dependent_struct, dependent_enum)
                 else:
-                    rsp_code += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name + "_" + _name_uuid + " = " + tools.convert_parameter(_type, _parameter, dependent_enum, enum)
+                    rsp_code += _name + ":" + tools.convert_type(_type, dependent_struct, dependent_enum) + " = " + tools.convert_parameter(_type, _parameter, dependent_enum, enum)
                 count = count + 1
                 if count < len(i[4]):
                     rsp_code += ", "
-            rsp_code += "){\n"
+            rsp_code += "):\n"
             _argv_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
-            rsp_code += "            var _argv_" + _argv_uuid + " = new ArrayList();\n"
-            rsp_code += "            _argv_" + _argv_uuid + ".Add(uuid_" + _rsp_uuid + ");\n"
+            rsp_code += "        _argv_" + _argv_uuid + " = [self.uuid_" + _rsp_uuid + "]\n"
             for _type, _name, _parameter in i[4]:
-                _name_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, _name)).split('-'))
                 type_ = tools.check_type(_type, dependent_struct, dependent_enum)
                 if type_ in tools.OriginalTypeList:
-                    rsp_code += "            _argv_" + _argv_uuid + ".Add(" + _name + "_" + _name_uuid + ");\n"
-                elif type_ == tools.TypeType.Enum:
-                    rsp_code += "            _argv_" + _argv_uuid + ".Add((int)" + _name + "_" + _name_uuid + ");\n"
+                    rsp_code += "        _argv_" + _argv_uuid + ".append(" + _name + ")\n"
                 elif type_ == tools.TypeType.Custom:
-                    rsp_code += "            _argv_" + _argv_uuid + ".Add(" + _type + "." + _type + "_to_protcol(" + _name + "_" + _name_uuid + "));\n"
+                    rsp_code += "        _argv_" + _argv_uuid + ".append(" + _type + "_to_protcol(" + _name + "))\n"
                 elif type_ == tools.TypeType.Array:
                     _array_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    rsp_code += "            var _array_" + _array_uuid + " = new ArrayList();\n"
-                    _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    rsp_code += "            foreach(var v_" + _v_uuid + " in " + _name + "_" + _name_uuid + "){\n"
+                    rsp_code += "        _array_" + _array_uuid + " = []"
+                    _v_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_X500, _name)).split('-'))
+                    rsp_code += "        for v_" + _v_uuid + " in " + _name + ":\n"
                     array_type = _type[:-2]
                     array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
                     if array_type_ in tools.OriginalTypeList:
-                        rsp_code += "                _array_" + _array_uuid + ".Add(v_" + _v_uuid + ");\n"
-                    elif array_type_ == tools.TypeType.Enum:
-                        rsp_code += "                _array_" + _array_uuid + ".Add((int)v_" + _v_uuid + ");\n"
+                        rsp_code += "            _array_" + _array_uuid + ".append(v_" + _v_uuid + ")\n"
                     elif array_type_ == tools.TypeType.Custom:
-                        rsp_code += "                _array_" + _array_uuid + ".Add(" + array_type + "." + array_type + "_to_protcol(v_" + _v_uuid + "));\n"
+                        rsp_code += "            _array_" + _array_uuid + ".append(" + array_type + "_to_protcol(v_" + _v_uuid + "))\n"
                     elif array_type_ == tools.TypeType.Array:
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
-                    rsp_code += "            }\n"                                                     
-                    rsp_code += "            _argv_" + _argv_uuid + ".Add(_array_" + _array_uuid + ");\n"
-            rsp_code += "            hub.hub._hubs.call_hub(_hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb_" + func_name + "_rsp\", _argv_" + _argv_uuid + ");\n"
-            rsp_code += "        }\n\n"
+                    rsp_code += "        _argv_" + _argv_uuid + ".append(_array_" + _array_uuid + ")\n"
+            rsp_code += "        self.hubs.call_hub(_hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb_" + func_name + "_rsp\", _argv_" + _argv_uuid + ")\n\n"
 
-            rsp_code += "        public void err("
+            rsp_code += "    def err("
             count = 0
             for _type, _name, _parameter in i[6]:
-                _name_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, _name)).split('-'))
                 if _parameter == None:
-                    rsp_code += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name + "_" + _name_uuid
+                    rsp_code += _name + ":" + tools.convert_type(_type, dependent_struct, dependent_enum)
                 else:
-                    rsp_code += tools.convert_type(_type, dependent_struct, dependent_enum) + " " + _name + "_" + _name_uuid + " = " + tools.convert_parameter(_type, _parameter, dependent_enum, enum)
+                    rsp_code += _name + ":" + tools.convert_type(_type, dependent_struct, dependent_enum) + " = " + tools.convert_parameter(_type, _parameter, dependent_enum, enum)
                 count = count + 1
                 if count < len(i[6]):
                     rsp_code += ", "
-            rsp_code += "){\n"
+            rsp_code += "):\n"
             _argv_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
-            rsp_code += "            var _argv_" + _argv_uuid + " = new ArrayList();\n"
-            rsp_code += "            _argv_" + _argv_uuid + ".Add(uuid_" + _rsp_uuid + ");\n"
+            rsp_code += "        _argv_" + _argv_uuid + " = [self.uuid_" + _rsp_uuid + "]\n"
             for _type, _name, _parameter in i[6]:
-                _name_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, _name)).split('-'))
                 type_ = tools.check_type(_type, dependent_struct, dependent_enum)
                 if type_ in tools.OriginalTypeList:
-                    rsp_code += "            _argv_" + _argv_uuid + ".Add(" + _name + "_" + _name_uuid + ");\n"
-                elif type_ == tools.TypeType.Enum:
-                    rsp_code += "            _argv_" + _argv_uuid + ".Add((int)" + _name + "_" + _name_uuid + ");\n"
+                    rsp_code += "        _argv_" + _argv_uuid + ".append(" + _name + ")\n"
                 elif type_ == tools.TypeType.Custom:
-                    rsp_code += "            _argv_" + _argv_uuid + ".Add(" + _type + "." + _type + "_to_protcol(" + _name + "_" + _name_uuid + "));\n"
+                    rsp_code += "        _argv_" + _argv_uuid + ".append(" + _type + "_to_protcol(" + _name + "))\n"
                 elif type_ == tools.TypeType.Array:
                     _array_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    rsp_code += "            var _array_" + _array_uuid + " = new ArrayList();\n"
-                    _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    rsp_code += "            foreach(var v_" + _v_uuid + " in " + _name + "_" + _name_uuid + "){\n"
+                    rsp_code += "        _array_" + _array_uuid + " = []"
+                    _v_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_X500, _name)).split('-'))
+                    rsp_code += "        for v_" + _v_uuid + " in " + _name + ":\n"
                     array_type = _type[:-2]
                     array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
                     if array_type_ in tools.OriginalTypeList:
-                        rsp_code += "                _array_" + _array_uuid + ".Add(v_" + _v_uuid + ");\n"
-                    elif array_type_ == tools.TypeType.Enum:
-                        rsp_code += "                _array_" + _array_uuid + ".Add((int)v_" + _v_uuid + ");\n"
+                        rsp_code += "            _array_" + _array_uuid + ".append(v_" + _v_uuid + ")\n"
                     elif array_type_ == tools.TypeType.Custom:
-                        rsp_code += "                _array_" + _array_uuid + ".Add(" + array_type + "." + array_type + "_to_protcol(v_" + _v_uuid + "));\n"
+                        rsp_code += "            _array_" + _array_uuid + ".append(" + array_type + "_to_protcol(v_" + _v_uuid + "))\n"
                     elif array_type_ == tools.TypeType.Array:
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
-                    rsp_code += "            }\n"                                                     
-                    rsp_code += "            _argv_" + _argv_uuid + ".Add(_array_" + _array_uuid + ");\n"
-            rsp_code += "            hub.hub._hubs.call_hub(_hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb_" + func_name + "_err\", _argv_" + _argv_uuid + ");\n"
-            rsp_code += "        }\n\n"
-            rsp_code += "    }\n\n"
+                    rsp_code += "        _argv_" + _argv_uuid + ".append(_array_" + _array_uuid + ")\n"
+            rsp_code += "        self.hubs..call_hub(_hub_name_" + _hub_uuid + ", \"" + module_name + "_rsp_cb_" + func_name + "_err\", _argv_" + _argv_uuid + ")\n\n"
 
         else:
             raise Exception("func:%s wrong rpc type:%s must req or ntf" % (func_name, str(i[1])))
 
-    code_constructor_end = "        }\n\n"
-    code = "    }\n"
+    code_constructor_end = "\n"
+    code = "\n"
         
     return rsp_code + code_constructor + code_constructor_cb + code_constructor_end + code_func + code
         

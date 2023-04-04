@@ -33,7 +33,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     code_end += "        self.hubs = _hubs\n"
     code_end += "        self._hubproxy = " + module_name + "_hubproxy(self.hubs)\n\n"
     code_end += "    def get_hub(self, hub_name:str):\n"
-    code_end += "            _hubproxy.hub_name_" + _hub_uuid + " = hub_name;\n"
+    code_end += "            _hubproxy.hub_name_" + _hub_uuid + " = hub_name\n"
     code_end += "            return _hubproxy\n\n"
 
     for i in funcs:
@@ -112,8 +112,8 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
             cb_func += "        self.on_" + func_name + "_timeout = timeout_cb\n\n"
             
             cb_code_constructor += "        self.map_" + func_name + ":dict[str, " + module_name + "_" + func_name + "_cb] = {}\n"
-            cb_code_constructor += "        self.modulemanager.add_mothed(\"" + module_name + "_rsp_cb_" + func_name + "_rsp\", " + func_name + "_rsp);\n"
-            cb_code_constructor += "        self.modulemanager.add_mothed(\"" + module_name + "_rsp_cb_" + func_name + "_err\", " + func_name + "_err);\n"
+            cb_code_constructor += "        self.modulemanager.add_mothed(\"" + module_name + "_rsp_cb_" + func_name + "_rsp\", self." + func_name + "_rsp)\n"
+            cb_code_constructor += "        self.modulemanager.add_mothed(\"" + module_name + "_rsp_cb_" + func_name + "_err\", self." + func_name + "_err)\n"
 
             cb_code_section += "    def " + func_name + "_rsp(self, inArray:list):\n"
             cb_code_section += "        uuid = inArray[0]\n"
@@ -149,7 +149,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                     cb_code_section += ", "
             cb_code_section += ")\n\n"
 
-            cb_code_section += "    def " + func_name + "_err(self, inArray:list){\n"
+            cb_code_section += "    def " + func_name + "_err(self, inArray:list):\n"
             cb_code_section += "        uuid = inArray[0]\n"
             count = 1 
             for _type, _name, _parameter in i[6]:
