@@ -81,7 +81,7 @@ namespace abelkhan
             _closeHandle = new closehandle();
 
             var redismq_url = _root_cfg.get_value_string("redis_for_mq");
-            _redis_mq_service = new abelkhan.redis_mq(redismq_url, name);
+            _redis_mq_service = new abelkhan.redis_mq(_timer, redismq_url, name, 333);
 
             _svrmanager = new svrmanager(_timer, this, _redis_mq_service);
             _svr_msg_handle = new svr_msg_handle(_svrmanager, _closeHandle);

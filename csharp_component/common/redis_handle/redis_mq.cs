@@ -1,10 +1,10 @@
 ﻿using StackExchange.Redis;
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.IO;
+using service;
+using System.Reflection.Metadata;
 
 namespace abelkhan
 {
@@ -49,32 +49,42 @@ namespace abelkhan
         private ConnectionMultiplexer connectionMultiplexer;
         private IDatabase database;
 
+        private readonly timerservice _timer;
         private readonly string main_channel_name;
-        private readonly Task th_send;
-        private readonly Task th_recv;
+        private readonly Thread th_send;
+        private readonly Thread th_recv;
         private bool run_flag = true;
+        private long tick_time;
 
         private readonly List<string> listen_channel_names;
         private readonly List<string> wait_listen_channel_names;
 
         private readonly ConcurrentDictionary<string, redischannel> channels;
-        private readonly ConcurrentQueue<Tuple<string, MemoryStream> > send_data;
 
-        public redis_mq(string connUrl, string _listen_channel_name)
+        private readonly Dictionary<string, Queue<RedisValue>> wait_send_data;
+        private readonly Dictionary<string, Queue<RedisValue>> send_data;
+
+        public redis_mq(timerservice timer, string connUrl, string _listen_channel_name, long _tick_time = 33)
         {
+            _timer = timer;
             main_channel_name = _listen_channel_name;
+            tick_time = _tick_time;
+
             listen_channel_names = new() { _listen_channel_name };
-            wait_listen_channel_names = new ();
+            wait_listen_channel_names = new();
             channels = new ConcurrentDictionary<string, redischannel>();
 
             _connHelper = new RedisConnectionHelper(connUrl, "RedisForMQ");
             _connHelper.ConnectOnStartup(ref connectionMultiplexer, ref database);
 
-            send_data = new ConcurrentQueue<Tuple<string, MemoryStream> >();
+            wait_send_data = new();
+            send_data = new();
 
-            th_send = new Task(th_send_poll, TaskCreationOptions.LongRunning);
+            ThreadStart th_send_poll_start = new ThreadStart(th_send_poll);
+            th_send = new Thread(th_send_poll_start);
             th_send.Start();
-            th_recv = new Task(th_recv_poll, TaskCreationOptions.LongRunning);
+            ThreadStart th_recv_poll_start = new ThreadStart(th_recv_poll);
+            th_recv = new Thread(th_recv_poll_start);
             th_recv.Start();
         }
 
@@ -91,11 +101,11 @@ namespace abelkhan
             _connHelper.Recover(ref connectionMultiplexer, ref database, e);
         }
 
-        public async void close()
+        public void close()
         {
             run_flag = false;
-            await th_send;
-            await th_recv;
+            th_send.Join();
+            th_recv.Join();
         }
 
         public redischannel connect(string ch_name)
@@ -128,19 +138,55 @@ namespace abelkhan
             st.Write(data, 0, data.Length);
             st.Position = 0;
 
-            send_data.Enqueue(Tuple.Create(ch_name, st));
+            if (!send_data.TryGetValue(ch_name, out Queue<RedisValue> send_queue))
+            {
+                lock (wait_send_data)
+                {
+                    if (!wait_send_data.TryGetValue(ch_name, out send_queue))
+                    {
+                        send_queue = new();
+                        wait_send_data.Add(ch_name, send_queue);
+                    }
+                }
+            }
+            lock (send_queue)
+            {
+                send_queue.Enqueue(st.ToArray());
+            }
         }
 
-        private async Task<bool> sendmsg_mq()
+        private async Task<long> sendmsg_mq()
         {
-            bool is_busy = false;
-            while (send_data.TryDequeue(out Tuple<string, MemoryStream> data))
+            var tick_begin = _timer.refresh();
+            if (wait_send_data.Count > 0)
             {
-                while (true)
+                lock (wait_send_data)
+                {
+                    foreach (var (ch_name, send_queue) in wait_send_data)
+                    {
+                        send_data.Add(ch_name, send_queue);
+                    }
+                    wait_send_data.Clear();
+                }
+            }
+
+            foreach (var (ch_name, send_queue) in send_data)
+            {
+                RedisValue[] push_data_array = null;
+                lock (send_queue)
+                {
+                    if (send_queue.Count > 0)
+                    {
+                        push_data_array = send_queue.ToArray();
+                        send_queue.Clear();
+                    }
+                }
+
+                while (push_data_array != null)
                 {
                     try
                     {
-                        await database.ListLeftPushAsync(data.Item1, data.Item2.ToArray());
+                        await database.ListLeftPushAsync(ch_name, push_data_array);
                         break;
                     }
                     catch (RedisTimeoutException ex)
@@ -158,10 +204,9 @@ namespace abelkhan
                         log.log.err("sendmsg_mq error:{0}", ex);
                     }
                 }
-                is_busy = true;
             }
 
-            return is_busy;
+            return _timer.refresh() - tick_begin;
         }
 
         private void list_channel_name()
@@ -186,107 +231,81 @@ namespace abelkhan
             }
         }
 
-        private async Task<bool> recvmsg_mq()
+        private async Task recvmsg_mq_ch(string ch_name)
         {
-            bool is_busy = false;
-            try
+            byte[] pop_data = await database.ListRightPopAsync(ch_name);
+            while (pop_data != null)
             {
-                foreach (var listen_channel_name in listen_channel_names)
+                var _ch_name_size = pop_data[0] | ((uint)pop_data[1] << 8) | ((uint)pop_data[2] << 16) | ((uint)pop_data[3] << 24);
+                var _ch_name = System.Text.Encoding.UTF8.GetString(pop_data, 4, (int)_ch_name_size);
+                var _header_len = 4 + _ch_name_size;
+                var _msg_len = pop_data.Length - _header_len;
+
+                using var _st = MemoryStreamPool.mstMgr.GetStream();
+                _st.Write(pop_data, (int)_header_len, (int)_msg_len);
+                _st.Position = 0;
+
+                if (!channels.TryGetValue(_ch_name, out redischannel ch))
                 {
-                    var pop_data = (byte[])(await database.ListRightPopAsync(listen_channel_name));
-                    while (pop_data != null)
-                    {
-                        is_busy = true;
+                    ch = new redischannel(_ch_name, this);
+                    channels.TryAdd(_ch_name, ch);
+                }
+                ch._channel_onrecv.on_recv(_st.ToArray());
 
-                        var _ch_name_size = (UInt32)pop_data[0] | ((UInt32)pop_data[1] << 8) | ((UInt32)pop_data[2] << 16) | ((UInt32)pop_data[3] << 24);
-                        var _ch_name = System.Text.Encoding.UTF8.GetString(pop_data, 4, (int)_ch_name_size);
-                        var _header_len = 4 + _ch_name_size;
-                        var _msg_len = pop_data.Length - _header_len;
+                pop_data = await database.ListRightPopAsync(ch_name);
+            }
+        }
 
-                        using var _st = MemoryStreamPool.mstMgr.GetStream();
-                        _st.Write(pop_data, (int)_header_len, (int)_msg_len);
-                        _st.Position = 0;
+        private async Task<long> recvmsg_mq()
+        {
+            var tick_begin = _timer.refresh();
 
-                        if (channels.TryGetValue(_ch_name, out redischannel ch))
-                        {
-                            ch._channel_onrecv.on_recv(_st.ToArray());
-                        }
-                        else
-                        {
-                            ch = new redischannel(_ch_name, this);
-                            channels.TryAdd(_ch_name, ch);
-                            ch._channel_onrecv.on_recv(_st.ToArray());
-                        }
-
-                        pop_data = await database.ListRightPopAsync(listen_channel_name);
-                    }
+            list_channel_name();
+            foreach (var listen_channel_name in listen_channel_names)
+            {
+                try
+                {
+                    await recvmsg_mq_ch(listen_channel_name);
+                }
+                catch (RedisTimeoutException ex)
+                {
+                    log.log.err("ListLeftPushAsync error:{0}", ex);
+                    Recover(ex);
+                }
+                catch (RedisConnectionException ex)
+                {
+                    log.log.err("ListLeftPushAsync error:{0}", ex);
+                    Recover(ex);
+                }
+                catch (System.Exception ex)
+                {
+                    log.log.err("recvmsg_mq error:{0}", ex);
                 }
             }
-            catch (RedisTimeoutException ex)
-            {
-                log.log.err("ListLeftPushAsync error:{0}", ex);
-                Recover(ex);
-            }
-            catch (RedisConnectionException ex)
-            {
-                log.log.err("ListLeftPushAsync error:{0}", ex);
-                Recover(ex);
-            }
-            catch (System.Exception ex)
-            {
-                log.log.err("recvmsg_mq error:{0}", ex);
-            }
 
-            return is_busy;
+            return _timer.refresh() - tick_begin;
         }
 
         private async void th_send_poll()
         {
-            var idle_wait = 2;
             while (run_flag)
             {
-                var is_send_busy = await sendmsg_mq();
-                if (!is_send_busy)
+                var tick = await sendmsg_mq();
+                if (tick < tick_time)
                 {
-                    await Task.Delay(idle_wait);
-                    if (idle_wait > 32)
-                    {
-                        idle_wait = 2;
-                    }
-                    else
-                    {
-                        idle_wait *= 2;
-                    }
-                }
-                else
-                {
-                    idle_wait = 2;
+                    Thread.Sleep((int)(tick_time - tick));
                 }
             }
         }
 
         private async void th_recv_poll()
         {
-            var idle_wait = 2;
             while (run_flag)
             {
-                list_channel_name();
-                var is_recv_busy = await recvmsg_mq();
-                if (!is_recv_busy)
+                var tick = await recvmsg_mq();
+                if (tick < tick_time)
                 {
-                    await Task.Delay(idle_wait);
-                    if (idle_wait > 32)
-                    {
-                        idle_wait = 2;
-                    }
-                    else
-                    {
-                        idle_wait *= 2;
-                    }
-                }
-                else
-                {
-                    idle_wait = 2;
+                    Thread.Sleep((int)(tick_time - tick));
                 }
             }
         }
