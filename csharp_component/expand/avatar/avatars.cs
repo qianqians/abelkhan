@@ -58,11 +58,10 @@ namespace avatar
         private Dictionary<string, Avatar> avatar_sdk_uuid = new();
         private Dictionary<string, Avatar> avatar_client_uuid = new();
 
-        public AvatarMgr add_hosting(Type t) 
+        public AvatarMgr add_hosting<T>() where T : IHostingDataInterface
         {
-            var type_str_method = t.GetMethod("type", BindingFlags.Public | BindingFlags.Static);
-            var type_str = (string)type_str_method?.Invoke(null, null);
-            hosting_data_template.Add(type_str, t);
+            var type_str = T.type();
+            hosting_data_template.Add(type_str, typeof(T));
             return this;
         }
 
