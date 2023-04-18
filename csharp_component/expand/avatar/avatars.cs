@@ -18,6 +18,15 @@ namespace avatar
         public BsonDocument store();
     }
 
+    public class IDataAgent<T> where T : IHostingDataInterface
+    {
+        public T Data { get; set; }
+
+        public void write_back()
+        {
+        }
+    }
+
     public class Avatar
     {
         private Dictionary<string, IHostingDataInterface> dataDict = new();
@@ -30,13 +39,15 @@ namespace avatar
             dataDict.Add(T.type(), data);
         }
 
-        public T hosting_data<T>() where T : IHostingDataInterface
+        public IDataAgent<T> get_clone_hosting_data<T>() where T : IHostingDataInterface
         {
             if (dataDict.TryGetValue(T.type(), out var data))
             {
-                return (T)data;
+                var agent = new IDataAgent<T>();
+                agent.Data = (T)data;
+                return agent;
             }
-            return default(T);
+            return default(IDataAgent<T>);
         }
     }
 
