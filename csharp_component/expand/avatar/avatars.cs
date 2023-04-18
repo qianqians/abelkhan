@@ -51,23 +51,28 @@ namespace avatar
         }
     }
 
-    public class AvatarMgr
+    public static class AvatarMgr
     {
-        private Dictionary<string, Type> hosting_data_template = new();
+        private static Dictionary<string, Type> hosting_data_template = new();
 
-        private Dictionary<string, Avatar> avatar_sdk_uuid = new();
-        private Dictionary<string, Avatar> avatar_client_uuid = new();
+        private static Dictionary<string, Avatar> avatar_sdk_uuid = new();
+        private static Dictionary<string, Avatar> avatar_client_uuid = new();
 
-        public AvatarMgr add_hosting<T>() where T : IHostingDataInterface
+        public static void add_hosting<T>() where T : IHostingDataInterface
         {
             var type_str = T.type();
             hosting_data_template.Add(type_str, typeof(T));
-            return this;
         }
 
-        public Avatar load_or_create(string sdk_uuid, string client_uuid, string data_src = "db")
+        public static Avatar load_or_create(string sdk_uuid, string client_uuid, string data_src = "db")
         {
             return null;
+        }
+
+        public static Avatar get_current_avatar(string client_uuid)
+        {
+            avatar_client_uuid.TryGetValue(client_uuid, out var avatar);
+            return avatar;
         }
     }
 }
