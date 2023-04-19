@@ -69,7 +69,18 @@ namespace avatar
             hosting_data_template.Add(type_str, T.create);
         }
 
-        public static Avatar load_or_create(string sdk_uuid, string client_uuid, string data_src = "db")
+        /*
+         * 从dbproxy拉取数据
+         */
+        public static Avatar load_or_create(string sdk_uuid, string client_uuid)
+        {
+            return null;
+        }
+
+        /*
+         * 从data_src节点拉取数据
+         */
+        public static Avatar load_or_create(string sdk_uuid, string client_uuid, string data_src)
         {
             return null;
         }
