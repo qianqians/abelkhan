@@ -62,11 +62,11 @@ namespace dbproxy
                 var db_ip = _config.get_value_string("db_ip");
                 var db_port = (short)_config.get_value_int("db_port");
 
-                _mongodbproxy = new mongodbproxy(db_ip, db_port);
+                _mongodbproxy = new service.mongodbproxy(db_ip, db_port);
             }
             else if (_config.has_key("db_url"))
             {
-                _mongodbproxy = new mongodbproxy(_config.get_value_string("db_url"));
+                _mongodbproxy = new service.mongodbproxy(_config.get_value_string("db_url"));
             }
 
             if (_config.has_key("index"))
@@ -244,7 +244,7 @@ namespace dbproxy
 		public static closehandle _closeHandle;
         public static hubmanager _hubmanager;
         public static service.timerservice _timer;
-        public static mongodbproxy _mongodbproxy;
+        public static service.mongodbproxy _mongodbproxy;
         public static abelkhan.redis_mq _redis_mq_service;
 
         public readonly abelkhan.config _root_config;
