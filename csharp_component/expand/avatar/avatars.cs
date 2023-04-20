@@ -1,6 +1,8 @@
-﻿using MongoDB.Bson;
+﻿using abelkhan;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace avatar
 {
@@ -16,7 +18,10 @@ namespace avatar
             return default(IHostingData);
         }
 
-        public void load(BsonDocument data);
+        public static virtual IHostingData load(BsonDocument data)
+        {
+            return default(IHostingData);
+        }
 
         public BsonDocument store();
     }
@@ -106,14 +111,24 @@ namespace avatar
         public string HubName { get; set; }
     }
 
+    public class AvtarLoadFromDBError : System.Exception
+    {
+        public string Error;
+        public AvtarLoadFromDBError(string err)
+        {
+            Error = err;        
+        }
+    }
+
     public static class AvatarMgr
     {
-        private static Dictionary<string, Func<IHostingData> > hosting_data_template = new();
+        private static Dictionary<string, Func<IHostingData> > hosting_data_create = new();
+        private static Dictionary<string, Func<BsonDocument, IHostingData> > hosting_data_template = new();
 
         private static Dictionary<string, Avatar> avatar_sdk_uuid = new();
         private static Dictionary<string, Avatar> avatar_client_uuid = new();
 
-        private static AvatarDataOriginalOptions opt;
+        private static AvatarDataOriginalOptions opt = new();
 
         public static void init_data_original(Action<AvatarDataOriginalOptions> configureOptions)
         {
@@ -123,20 +138,77 @@ namespace avatar
         public static void add_hosting<T>() where T : IHostingData
         {
             var type_str = T.type();
-            hosting_data_template.Add(type_str, T.create);
+            hosting_data_create.Add(type_str, T.create);
+            hosting_data_template.Add(type_str, T.load);
+        }
+
+        private static Task<Avatar> load_from_db(string sdk_uuid)
+        {
+            var task = new TaskCompletionSource<Avatar>();
+
+            var query = new DBQueryHelper();
+            query.condition("sdk_uuid", sdk_uuid);
+            hub.hub.get_random_dbproxyproxy().getCollection(opt.DBName, opt.DBCollection).getObjectInfo(query.query(), (value) => {
+                if (value.Count > 1)
+                {
+                    throw new AvtarLoadFromDBError($"repeated sdk_uuid:{sdk_uuid}");
+                }
+                else if (value.Count == 1)
+                {
+                    var avatar = new Avatar(true);
+                    
+                    var doc = value[0] as BsonDocument;
+                    foreach (var (name, load) in hosting_data_template)
+                    {
+                        var sub_doc = doc.GetValue(name) as BsonDocument;
+                        var ins = load(sub_doc);
+                        avatar.add_hosting_data(ins);
+                    }
+
+                    task.SetResult(avatar);
+                }
+                else
+                {
+                    task.SetResult(null);
+                }
+            }, () => { });
+
+            return task.Task;
+        }
+
+        public static Avatar create_avatar(bool _is_original)
+        {
+            var avatar = new Avatar(true);
+            foreach (var (name, create) in hosting_data_create)
+            {
+                var ins = create();
+                avatar.add_hosting_data(ins);
+            }
+            return avatar;
         }
 
         /*
          * load data from original
          */
-        public static Avatar load_or_create(string sdk_uuid, string client_uuid)
+        public static async Task<Avatar> load_or_create(string sdk_uuid, string client_uuid)
         {
+            if (opt.DataOriginal == AvatarDataOriginalOptions.EDataOriginal.DB)
+            {
+                var avatar = await load_from_db(sdk_uuid);
+                if (avatar == null)
+                {
+                    avatar = create_avatar(true);
+                }
+                avatar_sdk_uuid[sdk_uuid] = avatar;
+                avatar_client_uuid[client_uuid] = avatar;
+                return avatar;
+            }
             return null;
         }
 
-        public static Avatar get_current_avatar(string client_uuid)
+        public static Avatar get_current_avatar()
         {
-            avatar_client_uuid.TryGetValue(client_uuid, out var avatar);
+            avatar_client_uuid.TryGetValue(hub.hub._gates.current_client_uuid, out var avatar);
             return avatar;
         }
     }
