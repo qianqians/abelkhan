@@ -1,8 +1,6 @@
 ﻿using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Threading;
 
 namespace avatar
 {
@@ -23,12 +21,34 @@ namespace avatar
         public BsonDocument store();
     }
 
-    public class IDataAgent<T> where T : IHostingData
+    public abstract class IDataAgent<T> where T : IHostingData
     {
         public T Data { get; set; }
 
-        public void write_back()
+        public abstract void write_back();
+    }
+
+    /*
+     * original date agent
+     * write back data to memory
+     */
+    public class DataAgent<T> : IDataAgent<T> where T : IHostingData
+    {
+        public override void write_back()
         {
+
+        }
+    }
+
+    /*
+     * remote date agent
+     * write back data to original
+     */
+    public class RemoteDataAgent<T> : IDataAgent<T> where T : IHostingData
+    {
+        public override void write_back()
+        {
+
         }
     }
 
@@ -39,6 +59,13 @@ namespace avatar
         public long Guid;
         public string ClientUUID;
 
+        private bool is_original;
+
+        public Avatar(bool _is_original)
+        {
+            is_original = _is_original;
+        }
+
         public void add_hosting_data<T>(T data) where T : IHostingData
         {
             dataDict.Add(T.type(), data);
@@ -48,7 +75,16 @@ namespace avatar
         {
             if (dataDict.TryGetValue(T.type(), out var data))
             {
-                var agent = new IDataAgent<T>();
+                IDataAgent<T> agent = null;
+                if (is_original)
+                {
+                    agent = new DataAgent<T>();
+                }
+                else
+                {
+                    agent = new RemoteDataAgent<T>();
+                }
+                
                 agent.Data = (T)data;
                 return agent;
             }
@@ -56,12 +92,33 @@ namespace avatar
         }
     }
 
+    public class AvatarDataOriginalOptions
+    {
+        public enum EDataOriginal
+        {
+            DB = 0,
+            OtherHub = 1,
+        }
+
+        public EDataOriginal DataOriginal { get; set; }
+        public string DBName { get; set; }
+        public string DBCollection { get; set; }
+        public string HubName { get; set; }
+    }
+
     public static class AvatarMgr
     {
-        private static Dictionary<string, Func<IHostingData>> hosting_data_template = new();
+        private static Dictionary<string, Func<IHostingData> > hosting_data_template = new();
 
         private static Dictionary<string, Avatar> avatar_sdk_uuid = new();
         private static Dictionary<string, Avatar> avatar_client_uuid = new();
+
+        private static AvatarDataOriginalOptions opt;
+
+        public static void init_data_original(Action<AvatarDataOriginalOptions> configureOptions)
+        {
+            configureOptions.Invoke(opt);
+        }
 
         public static void add_hosting<T>() where T : IHostingData
         {
@@ -70,17 +127,9 @@ namespace avatar
         }
 
         /*
-         * 从dbproxy拉取数据
+         * load data from original
          */
         public static Avatar load_or_create(string sdk_uuid, string client_uuid)
-        {
-            return null;
-        }
-
-        /*
-         * 从data_src节点拉取数据
-         */
-        public static Avatar load_or_create(string sdk_uuid, string client_uuid, string data_src)
         {
             return null;
         }
