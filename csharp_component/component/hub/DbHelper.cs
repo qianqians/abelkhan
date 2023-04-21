@@ -1,5 +1,6 @@
 using MongoDB.Bson;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 
 namespace abelkhan
 {
@@ -148,9 +149,33 @@ namespace abelkhan
     {
         private readonly List<KeyValuePair<string, BsonValue> > query_condition = new ();
 
-        public DBQueryHelper condition<T>(string key, T t)
+        public DBQueryHelper condition(string key, long t)
         {
-            query_condition.Add(new KeyValuePair<string, BsonValue>(key, t.ToString()));
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, t));
+            return this;
+        }
+
+        public DBQueryHelper condition(string key, int t)
+        {
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, t));
+            return this;
+        }
+
+        public DBQueryHelper condition(string key, uint t)
+        {
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, t));
+            return this;
+        }
+
+        public DBQueryHelper condition(string key, float t)
+        {
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, t));
+            return this;
+        }
+
+        public DBQueryHelper condition(string key, double t)
+        {
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, t));
             return this;
         }
 
@@ -160,14 +185,90 @@ namespace abelkhan
             return this;
         }
 
-        public void gte<T>(string key, T t)
+        public void elemListMatchEq<T>(string key, long t)
         {
-            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$gte", t.ToString())));
+            var _condition = new BsonDocument("$eq", t);
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$elemMatch", _condition)));
         }
 
-        public void lte<T>(string key, T t)
+        public void elemListMatchEq<T>(string key, int t)
         {
-            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$lte", t.ToString())));
+            var _condition = new BsonDocument("$eq", t);
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$elemMatch", _condition)));
+        }
+
+        public void elemListMatchEq<T>(string key, uint t)
+        {
+            var _condition = new BsonDocument("$eq", t);
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$elemMatch", _condition)));
+        }
+
+        public void elemListMatchEq<T>(string key, float t)
+        {
+            var _condition = new BsonDocument("$eq", t);
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$elemMatch", _condition)));
+        }
+
+        public void elemListMatchEq<T>(string key, double t)
+        {
+            var _condition = new BsonDocument("$eq", t);
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$elemMatch", _condition)));
+        }
+
+        public void elemListMatchEq<T>(string key, string t)
+        {
+            var _condition = new BsonDocument("$eq", t);
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$elemMatch", _condition)));
+        }
+
+        public void lte(string key, long t)
+        {
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$lte", t)));
+        }
+
+        public void lte(string key, int t)
+        {
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$lte", t)));
+        }
+
+        public void lte(string key, uint t)
+        {
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$lte", t)));
+        }
+
+        public void lte(string key, float t)
+        {
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$lte", t)));
+        }
+
+        public void lte(string key, double t)
+        {
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$lte", t)));
+        }
+
+        public void gte(string key, long t)
+        {
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$gte", t)));
+        }
+
+        public void gte(string key, int t)
+        {
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$gte", t)));
+        }
+
+        public void gte(string key, uint t)
+        {
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$gte", t)));
+        }
+
+        public void gte(string key, float t)
+        {
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$gte", t)));
+        }
+
+        public void gte(string key, double t)
+        {
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$gte", t)));
         }
 
         public BsonDocument query()
