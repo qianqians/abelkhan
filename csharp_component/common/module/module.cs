@@ -18,9 +18,9 @@ namespace common
 	{
 	}
 
-	public class imodule
+	public class IModule
 	{
-		public imodule()
+		public IModule()
         {
 		}
 

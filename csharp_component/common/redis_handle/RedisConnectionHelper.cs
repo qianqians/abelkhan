@@ -43,7 +43,7 @@ public class RedisConnectionHelper
         }
         catch (StackExchange.Redis.RedisConnectionException conex)
         {
-            log.log.err("Can NOT connect to Redis! connectRetry={0}, connectTimeout={1}ms", connectRetry, connectTimeout);
+            log.Log.err("Can NOT connect to Redis! connectRetry={0}, connectTimeout={1}ms", connectRetry, connectTimeout);
             throw conex;
         }
     }
@@ -53,8 +53,8 @@ public class RedisConnectionHelper
     {
         if (Interlocked.CompareExchange(ref _inRecover, 1, 0) == 0)
         {
-            log.log.err("Redis Exception: {0}", e);
-            log.log.info("Reconnect for {0}, count={1}", _conName, ++_recoverCnt);
+            log.Log.err("Redis Exception: {0}", e);
+            log.Log.info("Reconnect for {0}, count={1}", _conName, ++_recoverCnt);
             try
             {
                 if (connection_Multiplexer != null)
@@ -66,7 +66,7 @@ public class RedisConnectionHelper
             }
             catch (StackExchange.Redis.RedisConnectionException)
             {
-                log.log.err("Exit due to Recover-Failure! RecoverCount={0}, connectRetry={1}, connectTimeout={2}ms", _recoverCnt, connectRetry, connectTimeout);
+                log.Log.err("Exit due to Recover-Failure! RecoverCount={0}, connectRetry={1}, connectTimeout={2}ms", _recoverCnt, connectRetry, connectTimeout);
                 Thread.Sleep(10);
                 Environment.Exit(1);
             }
@@ -77,12 +77,12 @@ public class RedisConnectionHelper
             _inRecover = 0;
             if (!_waitNotify.Set())
             {
-                log.log.err("_waitNotify.Set() failed");
+                log.Log.err("_waitNotify.Set() failed");
             }
             Thread.Sleep(10);
             if (!_waitNotify.Reset())
             {
-                log.log.err("_waitNotify.ReSet() failed");
+                log.Log.err("_waitNotify.ReSet() failed");
             }
         }
         else
@@ -90,7 +90,7 @@ public class RedisConnectionHelper
             if (!_waitNotify.WaitOne(_waitTimeout))
             {
                 var msg = $"_waitNotifyTimeout after {_waitTimeout}ms";
-                log.log.err(msg);
+                log.Log.err(msg);
                 Thread.Sleep(10);
                 Environment.Exit(1);
             }

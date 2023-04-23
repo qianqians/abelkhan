@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using MsgPack.Serialization;
 
 namespace common
@@ -17,9 +18,13 @@ namespace common
 	{
 	}
 
-	public class imodule
+	public class IModule
 	{
-		public Response rsp;
+		public IModule()
+        {
+		}
+
+		public Response rsp = null;
 	}
 }
 

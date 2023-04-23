@@ -152,8 +152,8 @@ class hub_call_hub_caller(Icaller):
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.append(hub_type)
         self.call_module_method("hub_call_hub_reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7)
 
-        cb_reg_hub_obj = hub_call_hub_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_hub_handle)
         global rsp_cb_hub_call_hub_handle
+        cb_reg_hub_obj = hub_call_hub_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_hub_handle)
         if rsp_cb_hub_call_hub_handle:
             rsp_cb_hub_call_hub_handle.map_reg_hub[uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106] = cb_reg_hub_obj
         return cb_reg_hub_obj
@@ -167,8 +167,8 @@ class hub_call_hub_caller(Icaller):
         _argv_78da410b_1845_3253_9a34_d7cda82883b6.append(gate_name)
         self.call_module_method("hub_call_hub_seep_client_gate", _argv_78da410b_1845_3253_9a34_d7cda82883b6)
 
-        cb_seep_client_gate_obj = hub_call_hub_seep_client_gate_cb(uuid_31169fc3_4fd4_512f_b157_203819bcbd47, rsp_cb_hub_call_hub_handle)
         global rsp_cb_hub_call_hub_handle
+        cb_seep_client_gate_obj = hub_call_hub_seep_client_gate_cb(uuid_31169fc3_4fd4_512f_b157_203819bcbd47, rsp_cb_hub_call_hub_handle)
         if rsp_cb_hub_call_hub_handle:
             rsp_cb_hub_call_hub_handle.map_seep_client_gate[uuid_31169fc3_4fd4_512f_b157_203819bcbd47] = cb_seep_client_gate_obj
         return cb_seep_client_gate_obj
@@ -271,8 +271,8 @@ class client_call_hub_caller(Icaller):
         _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = [uuid_a514ca5f_2c67_5668_aac0_354397bdce36]
         self.call_module_method("client_call_hub_heartbeats", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4)
 
-        cb_heartbeats_obj = client_call_hub_heartbeats_cb(uuid_a514ca5f_2c67_5668_aac0_354397bdce36, rsp_cb_client_call_hub_handle)
         global rsp_cb_client_call_hub_handle
+        cb_heartbeats_obj = client_call_hub_heartbeats_cb(uuid_a514ca5f_2c67_5668_aac0_354397bdce36, rsp_cb_client_call_hub_handle)
         if rsp_cb_client_call_hub_handle:
             rsp_cb_client_call_hub_handle.map_heartbeats[uuid_a514ca5f_2c67_5668_aac0_354397bdce36] = cb_heartbeats_obj
         return cb_heartbeats_obj

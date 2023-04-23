@@ -7,9 +7,9 @@ import uuid
 import tools
 
 def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum):
-    code_constructor = "    public class " + module_name + "_module : common.imodule {\n"
-    code_constructor += "        public client.client _client_handle;\n"
-    code_constructor += "        public " + module_name + "_module(client.client client_handle_) \n"
+    code_constructor = "    public class " + module_name + "_module : common.IModule {\n"
+    code_constructor += "        public client.Client _client_handle;\n"
+    code_constructor += "        public " + module_name + "_module(client.Client client_handle_) \n"
     code_constructor += "        {\n"
     code_constructor += "            _client_handle = client_handle_;\n"
         
@@ -238,8 +238,8 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
             rsp_code += "        private UInt64 uuid_" + _rsp_uuid + ";\n"
             _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
             rsp_code += "        private string hub_name_" + _hub_uuid + ";\n"
-            rsp_code += "        private client.client _client_handle;\n"
-            rsp_code += "        public " + module_name + "_" + func_name + "_rsp(client.client client_handle_, string current_hub, UInt64 _uuid) \n"
+            rsp_code += "        private client.Client _client_handle;\n"
+            rsp_code += "        public " + module_name + "_" + func_name + "_rsp(client.Client client_handle_, string current_hub, UInt64 _uuid) \n"
             rsp_code += "        {\n"
             rsp_code += "            _client_handle = client_handle_;\n"
             rsp_code += "            hub_name_" + _hub_uuid + " = current_hub;\n"

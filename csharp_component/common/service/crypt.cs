@@ -6,7 +6,7 @@
 
 namespace abelkhan
 {
-    public class crypt
+    public class Crypt
     {
         public static void crypt_func(byte[] data, int offset, int limit)
         {

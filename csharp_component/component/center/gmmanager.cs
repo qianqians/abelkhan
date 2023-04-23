@@ -8,11 +8,11 @@ using System.Runtime.InteropServices;
 
 namespace abelkhan
 {
-	public class gmmanager
+	public class GMmanager
     {
 		private Dictionary<abelkhan.Ichannel, string> gms;
 
-		public gmmanager()
+		public GMmanager()
         {
 			gms = new Dictionary<abelkhan.Ichannel, string>();
         }

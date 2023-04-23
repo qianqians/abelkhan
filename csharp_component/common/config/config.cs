@@ -3,9 +3,9 @@ using System.IO;
 
 namespace abelkhan
 {
-	public class config
+	public class Config
 	{
-		public config(String file_path)
+		public Config(String file_path)
 		{
 			FileStream fs = File.OpenRead(file_path);
 			byte[] data = new byte[fs.Length];
@@ -25,7 +25,7 @@ namespace abelkhan
 			handle = Newtonsoft.Json.Linq.JToken.Parse(System.Text.Encoding.Default.GetString(data));
 		}
 
-		private config(Newtonsoft.Json.Linq.JToken sub_handle)
+		private Config(Newtonsoft.Json.Linq.JToken sub_handle)
 		{
 			handle = sub_handle;
 		}
@@ -60,16 +60,16 @@ namespace abelkhan
 			return (string)(handle[key]);
 		}
 
-		public config get_value_dict(String key)
+		public Config get_value_dict(String key)
 		{
 			var _handle = (Newtonsoft.Json.Linq.JToken)(handle[key]);
-			return new config(_handle);
+			return new Config(_handle);
 		}
 
-		public config get_value_list(String key)
+		public Config get_value_list(String key)
 		{
 			var _handle = (handle[key]);
-			return new config(_handle);
+			return new Config(_handle);
 		}
 
 		public int get_list_size()
@@ -102,16 +102,16 @@ namespace abelkhan
 			return (string)(((Newtonsoft.Json.Linq.JArray)handle)[index]);
 		}
 
-		public config get_list_list(int index)
+		public Config get_list_list(int index)
 		{
 			var _handle = (Newtonsoft.Json.Linq.JToken)(((Newtonsoft.Json.Linq.JArray)handle)[index]);
-			return new config(_handle);
+			return new Config(_handle);
 		}
 
-		public config get_list_dict(int index)
+		public Config get_list_dict(int index)
 		{
 			var _handle = (((Newtonsoft.Json.Linq.JArray)handle)[index]);
-			return new config(_handle);
+			return new Config(_handle);
 		}
 
 		private Newtonsoft.Json.Linq.JToken handle;

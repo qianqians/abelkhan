@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 namespace service
 {
-	public class timerservice
+	public class Timerservice
 	{
-		public timerservice()
+		public Timerservice()
 		{
-            tickHandledict = new SortedList<Int64, List<HandleImpl> >();
-            addtickHandle = new Dictionary<Int64, List<HandleImpl> >();
+            tickHandledict = new SortedList<long, HandleImpl>();
+            addtickHandle = new Dictionary<long, HandleImpl>();
 
             daytimeHandledict = new Dictionary<day_time, List<HandleImpl>>();
             adddaytimeHandle = new Dictionary<day_time, List<HandleImpl>>();
@@ -28,365 +28,442 @@ namespace service
             addloopweekdaytimeHandle = new Dictionary<week_day_time, List<HandleImpl> >();
             loopweekdaytimeHandle = new Dictionary<week_day_time, List<HandleImpl> >();
 
-            Tick = (Int64)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
+            Tick = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
 
             loopdaytick = 0;
             loopweekdaytick = 0;
+
+            addticktime(33, polldaytimehandleimpl);
+            addticktime(33, polltimehandleimpl);
+            addticktime(33, pollmonthtimehandleimpl);
+            addticktime(33, pollloopdaytimehandleimpl);
+            addticktime(33, pollloopweekdaytimehandleimpl);
         }
 
-        public Int64 refresh()
+        public long refresh()
         {
-            Tick = (Int64)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
+            Tick = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
 
             return Tick;
         }
 
-        public Int64 poll()
+        private void addtickhandleimpl()
+        {
+            if (addtickHandle.Count > 0)
+            {
+                lock (addtickHandle)
+                {
+                    foreach (var item in addtickHandle)
+                    {
+                        var process = item.Key;
+                        while (tickHandledict.ContainsKey(process)) { process++; }
+                        tickHandledict.Add(process, item.Value);
+                    }
+                    addtickHandle.Clear();
+                }
+            }
+        }
+
+        private readonly List<long> list = new List<long>();
+        private void polltickhandleimpl()
+        {
+            addtickhandleimpl();
+
+            foreach (var item in tickHandledict)
+            {
+                if (item.Key <= Tick)
+                {
+                    list.Add(item.Key);
+
+                    var impl = item.Value;
+                    if (impl.is_del)
+                    {
+                        continue;
+                    }
+
+                    var handle = impl.handle as Action<long>;
+                    try
+                    {
+                        handle(Tick);
+                    }
+                    catch (System.Exception e)
+                    {
+                        log.Log.err("System.Exceptio{0}", e);
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (list.Count > 0)
+            {
+                foreach (var item in list)
+                {
+                    tickHandledict.Remove(item);
+                }
+                list.Clear();
+            }
+        }
+
+        private void adddaytimehandleimpl()
+        {
+            lock (adddaytimeHandle)
+            {
+                foreach (var item in adddaytimeHandle)
+                {
+                    if (!daytimeHandledict.ContainsKey(item.Key))
+                    {
+                        daytimeHandledict.Add(item.Key, new List<HandleImpl>());
+                    }
+                    daytimeHandledict[item.Key].AddRange(item.Value);
+                }
+                adddaytimeHandle.Clear();
+            }
+        }
+
+        private void polldaytimehandleimpl(long tick)
+        {
+            adddaytimehandleimpl();
+
+            DateTime t = DateTime.Now;
+            List<day_time> list = new List<day_time>();
+            foreach (var item in daytimeHandledict)
+            {
+                if (item.Key.hour == t.Hour && item.Key.minute == t.Minute && item.Key.second <= t.Second)
+                {
+                    list.Add(item.Key);
+
+                    foreach (var impl in item.Value)
+                    {
+                        if (impl.is_del)
+                        {
+                            continue;
+                        }
+
+                        var handle = impl.handle as Action<DateTime>;
+
+                        try
+                        {
+                            handle(t);
+                        }
+                        catch (System.Exception e)
+                        {
+                            log.Log.err("System.Exceptio{0}", e);
+                        }
+                    }
+                }
+            }
+            foreach (var item in list)
+            {
+                daytimeHandledict.Remove(item);
+            }
+
+            addticktime(888, polldaytimehandleimpl);
+        }
+
+        private void addtimehandleimpl()
+        {
+            lock (addtimeHandle)
+            {
+                foreach (var item in addtimeHandle)
+                {
+                    if (!timeHandledict.ContainsKey(item.Key))
+                    {
+                        timeHandledict.Add(item.Key, new List<HandleImpl>());
+                    }
+                    timeHandledict[item.Key].AddRange(item.Value);
+                }
+                addtimeHandle.Clear();
+            }
+        }
+
+        private void polltimehandleimpl(long tick)
+        {
+            addtimehandleimpl();
+
+            List<week_day_time> list = new List<week_day_time>();
+            DateTime t = DateTime.Now;
+            foreach (var item in timeHandledict)
+            {
+                if (item.Key.day == t.DayOfWeek && item.Key.hour == t.Hour && item.Key.minute == t.Minute && item.Key.second <= t.Second)
+                {
+                    list.Add(item.Key);
+
+                    foreach (var impl in item.Value)
+                    {
+                        if (impl.is_del)
+                        {
+                            continue;
+                        }
+
+                        var handle = impl.handle as Action<DateTime>;
+
+                        try
+                        {
+                            handle(t);
+                        }
+                        catch (System.Exception e)
+                        {
+                            log.Log.err("System.Exceptio{0}", e);
+                        }
+                    }
+                }
+            }
+            foreach (var item in list)
+            {
+                timeHandledict.Remove(item);
+            }
+
+            addticktime(888, polltimehandleimpl);
+        }
+
+        private void addmonthtimehandleimpl()
+        {
+            lock (addmonthtimeHandle)
+            {
+                foreach (var item in addmonthtimeHandle)
+                {
+                    if (!monthtimeHandledict.ContainsKey(item.Key))
+                    {
+                        monthtimeHandledict.Add(item.Key, new List<HandleImpl>());
+                    }
+                    monthtimeHandledict[item.Key].AddRange(item.Value);
+                }
+                addmonthtimeHandle.Clear();
+            }
+        }
+
+        private void pollmonthtimehandleimpl(long tick)
+        {
+            addmonthtimehandleimpl();
+
+            List<month_day_time> list = new List<month_day_time>();
+            DateTime t = DateTime.Now;
+            foreach (var item in monthtimeHandledict)
+            {
+                if (item.Key.month == t.Month && item.Key.day == t.Day && item.Key.hour == t.Hour && item.Key.minute == t.Minute && item.Key.second == t.Second)
+                {
+                    list.Add(item.Key);
+
+                    foreach (var impl in item.Value)
+                    {
+                        if (impl.is_del)
+                        {
+                            continue;
+                        }
+
+                        var handle = impl.handle as Action<DateTime>;
+
+                        try
+                        {
+                            handle(t);
+                        }
+                        catch (System.Exception e)
+                        {
+                            log.Log.err("System.Exceptio{0}", e);
+                        }
+                    }
+                }
+            }
+            foreach (var item in list)
+            {
+                monthtimeHandledict.Remove(item);
+            }
+
+            addticktime(888, pollmonthtimehandleimpl);
+        }
+
+        private void addloopdaytimehandleimpl()
+        {
+            lock (addloopdaytimeHandle)
+            {
+                foreach (var item in addloopdaytimeHandle)
+                {
+                    if (!loopdaytimeHandledict.ContainsKey(item.Key))
+                    {
+                        loopdaytimeHandledict.Add(item.Key, new List<HandleImpl>());
+                    }
+                    loopdaytimeHandledict[item.Key].AddRange(item.Value);
+                }
+                addloopdaytimeHandle.Clear();
+            }
+        }
+
+        private void pollloopdaytimehandleimpl(long tick)
+        {
+            addloopdaytimehandleimpl();
+
+            DateTime t = DateTime.Now;
+            if (t.Hour == 0 && t.Minute == 0 && (Tick - loopdaytick) >= 24 * 60 * 60 * 1000)
+            {
+                foreach (var item in loopdaytimeHandle)
+                {
+                    if (!loopdaytimeHandledict.ContainsKey(item.Key))
+                    {
+                        loopdaytimeHandledict.Add(item.Key, new List<HandleImpl>());
+                    }
+                    loopdaytimeHandledict[item.Key].AddRange(item.Value);
+                }
+                loopdaytimeHandle.Clear();
+
+                loopdaytick = Tick;
+            }
+
+            List<day_time> list = new List<day_time>();
+            foreach (var item in loopdaytimeHandledict)
+            {
+                if (item.Key.hour == t.Hour && item.Key.minute == t.Minute && item.Key.second <= t.Second)
+                {
+                    list.Add(item.Key);
+
+                    foreach (var impl in item.Value)
+                    {
+                        if (impl.is_del)
+                        {
+                            continue;
+                        }
+
+                        var handle = impl.handle as Action<DateTime>;
+
+                        try
+                        {
+                            handle(t);
+                        }
+                        catch (System.Exception e)
+                        {
+                            log.Log.err("System.Exceptio{0}", e);
+                        }
+                    }
+                }
+            }
+
+            foreach (var item in list)
+            {
+                if (!loopdaytimeHandle.ContainsKey(item))
+                {
+                    loopdaytimeHandle.Add(item, new List<HandleImpl>());
+                }
+                foreach (var impl in loopdaytimeHandledict[item])
+                {
+                    if (impl.is_del)
+                    {
+                        continue;
+                    }
+
+                    loopdaytimeHandle[item].Add(impl);
+                }
+                loopdaytimeHandledict.Remove(item);
+            }
+
+            addticktime(888, pollloopdaytimehandleimpl);
+        }
+
+        private void addloopweekdaytimehandleimpl()
+        {
+            lock (addloopweekdaytimeHandle)
+            {
+                foreach (var item in addloopweekdaytimeHandle)
+                {
+                    if (!loopweekdaytimeHandledict.ContainsKey(item.Key))
+                    {
+                        loopweekdaytimeHandledict.Add(item.Key, new List<HandleImpl>());
+                    }
+                    loopweekdaytimeHandledict[item.Key].AddRange(item.Value);
+                }
+                addloopweekdaytimeHandle.Clear();
+            }
+        }
+
+        private void pollloopweekdaytimehandleimpl(long tick)
+        {
+            addloopweekdaytimehandleimpl();
+
+            DateTime t = DateTime.Now;
+            if (t.DayOfWeek == DayOfWeek.Sunday && t.Hour == 0 && t.Minute == 0 && t.Second == 0 && (Tick - loopweekdaytick) >= 7 * 24 * 60 * 60 * 1000)
+            {
+                foreach (var item in loopweekdaytimeHandle)
+                {
+                    if (!loopweekdaytimeHandledict.ContainsKey(item.Key))
+                    {
+                        loopweekdaytimeHandledict.Add(item.Key, new List<HandleImpl>());
+                    }
+                    loopweekdaytimeHandledict[item.Key].AddRange(item.Value);
+                }
+                loopweekdaytimeHandle.Clear();
+
+                loopweekdaytick = Tick;
+            }
+
+            List<week_day_time> list = new List<week_day_time>();
+            foreach (var item in loopweekdaytimeHandledict)
+            {
+                if (item.Key.day == t.DayOfWeek && item.Key.hour == t.Hour && item.Key.minute == t.Minute && item.Key.second == t.Second)
+                {
+                    list.Add(item.Key);
+
+                    foreach (var impl in item.Value)
+                    {
+                        if (impl.is_del)
+                        {
+                            continue;
+                        }
+
+                        var handle = impl.handle as Action<DateTime>;
+
+                        try
+                        {
+                            handle(t);
+                        }
+                        catch (System.Exception e)
+                        {
+                            log.Log.err("System.Exceptio{0}", e);
+                        }
+                    }
+                }
+            }
+
+            foreach (var item in list)
+            {
+                if (!loopweekdaytimeHandle.ContainsKey(item))
+                {
+                    loopweekdaytimeHandle.Add(item, new List<HandleImpl>());
+                }
+                foreach (var impl in loopweekdaytimeHandledict[item])
+                {
+                    if (impl.is_del)
+                    {
+                        continue;
+                    }
+
+                    loopweekdaytimeHandle[item].Add(impl);
+                }
+                loopweekdaytimeHandledict.Remove(item);
+            }
+
+            addticktime(888, pollloopweekdaytimehandleimpl);
+        }
+
+        public long poll()
 		{
-            Tick = (Int64)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds;
-
-            foreach (var item in addtickHandle)
-            {
-                if (!tickHandledict.ContainsKey(item.Key))
-                {
-                    tickHandledict.Add(item.Key, new List<HandleImpl>());
-                }
-                tickHandledict[item.Key].AddRange(item.Value);
-            }
-            addtickHandle.Clear();
-
-            foreach (var item in adddaytimeHandle)
-            {
-                if (!daytimeHandledict.ContainsKey(item.Key))
-                {
-                    daytimeHandledict.Add(item.Key, new List<HandleImpl>());
-                }
-                daytimeHandledict[item.Key].AddRange(item.Value);
-            }
-            adddaytimeHandle.Clear();
-
-            foreach (var item in addtimeHandle)
-            {
-                if (!timeHandledict.ContainsKey(item.Key))
-                {
-                    timeHandledict.Add(item.Key, new List<HandleImpl>());
-                }
-                timeHandledict[item.Key].AddRange(item.Value);
-            }
-            addtimeHandle.Clear();
-
-            foreach (var item in addmonthtimeHandle)
-            {
-                if (!monthtimeHandledict.ContainsKey(item.Key))
-                {
-                    monthtimeHandledict.Add(item.Key, new List<HandleImpl>());
-                }
-                monthtimeHandledict[item.Key].AddRange(item.Value);
-            }
-            addmonthtimeHandle.Clear();
-
-            foreach(var item in addloopdaytimeHandle)
-            {
-                if (!loopdaytimeHandledict.ContainsKey(item.Key))
-                {
-                    loopdaytimeHandledict.Add(item.Key, new List<HandleImpl>());
-                }
-                loopdaytimeHandledict[item.Key].AddRange(item.Value);
-            }
-            addloopdaytimeHandle.Clear();
-
-            foreach (var item in addloopweekdaytimeHandle)
-            {
-                if (!loopweekdaytimeHandledict.ContainsKey(item.Key))
-                {
-                    loopweekdaytimeHandledict.Add(item.Key, new List<HandleImpl>());
-                }
-                loopweekdaytimeHandledict[item.Key].AddRange(item.Value);
-            }
-            addloopweekdaytimeHandle.Clear();
-
-            try
-            {
-				List<Int64> list = new List<Int64>();
-                
-                foreach (var item in tickHandledict)
-				{
-					if (item.Key <= Tick)
-					{
-						list.Add(item.Key);
-
-                        foreach (var impl in item.Value)
-                        {
-                            if (impl.is_del)
-                            {
-                                continue;
-                            }
-
-                            var handle = impl.handle as Action<Int64>;
-
-                            handle(Tick);
-                        }
-					}
-                    else
-                    {
-                        break;
-                    }
-				}
-
-				foreach (var item in list)
-				{
-					tickHandledict.Remove(item);
-                }
-			}
-            catch(System.Exception e)
-            {
-                log.log.err("System.Exceptio{0}", e);
-            }
-
-            try
-            {
-                List<day_time> list = new List<day_time>();
-
-                DateTime t = DateTime.Now;
-                foreach (var item in daytimeHandledict)
-                {
-                    if (item.Key.hour == t.Hour && item.Key.minute == t.Minute && item.Key.second == t.Second)
-                    {
-                        list.Add(item.Key);
-
-                        foreach (var impl in item.Value)
-                        {
-                            if (impl.is_del)
-                            {
-                                continue;
-                            }
-
-                            var handle = impl.handle as Action<DateTime>;
-
-                            handle(t);
-                        }
-                    }
-                }
-
-                foreach (var item in list)
-                {
-                    daytimeHandledict.Remove(item);
-                }
-            }
-            catch (System.Exception e)
-            {
-                log.log.err("System.Exceptio{0}", e);
-            }
-
-            try
-			{
-				List<week_day_time> list = new List<week_day_time>();
-
-				DateTime t = DateTime.Now;
-				foreach (var item in timeHandledict)
-				{
-					if (item.Key.day == t.DayOfWeek && item.Key.hour == t.Hour && item.Key.minute == t.Minute && item.Key.second == t.Second)
-					{
-						list.Add(item.Key);
-
-                        foreach (var impl in item.Value)
-                        {
-                            if (impl.is_del)
-                            {
-                                continue;
-                            }
-
-                            var handle = impl.handle as Action<DateTime>;
-
-                            handle(t);
-                        }
-                    }
-				}
-
-				foreach (var item in list)
-				{
-					timeHandledict.Remove(item);
-				}
-			}
-            catch (System.Exception e)
-            {
-                log.log.err("System.Exceptio{0}", e);
-            }
-
-            try
-            {
-                List<month_day_time> list = new List<month_day_time>();
-
-                DateTime t = DateTime.Now;
-                foreach (var item in monthtimeHandledict)
-                {
-                    if (item.Key.month == t.Month && item.Key.day == t.Day && item.Key.hour == t.Hour && item.Key.minute == t.Minute && item.Key.second == t.Second)
-                    {
-                        list.Add(item.Key);
-
-                        foreach (var impl in item.Value)
-                        {
-                            if (impl.is_del)
-                            {
-                                continue;
-                            }
-
-                            var handle = impl.handle as Action<DateTime>;
-
-                            handle(t);
-                        }
-                    }
-                }
-
-                foreach (var item in list)
-                {
-                    monthtimeHandledict.Remove(item);
-                }
-            }
-            catch (System.Exception e)
-            {
-                log.log.err("System.Exceptio{0}", e);
-            }
-
-            try
-            {
-                DateTime t = DateTime.Now;
-                if (t.Hour == 0 && t.Minute == 0 && t.Second == 0 &&
-                    (Tick - loopdaytick) >= 24 * 60 * 60 * 1000)
-                {
-                    foreach (var item in loopdaytimeHandle)
-                    {
-                        if (!loopdaytimeHandledict.ContainsKey(item.Key))
-                        {
-                            loopdaytimeHandledict.Add(item.Key, new List<HandleImpl>());
-                        }
-                        loopdaytimeHandledict[item.Key].AddRange(item.Value);
-                    }
-                    loopdaytimeHandle.Clear();
-
-                    loopdaytick = Tick;
-                }
-
-                List<day_time> list = new List<day_time>();
-                foreach (var item in loopdaytimeHandledict)
-                {
-                    if (item.Key.hour == t.Hour && item.Key.minute == t.Minute && item.Key.second == t.Second)
-                    {
-                        list.Add(item.Key);
-
-                        foreach (var impl in item.Value)
-                        {
-                            if (impl.is_del)
-                            {
-                                continue;
-                            }
-
-                            var handle = impl.handle as Action<DateTime>;
-
-                            handle(t);
-                        }
-                    }
-                }
-
-                foreach (var item in list)
-                {
-                    if (!loopdaytimeHandle.ContainsKey(item))
-                    {
-                        loopdaytimeHandle.Add(item, new List<HandleImpl>());
-                    }
-                    foreach (var impl in loopdaytimeHandledict[item])
-                    {
-                        if (impl.is_del)
-                        {
-                            continue;
-                        }
-
-                        loopdaytimeHandle[item].Add(impl);
-                    }
-                    loopdaytimeHandledict.Remove(item);
-                }
-            }
-            catch (System.Exception e)
-            {
-                log.log.err("System.Exceptio{0}", e);
-            }
-
-            try
-            {
-                DateTime t = DateTime.Now;
-                if (t.DayOfWeek == DayOfWeek.Sunday && t.Hour == 0 && t.Minute == 0 && t.Second == 0 &&
-                    (Tick - loopweekdaytick) >= 7 * 24 * 60 * 60 * 1000)
-                {
-                    foreach (var item in loopweekdaytimeHandle)
-                    {
-                        if (!loopweekdaytimeHandledict.ContainsKey(item.Key))
-                        {
-                            loopweekdaytimeHandledict.Add(item.Key, new List<HandleImpl>());
-                        }
-                        loopweekdaytimeHandledict[item.Key].AddRange(item.Value);
-                    }
-                    loopweekdaytimeHandle.Clear();
-
-                    loopweekdaytick = Tick;
-                }
-
-                List<week_day_time> list = new List<week_day_time>();
-                foreach (var item in loopweekdaytimeHandledict)
-                {
-                    if (item.Key.day == t.DayOfWeek && item.Key.hour == t.Hour && item.Key.minute == t.Minute && item.Key.second == t.Second)
-                    {
-                        list.Add(item.Key);
-
-                        foreach (var impl in item.Value)
-                        {
-                            if (impl.is_del)
-                            {
-                                continue;
-                            }
-
-                            var handle = impl.handle as Action<DateTime>;
-
-                            handle(t);
-                        }
-                    }
-                }
-
-                foreach (var item in list)
-                {
-                    if (!loopweekdaytimeHandle.ContainsKey(item))
-                    {
-                        loopweekdaytimeHandle.Add(item, new List<HandleImpl>());
-                    }
-                    foreach (var impl in loopweekdaytimeHandledict[item])
-                    {
-                        if (impl.is_del)
-                        {
-                            continue;
-                        }
-
-                        loopweekdaytimeHandle[item].Add(impl);
-                    }
-                    loopweekdaytimeHandledict.Remove(item);
-                }
-            }
-            catch (System.Exception e)
-            {
-                log.log.err("System.Exceptio{0}", e);
-            }
+            refresh();
+            polltickhandleimpl();
+            refresh();
 
             return Tick;
         }
 
-		public object addticktime(Int64 process, Action<Int64> handle)
+		public object addticktime(long process, Action<long> handle)
 		{
             process += Tick;
-            if (!addtickHandle.ContainsKey(process))
-            {
-                addtickHandle.Add(process, new List<HandleImpl>());
-            }
-
             var impl = new HandleImpl(handle);
-            addtickHandle[process].Add(impl);
+
+            lock (addtickHandle)
+            {
+                while (addtickHandle.ContainsKey(process)){ process++; }
+                addtickHandle.Add(process, impl);
+            }
 
             return impl;
 		}
@@ -397,13 +474,17 @@ namespace service
             key.hour = hour;
             key.minute = minute;
             key.second = second;
-            if (!adddaytimeHandle.ContainsKey(key))
-            {
-                adddaytimeHandle.Add(key, new List<HandleImpl>());
-            }
 
             var impl = new HandleImpl(handle);
-            adddaytimeHandle[key].Add(impl);
+
+            lock (adddaytimeHandle)
+            {
+                if (!adddaytimeHandle.ContainsKey(key))
+                {
+                    adddaytimeHandle.Add(key, new List<HandleImpl>());
+                }
+                adddaytimeHandle[key].Add(impl);
+            }
 
             return impl;
         }
@@ -415,13 +496,17 @@ namespace service
             key.hour = hour;
             key.minute = minute;
             key.second = second;
-            if (!addtimeHandle.ContainsKey(key))
-            {
-                addtimeHandle.Add(key, new List<HandleImpl>());
-            }
 
             var impl = new HandleImpl(handle);
-            addtimeHandle[key].Add(impl);
+
+            lock (addtimeHandle)
+            {
+                if (!addtimeHandle.ContainsKey(key))
+                {
+                    addtimeHandle.Add(key, new List<HandleImpl>());
+                }
+                addtimeHandle[key].Add(impl);
+            }
 
             return impl;
         }
@@ -434,13 +519,17 @@ namespace service
             key.hour = hour;
             key.minute = minute;
             key.second = second;
-            if (!addmonthtimeHandle.ContainsKey(key))
-            {
-                addmonthtimeHandle.Add(key, new List<HandleImpl>());
-            }
 
             var impl = new HandleImpl(handle);
-            addmonthtimeHandle[key].Add(impl);
+
+            lock (addmonthtimeHandle)
+            {
+                if (!addmonthtimeHandle.ContainsKey(key))
+                {
+                    addmonthtimeHandle.Add(key, new List<HandleImpl>());
+                }
+                addmonthtimeHandle[key].Add(impl);
+            }
 
             return impl;
         }
@@ -451,13 +540,17 @@ namespace service
             key.hour = hour;
             key.minute = minute;
             key.second = second;
-            if (!addloopdaytimeHandle.ContainsKey(key))
-            {
-                addloopdaytimeHandle.Add(key, new List<HandleImpl>());
-            }
 
             var impl = new HandleImpl(handle);
-            addloopdaytimeHandle[key].Add(impl);
+
+            lock (addloopdaytimeHandle)
+            {
+                if (!addloopdaytimeHandle.ContainsKey(key))
+                {
+                    addloopdaytimeHandle.Add(key, new List<HandleImpl>());
+                }
+                addloopdaytimeHandle[key].Add(impl);
+            }
 
             return impl;
         }
@@ -469,13 +562,17 @@ namespace service
             key.hour = hour;
             key.minute = minute;
             key.second = second;
-            if (!addloopweekdaytimeHandle.ContainsKey(key))
-            {
-                addloopweekdaytimeHandle.Add(key, new List<HandleImpl>());
-            }
 
             var impl = new HandleImpl(handle);
-            addloopweekdaytimeHandle[key].Add(impl);
+
+            lock (addloopweekdaytimeHandle)
+            {
+                if (!addloopweekdaytimeHandle.ContainsKey(key))
+                {
+                    addloopweekdaytimeHandle.Add(key, new List<HandleImpl>());
+                }
+                addloopweekdaytimeHandle[key].Add(impl);
+            }
 
             return impl;
         }
@@ -485,11 +582,11 @@ namespace service
             (impl as HandleImpl).is_del = true;
         }
 
-        static public Int64 Tick;
+        static public long Tick;
 
         class HandleImpl
         {
-            public HandleImpl(Action<Int64> handle_)
+            public HandleImpl(Action<long> handle_)
             {
                 is_del = false;
                 handle = handle_;
@@ -504,9 +601,6 @@ namespace service
             public bool is_del;
             public object handle;
         }
-
-		private SortedList<Int64, List<HandleImpl> > tickHandledict;
-        private Dictionary<Int64, List<HandleImpl>> addtickHandle;
 
         struct month_day_time
         {
@@ -545,8 +639,6 @@ namespace service
                 return false;
             }
         }
-        private Dictionary<month_day_time, List<HandleImpl> > monthtimeHandledict;
-        private Dictionary<month_day_time, List<HandleImpl> > addmonthtimeHandle;
 
         struct week_day_time
         {
@@ -583,8 +675,6 @@ namespace service
                 return false;
             }
         }
-        private Dictionary<week_day_time, List<HandleImpl> > timeHandledict;
-        private Dictionary<week_day_time, List<HandleImpl> > addtimeHandle;
 
         struct day_time
         {
@@ -619,18 +709,28 @@ namespace service
                 return false;
             }
         }
-        private Dictionary<day_time, List<HandleImpl> > loopdaytimeHandledict;
-        private Dictionary<day_time, List<HandleImpl> > addloopdaytimeHandle;
-        private Dictionary<day_time, List<HandleImpl> > loopdaytimeHandle;
-        private Int64 loopdaytick;
 
-        private Dictionary<day_time, List<HandleImpl>> daytimeHandledict;
-        private Dictionary<day_time, List<HandleImpl>> adddaytimeHandle;
+        private readonly SortedList<long, HandleImpl> tickHandledict;
+        private readonly Dictionary<long, HandleImpl> addtickHandle;
 
-        private Dictionary<week_day_time, List<HandleImpl> > loopweekdaytimeHandledict;
-        private Dictionary<week_day_time, List<HandleImpl> > addloopweekdaytimeHandle;
-        private Dictionary<week_day_time, List<HandleImpl> > loopweekdaytimeHandle;
-        private Int64 loopweekdaytick;
+        private readonly Dictionary<month_day_time, List<HandleImpl>> monthtimeHandledict;
+        private readonly Dictionary<month_day_time, List<HandleImpl>> addmonthtimeHandle;
+
+        private readonly Dictionary<week_day_time, List<HandleImpl>> timeHandledict;
+        private readonly Dictionary<week_day_time, List<HandleImpl>> addtimeHandle;
+
+        private readonly Dictionary<day_time, List<HandleImpl> > loopdaytimeHandledict;
+        private readonly Dictionary<day_time, List<HandleImpl> > addloopdaytimeHandle;
+        private readonly Dictionary<day_time, List<HandleImpl> > loopdaytimeHandle;
+        private long loopdaytick;
+
+        private readonly Dictionary<day_time, List<HandleImpl>> daytimeHandledict;
+        private readonly Dictionary<day_time, List<HandleImpl>> adddaytimeHandle;
+
+        private readonly Dictionary<week_day_time, List<HandleImpl> > loopweekdaytimeHandledict;
+        private readonly Dictionary<week_day_time, List<HandleImpl> > addloopweekdaytimeHandle;
+        private readonly Dictionary<week_day_time, List<HandleImpl> > loopweekdaytimeHandle;
+        private long loopweekdaytick;
     }
 }
 

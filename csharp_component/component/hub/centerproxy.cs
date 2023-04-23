@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace hub
 {
-	public class centerproxy
+	public class Centerproxy
     {
         private readonly abelkhan.center_caller _center_caller;
 
-        public centerproxy(abelkhan.Ichannel ch)
+        public Centerproxy(abelkhan.Ichannel ch)
 		{
 			is_reg_center_sucess = false;
             _ch = ch;
@@ -16,35 +16,35 @@ namespace hub
 
         public void reg_hub(Action callback)
         {
-            log.log.trace("begin connect center server");
+            log.Log.trace("begin connect center server");
 
-            _center_caller.reg_server_mq("hub", hub.type, hub.name).callBack(() =>
+            _center_caller.reg_server_mq("hub", Hub.type, Hub.name).callBack(() =>
             {
                 callback.Invoke();
-                log.log.trace("connect center server sucessed");
+                log.Log.trace("connect center server sucessed");
             }, () =>
             {
-                log.log.trace("connect center server faild");
+                log.Log.trace("connect center server faild");
             }).timeout(5000, () =>
             {
-                log.log.trace("connect center server timeout");
+                log.Log.trace("connect center server timeout");
             });
         }
 
         public Task<bool> reconn_reg_hub()
         {
-            log.log.trace("begin connect center server");
+            log.Log.trace("begin connect center server");
 
             var task_ret = new TaskCompletionSource<bool>();
 
-            _center_caller.reconn_reg_server_mq("hub", hub.type, hub.name).callBack(() => {
-                log.log.trace("reconnect center server sucessed");
+            _center_caller.reconn_reg_server_mq("hub", Hub.type, Hub.name).callBack(() => {
+                log.Log.trace("reconnect center server sucessed");
                 task_ret.SetResult(true);
             }, () => {
-                log.log.err("reconnect center server faild");
+                log.Log.err("reconnect center server faild");
                 task_ret.SetResult(false);
             }).timeout(5000, () => {
-                log.log.err("reconnect center server timeout");
+                log.Log.err("reconnect center server timeout");
                 task_ret.SetResult(false);
             });
 
@@ -53,17 +53,17 @@ namespace hub
 
         public void heartbeat()
         {
-            _center_caller.heartbeat(hub.tick).callBack(() => {
-                log.log.trace("heartbeat center server sucessed");
+            _center_caller.heartbeat(Hub.tick).callBack(() => {
+                log.Log.trace("heartbeat center server sucessed");
 
-                timetmp = service.timerservice.Tick;
+                timetmp = service.Timerservice.Tick;
 
             }, () => {
-                log.log.err("heartbeat center server faild");
+                log.Log.err("heartbeat center server faild");
             }).timeout(5000, () => {
-                log.log.err("heartbeat center server timeout");
+                log.Log.err("heartbeat center server timeout");
             });
-            log.log.trace("begin heartbeath center server tick:{0}!", service.timerservice.Tick);
+            log.Log.trace("begin heartbeath center server tick:{0}!", service.Timerservice.Tick);
         }
 
         public void closed()
@@ -71,7 +71,7 @@ namespace hub
             _center_caller.closed();
         }
 
-        public long timetmp = service.timerservice.Tick;
+        public long timetmp = service.Timerservice.Tick;
         public bool is_reg_center_sucess;
         public readonly abelkhan.Ichannel _ch;
 

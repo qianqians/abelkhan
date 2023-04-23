@@ -47,7 +47,7 @@ namespace service
                 return rsp.Body.WriteAsync(buf).AsTask();
 
             } catch (Exception ex) {
-                log.log.err("Response Exception:{0}", ex);
+                log.Log.err("Response Exception:{0}", ex);
             } finally {
             }
             return Task.CompletedTask;
@@ -59,19 +59,19 @@ namespace service
         }
 
         private static int lcount = 0;
-        private static long _recvStatTick = timerservice.Tick + 1000;
-        private static long _lastStatTick = timerservice.Tick + 1000;
+        private static long _recvStatTick = Timerservice.Tick + 1000;
+        private static long _lastStatTick = Timerservice.Tick + 1000;
         public void Configure(IApplicationBuilder app) {
             app.Run(async (context) =>
             {
-                var begin = timerservice.Tick;
+                var begin = Timerservice.Tick;
 
                 int count = Interlocked.Add(ref lcount, 1);
-                if (timerservice.Tick >= _recvStatTick) {
+                if (Timerservice.Tick >= _recvStatTick) {
                     Interlocked.And(ref lcount, -count);
-                    log.log.info("Connect statistics: {0} messages in {1} ms", count, timerservice.Tick - _lastStatTick);
-                    _lastStatTick = timerservice.Tick;
-                    _recvStatTick = timerservice.Tick + 1000;
+                    log.Log.info("Connect statistics: {0} messages in {1} ms", count, Timerservice.Tick - _lastStatTick);
+                    _lastStatTick = Timerservice.Tick;
+                    _recvStatTick = Timerservice.Tick + 1000;
                 }
 
                 Func<AbelkhanHttpRequest, Task> cb = null;
@@ -114,15 +114,15 @@ namespace service
                     }
                     await cb(new AbelkhanHttpRequest(context.Request, context.Response, buf, length));
                 } catch (Exception ex) {
-                    log.log.err("process http req ex:{0}", ex);
+                    log.Log.err("process http req ex:{0}", ex);
                 } finally {
                     if (buf != null) {
                         ArrayPool<byte>.Shared.Return(buf);
                     }
 
-                    var tick = timerservice.Tick - begin;
+                    var tick = Timerservice.Tick - begin;
                     if (tick > 1000) {
-                        log.log.err("Timeout: elapsed_ticks={0}", tick);
+                        log.Log.err("Timeout: elapsed_ticks={0}", tick);
                     }
                 }
             });

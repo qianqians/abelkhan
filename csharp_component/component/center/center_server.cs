@@ -11,60 +11,60 @@ using System.Threading;
 
 namespace abelkhan
 {
-    public class center
+    public class Center
     {
         private readonly abelkhan.redis_mq _redis_mq_service;
-        private readonly acceptservice _accept_gm_service;
-        private readonly gmmanager _gmmanager;
+        private readonly Acceptservice _accept_gm_service;
+        private readonly GMmanager _gmmanager;
         private readonly List<abelkhan.Ichannel> add_chs;
         private readonly svr_msg_handle _svr_msg_handle;
         private readonly gm_msg_handle _gm_msg_handle;
 
-        public readonly svrmanager _svrmanager;
+        public readonly Svrmanager _svrmanager;
         public readonly List<abelkhan.Ichannel> remove_chs;
-        public readonly closehandle _closeHandle;
-        public readonly service.timerservice _timer; 
-        public readonly abelkhan.config _root_cfg;
+        public readonly Closehandle _closeHandle;
+        public readonly service.Timerservice _timer; 
+        public readonly abelkhan.Config _root_cfg;
         
-        public event Action<svrproxy> on_svr_disconnect;
+        public event Action<Svrproxy> on_svr_disconnect;
 
         static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Exception ex = e.ExceptionObject as Exception;
-            log.log.err("unhandle exception:{0}", ex.ToString());
+            log.Log.err("unhandle exception:{0}", ex.ToString());
         }
 
-        public center(string cfg_file, string cfg_name)
+        public Center(string cfg_file, string cfg_name)
         {
-            _root_cfg = new config(cfg_file);
+            _root_cfg = new Config(cfg_file);
             var _config = _root_cfg.get_value_dict(cfg_name);
             var name = _config.get_value_string("name");
 
             var log_level = _config.get_value_string("log_level");
             if (log_level == "trace")
             {
-                log.log.logMode = log.log.enLogMode.trace;
+                log.Log.logMode = log.Log.enLogMode.trace;
             }
             else if (log_level == "debug")
             {
-                log.log.logMode = log.log.enLogMode.debug;
+                log.Log.logMode = log.Log.enLogMode.debug;
             }
             else if (log_level == "info")
             {
-                log.log.logMode = log.log.enLogMode.info;
+                log.Log.logMode = log.Log.enLogMode.info;
             }
             else if (log_level == "warn")
             {
-                log.log.logMode = log.log.enLogMode.warn;
+                log.Log.logMode = log.Log.enLogMode.warn;
             }
             else if (log_level == "err")
             {
-                log.log.logMode = log.log.enLogMode.err;
+                log.Log.logMode = log.Log.enLogMode.err;
             }
             var log_file = _config.get_value_string("log_file");
-            log.log.logFile = log_file;
+            log.Log.logFile = log_file;
             var log_dir = _config.get_value_string("log_dir");
-            log.log.logPath = log_dir;
+            log.Log.logPath = log_dir;
             {
                 if (!System.IO.Directory.Exists(log_dir))
                 {
@@ -74,28 +74,28 @@ namespace abelkhan
 
             AppDomain.CurrentDomain.UnhandledException += UnhandledException;
 
-            _timer = new service.timerservice();
+            _timer = new service.Timerservice();
 
             add_chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<Ichannel>();
-            _closeHandle = new closehandle();
+            _closeHandle = new Closehandle();
 
             var redismq_url = _root_cfg.get_value_string("redis_for_mq");
             _redis_mq_service = new abelkhan.redis_mq(_timer, redismq_url, name, 333);
 
-            _svrmanager = new svrmanager(_timer, this, _redis_mq_service);
+            _svrmanager = new Svrmanager(_timer, this, _redis_mq_service);
             _svr_msg_handle = new svr_msg_handle(_svrmanager, _closeHandle);
             _svrmanager.on_svr_disconnect += (proxy) =>
             {
                 on_svr_disconnect?.Invoke(proxy);
             };
 
-            _gmmanager = new gmmanager();
+            _gmmanager = new GMmanager();
             _gm_msg_handle = new gm_msg_handle(_svrmanager, _gmmanager, _closeHandle);
             var gm_host = _config.get_value_string("gm_host");
             var gm_port = _config.get_value_int("gm_port");
-            _accept_gm_service = new acceptservice((ushort)gm_port);
-            acceptservice.on_connect += (abelkhan.Ichannel ch) =>{
+            _accept_gm_service = new Acceptservice((ushort)gm_port);
+            Acceptservice.on_connect += (abelkhan.Ichannel ch) =>{
                 lock (add_chs)
                 {
                     add_chs.Add(ch);
@@ -146,11 +146,11 @@ namespace abelkhan
             }
             catch (abelkhan.Exception e)
             {
-                log.log.err("AbelkhanException:{0}", e.Message);
+                log.Log.err("AbelkhanException:{0}", e.Message);
             }
             catch (System.Exception e)
             {
-                log.log.err("System.Exception:{0}", e);
+                log.Log.err("System.Exception:{0}", e);
             }
 
             long tick_end = _timer.refresh();
@@ -177,10 +177,10 @@ namespace abelkhan
                 }
                 catch (System.Exception e)
                 {
-                    log.log.err("error:{0}", e.Message);
+                    log.Log.err("error:{0}", e.Message);
                 }
             }
-            log.log.close();
+            log.Log.close();
 
             Monitor.Exit(_run_mu);
         }

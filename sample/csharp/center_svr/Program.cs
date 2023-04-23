@@ -7,13 +7,13 @@ namespace center_svr
     {
         static void Main(string[] args)
         {
-            var _center = new abelkhan.center(args[0], args[1]);
-            _center.on_svr_disconnect += (abelkhan.svrproxy _proxy) =>
+            var _center = new abelkhan.Center(args[0], args[1]);
+            _center.on_svr_disconnect += (abelkhan.Svrproxy _proxy) =>
             {
-                log.log.err("svr:{0},{1} exception!", _proxy.type, _proxy.name);
+                log.Log.err("svr:{0},{1} exception!", _proxy.type, _proxy.name);
             };
 
-            log.log.trace("Center start ok");
+            log.Log.trace("Center start ok");
 
             _center.run();
         }

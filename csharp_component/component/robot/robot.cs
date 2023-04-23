@@ -8,12 +8,12 @@ using System.Net.Sockets;
 
 namespace client
 {
-    class gateproxy
+    class Gateproxy
     {
         private abelkhan.Ichannel _ch;
         private abelkhan.client_call_gate_caller _client_call_gate_caller;
 
-        public gateproxy(abelkhan.Ichannel ch)
+        public Gateproxy(abelkhan.Ichannel ch)
         {
             _ch = ch;
             _client_call_gate_caller = new abelkhan.client_call_gate_caller(ch, abelkhan.modulemng_handle._modulemng);
@@ -55,7 +55,7 @@ namespace client
         }
     }
 
-    class hubproxy
+    class Hubproxy
     {
         public string _hub_name;
         public string _hub_type;
@@ -63,7 +63,7 @@ namespace client
         private abelkhan.Ichannel _ch;
         private abelkhan.client_call_hub_caller _client_call_hub_caller;
 
-        public hubproxy(string hub_name, string hub_type, abelkhan.Ichannel ch)
+        public Hubproxy(string hub_name, string hub_type, abelkhan.Ichannel ch)
         {
             _hub_name = hub_name;
             _hub_type = hub_type;
@@ -106,7 +106,7 @@ namespace client
         }
     }
 
-    public class client
+    public class Client
     {
         public string uuid;
         public string current_hub;
@@ -117,21 +117,21 @@ namespace client
         public event Action<ulong> onGateTime;
         public event Action<string, ulong> onHubTime;
 
-        private gateproxy _gateproxy;
-        private Dictionary<string, hubproxy> _hubproxy_set;
-        private Dictionary<abelkhan.Ichannel, hubproxy> _ch_hubproxy_set;
+        private Gateproxy _gateproxy;
+        private Dictionary<string, Hubproxy> _hubproxy_set;
+        private Dictionary<abelkhan.Ichannel, Hubproxy> _ch_hubproxy_set;
 
-        public client()
+        public Client()
         {
-            _hubproxy_set = new Dictionary<string, hubproxy>();
-            _ch_hubproxy_set = new Dictionary<abelkhan.Ichannel, hubproxy>();
+            _hubproxy_set = new Dictionary<string, Hubproxy>();
+            _ch_hubproxy_set = new Dictionary<abelkhan.Ichannel, Hubproxy>();
 
-            robot.timer.addticktime(5000, heartbeats);
+            Robot.timer.addticktime(5000, heartbeats);
         }
 
         public string get_current_hubproxy(abelkhan.Ichannel current_ch)
         {
-            if (_ch_hubproxy_set.TryGetValue(current_ch, out hubproxy _proxy))
+            if (_ch_hubproxy_set.TryGetValue(current_ch, out Hubproxy _proxy))
             {
                 return _proxy._hub_name;
             }
@@ -158,7 +158,7 @@ namespace client
 
         public void call_hub(string hub_name, string func, ArrayList argv)
         {
-            if (_hubproxy_set.TryGetValue(hub_name, out hubproxy _hubproxy))
+            if (_hubproxy_set.TryGetValue(hub_name, out Hubproxy _hubproxy))
             {
                 _hubproxy.call_hub(func, argv);
                 return;
@@ -183,12 +183,12 @@ namespace client
             connect(ip, port, timeout, (is_conn, ch) => {
                 if (is_conn && ch != null)
                 {
-                    _gateproxy = new gateproxy(ch);
+                    _gateproxy = new Gateproxy(ch);
                     _gateproxy.onGateDisconnect += (ch) =>
                     {
-                        lock (robot.remove_chs)
+                        lock (Robot.remove_chs)
                         {
-                            robot.remove_chs.Add(ch);
+                            Robot.remove_chs.Add(ch);
                         }
                         _gateproxy = null;
 
@@ -212,15 +212,15 @@ namespace client
             connect(ip, port, timeout, (is_conn, ch) => {
                 if (is_conn && ch != null)
                 {
-                    var _hubproxy = new hubproxy(hub_name, hub_type, ch);
+                    var _hubproxy = new Hubproxy(hub_name, hub_type, ch);
                     _hubproxy.onHubDisconnect += (ch) =>
                     {
-                        lock (robot.remove_chs)
+                        lock (Robot.remove_chs)
                         {
-                            robot.remove_chs.Add(ch);
+                            Robot.remove_chs.Add(ch);
                         }
 
-                        if (_ch_hubproxy_set.Remove(ch, out hubproxy _proxy))
+                        if (_ch_hubproxy_set.Remove(ch, out Hubproxy _proxy))
                         {
                             _hubproxy_set.Remove(_proxy._hub_name);
                         }
@@ -266,7 +266,7 @@ namespace client
             socketConnectTmp s_cli = new socketConnectTmp();
             s_cli.s = s;
             s_cli.cb = cb;
-            s_cli.timeid = robot.timer.addticktime(timeout, (_) => {
+            s_cli.timeid = Robot.timer.addticktime(timeout, (_) => {
                 s.Close();
                 onGateConnectFaild?.Invoke();
             });
@@ -284,10 +284,10 @@ namespace client
                 {
                     _s_cli.s.EndConnect(ar);
 
-                    var ch = new abelkhan.cryptrawchannel(_s_cli.s);
-                    lock (robot.add_chs)
+                    var ch = new abelkhan.Cryptrawchannel(_s_cli.s);
+                    lock (Robot.add_chs)
                     {
-                        robot.add_chs.Add(ch);
+                        Robot.add_chs.Add(ch);
                     }
 
                     _s_cli.cb(true, ch);
@@ -299,45 +299,45 @@ namespace client
             }
             finally
             {
-                robot.timer.deltimer(_s_cli.timeid);
+                Robot.timer.deltimer(_s_cli.timeid);
             }
         }
     }
 
-    class robot
+    class Robot
     {
-        public static service.timerservice timer;
+        public static service.Timerservice timer;
 
         public static List<abelkhan.Ichannel> add_chs;
         public static List<abelkhan.Ichannel> remove_chs;
 
         public static string current_hub;
-        public static client current_robot;
+        public static Client current_robot;
 
         private int robot_num;
 
-        private common.modulemanager modulemanager;
+        private common.Modulemanager modulemanager;
 
-        private Dictionary<string, client> robotproxys;
-        private Dictionary<abelkhan.Ichannel, client> ch_robotproxys;
+        private Dictionary<string, Client> robotproxys;
+        private Dictionary<abelkhan.Ichannel, Client> ch_robotproxys;
 
         private abelkhan.gate_call_client_module _gate_call_client_module;
         private abelkhan.hub_call_client_module _hub_call_client_module;
 
-        public robot(int _robot_num)
+        public Robot(int _robot_num)
         {
             robot_num = _robot_num;
 
-            timer = new service.timerservice();
+            timer = new service.Timerservice();
             timer.refresh();
 
             add_chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<abelkhan.Ichannel>();
 
-            modulemanager = new common.modulemanager();
+            modulemanager = new common.Modulemanager();
 
-            robotproxys = new Dictionary<string, client>();
-            ch_robotproxys = new Dictionary<abelkhan.Ichannel, client>();
+            robotproxys = new Dictionary<string, Client>();
+            ch_robotproxys = new Dictionary<abelkhan.Ichannel, Client>();
 
             _gate_call_client_module = new abelkhan.gate_call_client_module(abelkhan.modulemng_handle._modulemng);
             _gate_call_client_module.on_ntf_cuuid += ntf_cuuid;
@@ -351,7 +351,7 @@ namespace client
         {
             for (int i = 0; i < robot_num; i++)
             {
-                var _proxy = new client();
+                var _proxy = new Client();
                 _proxy.connect_gate(ip, port, timeout);
                 _proxy.onGateConnect += (ch) => {
                     ch_robotproxys.Add(ch, _proxy);
@@ -359,8 +359,8 @@ namespace client
             }
         }
 
-        public event Action<client, string> onHubConnect;
-        public void connect_hub(client _proxy, string hub_name, string hub_type, string ip, short port, long timeout)
+        public event Action<Client, string> onHubConnect;
+        public void connect_hub(Client _proxy, string hub_name, string hub_type, string ip, short port, long timeout)
         {
             _proxy.connect_hub(hub_name, hub_type, ip, port, timeout);
             _proxy.onHubConnect += (hub_name, ch) => {
@@ -369,7 +369,7 @@ namespace client
             onHubConnect?.Invoke(_proxy, hub_name);
         }
 
-        public event Action<client> onGateConnect;
+        public event Action<Client> onGateConnect;
         private void ntf_cuuid(string _uuid)
         {
             robotproxys.Add(_uuid, current_robot);

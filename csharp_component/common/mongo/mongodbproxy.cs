@@ -1,17 +1,17 @@
-﻿using System;
+﻿using MongoDB.Driver;
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
-using MongoDB.Driver;
 
 namespace service
 {
-	public class mongodbproxy
+    public class Mongodbproxy
 	{
         private readonly Func<MongoClient> createMongocLient;
         private readonly ConcurrentQueue<MongoClient> client_pool = new();
 
-		public mongodbproxy(String ip, short port)
+		public Mongodbproxy(String ip, short port)
 		{
             createMongocLient = ()=>
             {
@@ -21,7 +21,7 @@ namespace service
             };
         }
 
-        public mongodbproxy(String url)
+        public Mongodbproxy(String url)
         {
             createMongocLient = () =>
             {
@@ -62,7 +62,7 @@ namespace service
             }
             catch(System.Exception e)
             {
-                log.log.err("create_index faild, {0}", e.Message);
+                log.Log.err("create_index faild, {0}", e.Message);
             }
             finally
             {
@@ -70,7 +70,7 @@ namespace service
             }
         }
 
-        public async void check_int_guid(string db, string collection, long inside_guid, long public_guid)
+        public async void check_int_guid(string db, string collection, long _guid)
         {
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
@@ -84,13 +84,13 @@ namespace service
                 var c = await _collection.FindAsync<MongoDB.Bson.BsonDocument>(_query);
                 if (c.MoveNext() && (c.Current == null || !c.Current.Any()))
                 {
-                    MongoDB.Bson.BsonDocument _d = new MongoDB.Bson.BsonDocument { { "Guid", "__guid__" }, { "inside_guid", inside_guid }, { "public_guid", public_guid } };
+                    MongoDB.Bson.BsonDocument _d = new MongoDB.Bson.BsonDocument { { "Guid", "__guid__" }, { "inside_guid", _guid } };
                     await _collection.InsertOneAsync(_d);
                 }
             }
             catch (System.Exception e)
             {
-                log.log.err("check_int_guid db: {0}, collection: {1}, inside_guid: {2}, public_guid: {3} faild, {4}", db, collection, inside_guid, public_guid, e);
+                log.Log.err("check_int_guid db: {0}, collection: {1}, inside_guid: {2}, faild: {3}", db, collection, _guid, e);
             }
             finally
             {
@@ -111,7 +111,7 @@ namespace service
             }
             catch(System.Exception e)
             {
-                log.log.err("save data faild, {0}", e.Message);
+                log.Log.err("save data faild, {0}", e.Message);
                 return false;
             }
             finally
@@ -141,7 +141,7 @@ namespace service
             }
             catch (System.Exception e)
             {
-                log.log.err("update data faild, {0}", e.Message);
+                log.Log.err("update data faild, {0}", e.Message);
                 return false;
             }
             finally
@@ -178,7 +178,7 @@ namespace service
             }
             catch (System.Exception e)
             {
-                log.log.err("find_and_modify data faild, {0}", e.Message);
+                log.Log.err("find_and_modify data faild, {0}", e.Message);
             }
             finally
             {
@@ -236,7 +236,7 @@ namespace service
             }
             catch (System.Exception e)
             {
-                log.log.err("find faild, {0}", e.Message);
+                log.Log.err("find faild, {0}", e.Message);
                 return _list;
             }
             finally
@@ -262,7 +262,7 @@ namespace service
             }
             catch (System.Exception e)
             {
-                log.log.err("count faild, {0}", e.Message);
+                log.Log.err("count faild, {0}", e.Message);
                 return 0;
             }
             finally
@@ -286,7 +286,7 @@ namespace service
             }
             catch (System.Exception e)
             {
-                log.log.err("remove faild, {0}", e.Message);
+                log.Log.err("remove faild, {0}", e.Message);
                 return false;
             }
             finally
@@ -297,7 +297,7 @@ namespace service
             return true;
 		}
 
-        public async Task<long> get_guid(string db, string collection, string guid_key)
+        public async Task<long> get_guid(string db, string collection)
         {
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
@@ -307,14 +307,14 @@ namespace service
             {
                 var _bson_query = new MongoDB.Bson.BsonDocument("Guid", "__guid__");
                 var _query = new BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
-                var _bson_update_impl = new MongoDB.Bson.BsonDocument { { "$inc", new MongoDB.Bson.BsonDocument { { guid_key, 1 } } } };
+                var _bson_update_impl = new MongoDB.Bson.BsonDocument { { "$inc", new MongoDB.Bson.BsonDocument { { "inside_guid", 1 } } } };
 
                 var c = await _collection.FindOneAndUpdateAsync<MongoDB.Bson.BsonDocument>(_query, _bson_update_impl);
-                return c.GetValue(guid_key).ToInt64();
+                return c.GetValue("inside_guid").ToInt64();
             }
             catch (System.Exception e)
             {
-                log.log.err("get_guid data db: {0}, collection: {1}, guid_key: {2} faild, {3}", db, collection, guid_key, e);
+                log.Log.err("get_guid data db: {0}, collection: {1}, guid_key: {2} faild, {3}", db, collection, "inside_guid", e);
                 return -1;
             }
             finally

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class test : MonoBehaviour
 {
-    private client.client _client;
+    private client.Client _client;
     private abelkhan.test_c2s_caller _test_c2s_caller;
 
     private abelkhan.test_s2c_module _test_s2c_module;
@@ -12,7 +12,7 @@ public class test : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _client = new client.client();
+        _client = new client.Client();
         _test_c2s_caller = new abelkhan.test_c2s_caller(_client);
 
         _test_s2c_module = new abelkhan.test_s2c_module(_client);

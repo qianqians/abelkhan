@@ -6,10 +6,10 @@ using System.IO;
 
 namespace dbproxy
 {
-	public class hubproxy
+	public class Hubproxy
 	{
 		public readonly abelkhan.Ichannel _ch;
-		public hubproxy(abelkhan.Ichannel ch)
+		public Hubproxy(abelkhan.Ichannel ch)
 		{
 			_serializer = MessagePackSerializer.Get<ArrayList>();
 

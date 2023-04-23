@@ -10,12 +10,12 @@ using Fleck;
 
 namespace abelkhan
 {
-    public class websocketacceptservice
+    public class Websocketacceptservice
     {
         private WebSocketServer _server;
 
         public event Action<abelkhan.Ichannel> on_connect;
-        public websocketacceptservice(ushort port, bool is_ssl, string pfx)
+        public Websocketacceptservice(ushort port, bool is_ssl, string pfx)
         {
             if (!is_ssl)
             {
@@ -29,7 +29,7 @@ namespace abelkhan
 
             _server.Start(socket =>
             {
-                var ch = new websocketchannel(socket);
+                var ch = new Websocketchannel(socket);
                 ch.on_connect += on_connect;
             });
         }

@@ -4,13 +4,13 @@ namespace dbproxy
 {
 	public class center_msg_handle
 	{
-		private closehandle _closehandle;
-		private centerproxy _centerproxy;
-        private hubmanager _hubs;
+		private Closehandle _closehandle;
+		private Centerproxy _centerproxy;
+        private Hubmanager _hubs;
 
 		private abelkhan.center_call_server_module _center_call_server_module;
 
-		public center_msg_handle(closehandle _closehandle_, centerproxy _centerproxy_, hubmanager _hubs_)
+		public center_msg_handle(Closehandle _closehandle_, Centerproxy _centerproxy_, Hubmanager _hubs_)
 		{
 			_closehandle = _closehandle_;
             _centerproxy = _centerproxy_;
@@ -40,15 +40,15 @@ namespace dbproxy
             if (_closehandle._is_closing && _hubs.all_hub_closed())
             {
 				_centerproxy.closed();
-                dbproxy._timer.addticktime(3000, close_server_impl);
+                DBproxy._timer.addticktime(3000, close_server_impl);
             }
         }
 
 		private void console_close_server(string svr_type, string svr_name)
         {
-			if (svr_type == "dbproxy" && svr_name == dbproxy.name)
+			if (svr_type == "dbproxy" && svr_name == DBproxy.name)
             {
-				dbproxy._timer.addticktime(3000, close_server_impl);
+				DBproxy._timer.addticktime(3000, close_server_impl);
 			}
             else
             {
@@ -62,7 +62,7 @@ namespace dbproxy
 
 		private void svr_be_closed(string svr_type, string svr_name)
         {
-            log.log.trace("svr_be_closed");
+            log.Log.trace("svr_be_closed");
 
 			if (svr_type == "hub")
 			{
@@ -73,7 +73,7 @@ namespace dbproxy
 
 		private void take_over_svr(string svr_name)
 		{
-			dbproxy._redis_mq_service.take_over_svr(svr_name);
+			DBproxy._redis_mq_service.take_over_svr(svr_name);
         }
     }
 }

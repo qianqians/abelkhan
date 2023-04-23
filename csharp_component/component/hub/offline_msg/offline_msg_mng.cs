@@ -20,9 +20,9 @@ namespace offline_msg
             _callback_dict = new Dictionary<string, Action<offline_msg> >();
         }
 
-        private hub.dbproxyproxy.Collection Collection
+        private hub.DBproxyproxy.Collection Collection
         {
-            get { return hub.hub.get_random_dbproxyproxy().getCollection(_db_name, _db_collection); }
+            get { return hub.Hub.get_random_dbproxyproxy().getCollection(_db_name, _db_collection); }
         }
 
         public struct offline_msg
@@ -72,13 +72,13 @@ namespace offline_msg
                     }
                     else
                     {
-                        log.log.err("unsuport msg.msg_type:{0}", msg.msg_type);
+                        log.Log.err("unsuport msg.msg_type:{0}", msg.msg_type);
                     }
                 }
             }
             catch(Exception ex)
             {
-                log.log.err("process_offline_msg ex:{0}", ex);
+                log.Log.err("process_offline_msg ex:{0}", ex);
             }
         }
 
@@ -90,9 +90,9 @@ namespace offline_msg
             _data.set(msg);
             Collection.createPersistedObject(_data.data(), (_result) =>
             {
-                if (_result != hub.dbproxyproxy.EM_DB_RESULT.EM_DB_SUCESSED)
+                if (_result != hub.DBproxyproxy.EM_DB_RESULT.EM_DB_SUCESSED)
                 {
-                    log.log.err("send_offline_msg faild, msg:{0}", msg.ToJson());
+                    log.Log.err("send_offline_msg faild, msg:{0}", msg.ToJson());
                     task.SetResult(false);
                 }
                 else
@@ -109,9 +109,9 @@ namespace offline_msg
             var _query = new abelkhan.DBQueryHelper();
             _query.condition("msg_guid", msg_guid);
             Collection.removeObject(_query.query(), (_result) => { 
-                if (_result != hub.dbproxyproxy.EM_DB_RESULT.EM_DB_SUCESSED)
+                if (_result != hub.DBproxyproxy.EM_DB_RESULT.EM_DB_SUCESSED)
                 {
-                    log.log.err("del_offline_msg faild, msg_guid:{0}", msg_guid);
+                    log.Log.err("del_offline_msg faild, msg_guid:{0}", msg_guid);
                 }
             });
         }

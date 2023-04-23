@@ -507,13 +507,12 @@ export class hub_call_dbproxy_caller extends abelkhan.Icaller {
         return cb_reg_hub_obj;
     }
 
-    public get_guid(db:string, collection:string, guid_key:string){
+    public get_guid(db:string, collection:string){
         let uuid_efe126e5_91e4_5df4_975c_18c91b6a6634 = Math.round(this.uuid_e713438c_e791_3714_ad31_4ccbddee2554++);
 
         let _argv_8b362c4a_74a5_366e_a6af_37474d7fa521:any[] = [uuid_efe126e5_91e4_5df4_975c_18c91b6a6634];
         _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.push(db);
         _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.push(collection);
-        _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.push(guid_key);
         this.call_module_method("hub_call_dbproxy_get_guid", _argv_8b362c4a_74a5_366e_a6af_37474d7fa521);
 
         let cb_get_guid_obj = new hub_call_dbproxy_get_guid_cb(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634, rsp_cb_hub_call_dbproxy_handle);
@@ -827,13 +826,12 @@ export class hub_call_dbproxy_module extends abelkhan.Imodule {
         this.rsp = null;
     }
 
-    public cb_get_guid : (db:string, collection:string, guid_key:string)=>void | null;
+    public cb_get_guid : (db:string, collection:string)=>void | null;
     get_guid(inArray:any[]){
         let _cb_uuid = inArray[0];
         let _argv_:any[] = [];
         _argv_.push(inArray[1]);
         _argv_.push(inArray[2]);
-        _argv_.push(inArray[3]);
         this.rsp = new hub_call_dbproxy_get_guid_rsp(this.current_ch, _cb_uuid);
         if (this.cb_get_guid){
             this.cb_get_guid.apply(null, _argv_);

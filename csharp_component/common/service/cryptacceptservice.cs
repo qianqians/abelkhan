@@ -12,33 +12,33 @@ using System.IO.Pipelines;
 
 namespace abelkhan
 {
-    public class cryptacceptservice
+    public class Cryptacceptservice
     {
         private bool run = true;
         private ushort port;
         private Task _t;
 
-        public cryptacceptservice(ushort _port)
+        public Cryptacceptservice(ushort _port)
         {
             port = _port;
         }
 
-        public static event Action<cryptchannel> on_connect;
-        public static void onConnect(cryptchannel ch)
+        public static event Action<Cryptchannel> on_connect;
+        public static void onConnect(Cryptchannel ch)
         {
             on_connect?.Invoke(ch);
         }
 
-        public static event Action<cryptchannel> on_disconnect;
-        public static void onDisconnect(cryptchannel ch)
+        public static event Action<Cryptchannel> on_disconnect;
+        public static void onDisconnect(Cryptchannel ch)
         {
             on_disconnect?.Invoke(ch);
         }
 
         private async Task ProcessLinesAsync(Socket socket)
         {
-            var ch = new channel(socket);
-            acceptservice.onConnect(ch);
+            var ch = new Channel(socket);
+            Acceptservice.onConnect(ch);
 
             var stream = new NetworkStream(socket);
             var reader = PipeReader.Create(stream);
@@ -57,7 +57,7 @@ namespace abelkhan
                 }
                 catch (System.Exception e)
                 {
-                    log.log.err("channel_onrecv.on_recv error:{0}!", e);
+                    log.Log.err("channel_onrecv.on_recv error:{0}!", e);
                     break;
                 }
             }

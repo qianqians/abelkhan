@@ -721,14 +721,13 @@ namespace abelkhan
             return cb_reg_hub_obj;
         }
 
-        public hub_call_dbproxy_get_guid_cb get_guid(string db, string collection, string guid_key){
+        public hub_call_dbproxy_get_guid_cb get_guid(string db, string collection){
             var uuid_efe126e5_91e4_5df4_975c_18c91b6a6634 = (UInt32)Interlocked.Increment(ref uuid_e713438c_e791_3714_ad31_4ccbddee2554);
 
             var _argv_8b362c4a_74a5_366e_a6af_37474d7fa521 = new ArrayList();
             _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.Add(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634);
             _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.Add(db);
             _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.Add(collection);
-            _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.Add(guid_key);
             call_module_method("hub_call_dbproxy_get_guid", _argv_8b362c4a_74a5_366e_a6af_37474d7fa521);
 
             var cb_get_guid_obj = new hub_call_dbproxy_get_guid_cb(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634, rsp_cb_hub_call_dbproxy_handle);
@@ -1059,15 +1058,14 @@ namespace abelkhan
             rsp.Value = null;
         }
 
-        public event Action<string, string, string> on_get_guid;
+        public event Action<string, string> on_get_guid;
         public void get_guid(IList<MsgPack.MessagePackObject> inArray){
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var _db = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             var _collection = ((MsgPack.MessagePackObject)inArray[2]).AsString();
-            var _guid_key = ((MsgPack.MessagePackObject)inArray[3]).AsString();
             rsp.Value = new hub_call_dbproxy_get_guid_rsp(current_ch.Value, _cb_uuid);
             if (on_get_guid != null){
-                on_get_guid(_db, _collection, _guid_key);
+                on_get_guid(_db, _collection);
             }
             rsp.Value = null;
         }

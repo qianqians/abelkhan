@@ -11,15 +11,15 @@ using Fleck;
 namespace abelkhan
 {
 
-    public class websocketchannel : abelkhan.Ichannel
+    public class Websocketchannel : abelkhan.Ichannel
     {
         private IWebSocketConnection _socket;
         private object lockobj;
 
         public channel_onrecv _channel_onrecv;
 
-        public event Action<websocketchannel> on_connect;
-        public websocketchannel(IWebSocketConnection socket)
+        public event Action<Websocketchannel> on_connect;
+        public Websocketchannel(IWebSocketConnection socket)
         {
             lockobj = new object();
             _channel_onrecv = new channel_onrecv(this);

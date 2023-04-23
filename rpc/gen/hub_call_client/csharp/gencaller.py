@@ -10,7 +10,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
     cb_func = ""
 
     cb_code = "/*this cb code is codegen by abelkhan for c#*/\n"
-    cb_code += "    public class " + module_name + "_rsp_cb : common.imodule {\n"
+    cb_code += "    public class " + module_name + "_rsp_cb : common.IModule {\n"
     cb_code_constructor = "        public " + module_name + "_rsp_cb() \n"
     cb_code_constructor += "        {\n"
     cb_code_section = ""
@@ -118,15 +118,15 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                     tmp_code += "            _argv_" + _argv_uuid + ".Add(_array_" + _array_uuid + ");\n"
             if i[1] == "ntf":
                 cp_code += tmp_code
-                cp_code += "            hub.hub._gates.call_client(client_uuid_" + _client_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
+                cp_code += "            hub.Hub._gates.call_client(client_uuid_" + _client_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
                 cp_code += "        }\n\n"
             elif i[1] == "multicast":
                 cm_code += tmp_code
-                cm_code += "            hub.hub._gates.call_group_client(client_uuids_" + _client_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
+                cm_code += "            hub.Hub._gates.call_group_client(client_uuids_" + _client_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
                 cm_code += "        }\n\n"
             elif i[1] == "broadcast":
                 cbc_code += tmp_code
-                cbc_code += "            hub.hub._gates.call_global_client(\"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
+                cbc_code += "            hub.Hub._gates.call_global_client(\"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
                 cbc_code += "        }\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
             cb_func += "    public class " + module_name + "_" + func_name + "_cb\n    {\n"
@@ -254,8 +254,8 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
 
             cb_code += "        public Dictionary<UInt64, " + module_name + "_" + func_name + "_cb> map_" + func_name + ";\n"
             cb_code_constructor += "            map_" + func_name + " = new Dictionary<UInt64, " + module_name + "_" + func_name + "_cb>();\n"
-            cb_code_constructor += "            hub.hub._modules.add_mothed(\"" + module_name + "_rsp_cb_" + func_name + "_rsp\", " + func_name + "_rsp);\n"
-            cb_code_constructor += "            hub.hub._modules.add_mothed(\"" + module_name + "_rsp_cb_" + func_name + "_err\", " + func_name + "_err);\n"
+            cb_code_constructor += "            hub.Hub._modules.add_mothed(\"" + module_name + "_rsp_cb_" + func_name + "_rsp\", " + func_name + "_rsp);\n"
+            cb_code_constructor += "            hub.Hub._modules.add_mothed(\"" + module_name + "_rsp_cb_" + func_name + "_err\", " + func_name + "_err);\n"
 
             cb_code_section += "        public void " + func_name + "_rsp(IList<MsgPack.MessagePackObject> inArray){\n"
             cb_code_section += "            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();\n"
@@ -498,7 +498,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     cp_code += "            }\n"                                                     
                     cp_code += "            _argv_" + _argv_uuid + ".Add(_array_" + _array_uuid + ");\n"
-            cp_code += "            hub.hub._gates.call_client(client_uuid_" + _client_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n\n"
+            cp_code += "            hub.Hub._gates.call_client(client_uuid_" + _client_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n\n"
             cp_code += "            var cb_" + func_name + "_obj = new " + module_name + "_" + func_name + "_cb(uuid_" + _cb_uuid_uuid + ", rsp_cb_" + module_name + "_handle);\n"
             cp_code += "            lock(rsp_cb_" + module_name + "_handle.map_" + func_name + ")\n"
             cp_code += "            {"

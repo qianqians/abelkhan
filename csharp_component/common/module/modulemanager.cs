@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace common
 {
-	public class modulemanager
+	public class Modulemanager
 	{
-		public modulemanager()
+		public Modulemanager()
 		{
 			motheds = new Dictionary<string, Action<IList<MsgPack.MessagePackObject> > >();
 		}
@@ -24,7 +24,7 @@ namespace common
 			}
 			else
             {
-                log.log.err("do not have a mothed name:{0}", func_name);
+                log.Log.err("do not have a mothed name:{0}", func_name);
 				throw new moduleException(String.Format("modulemanager.process_module_mothed unreg mothed name:{0}!", func_name));
 			}
 		}

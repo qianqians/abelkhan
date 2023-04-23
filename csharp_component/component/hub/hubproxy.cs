@@ -7,12 +7,12 @@ using abelkhan;
 
 namespace hub
 {
-    public class hubproxy
+    public class Hubproxy
     {
         private readonly abelkhan.hub_call_hub_caller _hub_call_hub_caller;
         private readonly MessagePackSerializer<ArrayList> _serializer = MessagePackSerializer.Get<ArrayList>();
 
-        public hubproxy(string hub_name, string hub_type, abelkhan.Ichannel ch)
+        public Hubproxy(string hub_name, string hub_type, abelkhan.Ichannel ch)
         {
             name = hub_name;
             type = hub_type;
@@ -37,7 +37,7 @@ namespace hub
 
         public void client_seep(string client_uuid)
         {
-            _hub_call_hub_caller.seep_client_gate(client_uuid, hub._gates.get_client_gate_name(client_uuid));
+            _hub_call_hub_caller.seep_client_gate(client_uuid, Hub._gates.get_client_gate_name(client_uuid));
         }
 
         public readonly string name;

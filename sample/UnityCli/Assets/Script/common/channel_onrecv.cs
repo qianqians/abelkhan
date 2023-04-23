@@ -13,9 +13,9 @@ namespace abelkhan
 {
     public class channel_onrecv
     {
-        private MemoryStream recv_buf = new MemoryStream();
-        private MessagePackSerializer<ArrayList> serializer = MessagePackSerializer.Get<ArrayList>();
-        private Ichannel channel;
+        private readonly MemoryStream recv_buf = new();
+        private readonly MessagePackSerializer<ArrayList> serializer = MessagePackSerializer.Get<ArrayList>();
+        private readonly Ichannel channel;
 
         public channel_onrecv(Ichannel ch)
         {
@@ -51,21 +51,19 @@ namespace abelkhan
                 offset += 4;
                 on_recv_data?.Invoke(under_buf, offset, offset + len);
 
-                using (var _tmp = new MemoryStream())
-                {
-                    _tmp.Write(under_buf, offset, len);
-                    _tmp.Position = 0;
-                    var _event = serializer.Unpack(_tmp);
-                    event_queue.msgQue.Enqueue(Tuple.Create<Ichannel, ArrayList>(channel, _event));
-                }
+                using var _tmp = new MemoryStream();
+                _tmp.Write(under_buf, offset, len);
+                _tmp.Position = 0;
+                var _event = serializer.Unpack(_tmp);
+                event_queue.msgQue.Enqueue(Tuple.Create(channel, _event));
 
                 offset += len;
             }
 
             if (offset > 4)
             {
-                Buffer.BlockCopy(under_buf, offset, under_buf, 0, (int)buffer_len - offset);
                 var pos = buffer_len - offset;
+                Buffer.BlockCopy(under_buf, offset, under_buf, 0, (int)pos);
                 recv_buf.Seek(pos, SeekOrigin.Begin);
                 recv_buf.SetLength(pos);
             }

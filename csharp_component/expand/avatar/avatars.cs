@@ -33,11 +33,7 @@ namespace avatar
         public abstract void write_back();
     }
 
-    /*
-     * original date agent
-     * write back data to memory
-     */
-    class DataAgent<T> : IDataAgent<T> where T : IHostingData
+    internal class DataAgent<T> : IDataAgent<T> where T : IHostingData
     {
         private readonly Avatar avatar;
 
@@ -95,8 +91,10 @@ namespace avatar
 
         internal BsonDocument get_db_doc()
         {
-            var doc = new BsonDocument();
-
+            var doc = new BsonDocument
+            {
+                { "guid", Guid }
+            };
             foreach (var (name, data) in dataDict)
             {
                 doc.Add(name, data.ToBsonDocument());
@@ -117,6 +115,7 @@ namespace avatar
         public EDataOriginal DataOriginal { get; set; }
         public string DBName { get; set; }
         public string DBCollection { get; set; }
+        public string GuidCollection { get; set; }
         public string HubName { get; set; }
     }
 
@@ -134,6 +133,7 @@ namespace avatar
         private static Dictionary<string, Func<IHostingData> > hosting_data_create = new();
         private static Dictionary<string, Func<BsonDocument, IHostingData> > hosting_data_template = new();
 
+        private static Dictionary<long, Avatar> avatar_guid = new();
         private static Dictionary<string, Avatar> avatar_sdk_uuid = new();
         private static Dictionary<string, Avatar> avatar_client_uuid = new();
 
@@ -157,7 +157,7 @@ namespace avatar
 
             var query = new DBQueryHelper();
             query.condition("sdk_uuid", sdk_uuid);
-            hub.hub.get_random_dbproxyproxy().getCollection(opt.DBName, opt.DBCollection).getObjectInfo(query.query(), (value) => {
+            hub.Hub.get_random_dbproxyproxy().getCollection(opt.DBName, opt.DBCollection).getObjectInfo(query.query(), (value) => {
                 if (value.Count > 1)
                 {
                     throw new AvtarLoadFromDBError($"repeated sdk_uuid:{sdk_uuid}");
@@ -173,6 +173,7 @@ namespace avatar
                         var ins = load(sub_doc);
                         avatar.add_hosting_data(ins);
                     }
+                    avatar.Guid = doc.GetValue("guid").AsInt64;
 
                     task.SetResult(avatar);
                 }
@@ -185,19 +186,35 @@ namespace avatar
             return task.Task;
         }
 
-        private static Avatar create_avatar(bool _is_original)
+        private static Task<long> get_guid()
+        {
+            var task = new TaskCompletionSource<long>();
+
+            hub.Hub.get_random_dbproxyproxy().getCollection(opt.DBName, opt.GuidCollection).getGuid((result, guid) =>
+            {
+                if (result == hub.DBproxyproxy.EM_DB_RESULT.EM_DB_SUCESSED)
+                {
+                    task.SetResult(guid);
+                }
+            });
+
+            return task.Task;
+        }
+
+        private static async Task<Avatar> create_avatar()
         {
             var avatar = new Avatar();
+            avatar.Guid = await get_guid();
             foreach (var (name, create) in hosting_data_create)
             {
                 var ins = create();
                 avatar.add_hosting_data(ins);
             }
-            hub.hub.get_random_dbproxyproxy().getCollection(opt.DBName, opt.DBCollection).createPersistedObject(avatar.get_db_doc(), (result) =>
+            hub.Hub.get_random_dbproxyproxy().getCollection(opt.DBName, opt.DBCollection).createPersistedObject(avatar.get_db_doc(), (result) =>
             {
-                if (result != hub.dbproxyproxy.EM_DB_RESULT.EM_DB_SUCESSED)
+                if (result != hub.DBproxyproxy.EM_DB_RESULT.EM_DB_SUCESSED)
                 {
-                    log.log.err("db create avatar faild:{0}", result.ToString());
+                    log.Log.err("db create avatar faild:{0}", result.ToString());
                 }
             });
             return avatar;
@@ -210,10 +227,15 @@ namespace avatar
                 var avatar = await load_from_db(sdk_uuid);
                 if (avatar == null)
                 {
-                    avatar = create_avatar(true);
+                    avatar = await create_avatar();
                 }
+                avatar.ClientUUID = client_uuid;
+
+                avatar_guid[avatar.Guid] = avatar;
+
                 avatar_sdk_uuid[sdk_uuid] = avatar;
                 avatar_client_uuid[client_uuid] = avatar;
+                
                 return avatar;
             }
             else
@@ -225,11 +247,17 @@ namespace avatar
 
         public static Avatar get_current_avatar()
         {
-            avatar_client_uuid.TryGetValue(hub.hub._gates.current_client_uuid, out var avatar);
+            avatar_client_uuid.TryGetValue(hub.Hub._gates.current_client_uuid, out var avatar);
             return avatar;
         }
 
-        public static Avatar get_target_avatar(string sdk_uuid)
+        public static Avatar get_target_avatar(long guid)
+        {
+            avatar_guid.TryGetValue(guid, out var avatar);
+            return avatar;
+        }
+
+        internal static Avatar get_target_avatar(string sdk_uuid)
         {
             avatar_sdk_uuid.TryGetValue(sdk_uuid, out var avatar);
             return avatar;

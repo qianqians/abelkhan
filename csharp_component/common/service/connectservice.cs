@@ -4,7 +4,7 @@ using System.Net.Sockets;
 
 namespace abelkhan
 {
-    public class connectservice
+    public class Connectservice
     {
         public static Socket connect(IPAddress address, short port)
         {

@@ -10,17 +10,17 @@ using System.Threading.Tasks;
 
 namespace hub
 {
-	public class hub
+	public class Hub
 	{
         static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             System.Exception ex = e.ExceptionObject as System.Exception;
-            log.log.err("unhandle exception:{0}", ex.ToString());
+            log.Log.err("unhandle exception:{0}", ex.ToString());
         }
 
-        public hub(string config_file, string _hub_name, string _hub_type)
+        public Hub(string config_file, string _hub_name, string _hub_type)
 		{
-            _config = new abelkhan.config(config_file);
+            _config = new abelkhan.Config(config_file);
 			_center_config = _config.get_value_dict("center");
 			_root_config = _config;
             _config = _config.get_value_dict(_hub_name);
@@ -30,28 +30,28 @@ namespace hub
             var log_level = _config.get_value_string("log_level");
             if (log_level == "trace")
             {
-                log.log.logMode = log.log.enLogMode.trace;
+                log.Log.logMode = log.Log.enLogMode.trace;
             }
             else if (log_level == "debug")
             {
-                log.log.logMode = log.log.enLogMode.debug;
+                log.Log.logMode = log.Log.enLogMode.debug;
             }
             else if (log_level == "info")
             {
-                log.log.logMode = log.log.enLogMode.info;
+                log.Log.logMode = log.Log.enLogMode.info;
             }
             else if (log_level == "warn")
             {
-                log.log.logMode = log.log.enLogMode.warn;
+                log.Log.logMode = log.Log.enLogMode.warn;
             }
             else if (log_level == "err")
             {
-                log.log.logMode = log.log.enLogMode.err;
+                log.Log.logMode = log.Log.enLogMode.err;
             }
             var log_file = _config.get_value_string("log_file");
-            log.log.logFile = log_file;
+            log.Log.logFile = log_file;
             var log_dir = _config.get_value_string("log_dir");
-            log.log.logPath = log_dir;
+            log.Log.logPath = log_dir;
             {
                 if (!System.IO.Directory.Exists(log_dir))
                 {
@@ -61,23 +61,23 @@ namespace hub
 
             AppDomain.CurrentDomain.UnhandledException += UnhandledException;
 
-            _timer = new service.timerservice();
+            _timer = new service.Timerservice();
             _timer.refresh();
 
-            _modules = new common.modulemanager();
+            _modules = new common.Modulemanager();
 
             add_chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<abelkhan.Ichannel>();
 
             _r = new Random();
-            _dbproxys = new ConcurrentDictionary<string, dbproxyproxy>();
+            _dbproxys = new ConcurrentDictionary<string, DBproxyproxy>();
 
             var redismq_url = _root_config.get_value_string("redis_for_mq");
             _redis_mq_service = new abelkhan.redis_mq(_timer, redismq_url, name);
-            _gates = new gatemanager(_redis_mq_service);
+            _gates = new Gatemanager(_redis_mq_service);
 
-            _closeHandle = new closehandle();
-            _hubs = new hubmanager();
+            _closeHandle = new Closehandle();
+            _hubs = new Hubmanager();
 
             _hubs.on_hubproxy += (_proxy) =>
             {
@@ -106,9 +106,9 @@ namespace hub
             {
                 add_chs.Add(_center_ch);
             }
-            _centerproxy = new centerproxy(_center_ch);
+            _centerproxy = new Centerproxy(_center_ch);
             _centerproxy.reg_hub(() => {
-                heartbeat(service.timerservice.Tick);
+                heartbeat(service.Timerservice.Tick);
             });
            
             if (_config.has_key("tcp_listen"))
@@ -116,11 +116,11 @@ namespace hub
                 var tcp_listen = _config.get_value_bool("tcp_listen");
                 if (tcp_listen)
                 {
-                    tcp_outside_address = new addressinfo();
+                    tcp_outside_address = new Addressinfo();
                     tcp_outside_address.host = _config.get_value_string("tcp_outside_host");
                     tcp_outside_address.port = (ushort)_config.get_value_int("tcp_outside_port");
-                    _cryptacceptservice = new abelkhan.cryptacceptservice(tcp_outside_address.port);
-                    cryptacceptservice.on_connect += (ch) => {
+                    _cryptacceptservice = new abelkhan.Cryptacceptservice(tcp_outside_address.port);
+                    Cryptacceptservice.on_connect += (ch) => {
                         lock (add_chs)
                         {
                             add_chs.Add(ch);
@@ -135,7 +135,7 @@ namespace hub
                 var is_websocket_listen = _config.get_value_bool("websocket_listen");
                 if (is_websocket_listen)
                 {
-                    websocket_outside_address = new addressinfo();
+                    websocket_outside_address = new Addressinfo();
                     websocket_outside_address.host = _config.get_value_string("websocket_outside_host");
                     websocket_outside_address.port = (ushort)_config.get_value_int("websocket_outside_port");
                     var is_ssl = _config.get_value_bool("is_ssl");
@@ -143,7 +143,7 @@ namespace hub
                     if (is_ssl) {
                         pfx = _config.get_value_string("pfx");
                     }
-                    _websocketacceptservice = new abelkhan.websocketacceptservice(websocket_outside_address.port, is_ssl, pfx);
+                    _websocketacceptservice = new abelkhan.Websocketacceptservice(websocket_outside_address.port, is_ssl, pfx);
                     _websocketacceptservice.on_connect += (ch) =>
                     {
                         lock (add_chs)
@@ -159,10 +159,10 @@ namespace hub
                 var is_enet_listen = _config.get_value_bool("enet_listen");
                 if (is_enet_listen)
                 {
-                    enet_outside_address = new addressinfo();
+                    enet_outside_address = new Addressinfo();
                     enet_outside_address.host = _config.get_value_string("enet_outside_host");
                     enet_outside_address.port = (ushort)_config.get_value_int("enet_outside_port");
-                    _enetservice = new abelkhan.enetservice(enet_outside_address.host, enet_outside_address.port);
+                    _enetservice = new abelkhan.Enetservice(enet_outside_address.host, enet_outside_address.port);
                     _enetservice.on_connect += (ch) => {
                         lock (add_chs)
                         {
@@ -178,7 +178,7 @@ namespace hub
                 var is_http_listen = _config.get_value_bool("http_listen");
                 if (is_http_listen)
                 {
-                    http_outside_address = new addressinfo();
+                    http_outside_address = new Addressinfo();
                     http_outside_address.host = _config.get_value_string("http_outside_host");
                     http_outside_address.port = (ushort)_config.get_value_int("http_outside_port");
                     _httpservice = new service.HttpService(http_outside_address.host, http_outside_address.port);
@@ -227,7 +227,7 @@ namespace hub
             {
                 add_chs.Add(_center_ch);
             }
-            _centerproxy = new centerproxy(_center_ch);
+            _centerproxy = new Centerproxy(_center_ch);
             if (await _centerproxy.reconn_reg_hub())
             {
                 reconn_count = 0;
@@ -238,7 +238,7 @@ namespace hub
         {
             do
             {
-                if ((service.timerservice.Tick - _centerproxy.timetmp) > 9000)
+                if ((service.Timerservice.Tick - _centerproxy.timetmp) > 9000)
                 {
                     reconnect_center();
                     break;
@@ -301,7 +301,7 @@ namespace hub
             {
                 add_chs.Add(_db_ch);
             }
-            var _dbproxy = new dbproxyproxy(dbproxy_name, _db_ch);
+            var _dbproxy = new DBproxyproxy(dbproxy_name, _db_ch);
             _dbproxy.reg_hub(name);
             _dbproxys.TryAdd(dbproxy_name, _dbproxy);
 
@@ -316,19 +316,19 @@ namespace hub
             return (uint)_r.NextInt64((int)max);
         }
 
-        public static dbproxyproxy get_random_dbproxyproxy()
+        public static DBproxyproxy get_random_dbproxyproxy()
         {
             return _dbproxys.Values.ToArray()[randmon_uint((uint)_dbproxys.Count)];
         }
 
-        public static dbproxyproxy get_dbproxy(string db_name)
+        public static DBproxyproxy get_dbproxy(string db_name)
         {
             return _dbproxys[db_name];
         }
 
         public static void dbproxy_closed(string db_name)
         {
-            if (_dbproxys.Remove(db_name, out dbproxyproxy _p))
+            if (_dbproxys.Remove(db_name, out DBproxyproxy _p))
             {
                 lock (remove_chs)
                 {
@@ -385,11 +385,11 @@ namespace hub
             }
             catch (abelkhan.Exception e)
             {
-                log.log.err(e.Message);
+                log.Log.err(e.Message);
             }
             catch (System.Exception e)
             {
-                log.log.err("{0}", e);
+                log.Log.err("{0}", e);
             }
 
             long tick_end = _timer.refresh();
@@ -397,7 +397,7 @@ namespace hub
 
             if (tick > 50)
             {
-                log.log.trace("poll_tick:{0}", tick);
+                log.Log.trace("poll_tick:{0}", tick);
             }
 
             return tick;
@@ -420,13 +420,13 @@ namespace hub
                     Thread.Sleep((int)(33 - ticktime));
                 }
             }
-            log.log.info("server closed, hub server:{0}", hub.name);
-            log.log.close();
+            log.Log.info("server closed, hub server:{0}", Hub.name);
+            log.Log.close();
 
             Monitor.Exit(_run_mu);
         }
 
-        public class addressinfo
+        public class Addressinfo
         {
             public string host;
             public ushort port;
@@ -436,16 +436,16 @@ namespace hub
 
         public static string name;
         public static string type;
-        public static addressinfo tcp_outside_address = null;
-        public static addressinfo websocket_outside_address = null;
-        public static addressinfo enet_outside_address = null;
-        public static addressinfo http_outside_address = null;
+        public static Addressinfo tcp_outside_address = null;
+        public static Addressinfo websocket_outside_address = null;
+        public static Addressinfo enet_outside_address = null;
+        public static Addressinfo http_outside_address = null;
 
-        public static abelkhan.config _config;
-        public static abelkhan.config _root_config;
-        public static abelkhan.config _center_config;
+        public static abelkhan.Config _config;
+        public static abelkhan.Config _root_config;
+        public static abelkhan.Config _center_config;
 
-        public static common.modulemanager _modules;
+        public static common.Modulemanager _modules;
 
         public static List<abelkhan.Ichannel> add_chs;
         public static List<abelkhan.Ichannel> remove_chs;
@@ -454,20 +454,20 @@ namespace hub
         public static abelkhan.redis_mq _redis_mq_service;
 
         private static Random _r;
-        private static ConcurrentDictionary<string, dbproxyproxy> _dbproxys;
+        private static ConcurrentDictionary<string, DBproxyproxy> _dbproxys;
 
-        public static closehandle _closeHandle;
-        public static hubmanager _hubs;
-        public static gatemanager _gates;
-        public static service.timerservice _timer;
+        public static Closehandle _closeHandle;
+        public static Hubmanager _hubs;
+        public static Gatemanager _gates;
+        public static service.Timerservice _timer;
 
-        private readonly abelkhan.enetservice _enetservice;
-        private readonly abelkhan.cryptacceptservice _cryptacceptservice;
-        private readonly abelkhan.websocketacceptservice _websocketacceptservice;
+        private readonly abelkhan.Enetservice _enetservice;
+        private readonly abelkhan.Cryptacceptservice _cryptacceptservice;
+        private readonly abelkhan.Websocketacceptservice _websocketacceptservice;
         private readonly service.HttpService _httpservice;
 
         private uint reconn_count = 0;
-        private centerproxy _centerproxy;
+        private Centerproxy _centerproxy;
 
         private readonly center_msg_handle _center_msg_handle;
         private readonly dbproxy_msg_handle _dbproxy_msg_handle;
@@ -475,8 +475,8 @@ namespace hub
         private readonly gate_msg_handle _gate_msg_handle;
         private readonly client_msg_handle _client_msg_handle;
 
-        public event Action<hubproxy> on_hubproxy;
-        public event Action<hubproxy> on_hubproxy_reconn;
+        public event Action<Hubproxy> on_hubproxy;
+        public event Action<Hubproxy> on_hubproxy_reconn;
 
         public event Action<string> on_client_disconnect;
         public event Action<string> on_client_exception;

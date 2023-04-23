@@ -140,8 +140,8 @@ class client_call_gate_caller(Icaller):
         _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4 = [uuid_a514ca5f_2c67_5668_aac0_354397bdce36]
         self.call_module_method("client_call_gate_heartbeats", _argv_6fbd85be_a054_37ed_b3ea_cced2f90fda4)
 
-        cb_heartbeats_obj = client_call_gate_heartbeats_cb(uuid_a514ca5f_2c67_5668_aac0_354397bdce36, rsp_cb_client_call_gate_handle)
         global rsp_cb_client_call_gate_handle
+        cb_heartbeats_obj = client_call_gate_heartbeats_cb(uuid_a514ca5f_2c67_5668_aac0_354397bdce36, rsp_cb_client_call_gate_handle)
         if rsp_cb_client_call_gate_handle:
             rsp_cb_client_call_gate_handle.map_heartbeats[uuid_a514ca5f_2c67_5668_aac0_354397bdce36] = cb_heartbeats_obj
         return cb_heartbeats_obj
@@ -154,8 +154,8 @@ class client_call_gate_caller(Icaller):
         _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24.append(hub_type)
         self.call_module_method("client_call_gate_get_hub_info", _argv_64f76bda_d44d_3aed_a6a4_d85fea361e24)
 
-        cb_get_hub_info_obj = client_call_gate_get_hub_info_cb(uuid_e9d2753f_7d38_512d_80ff_7aae13508048, rsp_cb_client_call_gate_handle)
         global rsp_cb_client_call_gate_handle
+        cb_get_hub_info_obj = client_call_gate_get_hub_info_cb(uuid_e9d2753f_7d38_512d_80ff_7aae13508048, rsp_cb_client_call_gate_handle)
         if rsp_cb_client_call_gate_handle:
             rsp_cb_client_call_gate_handle.map_get_hub_info[uuid_e9d2753f_7d38_512d_80ff_7aae13508048] = cb_get_hub_info_obj
         return cb_get_hub_info_obj
@@ -278,8 +278,8 @@ class hub_call_gate_caller(Icaller):
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.append(hub_type)
         self.call_module_method("hub_call_gate_reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7)
 
-        cb_reg_hub_obj = hub_call_gate_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_gate_handle)
         global rsp_cb_hub_call_gate_handle
+        cb_reg_hub_obj = hub_call_gate_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_gate_handle)
         if rsp_cb_hub_call_gate_handle:
             rsp_cb_hub_call_gate_handle.map_reg_hub[uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106] = cb_reg_hub_obj
         return cb_reg_hub_obj
@@ -297,8 +297,8 @@ class hub_call_gate_caller(Icaller):
         _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c.append(client_uuid)
         self.call_module_method("hub_call_gate_reverse_reg_client_hub", _argv_03d844bd_f79a_3179_8f8b_9f0ed380f60c)
 
-        cb_reverse_reg_client_hub_obj = hub_call_gate_reverse_reg_client_hub_cb(uuid_5352b179_7aef_5875_a08f_06381972529f, rsp_cb_hub_call_gate_handle)
         global rsp_cb_hub_call_gate_handle
+        cb_reverse_reg_client_hub_obj = hub_call_gate_reverse_reg_client_hub_cb(uuid_5352b179_7aef_5875_a08f_06381972529f, rsp_cb_hub_call_gate_handle)
         if rsp_cb_hub_call_gate_handle:
             rsp_cb_hub_call_gate_handle.map_reverse_reg_client_hub[uuid_5352b179_7aef_5875_a08f_06381972529f] = cb_reverse_reg_client_hub_obj
         return cb_reverse_reg_client_hub_obj

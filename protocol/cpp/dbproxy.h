@@ -434,13 +434,12 @@ namespace abelkhan
             return cb_reg_hub_obj;
         }
 
-        std::shared_ptr<hub_call_dbproxy_get_guid_cb> get_guid(std::string db, std::string collection, std::string guid_key){
+        std::shared_ptr<hub_call_dbproxy_get_guid_cb> get_guid(std::string db, std::string collection){
             auto uuid_efe126e5_91e4_5df4_975c_18c91b6a6634 = uuid_e713438c_e791_3714_ad31_4ccbddee2554++;
             msgpack11::MsgPack::array _argv_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948;
             _argv_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948.push_back(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634);
             _argv_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948.push_back(db);
             _argv_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948.push_back(collection);
-            _argv_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948.push_back(guid_key);
             call_module_method("hub_call_dbproxy_get_guid", _argv_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948);
 
             auto cb_get_guid_obj = std::make_shared<hub_call_dbproxy_get_guid_cb>(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634, rsp_cb_hub_call_dbproxy_handle);
@@ -784,14 +783,13 @@ namespace abelkhan
             rsp = nullptr;
         }
 
-        concurrent::signals<void(std::string, std::string, std::string)> sig_get_guid;
+        concurrent::signals<void(std::string, std::string)> sig_get_guid;
         void get_guid(const msgpack11::MsgPack::array& inArray){
             auto _cb_uuid = inArray[0].uint64_value();
             auto _db = inArray[1].string_value();
             auto _collection = inArray[2].string_value();
-            auto _guid_key = inArray[3].string_value();
             rsp = std::make_shared<hub_call_dbproxy_get_guid_rsp>(current_ch, _cb_uuid);
-            sig_get_guid.emit(_db, _collection, _guid_key);
+            sig_get_guid.emit(_db, _collection);
             rsp = nullptr;
         }
 

@@ -10,14 +10,14 @@ using System.Threading;
 
 namespace abelkhan
 {
-    public class channel : abelkhan.Ichannel
+    public class Channel : abelkhan.Ichannel
     {
         private readonly Socket s;
         private readonly object lockobj;
 
         public channel_onrecv _channel_onrecv;
 
-        public channel(Socket socket)
+        public Channel(Socket socket)
         {
             s = socket;
             lockobj = new object();

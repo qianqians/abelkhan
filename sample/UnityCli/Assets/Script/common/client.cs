@@ -1,4 +1,5 @@
-﻿using System;
+﻿using abelkhan;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -7,12 +8,12 @@ using System.Net.Sockets;
 
 namespace client
 {
-    class gateproxy
+    class Gateproxy
     {
         private abelkhan.Ichannel _ch;
         private abelkhan.client_call_gate_caller _client_call_gate_caller;
 
-        public gateproxy(abelkhan.Ichannel ch)
+        public Gateproxy(abelkhan.Ichannel ch)
         {
             _ch = ch;
             _client_call_gate_caller = new abelkhan.client_call_gate_caller(ch, abelkhan.modulemng_handle._modulemng);
@@ -24,7 +25,7 @@ namespace client
         {
             _client_call_gate_caller.heartbeats().callBack((ulong _svr_timetmp)=> {
                 onGateTime?.Invoke(_svr_timetmp);
-            }, ()=> {}).timeout(5 * 1000, ()=> {
+            }, ()=> {}).timeout(5000, ()=> {
                 onGateDisconnect?.Invoke(_ch);
             });
         }
@@ -35,7 +36,7 @@ namespace client
                 cb(hub_info);
             }, () => { 
                 
-            }).timeout(5 * 1000, ()=> {
+            }).timeout(5000, ()=> {
                 onGateDisconnect?.Invoke(_ch);
             });
         }
@@ -43,7 +44,7 @@ namespace client
         public void call_hub(string hub, string func, ArrayList argv)
         {
             var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
-            using (MemoryStream st = new MemoryStream())
+            using (MemoryStream st = new())
             {
                 var _event = new ArrayList();
                 _event.Add(func);
@@ -56,7 +57,7 @@ namespace client
         }
     }
 
-    class hubproxy
+    class Hubproxy
     {
         public string _hub_name;
         public string _hub_type;
@@ -64,7 +65,7 @@ namespace client
         private abelkhan.Ichannel _ch;
         private abelkhan.client_call_hub_caller _client_call_hub_caller;
 
-        public hubproxy(string hub_name, string hub_type, abelkhan.Ichannel ch)
+        public Hubproxy(string hub_name, string hub_type, abelkhan.Ichannel ch)
         {
             _hub_name = hub_name;
             _hub_type = hub_type;
@@ -85,7 +86,7 @@ namespace client
             _client_call_hub_caller.heartbeats().callBack((ulong _hub_timetmp) =>
             {
                 onHubTime?.Invoke(_hub_name, _hub_timetmp);
-            }, () => { }).timeout(5 * 1000, () =>
+            }, () => { }).timeout(5000, () =>
             {
                 onHubDisconnect?.Invoke(_ch);
             });
@@ -94,7 +95,7 @@ namespace client
         public void call_hub(string func, ArrayList argv)
         {
             var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
-            using (MemoryStream st = new MemoryStream())
+            using (MemoryStream st = new())
             {
                 var _event = new ArrayList();
                 _event.Add(func);
@@ -107,7 +108,7 @@ namespace client
         }
     }
 
-	public class client
+	public class Client
 	{
         public event Action onGateDisConnect;
         public event Action<string> onHubDisConnect;
@@ -116,16 +117,16 @@ namespace client
         public event Action<string, ulong> onHubTime;
 
         public String uuid;
-        public service.timerservice timer;
-        public common.modulemanager modulemanager;
+        public service.Timerservice timer;
+        public common.Modulemanager modulemanager;
 
         public string current_hub;
 
         private Int64 _heartbeats;
 
-        private gateproxy _gateproxy;
-        private Dictionary<string, hubproxy> _hubproxy_set;
-        private Dictionary<abelkhan.Ichannel, hubproxy> _ch_hubproxy_set;
+        private Gateproxy _gateproxy;
+        private Dictionary<string, Hubproxy> _hubproxy_set;
+        private Dictionary<abelkhan.Ichannel, Hubproxy> _ch_hubproxy_set;
 
         private List<abelkhan.Ichannel> add_chs;
         private List<abelkhan.Ichannel> remove_chs;
@@ -133,20 +134,20 @@ namespace client
         private abelkhan.gate_call_client_module _gate_call_client_module;
         private abelkhan.hub_call_client_module _hub_call_client_module;
 
-        public client()
+        public Client()
 		{
-			timer = new service.timerservice();
-			modulemanager = new common.modulemanager();
+			timer = new service.Timerservice();
+			modulemanager = new common.Modulemanager();
 
             _heartbeats = timer.refresh();
 
-            _hubproxy_set = new Dictionary<string, hubproxy>();
-            _ch_hubproxy_set = new Dictionary<abelkhan.Ichannel, hubproxy>();
+            _hubproxy_set = new Dictionary<string, Hubproxy>();
+            _ch_hubproxy_set = new Dictionary<abelkhan.Ichannel, Hubproxy>();
 
             add_chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<abelkhan.Ichannel>();
 
-            timer.addticktime(5 * 1000, heartbeats);
+            timer.addticktime(5000, heartbeats);
 
             _gate_call_client_module = new abelkhan.gate_call_client_module(abelkhan.modulemng_handle._modulemng);
             _gate_call_client_module.on_ntf_cuuid += ntf_cuuid;
@@ -215,7 +216,7 @@ namespace client
                 _hubproxy.Value.heartbeats();
             }
 
-            timer.addticktime(5 * 1000, heartbeats);
+            timer.addticktime(5000, heartbeats);
         }
 
         public void get_hub_info(string hub_type, Action<abelkhan.hub_info> cb)
@@ -225,7 +226,7 @@ namespace client
 
         public void call_hub(string hub_name, string func, ArrayList argv)
         {
-            if (_hubproxy_set.TryGetValue(hub_name, out hubproxy _hubproxy))
+            if (_hubproxy_set.TryGetValue(hub_name, out Hubproxy _hubproxy))
             {
                 _hubproxy.call_hub(func, argv);
                 return;
@@ -244,7 +245,7 @@ namespace client
             connect(ip, port, timeout, (is_conn, ch) => {
                 if (is_conn && ch != null)
                 {
-                    _gateproxy = new gateproxy(ch);
+                    _gateproxy = new Gateproxy(ch);
                     _gateproxy.onGateDisconnect += (ch) =>
                     {
                         lock (remove_chs)
@@ -274,7 +275,7 @@ namespace client
             connect(ip, port, timeout, (is_conn, ch) => { 
                 if (is_conn && ch != null)
                 {
-                    var _hubproxy = new hubproxy(hub_name, hub_type, ch);
+                    var _hubproxy = new Hubproxy(hub_name, hub_type, ch);
                     _hubproxy.onHubDisconnect += (ch) =>
                     {
                         lock (remove_chs)
@@ -351,7 +352,7 @@ namespace client
                 {
                     _s_cli.s.EndConnect(ar);
 
-                    var ch = new abelkhan.cryptrawchannel(_s_cli.s);
+                    var ch = new abelkhan.Cryptrawchannel(_s_cli.s);
                     lock (add_chs)
                     {
                         add_chs.Add(ch);
@@ -360,7 +361,7 @@ namespace client
                     _s_cli.cb(true, ch);
                 }
             }
-            catch (Exception)
+            catch (System.Exception)
             {
                 _s_cli.cb(false, null);
             }

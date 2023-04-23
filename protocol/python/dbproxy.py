@@ -335,24 +335,23 @@ class hub_call_dbproxy_caller(Icaller):
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.append(hub_name)
         self.call_module_method("hub_call_dbproxy_reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7)
 
-        cb_reg_hub_obj = hub_call_dbproxy_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_dbproxy_handle)
         global rsp_cb_hub_call_dbproxy_handle
+        cb_reg_hub_obj = hub_call_dbproxy_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_dbproxy_handle)
         if rsp_cb_hub_call_dbproxy_handle:
             rsp_cb_hub_call_dbproxy_handle.map_reg_hub[uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106] = cb_reg_hub_obj
         return cb_reg_hub_obj
 
-    def get_guid(self, db:str, collection:str, guid_key:str):
+    def get_guid(self, db:str, collection:str):
         self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (self.uuid_e713438c_e791_3714_ad31_4ccbddee2554 + 1) & 0x7fffffff
         uuid_efe126e5_91e4_5df4_975c_18c91b6a6634 = self.uuid_e713438c_e791_3714_ad31_4ccbddee2554
 
         _argv_8b362c4a_74a5_366e_a6af_37474d7fa521 = [uuid_efe126e5_91e4_5df4_975c_18c91b6a6634]
         _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.append(db)
         _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.append(collection)
-        _argv_8b362c4a_74a5_366e_a6af_37474d7fa521.append(guid_key)
         self.call_module_method("hub_call_dbproxy_get_guid", _argv_8b362c4a_74a5_366e_a6af_37474d7fa521)
 
-        cb_get_guid_obj = hub_call_dbproxy_get_guid_cb(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634, rsp_cb_hub_call_dbproxy_handle)
         global rsp_cb_hub_call_dbproxy_handle
+        cb_get_guid_obj = hub_call_dbproxy_get_guid_cb(uuid_efe126e5_91e4_5df4_975c_18c91b6a6634, rsp_cb_hub_call_dbproxy_handle)
         if rsp_cb_hub_call_dbproxy_handle:
             rsp_cb_hub_call_dbproxy_handle.map_get_guid[uuid_efe126e5_91e4_5df4_975c_18c91b6a6634] = cb_get_guid_obj
         return cb_get_guid_obj
@@ -367,8 +366,8 @@ class hub_call_dbproxy_caller(Icaller):
         _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607.append(object_info)
         self.call_module_method("hub_call_dbproxy_create_persisted_object", _argv_095b02b5_7f29_3bf1_8a63_87de3b3d6607)
 
-        cb_create_persisted_object_obj = hub_call_dbproxy_create_persisted_object_cb(uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb, rsp_cb_hub_call_dbproxy_handle)
         global rsp_cb_hub_call_dbproxy_handle
+        cb_create_persisted_object_obj = hub_call_dbproxy_create_persisted_object_cb(uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb, rsp_cb_hub_call_dbproxy_handle)
         if rsp_cb_hub_call_dbproxy_handle:
             rsp_cb_hub_call_dbproxy_handle.map_create_persisted_object[uuid_91387a79_b9d1_5601_bac5_4fc46430f5fb] = cb_create_persisted_object_obj
         return cb_create_persisted_object_obj
@@ -385,8 +384,8 @@ class hub_call_dbproxy_caller(Icaller):
         _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425.append(_upsert)
         self.call_module_method("hub_call_dbproxy_updata_persisted_object", _argv_0e29e55c_5309_3e23_82f9_e4944bc2c425)
 
-        cb_updata_persisted_object_obj = hub_call_dbproxy_updata_persisted_object_cb(uuid_7864a402_2d75_5c02_b24b_50287a06732f, rsp_cb_hub_call_dbproxy_handle)
         global rsp_cb_hub_call_dbproxy_handle
+        cb_updata_persisted_object_obj = hub_call_dbproxy_updata_persisted_object_cb(uuid_7864a402_2d75_5c02_b24b_50287a06732f, rsp_cb_hub_call_dbproxy_handle)
         if rsp_cb_hub_call_dbproxy_handle:
             rsp_cb_hub_call_dbproxy_handle.map_updata_persisted_object[uuid_7864a402_2d75_5c02_b24b_50287a06732f] = cb_updata_persisted_object_obj
         return cb_updata_persisted_object_obj
@@ -404,8 +403,8 @@ class hub_call_dbproxy_caller(Icaller):
         _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58.append(_upsert)
         self.call_module_method("hub_call_dbproxy_find_and_modify", _argv_fadbd43b_fa27_327c_83e3_1ede6e1a2f58)
 
-        cb_find_and_modify_obj = hub_call_dbproxy_find_and_modify_cb(uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a, rsp_cb_hub_call_dbproxy_handle)
         global rsp_cb_hub_call_dbproxy_handle
+        cb_find_and_modify_obj = hub_call_dbproxy_find_and_modify_cb(uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a, rsp_cb_hub_call_dbproxy_handle)
         if rsp_cb_hub_call_dbproxy_handle:
             rsp_cb_hub_call_dbproxy_handle.map_find_and_modify[uuid_e70b09ff_6d2a_5ea6_b2ff_99643df60f2a] = cb_find_and_modify_obj
         return cb_find_and_modify_obj
@@ -420,8 +419,8 @@ class hub_call_dbproxy_caller(Icaller):
         _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da.append(query_info)
         self.call_module_method("hub_call_dbproxy_remove_object", _argv_28aff888_d5ee_3477_b1f3_249ffe9d48da)
 
-        cb_remove_object_obj = hub_call_dbproxy_remove_object_cb(uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f, rsp_cb_hub_call_dbproxy_handle)
         global rsp_cb_hub_call_dbproxy_handle
+        cb_remove_object_obj = hub_call_dbproxy_remove_object_cb(uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f, rsp_cb_hub_call_dbproxy_handle)
         if rsp_cb_hub_call_dbproxy_handle:
             rsp_cb_hub_call_dbproxy_handle.map_remove_object[uuid_713503ae_bbb7_5af6_8c82_f1a61f71040f] = cb_remove_object_obj
         return cb_remove_object_obj
@@ -448,8 +447,8 @@ class hub_call_dbproxy_caller(Icaller):
         _argv_2632cded_162c_3a9b_86ee_462b614cbeea.append(query_info)
         self.call_module_method("hub_call_dbproxy_get_object_count", _argv_2632cded_162c_3a9b_86ee_462b614cbeea)
 
-        cb_get_object_count_obj = hub_call_dbproxy_get_object_count_cb(uuid_975425f5_8baf_5905_beeb_4454e78907f6, rsp_cb_hub_call_dbproxy_handle)
         global rsp_cb_hub_call_dbproxy_handle
+        cb_get_object_count_obj = hub_call_dbproxy_get_object_count_cb(uuid_975425f5_8baf_5905_beeb_4454e78907f6, rsp_cb_hub_call_dbproxy_handle)
         if rsp_cb_hub_call_dbproxy_handle:
             rsp_cb_hub_call_dbproxy_handle.map_get_object_count[uuid_975425f5_8baf_5905_beeb_4454e78907f6] = cb_get_object_count_obj
         return cb_get_object_count_obj
@@ -590,7 +589,7 @@ class hub_call_dbproxy_module(Imodule):
         self.modules.reg_method("hub_call_dbproxy_get_object_count", [self, self.get_object_count])
 
         self.cb_reg_hub : Callable[[str]] = None
-        self.cb_get_guid : Callable[[str, str, str]] = None
+        self.cb_get_guid : Callable[[str, str]] = None
         self.cb_create_persisted_object : Callable[[str, str, bytes]] = None
         self.cb_updata_persisted_object : Callable[[str, str, bytes, bytes, bool]] = None
         self.cb_find_and_modify : Callable[[str, str, bytes, bytes, bool, bool]] = None
@@ -610,10 +609,9 @@ class hub_call_dbproxy_module(Imodule):
         _cb_uuid = inArray[0]
         _db = inArray[1]
         _collection = inArray[2]
-        _guid_key = inArray[3]
         self.rsp = hub_call_dbproxy_get_guid_rsp(self.current_ch, _cb_uuid)
         if self.cb_get_guid:
-            self.cb_get_guid(_db, _collection, _guid_key)
+            self.cb_get_guid(_db, _collection)
         self.rsp = None
 
     def create_persisted_object(self, inArray:list):

@@ -2,7 +2,7 @@ module hub_call_dbproxy{
 
 	reg_hub req(string hub_name) rsp() err();
 	
-	get_guid req(string db, string collection, string guid_key) rsp(int64 guid) err();
+	get_guid req(string db, string collection) rsp(int64 guid) err();
 
 	create_persisted_object req(string db, string collection, bin object_info) rsp() err();
 	

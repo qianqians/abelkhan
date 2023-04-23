@@ -5,7 +5,7 @@ using System.IO;
 
 namespace hub
 {
-	public class dbproxyproxy
+	public class DBproxyproxy
 	{
         public static Dictionary<String, Action<MongoDB.Bson.BsonArray> > onGetObjectInfo_callback_set;
         public static Dictionary<String, Action> onGetObjectInfo_end_cb_set;
@@ -23,7 +23,7 @@ namespace hub
 		    EM_DB_TIMEOUT = 2,
 	    }
 
-        public dbproxyproxy(string _db_name, abelkhan.Ichannel _ch)
+        public DBproxyproxy(string _db_name, abelkhan.Ichannel _ch)
 		{
             db_name = _db_name;
             ch = _ch;
@@ -39,15 +39,15 @@ namespace hub
         public event Action on_connect_dbproxy_sucessed;
 		public void reg_hub(String name)
         {
-            log.log.trace("begin connect dbproxy server");
+            log.Log.trace("begin connect dbproxy server");
 
             _hub_call_dbproxy_caller.reg_hub(name).callBack(()=> {
-                log.log.trace("connect dbproxy server sucessed");
+                log.Log.trace("connect dbproxy server sucessed");
                 on_connect_dbproxy_sucessed?.Invoke();
             }, ()=> {
-                log.log.trace("connect dbproxy server faild");
+                log.Log.trace("connect dbproxy server faild");
             }).timeout(5000, ()=> {
-                log.log.trace("connect dbproxy server timeout");
+                log.Log.trace("connect dbproxy server timeout");
             });
 		}
 
@@ -64,7 +64,7 @@ namespace hub
 
         public class Collection
         {
-            public Collection(string db, string collection, dbproxyproxy proxy)
+            public Collection(string db, string collection, DBproxyproxy proxy)
             {
                 _db = db;
                 _collection = collection;
@@ -83,15 +83,15 @@ namespace hub
                 {
                     _dbproxy._hub_call_dbproxy_caller.create_persisted_object(_db, _collection, st.ToArray()).callBack(() =>
                     {
-                        log.log.trace("createPersistedObject sucessed!");
+                        log.Log.trace("createPersistedObject sucessed!");
                         _handle(EM_DB_RESULT.EM_DB_SUCESSED);
                     }, () =>
                     {
-                        log.log.err("createPersistedObject faild");
+                        log.Log.err("createPersistedObject faild");
                         _handle(EM_DB_RESULT.EM_DB_FAILD);
                     }).timeout(5000, () =>
                     {
-                        log.log.err("createPersistedObject timeout");
+                        log.Log.err("createPersistedObject timeout");
                         _handle(EM_DB_RESULT.EM_DB_TIMEOUT);
                     });
                 }
@@ -113,15 +113,15 @@ namespace hub
                 {
                     _dbproxy._hub_call_dbproxy_caller.updata_persisted_object(_db, _collection, st_query.ToArray(), st_update.ToArray(), is_upsert).callBack(() =>
                     {
-                        log.log.trace("updataPersistedObject sucessed!");
+                        log.Log.trace("updataPersistedObject sucessed!");
                         _handle(EM_DB_RESULT.EM_DB_SUCESSED);
                     }, () =>
                     {
-                        log.log.trace("updataPersistedObject faild!");
+                        log.Log.trace("updataPersistedObject faild!");
                         _handle(EM_DB_RESULT.EM_DB_FAILD);
                     }).timeout(5000, () =>
                     {
-                        log.log.trace("updataPersistedObject timeout!");
+                        log.Log.trace("updataPersistedObject timeout!");
                         _handle(EM_DB_RESULT.EM_DB_TIMEOUT);
                     });
                 }
@@ -141,17 +141,17 @@ namespace hub
                 {
                     _dbproxy._hub_call_dbproxy_caller.find_and_modify(_db, _collection, st_query.ToArray(), st_update.ToArray(), _new, is_upsert).callBack((byte[] obj) =>
                     {
-                        log.log.trace("findAndModifyObject sucessed!");
+                        log.Log.trace("findAndModifyObject sucessed!");
 
                         var obj_table = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(obj);
                         _handle(EM_DB_RESULT.EM_DB_SUCESSED, obj_table);
                     }, () =>
                     {
-                        log.log.trace("findAndModifyObject faild!");
+                        log.Log.trace("findAndModifyObject faild!");
                         _handle(EM_DB_RESULT.EM_DB_FAILD, null);
                     }).timeout(5000, () =>
                     {
-                        log.log.trace("findAndModifyObject timeout!");
+                        log.Log.trace("findAndModifyObject timeout!");
                         _handle(EM_DB_RESULT.EM_DB_TIMEOUT, null);
                     });
                 }
@@ -168,15 +168,15 @@ namespace hub
                 {
                     _dbproxy._hub_call_dbproxy_caller.get_object_count(_db, _collection, st.ToArray()).callBack((count) =>
                     {
-                        log.log.trace("getObjectCount sucessed!");
+                        log.Log.trace("getObjectCount sucessed!");
                         _handle(EM_DB_RESULT.EM_DB_SUCESSED, count);
                     }, () =>
                     {
-                        log.log.trace("getObjectCount faild!");
+                        log.Log.trace("getObjectCount faild!");
                         _handle(EM_DB_RESULT.EM_DB_FAILD, 0);
                     }).timeout(5000, () =>
                     {
-                        log.log.trace("getObjectCount timeout!");
+                        log.Log.trace("getObjectCount timeout!");
                         _handle(EM_DB_RESULT.EM_DB_TIMEOUT, 0);
                     });
                 }
@@ -194,8 +194,8 @@ namespace hub
                 lock (_dbproxy)
                 {
                     _dbproxy._hub_call_dbproxy_caller.get_object_info(_db, _collection, st.ToArray(), 0, 0, "", false, callbackid);
-                    dbproxyproxy.onGetObjectInfo_callback_set.Add(callbackid, _handle);
-                    dbproxyproxy.onGetObjectInfo_end_cb_set.Add(callbackid, _end);
+                    DBproxyproxy.onGetObjectInfo_callback_set.Add(callbackid, _handle);
+                    DBproxyproxy.onGetObjectInfo_end_cb_set.Add(callbackid, _end);
                 }
             }
 
@@ -211,26 +211,26 @@ namespace hub
                 lock (_dbproxy)
                 {
                     _dbproxy._hub_call_dbproxy_caller.get_object_info(_db, _collection, st.ToArray(), skip, limit, sort, _Ascending, callbackid);
-                    dbproxyproxy.onGetObjectInfo_callback_set.Add(callbackid, _handle);
-                    dbproxyproxy.onGetObjectInfo_end_cb_set.Add(callbackid, _end);
+                    DBproxyproxy.onGetObjectInfo_callback_set.Add(callbackid, _handle);
+                    DBproxyproxy.onGetObjectInfo_end_cb_set.Add(callbackid, _end);
                 }
             }
 
-            public void getGuid(string guid_key, Action<EM_DB_RESULT, long> _handle)
+            public void getGuid(Action<EM_DB_RESULT, long> _handle)
             {
                 lock (_dbproxy)
                 {
-                    _dbproxy._hub_call_dbproxy_caller.get_guid(_db, _collection, guid_key).callBack((guid) => 
+                    _dbproxy._hub_call_dbproxy_caller.get_guid(_db, _collection).callBack((guid) => 
                     {
-                        log.log.trace("getGuid sucessed!");
+                        log.Log.trace("getGuid sucessed!");
                         _handle(EM_DB_RESULT.EM_DB_SUCESSED, guid);
                     }, () => 
                     {
-                        log.log.trace("getGuid faild!");
+                        log.Log.trace("getGuid faild!");
                         _handle(EM_DB_RESULT.EM_DB_FAILD, -1);
                     }).timeout(5000, () => 
                     {
-                        log.log.trace("getGuid timeout!");
+                        log.Log.trace("getGuid timeout!");
                         _handle(EM_DB_RESULT.EM_DB_TIMEOUT, -1);
                     });
                 }
@@ -247,15 +247,15 @@ namespace hub
                 {
                     _dbproxy._hub_call_dbproxy_caller.remove_object(_db, _collection, st.ToArray()).callBack(() =>
                     {
-                        log.log.trace("removeObject sucessed!");
+                        log.Log.trace("removeObject sucessed!");
                         _handle(EM_DB_RESULT.EM_DB_SUCESSED);
                     }, () =>
                     {
-                        log.log.trace("removeObject faild!");
+                        log.Log.trace("removeObject faild!");
                         _handle(EM_DB_RESULT.EM_DB_FAILD);
                     }).timeout(5000, () =>
                     {
-                        log.log.trace("removeObject timeout!");
+                        log.Log.trace("removeObject timeout!");
                         _handle(EM_DB_RESULT.EM_DB_TIMEOUT);
                     });
                 }
@@ -263,7 +263,7 @@ namespace hub
 
             private string _db;
             private string _collection;
-            private dbproxyproxy _dbproxy;
+            private DBproxyproxy _dbproxy;
         }
 	}
 }

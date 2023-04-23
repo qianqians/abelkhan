@@ -17,9 +17,9 @@ namespace abelkhan
     public class RandomUUID
     {
         private static Random ran = new Random();
-        public static UInt64 random()
+        public static UInt32 random()
         {
-            return (UInt64)(ran.NextDouble() * UInt64.MaxValue);
+            return (UInt32)(ran.NextDouble() * Int32.MaxValue);
         }
     }
 
@@ -85,6 +85,8 @@ namespace abelkhan
         {
             module_name = _module_name;
             ch = _ch;
+
+            serializer = MessagePackSerializer.Get<ArrayList>();
         }
 
         public void call_module_method(String methodname, ArrayList argvs)
@@ -95,9 +97,8 @@ namespace abelkhan
 
             try
             {
-                using (MemoryStream stream = new MemoryStream(), send_st = new MemoryStream())
+                using (MemoryStream stream = new(), send_st = new())
                 {
-                    var serializer = MessagePackSerializer.Get<ArrayList>();
                     serializer.Pack(stream, _event);
                     stream.Position = 0;
                     var data = stream.ToArray();
@@ -125,8 +126,9 @@ namespace abelkhan
             }
         }
 
-        protected String module_name;
-        private Ichannel ch;
+        protected readonly String module_name;
+        private readonly Ichannel ch;
+        private readonly MessagePackSerializer<ArrayList> serializer;
     }
 
     public class Response : Icaller{

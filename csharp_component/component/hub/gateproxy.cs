@@ -6,14 +6,14 @@ using System.IO;
 
 namespace hub
 {
-	public class gateproxy
+	public class Gateproxy
 	{
 		public readonly abelkhan.Ichannel _ch;
 		public readonly string _name;
 
 		private readonly abelkhan.hub_call_gate_caller _hub_call_gate_caller;
 
-		public gateproxy(abelkhan.Ichannel ch, string name)
+		public Gateproxy(abelkhan.Ichannel ch, string name)
 		{
 			_ch = ch;
 			_name = name;
@@ -23,23 +23,23 @@ namespace hub
 
 		public void reg_hub()
         {
-            log.log.trace("begin connect gate server");
+            log.Log.trace("begin connect gate server");
 
-			_hub_call_gate_caller.reg_hub(hub.name, hub.type).callBack(() =>
+			_hub_call_gate_caller.reg_hub(Hub.name, Hub.type).callBack(() =>
 			{
-				log.log.trace("connect gate server sucessed");
+				log.Log.trace("connect gate server sucessed");
 			}, () =>
 			{
-				log.log.trace("connect gate server faild");
+				log.Log.trace("connect gate server faild");
 			}).timeout(5000, () =>
 			{
-				log.log.trace("connect gate server timeout");
+				log.Log.trace("connect gate server timeout");
 			});
 		}
 
 		public void tick_hub_health()
 		{
-			_hub_call_gate_caller.tick_hub_health(hub.tick);
+			_hub_call_gate_caller.tick_hub_health(Hub.tick);
         }
 
 		public abelkhan.hub_call_gate_reverse_reg_client_hub_cb reverse_reg_client_hub(string client_uuid)

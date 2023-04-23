@@ -13,21 +13,21 @@ using System.Xml.Linq;
 
 namespace abelkhan
 {
-    public class svrproxy
+    public class Svrproxy
     {
         public readonly string type;
         public readonly string hub_type;
         public readonly string name;
         public readonly abelkhan.Ichannel ch;
 
-        public long timetmp = service.timerservice.Tick;
+        public long timetmp = service.Timerservice.Tick;
         public bool is_mq = false;
         public bool is_closed = false;
         public uint tick = 0;
 
         private readonly abelkhan.center_call_server_caller _center_call_server_caller;
 
-        public svrproxy(abelkhan.Ichannel _ch, string _type, string _hub_type, string _name)
+        public Svrproxy(abelkhan.Ichannel _ch, string _type, string _hub_type, string _name)
         {
             type = _type;
             hub_type = _hub_type;
@@ -38,7 +38,7 @@ namespace abelkhan
             _center_call_server_caller = new abelkhan.center_call_server_caller(_ch, abelkhan.modulemng_handle._modulemng);
         }
 
-        public event Action<svrproxy> on_svr_close;
+        public event Action<Svrproxy> on_svr_close;
         public void closed_svr()
         {
             on_svr_close?.Invoke(this);
@@ -65,7 +65,7 @@ namespace abelkhan
         }
     }
 
-    public class hubproxy
+    public class Hubproxy
     {
         public readonly string type;
         public readonly string name;
@@ -74,7 +74,7 @@ namespace abelkhan
 
         private readonly abelkhan.center_call_hub_caller _center_call_hub_caller;
 
-        public hubproxy(abelkhan.Ichannel _ch, string _type, string _name)
+        public Hubproxy(abelkhan.Ichannel _ch, string _type, string _name)
         {
             type = _type;
             name = _name;
@@ -93,22 +93,22 @@ namespace abelkhan
         }
     }
 
-    public class svrmanager
+    public class Svrmanager
     {
-        private readonly List<svrproxy> dbproxys;
-        private readonly List<svrproxy> new_svrproxys;
-        private readonly List<hubproxy> new_hubproxys;
-        private readonly Dictionary<abelkhan.Ichannel, hubproxy> hubproxys;
-        private readonly Dictionary<string, List<hubproxy>> type_hubproxys;
+        private readonly List<Svrproxy> dbproxys;
+        private readonly List<Svrproxy> new_svrproxys;
+        private readonly List<Hubproxy> new_hubproxys;
+        private readonly Dictionary<abelkhan.Ichannel, Hubproxy> hubproxys;
+        private readonly Dictionary<string, List<Hubproxy>> type_hubproxys;
         private readonly redis_handle _redis_handle;
 
-        private readonly service.timerservice _timer;
-        private readonly center _center;
+        private readonly service.Timerservice _timer;
+        private readonly Center _center;
         private readonly redis_mq _redis_mq_service;
 
-        public readonly Dictionary<abelkhan.Ichannel, svrproxy> svrproxys;
+        public readonly Dictionary<abelkhan.Ichannel, Svrproxy> svrproxys;
 
-        public svrmanager(service.timerservice timer, center _center_proxy, redis_mq redis_mq_service)
+        public Svrmanager(service.Timerservice timer, Center _center_proxy, redis_mq redis_mq_service)
         {
             _timer = timer;
             _center = _center_proxy;
@@ -116,16 +116,16 @@ namespace abelkhan
 
             _redis_handle = new redis_handle(_center._root_cfg.get_value_string("redis_for_cache"));
 
-            dbproxys = new List<svrproxy>();
-            new_svrproxys = new List<svrproxy>();
-            new_hubproxys = new List<hubproxy>();
-            svrproxys = new Dictionary<abelkhan.Ichannel, svrproxy>();
-            hubproxys = new Dictionary<Ichannel, hubproxy>();
-            type_hubproxys = new Dictionary<string, List<hubproxy> >();
-            closed_svr_list = new List<svrproxy>();
+            dbproxys = new List<Svrproxy>();
+            new_svrproxys = new List<Svrproxy>();
+            new_hubproxys = new List<Hubproxy>();
+            svrproxys = new Dictionary<abelkhan.Ichannel, Svrproxy>();
+            hubproxys = new Dictionary<Ichannel, Hubproxy>();
+            type_hubproxys = new Dictionary<string, List<Hubproxy> >();
+            closed_svr_list = new List<Svrproxy>();
 
             load_svr_info();
-            heartbeat_svr(service.timerservice.Tick);
+            heartbeat_svr(service.Timerservice.Tick);
         }
 
         private class svr_info
@@ -133,7 +133,7 @@ namespace abelkhan
             public string type;
             public string hub_type;
             public string name;
-            public long timetmp = service.timerservice.Tick;
+            public long timetmp = service.Timerservice.Tick;
         }
 
         private async void load_svr_info()
@@ -145,7 +145,7 @@ namespace abelkhan
                 {
                     var _ch = _redis_mq_service.connect(_svr_info.name);
 
-                    var _svrproxy = new svrproxy(_ch, _svr_info.type, _svr_info.hub_type, _svr_info.name);
+                    var _svrproxy = new Svrproxy(_ch, _svr_info.type, _svr_info.hub_type, _svr_info.name);
                     _svrproxy.timetmp = _svr_info.timetmp;
                     svrproxys[_ch] = _svrproxy;
                     if (_svr_info.type == "dbproxy")
@@ -154,10 +154,10 @@ namespace abelkhan
                     }
                     _svrproxy.on_svr_close += on_svr_close;
 
-                    var _hubproxy = new hubproxy(_ch, _svr_info.hub_type, _svr_info.name);
+                    var _hubproxy = new Hubproxy(_ch, _svr_info.hub_type, _svr_info.name);
                     hubproxys[_ch] = _hubproxy;
 
-                    if (!type_hubproxys.TryGetValue(_svr_info.hub_type, out List<hubproxy> hubproxy_list))
+                    if (!type_hubproxys.TryGetValue(_svr_info.hub_type, out List<Hubproxy> hubproxy_list))
                     {
                         hubproxy_list = new();
                         type_hubproxys[_svr_info.hub_type] = hubproxy_list;
@@ -185,7 +185,7 @@ namespace abelkhan
 
         public void reg_svr(abelkhan.Ichannel ch, string type, string hub_type, string name, bool is_reconn = false)
         {
-            var _svrproxy = new svrproxy(ch, type, hub_type, name);
+            var _svrproxy = new Svrproxy(ch, type, hub_type, name);
             svrproxys[ch] = _svrproxy;
             if (type == "dbproxy")
             {
@@ -199,14 +199,14 @@ namespace abelkhan
             }
         }
 
-        public hubproxy reg_hub(abelkhan.Ichannel ch, string hub_type, string _name, bool is_reconn = false)
+        public Hubproxy reg_hub(abelkhan.Ichannel ch, string hub_type, string _name, bool is_reconn = false)
         {
-            log.log.trace("reg_hub name:{0}", _name);
+            log.Log.trace("reg_hub name:{0}", _name);
 
-            var _hubproxy = new hubproxy(ch, hub_type, _name);
+            var _hubproxy = new Hubproxy(ch, hub_type, _name);
             hubproxys[ch] = _hubproxy;
 
-            if (!type_hubproxys.TryGetValue(hub_type, out List<hubproxy> hubproxy_list))
+            if (!type_hubproxys.TryGetValue(hub_type, out List<Hubproxy> hubproxy_list))
             {
                 hubproxy_list = new ();
                 type_hubproxys[hub_type] = hubproxy_list;
@@ -221,7 +221,7 @@ namespace abelkhan
             return _hubproxy;
         }
 
-        public List<svrproxy> closed_svr_list;
+        public List<Svrproxy> closed_svr_list;
         public void remove_closed_svr()
         {
             foreach (var _proxy in closed_svr_list)
@@ -238,8 +238,8 @@ namespace abelkhan
 
                 if (hubproxys.ContainsKey(_proxy.ch))
                 {
-                    hubproxys.Remove(_proxy.ch, out hubproxy _hubproxy);
-                    if (type_hubproxys.TryGetValue(_proxy.hub_type, out List<hubproxy> hub_list))
+                    hubproxys.Remove(_proxy.ch, out Hubproxy _hubproxy);
+                    if (type_hubproxys.TryGetValue(_proxy.hub_type, out List<Hubproxy> hub_list))
                     {
                         hub_list.Remove(_hubproxy);
                     }
@@ -268,12 +268,12 @@ namespace abelkhan
             closed_svr_list.Clear();
         }
 
-        public event Action<svrproxy> on_svr_disconnect;
+        public event Action<Svrproxy> on_svr_disconnect;
         public async void heartbeat_svr(long tick)
         {
             foreach (var _proxy in svrproxys)
             {
-                if ((service.timerservice.Tick - _proxy.Value.timetmp) > 9000)
+                if ((service.Timerservice.Tick - _proxy.Value.timetmp) > 9000)
                 {
                     on_svr_close(_proxy.Value);
                 }
@@ -293,7 +293,7 @@ namespace abelkhan
             _timer.addticktime(6000, heartbeat_svr);
         }
 
-        public void on_svr_close(svrproxy _proxy)
+        public void on_svr_close(Svrproxy _proxy)
         {
             closed_svr_list.Add(_proxy);
             
@@ -308,9 +308,9 @@ namespace abelkhan
             return (int)(_r.NextDouble() * max);
         }
 
-        public void on_svr_close_callback(svrproxy _proxy)
+        public void on_svr_close_callback(Svrproxy _proxy)
         {
-            svrproxy _replace = null;
+            Svrproxy _replace = null;
 
             if (_proxy.type == "dbproxy")
             {
@@ -321,7 +321,7 @@ namespace abelkhan
             }
             else if (_proxy.type == "hub")
             {
-                if (type_hubproxys.TryGetValue(_proxy.hub_type, out List<hubproxy> type_hub_list))
+                if (type_hubproxys.TryGetValue(_proxy.hub_type, out List<Hubproxy> type_hub_list))
                 {
                     if (type_hub_list.Count > 0)
                     {
@@ -335,7 +335,7 @@ namespace abelkhan
 
         public void console_close_server(string type, string name)
         {
-            svrproxy _close_svrproxy = null;
+            Svrproxy _close_svrproxy = null;
             foreach(var _proxy in svrproxys)
             {
                 if (_proxy.Value.name == name)
@@ -427,7 +427,7 @@ namespace abelkhan
             is_ntf_db_close = true;
         }
 
-        public void for_each_svr(Action<svrproxy> fn)
+        public void for_each_svr(Action<Svrproxy> fn)
         {
             foreach (var _proxy in svrproxys.Values)
             {
@@ -435,7 +435,7 @@ namespace abelkhan
             }
         }
         
-        public void for_each_hub(Action<hubproxy> fn)
+        public void for_each_hub(Action<Hubproxy> fn)
         {
             foreach (var _proxy in hubproxys.Values)
             {
@@ -443,7 +443,7 @@ namespace abelkhan
             }
         }
 
-        public void for_each_new_svr(Action<svrproxy> fn)
+        public void for_each_new_svr(Action<Svrproxy> fn)
         {
             foreach (var _proxy in new_svrproxys)
             {
@@ -451,7 +451,7 @@ namespace abelkhan
             }
         }
 
-        public void for_each_new_hub(Action<hubproxy> fn)
+        public void for_each_new_hub(Action<Hubproxy> fn)
         {
             foreach (var _proxy in new_hubproxys)
             {
@@ -459,12 +459,12 @@ namespace abelkhan
             }
         }
 
-        public bool get_svr(abelkhan.Ichannel ch, out svrproxy _proxy)
+        public bool get_svr(abelkhan.Ichannel ch, out Svrproxy _proxy)
         {
             return svrproxys.TryGetValue(ch, out _proxy);
         }
 
-        public bool get_hub(abelkhan.Ichannel ch, out hubproxy _proxy)
+        public bool get_hub(abelkhan.Ichannel ch, out Hubproxy _proxy)
         {
             return hubproxys.TryGetValue(ch, out _proxy);
         }

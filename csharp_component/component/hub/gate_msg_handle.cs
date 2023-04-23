@@ -23,12 +23,12 @@ namespace hub
 
         public void client_disconnect(String client_uuid)
         {
-            hub._gates.client_disconnect(client_uuid);
+            Hub._gates.client_disconnect(client_uuid);
         }
 
         public void client_exception(String client_uuid)
         {
-            hub._gates.client_exception(client_uuid);
+            Hub._gates.client_exception(client_uuid);
         }
 
         public Action<string> on_client_msg;
@@ -44,16 +44,16 @@ namespace hub
                 var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
                 var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
-                hub._gates.current_client_uuid = uuid;
-                hub._gates.client_connect(uuid, _gate_call_hub_module.current_ch.Value);
-                hub._modules.process_module_mothed(func, argvs);
+                Hub._gates.current_client_uuid = uuid;
+                Hub._gates.client_connect(uuid, _gate_call_hub_module.current_ch.Value);
+                Hub._modules.process_module_mothed(func, argvs);
                 on_client_msg?.Invoke(uuid);
-                hub._gates.current_client_uuid = "";
+                Hub._gates.current_client_uuid = "";
             }
             catch (System.Exception e)
             {
-                log.log.err("call_hub exception:{0}", e);
-                hub._gates.client_exception(uuid);
+                log.Log.err("call_hub exception:{0}", e);
+                Hub._gates.client_exception(uuid);
             }
         }
 	}

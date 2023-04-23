@@ -29,13 +29,13 @@ namespace gm
         private abelkhan.gm_center_caller center_caller;
     }
 
-    class gm
+    class GM
     {
-        public gm(string[] args, string _gm_name)
+        public GM(string[] args, string _gm_name)
         {
             gm_name = _gm_name;
 
-            abelkhan.config _config = new abelkhan.config(args[0]);
+            abelkhan.Config _config = new abelkhan.Config(args[0]);
             if (args.Length > 1)
             {
                 _config = _config.get_value_dict(args[1]);
@@ -43,12 +43,12 @@ namespace gm
 
             var gm_ip = _config.get_value_string("gm_ip");
             var gm_port = (short)_config.get_value_int("gm_port");
-            var _socket = abelkhan.connectservice.connect(System.Net.IPAddress.Parse(gm_ip), gm_port);
-            ch = new abelkhan.rawchannel(_socket);
+            var _socket = abelkhan.Connectservice.connect(System.Net.IPAddress.Parse(gm_ip), gm_port);
+            ch = new abelkhan.Rawchannel(_socket);
             _center_proxy = new center_proxy(ch);
             _center_proxy.confirm_gm(gm_name);
 
-            timer = new service.timerservice();
+            timer = new service.Timerservice();
         }
 
         public long poll()
@@ -68,11 +68,11 @@ namespace gm
             }
             catch (abelkhan.Exception e)
             {
-                log.log.err(e.Message);
+                log.Log.err(e.Message);
             }
             catch (System.Exception e)
             {
-                log.log.err("{0}", e);
+                log.Log.err("{0}", e);
             }
 
             long tick_end = timer.refresh();
@@ -88,12 +88,12 @@ namespace gm
             Console.WriteLine(" reload----reload hub");
         }
 
-        public delegate void handle(string[] cmds);
+        public delegate void Handle(string[] cmds);
         private static void Main(string[] args)
         {
             if (args.Length <= 0)
             {
-                log.log.err("non input start argv");
+                log.Log.err("non input start argv");
                 return;
             }
 
@@ -115,10 +115,10 @@ namespace gm
                 gm_name = Console.ReadLine();
             }
 
-            gm _gm = new gm(args, gm_name);
+            GM _gm = new GM(args, gm_name);
             bool runing = true;
 
-            Dictionary<String, handle> cmd_callback = new Dictionary<string, handle>();
+            Dictionary<String, Handle> cmd_callback = new Dictionary<string, Handle>();
             cmd_callback.Add("close", (string[] cmds) => {
                 _gm._center_proxy.close_clutter(_gm.gm_name);
             });
@@ -169,7 +169,7 @@ namespace gm
 
         private string gm_name;
         private abelkhan.Ichannel ch;
-        private service.timerservice timer;
+        private service.Timerservice timer;
         private center_proxy _center_proxy;
     }
 }

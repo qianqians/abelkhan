@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace service
 {
-	public class timerservice
+	public class Timerservice
 	{
-		public timerservice()
+		public Timerservice()
 		{
             tickHandledict = new SortedList<long, HandleImpl>();
             addtickHandle = new Dictionary<long, HandleImpl>();
@@ -88,7 +88,7 @@ namespace service
                     }
                     catch (System.Exception e)
                     {
-                        log.log.err("System.Exceptio{0}", e);
+                        log.Log.err("System.Exceptio{0}", e);
                     }
                 }
                 else
@@ -150,7 +150,7 @@ namespace service
                         }
                         catch (System.Exception e)
                         {
-                            log.log.err("System.Exceptio{0}", e);
+                            log.Log.err("System.Exceptio{0}", e);
                         }
                     }
                 }
@@ -206,7 +206,7 @@ namespace service
                         }
                         catch (System.Exception e)
                         {
-                            log.log.err("System.Exceptio{0}", e);
+                            log.Log.err("System.Exceptio{0}", e);
                         }
                     }
                 }
@@ -262,7 +262,7 @@ namespace service
                         }
                         catch (System.Exception e)
                         {
-                            log.log.err("System.Exceptio{0}", e);
+                            log.Log.err("System.Exceptio{0}", e);
                         }
                     }
                 }
@@ -333,7 +333,7 @@ namespace service
                         }
                         catch (System.Exception e)
                         {
-                            log.log.err("System.Exceptio{0}", e);
+                            log.Log.err("System.Exceptio{0}", e);
                         }
                     }
                 }
@@ -418,7 +418,7 @@ namespace service
                         }
                         catch (System.Exception e)
                         {
-                            log.log.err("System.Exceptio{0}", e);
+                            log.Log.err("System.Exceptio{0}", e);
                         }
                     }
                 }

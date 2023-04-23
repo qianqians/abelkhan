@@ -6,7 +6,7 @@
 
 namespace abelkhan
 {
-    public class closehandle
+    public class Closehandle
     {
         public bool is_closing = false;
         public bool is_close = false;

@@ -4,23 +4,23 @@ using System.Collections.Generic;
 
 namespace dbproxy
 {
-	public class hubmanager
+	public class Hubmanager
 	{
-		private Dictionary<string, hubproxy> hubproxys_name;
-		private Dictionary<abelkhan.Ichannel, hubproxy> hubproxys;
+		private Dictionary<string, Hubproxy> hubproxys_name;
+		private Dictionary<abelkhan.Ichannel, Hubproxy> hubproxys;
 
 		private List<string> closed_hub_list = new ();
 
-		public hubmanager()
+		public Hubmanager()
 		{
-			hubproxys_name = new Dictionary<string, hubproxy> ();
-			hubproxys = new Dictionary<abelkhan.Ichannel, hubproxy> ();
+			hubproxys_name = new Dictionary<string, Hubproxy> ();
+			hubproxys = new Dictionary<abelkhan.Ichannel, Hubproxy> ();
 		}
 
-		public hubproxy reg_hub(abelkhan.Ichannel ch, String name)
+		public Hubproxy reg_hub(abelkhan.Ichannel ch, String name)
 		{
-			hubproxy _hubproxy = new hubproxy (ch);
-			if (hubproxys_name.TryGetValue(name, out hubproxy _old_proxy))
+			Hubproxy _hubproxy = new Hubproxy (ch);
+			if (hubproxys_name.TryGetValue(name, out Hubproxy _old_proxy))
             {
 				hubproxys_name[name] = _hubproxy;
 			}
@@ -41,7 +41,7 @@ namespace dbproxy
 			}
         }
 
-		public bool get_hub(abelkhan.Ichannel ch, out hubproxy _proxy)
+		public bool get_hub(abelkhan.Ichannel ch, out Hubproxy _proxy)
 		{
             return hubproxys.TryGetValue(ch, out _proxy);
 		}

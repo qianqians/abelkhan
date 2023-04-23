@@ -8,14 +8,14 @@ using System.Reflection.Metadata;
 
 namespace abelkhan
 {
-    public class redischannel : Ichannel
+    public class Redischannel : Ichannel
     {
         private readonly string _channelName;
         private readonly redis_mq _redis_mq_handle;
 
         public readonly channel_onrecv _channel_onrecv;
 
-        public redischannel(string channelName, redis_mq mq_handle)
+        public Redischannel(string channelName, redis_mq mq_handle)
         {
             _channelName = channelName;
             _redis_mq_handle = mq_handle;
@@ -49,7 +49,7 @@ namespace abelkhan
         private ConnectionMultiplexer connectionMultiplexer;
         private IDatabase database;
 
-        private readonly timerservice _timer;
+        private readonly Timerservice _timer;
         private readonly string main_channel_name;
         private readonly Thread th_send;
         private readonly Thread th_recv;
@@ -59,12 +59,12 @@ namespace abelkhan
         private readonly List<string> listen_channel_names;
         private readonly List<string> wait_listen_channel_names;
 
-        private readonly ConcurrentDictionary<string, redischannel> channels;
+        private readonly ConcurrentDictionary<string, Redischannel> channels;
 
         private readonly Dictionary<string, Queue<RedisValue>> wait_send_data;
         private readonly Dictionary<string, Queue<RedisValue>> send_data;
 
-        public redis_mq(timerservice timer, string connUrl, string _listen_channel_name, long _tick_time = 33)
+        public redis_mq(Timerservice timer, string connUrl, string _listen_channel_name, long _tick_time = 33)
         {
             _timer = timer;
             main_channel_name = _listen_channel_name;
@@ -72,7 +72,7 @@ namespace abelkhan
 
             listen_channel_names = new() { _listen_channel_name };
             wait_listen_channel_names = new();
-            channels = new ConcurrentDictionary<string, redischannel>();
+            channels = new ConcurrentDictionary<string, Redischannel>();
 
             _connHelper = new RedisConnectionHelper(connUrl, "RedisForMQ");
             _connHelper.ConnectOnStartup(ref connectionMultiplexer, ref database);
@@ -108,16 +108,16 @@ namespace abelkhan
             th_recv.Join();
         }
 
-        public redischannel connect(string ch_name)
+        public Redischannel connect(string ch_name)
         {
             lock (channels)
             {
-                if (channels.TryGetValue(ch_name, out redischannel ch))
+                if (channels.TryGetValue(ch_name, out Redischannel ch))
                 {
                     return ch;
                 }
 
-                ch = new redischannel(ch_name, this);
+                ch = new Redischannel(ch_name, this);
                 channels.TryAdd(ch_name, ch);
                 return ch;
             }
@@ -125,7 +125,7 @@ namespace abelkhan
 
         public void sendmsg(string ch_name, byte[] data)
         {
-            log.log.trace("send msg to:{0}", ch_name);
+            log.Log.trace("send msg to:{0}", ch_name);
 
             var b_listen_ch_name = System.Text.Encoding.UTF8.GetBytes(main_channel_name);
             var _listen_ch_name_size = b_listen_ch_name.Length;
@@ -191,17 +191,17 @@ namespace abelkhan
                     }
                     catch (RedisTimeoutException ex)
                     {
-                        log.log.err("ListLeftPushAsync error:{0}", ex);
+                        log.Log.err("ListLeftPushAsync error:{0}", ex);
                         Recover(ex);
                     }
                     catch (RedisConnectionException ex)
                     {
-                        log.log.err("ListLeftPushAsync error:{0}", ex);
+                        log.Log.err("ListLeftPushAsync error:{0}", ex);
                         Recover(ex);
                     }
                     catch (System.Exception ex)
                     {
-                        log.log.err("sendmsg_mq error:{0}", ex);
+                        log.Log.err("sendmsg_mq error:{0}", ex);
                     }
                 }
             }
@@ -227,7 +227,7 @@ namespace abelkhan
             }
             catch (System.Exception ex)
             {
-                log.log.err("list_channel_name error:{0}", ex);
+                log.Log.err("list_channel_name error:{0}", ex);
             }
         }
 
@@ -245,9 +245,9 @@ namespace abelkhan
                 _st.Write(pop_data, (int)_header_len, (int)_msg_len);
                 _st.Position = 0;
 
-                if (!channels.TryGetValue(_ch_name, out redischannel ch))
+                if (!channels.TryGetValue(_ch_name, out Redischannel ch))
                 {
-                    ch = new redischannel(_ch_name, this);
+                    ch = new Redischannel(_ch_name, this);
                     channels.TryAdd(_ch_name, ch);
                 }
                 ch._channel_onrecv.on_recv(_st.ToArray());
@@ -269,17 +269,17 @@ namespace abelkhan
                 }
                 catch (RedisTimeoutException ex)
                 {
-                    log.log.err("ListLeftPushAsync error:{0}", ex);
+                    log.Log.err("ListLeftPushAsync error:{0}", ex);
                     Recover(ex);
                 }
                 catch (RedisConnectionException ex)
                 {
-                    log.log.err("ListLeftPushAsync error:{0}", ex);
+                    log.Log.err("ListLeftPushAsync error:{0}", ex);
                     Recover(ex);
                 }
                 catch (System.Exception ex)
                 {
-                    log.log.err("recvmsg_mq error:{0}", ex);
+                    log.Log.err("recvmsg_mq error:{0}", ex);
                 }
             }
 

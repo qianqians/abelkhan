@@ -9,11 +9,11 @@ namespace abelkhan
     public class gm_msg_handle
     {
         private abelkhan.gm_center_module gm_center_module;
-        private svrmanager svrmng;
-        private gmmanager gmmng;
-        private closehandle closeHandle;
+        private Svrmanager svrmng;
+        private GMmanager gmmng;
+        private Closehandle closeHandle;
 
-        public gm_msg_handle(svrmanager svrs, gmmanager gms, closehandle _closeHandle)
+        public gm_msg_handle(Svrmanager svrs, GMmanager gms, Closehandle _closeHandle)
         {
             svrmng = svrs;
             gmmng = gms;
@@ -34,10 +34,10 @@ namespace abelkhan
         {
             if (gmmng.check_gm(gmname, gm_center_module.current_ch.Value))
             {
-                log.log.trace("close_clutter {0}", gmname);
+                log.Log.trace("close_clutter {0}", gmname);
 
                 closeHandle.is_closing = true;
-                svrmng.for_each_svr((svrproxy _svrproxy) => {
+                svrmng.for_each_svr((Svrproxy _svrproxy) => {
                     _svrproxy.close_server();
                 });
 
@@ -52,7 +52,7 @@ namespace abelkhan
         {
             if (gmmng.check_gm(gmname, gm_center_module.current_ch.Value))
             {
-                svrmng.for_each_hub((hubproxy _proxy) => {
+                svrmng.for_each_hub((Hubproxy _proxy) => {
                     _proxy.reload(argvs);
                 });
             }

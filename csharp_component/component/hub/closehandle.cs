@@ -1,9 +1,9 @@
 ﻿using System;
 namespace hub
 {
-	public class closehandle
+	public class Closehandle
 	{
-		public closehandle()
+		public Closehandle()
 		{
 			is_close = false;
 		}

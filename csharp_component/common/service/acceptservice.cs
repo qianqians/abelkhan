@@ -12,27 +12,27 @@ using System.IO.Pipelines;
 
 namespace abelkhan
 {
-    public class acceptservice
+    public class Acceptservice
     {
         private bool run = true;
         private ushort port;
         private Task _t;
 
-        public acceptservice(ushort _port)
+        public Acceptservice(ushort _port)
         {
             port = _port;
         }
 
         public static event Action<abelkhan.Ichannel> on_connect;
-        public static void onConnect(channel ch)
+        public static void onConnect(Channel ch)
         {
             on_connect?.Invoke(ch);
         }
 
         private async Task ProcessLinesAsync(Socket socket)
         {
-            var ch = new channel(socket);
-            acceptservice.onConnect(ch);
+            var ch = new Channel(socket);
+            Acceptservice.onConnect(ch);
 
             var stream = new NetworkStream(socket);
             var reader = PipeReader.Create(stream);
@@ -51,7 +51,7 @@ namespace abelkhan
                 }
                 catch (System.Exception e)
                 {
-                    log.log.err("channel_onrecv.on_recv error:{0}!", e);
+                    log.Log.err("channel_onrecv.on_recv error:{0}!", e);
                     break;
                 }
             }

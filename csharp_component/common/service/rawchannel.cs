@@ -6,14 +6,14 @@ using System.Net.Sockets;
 
 namespace abelkhan
 {
-    public class rawchannel : abelkhan.Ichannel
+    public class Rawchannel : abelkhan.Ichannel
     {
-        public event Action<rawchannel> onDisconnect;
-        public event Action<rawchannel> Disconnect;
+        public event Action<Rawchannel> onDisconnect;
+        public event Action<Rawchannel> Disconnect;
 
         public channel_onrecv _channel_onrecv;
 
-        public rawchannel(Socket _s)
+        public Rawchannel(Socket _s)
         {
             s = _s;
             _channel_onrecv = new channel_onrecv(this);
@@ -43,7 +43,7 @@ namespace abelkhan
 
         private void onRead(IAsyncResult ar)
         {
-            rawchannel ch = ar.AsyncState as rawchannel;
+            Rawchannel ch = ar.AsyncState as Rawchannel;
 
             try
             {
@@ -121,7 +121,7 @@ namespace abelkhan
 
         private void send_callback(IAsyncResult ar)
         {
-            rawchannel ch = ar.AsyncState as rawchannel;
+            Rawchannel ch = ar.AsyncState as Rawchannel;
 
             try
             {

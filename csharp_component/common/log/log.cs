@@ -3,7 +3,7 @@ using System;
 
 namespace log
 {
-    public class log
+    public class Log
     {
         public enum enLogMode
         {
@@ -20,7 +20,7 @@ namespace log
             {
                 return;
             }
-            output(new System.Diagnostics.StackFrame(1), service.timerservice.Tick, "trace", log, agrvs);
+            output(new System.Diagnostics.StackFrame(1), service.Timerservice.Tick, "trace", log, agrvs);
         }
 
         static public void debug(string log, params object[] agrvs)
@@ -29,7 +29,7 @@ namespace log
             {
                 return;
             }
-            output(new System.Diagnostics.StackFrame(1), service.timerservice.Tick, "debug", log, agrvs);
+            output(new System.Diagnostics.StackFrame(1), service.Timerservice.Tick, "debug", log, agrvs);
         }
 
         static public void info(string log, params object[] agrvs)
@@ -38,7 +38,7 @@ namespace log
             {
                 return;
             }
-            output(new System.Diagnostics.StackFrame(1), service.timerservice.Tick, "info", log, agrvs);
+            output(new System.Diagnostics.StackFrame(1), service.Timerservice.Tick, "info", log, agrvs);
         }
 
         static public void warn(string log, params object[] agrvs)
@@ -47,12 +47,12 @@ namespace log
             {
                 return;
             }
-            output(new System.Diagnostics.StackFrame(1), service.timerservice.Tick, "warn", log, agrvs);
+            output(new System.Diagnostics.StackFrame(1), service.Timerservice.Tick, "warn", log, agrvs);
         }
 
         static public void err(string log, params object[] agrvs)
         {
-            output(new System.Diagnostics.StackFrame(1), service.timerservice.Tick, "err", log, agrvs);
+            output(new System.Diagnostics.StackFrame(1), service.Timerservice.Tick, "err", log, agrvs);
         }
 
         static void output(StackFrame sf, long tmptime, string level, string log, params object[] agrvs)

@@ -5,19 +5,19 @@ using System.Threading;
 
 namespace dbproxy
 {
-	public class dbproxy
+	public class DBproxy
 	{
         static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Exception ex = e.ExceptionObject as Exception;
-            log.log.err("unhandle exception:{0}", ex.ToString());
+            log.Log.err("unhandle exception:{0}", ex.ToString());
         }
 
-        public dbproxy(string cfg_file, string cfg_name)
+        public DBproxy(string cfg_file, string cfg_name)
 		{
 			is_busy = false;
 
-            _root_config = new abelkhan.config(cfg_file);
+            _root_config = new abelkhan.Config(cfg_file);
             _center_config = _root_config.get_value_dict("center");
             var _config = _root_config.get_value_dict(cfg_name);
 
@@ -26,28 +26,28 @@ namespace dbproxy
             var log_level = _config.get_value_string("log_level");
             if (log_level == "trace")
             {
-                log.log.logMode = log.log.enLogMode.trace;
+                log.Log.logMode = log.Log.enLogMode.trace;
             }
             else if (log_level == "debug")
             {
-                log.log.logMode = log.log.enLogMode.debug;
+                log.Log.logMode = log.Log.enLogMode.debug;
             }
             else if (log_level == "info")
             {
-                log.log.logMode = log.log.enLogMode.info;
+                log.Log.logMode = log.Log.enLogMode.info;
             }
             else if (log_level == "warn")
             {
-                log.log.logMode = log.log.enLogMode.warn;
+                log.Log.logMode = log.Log.enLogMode.warn;
             }
             else if (log_level == "err")
             {
-                log.log.logMode = log.log.enLogMode.err;
+                log.Log.logMode = log.Log.enLogMode.err;
             }
             var log_file = _config.get_value_string("log_file");
-            log.log.logFile = log_file;
+            log.Log.logFile = log_file;
             var log_dir = _config.get_value_string("log_dir");
-            log.log.logPath = log_dir;
+            log.Log.logPath = log_dir;
             {
                 if (!System.IO.Directory.Exists(log_dir))
                 {
@@ -62,11 +62,11 @@ namespace dbproxy
                 var db_ip = _config.get_value_string("db_ip");
                 var db_port = (short)_config.get_value_int("db_port");
 
-                _mongodbproxy = new service.mongodbproxy(db_ip, db_port);
+                _mongodbproxy = new service.Mongodbproxy(db_ip, db_port);
             }
             else if (_config.has_key("db_url"))
             {
-                _mongodbproxy = new service.mongodbproxy(_config.get_value_string("db_url"));
+                _mongodbproxy = new service.Mongodbproxy(_config.get_value_string("db_url"));
             }
 
             if (_config.has_key("index"))
@@ -84,22 +84,25 @@ namespace dbproxy
             }
             if (_config.has_key("guid"))
             {
-                var _guid_cfg = _config.get_value_dict("guid");
-                var _db = _guid_cfg.get_value_string("db");
-                var _collection = _guid_cfg.get_value_string("collection");
-                var inside_guid = _guid_cfg.get_value_int("inside_guid");
-                var public_guid = _guid_cfg.get_value_int("public_guid");
-                _mongodbproxy.check_int_guid(_db, _collection, inside_guid, public_guid);
+                var _guid_config = _config.get_value_list("guid");
+                for (int i = 0; i < _guid_config.get_list_size(); i++)
+                {
+                    var _guid_cfg = _guid_config.get_list_dict(i);
+                    var _db = _guid_cfg.get_value_string("db");
+                    var _collection = _guid_cfg.get_value_string("collection");
+                    var _guid = _guid_cfg.get_value_int("guid");
+                    _mongodbproxy.check_int_guid(_db, _collection, _guid);
+                }
             }
             
-            _timer = new service.timerservice();
+            _timer = new service.Timerservice();
             _timer.refresh();
 
             add_chs = new List<abelkhan.Ichannel>();
             remove_chs = new List<abelkhan.Ichannel>();
             
-            _closeHandle = new closehandle();
-            _hubmanager = new hubmanager();
+            _closeHandle = new Closehandle();
+            _hubmanager = new Hubmanager();
 
             var redismq_url = _root_config.get_value_string("redis_for_mq");
             _redis_mq_service = new abelkhan.redis_mq(_timer, redismq_url, name);
@@ -109,9 +112,9 @@ namespace dbproxy
             {
                 add_chs.Add(_center_ch);
             }
-            _centerproxy = new centerproxy(_center_ch);
+            _centerproxy = new Centerproxy(_center_ch);
             _centerproxy.reg_dbproxy(() => {
-                heartbeath_center(service.timerservice.Tick);
+                heartbeath_center(service.Timerservice.Tick);
             });
 
             _hub_msg_handle = new hub_msg_handle(_hubmanager, _closeHandle);
@@ -138,7 +141,7 @@ namespace dbproxy
             {
                 add_chs.Add(_center_ch);
             }
-            _centerproxy = new centerproxy(_center_ch);
+            _centerproxy = new Centerproxy(_center_ch);
             if (await _centerproxy.reconn_reg_dbproxy())
             {
                 reconn_count = 0;
@@ -149,7 +152,7 @@ namespace dbproxy
         {
             do
             {
-                if ((service.timerservice.Tick - _centerproxy.timetmp) > 9000)
+                if ((service.Timerservice.Tick - _centerproxy.timetmp) > 9000)
                 {
                     reconnect_center();
                     break;
@@ -194,11 +197,11 @@ namespace dbproxy
             }
             catch (abelkhan.Exception e)
             {
-                log.log.err(e.Message);
+                log.Log.err(e.Message);
             }
             catch (System.Exception e)
             {
-                log.log.err("{0}", e);
+                log.Log.err("{0}", e);
             }
 
             tick = (uint)(_timer.refresh() - tick_begin);
@@ -231,9 +234,9 @@ namespace dbproxy
                     Thread.Sleep((int)(33 - tick));
                 }
             }
-            log.log.info("server closed, dbproxy server:{0}", dbproxy.name);
+            log.Log.info("server closed, dbproxy server:{0}", DBproxy.name);
 
-            log.log.close();
+            log.Log.close();
 
             Monitor.Exit(_run_mu);
         }
@@ -241,14 +244,14 @@ namespace dbproxy
 		public static String name;
 		public static bool is_busy;
         public static uint tick;
-		public static closehandle _closeHandle;
-        public static hubmanager _hubmanager;
-        public static service.timerservice _timer;
-        public static service.mongodbproxy _mongodbproxy;
+		public static Closehandle _closeHandle;
+        public static Hubmanager _hubmanager;
+        public static service.Timerservice _timer;
+        public static service.Mongodbproxy _mongodbproxy;
         public static abelkhan.redis_mq _redis_mq_service;
 
-        public readonly abelkhan.config _root_config;
-        public readonly abelkhan.config _center_config;
+        public readonly abelkhan.Config _root_config;
+        public readonly abelkhan.Config _center_config;
 
         private readonly List<abelkhan.Ichannel> add_chs;
         private readonly List<abelkhan.Ichannel> remove_chs;
@@ -258,7 +261,7 @@ namespace dbproxy
 
         private uint reconn_count = 0;
 
-		private centerproxy _centerproxy;
+		private Centerproxy _centerproxy;
 
 	}
 }

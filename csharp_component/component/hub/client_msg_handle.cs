@@ -22,31 +22,31 @@ namespace hub
 
 		public void connect_hub(string client_cuuid)
         {
-			hub._gates.direct_client_connect(client_cuuid, _client_call_hub_module.current_ch.Value);
+			Hub._gates.direct_client_connect(client_cuuid, _client_call_hub_module.current_ch.Value);
         }
 
 		public void heartbeats()
         {
 			var rsp = (abelkhan.client_call_hub_heartbeats_rsp)_client_call_hub_module.rsp.Value;
-			if (hub._gates.get_directproxy(_client_call_hub_module.current_ch.Value, out directproxy _proxy))
+			if (Hub._gates.get_directproxy(_client_call_hub_module.current_ch.Value, out Directproxy _proxy))
             {
 				if (_proxy._theory_timetmp == 0)
                 {
-					_proxy._theory_timetmp = service.timerservice.Tick;
+					_proxy._theory_timetmp = service.Timerservice.Tick;
                 }
                 else
                 {
 					_proxy._theory_timetmp += 5000;
 				}
-				_proxy._timetmp = service.timerservice.Tick;
+				_proxy._timetmp = service.Timerservice.Tick;
 			}
-			rsp.rsp((ulong)service.timerservice.Tick);
+			rsp.rsp((ulong)service.Timerservice.Tick);
 		}
 
 		public Action<string> on_client_msg;
 		public void call_hub(byte[] arpc_rgv)
 		{
-			if (hub._gates.get_directproxy(_client_call_hub_module.current_ch.Value, out directproxy _proxy))
+			if (Hub._gates.get_directproxy(_client_call_hub_module.current_ch.Value, out Directproxy _proxy))
 			{
 				try
 				{
@@ -59,15 +59,15 @@ namespace hub
                     var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
                     var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
-                    hub._gates.current_client_uuid = _proxy._cuuid;
-                    hub._modules.process_module_mothed(func, argvs);
+                    Hub._gates.current_client_uuid = _proxy._cuuid;
+                    Hub._modules.process_module_mothed(func, argvs);
                     on_client_msg?.Invoke(_proxy._cuuid);
-                    hub._gates.current_client_uuid = "";
+                    Hub._gates.current_client_uuid = "";
                 }
 				catch (System.Exception e)
 				{
-					log.log.err("call_hub exception:{0}", e);
-					hub._gates.direct_client_exception(_client_call_hub_module.current_ch.Value);
+					log.Log.err("call_hub exception:{0}", e);
+					Hub._gates.direct_client_exception(_client_call_hub_module.current_ch.Value);
 				}
 			}
 		}
