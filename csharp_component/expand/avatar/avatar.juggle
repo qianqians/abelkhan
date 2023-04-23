@@ -1,0 +1,3 @@
+module avatar {
+	get_remote_avatar req(string sdk_uuid) rsp(bin doc) err();
+}

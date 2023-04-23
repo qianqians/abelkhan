@@ -106,17 +106,9 @@ namespace avatar
 
     public class AvatarDataOriginalOptions
     {
-        public enum EDataOriginal
-        {
-            DB = 0,
-            OtherHub = 1,
-        }
-
-        public EDataOriginal DataOriginal { get; set; }
         public string DBName { get; set; }
         public string DBCollection { get; set; }
         public string GuidCollection { get; set; }
-        public string HubName { get; set; }
     }
 
     public class AvtarLoadFromDBError : System.Exception
@@ -139,9 +131,28 @@ namespace avatar
 
         private static AvatarDataOriginalOptions opt = new();
 
+        private static avatar_module _avatar_Module = new();
+        private static avatar_caller _avatar_Caller = new();
+
         public static void init_data_original(Action<AvatarDataOriginalOptions> configureOptions)
         {
             configureOptions.Invoke(opt);
+
+            _avatar_Module.on_get_remote_avatar += _avatar_Module_on_get_remote_avatar;
+        }
+
+        private static void _avatar_Module_on_get_remote_avatar(string sdk_uuid)
+        {
+            var rsp = _avatar_Module.rsp as avatar_get_remote_avatar_rsp;
+
+            if (avatar_sdk_uuid.TryGetValue(sdk_uuid, out var _avatar))
+            {
+                rsp.rsp(_avatar.ToBson());
+            }
+            else
+            {
+                rsp.err();
+            }
         }
 
         public static void add_hosting<T>() where T : IHostingData
@@ -220,29 +231,60 @@ namespace avatar
             return avatar;
         }
 
-        public static async Task<Avatar> load_or_create(string sdk_uuid, string client_uuid)
+        public static Task<Avatar> load_from_remote(string sdk_uuid, string client_uuid, string other_hub)
         {
-            if (opt.DataOriginal == AvatarDataOriginalOptions.EDataOriginal.DB)
+            var task = new TaskCompletionSource<Avatar>();
+
+            _avatar_Caller.get_hub(other_hub).get_remote_avatar(sdk_uuid).callBack((doc_bin) =>
             {
-                var avatar = await load_from_db(sdk_uuid);
-                if (avatar == null)
+
+                var avatar = new Avatar();
+
+                var doc = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(doc_bin);
+                foreach (var (name, load) in hosting_data_template)
                 {
-                    avatar = await create_avatar();
+                    var sub_doc = doc.GetValue(name) as BsonDocument;
+                    var ins = load(sub_doc);
+                    avatar.add_hosting_data(ins);
                 }
-                avatar.ClientUUID = client_uuid;
+                avatar.Guid = doc.GetValue("guid").AsInt64;
 
                 avatar_guid[avatar.Guid] = avatar;
 
                 avatar_sdk_uuid[sdk_uuid] = avatar;
                 avatar_client_uuid[client_uuid] = avatar;
-                
-                return avatar;
-            }
-            else
-            {
 
+                task.SetResult(avatar);
+
+            }, () =>
+            {
+                log.Log.err("load from remote error!");
+                task.SetResult(null);
+
+            }).timeout(3000, () =>
+            {
+                log.Log.err("load from remote timeout!");
+                task.SetResult(null);
+            });
+
+            return task.Task;
+        }
+
+        public static async Task<Avatar> load_or_create(string sdk_uuid, string client_uuid)
+        {
+            var avatar = await load_from_db(sdk_uuid);
+            if (avatar == null)
+            {
+                avatar = await create_avatar();
             }
-            return null;
+            avatar.ClientUUID = client_uuid;
+
+            avatar_guid[avatar.Guid] = avatar;
+
+            avatar_sdk_uuid[sdk_uuid] = avatar;
+            avatar_client_uuid[client_uuid] = avatar;
+
+            return avatar;
         }
 
         public static Avatar get_current_avatar()
