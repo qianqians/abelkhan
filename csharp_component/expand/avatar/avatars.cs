@@ -37,39 +37,34 @@ namespace avatar
      * original date agent
      * write back data to memory
      */
-    public class DataAgent<T> : IDataAgent<T> where T : IHostingData
+    class DataAgent<T> : IDataAgent<T> where T : IHostingData
     {
-        public override void write_back()
-        {
+        private readonly Avatar avatar;
 
+        public DataAgent(Avatar _avatar)
+        {
+            avatar = _avatar;
         }
-    }
 
-    /*
-     * remote date agent
-     * write back data to original
-     */
-    public class RemoteDataAgent<T> : IDataAgent<T> where T : IHostingData
-    {
         public override void write_back()
         {
-
+            avatar.Datas[T.type()] = Data;
         }
     }
 
     public class Avatar
     {
         private Dictionary<string, IHostingData> dataDict = new();
+        public Dictionary<string, IHostingData> Datas
+        {
+            get
+            {
+                return dataDict;
+            }
+        }
 
         public long Guid;
         public string ClientUUID;
-
-        private bool is_original;
-
-        public Avatar(bool _is_original)
-        {
-            is_original = _is_original;
-        }
 
         public void add_hosting_data<T>(T data) where T : IHostingData
         {
@@ -80,20 +75,34 @@ namespace avatar
         {
             if (dataDict.TryGetValue(T.type(), out var data))
             {
-                IDataAgent<T> agent = null;
-                if (is_original)
-                {
-                    agent = new DataAgent<T>();
-                }
-                else
-                {
-                    agent = new RemoteDataAgent<T>();
-                }
-                
+                DataAgent<T> agent = new(this);
+                agent.Data = (T)T.load(data.store());
+                return agent;
+            }
+            return default(IDataAgent<T>);
+        }
+
+        public IDataAgent<T> get_real_hosting_data<T>() where T : IHostingData
+        {
+            if (dataDict.TryGetValue(T.type(), out var data))
+            {
+                DataAgent<T> agent = new(this);
                 agent.Data = (T)data;
                 return agent;
             }
             return default(IDataAgent<T>);
+        }
+
+        internal BsonDocument get_db_doc()
+        {
+            var doc = new BsonDocument();
+
+            foreach (var (name, data) in dataDict)
+            {
+                doc.Add(name, data.ToBsonDocument());
+            }
+
+            return doc;
         }
     }
 
@@ -155,7 +164,7 @@ namespace avatar
                 }
                 else if (value.Count == 1)
                 {
-                    var avatar = new Avatar(true);
+                    var avatar = new Avatar();
                     
                     var doc = value[0] as BsonDocument;
                     foreach (var (name, load) in hosting_data_template)
@@ -176,20 +185,24 @@ namespace avatar
             return task.Task;
         }
 
-        public static Avatar create_avatar(bool _is_original)
+        private static Avatar create_avatar(bool _is_original)
         {
-            var avatar = new Avatar(true);
+            var avatar = new Avatar();
             foreach (var (name, create) in hosting_data_create)
             {
                 var ins = create();
                 avatar.add_hosting_data(ins);
             }
+            hub.hub.get_random_dbproxyproxy().getCollection(opt.DBName, opt.DBCollection).createPersistedObject(avatar.get_db_doc(), (result) =>
+            {
+                if (result != hub.dbproxyproxy.EM_DB_RESULT.EM_DB_SUCESSED)
+                {
+                    log.log.err("db create avatar faild:{0}", result.ToString());
+                }
+            });
             return avatar;
         }
 
-        /*
-         * load data from original
-         */
         public static async Task<Avatar> load_or_create(string sdk_uuid, string client_uuid)
         {
             if (opt.DataOriginal == AvatarDataOriginalOptions.EDataOriginal.DB)
@@ -203,12 +216,22 @@ namespace avatar
                 avatar_client_uuid[client_uuid] = avatar;
                 return avatar;
             }
+            else
+            {
+
+            }
             return null;
         }
 
         public static Avatar get_current_avatar()
         {
             avatar_client_uuid.TryGetValue(hub.hub._gates.current_client_uuid, out var avatar);
+            return avatar;
+        }
+
+        public static Avatar get_target_avatar(string sdk_uuid)
+        {
+            avatar_sdk_uuid.TryGetValue(sdk_uuid, out var avatar);
             return avatar;
         }
     }
