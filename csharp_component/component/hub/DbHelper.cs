@@ -185,37 +185,37 @@ namespace abelkhan
             return this;
         }
 
-        public void elemListMatchEq<T>(string key, long t)
+        public void elemListMatchEq(string key, long t)
         {
             var _condition = new BsonDocument("$eq", t);
             query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$elemMatch", _condition)));
         }
 
-        public void elemListMatchEq<T>(string key, int t)
+        public void elemListMatchEq(string key, int t)
         {
             var _condition = new BsonDocument("$eq", t);
             query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$elemMatch", _condition)));
         }
 
-        public void elemListMatchEq<T>(string key, uint t)
+        public void elemListMatchEq(string key, uint t)
         {
             var _condition = new BsonDocument("$eq", t);
             query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$elemMatch", _condition)));
         }
 
-        public void elemListMatchEq<T>(string key, float t)
+        public void elemListMatchEq(string key, float t)
         {
             var _condition = new BsonDocument("$eq", t);
             query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$elemMatch", _condition)));
         }
 
-        public void elemListMatchEq<T>(string key, double t)
+        public void elemListMatchEq(string key, double t)
         {
             var _condition = new BsonDocument("$eq", t);
             query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$elemMatch", _condition)));
         }
 
-        public void elemListMatchEq<T>(string key, string t)
+        public void elemListMatchEq(string key, string t)
         {
             var _condition = new BsonDocument("$eq", t);
             query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$elemMatch", _condition)));
