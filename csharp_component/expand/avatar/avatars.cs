@@ -1,7 +1,10 @@
 ﻿using abelkhan;
+using hub;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace avatar
@@ -45,6 +48,7 @@ namespace avatar
         public override void write_back()
         {
             avatar.Datas[T.type()] = Data;
+            avatar.set_dirty();
         }
     }
 
@@ -63,6 +67,56 @@ namespace avatar
         public string SDKUUID;
         public string ClientUUID;
 
+        private string bind_db_proxy_name = null;
+        private DBproxyproxy.Collection Collection
+        {
+            get
+            {
+                DBproxyproxy bind_db_proxy;
+                do
+                {
+                    if (string.IsNullOrEmpty(bind_db_proxy_name))
+                    {
+                        bind_db_proxy = hub.Hub.get_random_dbproxyproxy();
+                        bind_db_proxy_name = bind_db_proxy.db_name;
+                        break;
+                    }
+
+                    bind_db_proxy = hub.Hub.get_dbproxy(bind_db_proxy_name);
+                    if (bind_db_proxy == null)
+                    {
+                        bind_db_proxy = hub.Hub.get_random_dbproxyproxy();
+                        bind_db_proxy_name = bind_db_proxy.db_name;
+                    }
+                } while (false);
+
+                return bind_db_proxy.getCollection(AvatarMgr.opt.DBName, AvatarMgr.opt.DBCollection);
+
+            }
+        }
+        private int _is_dirty = 0;
+        internal void set_dirty()
+        {
+            var _dirty_state = Interlocked.Exchange(ref _is_dirty, 1);
+            if (_dirty_state == 0)
+            {
+                hub.Hub._timer.addticktime(AvatarMgr.opt.StoreDelayTime, (tick) =>
+                {
+                    Interlocked.Exchange(ref _is_dirty, 0);
+
+                    var query = new DBQueryHelper();
+                    query.condition("guid", Guid);
+                    Collection.updataPersistedObject(query.query(), get_db_doc(), false, (result) =>
+                    {
+                        if (result != DBproxyproxy.EM_DB_RESULT.EM_DB_SUCESSED)
+                        {
+                            ; log.Log.err("avatar set_dirty updataPersistedObject faild:{0}!", result.ToString());
+                        }
+                    });
+                });
+            }
+        }
+
         public void add_hosting_data<T>(T data) where T : IHostingData
         {
             dataDict.Add(T.type(), data);
@@ -70,22 +124,40 @@ namespace avatar
 
         public IDataAgent<T> get_clone_hosting_data<T>() where T : IHostingData
         {
-            if (dataDict.TryGetValue(T.type(), out var data))
+            try
             {
-                DataAgent<T> agent = new(this);
-                agent.Data = (T)T.load(data.store());
-                return agent;
+                if (dataDict.TryGetValue(T.type(), out var data))
+                {
+                    DataAgent<T> agent = new(this);
+                    agent.Data = (T)T.load(data.store());
+                    return agent;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                log.Log.err("avatar get_clone_hosting_data ex:{0}!", ex);
             }
             return default(IDataAgent<T>);
         }
 
         public IDataAgent<T> get_real_hosting_data<T>() where T : IHostingData
         {
-            if (dataDict.TryGetValue(T.type(), out var data))
+            try
             {
-                DataAgent<T> agent = new(this);
-                agent.Data = (T)data;
-                return agent;
+                if (dataDict.TryGetValue(T.type(), out var data))
+                {
+                    DataAgent<T> agent = new(this);
+                    agent.Data = (T)data;
+                    return agent;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                log.Log.err("avatar get_real_hosting_data ex:{0}!", ex);
+            }
+            finally
+            {
+                set_dirty();
             }
             return default(IDataAgent<T>);
         }
@@ -111,6 +183,7 @@ namespace avatar
         public string DBName { get; set; }
         public string DBCollection { get; set; }
         public string GuidCollection { get; set; }
+        public int StoreDelayTime { get; set; } 
     }
 
     public class AvtarLoadFromDBError : System.Exception
@@ -131,7 +204,7 @@ namespace avatar
         private static Dictionary<string, Avatar> avatar_sdk_uuid = new();
         private static Dictionary<string, Avatar> avatar_client_uuid = new();
 
-        private static AvatarDataDBOptions opt = new();
+        internal static AvatarDataDBOptions opt = new();
 
         private static avatar_module _avatar_Module = new();
         private static avatar_caller _avatar_Caller = new();
