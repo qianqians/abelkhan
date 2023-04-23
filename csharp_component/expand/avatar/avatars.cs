@@ -60,6 +60,7 @@ namespace avatar
         }
 
         public long Guid;
+        public string SDKUUID;
         public string ClientUUID;
 
         public void add_hosting_data<T>(T data) where T : IHostingData
@@ -93,7 +94,8 @@ namespace avatar
         {
             var doc = new BsonDocument
             {
-                { "guid", Guid }
+                { "guid", Guid },
+                { "sdk_uuid", SDKUUID }
             };
             foreach (var (name, data) in dataDict)
             {
@@ -141,11 +143,11 @@ namespace avatar
             _avatar_Module.on_get_remote_avatar += _avatar_Module_on_get_remote_avatar;
         }
 
-        private static void _avatar_Module_on_get_remote_avatar(string sdk_uuid)
+        private static void _avatar_Module_on_get_remote_avatar(long guid)
         {
             var rsp = _avatar_Module.rsp as avatar_get_remote_avatar_rsp;
 
-            if (avatar_sdk_uuid.TryGetValue(sdk_uuid, out var _avatar))
+            if (avatar_guid.TryGetValue(guid, out var _avatar))
             {
                 rsp.rsp(_avatar.ToBson());
             }
@@ -184,6 +186,7 @@ namespace avatar
                         var ins = load(sub_doc);
                         avatar.add_hosting_data(ins);
                     }
+                    avatar.SDKUUID = sdk_uuid;
                     avatar.Guid = doc.GetValue("guid").AsInt64;
 
                     task.SetResult(avatar);
@@ -212,9 +215,10 @@ namespace avatar
             return task.Task;
         }
 
-        private static async Task<Avatar> create_avatar()
+        private static async Task<Avatar> create_avatar(string sdk_uuid)
         {
             var avatar = new Avatar();
+            avatar.SDKUUID = sdk_uuid;
             avatar.Guid = await get_guid();
             foreach (var (name, create) in hosting_data_create)
             {
@@ -231,11 +235,11 @@ namespace avatar
             return avatar;
         }
 
-        public static Task<Avatar> load_from_remote(string sdk_uuid, string client_uuid, string other_hub)
+        public static Task<Avatar> load_from_remote(long guid, string client_uuid, string other_hub)
         {
             var task = new TaskCompletionSource<Avatar>();
 
-            _avatar_Caller.get_hub(other_hub).get_remote_avatar(sdk_uuid).callBack((doc_bin) =>
+            _avatar_Caller.get_hub(other_hub).get_remote_avatar(guid).callBack((doc_bin) =>
             {
 
                 var avatar = new Avatar();
@@ -247,11 +251,12 @@ namespace avatar
                     var ins = load(sub_doc);
                     avatar.add_hosting_data(ins);
                 }
-                avatar.Guid = doc.GetValue("guid").AsInt64;
+                avatar.SDKUUID = doc.GetValue("sdk_uuid").AsString;
+                avatar.Guid = guid;
 
-                avatar_guid[avatar.Guid] = avatar;
+                avatar_guid[guid] = avatar;
 
-                avatar_sdk_uuid[sdk_uuid] = avatar;
+                avatar_sdk_uuid[avatar.SDKUUID] = avatar;
                 avatar_client_uuid[client_uuid] = avatar;
 
                 task.SetResult(avatar);
@@ -275,7 +280,7 @@ namespace avatar
             var avatar = await load_from_db(sdk_uuid);
             if (avatar == null)
             {
-                avatar = await create_avatar();
+                avatar = await create_avatar(sdk_uuid);
             }
             avatar.ClientUUID = client_uuid;
 

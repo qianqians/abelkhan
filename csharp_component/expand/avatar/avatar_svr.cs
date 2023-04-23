@@ -149,12 +149,12 @@ namespace abelkhan
             rsp_cb_avatar_handle = rsp_cb_avatar_handle_;
         }
 
-        public avatar_get_remote_avatar_cb get_remote_avatar(string sdk_uuid){
+        public avatar_get_remote_avatar_cb get_remote_avatar(Int64 guid){
             var uuid_ebef94cb_599c_554a_982d_9e11bd6ce8c3 = (UInt64)Interlocked.Increment(ref uuid_3f335b73_f48e_3b8a_a9b6_e3c5a534be4f);
 
             var _argv_f7981503_551c_35e6_8df5_ca1daba221e7 = new ArrayList();
             _argv_f7981503_551c_35e6_8df5_ca1daba221e7.Add(uuid_ebef94cb_599c_554a_982d_9e11bd6ce8c3);
-            _argv_f7981503_551c_35e6_8df5_ca1daba221e7.Add(sdk_uuid);
+            _argv_f7981503_551c_35e6_8df5_ca1daba221e7.Add(guid);
             hub.Hub._hubs.call_hub(hub_name_3f335b73_f48e_3b8a_a9b6_e3c5a534be4f, "avatar_get_remote_avatar", _argv_f7981503_551c_35e6_8df5_ca1daba221e7);
 
             var cb_get_remote_avatar_obj = new avatar_get_remote_avatar_cb(uuid_ebef94cb_599c_554a_982d_9e11bd6ce8c3, rsp_cb_avatar_handle);
@@ -197,13 +197,13 @@ namespace abelkhan
             hub.Hub._modules.add_mothed("avatar_get_remote_avatar", get_remote_avatar);
         }
 
-        public event Action<string> on_get_remote_avatar;
+        public event Action<Int64> on_get_remote_avatar;
         public void get_remote_avatar(IList<MsgPack.MessagePackObject> inArray){
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            var _sdk_uuid = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _guid = ((MsgPack.MessagePackObject)inArray[1]).AsInt64();
             rsp = new avatar_get_remote_avatar_rsp(hub.Hub._hubs.current_hubproxy.name, _cb_uuid);
             if (on_get_remote_avatar != null){
-                on_get_remote_avatar(_sdk_uuid);
+                on_get_remote_avatar(_guid);
             }
             rsp = null;
         }
