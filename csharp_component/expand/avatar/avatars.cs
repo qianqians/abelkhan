@@ -41,7 +41,7 @@ namespace avatar
     {
         private readonly Avatar avatar;
 
-        public DataAgent(Avatar _avatar)
+        internal DataAgent(Avatar _avatar)
         {
             avatar = _avatar;
         }
@@ -55,7 +55,7 @@ namespace avatar
     public class Avatar
     {
         private Dictionary<string, IHostingData> dataDict = new();
-        public Dictionary<string, IHostingData> Datas
+        internal Dictionary<string, IHostingData> Datas
         {
             get
             {
