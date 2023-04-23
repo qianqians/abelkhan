@@ -106,7 +106,7 @@ namespace avatar
         }
     }
 
-    public class AvatarDataOriginalOptions
+    public class AvatarDataDBOptions
     {
         public string DBName { get; set; }
         public string DBCollection { get; set; }
@@ -131,12 +131,12 @@ namespace avatar
         private static Dictionary<string, Avatar> avatar_sdk_uuid = new();
         private static Dictionary<string, Avatar> avatar_client_uuid = new();
 
-        private static AvatarDataOriginalOptions opt = new();
+        private static AvatarDataDBOptions opt = new();
 
         private static avatar_module _avatar_Module = new();
         private static avatar_caller _avatar_Caller = new();
 
-        public static void init_data_original(Action<AvatarDataOriginalOptions> configureOptions)
+        public static void init_data_db_opt(Action<AvatarDataDBOptions> configureOptions)
         {
             configureOptions.Invoke(opt);
 
@@ -149,7 +149,7 @@ namespace avatar
 
             if (avatar_guid.TryGetValue(guid, out var _avatar))
             {
-                rsp.rsp(_avatar.ToBson());
+                rsp.rsp(_avatar.get_db_doc().ToBson());
             }
             else
             {
