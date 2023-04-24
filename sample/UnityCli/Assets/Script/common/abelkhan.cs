@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using MsgPack.Serialization;
 using System.Threading;
 
-namespace abelkhan
+namespace Abelkhan
 {
     public class Exception : System.Exception
     {
@@ -122,7 +122,7 @@ namespace abelkhan
             }
             catch (System.Exception)
             {
-                throw new abelkhan.Exception("error argvs");
+                throw new Abelkhan.Exception("error argvs");
             }
         }
 
@@ -163,7 +163,7 @@ namespace abelkhan
             method_set.Add(method_name, method);
         }
 
-        public Action<abelkhan.Ichannel> on_msg;
+        public Action<Abelkhan.Ichannel> on_msg;
         public void process_event(Ichannel _ch, ArrayList _event){
             try{
                 String method_name = ((MsgPack.MessagePackObject)_event[0]).AsString();
@@ -176,12 +176,12 @@ namespace abelkhan
                 }
                 else
                 {
-                    throw new abelkhan.Exception(string.Format("do not have a method named::{0}", method_name));
+                    throw new Abelkhan.Exception(string.Format("do not have a method named::{0}", method_name));
                 }
             }
             catch (System.Exception e)
             {
-                throw new abelkhan.Exception(string.Format("System.Exception:{0}", e));
+                throw new Abelkhan.Exception(string.Format("System.Exception:{0}", e));
             }
         }
 

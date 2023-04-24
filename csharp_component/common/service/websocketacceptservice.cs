@@ -8,14 +8,14 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using Fleck;
 
-namespace abelkhan
+namespace Abelkhan
 {
-    public class Websocketacceptservice
+    public class WebsocketAcceptService
     {
         private WebSocketServer _server;
 
-        public event Action<abelkhan.Ichannel> on_connect;
-        public Websocketacceptservice(ushort port, bool is_ssl, string pfx)
+        public event Action<Abelkhan.Ichannel> on_connect;
+        public WebsocketAcceptService(ushort port, bool is_ssl, string pfx)
         {
             if (!is_ssl)
             {
@@ -29,7 +29,7 @@ namespace abelkhan
 
             _server.Start(socket =>
             {
-                var ch = new Websocketchannel(socket);
+                var ch = new WebsocketChannel(socket);
                 ch.on_connect += on_connect;
             });
         }

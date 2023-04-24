@@ -8,20 +8,20 @@ using System.Buffers;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace abelkhan
+namespace Abelkhan
 {
-    public class Channel : abelkhan.Ichannel
+    public class Channel : Abelkhan.Ichannel
     {
         private readonly Socket s;
         private readonly object lockobj;
 
-        public channel_onrecv _channel_onrecv;
+        public ChannelOnRecv _channel_onrecv;
 
         public Channel(Socket socket)
         {
             s = socket;
             lockobj = new object();
-            _channel_onrecv = new channel_onrecv(this);
+            _channel_onrecv = new ChannelOnRecv(this);
         }
 
         public void disconnect()

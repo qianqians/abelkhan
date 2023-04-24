@@ -1,20 +1,20 @@
-﻿using abelkhan;
+﻿using Abelkhan;
 using MsgPack.Serialization;
 using System;
 using System.Collections;
 using System.IO;
 
-namespace dbproxy
+namespace DBProxy
 {
-	public class Hubproxy
+	public class HubProxy
 	{
-		public readonly abelkhan.Ichannel _ch;
-		public Hubproxy(abelkhan.Ichannel ch)
+		public readonly Abelkhan.Ichannel _ch;
+		public HubProxy(Abelkhan.Ichannel ch)
 		{
 			_serializer = MessagePackSerializer.Get<ArrayList>();
 
 			_ch = ch;
-			_caller = new abelkhan.dbproxy_call_hub_caller(ch, abelkhan.modulemng_handle._modulemng);
+			_caller = new Abelkhan.dbproxy_call_hub_caller(ch, Abelkhan.ModuleMgrHandle._modulemng);
 		}
 
 		public void ack_get_object_info(string callbackid, MongoDB.Bson.BsonDocument object_info)
@@ -32,7 +32,7 @@ namespace dbproxy
 			_caller.ack_get_object_info_end(callbackid);
 		}
 
-        private readonly abelkhan.dbproxy_call_hub_caller _caller;
+        private readonly Abelkhan.dbproxy_call_hub_caller _caller;
 		private readonly MessagePackSerializer<ArrayList> _serializer;
 	}
 }

@@ -4,19 +4,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
 
-namespace abelkhan
+namespace Abelkhan
 {
-    public class Rawchannel : abelkhan.Ichannel
+    public class RawChannel : Abelkhan.Ichannel
     {
-        public event Action<Rawchannel> onDisconnect;
-        public event Action<Rawchannel> Disconnect;
+        public event Action<RawChannel> onDisconnect;
+        public event Action<RawChannel> Disconnect;
 
-        public channel_onrecv _channel_onrecv;
+        public ChannelOnRecv _channel_onrecv;
 
-        public Rawchannel(Socket _s)
+        public RawChannel(Socket _s)
         {
             s = _s;
-            _channel_onrecv = new channel_onrecv(this);
+            _channel_onrecv = new ChannelOnRecv(this);
 
             recvbuflength = 8 * 1024;
             recvbuf = new byte[recvbuflength];
@@ -43,7 +43,7 @@ namespace abelkhan
 
         private void onRead(IAsyncResult ar)
         {
-            Rawchannel ch = ar.AsyncState as Rawchannel;
+            RawChannel ch = ar.AsyncState as RawChannel;
 
             try
             {
@@ -121,7 +121,7 @@ namespace abelkhan
 
         private void send_callback(IAsyncResult ar)
         {
-            Rawchannel ch = ar.AsyncState as Rawchannel;
+            RawChannel ch = ar.AsyncState as RawChannel;
 
             try
             {

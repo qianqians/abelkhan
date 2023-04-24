@@ -1,21 +1,21 @@
-﻿using abelkhan;
+﻿using Abelkhan;
 using MsgPack.Serialization;
 using System;
 using System.Collections;
 using System.IO;
 
-namespace hub
+namespace Hub
 {
 	public class gate_msg_handle
 	{
-        private readonly abelkhan.gate_call_hub_module _gate_call_hub_module;
+        private readonly Abelkhan.gate_call_hub_module _gate_call_hub_module;
         private readonly MessagePackSerializer<ArrayList> _serializer;
 
         public gate_msg_handle()
 		{
             _serializer = MessagePackSerializer.Get<ArrayList>();
 
-            _gate_call_hub_module = new abelkhan.gate_call_hub_module(abelkhan.modulemng_handle._modulemng);
+            _gate_call_hub_module = new Abelkhan.gate_call_hub_module(Abelkhan.ModuleMgrHandle._modulemng);
             _gate_call_hub_module.on_client_disconnect += client_disconnect;
             _gate_call_hub_module.on_client_exception += client_exception;
             _gate_call_hub_module.on_client_call_hub += client_call_hub;
@@ -52,7 +52,7 @@ namespace hub
             }
             catch (System.Exception e)
             {
-                log.Log.err("call_hub exception:{0}", e);
+                Log.Log.err("call_hub exception:{0}", e);
                 Hub._gates.client_exception(uuid);
             }
         }

@@ -13,14 +13,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using System.Buffers;
 using System.Threading;
-using System.Security.Cryptography;
 using System.Text;
-using System.Reflection.PortableExecutable;
 
-namespace service
+namespace Service
 {
     public class AbelkhanHttpRequest
     {
@@ -47,7 +44,7 @@ namespace service
                 return rsp.Body.WriteAsync(buf).AsTask();
 
             } catch (Exception ex) {
-                log.Log.err("Response Exception:{0}", ex);
+                Log.Log.err("Response Exception:{0}", ex);
             } finally {
             }
             return Task.CompletedTask;
@@ -69,7 +66,7 @@ namespace service
                 int count = Interlocked.Add(ref lcount, 1);
                 if (Timerservice.Tick >= _recvStatTick) {
                     Interlocked.And(ref lcount, -count);
-                    log.Log.info("Connect statistics: {0} messages in {1} ms", count, Timerservice.Tick - _lastStatTick);
+                    Log.Log.info("Connect statistics: {0} messages in {1} ms", count, Timerservice.Tick - _lastStatTick);
                     _lastStatTick = Timerservice.Tick;
                     _recvStatTick = Timerservice.Tick + 1000;
                 }
@@ -114,7 +111,7 @@ namespace service
                     }
                     await cb(new AbelkhanHttpRequest(context.Request, context.Response, buf, length));
                 } catch (Exception ex) {
-                    log.Log.err("process http req ex:{0}", ex);
+                    Log.Log.err("process http req ex:{0}", ex);
                 } finally {
                     if (buf != null) {
                         ArrayPool<byte>.Shared.Return(buf);
@@ -122,7 +119,7 @@ namespace service
 
                     var tick = Timerservice.Tick - begin;
                     if (tick > 1000) {
-                        log.Log.err("Timeout: elapsed_ticks={0}", tick);
+                        Log.Log.err("Timeout: elapsed_ticks={0}", tick);
                     }
                 }
             });

@@ -7,9 +7,9 @@ import uuid
 import tools
 
 def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum):
-    code_constructor = "    public class " + module_name + "_module : common.IModule {\n"
-    code_constructor += "        public client.Client _client_handle;\n"
-    code_constructor += "        public " + module_name + "_module(client.Client client_handle_) \n"
+    code_constructor = "    public class " + module_name + "_module : Common.IModule {\n"
+    code_constructor += "        public Client.Client _client_handle;\n"
+    code_constructor += "        public " + module_name + "_module(Client.Client client_handle_) \n"
     code_constructor += "        {\n"
     code_constructor += "            _client_handle = client_handle_;\n"
         
@@ -233,13 +233,13 @@ def gen_module_module(module_name, funcs, dependent_struct, dependent_enum, enum
             code_func += "            rsp = null;\n"
             code_func += "        }\n\n"
 
-            rsp_code += "    public class " + module_name + "_" + func_name + "_rsp : common.Response {\n"
+            rsp_code += "    public class " + module_name + "_" + func_name + "_rsp : Common.Response {\n"
             _rsp_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_X500, func_name)).split('-'))
             rsp_code += "        private UInt64 uuid_" + _rsp_uuid + ";\n"
             _hub_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
             rsp_code += "        private string hub_name_" + _hub_uuid + ";\n"
-            rsp_code += "        private client.Client _client_handle;\n"
-            rsp_code += "        public " + module_name + "_" + func_name + "_rsp(client.Client client_handle_, string current_hub, UInt64 _uuid) \n"
+            rsp_code += "        private Client.Client _client_handle;\n"
+            rsp_code += "        public " + module_name + "_" + func_name + "_rsp(Client.Client client_handle_, string current_hub, UInt64 _uuid) \n"
             rsp_code += "        {\n"
             rsp_code += "            _client_handle = client_handle_;\n"
             rsp_code += "            hub_name_" + _hub_uuid + " = current_hub;\n"

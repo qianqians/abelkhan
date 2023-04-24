@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using MsgPack.Serialization;
 
-namespace abelkhan
+namespace Abelkhan
 {
 /*this enum code is codegen by abelkhan codegen for c#*/
 
@@ -123,10 +123,10 @@ namespace abelkhan
     }
 
 /*this cb code is codegen by abelkhan for c#*/
-    public class test_c2s_rsp_cb : common.IModule {
+    public class test_c2s_rsp_cb : Common.IModule {
         public Dictionary<UInt64, test_c2s_get_svr_host_cb> map_get_svr_host;
         public Dictionary<UInt64, test_c2s_get_websocket_svr_host_cb> map_get_websocket_svr_host;
-        public test_c2s_rsp_cb(common.Modulemanager modules)
+        public test_c2s_rsp_cb(Common.ModuleManager modules)
         {
             map_get_svr_host = new Dictionary<UInt64, test_c2s_get_svr_host_cb>();
             modules.add_mothed("test_c2s_rsp_cb_get_svr_host_rsp", get_svr_host_rsp);
@@ -217,8 +217,8 @@ namespace abelkhan
     public class test_c2s_caller {
         public static test_c2s_rsp_cb rsp_cb_test_c2s_handle = null;
         private ThreadLocal<test_c2s_hubproxy> _hubproxy;
-        public client.Client _client_handle;
-        public test_c2s_caller(client.Client client_handle_) 
+        public Client.Client _client_handle;
+        public test_c2s_caller(Client.Client client_handle_) 
         {
             _client_handle = client_handle_;
             if (rsp_cb_test_c2s_handle == null)
@@ -245,10 +245,10 @@ namespace abelkhan
         public string hub_name_c233fb06_7c62_3839_a7d5_edade25b16c5;
         private Int32 uuid_c233fb06_7c62_3839_a7d5_edade25b16c5 = (Int32)RandomUUID.random();
 
-        public client.Client _client_handle;
+        public Client.Client _client_handle;
         public test_c2s_rsp_cb rsp_cb_test_c2s_handle;
 
-        public test_c2s_hubproxy(client.Client client_handle_, test_c2s_rsp_cb rsp_cb_test_c2s_handle_)
+        public test_c2s_hubproxy(Client.Client client_handle_, test_c2s_rsp_cb rsp_cb_test_c2s_handle_)
         {
             _client_handle = client_handle_;
             rsp_cb_test_c2s_handle = rsp_cb_test_c2s_handle_;

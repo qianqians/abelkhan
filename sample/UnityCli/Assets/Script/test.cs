@@ -4,21 +4,21 @@ using UnityEngine;
 
 public class test : MonoBehaviour
 {
-    private client.Client _client;
-    private abelkhan.test_c2s_caller _test_c2s_caller;
+    private Client.Client _client;
+    private Abelkhan.test_c2s_caller _test_c2s_caller;
 
-    private abelkhan.test_s2c_module _test_s2c_module;
+    private Abelkhan.test_s2c_module _test_s2c_module;
 
     // Start is called before the first frame update
     void Start()
     {
-        _client = new client.Client();
-        _test_c2s_caller = new abelkhan.test_c2s_caller(_client);
+        _client = new Client.Client();
+        _test_c2s_caller = new Abelkhan.test_c2s_caller(_client);
 
-        _test_s2c_module = new abelkhan.test_s2c_module(_client);
+        _test_s2c_module = new Abelkhan.test_s2c_module(_client);
         _test_s2c_module.on_ping += () => {
             Debug.Log("on_ping!");
-            var rsp = (abelkhan.test_s2c_ping_rsp)_test_s2c_module.rsp;
+            var rsp = (Abelkhan.test_s2c_ping_rsp)_test_s2c_module.rsp;
             rsp.rsp();
         };
 

@@ -1,17 +1,16 @@
 ﻿using Newtonsoft.Json;
 using StackExchange.Redis;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace abelkhan
+namespace Abelkhan
 {
-    public class redis_handle
+    public class RedisHandle
     {
         private ConnectionMultiplexer connectionMultiplexer;
         private RedisConnectionHelper _connHelper;
         private IDatabase database;
 
-        public redis_handle(string connUrl)
+        public RedisHandle(string connUrl)
         {
             _connHelper = new RedisConnectionHelper(connUrl, "RedisForCache");
             _connHelper.ConnectOnStartup(ref connectionMultiplexer, ref database);

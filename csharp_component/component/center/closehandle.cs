@@ -4,9 +4,9 @@
  * qianqians
  */
 
-namespace abelkhan
+namespace Abelkhan
 {
-    public class Closehandle
+    public class CloseHandle
     {
         public bool is_closing = false;
         public bool is_close = false;

@@ -1,22 +1,22 @@
 ﻿using System;
 
-namespace dbproxy
+namespace DBProxy
 {
 	public class center_msg_handle
 	{
-		private Closehandle _closehandle;
-		private Centerproxy _centerproxy;
-        private Hubmanager _hubs;
+		private CloseHandle _closehandle;
+		private CenterProxy _centerproxy;
+        private HubManager _hubs;
 
-		private abelkhan.center_call_server_module _center_call_server_module;
+		private Abelkhan.center_call_server_module _center_call_server_module;
 
-		public center_msg_handle(Closehandle _closehandle_, Centerproxy _centerproxy_, Hubmanager _hubs_)
+		public center_msg_handle(CloseHandle _closehandle_, CenterProxy _centerproxy_, HubManager _hubs_)
 		{
 			_closehandle = _closehandle_;
             _centerproxy = _centerproxy_;
             _hubs = _hubs_;
 
-			_center_call_server_module = new abelkhan.center_call_server_module(abelkhan.modulemng_handle._modulemng);
+			_center_call_server_module = new Abelkhan.center_call_server_module(Abelkhan.ModuleMgrHandle._modulemng);
 			_center_call_server_module.on_close_server += close_server;
 			_center_call_server_module.on_console_close_server += console_close_server;
 			_center_call_server_module.on_svr_be_closed += svr_be_closed;
@@ -40,15 +40,15 @@ namespace dbproxy
             if (_closehandle._is_closing && _hubs.all_hub_closed())
             {
 				_centerproxy.closed();
-                DBproxy._timer.addticktime(3000, close_server_impl);
+                DBProxy._timer.addticktime(3000, close_server_impl);
             }
         }
 
 		private void console_close_server(string svr_type, string svr_name)
         {
-			if (svr_type == "dbproxy" && svr_name == DBproxy.name)
+			if (svr_type == "dbproxy" && svr_name == DBProxy.name)
             {
-				DBproxy._timer.addticktime(3000, close_server_impl);
+				DBProxy._timer.addticktime(3000, close_server_impl);
 			}
             else
             {
@@ -62,7 +62,7 @@ namespace dbproxy
 
 		private void svr_be_closed(string svr_type, string svr_name)
         {
-            log.Log.trace("svr_be_closed");
+            Log.Log.trace("svr_be_closed");
 
 			if (svr_type == "hub")
 			{
@@ -73,7 +73,7 @@ namespace dbproxy
 
 		private void take_over_svr(string svr_name)
 		{
-			DBproxy._redis_mq_service.take_over_svr(svr_name);
+			DBProxy._redis_mq_service.take_over_svr(svr_name);
         }
     }
 }

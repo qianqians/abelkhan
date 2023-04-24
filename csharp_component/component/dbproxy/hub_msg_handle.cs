@@ -1,24 +1,24 @@
-﻿using abelkhan;
+﻿using Abelkhan;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 
-namespace dbproxy
+namespace DBProxy
 {
 	public class hub_msg_handle
     {
-        private Closehandle _closehandle;
-        private Hubmanager _hubmanager;
-        private abelkhan.hub_call_dbproxy_module _hub_call_dbproxy_module;
+        private CloseHandle _closehandle;
+        private HubManager _hubmanager;
+        private Abelkhan.hub_call_dbproxy_module _hub_call_dbproxy_module;
 
-        public hub_msg_handle(Hubmanager _hubmanager_, Closehandle _closehandle_)
+        public hub_msg_handle(HubManager _hubmanager_, CloseHandle _closehandle_)
 		{
 			_hubmanager = _hubmanager_;
             _closehandle = _closehandle_;
 
-            _hub_call_dbproxy_module = new abelkhan.hub_call_dbproxy_module(abelkhan.modulemng_handle._modulemng);
+            _hub_call_dbproxy_module = new Abelkhan.hub_call_dbproxy_module(Abelkhan.ModuleMgrHandle._modulemng);
             _hub_call_dbproxy_module.on_reg_hub += reg_hub;
             _hub_call_dbproxy_module.on_get_guid += get_guid;
             _hub_call_dbproxy_module.on_create_persisted_object += create_persisted_object;
@@ -31,21 +31,21 @@ namespace dbproxy
 
         public void reg_hub(string hub_name)
 		{
-            log.Log.trace("hub {0} connected", hub_name);
+            Log.Log.trace("hub {0} connected", hub_name);
                 
-            var rsp = (abelkhan.hub_call_dbproxy_reg_hub_rsp)_hub_call_dbproxy_module.rsp.Value;
-            Hubproxy _hubproxy = _hubmanager.reg_hub(_hub_call_dbproxy_module.current_ch.Value, hub_name);
+            var rsp = (Abelkhan.hub_call_dbproxy_reg_hub_rsp)_hub_call_dbproxy_module.rsp.Value;
+            HubProxy _hubproxy = _hubmanager.reg_hub(_hub_call_dbproxy_module.current_ch.Value, hub_name);
             rsp.rsp();
         }
 
         private async void get_guid(string db, string collection)
         {
-            log.Log.trace("begin get_guid!");
+            Log.Log.trace("begin get_guid!");
 
-            var rsp = (abelkhan.hub_call_dbproxy_get_guid_rsp)_hub_call_dbproxy_module.rsp.Value;
+            var rsp = (Abelkhan.hub_call_dbproxy_get_guid_rsp)_hub_call_dbproxy_module.rsp.Value;
             try
             {
-                var guid = await DBproxy._mongodbproxy.get_guid(db, collection);
+                var guid = await DBProxy._mongodbproxy.get_guid(db, collection);
                 if (guid > 0)
                 {
                     rsp.rsp(guid);
@@ -57,22 +57,22 @@ namespace dbproxy
             }
             catch (System.Exception ex)
             {
-                log.Log.err("ex:{0}", ex);
+                Log.Log.err("ex:{0}", ex);
                 rsp.err();
             }
 
 
-            log.Log.trace("end get_guid");
+            Log.Log.trace("end get_guid");
         }
 
         public async void create_persisted_object(string db, string collection, byte[] object_info)
 		{
-            log.Log.trace("begin create_persisted_object");
+            Log.Log.trace("begin create_persisted_object");
 
-            var rsp = (abelkhan.hub_call_dbproxy_create_persisted_object_rsp)_hub_call_dbproxy_module.rsp.Value;
+            var rsp = (Abelkhan.hub_call_dbproxy_create_persisted_object_rsp)_hub_call_dbproxy_module.rsp.Value;
             try
             {
-                var is_create_sucess = await DBproxy._mongodbproxy.save(db, collection, object_info);
+                var is_create_sucess = await DBProxy._mongodbproxy.save(db, collection, object_info);
                 if (is_create_sucess)
                 {
                     rsp.rsp();
@@ -84,21 +84,21 @@ namespace dbproxy
             }
             catch (System.Exception ex)
             {
-                log.Log.err("ex:{0}", ex);
+                Log.Log.err("ex:{0}", ex);
                 rsp.err();
             }
 
-            log.Log.trace("end create_persisted_object");
+            Log.Log.trace("end create_persisted_object");
         }
 
 		public async void updata_persisted_object(string db, string collection, byte[] query_data, byte[] object_data, bool upsert)
 		{
-            log.Log.trace("begin updata_persisted_object");
+            Log.Log.trace("begin updata_persisted_object");
 
-            var rsp = (abelkhan.hub_call_dbproxy_updata_persisted_object_rsp)_hub_call_dbproxy_module.rsp.Value;
+            var rsp = (Abelkhan.hub_call_dbproxy_updata_persisted_object_rsp)_hub_call_dbproxy_module.rsp.Value;
             try
             {
-                var is_update_sucessed = await DBproxy._mongodbproxy.update(db, collection, query_data, object_data, upsert);
+                var is_update_sucessed = await DBProxy._mongodbproxy.update(db, collection, query_data, object_data, upsert);
                 if (is_update_sucessed)
                 {
                     rsp.rsp();
@@ -110,21 +110,21 @@ namespace dbproxy
             }
             catch (System.Exception ex)
             {
-                log.Log.err("ex:{0}", ex);
+                Log.Log.err("ex:{0}", ex);
                 rsp.err();
             }
 
-            log.Log.trace("end updata_persisted_object");
+            Log.Log.trace("end updata_persisted_object");
         }
 
         public async void find_and_modify(string db, string collection, byte[] query_data, byte[] object_data, bool is_new, bool upsert)
         {
-            log.Log.trace("begin find_and_modify");
+            Log.Log.trace("begin find_and_modify");
 
-            var rsp = (abelkhan.hub_call_dbproxy_find_and_modify_rsp)_hub_call_dbproxy_module.rsp.Value;
+            var rsp = (Abelkhan.hub_call_dbproxy_find_and_modify_rsp)_hub_call_dbproxy_module.rsp.Value;
             try
             {
-                var obj = await DBproxy._mongodbproxy.find_and_modify(db, collection, query_data, object_data, is_new, upsert);
+                var obj = await DBProxy._mongodbproxy.find_and_modify(db, collection, query_data, object_data, is_new, upsert);
                 if (obj != null)
                 {
                     using var st = MemoryStreamPool.mstMgr.GetStream();
@@ -141,21 +141,21 @@ namespace dbproxy
             }
             catch (System.Exception ex)
             {
-                log.Log.err("ex:{0}", ex);
+                Log.Log.err("ex:{0}", ex);
                 rsp.err();
             }
 
-            log.Log.trace("end find_and_modify");
+            Log.Log.trace("end find_and_modify");
         }
 
         public async void remove_object(string db, string collection, byte[] query_data)
         {
-            log.Log.trace("begin remove_object");
+            Log.Log.trace("begin remove_object");
 
-            var rsp = (abelkhan.hub_call_dbproxy_remove_object_rsp)_hub_call_dbproxy_module.rsp.Value;
+            var rsp = (Abelkhan.hub_call_dbproxy_remove_object_rsp)_hub_call_dbproxy_module.rsp.Value;
             try
             {
-                var is_remove_sucessed = await DBproxy._mongodbproxy.remove(db, collection, query_data);
+                var is_remove_sucessed = await DBProxy._mongodbproxy.remove(db, collection, query_data);
                 if (is_remove_sucessed)
                 {
                     rsp.rsp();
@@ -167,41 +167,41 @@ namespace dbproxy
             }
             catch (System.Exception ex)
             {
-                log.Log.err("ex:{0}", ex);
+                Log.Log.err("ex:{0}", ex);
                 rsp.err();
             }
 
-            log.Log.trace("end remove_object");
+            Log.Log.trace("end remove_object");
         }
 
         public async void get_object_count(string db, string collection, byte[] query_data)
         {
-            log.Log.trace("begin get_object_info");
+            Log.Log.trace("begin get_object_info");
 
-            var rsp = (abelkhan.hub_call_dbproxy_get_object_count_rsp)_hub_call_dbproxy_module.rsp.Value;
+            var rsp = (Abelkhan.hub_call_dbproxy_get_object_count_rsp)_hub_call_dbproxy_module.rsp.Value;
             try
             {
-                var count = await DBproxy._mongodbproxy.count(db, collection, query_data);
+                var count = await DBProxy._mongodbproxy.count(db, collection, query_data);
                 rsp.rsp((uint)count);
             }
             catch (System.Exception ex)
             {
-                log.Log.err("ex:{0}", ex);
+                Log.Log.err("ex:{0}", ex);
                 rsp.err();
             }
 
-            log.Log.trace("end get_object_info");
+            Log.Log.trace("end get_object_info");
         }
 
 		public async void get_object_info(string db, string collection, byte[] query_data, int _skip, int _limit, string _sort, bool _Ascending_, string callbackid)
         {
-            log.Log.trace("begin get_object_info");
+            Log.Log.trace("begin get_object_info");
 
-            if (DBproxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value, out Hubproxy _hubproxy))
+            if (DBProxy._hubmanager.get_hub(_hub_call_dbproxy_module.current_ch.Value, out HubProxy _hubproxy))
             {
                 try
                 {
-                    var _list = await DBproxy._mongodbproxy.find(db, collection, query_data, _limit, _skip, _sort, _Ascending_);
+                    var _list = await DBProxy._mongodbproxy.find(db, collection, query_data, _limit, _skip, _sort, _Ascending_);
 
                     int count = 0;
                     if (_list.Count == 0)
@@ -234,16 +234,16 @@ namespace dbproxy
                 }
                 catch (System.Exception ex)
                 {
-                    log.Log.err("ex:{0}", ex);
+                    Log.Log.err("ex:{0}", ex);
                 }
             }
             else
             {
-                log.Log.err("hubproxy is null");
+                Log.Log.err("hubproxy is null");
                 _hubproxy.ack_get_object_info_end(callbackid);
             }
 
-            log.Log.trace("end get_object_info");
+            Log.Log.trace("end get_object_info");
         }
 	}
 }

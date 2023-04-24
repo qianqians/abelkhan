@@ -4,7 +4,7 @@
  * qianqians
  */
 
-namespace abelkhan
+namespace Abelkhan
 {
     public class Crypt
     {

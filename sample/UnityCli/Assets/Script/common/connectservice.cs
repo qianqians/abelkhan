@@ -2,9 +2,9 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace abelkhan
+namespace Abelkhan
 {
-    public class Connectservice
+    public class ConnectService
     {
         public static Socket connect(IPAddress address, short port)
         {

@@ -1,48 +1,48 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace dbproxy
+namespace DBProxy
 {
-	public class Centerproxy
+	public class CenterProxy
 	{
-		public Centerproxy(abelkhan.Ichannel ch)
+		public CenterProxy(Abelkhan.Ichannel ch)
 		{
 			is_reg_sucess = false;
 			_ch = ch;
-			_center_caller = new abelkhan.center_caller(ch, abelkhan.modulemng_handle._modulemng);
+			_center_caller = new Abelkhan.center_caller(ch, Abelkhan.ModuleMgrHandle._modulemng);
 		}
 
 		public void reg_dbproxy(Action callback)
 		{
-			log.Log.trace("begin connect center server");
+			Log.Log.trace("begin connect center server");
 
-			_center_caller.reg_server_mq("dbproxy", "dbproxy", DBproxy.name).callBack(() =>
+			_center_caller.reg_server_mq("dbproxy", "dbproxy", DBProxy.name).callBack(() =>
 			{
 				callback.Invoke();
-				log.Log.trace("connect center server sucessed");
+				Log.Log.trace("connect center server sucessed");
 			}, () =>
 			{
-				log.Log.trace("connect center server faild");
+				Log.Log.trace("connect center server faild");
 			}).timeout(5000, () =>
 			{
-				log.Log.trace("connect center server timeout");
+				Log.Log.trace("connect center server timeout");
 			});
 		}
 
 		public Task<bool> reconn_reg_dbproxy()
 		{
-			log.Log.trace("begin connect center server");
+			Log.Log.trace("begin connect center server");
 
 			var task_ret = new TaskCompletionSource<bool>();
 
-			_center_caller.reconn_reg_server_mq("dbproxy", "dbproxy", DBproxy.name).callBack(() => {
-				log.Log.trace("reconnect center server sucessed");
+			_center_caller.reconn_reg_server_mq("dbproxy", "dbproxy", DBProxy.name).callBack(() => {
+				Log.Log.trace("reconnect center server sucessed");
 				task_ret.SetResult(true);
 			}, () => {
-				log.Log.err("reconnect center server faild");
+				Log.Log.err("reconnect center server faild");
 				task_ret.SetResult(false);
 			}).timeout(5000, () => {
-				log.Log.err("reconnect center server timeout");
+				Log.Log.err("reconnect center server timeout");
 				task_ret.SetResult(false);
 			});
 
@@ -51,17 +51,17 @@ namespace dbproxy
 
 		public void heartbeath()
         {
-            _center_caller.heartbeat(DBproxy.tick).callBack(() => {
-				log.Log.trace("heartbeat center server sucessed");
+            _center_caller.heartbeat(DBProxy.tick).callBack(() => {
+				Log.Log.trace("heartbeat center server sucessed");
 
-				timetmp = service.Timerservice.Tick;
+				timetmp = Service.Timerservice.Tick;
 
 			}, () => {
-				log.Log.err("heartbeat center server faild");
+				Log.Log.err("heartbeat center server faild");
 			}).timeout(5000, () => {
-				log.Log.err("heartbeat center server timeout");
+				Log.Log.err("heartbeat center server timeout");
 			});
-			log.Log.trace("begin heartbeath center server tick:{0}!", service.Timerservice.Tick);
+			Log.Log.trace("begin heartbeath center server tick:{0}!", Service.Timerservice.Tick);
 		}
 
 		public void closed()
@@ -71,10 +71,10 @@ namespace dbproxy
         }
 
 		public bool is_reg_sucess;
-		public long timetmp = service.Timerservice.Tick;
-		public readonly abelkhan.Ichannel _ch;
+		public long timetmp = Service.Timerservice.Tick;
+		public readonly Abelkhan.Ichannel _ch;
 
-		private readonly abelkhan.center_caller _center_caller;
+		private readonly Abelkhan.center_caller _center_caller;
 	}
 }
 

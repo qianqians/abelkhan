@@ -4,22 +4,22 @@
  * qianqians
  */
 
-namespace abelkhan
+namespace Abelkhan
 {
     public class gm_msg_handle
     {
-        private abelkhan.gm_center_module gm_center_module;
-        private Svrmanager svrmng;
-        private GMmanager gmmng;
-        private Closehandle closeHandle;
+        private Abelkhan.gm_center_module gm_center_module;
+        private SvrManager svrmng;
+        private GMManager gmmng;
+        private CloseHandle closeHandle;
 
-        public gm_msg_handle(Svrmanager svrs, GMmanager gms, Closehandle _closeHandle)
+        public gm_msg_handle(SvrManager svrs, GMManager gms, CloseHandle _closeHandle)
         {
             svrmng = svrs;
             gmmng = gms;
             closeHandle = _closeHandle;
 
-            gm_center_module = new abelkhan.gm_center_module(abelkhan.modulemng_handle._modulemng);
+            gm_center_module = new Abelkhan.gm_center_module(Abelkhan.ModuleMgrHandle._modulemng);
             gm_center_module.on_confirm_gm += confirm_gm;
             gm_center_module.on_close_clutter += close_clutter;
             gm_center_module.on_reload += reload;
@@ -34,10 +34,10 @@ namespace abelkhan
         {
             if (gmmng.check_gm(gmname, gm_center_module.current_ch.Value))
             {
-                log.Log.trace("close_clutter {0}", gmname);
+                Log.Log.trace("close_clutter {0}", gmname);
 
                 closeHandle.is_closing = true;
-                svrmng.for_each_svr((Svrproxy _svrproxy) => {
+                svrmng.for_each_svr((SvrProxy _svrproxy) => {
                     _svrproxy.close_server();
                 });
 
@@ -52,7 +52,7 @@ namespace abelkhan
         {
             if (gmmng.check_gm(gmname, gm_center_module.current_ch.Value))
             {
-                svrmng.for_each_hub((Hubproxy _proxy) => {
+                svrmng.for_each_hub((HubProxy _proxy) => {
                     _proxy.reload(argvs);
                 });
             }

@@ -10,27 +10,27 @@ using System.Net;
 using System.Threading.Tasks;
 using ENet.Managed;
 
-namespace abelkhan
+namespace Abelkhan
 {
-    public class Enetservice
+    public class EnetService
     {
         private ENetHost host;
-        private Dictionary<ulong, Enetchannel> back_conns;
-        private Dictionary<ulong, Enetchannel> conns;
-        private Dictionary<ulong, Action<Enetchannel> > conn_cbs;
+        private Dictionary<ulong, EnetChannel> back_conns;
+        private Dictionary<ulong, EnetChannel> conns;
+        private Dictionary<ulong, Action<EnetChannel> > conn_cbs;
         private Task run_t;
         private bool run_flag = true;
 
-        public event Action<abelkhan.Ichannel> on_connect;
+        public event Action<Abelkhan.Ichannel> on_connect;
 
-        public Enetservice(string _host, ushort port)
+        public EnetService(string _host, ushort port)
         {
             var listenEndPoint = new IPEndPoint(Dns.GetHostAddresses(_host)[0], port);
             host = new ENetHost(listenEndPoint, 2048, 1);
 
-            back_conns = new Dictionary<ulong, Enetchannel>();
-            conns = new Dictionary<ulong, Enetchannel>();
-            conn_cbs = new Dictionary<ulong, Action<Enetchannel> >();
+            back_conns = new Dictionary<ulong, EnetChannel>();
+            conns = new Dictionary<ulong, EnetChannel>();
+            conn_cbs = new Dictionary<ulong, Action<EnetChannel> >();
         }
 
         private void poll()
@@ -50,10 +50,10 @@ namespace abelkhan
                         var ip_addr = (ulong)(ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24);
                         var peerHandle = ip_addr << 32 | (ulong)((UInt32)ep.Port);
 
-                        log.Log.trace("enetservice poll raddr:{0}", peerHandle);
-                        if (!back_conns.TryGetValue(peerHandle, out Enetchannel ch))
+                        Log.Log.trace("enetservice poll raddr:{0}", peerHandle);
+                        if (!back_conns.TryGetValue(peerHandle, out EnetChannel ch))
                         {
-                            ch = new Enetchannel(host, Event.Peer);
+                            ch = new EnetChannel(host, Event.Peer);
                             back_conns.Add(peerHandle, ch);
 
                             on_connect?.Invoke(ch);
@@ -63,7 +63,7 @@ namespace abelkhan
                             back_conns.Remove(peerHandle);
                         }
 
-                        if (conn_cbs.Remove(peerHandle, out Action<Enetchannel> cb))
+                        if (conn_cbs.Remove(peerHandle, out Action<EnetChannel> cb))
                         {
                             cb(ch);
                         }
@@ -90,7 +90,7 @@ namespace abelkhan
                         var ip_addr = (ulong)(ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24);
                         var peerHandle = ip_addr << 32 | (ulong)((UInt32)ep.Port);
 
-                        if (conns.TryGetValue(peerHandle, out Enetchannel ch))
+                        if (conns.TryGetValue(peerHandle, out EnetChannel ch))
                         {
                             ch.onrecv(Event.Packet);
                         }
@@ -121,9 +121,9 @@ namespace abelkhan
             run_flag = false;
         }
 
-        public void connect(string ulr_host, ushort port, Action<Enetchannel> cb)
+        public void connect(string ulr_host, ushort port, Action<EnetChannel> cb)
         {
-            log.Log.trace("enet connect host:{0}, port:{1}!", ulr_host, port);
+            Log.Log.trace("enet connect host:{0}, port:{1}!", ulr_host, port);
 
             IPEndPoint connectEndPoint = new IPEndPoint(Dns.GetHostAddresses(ulr_host)[0], port);
 

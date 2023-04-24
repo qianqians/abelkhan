@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Threading;
 using MsgPack.Serialization;
 
-namespace abelkhan
+namespace Abelkhan
 {
-/*this enum code is codegen by abelkhan codegen for c#*/
+/*this enum code is codegen by Abelkhan codegen for c#*/
 
     public enum framework_error{
         enum_framework_timeout = -1,
@@ -14,8 +14,8 @@ namespace abelkhan
         enum_framework_client_not_exist = 1,
         enum_framework_gate_exception = 2
     }
-/*this struct code is codegen by abelkhan codegen for c#*/
-/*this caller code is codegen by abelkhan codegen for c#*/
-/*this module code is codegen by abelkhan codegen for c#*/
+/*this struct code is codegen by Abelkhan codegen for c#*/
+/*this caller code is codegen by Abelkhan codegen for c#*/
+/*this module code is codegen by Abelkhan codegen for c#*/
 
 }

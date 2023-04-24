@@ -9,15 +9,15 @@ using System.Collections;
 using System.Collections.Generic;
 using MsgPack.Serialization;
 
-namespace abelkhan
+namespace Abelkhan
 {
-    public class channel_onrecv
+    public class ChannelOnRecv
     {
         private readonly MemoryStream recv_buf = new();
         private readonly MessagePackSerializer<ArrayList> serializer = MessagePackSerializer.Get<ArrayList>();
         private readonly Ichannel channel;
 
-        public channel_onrecv(Ichannel ch)
+        public ChannelOnRecv(Ichannel ch)
         {
             channel = ch;
         }
@@ -55,7 +55,7 @@ namespace abelkhan
                 _tmp.Write(under_buf, offset, len);
                 _tmp.Position = 0;
                 var _event = serializer.Unpack(_tmp);
-                event_queue.msgQue.Enqueue(Tuple.Create(channel, _event));
+                EventQueue.msgQue.Enqueue(Tuple.Create(channel, _event));
 
                 offset += len;
             }

@@ -3,24 +3,23 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using service;
-using System.Reflection.Metadata;
+using Service;
 
-namespace abelkhan
+namespace Abelkhan
 {
     public class Redischannel : Ichannel
     {
         private readonly string _channelName;
-        private readonly redis_mq _redis_mq_handle;
+        private readonly RedisMQ _redis_mq_handle;
 
-        public readonly channel_onrecv _channel_onrecv;
+        public readonly ChannelOnRecv _channel_onrecv;
 
-        public Redischannel(string channelName, redis_mq mq_handle)
+        public Redischannel(string channelName, RedisMQ mq_handle)
         {
             _channelName = channelName;
             _redis_mq_handle = mq_handle;
 
-            _channel_onrecv = new channel_onrecv(this);
+            _channel_onrecv = new ChannelOnRecv(this);
         }
 
         public void disconnect()
@@ -43,7 +42,7 @@ namespace abelkhan
 
     }
 
-    public class redis_mq
+    public class RedisMQ
     {
         private readonly RedisConnectionHelper _connHelper;
         private ConnectionMultiplexer connectionMultiplexer;
@@ -64,7 +63,7 @@ namespace abelkhan
         private readonly Dictionary<string, Queue<RedisValue>> wait_send_data;
         private readonly Dictionary<string, Queue<RedisValue>> send_data;
 
-        public redis_mq(Timerservice timer, string connUrl, string _listen_channel_name, long _tick_time = 33)
+        public RedisMQ(Timerservice timer, string connUrl, string _listen_channel_name, long _tick_time = 33)
         {
             _timer = timer;
             main_channel_name = _listen_channel_name;
@@ -125,7 +124,7 @@ namespace abelkhan
 
         public void sendmsg(string ch_name, byte[] data)
         {
-            log.Log.trace("send msg to:{0}", ch_name);
+            Log.Log.trace("send msg to:{0}", ch_name);
 
             var b_listen_ch_name = System.Text.Encoding.UTF8.GetBytes(main_channel_name);
             var _listen_ch_name_size = b_listen_ch_name.Length;
@@ -191,17 +190,17 @@ namespace abelkhan
                     }
                     catch (RedisTimeoutException ex)
                     {
-                        log.Log.err("ListLeftPushAsync error:{0}", ex);
+                        Log.Log.err("ListLeftPushAsync error:{0}", ex);
                         Recover(ex);
                     }
                     catch (RedisConnectionException ex)
                     {
-                        log.Log.err("ListLeftPushAsync error:{0}", ex);
+                        Log.Log.err("ListLeftPushAsync error:{0}", ex);
                         Recover(ex);
                     }
                     catch (System.Exception ex)
                     {
-                        log.Log.err("sendmsg_mq error:{0}", ex);
+                        Log.Log.err("sendmsg_mq error:{0}", ex);
                     }
                 }
             }
@@ -227,7 +226,7 @@ namespace abelkhan
             }
             catch (System.Exception ex)
             {
-                log.Log.err("list_channel_name error:{0}", ex);
+                Log.Log.err("list_channel_name error:{0}", ex);
             }
         }
 
@@ -269,17 +268,17 @@ namespace abelkhan
                 }
                 catch (RedisTimeoutException ex)
                 {
-                    log.Log.err("ListLeftPushAsync error:{0}", ex);
+                    Log.Log.err("ListLeftPushAsync error:{0}", ex);
                     Recover(ex);
                 }
                 catch (RedisConnectionException ex)
                 {
-                    log.Log.err("ListLeftPushAsync error:{0}", ex);
+                    Log.Log.err("ListLeftPushAsync error:{0}", ex);
                     Recover(ex);
                 }
                 catch (System.Exception ex)
                 {
-                    log.Log.err("recvmsg_mq error:{0}", ex);
+                    Log.Log.err("recvmsg_mq error:{0}", ex);
                 }
             }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace abelkhan
+namespace Abelkhan
 {
 	public class Config
 	{

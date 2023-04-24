@@ -4,19 +4,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
 
-namespace abelkhan
+namespace Abelkhan
 {
-    public class Cryptrawchannel : abelkhan.Ichannel
+    public class CryptRawChannel : Abelkhan.Ichannel
     {
-        public event Action<Cryptrawchannel> onDisconnect;
-        public event Action<Cryptrawchannel> Disconnect;
+        public event Action<CryptRawChannel> onDisconnect;
+        public event Action<CryptRawChannel> Disconnect;
 
-        public channel_onrecv _channel_onrecv;
+        public ChannelOnRecv _channel_onrecv;
 
-        public Cryptrawchannel(Socket _s)
+        public CryptRawChannel(Socket _s)
         {
             s = _s;
-            _channel_onrecv = new channel_onrecv(this);
+            _channel_onrecv = new ChannelOnRecv(this);
             _channel_onrecv.on_recv_data += Crypt.crypt_func;
 
             recvbuflength = 8 * 1024;
@@ -53,7 +53,7 @@ namespace abelkhan
 
         private void onRead(IAsyncResult ar)
         {
-            Cryptrawchannel ch = ar.AsyncState as Cryptrawchannel;
+            CryptRawChannel ch = ar.AsyncState as CryptRawChannel;
 
             try
             {
@@ -124,7 +124,7 @@ namespace abelkhan
 
         private void send_callback(IAsyncResult ar)
         {
-            Cryptrawchannel ch = ar.AsyncState as Cryptrawchannel;
+            CryptRawChannel ch = ar.AsyncState as CryptRawChannel;
 
             try
             {

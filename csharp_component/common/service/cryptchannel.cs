@@ -10,21 +10,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections;
 
-namespace abelkhan
+namespace Abelkhan
 {
-    public class Cryptchannel : abelkhan.Ichannel
+    public class CryptChannel : Abelkhan.Ichannel
     {
         private readonly Socket s;
         private readonly object lockobj;
 
-        public channel_onrecv _channel_onrecv;
+        public ChannelOnRecv _channel_onrecv;
 
-        public Cryptchannel(Socket socket)
+        public CryptChannel(Socket socket)
         {
             s = socket;
             lockobj = new object();
 
-            _channel_onrecv = new channel_onrecv(this);
+            _channel_onrecv = new ChannelOnRecv(this);
             _channel_onrecv.on_recv_data += Crypt.crypt_func;
         }
 

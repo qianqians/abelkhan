@@ -4,36 +4,36 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-namespace hub
+namespace Hub
 {
-	public class Gateproxy
+	public class GateProxy
 	{
-		public readonly abelkhan.Ichannel _ch;
+		public readonly Abelkhan.Ichannel _ch;
 		public readonly string _name;
 
-		private readonly abelkhan.hub_call_gate_caller _hub_call_gate_caller;
+		private readonly Abelkhan.hub_call_gate_caller _hub_call_gate_caller;
 
-		public Gateproxy(abelkhan.Ichannel ch, string name)
+		public GateProxy(Abelkhan.Ichannel ch, string name)
 		{
 			_ch = ch;
 			_name = name;
 
-			_hub_call_gate_caller = new abelkhan.hub_call_gate_caller(ch, abelkhan.modulemng_handle._modulemng);
+			_hub_call_gate_caller = new Abelkhan.hub_call_gate_caller(ch, Abelkhan.ModuleMgrHandle._modulemng);
 		}
 
 		public void reg_hub()
         {
-            log.Log.trace("begin connect gate server");
+            Log.Log.trace("begin connect gate server");
 
 			_hub_call_gate_caller.reg_hub(Hub.name, Hub.type).callBack(() =>
 			{
-				log.Log.trace("connect gate server sucessed");
+				Log.Log.trace("connect gate server sucessed");
 			}, () =>
 			{
-				log.Log.trace("connect gate server faild");
+				Log.Log.trace("connect gate server faild");
 			}).timeout(5000, () =>
 			{
-				log.Log.trace("connect gate server timeout");
+				Log.Log.trace("connect gate server timeout");
 			});
 		}
 
@@ -42,7 +42,7 @@ namespace hub
 			_hub_call_gate_caller.tick_hub_health(Hub.tick);
         }
 
-		public abelkhan.hub_call_gate_reverse_reg_client_hub_cb reverse_reg_client_hub(string client_uuid)
+		public Abelkhan.hub_call_gate_reverse_reg_client_hub_cb reverse_reg_client_hub(string client_uuid)
         {
 			return _hub_call_gate_caller.reverse_reg_client_hub(client_uuid);
 		}

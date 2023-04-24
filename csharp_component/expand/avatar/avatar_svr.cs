@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using MsgPack.Serialization;
 
-namespace abelkhan
+namespace Abelkhan
 {
 /*this enum code is codegen by abelkhan codegen for c#*/
 
@@ -67,13 +67,13 @@ namespace abelkhan
     }
 
 /*this cb code is codegen by abelkhan for c#*/
-    public class avatar_rsp_cb : common.IModule {
+    public class avatar_rsp_cb : Common.IModule {
         public Dictionary<UInt64, avatar_get_remote_avatar_cb> map_get_remote_avatar;
         public avatar_rsp_cb()
         {
             map_get_remote_avatar = new Dictionary<UInt64, avatar_get_remote_avatar_cb>();
-            hub.Hub._modules.add_mothed("avatar_rsp_cb_get_remote_avatar_rsp", get_remote_avatar_rsp);
-            hub.Hub._modules.add_mothed("avatar_rsp_cb_get_remote_avatar_err", get_remote_avatar_err);
+            Hub.Hub._modules.add_mothed("avatar_rsp_cb_get_remote_avatar_rsp", get_remote_avatar_rsp);
+            Hub.Hub._modules.add_mothed("avatar_rsp_cb_get_remote_avatar_err", get_remote_avatar_err);
         }
 
         public void get_remote_avatar_rsp(IList<MsgPack.MessagePackObject> inArray){
@@ -155,7 +155,7 @@ namespace abelkhan
             var _argv_f7981503_551c_35e6_8df5_ca1daba221e7 = new ArrayList();
             _argv_f7981503_551c_35e6_8df5_ca1daba221e7.Add(uuid_ebef94cb_599c_554a_982d_9e11bd6ce8c3);
             _argv_f7981503_551c_35e6_8df5_ca1daba221e7.Add(guid);
-            hub.Hub._hubs.call_hub(hub_name_3f335b73_f48e_3b8a_a9b6_e3c5a534be4f, "avatar_get_remote_avatar", _argv_f7981503_551c_35e6_8df5_ca1daba221e7);
+            Hub.Hub._hubs.call_hub(hub_name_3f335b73_f48e_3b8a_a9b6_e3c5a534be4f, "avatar_get_remote_avatar", _argv_f7981503_551c_35e6_8df5_ca1daba221e7);
 
             var cb_get_remote_avatar_obj = new avatar_get_remote_avatar_cb(uuid_ebef94cb_599c_554a_982d_9e11bd6ce8c3, rsp_cb_avatar_handle);
             lock(rsp_cb_avatar_handle.map_get_remote_avatar)
@@ -167,7 +167,7 @@ namespace abelkhan
 
     }
 /*this module code is codegen by abelkhan codegen for c#*/
-    public class avatar_get_remote_avatar_rsp : common.Response {
+    public class avatar_get_remote_avatar_rsp : Common.Response {
         private string _hub_name_f7981503_551c_35e6_8df5_ca1daba221e7;
         private UInt64 uuid_3c56f389_4436_3650_a479_d019fab8865d;
         public avatar_get_remote_avatar_rsp(string hub_name, UInt64 _uuid) 
@@ -180,28 +180,28 @@ namespace abelkhan
             var _argv_f7981503_551c_35e6_8df5_ca1daba221e7 = new ArrayList();
             _argv_f7981503_551c_35e6_8df5_ca1daba221e7.Add(uuid_3c56f389_4436_3650_a479_d019fab8865d);
             _argv_f7981503_551c_35e6_8df5_ca1daba221e7.Add(doc_6217a4bb_e21e_3fa1_a1c6_ad1267d01e4d);
-            hub.Hub._hubs.call_hub(_hub_name_f7981503_551c_35e6_8df5_ca1daba221e7, "avatar_rsp_cb_get_remote_avatar_rsp", _argv_f7981503_551c_35e6_8df5_ca1daba221e7);
+            Hub.Hub._hubs.call_hub(_hub_name_f7981503_551c_35e6_8df5_ca1daba221e7, "avatar_rsp_cb_get_remote_avatar_rsp", _argv_f7981503_551c_35e6_8df5_ca1daba221e7);
         }
 
         public void err(){
             var _argv_f7981503_551c_35e6_8df5_ca1daba221e7 = new ArrayList();
             _argv_f7981503_551c_35e6_8df5_ca1daba221e7.Add(uuid_3c56f389_4436_3650_a479_d019fab8865d);
-            hub.Hub._hubs.call_hub(_hub_name_f7981503_551c_35e6_8df5_ca1daba221e7, "avatar_rsp_cb_get_remote_avatar_err", _argv_f7981503_551c_35e6_8df5_ca1daba221e7);
+            Hub.Hub._hubs.call_hub(_hub_name_f7981503_551c_35e6_8df5_ca1daba221e7, "avatar_rsp_cb_get_remote_avatar_err", _argv_f7981503_551c_35e6_8df5_ca1daba221e7);
         }
 
     }
 
-    public class avatar_module : common.IModule {
+    public class avatar_module : Common.IModule {
         public avatar_module() 
         {
-            hub.Hub._modules.add_mothed("avatar_get_remote_avatar", get_remote_avatar);
+            Hub.Hub._modules.add_mothed("avatar_get_remote_avatar", get_remote_avatar);
         }
 
         public event Action<Int64> on_get_remote_avatar;
         public void get_remote_avatar(IList<MsgPack.MessagePackObject> inArray){
             var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
             var _guid = ((MsgPack.MessagePackObject)inArray[1]).AsInt64();
-            rsp = new avatar_get_remote_avatar_rsp(hub.Hub._hubs.current_hubproxy.name, _cb_uuid);
+            rsp = new avatar_get_remote_avatar_rsp(Hub.Hub._hubs.current_hubproxy.name, _cb_uuid);
             if (on_get_remote_avatar != null){
                 on_get_remote_avatar(_guid);
             }

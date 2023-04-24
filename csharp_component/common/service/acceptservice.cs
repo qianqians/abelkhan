@@ -10,7 +10,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO.Pipelines;
 
-namespace abelkhan
+namespace Abelkhan
 {
     public class Acceptservice
     {
@@ -23,7 +23,7 @@ namespace abelkhan
             port = _port;
         }
 
-        public static event Action<abelkhan.Ichannel> on_connect;
+        public static event Action<Abelkhan.Ichannel> on_connect;
         public static void onConnect(Channel ch)
         {
             on_connect?.Invoke(ch);
@@ -51,7 +51,7 @@ namespace abelkhan
                 }
                 catch (System.Exception e)
                 {
-                    log.Log.err("channel_onrecv.on_recv error:{0}!", e);
+                    Log.Log.err("channel_onrecv.on_recv error:{0}!", e);
                     break;
                 }
             }

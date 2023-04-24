@@ -1,5 +1,5 @@
-﻿using abelkhan;
-using hub;
+﻿using Abelkhan;
+using Hub;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
@@ -68,24 +68,24 @@ namespace avatar
         public string ClientUUID;
 
         private string bind_db_proxy_name = null;
-        private DBproxyproxy.Collection Collection
+        private DBProxyProxy.Collection Collection
         {
             get
             {
-                DBproxyproxy bind_db_proxy;
+                DBProxyProxy bind_db_proxy;
                 do
                 {
                     if (string.IsNullOrEmpty(bind_db_proxy_name))
                     {
-                        bind_db_proxy = hub.Hub.get_random_dbproxyproxy();
+                        bind_db_proxy = Hub.Hub.get_random_dbproxyproxy();
                         bind_db_proxy_name = bind_db_proxy.db_name;
                         break;
                     }
 
-                    bind_db_proxy = hub.Hub.get_dbproxy(bind_db_proxy_name);
+                    bind_db_proxy = Hub.Hub.get_dbproxy(bind_db_proxy_name);
                     if (bind_db_proxy == null)
                     {
-                        bind_db_proxy = hub.Hub.get_random_dbproxyproxy();
+                        bind_db_proxy = Hub.Hub.get_random_dbproxyproxy();
                         bind_db_proxy_name = bind_db_proxy.db_name;
                     }
                 } while (false);
@@ -100,7 +100,7 @@ namespace avatar
             var _dirty_state = Interlocked.Exchange(ref _is_dirty, 1);
             if (_dirty_state == 0)
             {
-                hub.Hub._timer.addticktime(AvatarMgr.opt.StoreDelayTime, (tick) =>
+                Hub.Hub._timer.addticktime(AvatarMgr.opt.StoreDelayTime, (tick) =>
                 {
                     Interlocked.Exchange(ref _is_dirty, 0);
 
@@ -108,9 +108,9 @@ namespace avatar
                     query.condition("guid", Guid);
                     Collection.updataPersistedObject(query.query(), get_db_doc(), false, (result) =>
                     {
-                        if (result != DBproxyproxy.EM_DB_RESULT.EM_DB_SUCESSED)
+                        if (result != DBProxyProxy.EM_DB_RESULT.EM_DB_SUCESSED)
                         {
-                            ; log.Log.err("avatar set_dirty updataPersistedObject faild:{0}!", result.ToString());
+                            ; Log.Log.err("avatar set_dirty updataPersistedObject faild:{0}!", result.ToString());
                         }
                     });
                 });
@@ -135,7 +135,7 @@ namespace avatar
             }
             catch (System.Exception ex)
             {
-                log.Log.err("avatar get_clone_hosting_data ex:{0}!", ex);
+                Log.Log.err("avatar get_clone_hosting_data ex:{0}!", ex);
             }
             return default(IDataAgent<T>);
         }
@@ -153,7 +153,7 @@ namespace avatar
             }
             catch (System.Exception ex)
             {
-                log.Log.err("avatar get_real_hosting_data ex:{0}!", ex);
+                Log.Log.err("avatar get_real_hosting_data ex:{0}!", ex);
             }
             finally
             {
@@ -243,7 +243,7 @@ namespace avatar
 
             var query = new DBQueryHelper();
             query.condition("sdk_uuid", sdk_uuid);
-            hub.Hub.get_random_dbproxyproxy().getCollection(opt.DBName, opt.DBCollection).getObjectInfo(query.query(), (value) => {
+            Hub.Hub.get_random_dbproxyproxy().getCollection(opt.DBName, opt.DBCollection).getObjectInfo(query.query(), (value) => {
                 if (value.Count > 1)
                 {
                     throw new AvtarLoadFromDBError($"repeated sdk_uuid:{sdk_uuid}");
@@ -277,9 +277,9 @@ namespace avatar
         {
             var task = new TaskCompletionSource<long>();
 
-            hub.Hub.get_random_dbproxyproxy().getCollection(opt.DBName, opt.GuidCollection).getGuid((result, guid) =>
+            Hub.Hub.get_random_dbproxyproxy().getCollection(opt.DBName, opt.GuidCollection).getGuid((result, guid) =>
             {
-                if (result == hub.DBproxyproxy.EM_DB_RESULT.EM_DB_SUCESSED)
+                if (result == Hub.DBProxyProxy.EM_DB_RESULT.EM_DB_SUCESSED)
                 {
                     task.SetResult(guid);
                 }
@@ -298,11 +298,11 @@ namespace avatar
                 var ins = create();
                 avatar.add_hosting_data(ins);
             }
-            hub.Hub.get_random_dbproxyproxy().getCollection(opt.DBName, opt.DBCollection).createPersistedObject(avatar.get_db_doc(), (result) =>
+            Hub.Hub.get_random_dbproxyproxy().getCollection(opt.DBName, opt.DBCollection).createPersistedObject(avatar.get_db_doc(), (result) =>
             {
-                if (result != hub.DBproxyproxy.EM_DB_RESULT.EM_DB_SUCESSED)
+                if (result != Hub.DBProxyProxy.EM_DB_RESULT.EM_DB_SUCESSED)
                 {
-                    log.Log.err("db create avatar faild:{0}", result.ToString());
+                    Log.Log.err("db create avatar faild:{0}", result.ToString());
                 }
             });
             return avatar;
@@ -336,12 +336,12 @@ namespace avatar
 
             }, () =>
             {
-                log.Log.err("load from remote error!");
+                Log.Log.err("load from remote error!");
                 task.SetResult(null);
 
             }).timeout(3000, () =>
             {
-                log.Log.err("load from remote timeout!");
+                Log.Log.err("load from remote timeout!");
                 task.SetResult(null);
             });
 
@@ -367,7 +367,7 @@ namespace avatar
 
         public static Avatar get_current_avatar()
         {
-            avatar_client_uuid.TryGetValue(hub.Hub._gates.current_client_uuid, out var avatar);
+            avatar_client_uuid.TryGetValue(Hub.Hub._gates.current_client_uuid, out var avatar);
             return avatar;
         }
 

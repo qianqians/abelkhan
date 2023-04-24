@@ -7,9 +7,9 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 
-namespace abelkhan
+namespace Abelkhan
 {
-    public class event_queue
+    public class EventQueue
     {
         public readonly static ConcurrentQueue<Tuple<Ichannel, ArrayList> > msgQue = new();
     }

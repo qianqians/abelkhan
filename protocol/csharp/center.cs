@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Threading;
 using MsgPack.Serialization;
 
-namespace abelkhan
+namespace Abelkhan
 {
-/*this enum code is codegen by abelkhan codegen for c#*/
+/*this enum code is codegen by Abelkhan codegen for c#*/
 
-/*this struct code is codegen by abelkhan codegen for c#*/
-/*this caller code is codegen by abelkhan codegen for c#*/
+/*this struct code is codegen by Abelkhan codegen for c#*/
+/*this caller code is codegen by Abelkhan codegen for c#*/
     public class center_reg_server_mq_cb
     {
         private UInt64 cb_uuid;
@@ -178,22 +178,22 @@ namespace abelkhan
 
     }
 
-/*this cb code is codegen by abelkhan for c#*/
-    public class center_rsp_cb : abelkhan.Imodule {
+/*this cb code is codegen by Abelkhan for c#*/
+    public class center_rsp_cb : Abelkhan.Imodule {
         public Dictionary<UInt64, center_reg_server_mq_cb> map_reg_server_mq;
         public Dictionary<UInt64, center_reconn_reg_server_mq_cb> map_reconn_reg_server_mq;
         public Dictionary<UInt64, center_heartbeat_cb> map_heartbeat;
-        public center_rsp_cb(abelkhan.modulemng modules) : base("center_rsp_cb")
+        public center_rsp_cb(Abelkhan.modulemng modules) : base("center_rsp_cb")
         {
             map_reg_server_mq = new Dictionary<UInt64, center_reg_server_mq_cb>();
-            modules.reg_method("center_rsp_cb_reg_server_mq_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server_mq_rsp));
-            modules.reg_method("center_rsp_cb_reg_server_mq_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server_mq_err));
+            modules.reg_method("center_rsp_cb_reg_server_mq_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_server_mq_rsp));
+            modules.reg_method("center_rsp_cb_reg_server_mq_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_server_mq_err));
             map_reconn_reg_server_mq = new Dictionary<UInt64, center_reconn_reg_server_mq_cb>();
-            modules.reg_method("center_rsp_cb_reconn_reg_server_mq_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server_mq_rsp));
-            modules.reg_method("center_rsp_cb_reconn_reg_server_mq_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server_mq_err));
+            modules.reg_method("center_rsp_cb_reconn_reg_server_mq_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reconn_reg_server_mq_rsp));
+            modules.reg_method("center_rsp_cb_reconn_reg_server_mq_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reconn_reg_server_mq_err));
             map_heartbeat = new Dictionary<UInt64, center_heartbeat_cb>();
-            modules.reg_method("center_rsp_cb_heartbeat_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeat_rsp));
-            modules.reg_method("center_rsp_cb_heartbeat_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeat_err));
+            modules.reg_method("center_rsp_cb_heartbeat_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, heartbeat_rsp));
+            modules.reg_method("center_rsp_cb_heartbeat_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, heartbeat_err));
         }
 
         public void reg_server_mq_rsp(IList<MsgPack.MessagePackObject> inArray){
@@ -306,11 +306,11 @@ namespace abelkhan
 
     }
 
-    public class center_caller : abelkhan.Icaller {
+    public class center_caller : Abelkhan.Icaller {
         public static center_rsp_cb rsp_cb_center_handle = null;
         private Int32 uuid_fd1a4f35_9b23_3f22_8094_3acc5aecb066 = (Int32)RandomUUID.random();
 
-        public center_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("center", _ch)
+        public center_caller(Abelkhan.Ichannel _ch, Abelkhan.modulemng modules) : base("center", _ch)
         {
             if (rsp_cb_center_handle == null)
             {
@@ -376,19 +376,19 @@ namespace abelkhan
         }
 
     }
-/*this cb code is codegen by abelkhan for c#*/
-    public class center_call_server_rsp_cb : abelkhan.Imodule {
-        public center_call_server_rsp_cb(abelkhan.modulemng modules) : base("center_call_server_rsp_cb")
+/*this cb code is codegen by Abelkhan for c#*/
+    public class center_call_server_rsp_cb : Abelkhan.Imodule {
+        public center_call_server_rsp_cb(Abelkhan.modulemng modules) : base("center_call_server_rsp_cb")
         {
         }
 
     }
 
-    public class center_call_server_caller : abelkhan.Icaller {
+    public class center_call_server_caller : Abelkhan.Icaller {
         public static center_call_server_rsp_cb rsp_cb_center_call_server_handle = null;
         private Int32 uuid_8c11e5bb_e9ff_3a0b_a436_65a9922a8da5 = (Int32)RandomUUID.random();
 
-        public center_call_server_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("center_call_server", _ch)
+        public center_call_server_caller(Abelkhan.Ichannel _ch, Abelkhan.modulemng modules) : base("center_call_server", _ch)
         {
             if (rsp_cb_center_call_server_handle == null)
             {
@@ -422,19 +422,19 @@ namespace abelkhan
         }
 
     }
-/*this cb code is codegen by abelkhan for c#*/
-    public class center_call_hub_rsp_cb : abelkhan.Imodule {
-        public center_call_hub_rsp_cb(abelkhan.modulemng modules) : base("center_call_hub_rsp_cb")
+/*this cb code is codegen by Abelkhan for c#*/
+    public class center_call_hub_rsp_cb : Abelkhan.Imodule {
+        public center_call_hub_rsp_cb(Abelkhan.modulemng modules) : base("center_call_hub_rsp_cb")
         {
         }
 
     }
 
-    public class center_call_hub_caller : abelkhan.Icaller {
+    public class center_call_hub_caller : Abelkhan.Icaller {
         public static center_call_hub_rsp_cb rsp_cb_center_call_hub_handle = null;
         private Int32 uuid_adbd1e34_0c90_3426_aefa_4d734c07a706 = (Int32)RandomUUID.random();
 
-        public center_call_hub_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("center_call_hub", _ch)
+        public center_call_hub_caller(Abelkhan.Ichannel _ch, Abelkhan.modulemng modules) : base("center_call_hub", _ch)
         {
             if (rsp_cb_center_call_hub_handle == null)
             {
@@ -456,19 +456,19 @@ namespace abelkhan
         }
 
     }
-/*this cb code is codegen by abelkhan for c#*/
-    public class gm_center_rsp_cb : abelkhan.Imodule {
-        public gm_center_rsp_cb(abelkhan.modulemng modules) : base("gm_center_rsp_cb")
+/*this cb code is codegen by Abelkhan for c#*/
+    public class gm_center_rsp_cb : Abelkhan.Imodule {
+        public gm_center_rsp_cb(Abelkhan.modulemng modules) : base("gm_center_rsp_cb")
         {
         }
 
     }
 
-    public class gm_center_caller : abelkhan.Icaller {
+    public class gm_center_caller : Abelkhan.Icaller {
         public static gm_center_rsp_cb rsp_cb_gm_center_handle = null;
         private Int32 uuid_130fb971_5ae0_3446_b480_f9ee83dbeb28 = (Int32)RandomUUID.random();
 
-        public gm_center_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("gm_center", _ch)
+        public gm_center_caller(Abelkhan.Ichannel _ch, Abelkhan.modulemng modules) : base("gm_center", _ch)
         {
             if (rsp_cb_gm_center_handle == null)
             {
@@ -496,10 +496,10 @@ namespace abelkhan
         }
 
     }
-/*this module code is codegen by abelkhan codegen for c#*/
-    public class center_reg_server_mq_rsp : abelkhan.Response {
+/*this module code is codegen by Abelkhan codegen for c#*/
+    public class center_reg_server_mq_rsp : Abelkhan.Response {
         private UInt64 uuid_7254d987_ac9c_3d73_831c_f43efb3268a9;
-        public center_reg_server_mq_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("center_rsp_cb", _ch)
+        public center_reg_server_mq_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("center_rsp_cb", _ch)
         {
             uuid_7254d987_ac9c_3d73_831c_f43efb3268a9 = _uuid;
         }
@@ -518,9 +518,9 @@ namespace abelkhan
 
     }
 
-    public class center_reconn_reg_server_mq_rsp : abelkhan.Response {
+    public class center_reconn_reg_server_mq_rsp : Abelkhan.Response {
         private UInt64 uuid_4d058274_a122_382e_8084_b9067ed713c5;
-        public center_reconn_reg_server_mq_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("center_rsp_cb", _ch)
+        public center_reconn_reg_server_mq_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("center_rsp_cb", _ch)
         {
             uuid_4d058274_a122_382e_8084_b9067ed713c5 = _uuid;
         }
@@ -539,9 +539,9 @@ namespace abelkhan
 
     }
 
-    public class center_heartbeat_rsp : abelkhan.Response {
+    public class center_heartbeat_rsp : Abelkhan.Response {
         private UInt64 uuid_617b63d0_e6d6_3c80_8c13_63a98d39e89f;
-        public center_heartbeat_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("center_rsp_cb", _ch)
+        public center_heartbeat_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("center_rsp_cb", _ch)
         {
             uuid_617b63d0_e6d6_3c80_8c13_63a98d39e89f = _uuid;
         }
@@ -560,15 +560,15 @@ namespace abelkhan
 
     }
 
-    public class center_module : abelkhan.Imodule {
-        private abelkhan.modulemng modules;
-        public center_module(abelkhan.modulemng _modules) : base("center")
+    public class center_module : Abelkhan.Imodule {
+        private Abelkhan.modulemng modules;
+        public center_module(Abelkhan.modulemng _modules) : base("center")
         {
             modules = _modules;
-            modules.reg_method("center_reg_server_mq", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_server_mq));
-            modules.reg_method("center_reconn_reg_server_mq", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reconn_reg_server_mq));
-            modules.reg_method("center_heartbeat", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeat));
-            modules.reg_method("center_closed", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, closed));
+            modules.reg_method("center_reg_server_mq", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_server_mq));
+            modules.reg_method("center_reconn_reg_server_mq", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reconn_reg_server_mq));
+            modules.reg_method("center_heartbeat", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, heartbeat));
+            modules.reg_method("center_closed", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, closed));
         }
 
         public event Action<string, string, string> on_reg_server_mq;
@@ -616,15 +616,15 @@ namespace abelkhan
         }
 
     }
-    public class center_call_server_module : abelkhan.Imodule {
-        private abelkhan.modulemng modules;
-        public center_call_server_module(abelkhan.modulemng _modules) : base("center_call_server")
+    public class center_call_server_module : Abelkhan.Imodule {
+        private Abelkhan.modulemng modules;
+        public center_call_server_module(Abelkhan.modulemng _modules) : base("center_call_server")
         {
             modules = _modules;
-            modules.reg_method("center_call_server_close_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, close_server));
-            modules.reg_method("center_call_server_console_close_server", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, console_close_server));
-            modules.reg_method("center_call_server_svr_be_closed", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, svr_be_closed));
-            modules.reg_method("center_call_server_take_over_svr", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, take_over_svr));
+            modules.reg_method("center_call_server_close_server", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, close_server));
+            modules.reg_method("center_call_server_console_close_server", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, console_close_server));
+            modules.reg_method("center_call_server_svr_be_closed", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, svr_be_closed));
+            modules.reg_method("center_call_server_take_over_svr", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, take_over_svr));
         }
 
         public event Action on_close_server;
@@ -661,13 +661,13 @@ namespace abelkhan
         }
 
     }
-    public class center_call_hub_module : abelkhan.Imodule {
-        private abelkhan.modulemng modules;
-        public center_call_hub_module(abelkhan.modulemng _modules) : base("center_call_hub")
+    public class center_call_hub_module : Abelkhan.Imodule {
+        private Abelkhan.modulemng modules;
+        public center_call_hub_module(Abelkhan.modulemng _modules) : base("center_call_hub")
         {
             modules = _modules;
-            modules.reg_method("center_call_hub_distribute_server_mq", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, distribute_server_mq));
-            modules.reg_method("center_call_hub_reload", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reload));
+            modules.reg_method("center_call_hub_distribute_server_mq", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, distribute_server_mq));
+            modules.reg_method("center_call_hub_reload", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reload));
         }
 
         public event Action<string, string> on_distribute_server_mq;
@@ -688,14 +688,14 @@ namespace abelkhan
         }
 
     }
-    public class gm_center_module : abelkhan.Imodule {
-        private abelkhan.modulemng modules;
-        public gm_center_module(abelkhan.modulemng _modules) : base("gm_center")
+    public class gm_center_module : Abelkhan.Imodule {
+        private Abelkhan.modulemng modules;
+        public gm_center_module(Abelkhan.modulemng _modules) : base("gm_center")
         {
             modules = _modules;
-            modules.reg_method("gm_center_confirm_gm", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, confirm_gm));
-            modules.reg_method("gm_center_close_clutter", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, close_clutter));
-            modules.reg_method("gm_center_reload", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reload));
+            modules.reg_method("gm_center_confirm_gm", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, confirm_gm));
+            modules.reg_method("gm_center_close_clutter", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, close_clutter));
+            modules.reg_method("gm_center_reload", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reload));
         }
 
         public event Action<string> on_confirm_gm;

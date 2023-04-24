@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Threading;
 using MsgPack.Serialization;
 
-namespace abelkhan
+namespace Abelkhan
 {
-/*this enum code is codegen by abelkhan codegen for c#*/
+/*this enum code is codegen by Abelkhan codegen for c#*/
 
-/*this struct code is codegen by abelkhan codegen for c#*/
+/*this struct code is codegen by Abelkhan codegen for c#*/
     public class hub_info
     {
         public string hub_name;
@@ -33,7 +33,7 @@ namespace abelkhan
         }
     }
 
-/*this caller code is codegen by abelkhan codegen for c#*/
+/*this caller code is codegen by Abelkhan codegen for c#*/
     public class client_call_gate_heartbeats_cb
     {
         private UInt64 cb_uuid;
@@ -146,18 +146,18 @@ namespace abelkhan
 
     }
 
-/*this cb code is codegen by abelkhan for c#*/
-    public class client_call_gate_rsp_cb : abelkhan.Imodule {
+/*this cb code is codegen by Abelkhan for c#*/
+    public class client_call_gate_rsp_cb : Abelkhan.Imodule {
         public Dictionary<UInt64, client_call_gate_heartbeats_cb> map_heartbeats;
         public Dictionary<UInt64, client_call_gate_get_hub_info_cb> map_get_hub_info;
-        public client_call_gate_rsp_cb(abelkhan.modulemng modules) : base("client_call_gate_rsp_cb")
+        public client_call_gate_rsp_cb(Abelkhan.modulemng modules) : base("client_call_gate_rsp_cb")
         {
             map_heartbeats = new Dictionary<UInt64, client_call_gate_heartbeats_cb>();
-            modules.reg_method("client_call_gate_rsp_cb_heartbeats_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeats_rsp));
-            modules.reg_method("client_call_gate_rsp_cb_heartbeats_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeats_err));
+            modules.reg_method("client_call_gate_rsp_cb_heartbeats_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, heartbeats_rsp));
+            modules.reg_method("client_call_gate_rsp_cb_heartbeats_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, heartbeats_err));
             map_get_hub_info = new Dictionary<UInt64, client_call_gate_get_hub_info_cb>();
-            modules.reg_method("client_call_gate_rsp_cb_get_hub_info_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_hub_info_rsp));
-            modules.reg_method("client_call_gate_rsp_cb_get_hub_info_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_hub_info_err));
+            modules.reg_method("client_call_gate_rsp_cb_get_hub_info_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, get_hub_info_rsp));
+            modules.reg_method("client_call_gate_rsp_cb_get_hub_info_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, get_hub_info_err));
         }
 
         public void heartbeats_rsp(IList<MsgPack.MessagePackObject> inArray){
@@ -236,11 +236,11 @@ namespace abelkhan
 
     }
 
-    public class client_call_gate_caller : abelkhan.Icaller {
+    public class client_call_gate_caller : Abelkhan.Icaller {
         public static client_call_gate_rsp_cb rsp_cb_client_call_gate_handle = null;
         private Int32 uuid_2a41ded1_acf2_3b8c_95bc_f149a01703b2 = (Int32)RandomUUID.random();
 
-        public client_call_gate_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("client_call_gate", _ch)
+        public client_call_gate_caller(Abelkhan.Ichannel _ch, Abelkhan.modulemng modules) : base("client_call_gate", _ch)
         {
             if (rsp_cb_client_call_gate_handle == null)
             {
@@ -399,18 +399,18 @@ namespace abelkhan
 
     }
 
-/*this cb code is codegen by abelkhan for c#*/
-    public class hub_call_gate_rsp_cb : abelkhan.Imodule {
+/*this cb code is codegen by Abelkhan for c#*/
+    public class hub_call_gate_rsp_cb : Abelkhan.Imodule {
         public Dictionary<UInt64, hub_call_gate_reg_hub_cb> map_reg_hub;
         public Dictionary<UInt64, hub_call_gate_reverse_reg_client_hub_cb> map_reverse_reg_client_hub;
-        public hub_call_gate_rsp_cb(abelkhan.modulemng modules) : base("hub_call_gate_rsp_cb")
+        public hub_call_gate_rsp_cb(Abelkhan.modulemng modules) : base("hub_call_gate_rsp_cb")
         {
             map_reg_hub = new Dictionary<UInt64, hub_call_gate_reg_hub_cb>();
-            modules.reg_method("hub_call_gate_rsp_cb_reg_hub_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub_rsp));
-            modules.reg_method("hub_call_gate_rsp_cb_reg_hub_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub_err));
+            modules.reg_method("hub_call_gate_rsp_cb_reg_hub_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_hub_rsp));
+            modules.reg_method("hub_call_gate_rsp_cb_reg_hub_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_hub_err));
             map_reverse_reg_client_hub = new Dictionary<UInt64, hub_call_gate_reverse_reg_client_hub_cb>();
-            modules.reg_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reverse_reg_client_hub_rsp));
-            modules.reg_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reverse_reg_client_hub_err));
+            modules.reg_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reverse_reg_client_hub_rsp));
+            modules.reg_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reverse_reg_client_hub_err));
         }
 
         public void reg_hub_rsp(IList<MsgPack.MessagePackObject> inArray){
@@ -488,11 +488,11 @@ namespace abelkhan
 
     }
 
-    public class hub_call_gate_caller : abelkhan.Icaller {
+    public class hub_call_gate_caller : Abelkhan.Icaller {
         public static hub_call_gate_rsp_cb rsp_cb_hub_call_gate_handle = null;
         private Int32 uuid_9796175c_1119_3833_bf31_5ee139b40edc = (Int32)RandomUUID.random();
 
-        public hub_call_gate_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("hub_call_gate", _ch)
+        public hub_call_gate_caller(Abelkhan.Ichannel _ch, Abelkhan.modulemng modules) : base("hub_call_gate", _ch)
         {
             if (rsp_cb_hub_call_gate_handle == null)
             {
@@ -576,10 +576,10 @@ namespace abelkhan
         }
 
     }
-/*this module code is codegen by abelkhan codegen for c#*/
-    public class client_call_gate_heartbeats_rsp : abelkhan.Response {
+/*this module code is codegen by Abelkhan codegen for c#*/
+    public class client_call_gate_heartbeats_rsp : Abelkhan.Response {
         private UInt64 uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56;
-        public client_call_gate_heartbeats_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("client_call_gate_rsp_cb", _ch)
+        public client_call_gate_heartbeats_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("client_call_gate_rsp_cb", _ch)
         {
             uuid_2c1e76dd_8bad_3bd6_a208_e15a8eb56f56 = _uuid;
         }
@@ -599,9 +599,9 @@ namespace abelkhan
 
     }
 
-    public class client_call_gate_get_hub_info_rsp : abelkhan.Response {
+    public class client_call_gate_get_hub_info_rsp : Abelkhan.Response {
         private UInt64 uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b;
-        public client_call_gate_get_hub_info_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("client_call_gate_rsp_cb", _ch)
+        public client_call_gate_get_hub_info_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("client_call_gate_rsp_cb", _ch)
         {
             uuid_db7b7f0f_c3d0_380b_b51e_53fea108bc3b = _uuid;
         }
@@ -621,14 +621,14 @@ namespace abelkhan
 
     }
 
-    public class client_call_gate_module : abelkhan.Imodule {
-        private abelkhan.modulemng modules;
-        public client_call_gate_module(abelkhan.modulemng _modules) : base("client_call_gate")
+    public class client_call_gate_module : Abelkhan.Imodule {
+        private Abelkhan.modulemng modules;
+        public client_call_gate_module(Abelkhan.modulemng _modules) : base("client_call_gate")
         {
             modules = _modules;
-            modules.reg_method("client_call_gate_heartbeats", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, heartbeats));
-            modules.reg_method("client_call_gate_get_hub_info", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_hub_info));
-            modules.reg_method("client_call_gate_forward_client_call_hub", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, forward_client_call_hub));
+            modules.reg_method("client_call_gate_heartbeats", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, heartbeats));
+            modules.reg_method("client_call_gate_get_hub_info", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, get_hub_info));
+            modules.reg_method("client_call_gate_forward_client_call_hub", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, forward_client_call_hub));
         }
 
         public event Action on_heartbeats;
@@ -662,9 +662,9 @@ namespace abelkhan
         }
 
     }
-    public class hub_call_gate_reg_hub_rsp : abelkhan.Response {
+    public class hub_call_gate_reg_hub_rsp : Abelkhan.Response {
         private UInt64 uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
-        public hub_call_gate_reg_hub_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_gate_rsp_cb", _ch)
+        public hub_call_gate_reg_hub_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_gate_rsp_cb", _ch)
         {
             uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 = _uuid;
         }
@@ -683,9 +683,9 @@ namespace abelkhan
 
     }
 
-    public class hub_call_gate_reverse_reg_client_hub_rsp : abelkhan.Response {
+    public class hub_call_gate_reverse_reg_client_hub_rsp : Abelkhan.Response {
         private UInt64 uuid_ef84ff12_6e4a_39cd_896e_27f3ac82fa1a;
-        public hub_call_gate_reverse_reg_client_hub_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_gate_rsp_cb", _ch)
+        public hub_call_gate_reverse_reg_client_hub_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_gate_rsp_cb", _ch)
         {
             uuid_ef84ff12_6e4a_39cd_896e_27f3ac82fa1a = _uuid;
         }
@@ -705,19 +705,19 @@ namespace abelkhan
 
     }
 
-    public class hub_call_gate_module : abelkhan.Imodule {
-        private abelkhan.modulemng modules;
-        public hub_call_gate_module(abelkhan.modulemng _modules) : base("hub_call_gate")
+    public class hub_call_gate_module : Abelkhan.Imodule {
+        private Abelkhan.modulemng modules;
+        public hub_call_gate_module(Abelkhan.modulemng _modules) : base("hub_call_gate")
         {
             modules = _modules;
-            modules.reg_method("hub_call_gate_reg_hub", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub));
-            modules.reg_method("hub_call_gate_tick_hub_health", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, tick_hub_health));
-            modules.reg_method("hub_call_gate_reverse_reg_client_hub", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reverse_reg_client_hub));
-            modules.reg_method("hub_call_gate_unreg_client_hub", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, unreg_client_hub));
-            modules.reg_method("hub_call_gate_disconnect_client", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, disconnect_client));
-            modules.reg_method("hub_call_gate_forward_hub_call_client", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, forward_hub_call_client));
-            modules.reg_method("hub_call_gate_forward_hub_call_group_client", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, forward_hub_call_group_client));
-            modules.reg_method("hub_call_gate_forward_hub_call_global_client", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, forward_hub_call_global_client));
+            modules.reg_method("hub_call_gate_reg_hub", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_hub));
+            modules.reg_method("hub_call_gate_tick_hub_health", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, tick_hub_health));
+            modules.reg_method("hub_call_gate_reverse_reg_client_hub", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reverse_reg_client_hub));
+            modules.reg_method("hub_call_gate_unreg_client_hub", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, unreg_client_hub));
+            modules.reg_method("hub_call_gate_disconnect_client", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, disconnect_client));
+            modules.reg_method("hub_call_gate_forward_hub_call_client", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, forward_hub_call_client));
+            modules.reg_method("hub_call_gate_forward_hub_call_group_client", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, forward_hub_call_group_client));
+            modules.reg_method("hub_call_gate_forward_hub_call_global_client", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, forward_hub_call_global_client));
         }
 
         public event Action<string, string> on_reg_hub;

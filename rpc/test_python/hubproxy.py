@@ -7,7 +7,7 @@ class hubproxy(object):
         self.name = hub_name
         self.type = hub_type
         self.ch = _ch
-        self.hub_call_hub_caller = hub.hub_call_hub_caller(self.ch, _modulemng)
+        self.hub_call_hub_caller = Hub.Hub_call_hub_caller(self.ch, _modulemng)
     
     def caller_hub(self, func_name:str, argvs:list):
         _event = [func_name, argvs]

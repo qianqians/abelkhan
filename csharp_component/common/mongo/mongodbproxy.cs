@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace service
+namespace Service
 {
     public class Mongodbproxy
 	{
@@ -62,7 +62,7 @@ namespace service
             }
             catch(System.Exception e)
             {
-                log.Log.err("create_index faild, {0}", e.Message);
+                Log.Log.err("create_index faild, {0}", e.Message);
             }
             finally
             {
@@ -90,7 +90,7 @@ namespace service
             }
             catch (System.Exception e)
             {
-                log.Log.err("check_int_guid db: {0}, collection: {1}, inside_guid: {2}, faild: {3}", db, collection, _guid, e);
+                Log.Log.err("check_int_guid db: {0}, collection: {1}, inside_guid: {2}, faild: {3}", db, collection, _guid, e);
             }
             finally
             {
@@ -111,7 +111,7 @@ namespace service
             }
             catch(System.Exception e)
             {
-                log.Log.err("save data faild, {0}", e.Message);
+                Log.Log.err("save data faild, {0}", e.Message);
                 return false;
             }
             finally
@@ -141,7 +141,7 @@ namespace service
             }
             catch (System.Exception e)
             {
-                log.Log.err("update data faild, {0}", e.Message);
+                Log.Log.err("update data faild, {0}", e.Message);
                 return false;
             }
             finally
@@ -178,7 +178,7 @@ namespace service
             }
             catch (System.Exception e)
             {
-                log.Log.err("find_and_modify data faild, {0}", e.Message);
+                Log.Log.err("find_and_modify data faild, {0}", e.Message);
             }
             finally
             {
@@ -236,7 +236,7 @@ namespace service
             }
             catch (System.Exception e)
             {
-                log.Log.err("find faild, {0}", e.Message);
+                Log.Log.err("find faild, {0}", e.Message);
                 return _list;
             }
             finally
@@ -262,7 +262,7 @@ namespace service
             }
             catch (System.Exception e)
             {
-                log.Log.err("count faild, {0}", e.Message);
+                Log.Log.err("count faild, {0}", e.Message);
                 return 0;
             }
             finally
@@ -286,7 +286,7 @@ namespace service
             }
             catch (System.Exception e)
             {
-                log.Log.err("remove faild, {0}", e.Message);
+                Log.Log.err("remove faild, {0}", e.Message);
                 return false;
             }
             finally
@@ -314,7 +314,7 @@ namespace service
             }
             catch (System.Exception e)
             {
-                log.Log.err("get_guid data db: {0}, collection: {1}, guid_key: {2} faild, {3}", db, collection, "inside_guid", e);
+                Log.Log.err("get_guid data db: {0}, collection: {1}, guid_key: {2} faild, {3}", db, collection, "inside_guid", e);
                 return -1;
             }
             finally

@@ -2,13 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace gm
+namespace GM
 {
-    class center_proxy
+    class CenterProxy
     {
-        public center_proxy(abelkhan.Ichannel ch)
+        public CenterProxy(Abelkhan.Ichannel ch)
         {
-            center_caller = new abelkhan.gm_center_caller(ch, abelkhan.modulemng_handle._modulemng);
+            center_caller = new Abelkhan.gm_center_caller(ch, Abelkhan.ModuleMgrHandle._modulemng);
         }
 
         public void confirm_gm(string gm_name)
@@ -26,7 +26,7 @@ namespace gm
             center_caller.reload(gm_name, argv);
         }
 
-        private abelkhan.gm_center_caller center_caller;
+        private Abelkhan.gm_center_caller center_caller;
     }
 
     class GM
@@ -35,7 +35,7 @@ namespace gm
         {
             gm_name = _gm_name;
 
-            abelkhan.Config _config = new abelkhan.Config(args[0]);
+            Abelkhan.Config _config = new Abelkhan.Config(args[0]);
             if (args.Length > 1)
             {
                 _config = _config.get_value_dict(args[1]);
@@ -43,12 +43,12 @@ namespace gm
 
             var gm_ip = _config.get_value_string("gm_ip");
             var gm_port = (short)_config.get_value_int("gm_port");
-            var _socket = abelkhan.Connectservice.connect(System.Net.IPAddress.Parse(gm_ip), gm_port);
-            ch = new abelkhan.Rawchannel(_socket);
-            _center_proxy = new center_proxy(ch);
+            var _socket = Abelkhan.ConnectService.connect(System.Net.IPAddress.Parse(gm_ip), gm_port);
+            ch = new Abelkhan.RawChannel(_socket);
+            _center_proxy = new CenterProxy(ch);
             _center_proxy.confirm_gm(gm_name);
 
-            timer = new service.Timerservice();
+            timer = new Service.Timerservice();
         }
 
         public long poll()
@@ -59,20 +59,20 @@ namespace gm
             {
                 while (true)
                 {
-                    if (!abelkhan.event_queue.msgQue.TryDequeue(out Tuple<abelkhan.Ichannel, ArrayList> _event))
+                    if (!Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
                     {
                         break;
                     }
-                    abelkhan.modulemng_handle._modulemng.process_event(_event.Item1, _event.Item2);
+                    Abelkhan.ModuleMgrHandle._modulemng.process_event(_event.Item1, _event.Item2);
                 }
             }
-            catch (abelkhan.Exception e)
+            catch (Abelkhan.Exception e)
             {
-                log.Log.err(e.Message);
+                Log.Log.err(e.Message);
             }
             catch (System.Exception e)
             {
-                log.Log.err("{0}", e);
+                Log.Log.err("{0}", e);
             }
 
             long tick_end = timer.refresh();
@@ -93,7 +93,7 @@ namespace gm
         {
             if (args.Length <= 0)
             {
-                log.Log.err("non input start argv");
+                Log.Log.err("non input start argv");
                 return;
             }
 
@@ -168,8 +168,8 @@ namespace gm
         }
 
         private string gm_name;
-        private abelkhan.Ichannel ch;
-        private service.Timerservice timer;
-        private center_proxy _center_proxy;
+        private Abelkhan.Ichannel ch;
+        private Service.Timerservice timer;
+        private CenterProxy _center_proxy;
     }
 }

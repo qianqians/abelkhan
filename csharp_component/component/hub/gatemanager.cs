@@ -1,4 +1,4 @@
-﻿using abelkhan;
+﻿using Abelkhan;
 using MsgPack.Serialization;
 using System;
 using System.Collections;
@@ -7,24 +7,24 @@ using System.IO;
 using System.Net;
 using System.Threading;
 
-namespace hub
+namespace Hub
 {
-    public class Directproxy
+    public class DirectProxy
     {
-        private readonly abelkhan.hub_call_client_caller _hub_call_client_caller;
+        private readonly Abelkhan.hub_call_client_caller _hub_call_client_caller;
 
         public readonly string _cuuid;
-        public readonly abelkhan.Ichannel _direct_ch;
+        public readonly Abelkhan.Ichannel _direct_ch;
 
         public long _timetmp = 0;
         public long _theory_timetmp = 0;
 
-        public Directproxy(string cuuid_, abelkhan.Ichannel direct_ch)
+        public DirectProxy(string cuuid_, Abelkhan.Ichannel direct_ch)
         {
             _cuuid = cuuid_;
             _direct_ch = direct_ch;
 
-            _hub_call_client_caller = new abelkhan.hub_call_client_caller(_direct_ch, abelkhan.modulemng_handle._modulemng);
+            _hub_call_client_caller = new Abelkhan.hub_call_client_caller(_direct_ch, Abelkhan.ModuleMgrHandle._modulemng);
         }
 
         public void call_client(byte[] rpc_argv)
@@ -33,35 +33,35 @@ namespace hub
         }
     }
 
-    public class Gatemanager
+    public class GateManager
 	{
         public string current_client_uuid;
 
-        private readonly Dictionary<string, Gateproxy> clients;
+        private readonly Dictionary<string, GateProxy> clients;
 
-        private readonly Dictionary<string, Gateproxy> _wait_destory_gateproxys;
-        private readonly Dictionary<abelkhan.Ichannel, Gateproxy> ch_gateproxys;
-        private readonly Dictionary<string, Gateproxy> gates;
+        private readonly Dictionary<string, GateProxy> _wait_destory_gateproxys;
+        private readonly Dictionary<Abelkhan.Ichannel, GateProxy> ch_gateproxys;
+        private readonly Dictionary<string, GateProxy> gates;
 
-        private readonly Dictionary<string, Directproxy> direct_clients;
-        private readonly Dictionary<abelkhan.Ichannel, Directproxy> ch_direct_clients;
+        private readonly Dictionary<string, DirectProxy> direct_clients;
+        private readonly Dictionary<Abelkhan.Ichannel, DirectProxy> ch_direct_clients;
 
         private readonly MessagePackSerializer<ArrayList> _serializer = MessagePackSerializer.Get<ArrayList>();
 
-        private readonly abelkhan.redis_mq _gate_redismq_conn;
+        private readonly Abelkhan.RedisMQ _gate_redismq_conn;
 
-        public Gatemanager(abelkhan.redis_mq _conn)
+        public GateManager(Abelkhan.RedisMQ _conn)
         {
             _gate_redismq_conn = _conn;
 
-            clients = new Dictionary<string, Gateproxy>();
+            clients = new Dictionary<string, GateProxy>();
 
-            _wait_destory_gateproxys = new Dictionary<string, Gateproxy>();
-            ch_gateproxys = new Dictionary<abelkhan.Ichannel, Gateproxy>();
-            gates = new Dictionary<string, Gateproxy>();
+            _wait_destory_gateproxys = new Dictionary<string, GateProxy>();
+            ch_gateproxys = new Dictionary<Abelkhan.Ichannel, GateProxy>();
+            gates = new Dictionary<string, GateProxy>();
 
-            direct_clients = new Dictionary<string, Directproxy>();
-            ch_direct_clients = new Dictionary<abelkhan.Ichannel, Directproxy>();
+            direct_clients = new Dictionary<string, DirectProxy>();
+            ch_direct_clients = new Dictionary<Abelkhan.Ichannel, DirectProxy>();
 
             Hub._timer.addticktime(10000, heartbeat_tick_hub_health);
             Hub._timer.addticktime(10000, heartbeat_client);
@@ -72,9 +72,9 @@ namespace hub
             var ch = _gate_redismq_conn.connect(name);
             if (ch != null)
             {
-                var _proxy = new Gateproxy(ch, name);
+                var _proxy = new GateProxy(ch, name);
 
-                if (gates.TryGetValue(name, out Gateproxy _old_proxy))
+                if (gates.TryGetValue(name, out GateProxy _old_proxy))
                 {
                     _wait_destory_gateproxys.Add(name, _old_proxy);
                     gates[name] = _proxy;
@@ -85,7 +85,7 @@ namespace hub
                 }
 
                 ch_gateproxys.Add(ch, _proxy);
-                log.Log.info("connect gate:{0}", name);
+                Log.Log.info("connect gate:{0}", name);
 
                 lock (Hub.add_chs)
                 {
@@ -95,19 +95,19 @@ namespace hub
             }
         }
 
-        public bool get_gateproxy(abelkhan.Ichannel gate_ch, out Gateproxy proxy)
+        public bool get_gateproxy(Abelkhan.Ichannel gate_ch, out GateProxy proxy)
 		{
 			return ch_gateproxys.TryGetValue(gate_ch, out proxy);
 		}
 
-        public bool get_gateproxy(string session_uuid, out Gateproxy proxy)
+        public bool get_gateproxy(string session_uuid, out GateProxy proxy)
         {
             return clients.TryGetValue(session_uuid, out proxy);
         }
 
         public string get_client_gate_name(string session_uuid)
         {
-            clients.TryGetValue(session_uuid, out Gateproxy _client_gate_proxy);
+            clients.TryGetValue(session_uuid, out GateProxy _client_gate_proxy);
             if (_client_gate_proxy != null)
             {
                 return _client_gate_proxy._name;
@@ -118,8 +118,8 @@ namespace hub
         public event Action<string> on_gate_closed;
         public void gate_be_closed(string svr_name)
         {
-            log.Log.info("gate_be_closed name:{0}", svr_name);
-            if (_wait_destory_gateproxys.Remove(svr_name, out Gateproxy _old_proxy))
+            Log.Log.info("gate_be_closed name:{0}", svr_name);
+            if (_wait_destory_gateproxys.Remove(svr_name, out GateProxy _old_proxy))
             {
                 var remove = new List<string>();
                 foreach (var it in clients)
@@ -143,7 +143,7 @@ namespace hub
             }
             else
             {
-                if (gates.Remove(svr_name, out Gateproxy _proxy))
+                if (gates.Remove(svr_name, out GateProxy _proxy))
                 {
                     var remove = new List<string>();
                     foreach (var it in clients)
@@ -170,9 +170,9 @@ namespace hub
             }
         }
 
-        public void client_connect(string client_uuid, abelkhan.Ichannel gate_ch)
+        public void client_connect(string client_uuid, Abelkhan.Ichannel gate_ch)
         {
-            if (ch_gateproxys.TryGetValue(gate_ch, out Gateproxy _proxy))
+            if (ch_gateproxys.TryGetValue(gate_ch, out GateProxy _proxy))
             {
                 if (!clients.ContainsKey(client_uuid))
                 {
@@ -181,17 +181,17 @@ namespace hub
             }
             else
             {
-                log.Log.err("invaild gate:{0}, ch_gateproxys.count:{1}", gate_ch, ch_gateproxys.Count);
+                Log.Log.err("invaild gate:{0}, ch_gateproxys.count:{1}", gate_ch, ch_gateproxys.Count);
             }
 
-            log.Log.trace("client {0} connected", client_uuid);
+            Log.Log.trace("client {0} connected", client_uuid);
         }
 
-        public Gateproxy client_seep(string client_uuid, string gate_name)
+        public GateProxy client_seep(string client_uuid, string gate_name)
         {
-            if (!gates.TryGetValue(gate_name, out Gateproxy _proxy))
+            if (!gates.TryGetValue(gate_name, out GateProxy _proxy))
             {
-                log.Log.err("invaild gate name:{0}", gate_name);
+                Log.Log.err("invaild gate name:{0}", gate_name);
                 return null;
             }
             if (!clients.ContainsKey(client_uuid))
@@ -199,7 +199,7 @@ namespace hub
                 clients.Add(client_uuid, _proxy);
             }
 
-            log.Log.trace("client {0} seep!", client_uuid);
+            Log.Log.trace("client {0} seep!", client_uuid);
 
             return _proxy;
         }
@@ -219,34 +219,34 @@ namespace hub
             clientException?.Invoke(client_uuid);
         }
 
-        public void direct_client_connect(String client_uuid, abelkhan.Ichannel direct_ch)
+        public void direct_client_connect(String client_uuid, Abelkhan.Ichannel direct_ch)
         {
-            if (direct_clients.Remove(client_uuid, out Directproxy _directproxy))
+            if (direct_clients.Remove(client_uuid, out DirectProxy _directproxy))
             {
                 ch_direct_clients.Remove(_directproxy._direct_ch);
             }
 
-            log.Log.trace("reg direct client:{0}", client_uuid);
+            Log.Log.trace("reg direct client:{0}", client_uuid);
 
-            var _directproxy_new = new Directproxy(client_uuid, direct_ch);
+            var _directproxy_new = new DirectProxy(client_uuid, direct_ch);
             direct_clients.Add(client_uuid, _directproxy_new);
 
             ch_direct_clients.Add(direct_ch, _directproxy_new);
         }
 
         public event Action<string> directClientDisconnect;
-        public void direct_client_disconnect(abelkhan.Ichannel direct_ch)
+        public void direct_client_disconnect(Abelkhan.Ichannel direct_ch)
         {
-            if (ch_direct_clients.Remove(direct_ch, out Directproxy _proxy))
+            if (ch_direct_clients.Remove(direct_ch, out DirectProxy _proxy))
             {
                 direct_clients.Remove(_proxy._cuuid);
                 directClientDisconnect?.Invoke(_proxy._cuuid);
             }
         }
 
-        public void direct_client_exception(abelkhan.Ichannel direct_ch)
+        public void direct_client_exception(Abelkhan.Ichannel direct_ch)
         {
-            if (ch_direct_clients.TryGetValue(direct_ch, out Directproxy _proxy))
+            if (ch_direct_clients.TryGetValue(direct_ch, out DirectProxy _proxy))
             {
                 clientException?.Invoke(_proxy._cuuid);
             }
@@ -264,8 +264,8 @@ namespace hub
 
         void heartbeat_client(long ticktime)
         {
-            List<Directproxy> remove_client = new List<Directproxy>();
-            List<Directproxy> exception_client = new List<Directproxy>();
+            List<DirectProxy> remove_client = new List<DirectProxy>();
+            List<DirectProxy> exception_client = new List<DirectProxy>();
             foreach (var item in direct_clients)
             {
                 var proxy = item.Value;
@@ -296,19 +296,19 @@ namespace hub
             Hub._timer.addticktime(10000, heartbeat_client);
         }
 
-        public bool get_directproxy(abelkhan.Ichannel direct_ch, out Directproxy _proxy)
+        public bool get_directproxy(Abelkhan.Ichannel direct_ch, out DirectProxy _proxy)
         {
             return ch_direct_clients.TryGetValue(direct_ch, out _proxy);
         }
 
         public void disconnect_client(String uuid)
         {
-            if (clients.Remove(uuid, out Gateproxy _proxy))
+            if (clients.Remove(uuid, out GateProxy _proxy))
             {
                 _proxy.disconnect_client(uuid);
             }
 
-            if (direct_clients.Remove(uuid, out Directproxy _directproxy)) {
+            if (direct_clients.Remove(uuid, out DirectProxy _directproxy)) {
                 ch_direct_clients.Remove(_directproxy._direct_ch);
             }
         }
@@ -325,7 +325,7 @@ namespace hub
             st.Position = 0;
             var _rpc_bin = st.ToArray();
 
-            if (direct_clients.TryGetValue(uuid, out Directproxy _client))
+            if (direct_clients.TryGetValue(uuid, out DirectProxy _client))
             {
                 _client.call_client(_rpc_bin);
             }
@@ -337,19 +337,19 @@ namespace hub
                 }
                 else
                 {
-                    log.Log.trace("no-exist client:", uuid);
+                    Log.Log.trace("no-exist client:", uuid);
                 }
             }
         }
 
         public void call_group_client(List<string> uuids, String func, ArrayList _argvs_list)
         {
-            var _direct_clients = new List<abelkhan.Ichannel>();
-            var _direct_clients_crypt = new List<abelkhan.Ichannel>();
-            var tmp_gates = new Dictionary<Gateproxy, List<string> >();
+            var _direct_clients = new List<Abelkhan.Ichannel>();
+            var _direct_clients_crypt = new List<Abelkhan.Ichannel>();
+            var tmp_gates = new Dictionary<GateProxy, List<string> >();
             foreach (var _uuid in uuids)
             {
-                if (direct_clients.TryGetValue(_uuid, out Directproxy _client))
+                if (direct_clients.TryGetValue(_uuid, out DirectProxy _client))
                 {
                     if (_client._direct_ch.is_xor_key_crypt())
                     {
@@ -362,7 +362,7 @@ namespace hub
                     continue;
                 }
 
-                if (clients.TryGetValue(_uuid, out Gateproxy _proxy))
+                if (clients.TryGetValue(_uuid, out GateProxy _proxy))
                 {
                     if (!tmp_gates.ContainsKey(_proxy))
                     {
@@ -410,7 +410,7 @@ namespace hub
             st_send_crypt.Write(st_send.GetBuffer());
             st_send_crypt.Position = 0;
             var crypt_buf = st_send_crypt.ToArray();
-            abelkhan.Crypt.crypt_func_send(crypt_buf);
+            Abelkhan.Crypt.crypt_func_send(crypt_buf);
 
             foreach (var _client in _direct_clients_crypt)
             {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace abelkhan
+namespace Abelkhan
 {
     public class SortedVector<TKey, TValue>
     {

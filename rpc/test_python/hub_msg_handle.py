@@ -9,7 +9,7 @@ class hub_msg_handle(object):
         self.hubmgr = _hubmanager
         self.modulemanager = _modulemanager
 
-        self.hub_call_hub_module = hub.hub_call_hub_module(_modulemng)
+        self.hub_call_hub_module = Hub.Hub_call_hub_module(_modulemng)
 
         self.hub_call_hub_module.cb_reg_hub = self.reg_hub
         self.hub_call_hub_module.cb_hub_call_hub_mothed = self.hub_call_hub_mothed

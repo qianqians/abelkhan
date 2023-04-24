@@ -8,21 +8,21 @@ using System.IO;
 using System.Collections;
 using Fleck;
 
-namespace abelkhan
+namespace Abelkhan
 {
 
-    public class Websocketchannel : abelkhan.Ichannel
+    public class WebsocketChannel : Abelkhan.Ichannel
     {
         private IWebSocketConnection _socket;
         private object lockobj;
 
-        public channel_onrecv _channel_onrecv;
+        public ChannelOnRecv _channel_onrecv;
 
-        public event Action<Websocketchannel> on_connect;
-        public Websocketchannel(IWebSocketConnection socket)
+        public event Action<WebsocketChannel> on_connect;
+        public WebsocketChannel(IWebSocketConnection socket)
         {
             lockobj = new object();
-            _channel_onrecv = new channel_onrecv(this);
+            _channel_onrecv = new ChannelOnRecv(this);
 
             _socket = socket;
             _socket.OnOpen = () => {

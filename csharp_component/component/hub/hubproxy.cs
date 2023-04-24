@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Collections;
 using MsgPack.Serialization;
 using System.IO;
-using abelkhan;
+using Abelkhan;
 
-namespace hub
+namespace Hub
 {
-    public class Hubproxy
+    public class HubProxy
     {
-        private readonly abelkhan.hub_call_hub_caller _hub_call_hub_caller;
+        private readonly Abelkhan.hub_call_hub_caller _hub_call_hub_caller;
         private readonly MessagePackSerializer<ArrayList> _serializer = MessagePackSerializer.Get<ArrayList>();
 
-        public Hubproxy(string hub_name, string hub_type, abelkhan.Ichannel ch)
+        public HubProxy(string hub_name, string hub_type, Abelkhan.Ichannel ch)
         {
             name = hub_name;
             type = hub_type;
             _ch = ch;
-            _hub_call_hub_caller = new abelkhan.hub_call_hub_caller(ch, abelkhan.modulemng_handle._modulemng);
+            _hub_call_hub_caller = new Abelkhan.hub_call_hub_caller(ch, Abelkhan.ModuleMgrHandle._modulemng);
         }
 
         public void caller_hub(string func_name, ArrayList argvs)
@@ -42,6 +42,6 @@ namespace hub
 
         public readonly string name;
         public readonly string type;
-        public readonly abelkhan.Ichannel _ch;
+        public readonly Abelkhan.Ichannel _ch;
     }
 }

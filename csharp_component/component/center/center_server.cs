@@ -9,29 +9,29 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace abelkhan
+namespace Abelkhan
 {
     public class Center
     {
-        private readonly abelkhan.redis_mq _redis_mq_service;
+        private readonly Abelkhan.RedisMQ _redis_mq_service;
         private readonly Acceptservice _accept_gm_service;
-        private readonly GMmanager _gmmanager;
-        private readonly List<abelkhan.Ichannel> add_chs;
+        private readonly GMManager _gmmanager;
+        private readonly List<Abelkhan.Ichannel> add_chs;
         private readonly svr_msg_handle _svr_msg_handle;
         private readonly gm_msg_handle _gm_msg_handle;
 
-        public readonly Svrmanager _svrmanager;
-        public readonly List<abelkhan.Ichannel> remove_chs;
-        public readonly Closehandle _closeHandle;
-        public readonly service.Timerservice _timer; 
-        public readonly abelkhan.Config _root_cfg;
+        public readonly SvrManager _svrmanager;
+        public readonly List<Abelkhan.Ichannel> remove_chs;
+        public readonly CloseHandle _closeHandle;
+        public readonly Service.Timerservice _timer; 
+        public readonly Abelkhan.Config _root_cfg;
         
-        public event Action<Svrproxy> on_svr_disconnect;
+        public event Action<SvrProxy> on_svr_disconnect;
 
         static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Exception ex = e.ExceptionObject as Exception;
-            log.Log.err("unhandle exception:{0}", ex.ToString());
+            Log.Log.err("unhandle exception:{0}", ex.ToString());
         }
 
         public Center(string cfg_file, string cfg_name)
@@ -43,28 +43,28 @@ namespace abelkhan
             var log_level = _config.get_value_string("log_level");
             if (log_level == "trace")
             {
-                log.Log.logMode = log.Log.enLogMode.trace;
+                Log.Log.logMode = Log.Log.enLogMode.trace;
             }
             else if (log_level == "debug")
             {
-                log.Log.logMode = log.Log.enLogMode.debug;
+                Log.Log.logMode = Log.Log.enLogMode.debug;
             }
             else if (log_level == "info")
             {
-                log.Log.logMode = log.Log.enLogMode.info;
+                Log.Log.logMode = Log.Log.enLogMode.info;
             }
             else if (log_level == "warn")
             {
-                log.Log.logMode = log.Log.enLogMode.warn;
+                Log.Log.logMode = Log.Log.enLogMode.warn;
             }
             else if (log_level == "err")
             {
-                log.Log.logMode = log.Log.enLogMode.err;
+                Log.Log.logMode = Log.Log.enLogMode.err;
             }
             var log_file = _config.get_value_string("log_file");
-            log.Log.logFile = log_file;
+            Log.Log.logFile = log_file;
             var log_dir = _config.get_value_string("log_dir");
-            log.Log.logPath = log_dir;
+            Log.Log.logPath = log_dir;
             {
                 if (!System.IO.Directory.Exists(log_dir))
                 {
@@ -74,28 +74,28 @@ namespace abelkhan
 
             AppDomain.CurrentDomain.UnhandledException += UnhandledException;
 
-            _timer = new service.Timerservice();
+            _timer = new Service.Timerservice();
 
-            add_chs = new List<abelkhan.Ichannel>();
+            add_chs = new List<Abelkhan.Ichannel>();
             remove_chs = new List<Ichannel>();
-            _closeHandle = new Closehandle();
+            _closeHandle = new CloseHandle();
 
             var redismq_url = _root_cfg.get_value_string("redis_for_mq");
-            _redis_mq_service = new abelkhan.redis_mq(_timer, redismq_url, name, 333);
+            _redis_mq_service = new Abelkhan.RedisMQ(_timer, redismq_url, name, 333);
 
-            _svrmanager = new Svrmanager(_timer, this, _redis_mq_service);
+            _svrmanager = new SvrManager(_timer, this, _redis_mq_service);
             _svr_msg_handle = new svr_msg_handle(_svrmanager, _closeHandle);
             _svrmanager.on_svr_disconnect += (proxy) =>
             {
                 on_svr_disconnect?.Invoke(proxy);
             };
 
-            _gmmanager = new GMmanager();
+            _gmmanager = new GMManager();
             _gm_msg_handle = new gm_msg_handle(_svrmanager, _gmmanager, _closeHandle);
             var gm_host = _config.get_value_string("gm_host");
             var gm_port = _config.get_value_int("gm_port");
             _accept_gm_service = new Acceptservice((ushort)gm_port);
-            Acceptservice.on_connect += (abelkhan.Ichannel ch) =>{
+            Acceptservice.on_connect += (Abelkhan.Ichannel ch) =>{
                 lock (add_chs)
                 {
                     add_chs.Add(ch);
@@ -113,11 +113,11 @@ namespace abelkhan
 
                 while (true)
                 {
-                    if (!event_queue.msgQue.TryDequeue(out Tuple<Ichannel, ArrayList> _event))
+                    if (!EventQueue.msgQue.TryDequeue(out Tuple<Ichannel, ArrayList> _event))
                     {
                         break;
                     }
-                    abelkhan.modulemng_handle._modulemng.process_event(_event.Item1, _event.Item2);
+                    Abelkhan.ModuleMgrHandle._modulemng.process_event(_event.Item1, _event.Item2);
                 }
 
                 if (remove_chs.Count > 0)
@@ -144,13 +144,13 @@ namespace abelkhan
                     }
                 }
             }
-            catch (abelkhan.Exception e)
+            catch (Abelkhan.Exception e)
             {
-                log.Log.err("AbelkhanException:{0}", e.Message);
+                Log.Log.err("AbelkhanException:{0}", e.Message);
             }
             catch (System.Exception e)
             {
-                log.Log.err("System.Exception:{0}", e);
+                Log.Log.err("System.Exception:{0}", e);
             }
 
             long tick_end = _timer.refresh();
@@ -162,7 +162,7 @@ namespace abelkhan
         {
             if (!Monitor.TryEnter(_run_mu))
             {
-                throw new abelkhan.Exception("run mast at single thread!");
+                throw new Abelkhan.Exception("run mast at single thread!");
             }
 
             while (!_closeHandle.is_close)
@@ -177,10 +177,10 @@ namespace abelkhan
                 }
                 catch (System.Exception e)
                 {
-                    log.Log.err("error:{0}", e.Message);
+                    Log.Log.err("error:{0}", e.Message);
                 }
             }
-            log.Log.close();
+            Log.Log.close();
 
             Monitor.Exit(_run_mu);
         }

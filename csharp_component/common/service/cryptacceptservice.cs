@@ -10,27 +10,27 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO.Pipelines;
 
-namespace abelkhan
+namespace Abelkhan
 {
-    public class Cryptacceptservice
+    public class CryptAcceptService
     {
         private bool run = true;
         private ushort port;
         private Task _t;
 
-        public Cryptacceptservice(ushort _port)
+        public CryptAcceptService(ushort _port)
         {
             port = _port;
         }
 
-        public static event Action<Cryptchannel> on_connect;
-        public static void onConnect(Cryptchannel ch)
+        public static event Action<CryptChannel> on_connect;
+        public static void onConnect(CryptChannel ch)
         {
             on_connect?.Invoke(ch);
         }
 
-        public static event Action<Cryptchannel> on_disconnect;
-        public static void onDisconnect(Cryptchannel ch)
+        public static event Action<CryptChannel> on_disconnect;
+        public static void onDisconnect(CryptChannel ch)
         {
             on_disconnect?.Invoke(ch);
         }
@@ -57,7 +57,7 @@ namespace abelkhan
                 }
                 catch (System.Exception e)
                 {
-                    log.Log.err("channel_onrecv.on_recv error:{0}!", e);
+                    Log.Log.err("channel_onrecv.on_recv error:{0}!", e);
                     break;
                 }
             }

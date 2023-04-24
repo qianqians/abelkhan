@@ -23,7 +23,7 @@ def gen_csharp_import(_import):
     code += "using System.Collections.Generic;\n"
     code += "using System.Threading;\n"
     code += "using MsgPack.Serialization;\n\n"
-    code += "namespace abelkhan\n{\n"
+    code += "namespace Abelkhan\n{\n"
     return code
 
 def gen_python_import(_import):

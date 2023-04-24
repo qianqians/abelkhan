@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Threading;
 using MsgPack.Serialization;
 
-namespace abelkhan
+namespace Abelkhan
 {
-/*this enum code is codegen by abelkhan codegen for c#*/
+/*this enum code is codegen by Abelkhan codegen for c#*/
 
-/*this struct code is codegen by abelkhan codegen for c#*/
-/*this caller code is codegen by abelkhan codegen for c#*/
+/*this struct code is codegen by Abelkhan codegen for c#*/
+/*this caller code is codegen by Abelkhan codegen for c#*/
     public class hub_call_dbproxy_reg_hub_cb
     {
         private UInt64 cb_uuid;
@@ -402,8 +402,8 @@ namespace abelkhan
 
     }
 
-/*this cb code is codegen by abelkhan for c#*/
-    public class hub_call_dbproxy_rsp_cb : abelkhan.Imodule {
+/*this cb code is codegen by Abelkhan for c#*/
+    public class hub_call_dbproxy_rsp_cb : Abelkhan.Imodule {
         public Dictionary<UInt64, hub_call_dbproxy_reg_hub_cb> map_reg_hub;
         public Dictionary<UInt64, hub_call_dbproxy_get_guid_cb> map_get_guid;
         public Dictionary<UInt64, hub_call_dbproxy_create_persisted_object_cb> map_create_persisted_object;
@@ -411,29 +411,29 @@ namespace abelkhan
         public Dictionary<UInt64, hub_call_dbproxy_find_and_modify_cb> map_find_and_modify;
         public Dictionary<UInt64, hub_call_dbproxy_remove_object_cb> map_remove_object;
         public Dictionary<UInt64, hub_call_dbproxy_get_object_count_cb> map_get_object_count;
-        public hub_call_dbproxy_rsp_cb(abelkhan.modulemng modules) : base("hub_call_dbproxy_rsp_cb")
+        public hub_call_dbproxy_rsp_cb(Abelkhan.modulemng modules) : base("hub_call_dbproxy_rsp_cb")
         {
             map_reg_hub = new Dictionary<UInt64, hub_call_dbproxy_reg_hub_cb>();
-            modules.reg_method("hub_call_dbproxy_rsp_cb_reg_hub_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub_rsp));
-            modules.reg_method("hub_call_dbproxy_rsp_cb_reg_hub_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub_err));
+            modules.reg_method("hub_call_dbproxy_rsp_cb_reg_hub_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_hub_rsp));
+            modules.reg_method("hub_call_dbproxy_rsp_cb_reg_hub_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_hub_err));
             map_get_guid = new Dictionary<UInt64, hub_call_dbproxy_get_guid_cb>();
-            modules.reg_method("hub_call_dbproxy_rsp_cb_get_guid_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_guid_rsp));
-            modules.reg_method("hub_call_dbproxy_rsp_cb_get_guid_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_guid_err));
+            modules.reg_method("hub_call_dbproxy_rsp_cb_get_guid_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, get_guid_rsp));
+            modules.reg_method("hub_call_dbproxy_rsp_cb_get_guid_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, get_guid_err));
             map_create_persisted_object = new Dictionary<UInt64, hub_call_dbproxy_create_persisted_object_cb>();
-            modules.reg_method("hub_call_dbproxy_rsp_cb_create_persisted_object_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, create_persisted_object_rsp));
-            modules.reg_method("hub_call_dbproxy_rsp_cb_create_persisted_object_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, create_persisted_object_err));
+            modules.reg_method("hub_call_dbproxy_rsp_cb_create_persisted_object_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, create_persisted_object_rsp));
+            modules.reg_method("hub_call_dbproxy_rsp_cb_create_persisted_object_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, create_persisted_object_err));
             map_updata_persisted_object = new Dictionary<UInt64, hub_call_dbproxy_updata_persisted_object_cb>();
-            modules.reg_method("hub_call_dbproxy_rsp_cb_updata_persisted_object_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, updata_persisted_object_rsp));
-            modules.reg_method("hub_call_dbproxy_rsp_cb_updata_persisted_object_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, updata_persisted_object_err));
+            modules.reg_method("hub_call_dbproxy_rsp_cb_updata_persisted_object_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, updata_persisted_object_rsp));
+            modules.reg_method("hub_call_dbproxy_rsp_cb_updata_persisted_object_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, updata_persisted_object_err));
             map_find_and_modify = new Dictionary<UInt64, hub_call_dbproxy_find_and_modify_cb>();
-            modules.reg_method("hub_call_dbproxy_rsp_cb_find_and_modify_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, find_and_modify_rsp));
-            modules.reg_method("hub_call_dbproxy_rsp_cb_find_and_modify_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, find_and_modify_err));
+            modules.reg_method("hub_call_dbproxy_rsp_cb_find_and_modify_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, find_and_modify_rsp));
+            modules.reg_method("hub_call_dbproxy_rsp_cb_find_and_modify_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, find_and_modify_err));
             map_remove_object = new Dictionary<UInt64, hub_call_dbproxy_remove_object_cb>();
-            modules.reg_method("hub_call_dbproxy_rsp_cb_remove_object_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, remove_object_rsp));
-            modules.reg_method("hub_call_dbproxy_rsp_cb_remove_object_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, remove_object_err));
+            modules.reg_method("hub_call_dbproxy_rsp_cb_remove_object_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, remove_object_rsp));
+            modules.reg_method("hub_call_dbproxy_rsp_cb_remove_object_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, remove_object_err));
             map_get_object_count = new Dictionary<UInt64, hub_call_dbproxy_get_object_count_cb>();
-            modules.reg_method("hub_call_dbproxy_rsp_cb_get_object_count_rsp", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_object_count_rsp));
-            modules.reg_method("hub_call_dbproxy_rsp_cb_get_object_count_err", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_object_count_err));
+            modules.reg_method("hub_call_dbproxy_rsp_cb_get_object_count_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, get_object_count_rsp));
+            modules.reg_method("hub_call_dbproxy_rsp_cb_get_object_count_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, get_object_count_err));
         }
 
         public void reg_hub_rsp(IList<MsgPack.MessagePackObject> inArray){
@@ -693,11 +693,11 @@ namespace abelkhan
 
     }
 
-    public class hub_call_dbproxy_caller : abelkhan.Icaller {
+    public class hub_call_dbproxy_caller : Abelkhan.Icaller {
         public static hub_call_dbproxy_rsp_cb rsp_cb_hub_call_dbproxy_handle = null;
         private Int32 uuid_e713438c_e791_3714_ad31_4ccbddee2554 = (Int32)RandomUUID.random();
 
-        public hub_call_dbproxy_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("hub_call_dbproxy", _ch)
+        public hub_call_dbproxy_caller(Abelkhan.Ichannel _ch, Abelkhan.modulemng modules) : base("hub_call_dbproxy", _ch)
         {
             if (rsp_cb_hub_call_dbproxy_handle == null)
             {
@@ -847,19 +847,19 @@ namespace abelkhan
         }
 
     }
-/*this cb code is codegen by abelkhan for c#*/
-    public class dbproxy_call_hub_rsp_cb : abelkhan.Imodule {
-        public dbproxy_call_hub_rsp_cb(abelkhan.modulemng modules) : base("dbproxy_call_hub_rsp_cb")
+/*this cb code is codegen by Abelkhan for c#*/
+    public class dbproxy_call_hub_rsp_cb : Abelkhan.Imodule {
+        public dbproxy_call_hub_rsp_cb(Abelkhan.modulemng modules) : base("dbproxy_call_hub_rsp_cb")
         {
         }
 
     }
 
-    public class dbproxy_call_hub_caller : abelkhan.Icaller {
+    public class dbproxy_call_hub_caller : Abelkhan.Icaller {
         public static dbproxy_call_hub_rsp_cb rsp_cb_dbproxy_call_hub_handle = null;
         private Int32 uuid_7a1d0ce9_a121_3019_b67a_319998ea37c8 = (Int32)RandomUUID.random();
 
-        public dbproxy_call_hub_caller(abelkhan.Ichannel _ch, abelkhan.modulemng modules) : base("dbproxy_call_hub", _ch)
+        public dbproxy_call_hub_caller(Abelkhan.Ichannel _ch, Abelkhan.modulemng modules) : base("dbproxy_call_hub", _ch)
         {
             if (rsp_cb_dbproxy_call_hub_handle == null)
             {
@@ -881,10 +881,10 @@ namespace abelkhan
         }
 
     }
-/*this module code is codegen by abelkhan codegen for c#*/
-    public class hub_call_dbproxy_reg_hub_rsp : abelkhan.Response {
+/*this module code is codegen by Abelkhan codegen for c#*/
+    public class hub_call_dbproxy_reg_hub_rsp : Abelkhan.Response {
         private UInt64 uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67;
-        public hub_call_dbproxy_reg_hub_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
+        public hub_call_dbproxy_reg_hub_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
         {
             uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67 = _uuid;
         }
@@ -903,9 +903,9 @@ namespace abelkhan
 
     }
 
-    public class hub_call_dbproxy_get_guid_rsp : abelkhan.Response {
+    public class hub_call_dbproxy_get_guid_rsp : Abelkhan.Response {
         private UInt64 uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948;
-        public hub_call_dbproxy_get_guid_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
+        public hub_call_dbproxy_get_guid_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
         {
             uuid_ed8b33be_8d91_3840_a2fc_8a3c7dbb6948 = _uuid;
         }
@@ -925,9 +925,9 @@ namespace abelkhan
 
     }
 
-    public class hub_call_dbproxy_create_persisted_object_rsp : abelkhan.Response {
+    public class hub_call_dbproxy_create_persisted_object_rsp : Abelkhan.Response {
         private UInt64 uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b;
-        public hub_call_dbproxy_create_persisted_object_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
+        public hub_call_dbproxy_create_persisted_object_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
         {
             uuid_c5ae7137_dfe0_316b_9f1d_5dffa222d32b = _uuid;
         }
@@ -946,9 +946,9 @@ namespace abelkhan
 
     }
 
-    public class hub_call_dbproxy_updata_persisted_object_rsp : abelkhan.Response {
+    public class hub_call_dbproxy_updata_persisted_object_rsp : Abelkhan.Response {
         private UInt64 uuid_16267d40_cddc_312f_87c0_185a55b79ad2;
-        public hub_call_dbproxy_updata_persisted_object_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
+        public hub_call_dbproxy_updata_persisted_object_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
         {
             uuid_16267d40_cddc_312f_87c0_185a55b79ad2 = _uuid;
         }
@@ -967,9 +967,9 @@ namespace abelkhan
 
     }
 
-    public class hub_call_dbproxy_find_and_modify_rsp : abelkhan.Response {
+    public class hub_call_dbproxy_find_and_modify_rsp : Abelkhan.Response {
         private UInt64 uuid_c7725286_bd2c_331b_8ba9_90ffcefab6ae;
-        public hub_call_dbproxy_find_and_modify_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
+        public hub_call_dbproxy_find_and_modify_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
         {
             uuid_c7725286_bd2c_331b_8ba9_90ffcefab6ae = _uuid;
         }
@@ -989,9 +989,9 @@ namespace abelkhan
 
     }
 
-    public class hub_call_dbproxy_remove_object_rsp : abelkhan.Response {
+    public class hub_call_dbproxy_remove_object_rsp : Abelkhan.Response {
         private UInt64 uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1;
-        public hub_call_dbproxy_remove_object_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
+        public hub_call_dbproxy_remove_object_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
         {
             uuid_f3bda2d9_d71c_307f_b727_d893a1cc0cd1 = _uuid;
         }
@@ -1010,9 +1010,9 @@ namespace abelkhan
 
     }
 
-    public class hub_call_dbproxy_get_object_count_rsp : abelkhan.Response {
+    public class hub_call_dbproxy_get_object_count_rsp : Abelkhan.Response {
         private UInt64 uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2;
-        public hub_call_dbproxy_get_object_count_rsp(abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
+        public hub_call_dbproxy_get_object_count_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_dbproxy_rsp_cb", _ch)
         {
             uuid_175cd463_d9ac_3cde_804f_1c917ef2c7d2 = _uuid;
         }
@@ -1032,19 +1032,19 @@ namespace abelkhan
 
     }
 
-    public class hub_call_dbproxy_module : abelkhan.Imodule {
-        private abelkhan.modulemng modules;
-        public hub_call_dbproxy_module(abelkhan.modulemng _modules) : base("hub_call_dbproxy")
+    public class hub_call_dbproxy_module : Abelkhan.Imodule {
+        private Abelkhan.modulemng modules;
+        public hub_call_dbproxy_module(Abelkhan.modulemng _modules) : base("hub_call_dbproxy")
         {
             modules = _modules;
-            modules.reg_method("hub_call_dbproxy_reg_hub", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, reg_hub));
-            modules.reg_method("hub_call_dbproxy_get_guid", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_guid));
-            modules.reg_method("hub_call_dbproxy_create_persisted_object", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, create_persisted_object));
-            modules.reg_method("hub_call_dbproxy_updata_persisted_object", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, updata_persisted_object));
-            modules.reg_method("hub_call_dbproxy_find_and_modify", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, find_and_modify));
-            modules.reg_method("hub_call_dbproxy_remove_object", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, remove_object));
-            modules.reg_method("hub_call_dbproxy_get_object_info", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_object_info));
-            modules.reg_method("hub_call_dbproxy_get_object_count", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, get_object_count));
+            modules.reg_method("hub_call_dbproxy_reg_hub", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_hub));
+            modules.reg_method("hub_call_dbproxy_get_guid", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, get_guid));
+            modules.reg_method("hub_call_dbproxy_create_persisted_object", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, create_persisted_object));
+            modules.reg_method("hub_call_dbproxy_updata_persisted_object", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, updata_persisted_object));
+            modules.reg_method("hub_call_dbproxy_find_and_modify", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, find_and_modify));
+            modules.reg_method("hub_call_dbproxy_remove_object", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, remove_object));
+            modules.reg_method("hub_call_dbproxy_get_object_info", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, get_object_info));
+            modules.reg_method("hub_call_dbproxy_get_object_count", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, get_object_count));
         }
 
         public event Action<string> on_reg_hub;
@@ -1156,13 +1156,13 @@ namespace abelkhan
         }
 
     }
-    public class dbproxy_call_hub_module : abelkhan.Imodule {
-        private abelkhan.modulemng modules;
-        public dbproxy_call_hub_module(abelkhan.modulemng _modules) : base("dbproxy_call_hub")
+    public class dbproxy_call_hub_module : Abelkhan.Imodule {
+        private Abelkhan.modulemng modules;
+        public dbproxy_call_hub_module(Abelkhan.modulemng _modules) : base("dbproxy_call_hub")
         {
             modules = _modules;
-            modules.reg_method("dbproxy_call_hub_ack_get_object_info", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, ack_get_object_info));
-            modules.reg_method("dbproxy_call_hub_ack_get_object_info_end", Tuple.Create<abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((abelkhan.Imodule)this, ack_get_object_info_end));
+            modules.reg_method("dbproxy_call_hub_ack_get_object_info", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, ack_get_object_info));
+            modules.reg_method("dbproxy_call_hub_ack_get_object_info_end", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, ack_get_object_info_end));
         }
 
         public event Action<string, byte[]> on_ack_get_object_info;

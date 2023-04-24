@@ -98,7 +98,7 @@ class hub_svr(object):
 
     def reg_hub(self, hub_name:str):
         ch = self.redis_mq_service.connect(hub_name)
-        _caller = hub.hub_call_hub_caller(ch, self.modulemng)
+        _caller = Hub.Hub_call_hub_caller(ch, self.modulemng)
         _caller.reg_hub(self.name, self.type)
     
     def poll(self):

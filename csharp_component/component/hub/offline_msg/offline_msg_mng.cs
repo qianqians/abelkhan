@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 
-namespace offline_msg
+namespace OfflineMsg
 {
-    public class offline_msg_mng
+    public class OfflineMsgMgr
     {
         private string _db_name;
         private string _db_collection;
 
         private Dictionary<string, Action<offline_msg> > _callback_dict;
 
-        public offline_msg_mng(string db_name, string db_collection)
+        public OfflineMsgMgr(string db_name, string db_collection)
         {
             _db_name = db_name;
             _db_collection = db_collection;
@@ -20,9 +20,9 @@ namespace offline_msg
             _callback_dict = new Dictionary<string, Action<offline_msg> >();
         }
 
-        private hub.DBproxyproxy.Collection Collection
+        private Hub.DBProxyProxy.Collection Collection
         {
-            get { return hub.Hub.get_random_dbproxyproxy().getCollection(_db_name, _db_collection); }
+            get { return Hub.Hub.get_random_dbproxyproxy().getCollection(_db_name, _db_collection); }
         }
 
         public struct offline_msg
@@ -39,7 +39,7 @@ namespace offline_msg
             var task = new TaskCompletionSource<List<offline_msg> >();
 
             var ret_list = new List<offline_msg>();
-            var _query = new abelkhan.DBQueryHelper();
+            var _query = new Abelkhan.DBQueryHelper();
             _query.condition("player_guid", player_guid);
             Collection.getObjectInfo(_query.query(), (_msg_array) => {
                 if (_msg_array.Count > 0)
@@ -72,13 +72,13 @@ namespace offline_msg
                     }
                     else
                     {
-                        log.Log.err("unsuport msg.msg_type:{0}", msg.msg_type);
+                        Log.Log.err("unsuport msg.msg_type:{0}", msg.msg_type);
                     }
                 }
             }
             catch(Exception ex)
             {
-                log.Log.err("process_offline_msg ex:{0}", ex);
+                Log.Log.err("process_offline_msg ex:{0}", ex);
             }
         }
 
@@ -86,13 +86,13 @@ namespace offline_msg
         {
             var task = new TaskCompletionSource<bool>();
 
-            var _data = new abelkhan.SaveDataHelper();
+            var _data = new Abelkhan.SaveDataHelper();
             _data.set(msg);
             Collection.createPersistedObject(_data.data(), (_result) =>
             {
-                if (_result != hub.DBproxyproxy.EM_DB_RESULT.EM_DB_SUCESSED)
+                if (_result != Hub.DBProxyProxy.EM_DB_RESULT.EM_DB_SUCESSED)
                 {
-                    log.Log.err("send_offline_msg faild, msg:{0}", msg.ToJson());
+                    Log.Log.err("send_offline_msg faild, msg:{0}", msg.ToJson());
                     task.SetResult(false);
                 }
                 else
@@ -106,12 +106,12 @@ namespace offline_msg
 
         public void del_offline_msg(string msg_guid)
         {
-            var _query = new abelkhan.DBQueryHelper();
+            var _query = new Abelkhan.DBQueryHelper();
             _query.condition("msg_guid", msg_guid);
             Collection.removeObject(_query.query(), (_result) => { 
-                if (_result != hub.DBproxyproxy.EM_DB_RESULT.EM_DB_SUCESSED)
+                if (_result != Hub.DBProxyProxy.EM_DB_RESULT.EM_DB_SUCESSED)
                 {
-                    log.Log.err("del_offline_msg faild, msg_guid:{0}", msg_guid);
+                    Log.Log.err("del_offline_msg faild, msg_guid:{0}", msg_guid);
                 }
             });
         }

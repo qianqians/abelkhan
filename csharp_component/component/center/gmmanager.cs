@@ -6,23 +6,23 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace abelkhan
+namespace Abelkhan
 {
-	public class GMmanager
+	public class GMManager
     {
-		private Dictionary<abelkhan.Ichannel, string> gms;
+		private Dictionary<Abelkhan.Ichannel, string> gms;
 
-		public GMmanager()
+		public GMManager()
         {
-			gms = new Dictionary<abelkhan.Ichannel, string>();
+			gms = new Dictionary<Abelkhan.Ichannel, string>();
         }
 
-		public void reg_gm(string gm_name, abelkhan.Ichannel ch)
+		public void reg_gm(string gm_name, Abelkhan.Ichannel ch)
         {
 			gms.Add(ch, gm_name);
         }
 
-		public bool check_gm(string gm_name, abelkhan.Ichannel ch)
+		public bool check_gm(string gm_name, Abelkhan.Ichannel ch)
         {
 			if (!gms.TryGetValue(ch, out string _gm_name))
             {

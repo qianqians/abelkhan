@@ -8,22 +8,22 @@ using System.IO;
 using System.Collections;
 using ENet.Managed;
 
-namespace abelkhan
+namespace Abelkhan
 {
-    public class Enetchannel : abelkhan.Ichannel
+    public class EnetChannel : Abelkhan.Ichannel
     {
         private ENetHost host;
         private ENetPeer peer;
         private object lockobj;
-        public channel_onrecv _channel_onrecv;
+        public ChannelOnRecv _channel_onrecv;
 
-        public Enetchannel(ENetHost _host, ENetPeer _peer)
+        public EnetChannel(ENetHost _host, ENetPeer _peer)
         {
             host = _host;
             peer = _peer;
             lockobj = new object();
 
-            _channel_onrecv = new channel_onrecv(this);
+            _channel_onrecv = new ChannelOnRecv(this);
             _channel_onrecv.on_recv_data += Crypt.crypt_func;
         }
 

@@ -3,21 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace dbproxy
+namespace DBProxy
 {
-	public class DBproxy
+	public class DBProxy
 	{
         static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Exception ex = e.ExceptionObject as Exception;
-            log.Log.err("unhandle exception:{0}", ex.ToString());
+            Log.Log.err("unhandle exception:{0}", ex.ToString());
         }
 
-        public DBproxy(string cfg_file, string cfg_name)
+        public DBProxy(string cfg_file, string cfg_name)
 		{
 			is_busy = false;
 
-            _root_config = new abelkhan.Config(cfg_file);
+            _root_config = new Abelkhan.Config(cfg_file);
             _center_config = _root_config.get_value_dict("center");
             var _config = _root_config.get_value_dict(cfg_name);
 
@@ -26,28 +26,28 @@ namespace dbproxy
             var log_level = _config.get_value_string("log_level");
             if (log_level == "trace")
             {
-                log.Log.logMode = log.Log.enLogMode.trace;
+                Log.Log.logMode = Log.Log.enLogMode.trace;
             }
             else if (log_level == "debug")
             {
-                log.Log.logMode = log.Log.enLogMode.debug;
+                Log.Log.logMode = Log.Log.enLogMode.debug;
             }
             else if (log_level == "info")
             {
-                log.Log.logMode = log.Log.enLogMode.info;
+                Log.Log.logMode = Log.Log.enLogMode.info;
             }
             else if (log_level == "warn")
             {
-                log.Log.logMode = log.Log.enLogMode.warn;
+                Log.Log.logMode = Log.Log.enLogMode.warn;
             }
             else if (log_level == "err")
             {
-                log.Log.logMode = log.Log.enLogMode.err;
+                Log.Log.logMode = Log.Log.enLogMode.err;
             }
             var log_file = _config.get_value_string("log_file");
-            log.Log.logFile = log_file;
+            Log.Log.logFile = log_file;
             var log_dir = _config.get_value_string("log_dir");
-            log.Log.logPath = log_dir;
+            Log.Log.logPath = log_dir;
             {
                 if (!System.IO.Directory.Exists(log_dir))
                 {
@@ -62,11 +62,11 @@ namespace dbproxy
                 var db_ip = _config.get_value_string("db_ip");
                 var db_port = (short)_config.get_value_int("db_port");
 
-                _mongodbproxy = new service.Mongodbproxy(db_ip, db_port);
+                _mongodbproxy = new Service.Mongodbproxy(db_ip, db_port);
             }
             else if (_config.has_key("db_url"))
             {
-                _mongodbproxy = new service.Mongodbproxy(_config.get_value_string("db_url"));
+                _mongodbproxy = new Service.Mongodbproxy(_config.get_value_string("db_url"));
             }
 
             if (_config.has_key("index"))
@@ -95,26 +95,26 @@ namespace dbproxy
                 }
             }
             
-            _timer = new service.Timerservice();
+            _timer = new Service.Timerservice();
             _timer.refresh();
 
-            add_chs = new List<abelkhan.Ichannel>();
-            remove_chs = new List<abelkhan.Ichannel>();
+            add_chs = new List<Abelkhan.Ichannel>();
+            remove_chs = new List<Abelkhan.Ichannel>();
             
-            _closeHandle = new Closehandle();
-            _hubmanager = new Hubmanager();
+            _closeHandle = new CloseHandle();
+            _hubmanager = new HubManager();
 
             var redismq_url = _root_config.get_value_string("redis_for_mq");
-            _redis_mq_service = new abelkhan.redis_mq(_timer, redismq_url, name);
+            _redis_mq_service = new Abelkhan.RedisMQ(_timer, redismq_url, name);
 
             var _center_ch = _redis_mq_service.connect(_center_config.get_value_string("name"));
             lock (add_chs)
             {
                 add_chs.Add(_center_ch);
             }
-            _centerproxy = new Centerproxy(_center_ch);
+            _centerproxy = new CenterProxy(_center_ch);
             _centerproxy.reg_dbproxy(() => {
-                heartbeath_center(service.Timerservice.Tick);
+                heartbeath_center(Service.Timerservice.Tick);
             });
 
             _hub_msg_handle = new hub_msg_handle(_hubmanager, _closeHandle);
@@ -141,7 +141,7 @@ namespace dbproxy
             {
                 add_chs.Add(_center_ch);
             }
-            _centerproxy = new Centerproxy(_center_ch);
+            _centerproxy = new CenterProxy(_center_ch);
             if (await _centerproxy.reconn_reg_dbproxy())
             {
                 reconn_count = 0;
@@ -152,7 +152,7 @@ namespace dbproxy
         {
             do
             {
-                if ((service.Timerservice.Tick - _centerproxy.timetmp) > 9000)
+                if ((Service.Timerservice.Tick - _centerproxy.timetmp) > 9000)
                 {
                     reconnect_center();
                     break;
@@ -173,11 +173,11 @@ namespace dbproxy
             {
                 while (true)
                 {
-                    if (!abelkhan.event_queue.msgQue.TryDequeue(out Tuple<abelkhan.Ichannel, ArrayList> _event))
+                    if (!Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
                     {
                         break;
                     }
-                    abelkhan.modulemng_handle._modulemng.process_event(_event.Item1, _event.Item2);
+                    Abelkhan.ModuleMgrHandle._modulemng.process_event(_event.Item1, _event.Item2);
                 }
 
                 if (remove_chs.Count > 0)
@@ -193,15 +193,15 @@ namespace dbproxy
                 }
 
                 _timer.poll();
-                abelkhan.TinyTimer.poll();
+                Abelkhan.TinyTimer.poll();
             }
-            catch (abelkhan.Exception e)
+            catch (Abelkhan.Exception e)
             {
-                log.Log.err(e.Message);
+                Log.Log.err(e.Message);
             }
             catch (System.Exception e)
             {
-                log.Log.err("{0}", e);
+                Log.Log.err("{0}", e);
             }
 
             tick = (uint)(_timer.refresh() - tick_begin);
@@ -222,7 +222,7 @@ namespace dbproxy
         {
             if (!Monitor.TryEnter(_run_mu))
             {
-                throw new abelkhan.Exception("run mast at single thread!");
+                throw new Abelkhan.Exception("run mast at single thread!");
             }
 
             while (!_closeHandle.is_close())
@@ -234,9 +234,9 @@ namespace dbproxy
                     Thread.Sleep((int)(33 - tick));
                 }
             }
-            log.Log.info("server closed, dbproxy server:{0}", DBproxy.name);
+            Log.Log.info("server closed, dbproxy server:{0}", DBProxy.name);
 
-            log.Log.close();
+            Log.Log.close();
 
             Monitor.Exit(_run_mu);
         }
@@ -244,24 +244,24 @@ namespace dbproxy
 		public static String name;
 		public static bool is_busy;
         public static uint tick;
-		public static Closehandle _closeHandle;
-        public static Hubmanager _hubmanager;
-        public static service.Timerservice _timer;
-        public static service.Mongodbproxy _mongodbproxy;
-        public static abelkhan.redis_mq _redis_mq_service;
+		public static CloseHandle _closeHandle;
+        public static HubManager _hubmanager;
+        public static Service.Timerservice _timer;
+        public static Service.Mongodbproxy _mongodbproxy;
+        public static Abelkhan.RedisMQ _redis_mq_service;
 
-        public readonly abelkhan.Config _root_config;
-        public readonly abelkhan.Config _center_config;
+        public readonly Abelkhan.Config _root_config;
+        public readonly Abelkhan.Config _center_config;
 
-        private readonly List<abelkhan.Ichannel> add_chs;
-        private readonly List<abelkhan.Ichannel> remove_chs;
+        private readonly List<Abelkhan.Ichannel> add_chs;
+        private readonly List<Abelkhan.Ichannel> remove_chs;
 
         private readonly hub_msg_handle _hub_msg_handle;
         private readonly center_msg_handle _center_msg_handle;
 
         private uint reconn_count = 0;
 
-		private Centerproxy _centerproxy;
+		private CenterProxy _centerproxy;
 
 	}
 }

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace service
+namespace Service
 {
 	public class Timerservice
 	{
@@ -88,7 +88,7 @@ namespace service
                     }
                     catch (System.Exception e)
                     {
-                        log.Log.err("System.Exceptio{0}", e);
+                        Log.Log.err("System.Exceptio{0}", e);
                     }
                 }
                 else
@@ -150,7 +150,7 @@ namespace service
                         }
                         catch (System.Exception e)
                         {
-                            log.Log.err("System.Exceptio{0}", e);
+                            Log.Log.err("System.Exceptio{0}", e);
                         }
                     }
                 }
@@ -206,7 +206,7 @@ namespace service
                         }
                         catch (System.Exception e)
                         {
-                            log.Log.err("System.Exceptio{0}", e);
+                            Log.Log.err("System.Exceptio{0}", e);
                         }
                     }
                 }
@@ -262,7 +262,7 @@ namespace service
                         }
                         catch (System.Exception e)
                         {
-                            log.Log.err("System.Exceptio{0}", e);
+                            Log.Log.err("System.Exceptio{0}", e);
                         }
                     }
                 }
@@ -333,7 +333,7 @@ namespace service
                         }
                         catch (System.Exception e)
                         {
-                            log.Log.err("System.Exceptio{0}", e);
+                            Log.Log.err("System.Exceptio{0}", e);
                         }
                     }
                 }
@@ -418,7 +418,7 @@ namespace service
                         }
                         catch (System.Exception e)
                         {
-                            log.Log.err("System.Exceptio{0}", e);
+                            Log.Log.err("System.Exceptio{0}", e);
                         }
                     }
                 }
