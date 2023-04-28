@@ -376,11 +376,5 @@ namespace avatar
             avatar_guid.TryGetValue(guid, out var avatar);
             return avatar;
         }
-
-        internal static Avatar get_target_avatar(string sdk_uuid)
-        {
-            avatar_sdk_uuid.TryGetValue(sdk_uuid, out var avatar);
-            return avatar;
-        }
     }
 }
