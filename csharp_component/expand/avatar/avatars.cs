@@ -26,7 +26,7 @@ namespace avatar
             return default(IHostingData);
         }
 
-        public BsonDocument store();
+        public abstract BsonDocument store();
     }
 
     public abstract class IDataAgent<T> where T : IHostingData
@@ -128,8 +128,10 @@ namespace avatar
             {
                 if (dataDict.TryGetValue(T.type(), out var data))
                 {
-                    DataAgent<T> agent = new(this);
-                    agent.Data = (T)T.load(data.store());
+                    DataAgent<T> agent = new(this)
+                    {
+                        Data = (T)T.load(data.store())
+                    };
                     return agent;
                 }
             }
@@ -146,8 +148,10 @@ namespace avatar
             {
                 if (dataDict.TryGetValue(T.type(), out var data))
                 {
-                    DataAgent<T> agent = new(this);
-                    agent.Data = (T)data;
+                    DataAgent<T> agent = new(this)
+                    {
+                        Data = (T)data
+                    };
                     return agent;
                 }
             }
