@@ -213,11 +213,14 @@ namespace avatar
         private static avatar_module _avatar_Module = new();
         private static avatar_caller _avatar_Caller = new();
 
+        public static void init()
+        {
+            _avatar_Module.on_get_remote_avatar += _avatar_Module_on_get_remote_avatar;
+        }
+
         public static void init_data_db_opt(Action<AvatarDataDBOptions> configureOptions)
         {
             configureOptions.Invoke(opt);
-
-            _avatar_Module.on_get_remote_avatar += _avatar_Module_on_get_remote_avatar;
         }
 
         private static void _avatar_Module_on_get_remote_avatar(long guid)
