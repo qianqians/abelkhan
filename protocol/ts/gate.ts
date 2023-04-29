@@ -5,11 +5,9 @@ import * as framework_error from "./framework_error";
 /*this struct code is codegen by abelkhan codegen for typescript*/
 export class hub_info
 {
-    public hub_name : string;
-    public hub_type : string;
+    public hub_name : string = "";
+    public hub_type : string = "";
 
-    constructor(){
-    }
 }
 
 export function hub_info_to_protcol(_struct:hub_info){
@@ -18,12 +16,14 @@ export function hub_info_to_protcol(_struct:hub_info){
 
 export function protcol_to_hub_info(_protocol:any){
     let _struct = new hub_info();
-    for (const [key, val] of Object.entries(_protocol))        if (key === "hub_name"){
+    for (const [key, val] of Object.entries(_protocol)) {
+        if (key === "hub_name"){
             _struct.hub_name = val as string;
         }
         else if (key === "hub_type"){
             _struct.hub_type = val as string;
         }
+    }
     return _struct;
 }
 

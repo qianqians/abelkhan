@@ -60,6 +60,50 @@ def convert_parameter(typestr, parameter, dependent_enum, enum):
         str_parameter = "Uint8Array.from(%s)"%parameter
         return str_parameter
 
+def default_parameter(typestr, dependent_struct, dependent_enum, enum):
+    if typestr == 'int8':
+        return '0'
+    elif typestr == 'int16':
+        return '0'
+    elif typestr == 'int32':
+        return '0'
+    elif typestr == 'int64':
+        return '0'
+    elif typestr == 'uint8':
+        return '0'
+    elif typestr == 'uint16':
+        return '0'
+    elif typestr == 'uint32':
+        return '0'
+    elif typestr == 'uint64':
+        return '0'
+    elif typestr == 'string':
+        return '\"\"'
+    elif typestr == 'float':
+        return '0.0'
+    elif typestr == 'double':
+        return '0.0'
+    elif typestr == 'bool':
+        return 'false'
+    elif check_in_dependent(typestr, dependent_enum):
+        _import = get_import(typestr, dependent_enum)
+        print(enum)
+        enum_elems = enum[typestr]
+        print(enum_elems)
+        for key, value in enum_elems:
+            if _import == "":
+                return typestr + '.' + key
+            else:
+                return _import + '.' + typestr + '.' + key
+    elif typestr == 'bin':
+        str_parameter = "Uint8Array.from([])"
+        return str_parameter
+    elif check_in_dependent(typestr, dependent_struct):
+        return 'null'
+    elif typestr[len(typestr)-2] == '[' and typestr[len(typestr)-1] == ']':
+        return '[]'
+    return 'null'
+
 def check_in_dependent(typestr, dependent):
     for _type, _import in dependent:
         if _type == typestr:
@@ -141,6 +185,52 @@ def convert_type(typestr, dependent_struct, dependent_enum):
             return typestr
         else:
             return _import + "." + typestr
+    elif check_in_dependent(typestr, dependent_enum):
+        _import = get_import(typestr, dependent_enum)
+        if _import == "":
+            return typestr
+        else:
+            return _import + "." + typestr
+    elif typestr[len(typestr)-2] == '[' and typestr[len(typestr)-1] == ']':
+        array_type = typestr[:-2]
+        array_type = convert_type(array_type, dependent_struct, dependent_enum)
+        return array_type+'[]'
+
+    raise Exception("non exist type:%s" % typestr)
+    
+def convert_finally_type(typestr, dependent_struct, dependent_enum):
+    if typestr == 'int8':
+        return 'number'
+    elif typestr == 'int16':
+        return 'number'
+    elif typestr == 'int32':
+        return 'number'
+    elif typestr == 'int64':
+        return 'number'
+    elif typestr == 'uint8':
+        return 'number'
+    elif typestr == 'uint16':
+        return 'number'
+    elif typestr == 'uint32':
+        return 'number'
+    elif typestr == 'uint64':
+        return 'number'
+    elif typestr == 'string':
+        return 'string'
+    elif typestr == 'float':
+        return 'number'
+    elif typestr == 'double':
+        return 'number'
+    elif typestr == 'bool':
+        return 'boolean'
+    elif typestr == 'bin':
+        return 'Uint8Array'
+    elif check_in_dependent(typestr, dependent_struct):
+        _import = get_import(typestr, dependent_struct)
+        if _import == "":
+            return typestr + ' | null'
+        else:
+            return _import + "." + typestr + ' | null'
     elif check_in_dependent(typestr, dependent_enum):
         _import = get_import(typestr, dependent_enum)
         if _import == "":

@@ -36,7 +36,7 @@ def genstructprotocol(struct_name, elems, dependent_struct, dependent_enum):
             code += "            _protocol.insert(std::make_pair(\"" + value + "\", " + key + "::" + key + "_to_protcol(_struct." + value + ")));\n"
         elif type_ == tools.TypeType.Array:
             code += "            msgpack11::MsgPack::array _array_" + value + ";\n"
-            code += "            for(auto v_ : _struct." + value + "){\n"
+            code += "            for(auto v_ : _struct." + value + ") {\n"
             array_type = key[:-2]
             array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
             if array_type_ in tools.OriginalTypeList:
@@ -57,15 +57,15 @@ def genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum):
     code = "        static " + struct_name + " protcol_to_" + struct_name + "(const msgpack11::MsgPack::object& _protocol){\n"
     _struct_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, struct_name)).split('-'))
     code += "            " + struct_name + " _struct" + _struct_uuid + ";\n"
-    code += "            for(auto i : _protocol){\n"
+    code += "            for(auto i : _protocol) {\n"
     count = 0
     for key, value, parameter in elems:
         type_ = tools.check_type(key, dependent_struct, dependent_enum)
         _type_ = tools.convert_type(key, dependent_struct, dependent_enum)
         if count == 0:
-            code += "                if (i.first == \"" + value + "\"){\n"
+            code += "                if (i.first == \"" + value + "\") {\n"
         else:
-            code += "                else if (i.first == \"" + value + "\"){\n"
+            code += "                else if (i.first == \"" + value + "\") {\n"
         if type_ == tools.TypeType.Int8:
             code += "                    _struct" + _struct_uuid + "." + value + " = i.second.int8_value();\n"
         elif type_ == tools.TypeType.Int16:
@@ -101,7 +101,7 @@ def genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum):
             array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
             _array_type = tools.convert_type(array_type, dependent_struct, dependent_enum)
             code += "                    auto _protocol_array = i.second.array_items();\n"
-            code += "                    for(auto it_ : _protocol_array){\n"
+            code += "                    for(auto it_ : _protocol_array) {\n"
             if array_type_ == tools.TypeType.Int8:
                 code += "                        _struct" + _struct_uuid + "." + value + ".push_back(it_.int8_value());\n"
             elif array_type_ == tools.TypeType.Int16:
@@ -119,7 +119,7 @@ def genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum):
             elif array_type_ == tools.TypeType.Uint64:
                 code += "                        _struct" + _struct_uuid + "." + value + ".push_back(it_.uint64_value());\n"
             elif array_type_ == tools.TypeType.Enum:
-                code += "                        _struct" + _struct_uuid + "." + value + ".push_back((" + _type_ + ")it_.int32_value());\n"
+                code += "                        _struct" + _struct_uuid + "." + value + ".push_back((" + _array_type + ")it_.int32_value());\n"
             elif array_type_ == tools.TypeType.Float:
                 code += "                        _struct" + _struct_uuid + "." + value + ".push_back(it_.float32_value());\n"
             elif array_type_ == tools.TypeType.Double:
@@ -134,7 +134,7 @@ def genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum):
                 code += "                        _struct" + _struct_uuid + "." + value + ".push_back(" + array_type + "::protcol_to_" + array_type + "(it_.object_items()));\n"
             elif array_type_ == tools.TypeType.Array:
                 raise Exception("not support nested array:%s in struct:%s" % (key, struct_name))
-            code += "            }\n"
+            code += "                    }\n"
         code += "                }\n"
         count += 1
     code += "            }\n"
@@ -165,8 +165,8 @@ def sort_struct_dependent(struct, dependent_struct, dependent_enum):
 
                 if dependent_struct_index > current_struct_index:
                     raise Exception("cycle dependent %s, %s" % (struct_name, key))
-    return sorted_struct
 
+    return sorted_struct
 
 def genstruct(pretreatment):
     dependent_struct = pretreatment.dependent_struct
@@ -178,7 +178,7 @@ def genstruct(pretreatment):
     code = "/*this struct code is codegen by abelkhan codegen for cpp*/\n"
     for struct_name in sorted_struct:
         elems = struct[struct_name]
-        code += genmainstruct(struct_name, elems, dependent_struct, dependent_enum, pretreatment.enum)
+        code += genmainstruct(struct_name, elems, dependent_struct, dependent_enum, pretreatment.all_enum)
         code += genstructprotocol(struct_name, elems, dependent_struct, dependent_enum)
         code += genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum)
         code += "    };\n\n"

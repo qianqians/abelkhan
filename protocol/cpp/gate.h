@@ -26,11 +26,11 @@ namespace abelkhan
 
         static hub_info protcol_to_hub_info(const msgpack11::MsgPack::object& _protocol){
             hub_info _struct4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2;
-            for(auto i : _protocol){
-                if (i.first == "hub_name"){
+            for(auto i : _protocol) {
+                if (i.first == "hub_name") {
                     _struct4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2.hub_name = i.second.string_value();
                 }
-                else if (i.first == "hub_type"){
+                else if (i.first == "hub_type") {
                     _struct4ca94c1e_3083_3fe9_a4f0_b4f03b01b0f2.hub_type = i.second.string_value();
                 }
             }

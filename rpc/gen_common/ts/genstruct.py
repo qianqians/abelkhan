@@ -14,10 +14,10 @@ def genmainstruct(struct_name, elems, dependent_struct, dependent_enum, enum):
             raise Exception("repeat struct elem:%s in struct:%s" % (key, struct_name))
         names.append(value)
         if parameter == None:
-            code += "    public " + value + " : " + tools.convert_type(key, dependent_struct, dependent_enum) + ";\n"
+            code += "    public " + value + " : " + tools.convert_finally_type(key, dependent_struct, dependent_enum) + " = " + tools.default_parameter(key, dependent_struct, dependent_enum, enum) + ";\n"
         else:
-            code += "    public " + value + " : " + tools.convert_type(key, dependent_struct, dependent_enum) + " = " + tools.convert_parameter(key, parameter, dependent_enum, enum) + ";\n"
-    code += "\n    constructor(){\n    }\n" 
+            code += "    public " + value + " : " + tools.convert_finally_type(key, dependent_struct, dependent_enum) + " = " + tools.convert_parameter(key, parameter, dependent_enum, enum) + ";\n"
+    code += "\n" 
     code += "}\n\n"
     return code
 
@@ -30,7 +30,7 @@ def genstructprotocol(struct_name, elems, dependent_struct, dependent_enum):
 def genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum):
     code = "export function protcol_to_" + struct_name + "(_protocol:any){\n"
     code += "    let _struct = new " + struct_name + "();\n"
-    code += "    for (const [key, val] of Object.entries(_protocol))"
+    code += "    for (const [key, val] of Object.entries(_protocol)) {\n"
     count = 0
     for key, value, parameter in elems:
         type_ = tools.check_type(key, dependent_struct, dependent_enum)
@@ -51,7 +51,7 @@ def genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum):
             array_type = key[:-2]
             array_type_ = tools.check_type(array_type, dependent_struct, dependent_enum)
             code += "            _struct." + value + " = [];\n"
-            code += "            for(let v_ of val){\n"
+            code += "            for(let v_ of val as any) {\n"
             if array_type_ in tools.OriginalTypeList:
                 code += "                _struct." + value + ".push(v_);\n"
             elif array_type_ == tools.TypeType.Custom:
@@ -62,9 +62,10 @@ def genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum):
                     code += "                _struct." + value + ".push(" + _import + ".protcol_to_" + array_type + "(v_));\n"
             elif array_type_ == tools.TypeType.Array:
                 raise Exception("not support nested array:%s in struct:%s" % (key, struct_name))
-            code += "    }\n"
+            code += "            }\n"
         code += "        }\n"
         count = count + 1
+    code += "    }\n"
     code += "    return _struct;\n"
     code += "}\n\n"
     return code
@@ -77,7 +78,7 @@ def genstruct(pretreatment):
     
     code = "/*this struct code is codegen by abelkhan codegen for typescript*/\n"
     for struct_name, elems in struct.items():
-        code += genmainstruct(struct_name, elems, dependent_struct, dependent_enum, pretreatment.enum)
+        code += genmainstruct(struct_name, elems, dependent_struct, dependent_enum, pretreatment.all_enum)
         code += genstructprotocol(struct_name, elems, dependent_struct, dependent_enum)
         code += genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum)
 

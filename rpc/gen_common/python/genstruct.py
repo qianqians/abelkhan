@@ -87,7 +87,7 @@ def genstruct(pretreatment):
     
     code = "#this struct code is codegen by abelkhan codegen for python\n"
     for struct_name, elems in struct.items():
-        code += genmainstruct(struct_name, elems, dependent_struct, dependent_enum, pretreatment.enum)
+        code += genmainstruct(struct_name, elems, dependent_struct, dependent_enum, pretreatment.all_enum)
         code += genstructprotocol(struct_name, elems, dependent_struct, dependent_enum)
         code += genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum)
 

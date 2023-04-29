@@ -16,6 +16,8 @@ class pretreatment(object):
         
         self.def_enum = []
         self.dependent_enum = []
+
+        self.all_enum = None
         
 def getImportElem(_import, pretreatmentdata):
     for e in pretreatmentdata:
@@ -26,6 +28,7 @@ def getImportElem(_import, pretreatmentdata):
 def process(pretreatmentdata):
     names = []
     modules = []
+    enum = {}
     for elem in pretreatmentdata:
         for k, v in elem.module.items():
             if k in names:
@@ -43,6 +46,7 @@ def process(pretreatmentdata):
     
     for elem in pretreatmentdata:
         for k, v in elem.enum.items():
+            enum[k] = v
             elem.def_enum.append(k)
         for _type in elem.def_enum:
             elem.dependent_enum.append((_type, "")) 
@@ -57,4 +61,7 @@ def process(pretreatmentdata):
             for _type in e.def_struct:
                 elem.dependent_struct.append((_type, _import))
             for _type in e.def_enum:
-                elem.dependent_enum.append((_type, _import))      
+                elem.dependent_enum.append((_type, _import)) 
+                
+    for elem in pretreatmentdata:
+        elem.all_enum = enum
