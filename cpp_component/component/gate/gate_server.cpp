@@ -101,7 +101,7 @@ void gate_service::init() {
 			});
 			_client_service->sigchanneldisconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
 				service::gc_put([this, ch]() {
-					_clientmanager->unreg_client(ch);
+					//_clientmanager->unreg_client(ch);
 				});
 			});
 		}
@@ -131,7 +131,7 @@ void gate_service::init() {
 			});
 			_websocket_service->sigchanneldisconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
 				service::gc_put([this, ch]() {
-					_clientmanager->unreg_client(ch);
+					//_clientmanager->unreg_client(ch);
 				});
 			});
 		}
@@ -157,7 +157,7 @@ void gate_service::init() {
 				});
 			_enet_service->sig_disconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
 				service::gc_put([this, ch]() {
-					_clientmanager->unreg_client(ch);
+					//_clientmanager->unreg_client(ch);
 				});
 			});	
 		}

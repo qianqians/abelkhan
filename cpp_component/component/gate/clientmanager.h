@@ -209,6 +209,8 @@ public:
 		client_map.insert(std::make_pair(cuuid, _client));
 		client_uuid_map.insert(std::make_pair(ch, _client));
 
+		_client->_timetmp = 0;
+
 		return _client;
 	}
 
@@ -243,6 +245,7 @@ public:
 				auto client_proxy = &client_proxy_pool[index1][index2];
 				client_proxy->done_send();
 			}
+			wait_send_cli[index1].clear();
 		}
 	}
 
