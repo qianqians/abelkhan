@@ -242,7 +242,6 @@ private:
 
 	void thread_poll_cluster() {
 		int sleep_time = 1;
-		int idle_count = 0;
 		while (run_flag) {
 			refresh_listen_list();
 
@@ -250,13 +249,11 @@ private:
 			if (redis_cluster_recv_data()) {
 				is_idle = false;
 				sleep_time = 1;
-				idle_count = 0;
 			}
 
 			if (is_idle) {
-				idle_count++;
-				if (sleep_time < 16) {
-					sleep_time *= idle_count;
+				if (sleep_time < 32) {
+					sleep_time *= 2;
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
 			}
@@ -265,7 +262,6 @@ private:
 
 	void thread_send_cluster() {
 		int sleep_time = 1;
-		int idle_count = 0;
 		while (run_flag) {
 			bool is_idle = true;
 
@@ -276,13 +272,11 @@ private:
 
 				is_idle = false;
 				sleep_time = 1;
-				idle_count = 0;
 			}
 
 			if (is_idle) {
-				idle_count++;
-				if (sleep_time < 16) {
-					sleep_time *= idle_count;
+				if (sleep_time < 32) {
+					sleep_time *= 2;
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
 			}
@@ -393,7 +387,6 @@ private:
 
 	void thread_poll_single() {
 		int sleep_time = 1;
-		int idle_count = 0;
 		while (run_flag) {
 			refresh_listen_list();
 
@@ -401,13 +394,11 @@ private:
 			if (redis_mq_recv_data()) {
 				is_idle = false;
 				sleep_time = 1;
-				idle_count = 0;
 			}
 
 			if (is_idle) {
-				idle_count++;
-				if (sleep_time < 16) {
-					sleep_time *= idle_count;
+				if (sleep_time < 32) {
+					sleep_time *= 2;
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
 			}
@@ -416,7 +407,6 @@ private:
 
 	void thread_send_single() {
 		int sleep_time = 1;
-		int idle_count = 0;
 		while (run_flag) {
 			bool is_idle = true;
 
@@ -427,13 +417,11 @@ private:
 
 				is_idle = false;
 				sleep_time = 1;
-				idle_count = 0;
 			}
 
 			if (is_idle) {
-				idle_count++;
-				if (sleep_time < 16) {
-					sleep_time *= idle_count;
+				if (sleep_time < 32) {
+					sleep_time *= 2;
 				}
 				std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
 			}
