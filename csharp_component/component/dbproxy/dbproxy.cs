@@ -236,6 +236,7 @@ namespace DBProxy
             }
             Log.Log.info("server closed, dbproxy server:{0}", DBProxy.name);
 
+            _redis_mq_service.close();
             Log.Log.close();
 
             Monitor.Exit(_run_mu);

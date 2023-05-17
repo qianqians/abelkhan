@@ -141,6 +141,7 @@ namespace Abelkhan
                         _closeHandle.is_close = true;
 
                         _accept_gm_service.close();
+                        _redis_mq_service.close();
                     }
                 }
             }

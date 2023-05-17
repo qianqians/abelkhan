@@ -48,7 +48,7 @@ namespace DBProxy
 
 		public bool all_hub_closed()
         {
-			return hubproxys_name.Count == closed_hub_list.Count;
+			return hubproxys_name.Count <= closed_hub_list.Count;
 		}
 
 	}
