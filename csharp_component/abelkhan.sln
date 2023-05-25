@@ -27,6 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "expand", "expand", "{737F56
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "avatar", "expand\avatar\avatar.csproj", "{F0AFADD2-CD38-4EFD-B9F2-F5C272B2FAB7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wx", "expand\wx_sdk\wx.csproj", "{3AB4966B-6774-47C9-9C7C-37535CD077AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{F0AFADD2-CD38-4EFD-B9F2-F5C272B2FAB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0AFADD2-CD38-4EFD-B9F2-F5C272B2FAB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0AFADD2-CD38-4EFD-B9F2-F5C272B2FAB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AB4966B-6774-47C9-9C7C-37535CD077AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AB4966B-6774-47C9-9C7C-37535CD077AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AB4966B-6774-47C9-9C7C-37535CD077AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AB4966B-6774-47C9-9C7C-37535CD077AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -83,6 +89,7 @@ Global
 		{10127DE0-5DC0-4BA9-9BE5-90F91038C533} = {DC52CDD4-2DB5-4231-9891-350CC45BBB89}
 		{682A7FB6-D086-438E-877F-67750DF56700} = {DC52CDD4-2DB5-4231-9891-350CC45BBB89}
 		{F0AFADD2-CD38-4EFD-B9F2-F5C272B2FAB7} = {737F5672-F3DB-4CF6-883B-5422BA14056B}
+		{3AB4966B-6774-47C9-9C7C-37535CD077AD} = {737F5672-F3DB-4CF6-883B-5422BA14056B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {71881DAC-9ED6-472F-AB12-DE9020A519C1}
