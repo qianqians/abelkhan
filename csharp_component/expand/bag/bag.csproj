@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="bag.cs~RF6b19cf59.TMP" />
-    <None Remove="bag.cs~RF6b1c4480.TMP" />
-    <None Remove="bag.juggle~RF6b19e60e.TMP" />
+    <None Remove="bag.juggle~RF6b49c1d3.TMP" />
+    <None Remove="bag.juggle~RF6b4bd86e.TMP" />
+    <None Remove="bag.juggle~RF6b4c3748.TMP" />
   </ItemGroup>
 
   <ItemGroup>

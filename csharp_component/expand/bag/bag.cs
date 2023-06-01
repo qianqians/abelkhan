@@ -9,7 +9,7 @@ namespace bag
     public class Bag : avatar.IHostingData
     {
         private int capacity;
-        private List<item> items;
+        private List<item_def> items;
 
         public static string Type()
         {
@@ -21,7 +21,7 @@ namespace bag
             return new Bag()
             {
                 capacity = BagModdule.capacity,
-                items = new List<item>()
+                items = new List<item_def>()
             };
         }
 
@@ -30,11 +30,11 @@ namespace bag
             var bag = new Bag()
             {
                 capacity = data["capacity"].AsInt32,
-                items = new List<item>()
+                items = new List<item_def>()
             };
             foreach(var _item in data.GetValue("items").AsBsonArray)
             {
-                var item = new item();
+                var item = new item_def();
                 item.uuid = _item["uuid"].AsInt64;
                 item.desc_id = _item["desc_id"].AsInt64;
                 item.amount = _item["amount"].AsInt32;
@@ -65,15 +65,15 @@ namespace bag
             return onUseItem.Invoke(uuid);
         }
 
-        public Abelkhan.bag get_bag()
+        public Abelkhan.bag_def get_bag()
         {
-            var bag = new Abelkhan.bag();
+            var bag = new Abelkhan.bag_def();
             bag.capacity = capacity;
             bag.items = items;
             return bag;
         }
 
-        public bool add_item(ref item _item)
+        public bool add_item(ref item_def _item)
         {
             var amount = 0;
             foreach(var it in items)

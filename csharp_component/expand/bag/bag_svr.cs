@@ -9,13 +9,13 @@ namespace Abelkhan
 /*this enum code is codegen by abelkhan codegen for c#*/
 
 /*this struct code is codegen by abelkhan codegen for c#*/
-    public class item
+    public class item_def
     {
         public Int64 uuid;
         public Int64 desc_id;
         public Int32 limit_amount;
         public Int32 amount;
-        public static MsgPack.MessagePackObjectDictionary item_to_protcol(item _struct){
+        public static MsgPack.MessagePackObjectDictionary item_def_to_protcol(item_def _struct){
             var _protocol = new MsgPack.MessagePackObjectDictionary();
             _protocol.Add("uuid", _struct.uuid);
             _protocol.Add("desc_id", _struct.desc_id);
@@ -23,57 +23,57 @@ namespace Abelkhan
             _protocol.Add("amount", _struct.amount);
             return _protocol;
         }
-        public static item protcol_to_item(MsgPack.MessagePackObjectDictionary _protocol){
-            var _struct6be2e26d_6cd6_3912_93ab_87a2fb9d1b5a = new item();
+        public static item_def protcol_to_item_def(MsgPack.MessagePackObjectDictionary _protocol){
+            var _struct18820fa0_02d9_3ef6_8c40_b67521bb4df7 = new item_def();
             foreach (var i in _protocol){
                 if (((MsgPack.MessagePackObject)i.Key).AsString() == "uuid"){
-                    _struct6be2e26d_6cd6_3912_93ab_87a2fb9d1b5a.uuid = ((MsgPack.MessagePackObject)i.Value).AsInt64();
+                    _struct18820fa0_02d9_3ef6_8c40_b67521bb4df7.uuid = ((MsgPack.MessagePackObject)i.Value).AsInt64();
                 }
                 else if (((MsgPack.MessagePackObject)i.Key).AsString() == "desc_id"){
-                    _struct6be2e26d_6cd6_3912_93ab_87a2fb9d1b5a.desc_id = ((MsgPack.MessagePackObject)i.Value).AsInt64();
+                    _struct18820fa0_02d9_3ef6_8c40_b67521bb4df7.desc_id = ((MsgPack.MessagePackObject)i.Value).AsInt64();
                 }
                 else if (((MsgPack.MessagePackObject)i.Key).AsString() == "limit_amount"){
-                    _struct6be2e26d_6cd6_3912_93ab_87a2fb9d1b5a.limit_amount = ((MsgPack.MessagePackObject)i.Value).AsInt32();
+                    _struct18820fa0_02d9_3ef6_8c40_b67521bb4df7.limit_amount = ((MsgPack.MessagePackObject)i.Value).AsInt32();
                 }
                 else if (((MsgPack.MessagePackObject)i.Key).AsString() == "amount"){
-                    _struct6be2e26d_6cd6_3912_93ab_87a2fb9d1b5a.amount = ((MsgPack.MessagePackObject)i.Value).AsInt32();
+                    _struct18820fa0_02d9_3ef6_8c40_b67521bb4df7.amount = ((MsgPack.MessagePackObject)i.Value).AsInt32();
                 }
             }
-            return _struct6be2e26d_6cd6_3912_93ab_87a2fb9d1b5a;
+            return _struct18820fa0_02d9_3ef6_8c40_b67521bb4df7;
         }
     }
 
-    public class bag
+    public class bag_def
     {
         public Int32 capacity;
-        public List<item> items;
-        public static MsgPack.MessagePackObjectDictionary bag_to_protcol(bag _struct){
+        public List<item_def> items;
+        public static MsgPack.MessagePackObjectDictionary bag_def_to_protcol(bag_def _struct){
             var _protocol = new MsgPack.MessagePackObjectDictionary();
             _protocol.Add("capacity", _struct.capacity);
             if (_struct.items != null) {
                 var _array_items = new List<MsgPack.MessagePackObject>();
                 foreach(var v_ in _struct.items){
-                    _array_items.Add( new MsgPack.MessagePackObject(item.item_to_protcol(v_)));
+                    _array_items.Add( new MsgPack.MessagePackObject(item_def.item_def_to_protcol(v_)));
                 }
                 _protocol.Add("items", new MsgPack.MessagePackObject(_array_items));
             }
             return _protocol;
         }
-        public static bag protcol_to_bag(MsgPack.MessagePackObjectDictionary _protocol){
-            var _struct14f29d5b_fe75_3659_8d49_9e1659161b45 = new bag();
+        public static bag_def protcol_to_bag_def(MsgPack.MessagePackObjectDictionary _protocol){
+            var _struct36247089_d39f_3082_9189_f3b10b7bd024 = new bag_def();
             foreach (var i in _protocol){
                 if (((MsgPack.MessagePackObject)i.Key).AsString() == "capacity"){
-                    _struct14f29d5b_fe75_3659_8d49_9e1659161b45.capacity = ((MsgPack.MessagePackObject)i.Value).AsInt32();
+                    _struct36247089_d39f_3082_9189_f3b10b7bd024.capacity = ((MsgPack.MessagePackObject)i.Value).AsInt32();
                 }
                 else if (((MsgPack.MessagePackObject)i.Key).AsString() == "items"){
-                    _struct14f29d5b_fe75_3659_8d49_9e1659161b45.items = new();
+                    _struct36247089_d39f_3082_9189_f3b10b7bd024.items = new();
                     var _protocol_array = ((MsgPack.MessagePackObject)i.Value).AsList();
                     foreach (var v_ in _protocol_array){
-                        _struct14f29d5b_fe75_3659_8d49_9e1659161b45.items.Add(item.protcol_to_item(((MsgPack.MessagePackObject)v_).AsDictionary()));
+                        _struct36247089_d39f_3082_9189_f3b10b7bd024.items.Add(item_def.protcol_to_item_def(((MsgPack.MessagePackObject)v_).AsDictionary()));
                     }
                 }
             }
-            return _struct14f29d5b_fe75_3659_8d49_9e1659161b45;
+            return _struct36247089_d39f_3082_9189_f3b10b7bd024;
         }
     }
 
@@ -89,11 +89,11 @@ namespace Abelkhan
             module_rsp_cb = _module_rsp_cb;
         }
 
-        public event Action<bag> on_get_bag_cb;
+        public event Action<bag_def> on_get_bag_cb;
         public event Action on_get_bag_err;
         public event Action on_get_bag_timeout;
 
-        public bag_service_get_bag_cb callBack(Action<bag> cb, Action err)
+        public bag_service_get_bag_cb callBack(Action<bag_def> cb, Action err)
         {
             on_get_bag_cb += cb;
             on_get_bag_err += err;
@@ -108,7 +108,7 @@ namespace Abelkhan
             on_get_bag_timeout += timeout_cb;
         }
 
-        public void call_cb(bag _bag)
+        public void call_cb(bag_def _bag)
         {
             if (on_get_bag_cb != null)
             {
@@ -206,7 +206,7 @@ namespace Abelkhan
 
         public void get_bag_rsp(IList<MsgPack.MessagePackObject> inArray){
             var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            var __bag = bag.protcol_to_bag(((MsgPack.MessagePackObject)inArray[1]).AsDictionary());
+            var __bag = bag_def.protcol_to_bag_def(((MsgPack.MessagePackObject)inArray[1]).AsDictionary());
             var rsp = try_get_and_del_get_bag_cb(uuid);
             if (rsp != null)
             {
@@ -355,10 +355,10 @@ namespace Abelkhan
             uuid_82fde665_e33a_3f78_a862_086dfa5e8891 = _uuid;
         }
 
-        public void rsp(bag _bag_0989ed80_deae_3d1b_b867_21e2d70ab4b3){
+        public void rsp(bag_def _bag_0989ed80_deae_3d1b_b867_21e2d70ab4b3){
             var _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b = new ArrayList();
             _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b.Add(uuid_82fde665_e33a_3f78_a862_086dfa5e8891);
-            _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b.Add(bag.bag_to_protcol(_bag_0989ed80_deae_3d1b_b867_21e2d70ab4b3));
+            _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b.Add(bag_def.bag_def_to_protcol(_bag_0989ed80_deae_3d1b_b867_21e2d70ab4b3));
             Hub.Hub._hubs.call_hub(_hub_name_d3863e11_ea63_38a7_94fc_1673af9ced0b, "bag_service_rsp_cb_get_bag_rsp", _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b);
         }
 

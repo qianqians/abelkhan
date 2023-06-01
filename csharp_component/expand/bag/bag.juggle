@@ -1,17 +1,17 @@
-struct item {
+struct item_def {
 	int64 uuid;
 	int64 desc_id;
 	int32 limit_amount;
 	int32 amount;
 }
 
-struct bag {
+struct bag_def {
 	int32 capacity;
-	item[] items;
+	item_def[] items;
 }
 
 
 module bag_service {
-	get_bag req() rsp(bag _bag) err();
+	get_bag req() rsp(bag_def _bag) err();
 	use_item req(int64 uuid) rsp() err();
 }
