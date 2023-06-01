@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "hub", "component\hub\hub.cs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bag", "expand\bag\bag.csproj", "{0AB23947-ED19-4D1D-9198-F6F9E3E3082D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "bag_client", "expand\bag_client\bag_client.csproj", "{6F8E5D18-0FF1-40FB-86E3-A6BDC16AC841}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{0AB23947-ED19-4D1D-9198-F6F9E3E3082D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AB23947-ED19-4D1D-9198-F6F9E3E3082D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AB23947-ED19-4D1D-9198-F6F9E3E3082D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F8E5D18-0FF1-40FB-86E3-A6BDC16AC841}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F8E5D18-0FF1-40FB-86E3-A6BDC16AC841}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F8E5D18-0FF1-40FB-86E3-A6BDC16AC841}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F8E5D18-0FF1-40FB-86E3-A6BDC16AC841}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -104,6 +110,7 @@ Global
 		{5193A085-FF45-4029-B794-EC4CE0801C52} = {737F5672-F3DB-4CF6-883B-5422BA14056B}
 		{36CD5088-53C1-4B9E-9369-85E52F60CB6A} = {11C5227E-6283-4A4D-BAD6-B79DC5B080A7}
 		{0AB23947-ED19-4D1D-9198-F6F9E3E3082D} = {737F5672-F3DB-4CF6-883B-5422BA14056B}
+		{6F8E5D18-0FF1-40FB-86E3-A6BDC16AC841} = {737F5672-F3DB-4CF6-883B-5422BA14056B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {71881DAC-9ED6-472F-AB12-DE9020A519C1}
