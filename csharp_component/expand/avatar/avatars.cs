@@ -318,8 +318,8 @@ namespace avatar
             foreach (var _avatar in timeout_avatar)
             {
                 avatar_client_uuid.Remove(_avatar.ClientUUID);
-                avatar_client_uuid.Remove(_avatar.ClientUUID);
-                avatar_client_uuid.Remove(_avatar.ClientUUID);
+                avatar_sdk_uuid.Remove(_avatar.SDKUUID);
+                avatar_guid.Remove(_avatar.Guid);
 
                 _avatar.on_destory();
             }
