@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="bag.cs~RF6b19cf59.TMP" />
+    <None Remove="bag.cs~RF6b1c4480.TMP" />
+    <None Remove="bag.juggle~RF6b19e60e.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\avatar\avatar.csproj" />
+  </ItemGroup>
+
+</Project>

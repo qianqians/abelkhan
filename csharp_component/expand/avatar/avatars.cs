@@ -268,6 +268,7 @@ namespace avatar
 
         internal AvatarDataDBOptions opt = new();
 
+        private static bool is_register = false;
         private static avatar_module _avatar_Module = new();
         private static avatar_caller _avatar_Caller = new();
 
@@ -282,7 +283,15 @@ namespace avatar
         public void init()
         {
             Hub.Hub._timer.addticktime(5 * 60 * 1000, tick_clear_timeout_avatar);
-            _avatar_Module.on_get_remote_avatar += _avatar_Module_on_get_remote_avatar;
+
+            lock (_avatar_Module)
+            {
+                if (!is_register)
+                {
+                    _avatar_Module.on_get_remote_avatar += _avatar_Module_on_get_remote_avatar;
+                    is_register = true;
+                }
+            }
         }
 
         public void init_data_db_opt(Action<AvatarDataDBOptions> configureOptions)
