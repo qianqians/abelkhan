@@ -54,6 +54,12 @@ namespace avatar
 
     public class Avatar
     {
+        private AvatarMgr avatarMgr;
+        internal Avatar(AvatarMgr mgr)
+        {
+            avatarMgr = mgr;
+        }
+
         private Dictionary<string, IHostingData> dataDict = new();
         internal Dictionary<string, IHostingData> Datas
         {
@@ -72,7 +78,7 @@ namespace avatar
         {
             set
             {
-                AvatarMgr.bind_new_client_uuid(this, value);
+                avatarMgr.bind_new_client_uuid(this, value);
                 client_uuid = value;
             }
             get
@@ -104,7 +110,7 @@ namespace avatar
                     }
                 } while (false);
 
-                return bind_db_proxy.getCollection(AvatarMgr.opt.DBName, AvatarMgr.opt.DBCollection);
+                return bind_db_proxy.getCollection(avatarMgr.opt.DBName, avatarMgr.opt.DBCollection);
 
             }
         }
@@ -114,7 +120,7 @@ namespace avatar
             var _dirty_state = Interlocked.Exchange(ref _is_dirty, 1);
             if (_dirty_state == 0)
             {
-                Hub.Hub._timer.addticktime(AvatarMgr.opt.StoreDelayTime, (tick) =>
+                Hub.Hub._timer.addticktime(avatarMgr.opt.StoreDelayTime, (tick) =>
                 {
                     Interlocked.Exchange(ref _is_dirty, 0);
 
@@ -144,7 +150,7 @@ namespace avatar
             var old_sdk_uuid = SDKUUID;
             SDKUUID = new_sdk_uuid;
 
-            if (AvatarMgr.transfer(old_sdk_uuid, new_sdk_uuid, this))
+            if (avatarMgr.transfer(old_sdk_uuid, new_sdk_uuid, this))
             {
                 var query = new DBQueryHelper();
                 query.condition("guid", Guid);
@@ -251,21 +257,21 @@ namespace avatar
         }
     }
 
-    public static class AvatarMgr
+    public class AvatarMgr
     {
-        private static Dictionary<string, Func<IHostingData> > hosting_data_create = new();
-        private static Dictionary<string, Func<BsonDocument, IHostingData> > hosting_data_template = new();
+        private Dictionary<string, Func<IHostingData> > hosting_data_create = new();
+        private Dictionary<string, Func<BsonDocument, IHostingData> > hosting_data_template = new();
 
-        private static Dictionary<long, Avatar> avatar_guid = new();
-        private static Dictionary<string, Avatar> avatar_sdk_uuid = new();
-        private static Dictionary<string, Avatar> avatar_client_uuid = new();
+        private Dictionary<long, Avatar> avatar_guid = new();
+        private Dictionary<string, Avatar> avatar_sdk_uuid = new();
+        private Dictionary<string, Avatar> avatar_client_uuid = new();
 
-        internal static AvatarDataDBOptions opt = new();
+        internal AvatarDataDBOptions opt = new();
 
         private static avatar_module _avatar_Module = new();
         private static avatar_caller _avatar_Caller = new();
 
-        public static int Count
+        public int Count
         {
             get
             {
@@ -273,18 +279,18 @@ namespace avatar
             }
         }
 
-        public static void init()
+        public void init()
         {
             Hub.Hub._timer.addticktime(5 * 60 * 1000, tick_clear_timeout_avatar);
             _avatar_Module.on_get_remote_avatar += _avatar_Module_on_get_remote_avatar;
         }
 
-        public static void init_data_db_opt(Action<AvatarDataDBOptions> configureOptions)
+        public void init_data_db_opt(Action<AvatarDataDBOptions> configureOptions)
         {
             configureOptions.Invoke(opt);
         }
 
-        private static void _avatar_Module_on_get_remote_avatar(long guid)
+        private void _avatar_Module_on_get_remote_avatar(long guid)
         {
             var rsp = _avatar_Module.rsp as avatar_get_remote_avatar_rsp;
 
@@ -298,14 +304,14 @@ namespace avatar
             }
         }
 
-        public static void add_hosting<T>() where T : IHostingData
+        public void add_hosting<T>() where T : IHostingData
         {
             var type_str = T.Type();
             hosting_data_create.Add(type_str, T.Create);
             hosting_data_template.Add(type_str, T.Load);
         }
 
-        private static void tick_clear_timeout_avatar(long tick_time)
+        private void tick_clear_timeout_avatar(long tick_time)
         {
             List<Avatar> timeout_avatar = new();
             foreach (var it in avatar_guid)
@@ -327,7 +333,7 @@ namespace avatar
             Hub.Hub._timer.addticktime(5 * 60 * 1000, tick_clear_timeout_avatar);
         }
 
-        internal static bool transfer(string old_sdk_uuid, string new_sdk_uuid, Avatar avatar)
+        internal bool transfer(string old_sdk_uuid, string new_sdk_uuid, Avatar avatar)
         {
             if (avatar_sdk_uuid.Remove(old_sdk_uuid))
             {
@@ -337,7 +343,7 @@ namespace avatar
             return false;
         }
 
-        internal static void bind_new_client_uuid(Avatar avatar, string new_client_uuid)
+        internal void bind_new_client_uuid(Avatar avatar, string new_client_uuid)
         {
             if (!string.IsNullOrEmpty(avatar.ClientUUID))
             {
@@ -346,7 +352,7 @@ namespace avatar
             avatar_client_uuid[new_client_uuid] = avatar;
         }
 
-        private static Task<Avatar> load_from_db(string sdk_uuid)
+        private Task<Avatar> load_from_db(string sdk_uuid)
         {
             var task = new TaskCompletionSource<Avatar>();
 
@@ -359,7 +365,7 @@ namespace avatar
                 }
                 else if (value.Count == 1)
                 {
-                    var avatar = new Avatar();
+                    var avatar = new Avatar(this);
                     
                     var doc = value[0] as BsonDocument;
                     foreach (var (name, load) in hosting_data_template)
@@ -382,7 +388,7 @@ namespace avatar
             return task.Task;
         }
 
-        private static Task<long> get_guid()
+        private Task<long> get_guid()
         {
             var task = new TaskCompletionSource<long>();
 
@@ -397,9 +403,9 @@ namespace avatar
             return task.Task;
         }
 
-        private static async Task<Avatar> create_avatar(string sdk_uuid)
+        private async Task<Avatar> create_avatar(string sdk_uuid)
         {
-            var avatar = new Avatar();
+            var avatar = new Avatar(this);
             avatar.SDKUUID = sdk_uuid;
             avatar.Guid = await get_guid();
             foreach (var (name, create) in hosting_data_create)
@@ -417,14 +423,14 @@ namespace avatar
             return avatar;
         }
 
-        public static Task<Avatar> load_from_remote(long guid, string client_uuid, string other_hub)
+        public Task<Avatar> load_from_remote(long guid, string client_uuid, string other_hub)
         {
             var task = new TaskCompletionSource<Avatar>();
 
             _avatar_Caller.get_hub(other_hub).get_remote_avatar(guid).callBack((doc_bin) =>
             {
 
-                var avatar = new Avatar();
+                var avatar = new Avatar(this);
 
                 var doc = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(doc_bin);
                 foreach (var (name, load) in hosting_data_template)
@@ -457,7 +463,7 @@ namespace avatar
             return task.Task;
         }
 
-        public static async Task<Avatar> load_or_create(string sdk_uuid, string client_uuid)
+        public async Task<Avatar> load_or_create(string sdk_uuid, string client_uuid)
         {
             var avatar = await load_from_db(sdk_uuid);
             if (avatar == null)
@@ -477,7 +483,7 @@ namespace avatar
             return avatar;
         }
 
-        public static Avatar get_current_avatar()
+        public Avatar get_current_avatar()
         {
             avatar_client_uuid.TryGetValue(Hub.Hub._gates.current_client_uuid, out var avatar);
             if (avatar != null)
@@ -487,7 +493,7 @@ namespace avatar
             return avatar;
         }
 
-        public static Avatar get_avatar(string client_uuid)
+        public Avatar get_avatar(string client_uuid)
         {
             avatar_client_uuid.TryGetValue(client_uuid, out var avatar);
             if (avatar != null)
@@ -497,7 +503,7 @@ namespace avatar
             return avatar;
         }
 
-        public static Avatar get_target_avatar(long guid)
+        public Avatar get_target_avatar(long guid)
         {
             avatar_guid.TryGetValue(guid, out var avatar);
             if (avatar != null)
@@ -507,7 +513,7 @@ namespace avatar
             return avatar;
         }
 
-        public static Avatar get_target_avatar(string sdk_uuid)
+        public Avatar get_target_avatar(string sdk_uuid)
         {
             avatar_sdk_uuid.TryGetValue(sdk_uuid, out var avatar);
             if (avatar != null)
