@@ -73,6 +73,11 @@ namespace bag
             return bag;
         }
 
+        public void add_capacity(int count)
+        {
+            capacity += count;
+        }
+
         public bool add_item(ref item_def _item)
         {
             var amount = 0;
