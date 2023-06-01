@@ -1,9 +1,9 @@
 ﻿using Abelkhan;
 using Hub;
 using MongoDB.Bson;
+using Service;
 using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,22 +11,22 @@ namespace avatar
 {
     public interface IHostingData
     {
-        public static virtual string type()
+        public static virtual string Type()
         {
             return string.Empty;
         }
 
-        public static virtual IHostingData create()
+        public static virtual IHostingData Create()
         {
             return default(IHostingData);
         }
 
-        public static virtual IHostingData load(BsonDocument data)
+        public static virtual IHostingData Load(BsonDocument data)
         {
             return default(IHostingData);
         }
 
-        public abstract BsonDocument store();
+        public abstract BsonDocument Store();
     }
 
     public abstract class IDataAgent<T> where T : IHostingData
@@ -47,7 +47,7 @@ namespace avatar
 
         public override void write_back()
         {
-            avatar.Datas[T.type()] = Data;
+            avatar.Datas[T.Type()] = Data;
             avatar.set_dirty();
         }
     }
@@ -63,9 +63,23 @@ namespace avatar
             }
         }
 
+        public long LastActiveTime = Timerservice.Tick;
         public long Guid;
         public string SDKUUID;
-        public string ClientUUID;
+
+        private string client_uuid;
+        public string ClientUUID
+        {
+            set
+            {
+                AvatarMgr.bind_new_client_uuid(this, value);
+                client_uuid = value;
+            }
+            get
+            {
+                return client_uuid;
+            }
+        }
 
         private string bind_db_proxy_name = null;
         private DBProxyProxy.Collection Collection
@@ -110,27 +124,65 @@ namespace avatar
                     {
                         if (result != DBProxyProxy.EM_DB_RESULT.EM_DB_SUCESSED)
                         {
-                            ; Log.Log.err("avatar set_dirty updataPersistedObject faild:{0}!", result.ToString());
+                            Log.Log.err("avatar set_dirty updataPersistedObject faild:{0}!", result.ToString());
                         }
                     });
                 });
             }
         }
 
+        public event Action onDestory;
+        internal void on_destory()
+        {
+            onDestory?.Invoke();
+        }
+
+        public Task<bool> transfer(string new_sdk_uuid)
+        {
+            var task = new TaskCompletionSource<bool>();
+
+            var old_sdk_uuid = SDKUUID;
+            SDKUUID = new_sdk_uuid;
+
+            if (AvatarMgr.transfer(old_sdk_uuid, new_sdk_uuid, this))
+            {
+                var query = new DBQueryHelper();
+                query.condition("guid", Guid);
+                Collection.updataPersistedObject(query.query(), get_db_doc(), false, (result) =>
+                {
+                    if (result != DBProxyProxy.EM_DB_RESULT.EM_DB_SUCESSED)
+                    {
+                        Log.Log.err("avatar set_dirty updataPersistedObject faild:{0}!", result.ToString());
+                        task.SetResult(false);
+                    }
+                    else
+                    {
+                        task.SetResult(true);
+                    }
+                });
+            }
+            else
+            {
+                task.SetResult(false);
+            }
+
+            return task.Task;
+        }
+
         public void add_hosting_data<T>(T data) where T : IHostingData
         {
-            dataDict.Add(T.type(), data);
+            dataDict.Add(T.Type(), data);
         }
 
         public IDataAgent<T> get_clone_hosting_data<T>() where T : IHostingData
         {
             try
             {
-                if (dataDict.TryGetValue(T.type(), out var data))
+                if (dataDict.TryGetValue(T.Type(), out var data))
                 {
                     DataAgent<T> agent = new(this)
                     {
-                        Data = (T)T.load(data.store())
+                        Data = (T)T.Load(data.Store())
                     };
                     return agent;
                 }
@@ -146,7 +198,7 @@ namespace avatar
         {
             try
             {
-                if (dataDict.TryGetValue(T.type(), out var data))
+                if (dataDict.TryGetValue(T.Type(), out var data))
                 {
                     DataAgent<T> agent = new(this)
                     {
@@ -213,8 +265,17 @@ namespace avatar
         private static avatar_module _avatar_Module = new();
         private static avatar_caller _avatar_Caller = new();
 
+        public static int Count
+        {
+            get
+            {
+                return avatar_guid.Count;
+            }
+        }
+
         public static void init()
         {
+            Hub.Hub._timer.addticktime(5 * 60 * 1000, tick_clear_timeout_avatar);
             _avatar_Module.on_get_remote_avatar += _avatar_Module_on_get_remote_avatar;
         }
 
@@ -239,9 +300,50 @@ namespace avatar
 
         public static void add_hosting<T>() where T : IHostingData
         {
-            var type_str = T.type();
-            hosting_data_create.Add(type_str, T.create);
-            hosting_data_template.Add(type_str, T.load);
+            var type_str = T.Type();
+            hosting_data_create.Add(type_str, T.Create);
+            hosting_data_template.Add(type_str, T.Load);
+        }
+
+        private static void tick_clear_timeout_avatar(long tick_time)
+        {
+            List<Avatar> timeout_avatar = new();
+            foreach (var it in avatar_guid)
+            {
+                if ((it.Value.LastActiveTime + 30 * 60 * 1000) < Timerservice.Tick)
+                {
+                    timeout_avatar.Add(it.Value);
+                }
+            }
+            foreach (var _avatar in timeout_avatar)
+            {
+                avatar_client_uuid.Remove(_avatar.ClientUUID);
+                avatar_client_uuid.Remove(_avatar.ClientUUID);
+                avatar_client_uuid.Remove(_avatar.ClientUUID);
+
+                _avatar.on_destory();
+            }
+
+            Hub.Hub._timer.addticktime(5 * 60 * 1000, tick_clear_timeout_avatar);
+        }
+
+        internal static bool transfer(string old_sdk_uuid, string new_sdk_uuid, Avatar avatar)
+        {
+            if (avatar_sdk_uuid.Remove(old_sdk_uuid))
+            {
+                avatar_sdk_uuid[new_sdk_uuid] = avatar;
+                return true;
+            }
+            return false;
+        }
+
+        internal static void bind_new_client_uuid(Avatar avatar, string new_client_uuid)
+        {
+            if (!string.IsNullOrEmpty(avatar.ClientUUID))
+            {
+                avatar_client_uuid.Remove(avatar.ClientUUID);
+            }
+            avatar_client_uuid[new_client_uuid] = avatar;
         }
 
         private static Task<Avatar> load_from_db(string sdk_uuid)
@@ -365,9 +467,12 @@ namespace avatar
             avatar.ClientUUID = client_uuid;
 
             avatar_guid[avatar.Guid] = avatar;
-
             avatar_sdk_uuid[sdk_uuid] = avatar;
-            avatar_client_uuid[client_uuid] = avatar;
+
+            if (!string.IsNullOrEmpty(client_uuid))
+            {
+                avatar_client_uuid[client_uuid] = avatar;
+            }
 
             return avatar;
         }
@@ -375,12 +480,40 @@ namespace avatar
         public static Avatar get_current_avatar()
         {
             avatar_client_uuid.TryGetValue(Hub.Hub._gates.current_client_uuid, out var avatar);
+            if (avatar != null)
+            {
+                avatar.LastActiveTime = Timerservice.Tick;
+            }
+            return avatar;
+        }
+
+        public static Avatar get_avatar(string client_uuid)
+        {
+            avatar_client_uuid.TryGetValue(client_uuid, out var avatar);
+            if (avatar != null)
+            {
+                avatar.LastActiveTime = Timerservice.Tick;
+            }
             return avatar;
         }
 
         public static Avatar get_target_avatar(long guid)
         {
             avatar_guid.TryGetValue(guid, out var avatar);
+            if (avatar != null)
+            {
+                avatar.LastActiveTime = Timerservice.Tick;
+            }
+            return avatar;
+        }
+
+        public static Avatar get_target_avatar(string sdk_uuid)
+        {
+            avatar_sdk_uuid.TryGetValue(sdk_uuid, out var avatar);
+            if (avatar != null)
+            {
+                avatar.LastActiveTime = Timerservice.Tick;
+            }
             return avatar;
         }
     }
