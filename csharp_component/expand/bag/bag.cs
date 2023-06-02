@@ -3,6 +3,7 @@ using avatar;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
+using static MongoDB.Driver.WriteConcern;
 
 namespace bag
 {
@@ -101,6 +102,38 @@ namespace bag
                 if (capacity > items.Count)
                 {
                     items.Add(_item);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool sub_item(long uuid)
+        {
+            foreach (var it in items)
+            {
+                if (it.uuid == uuid)
+                {
+                    it.amount--;
+                    if (it.amount <= 0)
+                    {
+                        items.Remove(it);
+                    }
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool del_item(long uuid)
+        {
+            foreach (var it in items)
+            {
+                if (it.uuid == uuid)
+                {
+                    items.Remove(it);
                     return true;
                 }
             }
