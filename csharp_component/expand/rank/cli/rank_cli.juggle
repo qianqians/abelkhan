@@ -1,0 +1,6 @@
+import rank_comm
+
+module rank_cli_service {
+	get_rank_guid req(string rank_name, int64 guid) rsp(int32 rank) err();
+	get_rank_range req(string rank_name, int32 start, int32 end) rsp(rank_item[] rank_list) err();
+}

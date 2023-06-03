@@ -1,0 +1,6 @@
+import rank_comm
+
+module rank_svr_service {
+	update_rank_item req(string rank_name, rank_item item) rsp(int32 rank) err();
+	get_rank_guid req(string rank_name, int64 guid) rsp(int32 rank) err();
+}

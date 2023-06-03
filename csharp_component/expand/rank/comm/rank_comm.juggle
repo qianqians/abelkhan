@@ -1,0 +1,6 @@
+struct rank_item {
+	int64 guid;
+	int64 score;
+	int32 rank;
+	bin item;
+}

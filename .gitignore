@@ -248,3 +248,7 @@ ModelManifest.xml
 vc_build/
 .build/
 .idea/
+*.dll
+*.lib
+*.pdb
+*.exp

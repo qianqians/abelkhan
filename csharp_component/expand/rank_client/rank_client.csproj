@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="bag.juggle~RF6b49c1d3.TMP" />
+    <None Remove="bag.juggle~RF6b4bd86e.TMP" />
+    <None Remove="bag.juggle~RF6b4c3748.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\component\client\client.csproj" />
+  </ItemGroup>
+
+</Project>
