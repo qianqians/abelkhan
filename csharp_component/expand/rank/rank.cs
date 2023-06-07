@@ -22,10 +22,11 @@ namespace Rank
 
         public BsonDocument ToBsonDocument()
         {
-            var doc = new BsonDocument();
-
-            doc.Add("name", name);
-            doc.Add("capacity", capacity);
+            var doc = new BsonDocument
+            {
+                { "name", name },
+                { "capacity", capacity }
+            };
 
             var docRankList = new BsonDocument();
             foreach (var it in rankList)
@@ -89,7 +90,7 @@ namespace Rank
         {
             var rank = new List<rank_item>();
 
-            for (var i = start; i < end; ++i)
+            for (var i = start; i < end && i < rankList.Count; ++i)
             {
                 rank.Add(rankList.GetValueAtIndex(i));
             }
@@ -152,7 +153,33 @@ namespace Rank
                 task.SetResult();
             });
 
+            Hub.Hub._timer.addticktime(60 * 60 * 1000, tick_save_rank);
+
             return task.Task;
+        }
+
+        private static void tick_save_rank(long tick)
+        {
+            try
+            {
+                foreach (var item in rankDict.Values)
+                {
+                    var query = new DBQueryHelper();
+                    query.condition("name", item.name);
+                    var doc = item.ToBsonDocument();
+                    Hub.Hub.get_random_dbproxyproxy().getCollection(dbName, dbCollection).updataPersistedObject(query.query(), doc, false, (result) =>
+                    {
+                        if (result != Hub.DBProxyProxy.EM_DB_RESULT.EM_DB_SUCESSED)
+                        {
+                            Log.Log.err($"tick_save_rank item.name faild:{result}");
+                        }
+                    });
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Log.Log.err($"tick_save_rank:{ex}");
+            }
         }
 
         private static void Rank_svr_Service_Module_on_update_rank_item(string rankNmae, rank_item item)
