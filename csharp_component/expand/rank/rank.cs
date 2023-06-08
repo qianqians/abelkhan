@@ -158,7 +158,7 @@ namespace Rank
             return task.Task;
         }
 
-        private static void tick_save_rank(long tick)
+        public static void save_rank()
         {
             try
             {
@@ -180,6 +180,12 @@ namespace Rank
             {
                 Log.Log.err($"tick_save_rank:{ex}");
             }
+        }
+
+        private static void tick_save_rank(long tick)
+        {
+            save_rank();
+            Hub.Hub._timer.addticktime(60 * 60 * 1000, tick_save_rank);
         }
 
         private static void Rank_svr_Service_Module_on_update_rank_item(string rankNmae, rank_item item)
