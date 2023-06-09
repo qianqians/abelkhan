@@ -56,11 +56,13 @@ namespace Rank
         {
             if (guidRank.TryGetValue(item.guid, out var old))
             {
-                rankList.RemoveAt(old);
+                rankList.RemoveAt(old - 1);
             }
 
             var score = item.score << 32 | item.guid;
             rankList.Add(score, item);
+            item.rank = rankList.IndexOfKey(score) + 1;
+            guidRank[item.guid] = item.rank;
 
             if (rankList.Count > (capacity + 200)) {
                 var remove = new List<long>();
@@ -74,7 +76,7 @@ namespace Rank
                 }
             }
 
-            return rankList.IndexOfKey(score);
+            return item.rank;
         }
 
         public int GetRankGuid(long guid)
