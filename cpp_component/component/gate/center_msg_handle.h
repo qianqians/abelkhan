@@ -20,15 +20,15 @@ namespace gate {
 class center_msg_handle
 {
 private:
-	std::shared_ptr<gate_service> _gate_service;
-	std::shared_ptr<hubsvrmanager> _hubsvrmanager;
-	std::shared_ptr<service::timerservice> _timerservice;
+	gate_service* _gate_service;
+	hubsvrmanager* _hubsvrmanager;
+	service::timerservice* _timerservice;
 	std::shared_ptr<service::redismqservice> _hub_redismq_service;
 
 	std::shared_ptr<abelkhan::center_call_server_module> _center_call_server_module;
 
 public:
-	center_msg_handle(std::shared_ptr<gate::gate_service> gate_service_, std::shared_ptr<hubsvrmanager> hubsvrmanager_, std::shared_ptr<service::timerservice> timerservice_, std::shared_ptr<service::redismqservice> hub_redismq_service_) {
+	center_msg_handle(gate_service* gate_service_, hubsvrmanager* hubsvrmanager_, service::timerservice* timerservice_, std::shared_ptr<service::redismqservice> hub_redismq_service_) {
 		_gate_service = gate_service_;
 		_hubsvrmanager = hubsvrmanager_;
 		_timerservice = timerservice_;

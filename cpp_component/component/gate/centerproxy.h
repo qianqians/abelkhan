@@ -22,7 +22,7 @@ struct name_info {
 
 class centerproxy : public std::enable_shared_from_this<centerproxy> {
 public:
-	centerproxy(std::shared_ptr<abelkhan::Ichannel> ch, std::shared_ptr<service::timerservice> _timer) {
+	centerproxy(std::shared_ptr<abelkhan::Ichannel> ch, service::timerservice* _timer) {
 		is_reg_sucess = false;
 		_center_ch = ch;
 		_timerservice = _timer;
@@ -81,8 +81,8 @@ public:
 	time_t timetmp ;
 
 private:
+	service::timerservice* _timerservice;
 	std::shared_ptr<abelkhan::Ichannel> _center_ch;
-	std::shared_ptr<service::timerservice> _timerservice;
 	std::shared_ptr<abelkhan::center_caller> _center_caller;
 
 };

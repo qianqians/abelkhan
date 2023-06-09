@@ -19,14 +19,14 @@ namespace gate {
 
 class client_msg_handle {
 private:
-	std::shared_ptr<clientmanager> _clientmanager;
-	std::shared_ptr<hubsvrmanager> _hubsvrmanager;
-	std::shared_ptr<service::timerservice> _timerservice;
+	clientmanager* _clientmanager;
+	hubsvrmanager* _hubsvrmanager;
+	service::timerservice* _timerservice;
 
 	std::shared_ptr<abelkhan::client_call_gate_module> _client_call_gate_module;
 
 public:
-	client_msg_handle(std::shared_ptr<clientmanager> clientmanager_, std::shared_ptr<hubsvrmanager> hubsvrmanager_, std::shared_ptr<service::timerservice> timerservice_) {
+	client_msg_handle(clientmanager* clientmanager_, hubsvrmanager* hubsvrmanager_, service::timerservice* timerservice_) {
 		_clientmanager = clientmanager_;
 		_hubsvrmanager = hubsvrmanager_;
 		_timerservice = timerservice_;

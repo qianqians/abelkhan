@@ -24,13 +24,13 @@ namespace gate {
 
 class hub_svr_msg_handle {
 private:
-	std::shared_ptr<clientmanager> _clientmanager;
-	std::shared_ptr<hubsvrmanager> _hubsvrmanager;
+	clientmanager* _clientmanager;
+	hubsvrmanager* _hubsvrmanager;
 
 	std::shared_ptr<abelkhan::hub_call_gate_module> _hub_call_gate_module;
 
 public:
-	hub_svr_msg_handle(std::shared_ptr<clientmanager> clientmanager_, std::shared_ptr<hubsvrmanager> hubsvrmanager_) {
+	hub_svr_msg_handle(clientmanager* clientmanager_, hubsvrmanager* hubsvrmanager_) {
 		_clientmanager = clientmanager_;
 		_hubsvrmanager = hubsvrmanager_;
 

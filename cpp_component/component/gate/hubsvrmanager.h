@@ -56,8 +56,8 @@ public:
 	virtual ~hubsvrmanager(){
 	}
 
-	std::shared_ptr<hubproxy> reg_hub(std::string hub_name, std::string& hub_type, std::shared_ptr<abelkhan::Ichannel> ch) {
-		auto _hubproxy = std::make_shared<hubproxy>(hub_name, hub_type, ch);
+	hubproxy* reg_hub(std::string hub_name, std::string& hub_type, std::shared_ptr<abelkhan::Ichannel> ch) {
+		auto _hubproxy = new hubproxy(hub_name, hub_type, ch);
 
 		auto it = hub_name_proxy.find(hub_name);
 		if (it != hub_name_proxy.end()) {
@@ -89,14 +89,14 @@ public:
 		}
 	}
 
-	std::shared_ptr<hubproxy> get_hub(std::string hub_name) {
+	hubproxy* get_hub(std::string hub_name) {
 		if (hub_name_proxy.find(hub_name) == hub_name_proxy.end()){
 			return nullptr;
 		}
 		return hub_name_proxy[hub_name];
 	}
 
-	std::shared_ptr<hubproxy> get_hub(std::shared_ptr<abelkhan::Ichannel> hub_channel) {
+	hubproxy* get_hub(std::shared_ptr<abelkhan::Ichannel> hub_channel) {
 		if (hub_channel_name.find(hub_channel) == hub_channel_name.end()) {
 			return nullptr;
 		}
@@ -128,15 +128,15 @@ public:
 		return result;
 	}
 
-	void for_each_hub(std::function<void(std::string hub_name, std::shared_ptr<hubproxy> proxy)> fn){
+	void for_each_hub(std::function<void(std::string hub_name, hubproxy* proxy)> fn){
 		for (auto it : hub_name_proxy) {
 			fn(it.first, it.second);
 		}
 	}
 
 private:
-	std::unordered_map<std::string, std::shared_ptr<hubproxy> > wait_destory_proxy;
-	std::unordered_map<std::string, std::shared_ptr<hubproxy> > hub_name_proxy;
+	std::unordered_map<std::string, hubproxy*> wait_destory_proxy;
+	std::unordered_map<std::string, hubproxy*> hub_name_proxy;
 	std::unordered_map<std::shared_ptr<abelkhan::Ichannel>, std::string> hub_channel_name;
 
 };
