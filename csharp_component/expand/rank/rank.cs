@@ -167,7 +167,9 @@ namespace Rank
                     var query = new DBQueryHelper();
                     query.condition("name", item.name);
                     var doc = item.ToBsonDocument();
-                    Hub.Hub.get_random_dbproxyproxy().getCollection(dbName, dbCollection).updataPersistedObject(query.query(), doc, false, (result) =>
+                    var update = new UpdateDataHelper();
+                    update.set(doc);
+                    Hub.Hub.get_random_dbproxyproxy().getCollection(dbName, dbCollection).updataPersistedObject(query.query(), update.data(), false, (result) =>
                     {
                         if (result != Hub.DBProxyProxy.EM_DB_RESULT.EM_DB_SUCESSED)
                         {
