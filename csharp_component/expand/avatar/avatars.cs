@@ -126,7 +126,9 @@ namespace avatar
 
                     var query = new DBQueryHelper();
                     query.condition("guid", Guid);
-                    Collection.updataPersistedObject(query.query(), get_db_doc(), false, (result) =>
+                    var update = new UpdateDataHelper();
+                    update.set(get_db_doc());
+                    Collection.updataPersistedObject(query.query(), update.data(), false, (result) =>
                     {
                         if (result != DBProxyProxy.EM_DB_RESULT.EM_DB_SUCESSED)
                         {
@@ -154,7 +156,9 @@ namespace avatar
             {
                 var query = new DBQueryHelper();
                 query.condition("guid", Guid);
-                Collection.updataPersistedObject(query.query(), get_db_doc(), false, (result) =>
+                var update = new UpdateDataHelper();
+                update.set(get_db_doc());
+                Collection.updataPersistedObject(query.query(), update.data(), false, (result) =>
                 {
                     if (result != DBProxyProxy.EM_DB_RESULT.EM_DB_SUCESSED)
                     {
