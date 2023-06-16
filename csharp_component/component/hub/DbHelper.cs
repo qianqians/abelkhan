@@ -278,10 +278,11 @@ namespace Abelkhan
             {
                 _condition.Add(new BsonDocument(c.Key, c.Value));
             }
-            BsonDocument _query = new()
+            BsonDocument _query = new();
+            if (_condition.Count > 0)
             {
-                { "$and", _condition }
-            };
+                _query.Add("$and", _condition);
+            }
 
             return _query;
         }
