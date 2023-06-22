@@ -13,7 +13,7 @@ namespace Rank
         internal string name;
         internal int capacity;
         internal SortedList<long, rank_item> rankList = new();
-        internal SortedDictionary<long, int> guidRank = new ();
+        internal SortedDictionary<long, long> guidRank = new ();
 
         public Rank(int _capacity)
         {
@@ -54,15 +54,15 @@ namespace Rank
 
         public int UpdateRankItem(rank_item item)
         {
-            if (guidRank.TryGetValue(item.guid, out var old))
+            if (guidRank.TryGetValue(item.guid, out var oldScore))
             {
-                rankList.RemoveAt(old - 1);
+                rankList.Remove(oldScore);
             }
 
-            var score = item.score << 32 | item.guid;
+            var score = item.score << 32 | (int.MaxValue - item.guid);
             rankList.Add(score, item);
             item.rank = rankList.IndexOfKey(score) + 1;
-            guidRank[item.guid] = item.rank;
+            guidRank[item.guid] = score;
 
             if (rankList.Count > (capacity + 200)) {
                 var remove = new List<long>();
@@ -81,20 +81,33 @@ namespace Rank
 
         public int GetRankGuid(long guid)
         {
-            if (!guidRank.TryGetValue(guid, out var rank))
+            if (!guidRank.TryGetValue(guid, out var score))
             {
-                rank = -1;
+                return -1;
             }
-            return rank;
+
+            for (var r = 0; r < rankList.Count; r++)
+            {
+                var item = rankList[r];
+                if (item.score == score)
+                {
+                    return r + 1;
+                }
+            }
+
+            return -1;
         }
 
         public List<rank_item> GetRankRange(int start, int end)
         {
             var rank = new List<rank_item>();
 
-            for (var i = start; i < end && i < rankList.Count; ++i)
+            var r = start;
+            for (var i = rankList.Count - start; i >= rankList.Count - end && i >= 0; --i)
             {
-                rank.Add(rankList.GetValueAtIndex(i));
+                var item = rankList.GetValueAtIndex(i);
+                item.rank = r++;
+                rank.Add(item);
             }
 
             return rank;
