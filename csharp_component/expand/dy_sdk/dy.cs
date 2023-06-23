@@ -1,4 +1,5 @@
 ﻿using Abelkhan;
+using System;
 using System.Collections;
 using System.Threading.Tasks;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
@@ -45,7 +46,7 @@ namespace dy
                     var ret = await result.Content.ReadAsStringAsync();
                     Log.Log.trace("jscode2session:{0}", ret);
                     var json_obj = Newtonsoft.Json.JsonConvert.DeserializeObject<Hashtable>(ret);
-                    var err = (int)json_obj["error"];
+                    var err = (long)json_obj["error"];
                     if (err == 0)
                     {
                         var ret_obj = Newtonsoft.Json.JsonConvert.DeserializeObject<code2Session>(ret);
