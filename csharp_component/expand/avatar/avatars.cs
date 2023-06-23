@@ -179,9 +179,9 @@ namespace avatar
             return task.Task;
         }
 
-        public void add_hosting_data<T>(T data) where T : IHostingData
+        public void add_hosting_data<T>(string type_name, T data) where T : IHostingData
         {
-            dataDict.Add(T.Type(), data);
+            dataDict.Add(type_name, data);
         }
 
         public IDataAgent<T> get_clone_hosting_data<T>() where T : IHostingData
@@ -237,7 +237,7 @@ namespace avatar
             };
             foreach (var (name, data) in dataDict)
             {
-                doc.Add(name, data.ToBsonDocument());
+                doc.Add(name, data.Store());
             }
 
             return doc;
@@ -320,6 +320,7 @@ namespace avatar
         public void add_hosting<T>() where T : IHostingData
         {
             var type_str = T.Type();
+            Log.Log.trace("add_hosting type:{0}", type_str);
             hosting_data_create.Add(type_str, T.Create);
             hosting_data_template.Add(type_str, T.Load);
         }
@@ -385,7 +386,7 @@ namespace avatar
                     {
                         var sub_doc = doc.GetValue(name) as BsonDocument;
                         var ins = load(sub_doc);
-                        avatar.add_hosting_data(ins);
+                        avatar.add_hosting_data(name, ins);
                     }
                     avatar.SDKUUID = sdk_uuid;
                     avatar.Guid = doc.GetValue("guid").AsInt64;
@@ -424,7 +425,7 @@ namespace avatar
             foreach (var (name, create) in hosting_data_create)
             {
                 var ins = create();
-                avatar.add_hosting_data(ins);
+                avatar.add_hosting_data(name, ins);
             }
             Hub.Hub.get_random_dbproxyproxy().getCollection(opt.DBName, opt.DBCollection).createPersistedObject(avatar.get_db_doc(), (result) =>
             {
@@ -450,7 +451,7 @@ namespace avatar
                 {
                     var sub_doc = doc.GetValue(name) as BsonDocument;
                     var ins = load(sub_doc);
-                    avatar.add_hosting_data(ins);
+                    avatar.add_hosting_data(name, ins);
                 }
                 avatar.SDKUUID = doc.GetValue("sdk_uuid").AsString;
                 avatar.Guid = guid;

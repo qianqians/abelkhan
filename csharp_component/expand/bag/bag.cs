@@ -47,10 +47,20 @@ namespace bag
 
         public BsonDocument Store()
         {
+            var itemList = new BsonArray();
+            foreach (var item in items)
+            {
+                itemList.Add(new BsonDocument
+                {
+                    { "uuid", item.uuid },
+                    { "desc_id", item.desc_id },
+                    { "amount", item.amount }
+                });
+            }
             var doc = new BsonDocument
             {
                 { "capacity", capacity },
-                { "items", new BsonArray(items) }
+                { "items", itemList }
             };
             return doc;
         }
