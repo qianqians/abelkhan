@@ -479,11 +479,15 @@ namespace avatar
 
         public async Task<Avatar> load_or_create(string sdk_uuid, string client_uuid)
         {
-            var avatar = await load_from_db(sdk_uuid);
-            if (avatar == null)
+            if(!avatar_sdk_uuid.TryGetValue(sdk_uuid, out var avatar))
             {
-                avatar = await create_avatar(sdk_uuid);
+                avatar = await load_from_db(sdk_uuid);
+                if (avatar == null)
+                {
+                    avatar = await create_avatar(sdk_uuid);
+                }
             }
+
             avatar.ClientUUID = client_uuid;
 
             avatar_guid[avatar.Guid] = avatar;
