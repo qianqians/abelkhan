@@ -4,6 +4,7 @@ using MongoDB.Bson;
 using Service;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -267,6 +268,13 @@ namespace avatar
         private Dictionary<string, Func<BsonDocument, IHostingData> > hosting_data_template = new();
 
         private Dictionary<long, Avatar> avatar_guid = new();
+        public List<Avatar> Avatars
+        {
+            get
+            {
+                return avatar_guid.Values.ToList();
+            }
+        }
         private Dictionary<string, Avatar> avatar_sdk_uuid = new();
         private Dictionary<string, Avatar> avatar_client_uuid = new();
 
