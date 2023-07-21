@@ -50,6 +50,8 @@ namespace dy
                     if (err == 0)
                     {
                         var ret_obj = Newtonsoft.Json.JsonConvert.DeserializeObject<code2Session>(ret);
+                        ret_obj.openid = $"dy_{ret_obj.openid}";
+                        ret_obj.anonymous_openid = $"dy_{ret_obj.anonymous_openid}";
                         return ret_obj;
                     }
                     else

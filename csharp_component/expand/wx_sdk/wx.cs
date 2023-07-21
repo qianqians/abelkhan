@@ -1,16 +1,5 @@
 ﻿using Abelkhan;
-using Hub;
-using Log;
-using MongoDB.Bson;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Reflection.Metadata;
-using System.Security.Cryptography;
-using System.Threading;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace wx
 {
@@ -38,6 +27,7 @@ namespace wx
                     var ret = await result.Content.ReadAsStringAsync();
                     Log.Log.trace("jscode2session:{0}", ret);
                     var ret_obj = Newtonsoft.Json.JsonConvert.DeserializeObject<code2Session>(ret);
+                    ret_obj.openid = $"wx_{ret_obj.openid}";
                     return ret_obj;
                 }
             }
