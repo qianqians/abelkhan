@@ -158,9 +158,7 @@
       }
     ],
     "_visFlags": 0,
-    "lightmapSettings": {
-      "__id__": 5
-    },
+    "lightmapSettings": null,
     "_mesh": {
       "__uuid__": "929e58ce-66a4-4e04-9036-4244456a1220@f6832"
     },
@@ -169,10 +167,13 @@
     "_id": "",
     "__prefab": {
       "__id__": 6
+    },
+    "bakeSettings": {
+      "__id__": 5
     }
   },
   {
-    "__type__": "cc.ModelLightmapSettings",
+    "__type__": "cc.ModelBakeSettings",
     "texture": null,
     "uvParam": {
       "__type__": "cc.Vec4",
