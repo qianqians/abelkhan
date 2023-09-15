@@ -67,7 +67,7 @@ class hub_hub_hubproxy(object):
         self.hub_name_2707e093_e344_3ec7_8063_8b86e948eca8 = ""
         self.uuid_2707e093_e344_3ec7_8063_8b86e948eca8 = RandomUUID()
 
-    def test1(self, id1:str, id2:int, _is:bool):
+    def test1(self, id1:str, id2:int = 3, _is:bool):
         _argv_c501822b_22a8_37ff_91a9_9545f4689a3d = []
         _argv_c501822b_22a8_37ff_91a9_9545f4689a3d.append(id1)
         _argv_c501822b_22a8_37ff_91a9_9545f4689a3d.append(id2)

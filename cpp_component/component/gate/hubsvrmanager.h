@@ -9,6 +9,7 @@
 
 #include <string>
 #include <map>
+#include <random>
 
 #include <abelkhan.h>
 #include <modulemng_handle.h>
@@ -106,6 +107,7 @@ public:
 	bool get_hub_list(std::string hub_type, abelkhan::hub_info& _info) {
 		auto result = false;
 
+		std::vector<abelkhan::hub_info> hub_list;
 		uint32_t tick_time_tmp = INT32_MAX;
 		for (auto it : hub_name_proxy) {
 			if (it.second->_hub_type != hub_type) {
@@ -121,9 +123,14 @@ public:
 				_info.hub_name = it.second->_hub_name;
 				_info.hub_type = it.second->_hub_type;
 
+				hub_list.push_back(_info);
+
 				result = true;
 			}
 		}
+
+		auto index = rand() % hub_list.size();
+		_info = hub_list[index];
 		
 		return result;
 	}
@@ -135,6 +142,7 @@ public:
 	}
 
 private:
+	std::mt19937 rand;
 	std::unordered_map<std::string, hubproxy*> wait_destory_proxy;
 	std::unordered_map<std::string, hubproxy*> hub_name_proxy;
 	std::unordered_map<std::shared_ptr<abelkhan::Ichannel>, std::string> hub_channel_name;
