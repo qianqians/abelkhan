@@ -78,29 +78,8 @@ public:
 
 		_is_cluster = is_cluster;
 		if (is_cluster) {
-			_write_cluster_ctx = redisClusterContextInit();
-			redisClusterSetOptionAddNodes(_write_cluster_ctx, redis_url.c_str());
-			if (!password.empty()) {
-				redisClusterSetOptionPassword(_write_cluster_ctx, password.c_str());
-			}
-			redisClusterSetOptionRouteUseSlots(_write_cluster_ctx);
-			redisClusterConnect2(_write_cluster_ctx);
-			if (!_write_cluster_ctx || _write_cluster_ctx->err) {
-				spdlog::error("redisClusterConnect2 faild url:{0}!", redis_url);
-				throw redismqserviceException("redisClusterConnect2 faild!");
-			}
-
-			_recv_cluster_ctx = redisClusterContextInit();
-			redisClusterSetOptionAddNodes(_recv_cluster_ctx, redis_url.c_str());
-			if (!password.empty()) {
-				redisClusterSetOptionPassword(_recv_cluster_ctx, password.c_str());
-			}
-			redisClusterSetOptionRouteUseSlots(_recv_cluster_ctx);
-			redisClusterConnect2(_recv_cluster_ctx);
-			if (!_recv_cluster_ctx || _recv_cluster_ctx->err) {
-				spdlog::error("redisClusterConnect2 faild url:{0}!", redis_url);
-				throw redismqserviceException("redisClusterConnect2 faild!");
-			}
+			init_write_cluster_ctx();
+			init_recv_cluster_ctx();
 		}
 		else {
 			_write_ctx = conn_redis();
@@ -201,14 +180,48 @@ private:
 		wait_listen_channel_names.clear();
 	}
 
+	void init_write_cluster_ctx() {
+		_write_cluster_ctx = redisClusterContextInit();
+		redisClusterSetOptionAddNodes(_write_cluster_ctx, _redis_url.c_str());
+		if (!_password.empty()) {
+			redisClusterSetOptionPassword(_write_cluster_ctx, _password.c_str());
+		}
+		redisClusterSetOptionRouteUseSlots(_write_cluster_ctx);
+		redisClusterConnect2(_write_cluster_ctx);
+		if (!_write_cluster_ctx || _write_cluster_ctx->err) {
+			spdlog::error("redisClusterConnect2 faild url:{0}!", _redis_url);
+			throw redismqserviceException("redisClusterConnect2 faild!");
+		}
+	}
+
+	void init_recv_cluster_ctx() {
+		_recv_cluster_ctx = redisClusterContextInit();
+		redisClusterSetOptionAddNodes(_recv_cluster_ctx, _redis_url.c_str());
+		if (!_password.empty()) {
+			redisClusterSetOptionPassword(_recv_cluster_ctx, _password.c_str());
+		}
+		redisClusterSetOptionRouteUseSlots(_recv_cluster_ctx);
+		redisClusterConnect2(_recv_cluster_ctx);
+		if (!_recv_cluster_ctx || _recv_cluster_ctx->err) {
+			spdlog::error("redisClusterConnect2 faild url:{0}!", _redis_url);
+			throw redismqserviceException("redisClusterConnect2 faild!");
+		}
+	}
+
 	void redis_cluster_send_data(std::string ch_name, char* data, size_t len) {
 		auto _reply = (redisReply*)redisClusterCommand(_write_cluster_ctx, "LPUSH %s %b", ch_name.c_str(), data, len);
-		if (_reply->type == REDIS_REPLY_PUSH || _reply->type == REDIS_REPLY_INTEGER) {
+		if (_reply) {
+			if (_reply->type == REDIS_REPLY_PUSH || _reply->type == REDIS_REPLY_INTEGER) {
+			}
+			else {
+				spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
+			}
+			freeReplyObject(_reply);
 		}
 		else {
-			spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
+			spdlog::error("redis exception operate type:{0}, str:{1}", _write_cluster_ctx->err, _write_cluster_ctx->errstr);
+			init_write_cluster_ctx();
 		}
-		freeReplyObject(_reply);
 	}
 
 	void redis_cluster_recv_data() {
@@ -242,6 +255,10 @@ private:
 					break;
 				}
 				freeReplyObject(_reply);
+			}
+			else {
+				spdlog::error("redis exception operate type:{0}, str:{1}", _recv_cluster_ctx->err, _recv_cluster_ctx->errstr);
+				init_recv_cluster_ctx();
 			}
 		}
 	}
