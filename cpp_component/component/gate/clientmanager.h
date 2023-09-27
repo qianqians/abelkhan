@@ -30,7 +30,7 @@ namespace gate {
 class clientmanager;
 class clientproxy {
 private:
-	concurrent::ringque<std::pair<char*, int> > wait_send_buf;
+	concurrent::ringque<std::pair<char*, int> >* wait_send_buf = nullptr;
 
 public:
 	int64_t _timetmp = 0;
@@ -48,13 +48,24 @@ public:
 
 public:
 	clientproxy() : _gate_call_client_caller(nullptr, service::_modulemng) {
+		wait_send_buf = new concurrent::ringque<std::pair<char*, int> >();
 	}
 
-	clientproxy(const clientproxy & _) : _gate_call_client_caller(nullptr, service::_modulemng) {
+	clientproxy(const clientproxy & other) : _gate_call_client_caller(nullptr, service::_modulemng) {
+		wait_send_buf = other.wait_send_buf;
+		conn_hubproxys = other.conn_hubproxys;
+
+		_cuuid = other._cuuid;
+		_ch = other._ch;
+		_gate_call_client_caller.reset_channel(_ch);
+
+		index = other.index;
+
+		_cli_mgr = other._cli_mgr;
 	}
 
 	void init(std::string& cuuid, std::shared_ptr<abelkhan::Ichannel> ch, int _index, clientmanager* cli_mgr) {
-		wait_send_buf.clear();
+		wait_send_buf->clear();
 		conn_hubproxys.clear();
 
 		_cuuid = cuuid;
@@ -99,8 +110,8 @@ public:
 	}
 
 	void done_send() {
-		std::pair<char*, int> buf; ;
-		while (wait_send_buf.pop(buf)) {
+		std::pair<char*, int> buf;
+		while (wait_send_buf->pop(buf)) {
 			_ch->send(buf.first, buf.second);
 		}
 	}
