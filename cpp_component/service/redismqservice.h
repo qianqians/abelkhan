@@ -211,55 +211,46 @@ private:
 		freeReplyObject(_reply);
 	}
 
-	bool redis_cluster_recv_data() {
-		auto ret = false;
-		
+	void redis_cluster_recv_data() {
 		std::string cmd = "BRPOP";
 		for (auto channel_name : listen_channel_names) {
 			cmd += " " + channel_name;
 		}
 		cmd += " 1";
-		auto _reply = (redisReply*)redisClusterCommand(_recv_cluster_ctx, cmd.c_str());
-		if (_reply->type == REDIS_REPLY_ARRAY) {
-			auto _buf = _reply->element[1]->str;
-			auto _ch_name_size = (uint32_t)_buf[0] | ((uint32_t)_buf[1] << 8) | ((uint32_t)_buf[2] << 16) | ((uint32_t)_buf[3] << 24);
-			auto _ch_name = std::string(&_buf[4], _ch_name_size);
-			auto _header_len = 4 + _ch_name_size;
-			auto _msg_len = (uint32_t)_reply->len - _header_len;
+		while (true) {
+			auto _reply = (redisReply*)redisClusterCommand(_recv_cluster_ctx, cmd.c_str());
+			if (_reply) {
+				if (_reply->type == REDIS_REPLY_ARRAY) {
+					auto _buf = _reply->element[1]->str;
+					auto _ch_name_size = (uint32_t)_buf[0] | ((uint32_t)_buf[1] << 8) | ((uint32_t)_buf[2] << 16) | ((uint32_t)_buf[3] << 24);
+					auto _ch_name = std::string(&_buf[4], _ch_name_size);
+					auto _header_len = 4 + _ch_name_size;
+					auto _msg_len = (uint32_t)_reply->len - _header_len;
 
-			auto tmp_buff = (unsigned char*)_buf[_header_len];
-			uint32_t len = (uint32_t)tmp_buff[0] | ((uint32_t)tmp_buff[1] << 8) | ((uint32_t)tmp_buff[2] << 16) | ((uint32_t)tmp_buff[3] << 24);
-			std::string err;
-			auto obj = msgpack11::MsgPack::parse((const char*)tmp_buff, len, err);
-			recv_data.push(std::make_pair(_ch_name, obj));
+					auto tmp_buff = (unsigned char*)_buf[_header_len];
+					uint32_t len = (uint32_t)tmp_buff[0] | ((uint32_t)tmp_buff[1] << 8) | ((uint32_t)tmp_buff[2] << 16) | ((uint32_t)tmp_buff[3] << 24);
+					std::string err;
+					auto obj = msgpack11::MsgPack::parse((const char*)tmp_buff, len, err);
+					recv_data.push(std::make_pair(_ch_name, obj));
 
-			ret = true;
+				}
+				else if (_reply->type != REDIS_REPLY_NIL) {
+					spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
+				}
+				else {
+					freeReplyObject(_reply);
+					break;
+				}
+				freeReplyObject(_reply);
+			}
 		}
-		else if (_reply->type != REDIS_REPLY_NIL) {
-			spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
-		}
-		freeReplyObject(_reply);
-
-		return ret;
 	}
 
 	void thread_poll_cluster() {
 		int sleep_time = 1;
 		while (run_flag) {
 			refresh_listen_list();
-
-			bool is_idle = true;
-			if (redis_cluster_recv_data()) {
-				is_idle = false;
-				sleep_time = 1;
-			}
-
-			if (is_idle) {
-				if (sleep_time < 32) {
-					sleep_time *= 2;
-				}
-				std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
-			}
+			redis_cluster_recv_data();
 		}
 	}
 
@@ -345,69 +336,56 @@ private:
 		}
 	}
 
-	bool redis_mq_recv_data() {
-		auto ret = false;
-
+	void redis_mq_recv_data() {
 		std::string cmd = "BRPOP";
 		for (auto channel_name : listen_channel_names) {
 			cmd += " " + channel_name;
 		}
 		cmd += " 1";
-		auto _reply = (redisReply*)redisCommand(_recv_ctx, cmd.c_str());
-		if (_reply) {
-			if (_reply->type == REDIS_REPLY_ARRAY) {
-				auto _buf = _reply->element[1]->str;
-				auto _ch_name_size = (uint32_t)_buf[0] | ((uint32_t)_buf[1] << 8) | ((uint32_t)_buf[2] << 16) | ((uint32_t)_buf[3] << 24);
-				auto _ch_name = std::string(&_buf[4], _ch_name_size);
-				auto _header_len = 4 + _ch_name_size;
-				auto _msg_len = (uint32_t)_reply->len - _header_len;
+		while (true) {
+			auto _reply = (redisReply*)redisCommand(_recv_ctx, cmd.c_str());
+			if (_reply) {
+				if (_reply->type == REDIS_REPLY_ARRAY) {
+					auto _buf = _reply->element[1]->str;
+					auto _ch_name_size = (uint32_t)_buf[0] | ((uint32_t)_buf[1] << 8) | ((uint32_t)_buf[2] << 16) | ((uint32_t)_buf[3] << 24);
+					auto _ch_name = std::string(&_buf[4], _ch_name_size);
+					auto _header_len = 4 + _ch_name_size;
+					auto _msg_len = (uint32_t)_reply->len - _header_len;
 
-				auto tmp_buff = (unsigned char*)&_buf[_header_len];
-				uint32_t len = (uint32_t)tmp_buff[0] | ((uint32_t)tmp_buff[1] << 8) | ((uint32_t)tmp_buff[2] << 16) | ((uint32_t)tmp_buff[3] << 24);
-				std::string err;
-				auto obj = msgpack11::MsgPack::parse((const char*)&tmp_buff[4], len, err);
-				recv_data.push(std::make_pair(_ch_name, obj));
-
-				ret = true;
-			}
-			else if (_reply->type != REDIS_REPLY_NIL) {
-				spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
-			}
-			freeReplyObject(_reply);
-		}
-		else {
-			int wait_time = 8;
-			while (!re_conn_redis(_recv_ctx)) {
-				try {
-					std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
+					auto tmp_buff = (unsigned char*)&_buf[_header_len];
+					uint32_t len = (uint32_t)tmp_buff[0] | ((uint32_t)tmp_buff[1] << 8) | ((uint32_t)tmp_buff[2] << 16) | ((uint32_t)tmp_buff[3] << 24);
+					std::string err;
+					auto obj = msgpack11::MsgPack::parse((const char*)&tmp_buff[4], len, err);
+					recv_data.push(std::make_pair(_ch_name, obj));
 				}
-				catch (redismqserviceException ex) {
-					std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
+				else if (_reply->type != REDIS_REPLY_NIL) {
+					spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
 				}
-				wait_time *= 2;
+				else {
+					freeReplyObject(_reply);
+					break;
+				}
+				freeReplyObject(_reply);
+			}
+			else {
+				int wait_time = 8;
+				while (!re_conn_redis(_recv_ctx)) {
+					try {
+						std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
+					}
+					catch (redismqserviceException ex) {
+						std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
+					}
+					wait_time *= 2;
+				}
 			}
 		}
-
-		return ret;
 	}
 
 	void thread_poll_single() {
-		int sleep_time = 1;
 		while (run_flag) {
 			refresh_listen_list();
-
-			bool is_idle = true;
-			if (redis_mq_recv_data()) {
-				is_idle = false;
-				sleep_time = 1;
-			}
-
-			if (is_idle) {
-				if (sleep_time < 32) {
-					sleep_time *= 2;
-				}
-				std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
-			}
+			redis_mq_recv_data();
 		}
 	}
 
