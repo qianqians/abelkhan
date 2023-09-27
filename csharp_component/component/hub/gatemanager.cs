@@ -382,48 +382,79 @@ namespace Hub
             st.Position = 0;
             var _rpc_bin = st.ToArray();
 
-            using var st_event = MemoryStreamPool.mstMgr.GetStream();
-            var _direct_rpc_argv = new ArrayList
-            {
-                _rpc_bin
-            };
-            ArrayList _event = new ArrayList
-            {
-                "hub_call_client_call_client",
-                _direct_rpc_argv
-            };
-            _serializer.Pack(st_event, _event);
-            st_event.Position = 0;
-            var data = st_event.ToArray();
-
-            using var st_send = MemoryStreamPool.mstMgr.GetStream();
-            var _tmplenght = data.Length;
-            st_send.WriteByte((byte)(_tmplenght & 0xff));
-            st_send.WriteByte((byte)((_tmplenght >> 8) & 0xff));
-            st_send.WriteByte((byte)((_tmplenght >> 16) & 0xff));
-            st_send.WriteByte((byte)((_tmplenght >> 24) & 0xff));
-            st_send.Write(data, 0, _tmplenght);
-            st_send.Position = 0;
-            var buf = st_send.ToArray();
-
-            using var st_send_crypt = MemoryStreamPool.mstMgr.GetStream();
-            st_send_crypt.Write(st_send.GetBuffer());
-            st_send_crypt.Position = 0;
-            var crypt_buf = st_send_crypt.ToArray();
-            Abelkhan.Crypt.crypt_func_send(crypt_buf);
-
-            foreach (var _client in _direct_clients_crypt)
-            {
-                _client.send(crypt_buf);
-            }
-            foreach (var _client in _direct_clients)
-            {
-                _client.send(buf);
-            }
-
             foreach (var _proxy in tmp_gates)
             {
                 _proxy.Key.forward_hub_call_group_client(_proxy.Value, _rpc_bin);
+            }
+
+            if (_direct_clients.Count > 0)
+            {
+                using var st_event = MemoryStreamPool.mstMgr.GetStream();
+                var _direct_rpc_argv = new ArrayList
+                {
+                    _rpc_bin
+                };
+                ArrayList _event = new ArrayList
+                {
+                    "hub_call_client_call_client",
+                    _direct_rpc_argv
+                };
+                _serializer.Pack(st_event, _event);
+                st_event.Position = 0;
+                var data = st_event.ToArray();
+
+                using var st_send = MemoryStreamPool.mstMgr.GetStream();
+                var _tmplenght = data.Length;
+                st_send.WriteByte((byte)(_tmplenght & 0xff));
+                st_send.WriteByte((byte)((_tmplenght >> 8) & 0xff));
+                st_send.WriteByte((byte)((_tmplenght >> 16) & 0xff));
+                st_send.WriteByte((byte)((_tmplenght >> 24) & 0xff));
+                st_send.Write(data, 0, _tmplenght);
+                st_send.Position = 0;
+                var buf = st_send.ToArray();
+
+                foreach (var _client in _direct_clients)
+                {
+                    _client.send(buf);
+                }
+            }
+
+            if (_direct_clients_crypt.Count > 0)
+            {
+                using var st_event = MemoryStreamPool.mstMgr.GetStream();
+                var _direct_rpc_argv = new ArrayList
+                {
+                    _rpc_bin
+                };
+                ArrayList _event = new ArrayList
+                {
+                    "hub_call_client_call_client",
+                    _direct_rpc_argv
+                };
+                _serializer.Pack(st_event, _event);
+                st_event.Position = 0;
+                var data = st_event.ToArray();
+
+                using var st_send = MemoryStreamPool.mstMgr.GetStream();
+                var _tmplenght = data.Length;
+                st_send.WriteByte((byte)(_tmplenght & 0xff));
+                st_send.WriteByte((byte)((_tmplenght >> 8) & 0xff));
+                st_send.WriteByte((byte)((_tmplenght >> 16) & 0xff));
+                st_send.WriteByte((byte)((_tmplenght >> 24) & 0xff));
+                st_send.Write(data, 0, _tmplenght);
+                st_send.Position = 0;
+                var buf = st_send.ToArray();
+
+                using var st_send_crypt = MemoryStreamPool.mstMgr.GetStream();
+                st_send_crypt.Write(st_send.GetBuffer());
+                st_send_crypt.Position = 0;
+                var crypt_buf = st_send_crypt.ToArray();
+                Abelkhan.Crypt.crypt_func_send(crypt_buf);
+
+                foreach (var _client in _direct_clients_crypt)
+                {
+                    _client.send(crypt_buf);
+                }
             }
         }
 
