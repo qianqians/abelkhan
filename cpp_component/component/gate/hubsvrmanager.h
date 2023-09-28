@@ -129,9 +129,11 @@ public:
 			}
 		}
 
-		auto index = rand() % hub_list.size();
-		_info = hub_list[index];
-		
+		if (hub_list.size() > 0) {
+			auto index = rand() % hub_list.size();
+			_info = hub_list[index];
+		}
+
 		return result;
 	}
 
