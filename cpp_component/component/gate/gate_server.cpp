@@ -60,7 +60,7 @@ void gate_service::init() {
 
 	_timerservice = new service::timerservice();
 	_hubsvrmanager = new hubsvrmanager();
-	_clientmanager = new clientmanager(_hubsvrmanager);
+	_clientmanager = new clientmanager(_config->get_value_int("limit_client"), _hubsvrmanager);
 	_closehandle = new closehandle();
 
 	auto redismq_url = _root_config->get_value_string("redis_for_mq");
@@ -97,7 +97,12 @@ void gate_service::init() {
 				std::static_pointer_cast<service::channel>(ch)->set_xor_key_crypt();
 
 				auto _client = _clientmanager->reg_client(ch);
-				_client->ntf_cuuid();
+				if (_client) {
+					_client->ntf_cuuid();
+				}
+				else {
+					ch->disconnect();
+				}
 			});
 			_client_service->sigchanneldisconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
 				service::gc_put([this, ch]() {
@@ -127,7 +132,12 @@ void gate_service::init() {
 				}
 
 				auto _client = _clientmanager->reg_client(ch);
-				_client->ntf_cuuid();
+				if (_client) {
+					_client->ntf_cuuid();
+				}
+				else {
+					ch->disconnect();
+				}
 			});
 			_websocket_service->sigchanneldisconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
 				service::gc_put([this, ch]() {
@@ -153,8 +163,13 @@ void gate_service::init() {
 				std::static_pointer_cast<service::enetchannel>(ch)->set_xor_key_crypt();
 
 				auto _client = _clientmanager->reg_client(ch);
-				_client->ntf_cuuid();
-				});
+				if (_client) {
+					_client->ntf_cuuid();
+				}
+				else {
+					ch->disconnect();
+				}
+			});
 			_enet_service->sig_disconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
 				service::gc_put([this, ch]() {
 					//_clientmanager->unreg_client(ch);

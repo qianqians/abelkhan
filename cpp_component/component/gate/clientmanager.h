@@ -123,11 +123,11 @@ public:
 
 class clientmanager {
 public:
-	clientmanager(hubsvrmanager* _hubsvrmanager_) {
+	clientmanager(size_t _limit_client, hubsvrmanager* _hubsvrmanager_) {
 		_hubsvrmanager = _hubsvrmanager_;
 
-		client_proxy_pool.resize(8192);
-		for (int i = 0; i < 8192; i++)
+		client_proxy_pool.resize(_limit_client);
+		for (int i = 0; i < _limit_client; i++)
 		{
 			client_proxy_recycle_pool.push(i);
 		}
@@ -163,16 +163,6 @@ public:
 		}
 	}
 
-	void scaler_client_proxy_pool() {
-		auto size = client_proxy_pool.size();
-		client_proxy_pool.resize(size + 8192);
-
-		for (int i = size; i < size + 8192; i++)
-		{
-			client_proxy_recycle_pool.push(i);
-		}
-	}
-
 	int pop_client_proxy_from_pool() {
 		if (!client_proxy_recycle_pool.empty()) {
 			auto index = client_proxy_recycle_pool.top();
@@ -180,13 +170,7 @@ public:
 
 			return index;
 		}
-
-		scaler_client_proxy_pool();
-
-		auto index = client_proxy_recycle_pool.top();
-		client_proxy_recycle_pool.pop();
-
-		return index;
+		return -1;
 	}
 
 	static void recycle_client_proxy(clientmanager* _cli_mgr, clientproxy * _proxy) {
@@ -201,6 +185,10 @@ public:
 		auto _cli_mgr = this;
 
 		auto index = pop_client_proxy_from_pool();
+		if (index < 0) {
+			return nullptr;
+		}
+
 		auto client_proxy = &client_proxy_pool[index];
 		client_proxy->init(cuuid, ch, index, _cli_mgr);
 		auto _client = std::shared_ptr<clientproxy>(client_proxy, std::bind(&clientmanager::recycle_client_proxy, _cli_mgr, std::placeholders::_1));
