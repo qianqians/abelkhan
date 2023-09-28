@@ -58,12 +58,12 @@ public:
 
 		conn_hubproxys = other.conn_hubproxys;
 
+		_timetmp = other._timetmp;
+		_theory_timetmp = other._theory_timetmp;
 		_cuuid = other._cuuid;
 		_ch = other._ch;
 		_gate_call_client_caller.reset_channel(_ch);
-
 		index = other.index;
-
 		_cli_mgr = other._cli_mgr;
 	}
 
