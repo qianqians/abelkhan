@@ -1,4 +1,9 @@
+enum test {
+	test1 = 1;
+	test2 = 2;
+}
+
 module hub_hub {
-	test1 ntf(string id1, int32 id2 = 3, bool _is);
+	test1 ntf(string id1, int32 id2 = 3, bool _is = false, test e = test1);
     test2 req(string id) rsp(string token) err(int32 err);
 }

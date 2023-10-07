@@ -45,7 +45,11 @@ def convert_parameter(typestr, parameter, dependent_enum, enum):
     elif typestr == 'double':
         return "float(" + parameter + ")"
     elif typestr == 'bool':
-        return parameter
+        if parameter == "false":
+            return "False"
+        elif parameter == "true":
+            return "True"
+        raise Exception("wrong parameter:%s" % parameter)
     elif check_in_dependent(typestr, dependent_enum):
         enum_elems = enum[typestr]
         for key, value in enum_elems:
