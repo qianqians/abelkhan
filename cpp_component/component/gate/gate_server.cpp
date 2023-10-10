@@ -12,6 +12,8 @@
 #include <websocketacceptservice.h>
 #include <modulemng_handle.h>
 
+#include <fmt/format.h>
+
 #include "center_msg_handle.h"
 #include "hub_svr_msg_handle.h"
 #include "client_msg_handle.h"
@@ -30,7 +32,7 @@ gate_service::gate_service(std::string config_file_path, std::string config_name
 	_center_config = _root_config->get_value_dict("center");
 	_config = _root_config->get_value_dict(config_name);
 
-	gate_name_info.name = std::format("{0}_{1}", config_name, xg::newGuid().str());
+	gate_name_info.name = fmt::format("{0}_{1}", config_name, xg::newGuid().str());
 	reconn_count = 0;
 	tick = 0;
 }

@@ -7,6 +7,8 @@
 #ifndef _buffer_h
 #define _buffer_h
 
+#include <stdlib.h>
+
 namespace service {
 
 size_t get_buffer_size();

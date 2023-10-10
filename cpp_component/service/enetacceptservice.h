@@ -5,6 +5,8 @@
 
 #include <concurrent/signals.h>
 
+#include <abelkhan.h>
+
 #include "DNS.h"
 #include "enetchannel.h"
 
@@ -16,7 +18,7 @@ public:
 	enetacceptservice(std::string host, short port){
 		ENetAddress address;
 		if (enet_address_set_host_ip(&address, "0.0.0.0") != 0) {
-			throw std::exception("enet_address_set_host_ip faild");
+			throw abelkhan::Exception("enet_address_set_host_ip faild");
 			return;
 		}
 		address.port = port;
@@ -103,13 +105,13 @@ public:
 		auto ip = service::DNS(hub_host);
 		ENetAddress address;
 		if (enet_address_set_host_ip(&address, ip.c_str()) != 0) {
-			throw std::exception("enet_address_set_host_ip faild");
+			throw abelkhan::Exception("enet_address_set_host_ip faild");
 		}
 		address.port = port;
 
 		ENetPeer* peer = enet_host_connect(_host, &address, 1, 0);
 		if (peer == nullptr) {
-			throw std::exception("enet_host_connect faild");
+			throw abelkhan::Exception("enet_host_connect faild");
 		}
 
 		std::string cb_handle = ip + ":" + std::to_string(port);

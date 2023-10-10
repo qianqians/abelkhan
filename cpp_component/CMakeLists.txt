@@ -46,6 +46,9 @@ INCLUDE_DIRECTORIES(${hiredis_INCLUDE_PATH})
 set(hiredis-cluster_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//3rdparty//hiredis-cluster CACHE PATH "hiredis-cluster include path")
 INCLUDE_DIRECTORIES(${hiredis-cluster_INCLUDE_PATH})
 
+set(fmt_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//3rdparty//fmt//include CACHE PATH "fmt include path")
+INCLUDE_DIRECTORIES(${fmt_INCLUDE_PATH})
+
 set(msgpack11_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//tools//juggle//cpp//3rdparty//msgpack11 CACHE PATH "msgpack11 include path")
 INCLUDE_DIRECTORIES(${msgpack11_INCLUDE_PATH})
 
