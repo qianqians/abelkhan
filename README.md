@@ -17,6 +17,12 @@ theDarkforce@aliyun.com
 juggle:https://github.com/qianqians/juggle  
 concurrent:https://github.com/qianqians/concurrent  
 meter:https://github.com/qianqians/meter  
-  
+
+## 使用本框架的项目
+AnimalEstate: https://github.com/01hala/AnimalEstate  
+porno: https://github.com/01hala/porno  
+tsxs: https://github.com/01hala/tsxs  
+AutoChess: https://github.com/01hala/AutoChess  
+  
 ## QQ群
 494405542

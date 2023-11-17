@@ -16,6 +16,8 @@
 
 #include <json11.hpp>
 
+#include <abelkhan.h>
+
 #include <log.h>
 
 namespace config {
@@ -25,7 +27,7 @@ public:
 	config(std::string & file) {
 		auto fs = std::ifstream(file);
 		if (!fs.is_open()) {
-			throw std::exception(("cannot find config file" + file).c_str());
+			throw abelkhan::Exception("cannot find config file" + file);
 		}
 
 		std::stringstream buffer;

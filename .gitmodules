@@ -16,3 +16,6 @@
 [submodule "cpp_component/3rdparty/libbson"]
 	path = cpp_component/3rdparty/libbson
 	url = git@github.com:qianqians/libbson.git
+[submodule "cpp_component/3rdparty/fmt"]
+	path = cpp_component/3rdparty/fmt
+	url = git@github.com:fmtlib/fmt.git

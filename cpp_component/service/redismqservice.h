@@ -17,6 +17,7 @@
 #include <hiredis/hiredis.h>
 #include <hircluster.h>
 #include <msgpack11.hpp>
+#include <fmt/format.h>
 
 #include <string_tools.h>
 #include <ringque.h>
@@ -27,7 +28,7 @@ namespace service {
 
 class redismqserviceException : public std::exception{
 public:
-	redismqserviceException(std::string err_) : std::exception(err_.c_str()) {
+	redismqserviceException(std::string err_) {
 		_err = err_;
 	}
 
@@ -214,7 +215,7 @@ private:
 			if (_reply->type == REDIS_REPLY_PUSH || _reply->type == REDIS_REPLY_INTEGER) {
 			}
 			else {
-				spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
+				spdlog::error(fmt::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
 			}
 			freeReplyObject(_reply);
 		}
@@ -248,7 +249,7 @@ private:
 
 				}
 				else if (_reply->type != REDIS_REPLY_NIL) {
-					spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
+					spdlog::error(fmt::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
 				}
 				else {
 					freeReplyObject(_reply);
@@ -333,7 +334,7 @@ private:
 				if (_reply->type == REDIS_REPLY_PUSH || _reply->type == REDIS_REPLY_INTEGER) {
 				}
 				else {
-					spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
+					spdlog::error(fmt::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
 				}
 				freeReplyObject(_reply);
 				break;
@@ -376,7 +377,7 @@ private:
 					recv_data.push(std::make_pair(_ch_name, obj));
 				}
 				else if (_reply->type != REDIS_REPLY_NIL) {
-					spdlog::error(std::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
+					spdlog::error(fmt::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
 				}
 				else {
 					freeReplyObject(_reply);
