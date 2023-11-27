@@ -81,6 +81,7 @@ public:
 			ctx->set_options(
 				asio::ssl::context::default_workarounds | 
 				asio::ssl::context::no_sslv2 |
+				asio::ssl::context::no_sslv3 |
 				asio::ssl::context::single_dh_use);
 	
 			ctx->use_certificate_chain_file(certificate_chain_file);
