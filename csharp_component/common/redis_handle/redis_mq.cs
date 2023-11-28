@@ -232,26 +232,28 @@ namespace Abelkhan
 
         private async Task recvmsg_mq_ch(string ch_name)
         {
-            byte[] pop_data = await database.ListRightPopAsync(ch_name);
-            while (pop_data != null)
+            var batch_pop_data = await database.ListRightPopAsync(ch_name, 10);
+            while (batch_pop_data != null)
             {
-                var _ch_name_size = pop_data[0] | ((uint)pop_data[1] << 8) | ((uint)pop_data[2] << 16) | ((uint)pop_data[3] << 24);
-                var _ch_name = System.Text.Encoding.UTF8.GetString(pop_data, 4, (int)_ch_name_size);
-                var _header_len = 4 + _ch_name_size;
-                var _msg_len = pop_data.Length - _header_len;
+                foreach (byte[] pop_data in batch_pop_data) {
+                    var _ch_name_size = pop_data[0] | ((uint)pop_data[1] << 8) | ((uint)pop_data[2] << 16) | ((uint)pop_data[3] << 24);
+                    var _ch_name = System.Text.Encoding.UTF8.GetString(pop_data, 4, (int)_ch_name_size);
+                    var _header_len = 4 + _ch_name_size;
+                    var _msg_len = pop_data.Length - _header_len;
 
-                using var _st = MemoryStreamPool.mstMgr.GetStream();
-                _st.Write(pop_data, (int)_header_len, (int)_msg_len);
-                _st.Position = 0;
+                    using var _st = MemoryStreamPool.mstMgr.GetStream();
+                    _st.Write(pop_data, (int)_header_len, (int)_msg_len);
+                    _st.Position = 0;
 
-                if (!channels.TryGetValue(_ch_name, out Redischannel ch))
-                {
-                    ch = new Redischannel(_ch_name, this);
-                    channels.TryAdd(_ch_name, ch);
+                    if (!channels.TryGetValue(_ch_name, out Redischannel ch))
+                    {
+                        ch = new Redischannel(_ch_name, this);
+                        channels.TryAdd(_ch_name, ch);
+                    }
+                    ch._channel_onrecv.on_recv(_st.ToArray());
                 }
-                ch._channel_onrecv.on_recv(_st.ToArray());
 
-                pop_data = await database.ListRightPopAsync(ch_name);
+                batch_pop_data = await database.ListRightPopAsync(ch_name, 10);
             }
         }
 
