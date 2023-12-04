@@ -239,7 +239,6 @@ private:
 					auto _ch_name_size = (uint32_t)_buf[0] | ((uint32_t)_buf[1] << 8) | ((uint32_t)_buf[2] << 16) | ((uint32_t)_buf[3] << 24);
 					auto _ch_name = std::string(&_buf[4], _ch_name_size);
 					auto _header_len = 4 + _ch_name_size;
-					auto _msg_len = (uint32_t)_reply->len - _header_len;
 
 					auto tmp_buff = (unsigned char*)_buf[_header_len];
 					uint32_t len = (uint32_t)tmp_buff[0] | ((uint32_t)tmp_buff[1] << 8) | ((uint32_t)tmp_buff[2] << 16) | ((uint32_t)tmp_buff[3] << 24);
@@ -368,7 +367,6 @@ private:
 					auto _ch_name_size = (uint32_t)_buf[0] | ((uint32_t)_buf[1] << 8) | ((uint32_t)_buf[2] << 16) | ((uint32_t)_buf[3] << 24);
 					auto _ch_name = std::string(&_buf[4], _ch_name_size);
 					auto _header_len = 4 + _ch_name_size;
-					auto _msg_len = (uint32_t)_reply->len - _header_len;
 
 					auto tmp_buff = (unsigned char*)&_buf[_header_len];
 					uint32_t len = (uint32_t)tmp_buff[0] | ((uint32_t)tmp_buff[1] << 8) | ((uint32_t)tmp_buff[2] << 16) | ((uint32_t)tmp_buff[3] << 24);
