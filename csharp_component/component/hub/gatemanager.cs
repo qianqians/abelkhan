@@ -364,11 +364,12 @@ namespace Hub
 
                 if (clients.TryGetValue(_uuid, out GateProxy _proxy))
                 {
-                    if (!tmp_gates.ContainsKey(_proxy))
+                    if (!tmp_gates.TryGetValue(_proxy, out var uuidlist))
                     {
-                        tmp_gates.Add(_proxy, new List<string>());
+                        uuidlist = new();
+                        tmp_gates.Add(_proxy, uuidlist);
                     }
-                    tmp_gates[_proxy].Add(_uuid);
+                    uuidlist.Add(_uuid);
                 }
             }
 
