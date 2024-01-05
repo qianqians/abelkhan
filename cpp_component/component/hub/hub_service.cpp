@@ -21,6 +21,7 @@
 #include "hub_svr_msg_handle.h"
 #include "gate_msg_handle.h"
 #include "direct_client_msg_handle.h"
+#include "modulemng_handle.h"
 
 namespace _log {
 
@@ -313,6 +314,8 @@ uint32_t hub_service::poll() {
 		abelkhan::TinyTimer::poll();
 
 		_timerservice->poll();
+
+		service::_modulemng->process_event();
 
 		service::gc_poll();
 

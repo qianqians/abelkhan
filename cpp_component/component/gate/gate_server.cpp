@@ -224,10 +224,20 @@ void gate_service::run() {
 	if (!_run_mu.try_lock()) {
 		throw abelkhan::Exception("run mast at single thread!");
 	}
+	
+	_thread_group.create_thread(std::bind(&gate_service::enet_run, this));
+	_thread_group.create_thread(std::bind(&gate_service::redis_mq_run, this));
 
+	auto worker = (io_service == nullptr ? 0 : 1) + (_websocket_service == nullptr ? 0 : 1);
+	auto max_thread = std::max((std::thread::hardware_concurrency() - 2) / worker, (uint32_t)1);
+	for (uint32_t i = 0; i < max_thread; i++) {
+		_thread_group.create_thread(std::bind(&gate_service::tcp_run, this));
+		_thread_group.create_thread(std::bind(&gate_service::ws_run, this));
+	}
+	
 	while (!_closehandle->is_closed) {
 		try {
-			auto tick_time = poll();
+			auto tick_time = logic_poll();
 
 			if (tick_time < 33) {
 				std::this_thread::sleep_for(std::chrono::milliseconds(33 - tick_time));
@@ -238,38 +248,119 @@ void gate_service::run() {
 		}
 	}
 
+	_thread_group.join_all();
 	GC_deinit();
 	spdlog::shutdown();
 	_run_mu.unlock();
 }
 
-uint32_t gate_service::poll(){
+void gate_service::tcp_run(){
+	if (io_service == nullptr) {
+		return;
+	}
+
+	while (!_closehandle->is_closed) {
+		try {
+			auto begin = msec_time();
+
+			if (io_service != nullptr) {
+				io_service->poll();
+			}
+
+			tick = static_cast<uint32_t>(msec_time() - begin);
+			if (tick < 33) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(33 - tick));
+			}
+		}
+		catch (std::exception e) {
+			spdlog::info("poll error:{0}!", e.what());
+		}
+	}
+}
+
+void gate_service::ws_run() {
+	if (_websocket_service == nullptr) {
+		return;
+	}
+
+	while (!_closehandle->is_closed) {
+		try {
+			auto begin = msec_time();
+
+			if (_websocket_service != nullptr) {
+				_websocket_service->poll();
+			}
+
+			tick = static_cast<uint32_t>(msec_time() - begin);
+			if (tick < 33) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(33 - tick));
+			}
+		}
+		catch (std::exception e) {
+			spdlog::info("poll error:{0}!", e.what());
+		}
+	}
+}
+
+void gate_service::enet_run() {
+	if (_enet_service == nullptr) {
+		return;
+	}
+
+	while (!_closehandle->is_closed) {
+		try {
+			auto begin = msec_time();
+
+			if (_enet_service != nullptr) {
+				_enet_service->poll();
+			}
+
+			tick = static_cast<uint32_t>(msec_time() - begin);
+			if (tick < 33) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(33 - tick));
+			}
+		}
+		catch (std::exception e) {
+			spdlog::info("poll error:{0}!", e.what());
+		}
+	}
+}
+
+void gate_service::redis_mq_run() {
+	if (_hub_redismq_service == nullptr) {
+		return;
+	}
+
+	while (!_closehandle->is_closed) {
+		try {
+			auto begin = msec_time();
+
+			if (_hub_redismq_service != nullptr) {
+				_hub_redismq_service->poll();
+			}
+
+			tick = static_cast<uint32_t>(msec_time() - begin);
+			if (tick < 33) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(33 - tick));
+			}
+		}
+		catch (std::exception e) {
+			spdlog::info("poll error:{0}!", e.what());
+		}
+	}
+}
+
+uint32_t gate_service::logic_poll() {
 	auto begin = msec_time();
 	try {
-
-		if (io_service != nullptr) {
-			io_service->poll();
-		}
-
-		if (_enet_service != nullptr) {
-			_enet_service->poll();
-		}
-
-		if (_hub_redismq_service != nullptr) {
-			_hub_redismq_service->poll();
-		}
-
-		if (_websocket_service != nullptr) {
-			_websocket_service->poll();
-		}
-
 		_clientmanager->client_proxy_send();
 
 		abelkhan::TinyTimer::poll();
 		_timerservice->poll();
 
-		_log::file_logger->flush();
+		service::_modulemng->process_event();
 
+		_log::file_logger->flush();
 	}
 	catch (std::exception e) {
 		spdlog::info("poll error:{0}!", e.what());

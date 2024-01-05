@@ -8,6 +8,7 @@
 
 #include <mutex>
 
+#include <thread_group.h>
 #include <abelkhan.h>
 #include <timerservice.h>
 #include <config.h>
@@ -55,7 +56,15 @@ public:
 	void close_svr();
 
 private:
-	uint32_t poll();
+	void tcp_run();
+
+	void ws_run();
+
+	void enet_run();
+
+	void redis_mq_run();
+
+	uint32_t logic_poll();
 
 	void init_center(std::shared_ptr<abelkhan::Ichannel> center_ch);
 
@@ -98,6 +107,8 @@ private:
 	std::shared_ptr<service::acceptservice> _client_service;
 	std::shared_ptr<service::webacceptservice> _websocket_service;
 	std::shared_ptr<service::enetacceptservice> _enet_service;
+
+	concurrent::thread_group _thread_group;
 
 	std::mutex _run_mu;
 

@@ -44,7 +44,7 @@ public:
 		else {
 			try
 			{
-				_modulemng->process_event(shared_from_this(), obj.array_items());
+				_modulemng->enque_event(shared_from_this(), obj.array_items());
 			}
 			catch (std::exception e)
 			{
