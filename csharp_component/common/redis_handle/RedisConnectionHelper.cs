@@ -49,7 +49,6 @@ namespace Abelkhan
             }
         }
 
-
         public void Recover(ref ConnectionMultiplexer connection_Multiplexer, ref IDatabase database, System.Exception e, Action afterRecover = null)
         {
             if (Interlocked.CompareExchange(ref _inRecover, 1, 0) == 0)
