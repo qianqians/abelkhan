@@ -67,7 +67,6 @@ namespace Log
             lock (logFile)
             {
                 string realLogFile = logPath + "/" + logFile;
-
                 {
                     if (!System.IO.File.Exists(realLogFile))
                     {
@@ -93,7 +92,6 @@ namespace Log
                         fs.AutoFlush = true;
                     }
                 }
-
                 fs.WriteLine(strlog);
             }
         }

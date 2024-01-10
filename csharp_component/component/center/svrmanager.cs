@@ -138,168 +138,220 @@ namespace Abelkhan
 
         private async void load_svr_info()
         {
-            var svr_info_list = await _redis_handle.GetData<List<svr_info> >("svr_info_list");
-            if (svr_info_list != null)
+            try
             {
-                foreach (var _svr_info in svr_info_list)
+                var svr_info_list = await _redis_handle.GetData<List<svr_info>>("svr_info_list");
+                if (svr_info_list != null)
                 {
-                    var _ch = _redis_mq_service.connect(_svr_info.name);
-
-                    var _svrproxy = new SvrProxy(_ch, _svr_info.type, _svr_info.hub_type, _svr_info.name);
-                    _svrproxy.timetmp = _svr_info.timetmp;
-                    svrproxys[_ch] = _svrproxy;
-                    if (_svr_info.type == "dbproxy")
+                    foreach (var _svr_info in svr_info_list)
                     {
-                        dbproxys.Add(_svrproxy);
-                    }
-                    _svrproxy.on_svr_close += on_svr_close;
+                        var _ch = _redis_mq_service.connect(_svr_info.name);
 
-                    var _hubproxy = new HubProxy(_ch, _svr_info.hub_type, _svr_info.name);
-                    hubproxys[_ch] = _hubproxy;
+                        var _svrproxy = new SvrProxy(_ch, _svr_info.type, _svr_info.hub_type, _svr_info.name);
+                        _svrproxy.timetmp = _svr_info.timetmp;
+                        svrproxys[_ch] = _svrproxy;
+                        if (_svr_info.type == "dbproxy")
+                        {
+                            dbproxys.Add(_svrproxy);
+                        }
+                        _svrproxy.on_svr_close += on_svr_close;
 
-                    if (!type_hubproxys.TryGetValue(_svr_info.hub_type, out List<HubProxy> hubproxy_list))
-                    {
-                        hubproxy_list = new();
-                        type_hubproxys[_svr_info.hub_type] = hubproxy_list;
+                        var _hubproxy = new HubProxy(_ch, _svr_info.hub_type, _svr_info.name);
+                        hubproxys[_ch] = _hubproxy;
+
+                        if (!type_hubproxys.TryGetValue(_svr_info.hub_type, out List<HubProxy> hubproxy_list))
+                        {
+                            hubproxy_list = new();
+                            type_hubproxys[_svr_info.hub_type] = hubproxy_list;
+                        }
+                        hubproxy_list.Add(_hubproxy);
                     }
-                    hubproxy_list.Add(_hubproxy);
                 }
+            }
+            catch (Exception e)
+            {
+                Log.Log.err(e.ToString());
             }
         }
 
         private async Task<bool> store_svr_info()
         {
-            var svr_info_list = new List<svr_info>();
-            foreach(var svr in svrproxys)
+            try
             {
-                svr_info_list.Add(new svr_info()
+                var svr_info_list = new List<svr_info>();
+                foreach (var svr in svrproxys)
                 {
-                    type = svr.Value.type,
-                    hub_type = svr.Value.hub_type,
-                    name = svr.Value.name,
-                    timetmp = svr.Value.timetmp
-                });
+                    svr_info_list.Add(new svr_info()
+                    {
+                        type = svr.Value.type,
+                        hub_type = svr.Value.hub_type,
+                        name = svr.Value.name,
+                        timetmp = svr.Value.timetmp
+                    });
+                }
+                return await _redis_handle.SetData("svr_info_list", svr_info_list);
             }
-            return await _redis_handle.SetData("svr_info_list", svr_info_list);
+            catch (Exception e)
+            {
+                Log.Log.err(e.ToString());
+                return false;
+            }
         }
 
         public void reg_svr(Abelkhan.Ichannel ch, string type, string hub_type, string name, bool is_reconn = false)
         {
-            var _svrproxy = new SvrProxy(ch, type, hub_type, name);
-            svrproxys[ch] = _svrproxy;
-            if (type == "dbproxy")
+            try
             {
-                dbproxys.Add(_svrproxy);
-            }
-            _svrproxy.on_svr_close += on_svr_close;
+                var _svrproxy = new SvrProxy(ch, type, hub_type, name);
+                svrproxys[ch] = _svrproxy;
+                if (type == "dbproxy")
+                {
+                    dbproxys.Add(_svrproxy);
+                }
+                _svrproxy.on_svr_close += on_svr_close;
 
-            if (!is_reconn)
+                if (!is_reconn)
+                {
+                    new_svrproxys.Add(_svrproxy);
+                }
+            }
+            catch (Exception e)
             {
-                new_svrproxys.Add(_svrproxy);
+                Log.Log.err(e.ToString());
             }
         }
 
         public HubProxy reg_hub(Abelkhan.Ichannel ch, string hub_type, string _name, bool is_reconn = false)
         {
-            Log.Log.trace("reg_hub name:{0}", _name);
-
-            var _hubproxy = new HubProxy(ch, hub_type, _name);
-            hubproxys[ch] = _hubproxy;
-
-            if (!type_hubproxys.TryGetValue(hub_type, out List<HubProxy> hubproxy_list))
+            try
             {
-                hubproxy_list = new ();
-                type_hubproxys[hub_type] = hubproxy_list;
-            }
-            hubproxy_list.Add(_hubproxy);
+                Log.Log.trace("reg_hub name:{0}", _name);
 
-            if (!is_reconn)
+                var _hubproxy = new HubProxy(ch, hub_type, _name);
+                hubproxys[ch] = _hubproxy;
+
+                if (!type_hubproxys.TryGetValue(hub_type, out List<HubProxy> hubproxy_list))
+                {
+                    hubproxy_list = new();
+                    type_hubproxys[hub_type] = hubproxy_list;
+                }
+                hubproxy_list.Add(_hubproxy);
+
+                if (!is_reconn)
+                {
+                    new_hubproxys.Add(_hubproxy);
+                }
+
+                return _hubproxy;
+            }
+            catch (Exception e)
             {
-                new_hubproxys.Add(_hubproxy);
+                Log.Log.err(e.ToString());
+                return null;
             }
-
-            return _hubproxy;
         }
 
         public List<SvrProxy> closed_svr_list;
         public void remove_closed_svr()
         {
-            foreach (var _proxy in closed_svr_list)
+            try
             {
-                if (svrproxys.ContainsKey(_proxy.ch))
+                foreach (var _proxy in closed_svr_list)
                 {
-                    svrproxys.Remove(_proxy.ch);
-                }
-
-                if (dbproxys.Contains(_proxy))
-                {
-                    dbproxys.Remove(_proxy);
-                }
-
-                if (hubproxys.ContainsKey(_proxy.ch))
-                {
-                    hubproxys.Remove(_proxy.ch, out HubProxy _hubproxy);
-                    if (type_hubproxys.TryGetValue(_proxy.hub_type, out List<HubProxy> hub_list))
+                    if (svrproxys.ContainsKey(_proxy.ch))
                     {
-                        hub_list.Remove(_hubproxy);
+                        svrproxys.Remove(_proxy.ch);
+                    }
+
+                    if (dbproxys.Contains(_proxy))
+                    {
+                        dbproxys.Remove(_proxy);
+                    }
+
+                    if (hubproxys.ContainsKey(_proxy.ch))
+                    {
+                        hubproxys.Remove(_proxy.ch, out HubProxy _hubproxy);
+                        if (type_hubproxys.TryGetValue(_proxy.hub_type, out List<HubProxy> hub_list))
+                        {
+                            hub_list.Remove(_hubproxy);
+                        }
+                    }
+
+                    if (new_svrproxys.Contains(_proxy))
+                    {
+                        new_svrproxys.Remove(_proxy);
+                    }
+
+                    foreach (var _hubproxy in new_hubproxys)
+                    {
+                        if (_hubproxy.type == _proxy.type && _hubproxy.name == _proxy.name)
+                        {
+                            new_hubproxys.Remove(_hubproxy);
+                            break;
+                        }
                     }
                 }
 
-                if (new_svrproxys.Contains(_proxy))
+                foreach (var _proxy in closed_svr_list)
                 {
-                    new_svrproxys.Remove(_proxy);
+                    on_svr_close_callback(_proxy);
                 }
 
-                foreach (var _hubproxy in new_hubproxys)
-                {
-                    if (_hubproxy.type == _proxy.type && _hubproxy.name == _proxy.name)
-                    {
-                        new_hubproxys.Remove(_hubproxy);
-                        break;
-                    }
-                }
+                closed_svr_list.Clear();
             }
-            
-            foreach (var _proxy in closed_svr_list)
+            catch (Exception e)
             {
-                on_svr_close_callback(_proxy);
+                Log.Log.err(e.ToString());
             }
-
-            closed_svr_list.Clear();
         }
 
         public event Action<SvrProxy> on_svr_disconnect;
         public async void heartbeat_svr(long tick)
         {
-            foreach (var _proxy in svrproxys)
+            try
             {
-                if ((Service.Timerservice.Tick - _proxy.Value.timetmp) > 9000)
+                foreach (var _proxy in svrproxys)
                 {
-                    on_svr_close(_proxy.Value);
+                    if ((Service.Timerservice.Tick - _proxy.Value.timetmp) > 9000)
+                    {
+                        on_svr_close(_proxy.Value);
+                    }
                 }
-            }
 
-            if (closed_svr_list.Count > 0)
+                if (closed_svr_list.Count > 0)
+                {
+                    foreach (var _proxy in closed_svr_list)
+                    {
+                        on_svr_disconnect?.Invoke(_proxy);
+                    }
+                    remove_closed_svr();
+                }
+
+                await store_svr_info();
+
+                _timer.addticktime(6000, heartbeat_svr);
+            }
+            catch (Exception e)
             {
-                foreach (var _proxy in closed_svr_list)
-                {
-                    on_svr_disconnect?.Invoke(_proxy);
-                }
-                remove_closed_svr();
+                Log.Log.err(e.ToString());
             }
-
-            await store_svr_info();
-
-            _timer.addticktime(6000, heartbeat_svr);
         }
 
         public void on_svr_close(SvrProxy _proxy)
         {
-            closed_svr_list.Add(_proxy);
-            
-            for_each_svr((_proxy_tmp)=> {
-                _proxy_tmp.server_be_closed(_proxy.type, _proxy.name);
-            });
+            try
+            {
+                closed_svr_list.Add(_proxy);
+
+                for_each_svr((_proxy_tmp) =>
+                {
+                    _proxy_tmp.server_be_closed(_proxy.type, _proxy.name);
+                });
+            }
+            catch (Exception e)
+            {
+                Log.Log.err(e.ToString());
+            }
         }
 
         private Random _r = new ();
@@ -310,152 +362,217 @@ namespace Abelkhan
 
         public void on_svr_close_callback(SvrProxy _proxy)
         {
-            SvrProxy _replace = null;
+            try
+            {
+                SvrProxy _replace = null;
 
-            if (_proxy.type == "dbproxy")
-            {
-                if (dbproxys.Count > 0)
+                if (_proxy.type == "dbproxy")
                 {
-                    _replace = dbproxys[randmon_uint(dbproxys.Count)];
-                }
-            }
-            else if (_proxy.type == "hub")
-            {
-                if (type_hubproxys.TryGetValue(_proxy.hub_type, out List<HubProxy> type_hub_list))
-                {
-                    if (type_hub_list.Count > 0)
+                    if (dbproxys.Count > 0)
                     {
-                        var _replace_hubproxy = type_hub_list[randmon_uint(type_hub_list.Count)];
-                        svrproxys.TryGetValue(_replace_hubproxy.ch, out _replace);
+                        _replace = dbproxys[randmon_uint(dbproxys.Count)];
                     }
                 }
+                else if (_proxy.type == "hub")
+                {
+                    if (type_hubproxys.TryGetValue(_proxy.hub_type, out List<HubProxy> type_hub_list))
+                    {
+                        if (type_hub_list.Count > 0)
+                        {
+                            var _replace_hubproxy = type_hub_list[randmon_uint(type_hub_list.Count)];
+                            svrproxys.TryGetValue(_replace_hubproxy.ch, out _replace);
+                        }
+                    }
+                }
+                _replace?.take_over_svr(_proxy.name);
             }
-            _replace?.take_over_svr(_proxy.name);
+            catch (Exception e)
+            {
+                Log.Log.err(e.ToString());
+            }
         }
 
         public void console_close_server(string type, string name)
         {
-            SvrProxy _close_svrproxy = null;
-            foreach(var _proxy in svrproxys)
+            try
             {
-                if (_proxy.Value.name == name)
+                SvrProxy _close_svrproxy = null;
+                foreach (var _proxy in svrproxys)
                 {
-                    _close_svrproxy = _proxy.Value;
-                    break;
+                    if (_proxy.Value.name == name)
+                    {
+                        _close_svrproxy = _proxy.Value;
+                        break;
+                    }
+                }
+
+                foreach (var _proxy in svrproxys)
+                {
+                    _proxy.Value.console_close_server(_close_svrproxy.type, _close_svrproxy.name);
+                }
+
+                if (svrproxys.ContainsKey(_close_svrproxy.ch))
+                {
+                    svrproxys.Remove(_close_svrproxy.ch);
+                }
+
+                if (dbproxys.Contains(_close_svrproxy))
+                {
+                    dbproxys.Remove(_close_svrproxy);
+                }
+
+                if (hubproxys.ContainsKey(_close_svrproxy.ch))
+                {
+                    hubproxys.Remove(_close_svrproxy.ch);
+                }
+
+                if (new_svrproxys.Contains(_close_svrproxy))
+                {
+                    new_svrproxys.Remove(_close_svrproxy);
+                }
+
+                foreach (var _hubproxy in new_hubproxys)
+                {
+                    if (_hubproxy.type == _close_svrproxy.type && _hubproxy.name == _close_svrproxy.name)
+                    {
+                        new_hubproxys.Remove(_hubproxy);
+                        break;
+                    }
+                }
+
+                lock (_center.remove_chs)
+                {
+                    _center.remove_chs.Add(_close_svrproxy.ch);
                 }
             }
-
-            foreach(var _proxy in svrproxys)
+            catch (Exception e)
             {
-                _proxy.Value.console_close_server(_close_svrproxy.type, _close_svrproxy.name);
-            }
-
-            if (svrproxys.ContainsKey(_close_svrproxy.ch))
-            {
-                svrproxys.Remove(_close_svrproxy.ch);
-            }
-
-            if (dbproxys.Contains(_close_svrproxy))
-            {
-                dbproxys.Remove(_close_svrproxy);
-            }
-
-            if (hubproxys.ContainsKey(_close_svrproxy.ch))
-            {
-                hubproxys.Remove(_close_svrproxy.ch);
-            }
-
-            if (new_svrproxys.Contains(_close_svrproxy))
-            {
-                new_svrproxys.Remove(_close_svrproxy);
-            }
-
-            foreach (var _hubproxy in new_hubproxys)
-            {
-                if (_hubproxy.type == _close_svrproxy.type && _hubproxy.name == _close_svrproxy.name)
-                {
-                    new_hubproxys.Remove(_hubproxy);
-                    break;
-                }
-            }
-
-            lock (_center.remove_chs)
-            {
-                _center.remove_chs.Add(_close_svrproxy.ch);
+                Log.Log.err(e.ToString());
             }
         }
 
         public bool check_all_hub_closed()
         {
-            bool _all_closed = true;
-            foreach (var _proxy in hubproxys.Values)
+            try
             {
-                if (!_proxy.is_closed)
+                bool _all_closed = true;
+                foreach (var _proxy in hubproxys.Values)
                 {
-                    _all_closed = false;
+                    if (!_proxy.is_closed)
+                    {
+                        _all_closed = false;
+                    }
                 }
+                return _all_closed;
             }
-            return _all_closed;
+            catch (Exception e)
+            {
+                Log.Log.err(e.ToString());
+                return false;
+            }
         }
 
         public bool check_all_db_closed()
         {
-            bool _all_closed = true;
-            foreach (var _proxy in dbproxys)
+            try
             {
-                if (!_proxy.is_closed)
+                bool _all_closed = true;
+                foreach (var _proxy in dbproxys)
                 {
-                    _all_closed = false;
+                    if (!_proxy.is_closed)
+                    {
+                        _all_closed = false;
+                    }
                 }
+                return _all_closed;
             }
-            return _all_closed;
+            catch (Exception e)
+            {
+                Log.Log.err(e.ToString());
+                return false;
+            }
         }
 
         private bool is_ntf_db_close = false;
         public void close_db()
         {
-            if (is_ntf_db_close)
+            try
             {
-                return;
-            }
+                if (is_ntf_db_close)
+                {
+                    return;
+                }
 
-            foreach (var _proxy in dbproxys)
+                foreach (var _proxy in dbproxys)
+                {
+                    _proxy.close_server();
+                }
+
+                is_ntf_db_close = true;
+            }
+            catch (Exception e)
             {
-                _proxy.close_server();
+                Log.Log.err(e.ToString());
             }
-
-            is_ntf_db_close = true;
         }
 
         public void for_each_svr(Action<SvrProxy> fn)
         {
-            foreach (var _proxy in svrproxys.Values)
+            try
             {
-                fn(_proxy);
+                foreach (var _proxy in svrproxys.Values)
+                {
+                    fn(_proxy);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Log.err(e.ToString());
             }
         }
         
         public void for_each_hub(Action<HubProxy> fn)
         {
-            foreach (var _proxy in hubproxys.Values)
+            try
             {
-                fn(_proxy);
+                foreach (var _proxy in hubproxys.Values)
+                {
+                    fn(_proxy);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Log.err(e.ToString());
             }
         }
 
         public void for_each_new_svr(Action<SvrProxy> fn)
         {
-            foreach (var _proxy in new_svrproxys)
+            try
             {
-                fn(_proxy);
+                foreach (var _proxy in new_svrproxys)
+                {
+                    fn(_proxy);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Log.err(e.ToString());
             }
         }
 
         public void for_each_new_hub(Action<HubProxy> fn)
         {
-            foreach (var _proxy in new_hubproxys)
+            try
             {
-                fn(_proxy);
+                foreach (var _proxy in new_hubproxys)
+                {
+                    fn(_proxy);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Log.err(e.ToString());
             }
         }
 

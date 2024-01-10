@@ -126,31 +126,38 @@ namespace Abelkhan
         {
             Log.Log.trace("send msg to:{0}", ch_name);
 
-            var b_listen_ch_name = System.Text.Encoding.UTF8.GetBytes(main_channel_name);
-            var _listen_ch_name_size = b_listen_ch_name.Length;
-            var st = MemoryStreamPool.mstMgr.GetStream();
-            st.WriteByte((byte)(_listen_ch_name_size & 0xff));
-            st.WriteByte((byte)(_listen_ch_name_size >> 8 & 0xff));
-            st.WriteByte((byte)(_listen_ch_name_size >> 16 & 0xff));
-            st.WriteByte((byte)(_listen_ch_name_size >> 24 & 0xff));
-            st.Write(b_listen_ch_name, 0, _listen_ch_name_size);
-            st.Write(data, 0, data.Length);
-            st.Position = 0;
-
-            if (!send_data.TryGetValue(ch_name, out Queue<RedisValue> send_queue))
+            try
             {
-                lock (wait_send_data)
+                var b_listen_ch_name = System.Text.Encoding.UTF8.GetBytes(main_channel_name);
+                var _listen_ch_name_size = b_listen_ch_name.Length;
+                var st = MemoryStreamPool.mstMgr.GetStream();
+                st.WriteByte((byte)(_listen_ch_name_size & 0xff));
+                st.WriteByte((byte)(_listen_ch_name_size >> 8 & 0xff));
+                st.WriteByte((byte)(_listen_ch_name_size >> 16 & 0xff));
+                st.WriteByte((byte)(_listen_ch_name_size >> 24 & 0xff));
+                st.Write(b_listen_ch_name, 0, _listen_ch_name_size);
+                st.Write(data, 0, data.Length);
+                st.Position = 0;
+
+                if (!send_data.TryGetValue(ch_name, out Queue<RedisValue> send_queue))
                 {
-                    if (!wait_send_data.TryGetValue(ch_name, out send_queue))
+                    lock (wait_send_data)
                     {
-                        send_queue = new();
-                        wait_send_data.Add(ch_name, send_queue);
+                        if (!wait_send_data.TryGetValue(ch_name, out send_queue))
+                        {
+                            send_queue = new();
+                            wait_send_data.Add(ch_name, send_queue);
+                        }
                     }
                 }
+                lock (send_queue)
+                {
+                    send_queue.Enqueue(st.ToArray());
+                }
             }
-            lock (send_queue)
+            catch (System.Exception e)
             {
-                send_queue.Enqueue(st.ToArray());
+                Log.Log.err("sendmsg error:{0}", e.Message);
             }
         }
 

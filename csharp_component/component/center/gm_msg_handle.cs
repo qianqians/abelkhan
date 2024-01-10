@@ -27,34 +27,57 @@ namespace Abelkhan
 
         private void confirm_gm(string gm_name)
         {
-            gmmng.reg_gm(gm_name, gm_center_module.current_ch.Value);
+            try
+            {
+                gmmng.reg_gm(gm_name, gm_center_module.current_ch.Value);
+            }
+            catch (System.Exception e)
+            {
+                Log.Log.err("confirm_gm {0} {1}", gm_name, e.Message);
+            }
         }
 
         private void close_clutter(string gmname)
         {
-            if (gmmng.check_gm(gmname, gm_center_module.current_ch.Value))
+            try
             {
-                Log.Log.trace("close_clutter {0}", gmname);
-
-                closeHandle.is_closing = true;
-                svrmng.for_each_svr((SvrProxy _svrproxy) => {
-                    _svrproxy.close_server();
-                });
-
-                if (svrmng.check_all_hub_closed())
+                if (gmmng.check_gm(gmname, gm_center_module.current_ch.Value))
                 {
-                    closeHandle.is_close = true;
+                    Log.Log.trace("close_clutter {0}", gmname);
+
+                    closeHandle.is_closing = true;
+                    svrmng.for_each_svr((SvrProxy _svrproxy) =>
+                    {
+                        _svrproxy.close_server();
+                    });
+
+                    if (svrmng.check_all_hub_closed())
+                    {
+                        closeHandle.is_close = true;
+                    }
                 }
+            }
+            catch (System.Exception e)
+            {
+                Log.Log.err("close_clutter {0} {1}", gmname, e.Message);
             }
         }
 
         private void reload(string gmname, string argvs)
         {
-            if (gmmng.check_gm(gmname, gm_center_module.current_ch.Value))
+            try
             {
-                svrmng.for_each_hub((HubProxy _proxy) => {
-                    _proxy.reload(argvs);
-                });
+                if (gmmng.check_gm(gmname, gm_center_module.current_ch.Value))
+                {
+                    svrmng.for_each_hub((HubProxy _proxy) =>
+                    {
+                        _proxy.reload(argvs);
+                    });
+                }
+            }
+            catch (System.Exception e)
+            {
+                Log.Log.err("reload {0} {1}", gmname, e.Message);
             }
         }
     }
