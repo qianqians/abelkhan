@@ -24,7 +24,7 @@ namespace Abelkhan
         }
 
         public static event Action<CryptChannel> on_connect;
-        public static void onConnect(CryptChannel ch)
+        private static void onConnect(CryptChannel ch)
         {
             on_connect?.Invoke(ch);
         }
@@ -37,8 +37,8 @@ namespace Abelkhan
 
         private async Task ProcessLinesAsync(Socket socket)
         {
-            var ch = new Channel(socket);
-            Acceptservice.onConnect(ch);
+            var ch = new CryptChannel(socket);
+            CryptAcceptService.onConnect(ch);
 
             var stream = new NetworkStream(socket);
             var reader = PipeReader.Create(stream);
