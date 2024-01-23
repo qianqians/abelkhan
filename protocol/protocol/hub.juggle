@@ -14,6 +14,8 @@ module hub_call_hub{
 
 	reg_hub req(string hub_name, string hub_type) rsp() err();
 	
+	reg_hub_direct req(string hub_name, string hub_type) rsp() err();
+
 	seep_client_gate req(string client_uuid, string gate_name) rsp() err(framework_error err);
 	
 	hub_call_hub_mothed ntf(bin rpc_argv);

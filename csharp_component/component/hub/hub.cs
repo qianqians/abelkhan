@@ -110,6 +110,25 @@ namespace Hub
             _centerproxy.reg_hub(() => {
                 heartbeat(Service.Timerservice.Tick);
             });
+
+            if (_config.has_key("tcp_inside_listen"))
+            {
+                var tcp_inside_listen = _config.get_value_bool("tcp_inside_listen");
+                if (tcp_inside_listen)
+                {
+                    tcp_inside_address = new Addressinfo();
+                    tcp_inside_address.host = _config.get_value_string("tcp_inside_host");
+                    tcp_inside_address.port = (ushort)_config.get_value_int("tcp_inside_port");
+                    _acceptservice = new Abelkhan.Acceptservice(tcp_inside_address.port);
+                    Acceptservice.on_connect += (ch) => {
+                        lock (add_chs)
+                        {
+                            add_chs.Add(ch);
+                        }
+                    };
+                    _acceptservice.start();
+                }
+            }
            
             if (_config.has_key("tcp_listen"))
             {
@@ -353,7 +372,6 @@ namespace Hub
         private List<Task> wait_task = new ();
         private long poll()
         {
-            
             long tick_begin = _timer.refresh();
 
             try
@@ -394,7 +412,6 @@ namespace Hub
 
             long tick_end = _timer.refresh();
             tick = (uint)(tick_end - tick_begin);
-
             if (tick > 50)
             {
                 Log.Log.trace("poll_tick:{0}", tick);
@@ -441,6 +458,8 @@ namespace Hub
         public static Addressinfo enet_outside_address = null;
         public static Addressinfo http_outside_address = null;
 
+        public static Addressinfo tcp_inside_address = null;
+
         public static Abelkhan.Config _config;
         public static Abelkhan.Config _root_config;
         public static Abelkhan.Config _center_config;
@@ -466,6 +485,8 @@ namespace Hub
         private readonly Abelkhan.WebsocketAcceptService _websocketacceptservice;
         private readonly Service.HttpService _httpservice;
 
+        private readonly Abelkhan.Acceptservice _acceptservice;
+
         private uint reconn_count = 0;
         private CenterProxy _centerproxy;
 
@@ -483,6 +504,10 @@ namespace Hub
         public event Action<string> on_client_msg;
 
         public event Action<string> on_direct_client_disconnect;
+
+        public Func<string, bool> OnCheckConnHub;
+        public Func<bool> OnCheckConnGate;
+
     }
 }
 

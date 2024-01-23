@@ -343,6 +343,62 @@ namespace Abelkhan
 
     }
 
+    public class hub_call_gate_reg_hub_direct_cb
+    {
+        private UInt64 cb_uuid;
+        private hub_call_gate_rsp_cb module_rsp_cb;
+
+        public hub_call_gate_reg_hub_direct_cb(UInt64 _cb_uuid, hub_call_gate_rsp_cb _module_rsp_cb)
+        {
+            cb_uuid = _cb_uuid;
+            module_rsp_cb = _module_rsp_cb;
+        }
+
+        public event Action on_reg_hub_direct_cb;
+        public event Action on_reg_hub_direct_err;
+        public event Action on_reg_hub_direct_timeout;
+
+        public hub_call_gate_reg_hub_direct_cb callBack(Action cb, Action err)
+        {
+            on_reg_hub_direct_cb += cb;
+            on_reg_hub_direct_err += err;
+            return this;
+        }
+
+        public void timeout(UInt64 tick, Action timeout_cb)
+        {
+            TinyTimer.add_timer(tick, ()=>{
+                module_rsp_cb.reg_hub_direct_timeout(cb_uuid);
+            });
+            on_reg_hub_direct_timeout += timeout_cb;
+        }
+
+        public void call_cb()
+        {
+            if (on_reg_hub_direct_cb != null)
+            {
+                on_reg_hub_direct_cb();
+            }
+        }
+
+        public void call_err()
+        {
+            if (on_reg_hub_direct_err != null)
+            {
+                on_reg_hub_direct_err();
+            }
+        }
+
+        public void call_timeout()
+        {
+            if (on_reg_hub_direct_timeout != null)
+            {
+                on_reg_hub_direct_timeout();
+            }
+        }
+
+    }
+
     public class hub_call_gate_reverse_reg_client_hub_cb
     {
         private UInt64 cb_uuid;
@@ -402,12 +458,16 @@ namespace Abelkhan
 /*this cb code is codegen by Abelkhan for c#*/
     public class hub_call_gate_rsp_cb : Abelkhan.Imodule {
         public Dictionary<UInt64, hub_call_gate_reg_hub_cb> map_reg_hub;
+        public Dictionary<UInt64, hub_call_gate_reg_hub_direct_cb> map_reg_hub_direct;
         public Dictionary<UInt64, hub_call_gate_reverse_reg_client_hub_cb> map_reverse_reg_client_hub;
         public hub_call_gate_rsp_cb(Abelkhan.modulemng modules) : base("hub_call_gate_rsp_cb")
         {
             map_reg_hub = new Dictionary<UInt64, hub_call_gate_reg_hub_cb>();
             modules.reg_method("hub_call_gate_rsp_cb_reg_hub_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_hub_rsp));
             modules.reg_method("hub_call_gate_rsp_cb_reg_hub_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_hub_err));
+            map_reg_hub_direct = new Dictionary<UInt64, hub_call_gate_reg_hub_direct_cb>();
+            modules.reg_method("hub_call_gate_rsp_cb_reg_hub_direct_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_hub_direct_rsp));
+            modules.reg_method("hub_call_gate_rsp_cb_reg_hub_direct_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_hub_direct_err));
             map_reverse_reg_client_hub = new Dictionary<UInt64, hub_call_gate_reverse_reg_client_hub_cb>();
             modules.reg_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_rsp", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reverse_reg_client_hub_rsp));
             modules.reg_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_err", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reverse_reg_client_hub_err));
@@ -444,6 +504,42 @@ namespace Abelkhan
                 if (map_reg_hub.TryGetValue(uuid, out hub_call_gate_reg_hub_cb rsp))
                 {
                     map_reg_hub.Remove(uuid);
+                }
+                return rsp;
+            }
+        }
+
+        public void reg_hub_direct_rsp(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var rsp = try_get_and_del_reg_hub_direct_cb(uuid);
+            if (rsp != null)
+            {
+                rsp.call_cb();
+            }
+        }
+
+        public void reg_hub_direct_err(IList<MsgPack.MessagePackObject> inArray){
+            var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var rsp = try_get_and_del_reg_hub_direct_cb(uuid);
+            if (rsp != null)
+            {
+                rsp.call_err();
+            }
+        }
+
+        public void reg_hub_direct_timeout(UInt64 cb_uuid){
+            var rsp = try_get_and_del_reg_hub_direct_cb(cb_uuid);
+            if (rsp != null){
+                rsp.call_timeout();
+            }
+        }
+
+        private hub_call_gate_reg_hub_direct_cb try_get_and_del_reg_hub_direct_cb(UInt64 uuid){
+            lock(map_reg_hub_direct)
+            {
+                if (map_reg_hub_direct.TryGetValue(uuid, out hub_call_gate_reg_hub_direct_cb rsp))
+                {
+                    map_reg_hub_direct.Remove(uuid);
                 }
                 return rsp;
             }
@@ -515,6 +611,23 @@ namespace Abelkhan
                 rsp_cb_hub_call_gate_handle.map_reg_hub.Add(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, cb_reg_hub_obj);
             }
             return cb_reg_hub_obj;
+        }
+
+        public hub_call_gate_reg_hub_direct_cb reg_hub_direct(string hub_name, string hub_type){
+            var uuid_9e554add_7c96_571a_acbd_5c30f34b5474 = (UInt32)Interlocked.Increment(ref uuid_9796175c_1119_3833_bf31_5ee139b40edc);
+
+            var _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7 = new ArrayList();
+            _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7.Add(uuid_9e554add_7c96_571a_acbd_5c30f34b5474);
+            _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7.Add(hub_name);
+            _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7.Add(hub_type);
+            call_module_method("hub_call_gate_reg_hub_direct", _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7);
+
+            var cb_reg_hub_direct_obj = new hub_call_gate_reg_hub_direct_cb(uuid_9e554add_7c96_571a_acbd_5c30f34b5474, rsp_cb_hub_call_gate_handle);
+            lock(rsp_cb_hub_call_gate_handle.map_reg_hub_direct)
+            {
+                rsp_cb_hub_call_gate_handle.map_reg_hub_direct.Add(uuid_9e554add_7c96_571a_acbd_5c30f34b5474, cb_reg_hub_direct_obj);
+            }
+            return cb_reg_hub_direct_obj;
         }
 
         public void tick_hub_health(UInt32 tick_time){
@@ -683,6 +796,27 @@ namespace Abelkhan
 
     }
 
+    public class hub_call_gate_reg_hub_direct_rsp : Abelkhan.Response {
+        private UInt64 uuid_7bc49b0e_5316_38ca_91dd_81ddc3d405aa;
+        public hub_call_gate_reg_hub_direct_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_gate_rsp_cb", _ch)
+        {
+            uuid_7bc49b0e_5316_38ca_91dd_81ddc3d405aa = _uuid;
+        }
+
+        public void rsp(){
+            var _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7 = new ArrayList();
+            _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7.Add(uuid_7bc49b0e_5316_38ca_91dd_81ddc3d405aa);
+            call_module_method("hub_call_gate_rsp_cb_reg_hub_direct_rsp", _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7);
+        }
+
+        public void err(){
+            var _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7 = new ArrayList();
+            _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7.Add(uuid_7bc49b0e_5316_38ca_91dd_81ddc3d405aa);
+            call_module_method("hub_call_gate_rsp_cb_reg_hub_direct_err", _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7);
+        }
+
+    }
+
     public class hub_call_gate_reverse_reg_client_hub_rsp : Abelkhan.Response {
         private UInt64 uuid_ef84ff12_6e4a_39cd_896e_27f3ac82fa1a;
         public hub_call_gate_reverse_reg_client_hub_rsp(Abelkhan.Ichannel _ch, UInt64 _uuid) : base("hub_call_gate_rsp_cb", _ch)
@@ -711,6 +845,7 @@ namespace Abelkhan
         {
             modules = _modules;
             modules.reg_method("hub_call_gate_reg_hub", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_hub));
+            modules.reg_method("hub_call_gate_reg_hub_direct", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_hub_direct));
             modules.reg_method("hub_call_gate_tick_hub_health", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, tick_hub_health));
             modules.reg_method("hub_call_gate_reverse_reg_client_hub", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reverse_reg_client_hub));
             modules.reg_method("hub_call_gate_unreg_client_hub", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, unreg_client_hub));
@@ -728,6 +863,18 @@ namespace Abelkhan
             rsp.Value = new hub_call_gate_reg_hub_rsp(current_ch.Value, _cb_uuid);
             if (on_reg_hub != null){
                 on_reg_hub(_hub_name, _hub_type);
+            }
+            rsp.Value = null;
+        }
+
+        public event Action<string, string> on_reg_hub_direct;
+        public void reg_hub_direct(IList<MsgPack.MessagePackObject> inArray){
+            var _cb_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
+            var _hub_name = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _hub_type = ((MsgPack.MessagePackObject)inArray[2]).AsString();
+            rsp.Value = new hub_call_gate_reg_hub_direct_rsp(current_ch.Value, _cb_uuid);
+            if (on_reg_hub_direct != null){
+                on_reg_hub_direct(_hub_name, _hub_type);
             }
             rsp.Value = null;
         }
