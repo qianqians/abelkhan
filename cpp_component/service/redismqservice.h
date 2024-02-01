@@ -152,6 +152,17 @@ public:
 		});
 	}
 
+	void set_data(std::string key, std::string value) {
+		if (_write_cluster_ctx) {
+			auto _reply = (redisReply*)redisClusterCommand(_write_cluster_ctx, "SET %s %s", key.c_str(), value.c_str());
+			freeReplyObject(_reply);
+		}
+		else if (_write_ctx) {
+			auto _reply = (redisReply*)redisCommand(_write_ctx, "SET %s %s", key.c_str(), value.c_str());
+			freeReplyObject(_reply);
+		}
+	}
+
 	void close() {
 		run_flag = false;
 		th_recv.join();

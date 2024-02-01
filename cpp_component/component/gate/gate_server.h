@@ -71,6 +71,8 @@ private:
 private:
 	static void heartbeat_center(gate_service* _gate_service, std::function<void()> reconn_func, int64_t tick);
 
+	static void heartbeat_flush_host(gate_service* _gate_service, int64_t tick);
+
 public:
 	concurrent::signals<void() > sig_close_server;
 	concurrent::signals<void() > sig_center_crash;
