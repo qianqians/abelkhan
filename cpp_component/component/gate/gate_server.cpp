@@ -226,12 +226,12 @@ void gate_service::heartbeat_flush_host(gate_service* _gate_service, int64_t tic
 		if (is_tcp_listen) {
 			auto tcp_outside_host = _gate_service->_config->get_value_string("tcp_outside_host");
 			auto tcp_outside_port = (short)_gate_service->_config->get_value_int("tcp_outside_port");
-			_gate_service->_hub_redismq_service->set_data(_gate_service->gate_name_info.name, fmt::format("{}:{}", tcp_outside_host, tcp_outside_port));
+			_gate_service->_hub_redismq_service->set_data(_gate_service->gate_name_info.name, fmt::format("{}:{}", tcp_outside_host, tcp_outside_port), 60);
 		}
 	}
 
 	if (!_gate_service->_closehandle->is_closed) {
-		_gate_service->_timerservice->addticktimer(3000, std::bind(&gate_service::heartbeat_flush_host, _gate_service, std::placeholders::_1));
+		_gate_service->_timerservice->addticktimer(40000, std::bind(&gate_service::heartbeat_flush_host, _gate_service, std::placeholders::_1));
 	}
 }
 

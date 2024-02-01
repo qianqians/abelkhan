@@ -152,9 +152,9 @@ public:
 		});
 	}
 
-	void set_data(std::string key, std::string value) {
+	void set_data(std::string key, std::string value, int ex) {
 		if (_write_cluster_ctx) {
-			auto _reply = (redisReply*)redisClusterCommand(_write_cluster_ctx, "SET %s %s", key.c_str(), value.c_str());
+			auto _reply = (redisReply*)redisClusterCommand(_write_cluster_ctx, "SET %s %s EX %d", key.c_str(), value.c_str(), ex);
 			freeReplyObject(_reply);
 		}
 		else if (_write_ctx) {
