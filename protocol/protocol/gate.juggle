@@ -19,8 +19,6 @@ module hub_call_gate{
 
 	reg_hub req(string hub_name, string hub_type) rsp() err();
 	
-	reg_hub_direct req(string hub_name, string hub_type) rsp() err();
-	
 	tick_hub_health ntf(uint32 tick_time);
 	
 	reverse_reg_client_hub req(string client_uuid) rsp() err(framework_error err);

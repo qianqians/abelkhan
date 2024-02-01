@@ -173,9 +173,6 @@ class hub_call_gate_rsp_cb(Imodule):
         self.map_reg_hub = {}
         modules.reg_method("hub_call_gate_rsp_cb_reg_hub_rsp", [self, self.reg_hub_rsp])
         modules.reg_method("hub_call_gate_rsp_cb_reg_hub_err", [self, self.reg_hub_err])
-        self.map_reg_hub_direct = {}
-        modules.reg_method("hub_call_gate_rsp_cb_reg_hub_direct_rsp", [self, self.reg_hub_direct_rsp])
-        modules.reg_method("hub_call_gate_rsp_cb_reg_hub_direct_err", [self, self.reg_hub_direct_err])
         self.map_reverse_reg_client_hub = {}
         modules.reg_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_rsp", [self, self.reverse_reg_client_hub_rsp])
         modules.reg_method("hub_call_gate_rsp_cb_reverse_reg_client_hub_err", [self, self.reverse_reg_client_hub_err])
@@ -200,28 +197,6 @@ class hub_call_gate_rsp_cb(Imodule):
     def try_get_and_del_reg_hub_cb(self, uuid : int):
         rsp = self.map_reg_hub.get(uuid)
         del self.map_reg_hub[uuid]
-        return rsp
-
-    def reg_hub_direct_rsp(self, inArray:list):
-        uuid = inArray[0]
-        rsp = self.try_get_and_del_reg_hub_direct_cb(uuid)
-        if rsp and rsp.event_reg_hub_direct_handle_cb:
-            rsp.event_reg_hub_direct_handle_cb()
-
-    def reg_hub_direct_err(self, inArray:list):
-        uuid = inArray[0]
-        rsp = self.try_get_and_del_reg_hub_direct_cb(uuid)
-        if rsp and rsp.event_reg_hub_direct_handle_err:
-            rsp.event_reg_hub_direct_handle_err()
-
-    def reg_hub_direct_timeout(self, cb_uuid : int):
-        rsp = self.try_get_and_del_reg_hub_direct_cb(cb_uuid)
-        if rsp and rsp.event_reg_hub_direct_handle_timeout:
-            rsp.event_reg_hub_direct_handle_timeout()
-
-    def try_get_and_del_reg_hub_direct_cb(self, uuid : int):
-        rsp = self.map_reg_hub_direct.get(uuid)
-        del self.map_reg_hub_direct[uuid]
         return rsp
 
     def reverse_reg_client_hub_rsp(self, inArray:list):
@@ -264,24 +239,6 @@ class hub_call_gate_reg_hub_cb:
         t = Timer(tick, lambda : self.module_rsp_cb.reg_hub_timeout(self.cb_uuid))
         t.start()
         self.event_reg_hub_handle_timeout = timeout_cb
-
-class hub_call_gate_reg_hub_direct_cb:
-    def __init__(self, _cb_uuid : int, _module_rsp_cb : hub_call_gate_rsp_cb):
-        self.cb_uuid = _cb_uuid
-        self.module_rsp_cb = _module_rsp_cb
-        self.event_reg_hub_direct_handle_cb:Callable[[]] = None
-        self.event_reg_hub_direct_handle_err:Callable[[]] = None
-        self.event_reg_hub_direct_handle_timeout:Callable[...] = None
-
-    def callBack(self, _cb:Callable[[]], _err:Callable[[]]):
-        self.event_reg_hub_direct_handle_cb = _cb
-        self.event_reg_hub_direct_handle_err = _err
-        return self
-
-    def timeout(self, tick:int, timeout_cb:Callable[...]):
-        t = Timer(tick, lambda : self.module_rsp_cb.reg_hub_direct_timeout(self.cb_uuid))
-        t.start()
-        self.event_reg_hub_direct_handle_timeout = timeout_cb
 
 class hub_call_gate_reverse_reg_client_hub_cb:
     def __init__(self, _cb_uuid : int, _module_rsp_cb : hub_call_gate_rsp_cb):
@@ -326,21 +283,6 @@ class hub_call_gate_caller(Icaller):
         if rsp_cb_hub_call_gate_handle:
             rsp_cb_hub_call_gate_handle.map_reg_hub[uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106] = cb_reg_hub_obj
         return cb_reg_hub_obj
-
-    def reg_hub_direct(self, hub_name:str, hub_type:str):
-        self.uuid_9796175c_1119_3833_bf31_5ee139b40edc = (self.uuid_9796175c_1119_3833_bf31_5ee139b40edc + 1) & 0x7fffffff
-        uuid_9e554add_7c96_571a_acbd_5c30f34b5474 = self.uuid_9796175c_1119_3833_bf31_5ee139b40edc
-
-        _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7 = [uuid_9e554add_7c96_571a_acbd_5c30f34b5474]
-        _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7.append(hub_name)
-        _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7.append(hub_type)
-        self.call_module_method("hub_call_gate_reg_hub_direct", _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7)
-
-        global rsp_cb_hub_call_gate_handle
-        cb_reg_hub_direct_obj = hub_call_gate_reg_hub_direct_cb(uuid_9e554add_7c96_571a_acbd_5c30f34b5474, rsp_cb_hub_call_gate_handle)
-        if rsp_cb_hub_call_gate_handle:
-            rsp_cb_hub_call_gate_handle.map_reg_hub_direct[uuid_9e554add_7c96_571a_acbd_5c30f34b5474] = cb_reg_hub_direct_obj
-        return cb_reg_hub_direct_obj
 
     def tick_hub_health(self, tick_time:int):
         _argv_e81472b5_19a4_36bc_9cd9_b8fe87a10079 = []
@@ -466,19 +408,6 @@ class hub_call_gate_reg_hub_rsp(Response):
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7 = [self.uuid_d47a6c8a_5494_35bb_9bc5_60d20f624f67]
         self.call_module_method("hub_call_gate_rsp_cb_reg_hub_err", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7)
 
-class hub_call_gate_reg_hub_direct_rsp(Response):
-    def __init__(self, _ch:Ichannel, _uuid:int):
-        super(hub_call_gate_reg_hub_direct_rsp, self).__init(_ch, _uuid)
-        self.uuid_7bc49b0e_5316_38ca_91dd_81ddc3d405aa = _uuid
-
-    def rsp(self, ):
-        _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7 = [self.uuid_7bc49b0e_5316_38ca_91dd_81ddc3d405aa]
-        self.call_module_method("hub_call_gate_rsp_cb_reg_hub_direct_rsp", _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7)
-
-    def err(self, ):
-        _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7 = [self.uuid_7bc49b0e_5316_38ca_91dd_81ddc3d405aa]
-        self.call_module_method("hub_call_gate_rsp_cb_reg_hub_direct_err", _argv_2dd51db8_e47e_346d_bdd6_6c41856647a7)
-
 class hub_call_gate_reverse_reg_client_hub_rsp(Response):
     def __init__(self, _ch:Ichannel, _uuid:int):
         super(hub_call_gate_reverse_reg_client_hub_rsp, self).__init(_ch, _uuid)
@@ -498,7 +427,6 @@ class hub_call_gate_module(Imodule):
         super(hub_call_gate_module, self)
         self.modules = modules
         self.modules.reg_method("hub_call_gate_reg_hub", [self, self.reg_hub])
-        self.modules.reg_method("hub_call_gate_reg_hub_direct", [self, self.reg_hub_direct])
         self.modules.reg_method("hub_call_gate_tick_hub_health", [self, self.tick_hub_health])
         self.modules.reg_method("hub_call_gate_reverse_reg_client_hub", [self, self.reverse_reg_client_hub])
         self.modules.reg_method("hub_call_gate_unreg_client_hub", [self, self.unreg_client_hub])
@@ -508,7 +436,6 @@ class hub_call_gate_module(Imodule):
         self.modules.reg_method("hub_call_gate_forward_hub_call_global_client", [self, self.forward_hub_call_global_client])
 
         self.cb_reg_hub : Callable[[str, str]] = None
-        self.cb_reg_hub_direct : Callable[[str, str]] = None
         self.cb_tick_hub_health : Callable[[int]] = None
         self.cb_reverse_reg_client_hub : Callable[[str]] = None
         self.cb_unreg_client_hub : Callable[[str]] = None
@@ -524,15 +451,6 @@ class hub_call_gate_module(Imodule):
         self.rsp = hub_call_gate_reg_hub_rsp(self.current_ch, _cb_uuid)
         if self.cb_reg_hub:
             self.cb_reg_hub(_hub_name, _hub_type)
-        self.rsp = None
-
-    def reg_hub_direct(self, inArray:list):
-        _cb_uuid = inArray[0]
-        _hub_name = inArray[1]
-        _hub_type = inArray[2]
-        self.rsp = hub_call_gate_reg_hub_direct_rsp(self.current_ch, _cb_uuid)
-        if self.cb_reg_hub_direct:
-            self.cb_reg_hub_direct(_hub_name, _hub_type)
         self.rsp = None
 
     def tick_hub_health(self, inArray:list):
