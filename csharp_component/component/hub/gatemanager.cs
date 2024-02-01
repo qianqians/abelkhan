@@ -67,9 +67,20 @@ namespace Hub
             Hub._timer.addticktime(10000, heartbeat_client);
         }
 
-        public void connect_gate(String name)
+        public async void connect_gate(String name)
         {
-            var ch = _gate_redismq_conn.connect(name);
+            Ichannel ch = null;
+            if (Hub.OnCheckConnGate != null && Hub.OnCheckConnGate())
+            {
+                string host = await Hub._redis_handle.GetStrData(name);
+                var host_info = host.Split(":");
+                var s = ConnectService.connect(IPAddress.Parse(host_info[0]), short.Parse(host_info[1]));
+                ch = new Abelkhan.RawChannel(s);
+            }
+            else
+            {
+                ch = _gate_redismq_conn.connect(name);
+            }
             if (ch != null)
             {
                 var _proxy = new GateProxy(ch, name);

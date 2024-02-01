@@ -9,15 +9,35 @@ namespace Hub
 {
     public class HubProxy
     {
-        private readonly Abelkhan.hub_call_hub_caller _hub_call_hub_caller;
+        private Abelkhan.hub_call_hub_caller _hub_call_hub_caller;
         private readonly MessagePackSerializer<ArrayList> _serializer = MessagePackSerializer.Get<ArrayList>();
 
-        public HubProxy(string hub_name, string hub_type, Abelkhan.Ichannel ch)
+        public HubProxy(string hub_name, string hub_type)
         {
             name = hub_name;
             type = hub_type;
-            _ch = ch;
-            _hub_call_hub_caller = new Abelkhan.hub_call_hub_caller(ch, Abelkhan.ModuleMgrHandle._modulemng);
+        }
+
+        public void set_redis_ch(Abelkhan.Ichannel ch)
+        {
+            _redis_ch = ch;
+            if (_hub_call_hub_caller == null)
+            {
+                _hub_call_hub_caller = new Abelkhan.hub_call_hub_caller(ch, Abelkhan.ModuleMgrHandle._modulemng);
+            }
+        }
+
+        public void set_tcp_ch(Abelkhan.Ichannel ch)
+        {
+            _tcp_ch = ch;
+            if (_hub_call_hub_caller == null)
+            {
+                _hub_call_hub_caller = new Abelkhan.hub_call_hub_caller(ch, Abelkhan.ModuleMgrHandle._modulemng);
+            }
+            else
+            {
+                _hub_call_hub_caller.reset_ch(ch);
+            }
         }
 
         public void caller_hub(string func_name, ArrayList argvs)
@@ -42,6 +62,7 @@ namespace Hub
 
         public readonly string name;
         public readonly string type;
-        public readonly Abelkhan.Ichannel _ch;
+        public Abelkhan.Ichannel _redis_ch;
+        public Abelkhan.Ichannel _tcp_ch;
     }
 }

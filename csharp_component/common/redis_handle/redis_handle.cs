@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using StackExchange.Redis;
+using System;
 using System.Threading.Tasks;
 
 namespace Abelkhan
@@ -21,12 +22,17 @@ namespace Abelkhan
             _connHelper.Recover(ref connectionMultiplexer, ref database, e);
         }
 
-        public Task<bool> SetStrData(string key, string data)
+        public Task<bool> SetStrData(string key, string data, long timeout = 0)
         {
             while (true)
             {
                 try
                 {
+                    if (timeout > 0)
+                    {
+                        return database.StringSetAsync(key, data, TimeSpan.FromSeconds(timeout));
+                    }
+
                     return database.StringSetAsync(key, data);
                 }
                 catch (RedisTimeoutException e)
@@ -36,9 +42,9 @@ namespace Abelkhan
             }
         }
 
-        public Task<bool> SetData<T>(string key, T data)
+        public Task<bool> SetData<T>(string key, T data, long timeout = 0)
         {
-            return SetStrData(key, JsonConvert.SerializeObject(data));
+            return SetStrData(key, JsonConvert.SerializeObject(data), timeout);
         }
 
         public Task<RedisValue> GetStrData(string key)

@@ -1,10 +1,12 @@
 ﻿using Abelkhan;
 using ENet.Managed;
+using Service;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -76,15 +78,19 @@ namespace Hub
             _redis_mq_service = new Abelkhan.RedisMQ(_timer, redismq_url, name);
             _gates = new GateManager(_redis_mq_service);
 
+            _redis_handle = new RedisHandle(_root_config.get_value_string("redis_for_cache"));
+
             _closeHandle = new CloseHandle();
             _hubs = new HubManager();
 
             _hubs.on_hubproxy += (_proxy) =>
             {
+                check_connnect_hub(_proxy);
                 on_hubproxy?.Invoke(_proxy);
             };
             _hubs.on_hubproxy_reconn += (_proxy) =>
             {
+                check_connnect_hub(_proxy);
                 on_hubproxy_reconn?.Invoke(_proxy);
             };
 
@@ -127,6 +133,8 @@ namespace Hub
                         }
                     };
                     _acceptservice.start();
+
+                    flush_host();
                 }
             }
            
@@ -219,6 +227,29 @@ namespace Hub
             {
                 on_client_msg?.Invoke(uuid);
             };
+        }
+
+        private async void check_connnect_hub(HubProxy _proxy)
+        {
+            if (OnCheckConnHub != null && OnCheckConnHub(_proxy.name) && _proxy._tcp_ch == null)
+            {
+                string host = await _redis_handle.GetStrData(name);
+                var host_info = host.Split(":");
+                var s = ConnectService.connect(IPAddress.Parse(host_info[0]), short.Parse(host_info[1]));
+                var ch = new Abelkhan.RawChannel(s);
+                var _caller = new Abelkhan.hub_call_hub_caller(ch, Abelkhan.ModuleMgrHandle._modulemng);
+                _caller.reg_hub(name, type);
+
+                _hubs.replace_hub(_proxy.name, _proxy.type, ch);
+            }
+        }
+
+        private void flush_host(long _ = 0)
+        {
+            var host = $"{tcp_inside_address.host}:{tcp_inside_address.port}";
+            _redis_handle.SetStrData(name, host, 60);
+
+            _timer.addticktime(40000, flush_host);
         }
 
         public void set_support_take_over_svr(bool is_support)
@@ -364,9 +395,12 @@ namespace Hub
 
         public void reg_hub(String hub_name)
         {
-            var ch = _redis_mq_service.connect(hub_name);
-            var _caller = new Abelkhan.hub_call_hub_caller(ch, Abelkhan.ModuleMgrHandle._modulemng);
-            _caller.reg_hub(name, type);
+            if (!_hubs.get_hub(hub_name, out var _))
+            {
+                var ch = _redis_mq_service.connect(hub_name);
+                var _caller = new Abelkhan.hub_call_hub_caller(ch, Abelkhan.ModuleMgrHandle._modulemng);
+                _caller.reg_hub(name, type);
+            }
         }
 
         private List<Task> wait_task = new ();
@@ -471,6 +505,7 @@ namespace Hub
 
         public static bool is_support_take_over_svr = true;
         public static Abelkhan.RedisMQ _redis_mq_service;
+        public static Abelkhan.RedisHandle _redis_handle;
 
         private static Random _r;
         private static ConcurrentDictionary<string, DBProxyProxy> _dbproxys;
@@ -479,6 +514,9 @@ namespace Hub
         public static HubManager _hubs;
         public static GateManager _gates;
         public static Service.Timerservice _timer;
+
+        public static Func<string, bool> OnCheckConnHub;
+        public static Func<bool> OnCheckConnGate;
 
         private readonly Abelkhan.EnetService _enetservice;
         private readonly Abelkhan.CryptAcceptService _cryptacceptservice;
@@ -504,9 +542,6 @@ namespace Hub
         public event Action<string> on_client_msg;
 
         public event Action<string> on_direct_client_disconnect;
-
-        public Func<string, bool> OnCheckConnHub;
-        public Func<bool> OnCheckConnGate;
 
     }
 }
