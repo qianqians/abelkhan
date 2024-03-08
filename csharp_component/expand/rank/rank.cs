@@ -86,16 +86,7 @@ namespace Rank
                 return -1;
             }
 
-            for (var r = 0; r < rankList.Count; r++)
-            {
-                var item = rankList[r];
-                if (item.score == score)
-                {
-                    return r + 1;
-                }
-            }
-
-            return -1;
+            return rankList.IndexOfKey(score) + 1;
         }
 
         public List<rank_item> GetRankRange(int start, int end)
