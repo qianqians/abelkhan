@@ -29,6 +29,9 @@ def genstructprotocol(struct_name, elems, dependent_struct, dependent_enum):
 
 def genprotocolstruct(struct_name, elems, dependent_struct, dependent_enum):
     code = "export function protcol_to_" + struct_name + "(_protocol:any){\n"
+    code += "    if (_protocol == null) {\n"
+    code += "        return null;\n"
+    code += "    }\n\n"
     code += "    let _struct = new " + struct_name + "();\n"
     code += "    for (const [key, val] of Object.entries(_protocol)) {\n"
     count = 0

@@ -8,11 +8,6 @@ import hubmanager
 
 # this enum code is codegen by abelkhan codegen for python
 
-class test(Enum):
-    test1 = 1
-    test2 = 2
-
-
 #this struct code is codegen by abelkhan codegen for python
 #this caller code is codegen by abelkhan codegen for python
 #this cb code is codegen by abelkhan for python
@@ -72,12 +67,11 @@ class hub_hub_hubproxy(object):
         self.hub_name_2707e093_e344_3ec7_8063_8b86e948eca8 = ""
         self.uuid_2707e093_e344_3ec7_8063_8b86e948eca8 = RandomUUID()
 
-    def test1(self, id1:str, id2:int = 3, _is:bool = False, e:test = test.test1):
+    def test1(self, id1:str, id2:int, _is:bool):
         _argv_c501822b_22a8_37ff_91a9_9545f4689a3d = []
         _argv_c501822b_22a8_37ff_91a9_9545f4689a3d.append(id1)
         _argv_c501822b_22a8_37ff_91a9_9545f4689a3d.append(id2)
         _argv_c501822b_22a8_37ff_91a9_9545f4689a3d.append(_is)
-        _argv_c501822b_22a8_37ff_91a9_9545f4689a3d.append(e)
         self.hubs.call_hub(self.hub_name_2707e093_e344_3ec7_8063_8b86e948eca8, "hub_hub_test1", _argv_c501822b_22a8_37ff_91a9_9545f4689a3d)
 
     def test2(self, id:str):
@@ -128,7 +122,7 @@ class hub_hub_module(imodule):
     def __init__(self, _modulemanager:modulemanager.modulemanager, _hubs:hubmanager.hubmanager):
         self.modulemanager = _modulemanager
         self.hubs = _hubs
-        self.on_test1:Callable[[str, int, bool, test]] = None
+        self.on_test1:Callable[[str, int, bool]] = None
         self.modulemanager.add_mothed("hub_hub_test1", self.test1)
         self.on_test2:Callable[[str]] = None
         self.modulemanager.add_mothed("hub_hub_test2", self.test2)
@@ -137,9 +131,8 @@ class hub_hub_module(imodule):
         _id1 = inArray[0]
         _id2 = inArray[1]
         __is = inArray[2]
-        _e = inArray[3]
         if self.on_test1:
-            self.on_test1(_id1, _id2, __is, _e)
+            self.on_test1(_id1, _id2, __is)
 
     def test2(self, inArray:list):
         _cb_uuid = inArray[0]

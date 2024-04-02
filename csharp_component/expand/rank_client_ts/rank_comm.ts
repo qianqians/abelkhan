@@ -16,6 +16,10 @@ export function rank_item_to_protcol(_struct:rank_item){
 }
 
 export function protcol_to_rank_item(_protocol:any){
+    if (_protocol == null) {
+        return null;
+    }
+
     let _struct = new rank_item();
     for (const [key, val] of Object.entries(_protocol)) {
         if (key === "guid"){

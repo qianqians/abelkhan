@@ -16,6 +16,10 @@ namespace Abelkhan
         public Int32 rank;
         public byte[] item;
         public static MsgPack.MessagePackObjectDictionary rank_item_to_protcol(rank_item _struct){
+        if (_struct == null) {
+            return null;
+        }
+
             var _protocol = new MsgPack.MessagePackObjectDictionary();
             _protocol.Add("guid", _struct.guid);
             _protocol.Add("score", _struct.score);
@@ -24,6 +28,10 @@ namespace Abelkhan
             return _protocol;
         }
         public static rank_item protcol_to_rank_item(MsgPack.MessagePackObjectDictionary _protocol){
+        if (_protocol == null) {
+            return null;
+        }
+
             var _struct8e307fd3_8e06_3971_adaf_10e42d498ea0 = new rank_item();
             foreach (var i in _protocol){
                 if (((MsgPack.MessagePackObject)i.Key).AsString() == "guid"){

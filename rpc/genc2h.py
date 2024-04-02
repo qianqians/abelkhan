@@ -32,7 +32,7 @@ def gen_ts_import(_import):
         code += "import * as " + _i + " from \"./" + _i + "\";\n"
     return code
 
-def gen(inputdir, commondir, lang, outputdir):
+def gen(inputdir, commondir, lang, clioutputdir, svroutputdir):
     syspath = "./gen/client_call_hub/"
     if lang == 'cpp':
         sys.path.append("./gen_common/cpp")
@@ -56,8 +56,13 @@ def gen(inputdir, commondir, lang, outputdir):
     import genenum
     import genstruct
 
-    if not os.path.isdir(outputdir):
-        os.mkdir(outputdir)
+    if len(clioutputdir) > 0:
+        if not os.path.isdir(clioutputdir):
+            os.mkdir(clioutputdir)
+        
+    if len(svroutputdir) > 0:
+        if not os.path.isdir(svroutputdir):
+            os.mkdir(svroutputdir)
 
     pretreatmentdata = jparser.batch(inputdir, commondir)
     for pretreatment in pretreatmentdata:
@@ -76,13 +81,14 @@ def gen(inputdir, commondir, lang, outputdir):
             cpp_code += "namespace abelkhan\n{\n\n"
             cpp_code += "\n}\n"
 
-            file = open(outputdir + '//' + pretreatment.name + ".h", 'w')
-            file.write(code)
-            file.close()
+            if len(svroutputdir) > 0:
+                file = open(svroutputdir + '//' + pretreatment.name + ".h", 'w')
+                file.write(code)
+                file.close()
 
-            file = open(outputdir + '//' + pretreatment.name + ".cpp", 'w')
-            file.write(cpp_code)
-            file.close()
+                file = open(svroutputdir + '//' + pretreatment.name + ".cpp", 'w')
+                file.write(cpp_code)
+                file.close()
         elif lang == 'csharp':
             code = gen_csharp_import(pretreatment._import)
             code += genenum.genenum(pretreatment)
@@ -90,25 +96,28 @@ def gen(inputdir, commondir, lang, outputdir):
             c_code = code + gencaller.gencaller(pretreatment) + "\n}\n"
             s_code = code + genmodule.genmodule(pretreatment) + "\n}\n"
 
-            file = open(outputdir + '//' + pretreatment.name + "_cli.cs", 'w')
-            file.write(c_code)
-            file.close()
+            if len(clioutputdir) > 0:
+                file = open(clioutputdir + '//' + pretreatment.name + "_cli.cs", 'w')
+                file.write(c_code)
+                file.close()
 
-            file = open(outputdir + '//' + pretreatment.name + "_svr.cs", 'w')
-            file.write(s_code)
-            file.close()
+            if len(svroutputdir) > 0:
+                file = open(svroutputdir + '//' + pretreatment.name + "_svr.cs", 'w')
+                file.write(s_code)
+                file.close()
         elif lang == "ts":
             code = gen_ts_import(pretreatment._import)
             code += genenum.genenum(pretreatment)
             code += genstruct.genstruct(pretreatment)
             code += gencaller.gencaller(pretreatment)
 
-            file = open(outputdir + '//' + pretreatment.name + ".ts", 'w')
-            file.write(code)
-            file.close()
+            if len(clioutputdir) > 0:
+                file = open(clioutputdir + '//' + pretreatment.name + ".ts", 'w')
+                file.write(code)
+                file.close()
 
 if __name__ == '__main__':
-    if len(sys.argv) == 5:
-        gen(sys.argv[1], sys.argv[4], sys.argv[2], sys.argv[3])
+    if len(sys.argv) == 6:
+        gen(sys.argv[1], sys.argv[5], sys.argv[2], sys.argv[3], sys.argv[4])
     else:
-        gen(sys.argv[1], None, sys.argv[2], sys.argv[3])
+        gen(sys.argv[1], None, sys.argv[2], sys.argv[3], sys.argv[4])
