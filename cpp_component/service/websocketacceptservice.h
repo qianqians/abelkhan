@@ -81,10 +81,12 @@ public:
 			ctx->set_options(
 				asio::ssl::context::default_workarounds | 
 				asio::ssl::context::no_sslv2 |
-				asio::ssl::context::no_sslv3);
+				asio::ssl::context::no_sslv3 |
+				asio::ssl::context::single_dh_use);
 	
 			ctx->use_certificate_chain_file(certificate_chain_file);
 			ctx->use_private_key_file(private_key_file, asio::ssl::context::pem);
+			ctx->use_tmp_dh_file(tmp_dh_file); // openssl dhparam -out dhparam.pem n > 2048
 		}
 		catch (std::exception& e) {
 			std::cout << "Exception: " << e.what() << std::endl;
