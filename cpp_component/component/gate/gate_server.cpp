@@ -373,6 +373,8 @@ uint32_t gate_service::logic_poll() {
 		service::_modulemng->process_event();
 
 		_log::file_logger->flush();
+
+		_clientmanager->client_proxy_send();
 	}
 	catch (std::exception e) {
 		spdlog::info("poll error:{0}!", e.what());
