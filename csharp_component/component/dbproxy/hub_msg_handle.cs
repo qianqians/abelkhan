@@ -6,7 +6,7 @@ namespace DBProxy
         private readonly HubManager _hubmanager;
         private readonly Abelkhan.hub_call_dbproxy_module _hub_call_dbproxy_module;
 
-        public hub_msg_handle(HubManager _hubmanager_, CloseHandle _closehandle_)
+        public hub_msg_handle(HubManager _hubmanager_)
 		{
 			_hubmanager = _hubmanager_;
 

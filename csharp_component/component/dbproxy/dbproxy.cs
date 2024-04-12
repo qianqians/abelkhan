@@ -168,12 +168,8 @@ namespace DBProxy
 
             try
             {
-                while (true)
+                while (Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
                 {
-                    if (!Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
-                    {
-                        break;
-                    }
                     Abelkhan.ModuleMgrHandle._modulemng.process_event(_event.Item1, _event.Item2);
                 }
 
@@ -183,7 +179,10 @@ namespace DBProxy
                     {
                         foreach (var ch in remove_chs)
                         {
-                            add_chs.Remove(ch);
+                            lock (add_chs)
+                            {
+                                add_chs.Remove(ch);
+                            }
                         }
                         remove_chs.Clear();
                     }
@@ -222,7 +221,7 @@ namespace DBProxy
                 throw new Abelkhan.Exception("run mast at single thread!");
             }
 
-            var _hub_msg_handle = new hub_msg_handle(_hubmanager, _closeHandle);
+            var _hub_msg_handle = new hub_msg_handle(_hubmanager);
             var _center_msg_handle = new center_msg_handle(_closeHandle, _centerproxy, _hubmanager);
 
             while (!_closeHandle.is_close())
