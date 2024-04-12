@@ -3,7 +3,7 @@ using System;
 
 namespace Log
 {
-    public class Log
+    public static class Log
     {
         public enum enLogMode
         {
