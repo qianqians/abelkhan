@@ -184,14 +184,11 @@ namespace Service
             {
                 releaseMongoClient(_mongoclient);
             }
-
             return null;
         }
 
-        public async Task<MongoDB.Bson.BsonArray> find(string db, string collection, byte[] bson_query, int skip, int limit, string sort, bool _Ascending)
+        public async Task<IAsyncCursor<MongoDB.Bson.BsonDocument>> find(string db, string collection, byte[] bson_query, int skip, int limit, string sort, bool _Ascending)
         {
-            var _list = new MongoDB.Bson.BsonArray();
-
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
@@ -220,31 +217,18 @@ namespace Service
                     }
                 }
 
-                var c = await _collection.FindAsync<MongoDB.Bson.BsonDocument>(_bson_query, _opt);
-                while (c.MoveNext())
-                {
-                    var _c = c.Current;
-                    if (_c != null)
-                    {
-                        foreach (var data in _c)
-                        {
-                            data.Remove("_id");
-                            _list.Add(data);
-                        }
-                    }
-                }
+                return await _collection.FindAsync<MongoDB.Bson.BsonDocument>(_bson_query, _opt);
             }
             catch (System.Exception e)
             {
                 Log.Log.err("find faild, {0}", e.Message);
-                return _list;
             }
             finally
             {
                 releaseMongoClient(_mongoclient);
             }
 
-            return _list;
+            return null;
 		}
 
         public async Task<int> count(string db, string collection, byte[] bson_query)

@@ -1,4 +1,6 @@
 ﻿
+using System.Diagnostics.Metrics;
+
 namespace DBProxy
 {
 	public class hub_msg_handle
@@ -192,35 +194,45 @@ namespace DBProxy
             {
                 try
                 {
-                    var _list = await DBProxy._mongodbproxy.find(db, collection, query_data, _limit, _skip, _sort, _Ascending_);
+                    var c = await DBProxy._mongodbproxy.find(db, collection, query_data, _limit, _skip, _sort, _Ascending_);
 
-                    int count = 0;
-                    if (_list.Count == 0)
+                    var _datalist = new MongoDB.Bson.BsonArray();
+                    if (c == null)
                     {
-                        _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _list } });
+                        _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _datalist } });
                     }
                     else
                     {
-                        var _datalist = new MongoDB.Bson.BsonArray();
-                        foreach (var data in _list)
+                        int count = 0;
+                        int total_count = 0;
+                        while (c.MoveNext())
                         {
-                            _datalist.Add(data);
-
-                            count++;
-
-                            if (count >= 100)
+                            var _c = c.Current;
+                            if (_c != null)
                             {
-                                _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _datalist } });
+                                foreach (var data in _c)
+                                {
+                                    data.Remove("_id");
+                                    _datalist.Add(data);
 
-                                count = 0;
-                                _datalist = new MongoDB.Bson.BsonArray();
+                                    count++;
+                                    total_count++;
+                                    if (count >= 100)
+                                    {
+                                        _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _datalist } });
+
+                                        count = 0;
+                                        _datalist = new MongoDB.Bson.BsonArray();
+                                    }
+                                }
                             }
                         }
-                        if (count > 0 && count < 100)
+                        if (total_count <= 0 || count > 0)
                         {
                             _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _datalist } });
                         }
                     }
+
                     _hubproxy.ack_get_object_info_end(callbackid);
                 }
                 catch (System.Exception ex)
