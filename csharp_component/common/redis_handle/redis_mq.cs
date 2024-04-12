@@ -269,26 +269,26 @@ namespace Abelkhan
             var tick_begin = _timer.refresh();
 
             list_channel_name();
-            foreach (var listen_channel_name in listen_channel_names)
+            try
             {
-                try
+                foreach (var listen_channel_name in listen_channel_names)
                 {
                     await recvmsg_mq_ch(listen_channel_name);
                 }
-                catch (RedisTimeoutException ex)
-                {
-                    Log.Log.err("ListLeftPushAsync error:{0}", ex);
-                    Recover(ex);
-                }
-                catch (RedisConnectionException ex)
-                {
-                    Log.Log.err("ListLeftPushAsync error:{0}", ex);
-                    Recover(ex);
-                }
-                catch (System.Exception ex)
-                {
-                    Log.Log.err("recvmsg_mq error:{0}", ex);
-                }
+            }
+            catch (RedisTimeoutException ex)
+            {
+                Log.Log.err("ListLeftPushAsync error:{0}", ex);
+                Recover(ex);
+            }
+            catch (RedisConnectionException ex)
+            {
+                Log.Log.err("ListLeftPushAsync error:{0}", ex);
+                Recover(ex);
+            }
+            catch (System.Exception ex)
+            {
+                Log.Log.err("recvmsg_mq error:{0}", ex);
             }
 
             return _timer.refresh() - tick_begin;
