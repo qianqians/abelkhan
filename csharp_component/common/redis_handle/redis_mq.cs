@@ -186,9 +186,13 @@ namespace Abelkhan
                         push_data_array = send_queue.ToArray();
                         send_queue.Clear();
                     }
+                    else
+                    {
+                        continue;
+                    }
                 }
 
-                while (push_data_array != null)
+                while (true)
                 {
                     try
                     {
