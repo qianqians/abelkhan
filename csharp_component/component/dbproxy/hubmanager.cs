@@ -6,10 +6,10 @@ namespace DBProxy
 {
 	public class HubManager
 	{
-		private Dictionary<string, HubProxy> hubproxys_name;
-		private Dictionary<Abelkhan.Ichannel, HubProxy> hubproxys;
+		private readonly Dictionary<string, HubProxy> hubproxys_name;
+		private readonly Dictionary<Abelkhan.Ichannel, HubProxy> hubproxys;
 
-		private List<string> closed_hub_list = new ();
+		private readonly List<string> closed_hub_list = new ();
 
 		public HubManager()
 		{

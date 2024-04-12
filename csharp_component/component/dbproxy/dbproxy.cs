@@ -116,9 +116,6 @@ namespace DBProxy
             _centerproxy.reg_dbproxy(() => {
                 heartbeath_center(Service.Timerservice.Tick);
             });
-
-            _hub_msg_handle = new hub_msg_handle(_hubmanager, _closeHandle);
-            _center_msg_handle = new center_msg_handle(_closeHandle, _centerproxy, _hubmanager);
         }
 
         public Action onCenterCrash;
@@ -225,6 +222,9 @@ namespace DBProxy
                 throw new Abelkhan.Exception("run mast at single thread!");
             }
 
+            var _hub_msg_handle = new hub_msg_handle(_hubmanager, _closeHandle);
+            var _center_msg_handle = new center_msg_handle(_closeHandle, _centerproxy, _hubmanager);
+
             while (!_closeHandle.is_close())
             {
                 var tick = (uint)poll();
@@ -242,7 +242,7 @@ namespace DBProxy
             Monitor.Exit(_run_mu);
         }
 
-		public static String name;
+		public static string name;
 		public static bool is_busy;
         public static uint tick;
 		public static CloseHandle _closeHandle;
@@ -256,9 +256,6 @@ namespace DBProxy
 
         private readonly List<Abelkhan.Ichannel> add_chs;
         private readonly List<Abelkhan.Ichannel> remove_chs;
-
-        private readonly hub_msg_handle _hub_msg_handle;
-        private readonly center_msg_handle _center_msg_handle;
 
         private uint reconn_count = 0;
 

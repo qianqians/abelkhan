@@ -1,22 +1,14 @@
-﻿using Abelkhan;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Security.Cryptography;
-
+﻿
 namespace DBProxy
 {
 	public class hub_msg_handle
     {
-        private CloseHandle _closehandle;
-        private HubManager _hubmanager;
-        private Abelkhan.hub_call_dbproxy_module _hub_call_dbproxy_module;
+        private readonly HubManager _hubmanager;
+        private readonly Abelkhan.hub_call_dbproxy_module _hub_call_dbproxy_module;
 
         public hub_msg_handle(HubManager _hubmanager_, CloseHandle _closehandle_)
 		{
 			_hubmanager = _hubmanager_;
-            _closehandle = _closehandle_;
 
             _hub_call_dbproxy_module = new Abelkhan.hub_call_dbproxy_module(Abelkhan.ModuleMgrHandle._modulemng);
             _hub_call_dbproxy_module.on_reg_hub += reg_hub;
@@ -60,7 +52,6 @@ namespace DBProxy
                 Log.Log.err("ex:{0}", ex);
                 rsp.err();
             }
-
 
             Log.Log.trace("end get_guid");
         }
@@ -127,7 +118,7 @@ namespace DBProxy
                 var obj = await DBProxy._mongodbproxy.find_and_modify(db, collection, query_data, object_data, is_new, upsert);
                 if (obj != null)
                 {
-                    using var st = MemoryStreamPool.mstMgr.GetStream();
+                    using var st = Abelkhan.MemoryStreamPool.mstMgr.GetStream();
                     var write = new MongoDB.Bson.IO.BsonBinaryWriter(st);
                     MongoDB.Bson.Serialization.BsonSerializer.Serialize(write, obj);
                     st.Position = 0;

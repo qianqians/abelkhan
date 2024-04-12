@@ -4,9 +4,9 @@ namespace DBProxy
 {
 	public class center_msg_handle
 	{
-		private CloseHandle _closehandle;
-		private CenterProxy _centerproxy;
-        private HubManager _hubs;
+		private readonly CloseHandle _closehandle;
+		private readonly CenterProxy _centerproxy;
+        private readonly HubManager _hubs;
 
 		private Abelkhan.center_call_server_module _center_call_server_module;
 
