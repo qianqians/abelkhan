@@ -50,8 +50,8 @@ namespace Abelkhan
 
         private readonly Timerservice _timer;
         private readonly string main_channel_name;
-        private readonly Thread th_send;
-        private readonly Thread th_recv;
+        private readonly Task th_send;
+        private readonly Task th_recv;
         private readonly long tick_time;
         private bool run_flag = true;
 
@@ -78,12 +78,8 @@ namespace Abelkhan
             wait_send_data = new();
             send_data = new();
 
-            var th_send_poll_start = new ThreadStart(th_send_poll);
-            th_send = new Thread(th_send_poll_start);
-            th_send.Start();
-            var th_recv_poll_start = new ThreadStart(th_recv_poll);
-            th_recv = new Thread(th_recv_poll_start);
-            th_recv.Start();
+            th_send = Task.Factory.StartNew(th_send_poll, TaskCreationOptions.LongRunning); 
+            th_recv = Task.Factory.StartNew(th_recv_poll, TaskCreationOptions.LongRunning);
         }
 
         public void take_over_svr(string svr_name)
@@ -99,8 +95,7 @@ namespace Abelkhan
         public void close()
         {
             run_flag = false;
-            th_send.Join();
-            th_recv.Join();
+            Task.WaitAll(th_send, th_recv);
         }
 
         public Redischannel connect(string ch_name)
@@ -278,7 +273,7 @@ namespace Abelkhan
                 var tick = await sendmsg_mq();
                 if (tick < tick_time)
                 {
-                    Thread.Sleep((int)(tick_time - tick));
+                    await Task.Delay((int)(tick_time - tick));
                 }
             }
         }
@@ -290,7 +285,7 @@ namespace Abelkhan
                 var tick = await recvmsg_mq();
                 if (tick < tick_time)
                 {
-                    Thread.Sleep((int)(tick_time - tick));
+                    await Task.Delay((int)(tick_time - tick));
                 }
             }
         }
