@@ -26,7 +26,7 @@ namespace DBProxy
             Log.Log.trace("hub {0} connected", hub_name);
                 
             var rsp = (Abelkhan.hub_call_dbproxy_reg_hub_rsp)_hub_call_dbproxy_module.rsp.Value;
-            HubProxy _hubproxy = _hubmanager.reg_hub(_hub_call_dbproxy_module.current_ch.Value, hub_name);
+            _ = _hubmanager.reg_hub(_hub_call_dbproxy_module.current_ch.Value, hub_name);
             rsp.rsp();
         }
 
