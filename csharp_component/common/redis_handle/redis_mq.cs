@@ -52,8 +52,8 @@ namespace Abelkhan
         private readonly string main_channel_name;
         private readonly Thread th_send;
         private readonly Thread th_recv;
+        private readonly long tick_time;
         private bool run_flag = true;
-        private long tick_time;
 
         private readonly List<string> listen_channel_names;
         private readonly List<string> wait_listen_channel_names;
@@ -79,10 +79,10 @@ namespace Abelkhan
             wait_send_data = new();
             send_data = new();
 
-            ThreadStart th_send_poll_start = new ThreadStart(th_send_poll);
+            var th_send_poll_start = new ThreadStart(th_send_poll);
             th_send = new Thread(th_send_poll_start);
             th_send.Start();
-            ThreadStart th_recv_poll_start = new ThreadStart(th_recv_poll);
+            var th_recv_poll_start = new ThreadStart(th_recv_poll);
             th_recv = new Thread(th_recv_poll_start);
             th_recv.Start();
         }
