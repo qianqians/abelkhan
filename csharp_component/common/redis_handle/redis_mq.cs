@@ -55,8 +55,7 @@ namespace Abelkhan
         private readonly long tick_time;
         private bool run_flag = true;
 
-        private readonly List<string> listen_channel_names;
-        private readonly List<string> wait_listen_channel_names;
+        private readonly ConcurrentQueue<string> listen_channel_names;
 
         private readonly ConcurrentDictionary<string, Redischannel> channels;
 
@@ -69,8 +68,8 @@ namespace Abelkhan
             main_channel_name = _listen_channel_name;
             tick_time = _tick_time;
 
-            listen_channel_names = new() { _listen_channel_name };
-            wait_listen_channel_names = new();
+            listen_channel_names = new();
+            listen_channel_names.Enqueue(_listen_channel_name);
             channels = new ConcurrentDictionary<string, Redischannel>();
 
             _connHelper = new RedisConnectionHelper(connUrl, "RedisForMQ");
@@ -89,10 +88,7 @@ namespace Abelkhan
 
         public void take_over_svr(string svr_name)
         {
-            lock (wait_listen_channel_names)
-            {
-                wait_listen_channel_names.Add(svr_name);
-            }
+            listen_channel_names.Enqueue(svr_name);
         }
 
         void Recover(System.Exception e)
@@ -219,28 +215,6 @@ namespace Abelkhan
             return _timer.refresh() - tick_begin;
         }
 
-        private void list_channel_name()
-        {
-            try
-            {
-                if (wait_listen_channel_names.Count > 0)
-                {
-                    lock (wait_listen_channel_names)
-                    {
-                        foreach (var name in wait_listen_channel_names)
-                        {
-                            listen_channel_names.Add(name);
-                        }
-                        wait_listen_channel_names.Clear();
-                    }
-                }
-            }
-            catch (System.Exception ex)
-            {
-                Log.Log.err("list_channel_name error:{0}", ex);
-            }
-        }
-
         private async Task recvmsg_mq_ch(string ch_name)
         {
             var batch_pop_data = await database.ListRightPopAsync(ch_name, 10);
@@ -272,7 +246,6 @@ namespace Abelkhan
         {
             var tick_begin = _timer.refresh();
 
-            list_channel_name();
             try
             {
                 foreach (var listen_channel_name in listen_channel_names)
