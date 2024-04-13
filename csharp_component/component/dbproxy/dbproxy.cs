@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DBProxy
 {
@@ -162,7 +163,7 @@ namespace DBProxy
             _timer.addticktime(3000, heartbeath_center);
         }
 
-		private long poll()
+		private async Task<long> poll()
         {
             long tick_begin = _timer.refresh();
 
@@ -187,6 +188,8 @@ namespace DBProxy
                         remove_chs.Clear();
                     }
                 }
+
+                _ = await _redis_mq_service.sendmsg_mq();
 
                 _timer.poll();
                 Abelkhan.TinyTimer.poll();
@@ -213,20 +216,14 @@ namespace DBProxy
             return tick;
         }
 
-        private object _run_mu = new object();
-        public void run()
+        private async Task _run()
         {
-            if (!Monitor.TryEnter(_run_mu))
-            {
-                throw new Abelkhan.Exception("run mast at single thread!");
-            }
-
             var _hub_msg_handle = new hub_msg_handle(_hubmanager);
             var _center_msg_handle = new center_msg_handle(_closeHandle, _centerproxy, _hubmanager);
 
             while (!_closeHandle.is_close())
             {
-                var tick = (uint)poll();
+                var tick = (uint)await poll();
 
                 if (tick < 33)
                 {
@@ -238,10 +235,22 @@ namespace DBProxy
             _redis_mq_service.close();
             Log.Log.close();
 
+        }
+
+        private object _run_mu = new object();
+        public void run()
+        {
+            if (!Monitor.TryEnter(_run_mu))
+            {
+                throw new Abelkhan.Exception("run mast at single thread!");
+            }
+
+            _run().Wait();
+
             Monitor.Exit(_run_mu);
         }
 
-		public static string name;
+        public static string name;
 		public static bool is_busy;
         public static uint tick;
 		public static CloseHandle _closeHandle;

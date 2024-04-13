@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Abelkhan
 {
@@ -104,19 +105,15 @@ namespace Abelkhan
             _accept_gm_service.start();
         }
 
-        private long poll()
+        private async Task<long> poll()
         {
             var tick_begin = _timer.refresh();
             try
             {
                 _timer.poll();
 
-                while (true)
+                while (Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
                 {
-                    if (!EventQueue.msgQue.TryDequeue(out Tuple<Ichannel, ArrayList> _event))
-                    {
-                        break;
-                    }
                     Abelkhan.ModuleMgrHandle._modulemng.process_event(_event.Item1, _event.Item2);
                 }
 
@@ -131,6 +128,8 @@ namespace Abelkhan
                         remove_chs.Clear();
                     }
                 }
+
+                _ = await _redis_mq_service.sendmsg_mq();
 
                 if (_closeHandle.is_closing && _svrmanager.check_all_hub_closed())
                 {
@@ -158,19 +157,13 @@ namespace Abelkhan
             return tick_end - tick_begin;
         }
 
-        private object _run_mu = new object();
-        public void run()
+        private async Task _run()
         {
-            if (!Monitor.TryEnter(_run_mu))
-            {
-                throw new Abelkhan.Exception("run mast at single thread!");
-            }
-
             while (!_closeHandle.is_close)
             {
                 try
                 {
-                    var tick = poll();
+                    var tick = await poll();
                     if (tick < 333)
                     {
                         Thread.Sleep((int)(333 - tick));
@@ -182,6 +175,17 @@ namespace Abelkhan
                 }
             }
             Log.Log.close();
+        }
+
+        private object _run_mu = new object();
+        public void run()
+        {
+            if (!Monitor.TryEnter(_run_mu))
+            {
+                throw new Abelkhan.Exception("run mast at single thread!");
+            }
+
+            _run().Wait();
 
             Monitor.Exit(_run_mu);
         }

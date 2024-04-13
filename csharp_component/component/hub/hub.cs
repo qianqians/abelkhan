@@ -404,7 +404,7 @@ namespace Hub
         }
 
         private List<Task> wait_task = new ();
-        private long poll()
+        private async Task<long> poll()
         {
             long tick_begin = _timer.refresh();
 
@@ -412,12 +412,8 @@ namespace Hub
             {
                 _timer.poll();
 
-                while (true)
+                while (Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
                 {
-                    if (!Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
-                    {
-                        break;
-                    }
                     Abelkhan.ModuleMgrHandle._modulemng.process_event(_event.Item1, _event.Item2);
                 }
 
@@ -432,6 +428,8 @@ namespace Hub
                         remove_chs.Clear();
                     }
                 }
+
+                _ = await _redis_mq_service.sendmsg_mq();
 
                 Abelkhan.TinyTimer.poll();
             }
@@ -454,17 +452,11 @@ namespace Hub
             return tick;
         }
 
-        private readonly object _run_mu = new();
-        public void run()
+        private async Task _run()
         {
-            if (!Monitor.TryEnter(_run_mu))
-            {
-                throw new Abelkhan.Exception("run mast at single thread!");
-            }
-
             while (!_closeHandle.is_close)
             {
-                var ticktime = poll();
+                var ticktime = await poll();
 
                 if (ticktime < 33)
                 {
@@ -473,6 +465,17 @@ namespace Hub
             }
             Log.Log.info("server closed, hub server:{0}", Hub.name);
             Log.Log.close();
+        }
+
+        private readonly object _run_mu = new();
+        public void run()
+        {
+            if (!Monitor.TryEnter(_run_mu))
+            {
+                throw new Abelkhan.Exception("run mast at single thread!");
+            }
+
+            _run().Wait();
 
             Monitor.Exit(_run_mu);
         }

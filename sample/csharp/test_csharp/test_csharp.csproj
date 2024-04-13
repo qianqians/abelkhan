@@ -14,6 +14,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\proto\csharp\svr\test_c2s_svr.cs" Link="test_c2s_svr.cs" />
+    <Compile Include="..\..\proto\csharp\svr\test_s2c_svr.cs" Link="test_s2c_svr.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\..\csharp_component\component\hub\hub.csproj" />
   </ItemGroup>
 

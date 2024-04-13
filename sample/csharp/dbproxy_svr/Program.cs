@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Log;
+using System;
 using System.Threading;
 
 namespace dbproxy_svr
