@@ -21,11 +21,11 @@ namespace Abelkhan
             module_rsp_cb = _module_rsp_cb;
         }
 
-        public event Action<Int32> on_get_rank_guid_cb;
+        public event Action<rank_item> on_get_rank_guid_cb;
         public event Action on_get_rank_guid_err;
         public event Action on_get_rank_guid_timeout;
 
-        public rank_cli_service_get_rank_guid_cb callBack(Action<Int32> cb, Action err)
+        public rank_cli_service_get_rank_guid_cb callBack(Action<rank_item> cb, Action err)
         {
             on_get_rank_guid_cb += cb;
             on_get_rank_guid_err += err;
@@ -40,7 +40,7 @@ namespace Abelkhan
             on_get_rank_guid_timeout += timeout_cb;
         }
 
-        public void call_cb(Int32 rank)
+        public void call_cb(rank_item rank)
         {
             if (on_get_rank_guid_cb != null)
             {
@@ -138,7 +138,7 @@ namespace Abelkhan
 
         public void get_rank_guid_rsp(IList<MsgPack.MessagePackObject> inArray){
             var uuid = ((MsgPack.MessagePackObject)inArray[0]).AsUInt64();
-            var _rank = ((MsgPack.MessagePackObject)inArray[1]).AsInt32();
+            var _rank = rank_item.protcol_to_rank_item(((MsgPack.MessagePackObject)inArray[1]).AsDictionary());
             var rsp = try_get_and_del_get_rank_guid_cb(uuid);
             if (rsp != null)
             {

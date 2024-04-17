@@ -8,7 +8,7 @@ export class rank_cli_service_get_rank_guid_cb{
     private cb_uuid : number;
     private module_rsp_cb : rank_cli_service_rsp_cb;
 
-    public event_get_rank_guid_handle_cb : (rank:number)=>void | null;
+    public event_get_rank_guid_handle_cb : (rank:rank_comm.rank_item)=>void | null;
     public event_get_rank_guid_handle_err : ()=>void | null;
     public event_get_rank_guid_handle_timeout : ()=>void | null;
     constructor(_cb_uuid : number, _module_rsp_cb : rank_cli_service_rsp_cb){
@@ -19,7 +19,7 @@ export class rank_cli_service_get_rank_guid_cb{
         this.event_get_rank_guid_handle_timeout = null;
     }
 
-    callBack(_cb:(rank:number)=>void, _err:()=>void)
+    callBack(_cb:(rank:rank_comm.rank_item)=>void, _err:()=>void)
     {
         this.event_get_rank_guid_handle_cb = _cb;
         this.event_get_rank_guid_handle_err = _err;
@@ -80,7 +80,7 @@ export class rank_cli_service_rsp_cb extends client_handle.imodule {
     public get_rank_guid_rsp(inArray:any[]){
         let uuid = inArray[0];
         let _argv_90f752ce_ee17_38de_b679_4a35e21e4129:any[] = [];
-        _argv_90f752ce_ee17_38de_b679_4a35e21e4129.push(inArray[1]);
+        _argv_90f752ce_ee17_38de_b679_4a35e21e4129.push(rank_comm.protcol_to_rank_item(inArray[1]));
         var rsp = this.try_get_and_del_get_rank_guid_cb(uuid);
         if (rsp && rsp.event_get_rank_guid_handle_cb) {
             rsp.event_get_rank_guid_handle_cb.apply(null, _argv_90f752ce_ee17_38de_b679_4a35e21e4129);

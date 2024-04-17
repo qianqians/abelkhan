@@ -79,14 +79,29 @@ namespace Rank
             return item.rank;
         }
 
-        public int GetRankGuid(long guid)
+        public rank_item GetRankGuid(long guid)
         {
+            var rank = new rank_item
+            {
+                guid = guid
+            };
+
             if (!guidRank.TryGetValue(guid, out var score))
             {
-                return -1;
+                rank.rank = -1;
+                rank.score = 0;
+            }
+            else
+            {
+                if (rankList.TryGetValue(score, out var r))
+                {
+                    rank.rank = rankList.IndexOfKey(score) + 1;
+                    rank.score = score;
+                    rank.item = r.item;
+                }
             }
 
-            return rankList.IndexOfKey(score) + 1;
+            return rank;;
         }
 
         public List<rank_item> GetRankRange(int start, int end)
@@ -94,7 +109,8 @@ namespace Rank
             var rank = new List<rank_item>();
 
             var r = start;
-            for (var i = rankList.Count - start; i >= rankList.Count - end && i >= 0; --i)
+            end = end < rankList.Count ? end : rankList.Count;
+            for (var i = start - 1; i < end; i++)
             {
                 var item = rankList.GetValueAtIndex(i);
                 item.rank = r++;
@@ -218,7 +234,7 @@ namespace Rank
             if (rankDict.TryGetValue(rankNmae, out var rankIns))
             {
                 var rank = rankIns.GetRankGuid(guid);
-                rsp.rsp(rank);
+                rsp.rsp(rank.rank);
             }
             else
             {

@@ -19,10 +19,10 @@ namespace Abelkhan
             uuid_3eca1bfd_46e9_32ae_ac6c_bba1510a64e4 = _uuid;
         }
 
-        public void rsp(Int32 rank_4c7a18ad_077b_37ed_8d4e_92440bd00c2b){
+        public void rsp(rank_item rank_4c7a18ad_077b_37ed_8d4e_92440bd00c2b){
             var _argv_90f752ce_ee17_38de_b679_4a35e21e4129 = new ArrayList();
             _argv_90f752ce_ee17_38de_b679_4a35e21e4129.Add(uuid_3eca1bfd_46e9_32ae_ac6c_bba1510a64e4);
-            _argv_90f752ce_ee17_38de_b679_4a35e21e4129.Add(rank_4c7a18ad_077b_37ed_8d4e_92440bd00c2b);
+            _argv_90f752ce_ee17_38de_b679_4a35e21e4129.Add(rank_item.rank_item_to_protcol(rank_4c7a18ad_077b_37ed_8d4e_92440bd00c2b));
             Hub.Hub._gates.call_client(_client_uuid_90f752ce_ee17_38de_b679_4a35e21e4129, "rank_cli_service_rsp_cb_get_rank_guid_rsp", _argv_90f752ce_ee17_38de_b679_4a35e21e4129);
         }
 
