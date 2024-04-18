@@ -131,6 +131,12 @@ namespace Rank
         }
     }
 
+    public class RankInitInfo
+    {
+        public string name;
+        public int capacity;
+    }
+
     public static class RankModule
     {
         private static string dbName;
@@ -141,7 +147,7 @@ namespace Rank
         private static rank_cli_service_module rank_Cli_Service_Module = new();
         private static rank_svr_service_module rank_svr_Service_Module = new();
 
-        public static Task Init(string _dbName, string _dbCollection, List<string> rankNames)
+        public static Task Init(string _dbName, string _dbCollection, List<RankInitInfo> rankInitInfos)
         {
             var task = new TaskCompletionSource();
 
@@ -155,7 +161,12 @@ namespace Rank
             dbCollection = _dbCollection;
 
             var query = new DBQueryHelper();
-            query._in("name", new BsonArray(rankNames));
+            var names = new BsonArray();
+            foreach (var info in rankInitInfos)
+            {
+                names.Add(info.name);
+            }
+            query._in("name", names);
             Hub.Hub.get_random_dbproxyproxy().getCollection(dbName, dbCollection).getObjectInfo(query.query(), (array) =>
             {
                 foreach(var rankDoc in array)
@@ -181,12 +192,12 @@ namespace Rank
                     rankDict.Add(rank.name, rank);
                 }
 
-                foreach(var rName in rankNames)
+                foreach(var info in rankInitInfos)
                 {
-                    if (!rankDict.ContainsKey(rName))
+                    if (!rankDict.ContainsKey(info.name))
                     {
-                        var rank = new Rank(100);
-                        rank.name = rName;
+                        var rank = new Rank(info.capacity);
+                        rank.name = info.name;
                         rankDict.Add(rank.name, rank);
                     }
                 }
