@@ -271,6 +271,11 @@ namespace Abelkhan
             query_condition.Add(new KeyValuePair<string, BsonValue>(key, new BsonDocument("$gte", t)));
         }
 
+        public void _in(string key, BsonArray c)
+        {
+            query_condition.Add(new KeyValuePair<string, BsonValue>(key, c));
+        }
+
         public BsonDocument query()
         {
             var _condition = new BsonArray();
@@ -278,11 +283,10 @@ namespace Abelkhan
             {
                 _condition.Add(new BsonDocument(c.Key, c.Value));
             }
-            BsonDocument _query = new();
-            if (_condition.Count > 0)
+            BsonDocument _query = new()
             {
-                _query.Add("$and", _condition);
-            }
+                { "$and", _condition }
+            };
 
             return _query;
         }

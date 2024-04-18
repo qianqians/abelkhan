@@ -3,6 +3,7 @@ using MongoDB.Bson;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using ZstdSharp.Unsafe;
 
@@ -12,12 +13,14 @@ namespace Rank
     {
         internal string name;
         internal int capacity;
+        internal int total_capacity;
         internal SortedList<long, rank_item> rankList = new();
         internal SortedDictionary<long, long> guidRank = new ();
 
         public Rank(int _capacity)
         {
             capacity = _capacity;
+            total_capacity = _capacity + 200;
         }
 
         public BsonDocument ToBsonDocument()
@@ -64,7 +67,7 @@ namespace Rank
             item.rank = rankList.IndexOfKey(score) + 1;
             guidRank[item.guid] = score;
 
-            if (rankList.Count > (capacity + 200)) {
+            if (rankList.Count > capacity) {
                 var remove = new List<long>();
                 for (var i = capacity; i < rankList.Count; ++i)
                 {
@@ -77,6 +80,12 @@ namespace Rank
             }
 
             return item.rank;
+        }
+
+        public void ResetRank()
+        {
+            rankList.Clear();
+            guidRank.Clear();
         }
 
         public rank_item GetRankGuid(long guid)
@@ -101,7 +110,7 @@ namespace Rank
                 }
             }
 
-            return rank;;
+            return rank;
         }
 
         public List<rank_item> GetRankRange(int start, int end)
@@ -109,7 +118,8 @@ namespace Rank
             var rank = new List<rank_item>();
 
             var r = start;
-            end = end < rankList.Count ? end : rankList.Count;
+            var c = rankList.Count < capacity ? rankList.Count : capacity;
+            end = end < c ? end : c;
             for (var i = start - 1; i < end; i++)
             {
                 var item = rankList.GetValueAtIndex(i);
@@ -131,7 +141,7 @@ namespace Rank
         private static rank_cli_service_module rank_Cli_Service_Module = new();
         private static rank_svr_service_module rank_svr_Service_Module = new();
 
-        public static Task Init(string _dbName, string _dbCollection)
+        public static Task Init(string _dbName, string _dbCollection, List<string> rankNames)
         {
             var task = new TaskCompletionSource();
 
@@ -145,6 +155,7 @@ namespace Rank
             dbCollection = _dbCollection;
 
             var query = new DBQueryHelper();
+            query._in("name", new BsonArray(rankNames));
             Hub.Hub.get_random_dbproxyproxy().getCollection(dbName, dbCollection).getObjectInfo(query.query(), (array) =>
             {
                 foreach(var rankDoc in array)
@@ -168,6 +179,16 @@ namespace Rank
                     }
 
                     rankDict.Add(rank.name, rank);
+                }
+
+                foreach(var rName in rankNames)
+                {
+                    if (!rankDict.ContainsKey(rName))
+                    {
+                        var rank = new Rank(100);
+                        rank.name = rName;
+                        rankDict.Add(rank.name, rank);
+                    }
                 }
 
             }, () =>
@@ -210,6 +231,14 @@ namespace Rank
         {
             save_rank();
             Hub.Hub._timer.addticktime(60 * 60 * 1000, tick_save_rank);
+        }
+
+        public static void reset_rank(string rankName)
+        {
+            if (rankDict.TryGetValue(rankName, out var rankIns))
+            {
+                rankIns.ResetRank();
+            }
         }
 
         private static void Rank_svr_Service_Module_on_update_rank_item(string rankNmae, rank_item item)
