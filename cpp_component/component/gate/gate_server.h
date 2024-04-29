@@ -62,8 +62,6 @@ private:
 
 	void enet_run();
 
-	void redis_mq_run();
-
 	uint32_t logic_poll();
 
 	void init_center(std::shared_ptr<abelkhan::Ichannel> center_ch);

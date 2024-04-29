@@ -303,10 +303,6 @@ uint32_t hub_service::poll() {
 			_enet_service->poll();
 		}
 
-		if (_hub_redismq_service != nullptr) {
-			_hub_redismq_service->poll();
-		}
-
 		if (_client_websocket_service != nullptr) {
 			_client_websocket_service->poll();
 		}

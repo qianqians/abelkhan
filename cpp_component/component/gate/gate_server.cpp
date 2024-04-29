@@ -240,16 +240,12 @@ void gate_service::run() {
 		throw abelkhan::Exception("run mast at single thread!");
 	}
 	
-	auto th_num = 1;
-	_thread_group.create_thread(std::bind(&gate_service::redis_mq_run, this));
-
 	if (_enet_service != nullptr) {
 		_thread_group.create_thread(std::bind(&gate_service::enet_run, this));
-		++th_num;
 	}
 
 	auto worker = (io_service == nullptr ? 0 : 1) + (_websocket_service == nullptr ? 0 : 1);
-	auto max_thread = std::max((std::thread::hardware_concurrency() - th_num) / worker, (uint32_t)1);
+	auto max_thread = std::max((std::thread::hardware_concurrency() - 1) / worker, (uint32_t)1);
 	for (uint32_t i = 0; i < max_thread; i++) {
 		_thread_group.create_thread(std::bind(&gate_service::tcp_run, this));
 		_thread_group.create_thread(std::bind(&gate_service::ws_run, this));
@@ -328,28 +324,6 @@ void gate_service::enet_run() {
 			auto begin = msec_time();
 
 			_enet_service->poll();
-
-			tick = static_cast<uint32_t>(msec_time() - begin);
-			if (tick < 33) {
-				std::this_thread::sleep_for(std::chrono::milliseconds(33 - tick));
-			}
-		}
-		catch (std::exception e) {
-			spdlog::info("poll error:{0}!", e.what());
-		}
-	}
-}
-
-void gate_service::redis_mq_run() {
-	if (_hub_redismq_service == nullptr) {
-		return;
-	}
-
-	while (!_closehandle->is_closed) {
-		try {
-			auto begin = msec_time();
-
-			_hub_redismq_service->poll();
 
 			tick = static_cast<uint32_t>(msec_time() - begin);
 			if (tick < 33) {

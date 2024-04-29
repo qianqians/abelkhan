@@ -68,7 +68,6 @@ private:
 	std::jthread th_recv;
 
 	concurrent::ringque<redismqbuff> send_data;
-	concurrent::ringque<std::pair<std::string, msgpack11::MsgPack> > recv_data;
 
 public:
 	redismqservice(bool is_cluster, std::string _listen_channle_name, std::string redis_url, std::string password = "") {
@@ -169,18 +168,17 @@ public:
 		th_send.join();
 	}
 
-	void poll() {
-		std::pair<std::string, msgpack11::MsgPack> data;
-		while (recv_data.pop(data)) {
-			auto it = _ch_map.find(data.first);
-			if (it != _ch_map.end()) {
-				it->second->recv(data.second);
-			}
-			else {
-				auto ch = std::make_shared<redismqchannel>(data.first, shared_from_this());
-				ch->recv(data.second);
-				_ch_map.insert(std::make_pair(data.first, ch));
-			}
+	void recv(std::pair<std::string, msgpack11::MsgPack> data) {
+		std::lock_guard<std::mutex> l(_mu_ch_map);
+		auto it = _ch_map.find(data.first);
+		if (it != _ch_map.end()) {
+			it->second->recv(data.second);
+		}
+		else {
+			auto ch = std::make_shared<redismqchannel>(data.first, shared_from_this());
+			ch->recv(data.second);
+
+			_ch_map.insert(std::make_pair(data.first, ch));
 		}
 	}
 
@@ -256,7 +254,7 @@ private:
 					uint32_t len = (uint32_t)tmp_buff[0] | ((uint32_t)tmp_buff[1] << 8) | ((uint32_t)tmp_buff[2] << 16) | ((uint32_t)tmp_buff[3] << 24);
 					std::string err;
 					auto obj = msgpack11::MsgPack::parse((const char*)tmp_buff, len, err);
-					recv_data.push(std::make_pair(_ch_name, obj));
+					recv(std::make_pair(_ch_name, obj));
 
 				}
 				else if (_reply->type != REDIS_REPLY_NIL) {
@@ -315,7 +313,10 @@ private:
 
 		if (!_password.empty()) {
 			auto reply = (redisReply*)redisCommand(_ctx, "AUTH % s", _password.c_str());
-			if (reply->type == REDIS_REPLY_ERROR) {
+			auto reply_type = reply->type;
+			freeReplyObject(reply);
+
+			if (reply_type == REDIS_REPLY_ERROR) {
 				spdlog::error("redisContext auth faild:{0}!", _password);
 				throw redismqserviceException("redisContext auth faild!");
 			}
@@ -323,18 +324,23 @@ private:
 		return _ctx;
 	}
 
-	bool re_conn_redis(redisContext* _ctx) {
-		if (redisReconnect(_ctx) == REDIS_OK) {
-			if (!_password.empty()) {
-				auto reply = (redisReply*)redisCommand(_ctx, "AUTH % s", _password.c_str());
-				if (reply->type == REDIS_REPLY_ERROR) {
-					spdlog::error("redisContext auth faild:{0}!", _password);
-					throw redismqserviceException("redisContext auth faild!");
+	void re_conn_redis(redisContext* _ctx) {
+		while (true) {
+			if (redisReconnect(_ctx) == REDIS_OK) {
+				if (!_password.empty()) {
+					auto reply = (redisReply*)redisCommand(_ctx, "AUTH % s", _password.c_str());
+					auto reply_type = reply->type;
+					freeReplyObject(reply);
+
+					if (reply_type == REDIS_REPLY_ERROR) {
+						spdlog::error("redisContext auth faild:{0}!", _password);
+						std::this_thread::sleep_for(std::chrono::milliseconds(8));
+						continue;
+					}
 				}
+				break;
 			}
-			return true;
 		}
-		return false;
 	}
 
 	void redis_mq_send_data(std::string ch_name, char* data, size_t len) {
@@ -350,16 +356,7 @@ private:
 				break;
 			}
 			else {
-				int wait_time = 8;
-				while (!re_conn_redis(_write_ctx)) {
-					try {
-						std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
-					}
-					catch (redismqserviceException ex) {
-						std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
-					}
-					wait_time *= 2;
-				}
+				re_conn_redis(_write_ctx);
 			}
 		}
 	}
@@ -383,7 +380,7 @@ private:
 					uint32_t len = (uint32_t)tmp_buff[0] | ((uint32_t)tmp_buff[1] << 8) | ((uint32_t)tmp_buff[2] << 16) | ((uint32_t)tmp_buff[3] << 24);
 					std::string err;
 					auto obj = msgpack11::MsgPack::parse((const char*)&tmp_buff[4], len, err);
-					recv_data.push(std::make_pair(_ch_name, obj));
+					recv(std::make_pair(_ch_name, obj));
 				}
 				else if (_reply->type != REDIS_REPLY_NIL) {
 					spdlog::error(fmt::format("redis exception operate type:{0}, str:{1}", _reply->type, _reply->str));
@@ -395,16 +392,7 @@ private:
 				freeReplyObject(_reply);
 			}
 			else {
-				int wait_time = 8;
-				while (!re_conn_redis(_recv_ctx)) {
-					try {
-						std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
-					}
-					catch (redismqserviceException ex) {
-						std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
-					}
-					wait_time *= 2;
-				}
+				re_conn_redis(_recv_ctx);
 			}
 		}
 	}
