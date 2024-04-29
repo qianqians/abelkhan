@@ -149,15 +149,15 @@ public:
 			}
 		}
 
-		for (auto _client : remove_client){
-			for (auto hubproxy_ : _client->conn_hubproxys) {
+		for (auto& _client : remove_client) {
+			for (auto& hubproxy_ : _client->conn_hubproxys) {
 				hubproxy_->client_disconnect(_client->_cuuid);
 			}
 			unreg_client(_client->_ch);
 		}
 
-		for (auto proxy : exception_client) {
-			for (auto hubproxy_ : proxy->conn_hubproxys) {
+		for (auto& proxy : exception_client) {
+			for (auto& hubproxy_ : proxy->conn_hubproxys) {
 				hubproxy_->client_exception(proxy->_cuuid);
 			}
 		}
@@ -227,8 +227,7 @@ public:
 		omp_set_nested(1);
 #pragma omp parallel for
 		for (int index = 0; index < wait_send_cli.size(); ++index) {
-			auto client_proxy = &client_proxy_pool[index];
-			client_proxy->done_send();
+			client_proxy_pool[index].done_send();
 		}
 		wait_send_cli.clear();
 	}

@@ -58,8 +58,6 @@ void gate_service::init() {
 
 	ares_library_init(ARES_LIB_INIT_ALL);
 
-	auto this_ptr = this;
-
 	_timerservice = new service::timerservice();
 	_hubsvrmanager = new hubsvrmanager();
 	_clientmanager = new clientmanager(_config->get_value_int("limit_client"), _hubsvrmanager);
@@ -76,7 +74,7 @@ void gate_service::init() {
 	}
 	_hub_redismq_service->start();
 
-	_center_msg_handle = new center_msg_handle(this_ptr, _hubsvrmanager, _timerservice, _hub_redismq_service);
+	_center_msg_handle = new center_msg_handle(this, _hubsvrmanager, _timerservice, _hub_redismq_service);
 	_hub_svr_msg_handle = new hub_svr_msg_handle(_clientmanager, _hubsvrmanager);
 	_client_msg_handle = new client_msg_handle(_clientmanager, _hubsvrmanager, _timerservice);
 
@@ -106,11 +104,12 @@ void gate_service::init() {
 					ch->disconnect();
 				}
 			});
-			_client_service->sigchanneldisconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
-				service::gc_put([this, ch]() {
-					//_clientmanager->unreg_client(ch);
-				});
-			});
+			heartbeat_flush_host(this, _timerservice->Tick);
+			//_client_service->sigchanneldisconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
+			//	service::gc_put([this, ch]() {
+			//		//_clientmanager->unreg_client(ch);
+			//	});
+			//});
 		}
 	}
 
@@ -141,11 +140,11 @@ void gate_service::init() {
 					ch->disconnect();
 				}
 			});
-			_websocket_service->sigchanneldisconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
-				service::gc_put([this, ch]() {
-					//_clientmanager->unreg_client(ch);
-				});
-			});
+			//_websocket_service->sigchanneldisconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
+			//	service::gc_put([this, ch]() {
+			//		//_clientmanager->unreg_client(ch);
+			//	});
+			//});
 		}
 	}
 
@@ -172,11 +171,11 @@ void gate_service::init() {
 					ch->disconnect();
 				}
 			});
-			_enet_service->sig_disconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
-				service::gc_put([this, ch]() {
-					//_clientmanager->unreg_client(ch);
-				});
-			});	
+			//_enet_service->sig_disconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
+			//	service::gc_put([this, ch]() {
+			//		//_clientmanager->unreg_client(ch);
+			//	});
+			//});	
 		}
 	}
 

@@ -1,6 +1,8 @@
 #ifndef _channel_encrypt_decrypt_ondata_h
 #define _channel_encrypt_decrypt_ondata_h
 
+#include <gc.h>
+
 #include <abelkhan.h>
 #include <log.h>
 #include <buffer.h>
@@ -67,7 +69,6 @@ public:
 	}
 
 	virtual ~channel_encrypt_decrypt_ondata(){
-		free(buff);
 	}
 
 	bool is_compress_and_encrypt;
@@ -97,20 +98,14 @@ public:
 					if (is_compress_and_encrypt) {
 						xor_key_encrypt_decrypt((char*)proto_buff, len);
 					}
+
 					std::string err;
 					auto obj = msgpack11::MsgPack::parse((const char*)proto_buff, len, err);
-					if (!obj.is_array()) {
-						spdlog::error("channel recv parse MsgPack error");
-						ch->disconnect();
-						return;
-					}
-					try
-					{
+					if (obj.is_array()) {
 						_modulemng->enque_event(ch, obj.array_items());
 					}
-					catch (std::exception e)
-					{
-						spdlog::error("channel do rpc callback error");
+					else {
+						spdlog::error("channel recv parse MsgPack error");
 						ch->disconnect();
 						return;
 					}
@@ -126,12 +121,11 @@ public:
 			{
 				if (buff_offset > buff_size) {
 					buff_size = (buff_offset + 1023) / 1024 * 1024;
-					if (buff) {
-						free(buff);
-					}
-					buff = (char*)malloc(buff_size);
+					buff = (char*)GC_malloc(buff_size);
 				}
-				memcpy(buff, &tmp_buffer[tmp_buff_offset], buff_offset);
+				if (buff) {
+					memcpy(buff, &tmp_buffer[tmp_buff_offset], buff_offset);
+				}
 			}
 		}
 		catch (std::exception e) {

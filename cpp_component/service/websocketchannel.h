@@ -51,16 +51,14 @@ public:
 
 	void recv(std::string resv_data)
 	{
-		if (is_close) {
-			return;
-		}
-
-		try {
-			ch_encrypt_decrypt_ondata->recv(resv_data.data(), resv_data.size());
-		}
-		catch (std::exception e) {
-			spdlog::error("webchannel recv exception error:{0}", e.what());
-			disconnect();
+		if (!is_close) {
+			try {
+				ch_encrypt_decrypt_ondata->recv(resv_data.data(), resv_data.size());
+			}
+			catch (std::exception e) {
+				spdlog::error("webchannel recv exception error:{0}", e.what());
+				disconnect();
+			}
 		}
 	}
 

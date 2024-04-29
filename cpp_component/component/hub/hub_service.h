@@ -87,6 +87,8 @@ private:
 
 	static void heartbeat(std::shared_ptr<hub_service> this_ptr, int64_t tick);
 
+	static void heartbeat_flush_host(std::shared_ptr<hub_service> _hub_service, int64_t tick);
+
 public:
 	std::string hub_type;
 	hub::name_info name_info;

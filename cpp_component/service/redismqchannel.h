@@ -38,18 +38,11 @@ public:
 
 	void recv(msgpack11::MsgPack obj)
 	{
-		if (!obj.is_array()) {
-			spdlog::error("redismqchannel recv parse MsgPack error");
+		if (obj.is_array()) {
+			_modulemng->enque_event(shared_from_this(), obj.array_items());
 		}
 		else {
-			try
-			{
-				_modulemng->enque_event(shared_from_this(), obj.array_items());
-			}
-			catch (std::exception e)
-			{
-				spdlog::error("redismqchannel do rpc callback error");
-			}
+			spdlog::error("redismqchannel recv parse MsgPack error");
 		}
 	}
 	

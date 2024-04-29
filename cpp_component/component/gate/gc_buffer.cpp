@@ -8,7 +8,7 @@
 
 namespace gate {
 
-char* gc_get_buffer(size_t _buffer_size) {
+char* get_gc_tmp_buffer(size_t _buffer_size) {
 	return (char*)GC_malloc(_buffer_size);
 }
 

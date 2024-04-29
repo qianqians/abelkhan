@@ -107,6 +107,8 @@ void hub_service::init() {
 					_gatemng->client_direct_disconnect(ch);
 				});
 			});
+
+			heartbeat_flush_host(shared_from_this(), _timerservice->Tick);
 		}
 	}
 
@@ -170,6 +172,19 @@ void hub_service::heartbeat(std::shared_ptr<hub_service> this_ptr, int64_t _tick
 
 	if (!this_ptr->_close_handle->is_closed) {
 		this_ptr->_timerservice->addticktimer(3 * 1000, std::bind(&hub_service::heartbeat, this_ptr, std::placeholders::_1));
+	}
+}
+
+void hub_service::heartbeat_flush_host(std::shared_ptr<hub_service> _hub_service, int64_t tick) {
+	if (_hub_service->_config->has_key("tcp_listen")) {
+		auto is_tcp_listen = _hub_service->_config->get_value_bool("tcp_listen");
+		if (is_tcp_listen) {
+			_hub_service->_hub_redismq_service->set_data(_hub_service->name_info.name, fmt::format("{}:{}", _hub_service->tcp_address_info->host, _hub_service->tcp_address_info->port), 60);
+		}
+	}
+
+	if (!_hub_service->_close_handle->is_closed) {
+		_hub_service->_timerservice->addticktimer(40000, std::bind(&hub_service::heartbeat_flush_host, _hub_service, std::placeholders::_1));
 	}
 }
 

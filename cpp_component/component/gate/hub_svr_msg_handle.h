@@ -138,7 +138,7 @@ public:
 		if (!clients.empty()) {
 			size_t len = data.size();
 			size_t datasize = len + 4;
-			auto _data = gate::gc_get_buffer(datasize);
+			auto _data = gate::get_gc_tmp_buffer(datasize);
 
 			_data[0] = len & 0xff;
 			_data[1] = len >> 8 & 0xff;
@@ -154,7 +154,7 @@ public:
 		if (!crypt_clients.empty()) {
 			size_t len = data.size();
 			size_t datasize = len + 4;
-			auto _data = gate::gc_get_buffer(datasize);
+			auto _data = gate::get_gc_tmp_buffer(datasize);
 
 			_data[0] = len & 0xff;
 			_data[1] = len >> 8 & 0xff;
@@ -197,7 +197,7 @@ public:
 		if (!chs.empty()) {
 			size_t len = data.size();
 			size_t datasize = len + 4;
-			auto _data = gate::gc_get_buffer(datasize);
+			auto _data = gate::get_gc_tmp_buffer(datasize);
 
 			_data[0] = len & 0xff;
 			_data[1] = len >> 8 & 0xff;
@@ -213,7 +213,7 @@ public:
 		if (!crypt_chs.empty()) {
 			size_t len = data.size();
 			size_t datasize = len + 4;
-			auto _data = gate::gc_get_buffer(datasize);
+			auto _data = gate::get_gc_tmp_buffer(datasize);
 
 			_data[0] = len & 0xff;
 			_data[1] = len >> 8 & 0xff;

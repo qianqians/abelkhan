@@ -31,6 +31,8 @@ private:
 
 public:
 	hubproxy(std::string& hub_name, std::string& hub_type, std::shared_ptr<abelkhan::Ichannel> ch) : _gate_call_hub_caller(ch, service::_modulemng) {
+		_tick_time = 0;
+
 		_hub_name = hub_name;
 		_hub_type = hub_type;
 		_ch = ch;
@@ -105,11 +107,8 @@ public:
 	}
 
 	bool get_hub_list(std::string hub_type, abelkhan::hub_info& _info) {
-		auto result = false;
-
 		std::vector<abelkhan::hub_info> hub_list;
-		uint32_t tick_time_tmp = INT32_MAX;
-		for (auto it : hub_name_proxy) {
+		for (auto& it : hub_name_proxy) {
 			if (it.second->_hub_type != hub_type) {
 				continue;
 			}
@@ -117,28 +116,24 @@ public:
 				continue;
 			}
 			
-			if (it.second->_tick_time < tick_time_tmp) {
-				tick_time_tmp = it.second->_tick_time;
+			_info.hub_name = it.second->_hub_name;
+			_info.hub_type = it.second->_hub_type;
 
-				_info.hub_name = it.second->_hub_name;
-				_info.hub_type = it.second->_hub_type;
-
-				hub_list.push_back(_info);
-
-				result = true;
-			}
+			hub_list.push_back(_info);
 		}
 
 		if (hub_list.size() > 0) {
 			auto index = rand() % hub_list.size();
 			_info = hub_list[index];
+
+			return true;
 		}
 
-		return result;
+		return false;
 	}
 
 	void for_each_hub(std::function<void(std::string hub_name, hubproxy* proxy)> fn){
-		for (auto it : hub_name_proxy) {
+		for (auto& it : hub_name_proxy) {
 			fn(it.first, it.second);
 		}
 	}

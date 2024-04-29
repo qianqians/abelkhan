@@ -170,15 +170,21 @@ public:
 
 	void recv(std::pair<std::string, msgpack11::MsgPack> data) {
 		std::lock_guard<std::mutex> l(_mu_ch_map);
-		auto it = _ch_map.find(data.first);
-		if (it != _ch_map.end()) {
-			it->second->recv(data.second);
-		}
-		else {
-			auto ch = std::make_shared<redismqchannel>(data.first, shared_from_this());
-			ch->recv(data.second);
 
-			_ch_map.insert(std::make_pair(data.first, ch));
+		try {
+			auto it = _ch_map.find(data.first);
+			if (it != _ch_map.end()) {
+				it->second->recv(data.second);
+			}
+			else {
+				auto ch = std::make_shared<redismqchannel>(data.first, shared_from_this());
+				ch->recv(data.second);
+
+				_ch_map.insert(std::make_pair(data.first, ch));
+			}
+		}
+		catch (std::exception e) {
+			spdlog::error("recv error :{0}!", e.what());
 		}
 	}
 
