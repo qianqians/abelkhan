@@ -8,47 +8,23 @@ namespace Service
 {
     public class Mongodbproxy
 	{
-        private readonly Func<MongoClient> createMongocLient;
-        private readonly ConcurrentQueue<MongoClient> client_pool = new();
+        private readonly MongoClient _mongoclient;
 
-		public Mongodbproxy(String ip, short port)
+		public Mongodbproxy(string ip, short port)
 		{
-            createMongocLient = ()=>
-            {
-                var setting = new MongoClientSettings();
-                setting.Server = new MongoServerAddress(ip, port);
-                return new MongoClient(setting);
-            };
+            var setting = new MongoClientSettings();
+            setting.Server = new MongoServerAddress(ip, port);
+            _mongoclient = new MongoClient(setting);
         }
 
-        public Mongodbproxy(String url)
+        public Mongodbproxy(string url)
         {
-            createMongocLient = () =>
-            {
-                var mongo_url = new MongoUrl(url);
-                return new MongoClient(mongo_url);
-            };
-        }
-
-        private MongoClient getMongoCLient()
-        {
-            MongoClient tmp;
-            if (client_pool.TryDequeue(out tmp))
-            {
-                return tmp;
-            }
-
-            return createMongocLient();
-        }
-
-        private void releaseMongoClient(MongoClient client)
-        {
-            client_pool.Enqueue(client);
+            var mongo_url = new MongoUrl(url);
+            _mongoclient = new MongoClient(mongo_url);
         }
 
         public void create_index(string db, string collection, string key, bool is_unique)
         {
-            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
@@ -64,15 +40,10 @@ namespace Service
             {
                 Log.Log.err("create_index faild, {0}", e.Message);
             }
-            finally
-            {
-                releaseMongoClient(_mongoclient);
-            }
         }
 
         public async void check_int_guid(string db, string collection, long _guid)
         {
-            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
@@ -92,15 +63,10 @@ namespace Service
             {
                 Log.Log.err("check_int_guid db: {0}, collection: {1}, inside_guid: {2}, faild: {3}", db, collection, _guid, e);
             }
-            finally
-            {
-                releaseMongoClient(_mongoclient);
-            }
         }
 
         public async Task<bool> save(string db, string collection, byte[] bson_data) 
 		{
-            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
@@ -114,17 +80,12 @@ namespace Service
                 Log.Log.err("save data faild, {0}", e.Message);
                 return false;
             }
-            finally
-            {
-                releaseMongoClient(_mongoclient);
-            }
 
             return true;
 		}
 
         public async Task<bool> update(string db, string collection, byte[] bson_query, byte[] bson_update, bool upsert)
         {
-            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
@@ -144,17 +105,12 @@ namespace Service
                 Log.Log.err("update data faild, {0}", e.Message);
                 return false;
             }
-            finally
-            {
-                releaseMongoClient(_mongoclient);
-            }
 
             return true;
 		}
 
         public async Task<MongoDB.Bson.BsonDocument> find_and_modify(string db, string collection, byte[] bson_query, byte[] bson_update, bool _new, bool _upsert)
         {
-            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection) as MongoDB.Driver.IMongoCollection<MongoDB.Bson.BsonDocument>;
 
@@ -180,16 +136,12 @@ namespace Service
             {
                 Log.Log.err("find_and_modify data faild, {0}", e.Message);
             }
-            finally
-            {
-                releaseMongoClient(_mongoclient);
-            }
+
             return null;
         }
 
         public async Task<IAsyncCursor<MongoDB.Bson.BsonDocument>> find(string db, string collection, byte[] bson_query, int skip, int limit, string sort, bool _Ascending)
         {
-            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
@@ -223,10 +175,6 @@ namespace Service
             {
                 Log.Log.err("find faild, {0}", e.Message);
             }
-            finally
-            {
-                releaseMongoClient(_mongoclient);
-            }
 
             return null;
 		}
@@ -235,7 +183,6 @@ namespace Service
         {
             long c = 0;
 
-            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
@@ -249,17 +196,12 @@ namespace Service
                 Log.Log.err("count faild, {0}", e.Message);
                 return 0;
             }
-            finally
-            {
-                releaseMongoClient(_mongoclient);
-            }
 
             return (int)c;
         }
 
 		public async Task<bool> remove(string db, string collection, byte[] bson_query)
         {
-            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
@@ -273,17 +215,12 @@ namespace Service
                 Log.Log.err("remove faild, {0}", e.Message);
                 return false;
             }
-            finally
-            {
-                releaseMongoClient(_mongoclient);
-            }
 
             return true;
 		}
 
         public async Task<long> get_guid(string db, string collection)
         {
-            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
@@ -300,10 +237,6 @@ namespace Service
             {
                 Log.Log.err("get_guid data db: {0}, collection: {1}, guid_key: {2} faild, {3}", db, collection, "inside_guid", e);
                 return -1;
-            }
-            finally
-            {
-                releaseMongoClient(_mongoclient);
             }
         }
     }
