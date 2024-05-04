@@ -86,7 +86,7 @@ public:
 	
 			ctx->use_certificate_chain_file(certificate_chain_file);
 			ctx->use_private_key_file(private_key_file, asio::ssl::context::pem);
-			ctx->use_tmp_dh_file(tmp_dh_file); // openssl dhparam -out dhparam.pem n >= 4096
+			ctx->use_tmp_dh_file(tmp_dh_file); // openssl dhparam -out dhparam.pem n >= 8192
 		}
 		catch (std::exception& e) {
 			std::cout << "Exception: " << e.what() << std::endl;
