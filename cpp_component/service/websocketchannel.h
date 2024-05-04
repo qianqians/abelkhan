@@ -89,22 +89,20 @@ public:
 
 	void send(const char* data, size_t len)
 	{
-		if (is_close) {
-			return;
-		}
-
-		try {
-			std::lock_guard<std::mutex> lock(_mutex);
-			if (is_ssl) {
-				asio_tls_server->send(hdl, data, len, websocketpp::frame::opcode::binary);
+		if (!is_close) {
+			try {
+				std::lock_guard<std::mutex> lock(_mutex);
+				if (is_ssl) {
+					asio_tls_server->send(hdl, data, len, websocketpp::frame::opcode::binary);
+				}
+				else {
+					asio_server->send(hdl, data, len, websocketpp::frame::opcode::binary);
+				}
 			}
-			else {
-				asio_server->send(hdl, data, len, websocketpp::frame::opcode::binary);
+			catch (std::exception e) {
+				spdlog::error("webchannel push error:{0}", e.what());
+				is_close = true;
 			}
-		}
-		catch (std::exception e) {
-			spdlog::error("webchannel push error:{0}", e.what());
-			is_close = true;
 		}
 	}
 	
