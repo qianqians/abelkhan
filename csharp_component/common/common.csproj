@@ -8,8 +8,10 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" Version="2.2.8" />
     <PackageReference Include="ENet.Managed" Version="5.0.4.18-alpha" />
     <PackageReference Include="Fleck" Version="1.2.0" />
+    <PackageReference Include="InfluxData.Net" Version="8.0.1" />
     <PackageReference Include="MongoDB.Driver" Version="2.19.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="prometheus-net" Version="8.2.1" />
     <PackageReference Include="StackExchange.Redis" Version="2.6.104" />
   </ItemGroup>
 
