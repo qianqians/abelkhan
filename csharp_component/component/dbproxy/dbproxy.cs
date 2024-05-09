@@ -20,7 +20,7 @@ namespace DBProxy
 
             _root_config = new Abelkhan.Config(cfg_file);
             _center_config = _root_config.get_value_dict("center");
-            var _config = _root_config.get_value_dict(cfg_name);
+            _config = _root_config.get_value_dict(cfg_name);
 
             name = $"{cfg_name}_{Guid.NewGuid().ToString("N")}";
 
@@ -221,6 +221,12 @@ namespace DBProxy
             var _hub_msg_handle = new hub_msg_handle(_hubmanager);
             var _center_msg_handle = new center_msg_handle(_closeHandle, _centerproxy, _hubmanager);
 
+            if (_config.has_key("prometheus_port"))
+            {
+                var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
+                _prometheus.Start();
+            }
+
             while (!_closeHandle.is_close())
             {
                 var tick = (uint)await poll();
@@ -261,6 +267,7 @@ namespace DBProxy
 
         public readonly Abelkhan.Config _root_config;
         public readonly Abelkhan.Config _center_config;
+        public readonly Abelkhan.Config _config;
 
         private readonly List<Abelkhan.Ichannel> add_chs;
         private readonly List<Abelkhan.Ichannel> remove_chs;

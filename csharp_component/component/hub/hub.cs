@@ -454,6 +454,12 @@ namespace Hub
 
         private async Task _run()
         {
+            if (_config.has_key("prometheus_port"))
+            {
+                var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
+                _prometheus.Start();
+            }
+
             while (!_closeHandle.is_close)
             {
                 var ticktime = await poll();
