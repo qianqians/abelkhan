@@ -9,7 +9,6 @@
 
 #include <omp.h>
 
-#include <vector>
 #include <queue>
 #include <set>
 #include <unordered_map>
@@ -38,7 +37,7 @@ public:
 	std::string _cuuid;
 
 	std::mutex _conn_hubproxys_mutex;
-	std::vector<hubproxy*> conn_hubproxys;
+	std::set<hubproxy*> conn_hubproxys;
 
 	std::shared_ptr<abelkhan::Ichannel> _ch;
 	int index = 0;
@@ -85,17 +84,12 @@ public:
 
 	void conn_hub(hubproxy* hub_proxy) {
 		std::lock_guard<std::mutex> l(_conn_hubproxys_mutex);
-		if (std::find(conn_hubproxys.begin(), conn_hubproxys.end(), hub_proxy) == conn_hubproxys.end()) {
-			conn_hubproxys.push_back(hub_proxy);
-		}
+		conn_hubproxys.insert(hub_proxy);
 	}
 
 	void unreg_hub(hubproxy* hub_proxy) {
 		std::lock_guard<std::mutex> l(_conn_hubproxys_mutex);
-		auto it = std::find(conn_hubproxys.begin(), conn_hubproxys.end(), hub_proxy);
-		if (it == conn_hubproxys.end()) {
-			conn_hubproxys.erase(it);
-		}
+		conn_hubproxys.erase(hub_proxy);
 	}
 
 	void ntf_cuuid() {
