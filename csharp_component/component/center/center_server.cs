@@ -26,7 +26,8 @@ namespace Abelkhan
         public readonly CloseHandle _closeHandle;
         public readonly Service.Timerservice _timer; 
         public readonly Abelkhan.Config _root_cfg;
-        
+        public readonly Abelkhan.Config _config;
+
         public event Action<SvrProxy> on_svr_disconnect;
 
         static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -38,7 +39,7 @@ namespace Abelkhan
         public Center(string cfg_file, string cfg_name)
         {
             _root_cfg = new Config(cfg_file);
-            var _config = _root_cfg.get_value_dict(cfg_name);
+            _config = _root_cfg.get_value_dict(cfg_name);
             var name = _config.get_value_string("name");
 
             var log_level = _config.get_value_string("log_level");
@@ -159,6 +160,12 @@ namespace Abelkhan
 
         private async Task _run()
         {
+            if (_config.has_key("prometheus_port"))
+            {
+                var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
+                _prometheus.Start();
+            }
+
             while (!_closeHandle.is_close)
             {
                 try
