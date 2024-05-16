@@ -1,18 +1,17 @@
 ﻿using Abelkhan;
 using System;
-using System.Collections;
-using System.IO;
+using System.Collections.Generic;
 
 namespace Hub
 {
 	public class client_msg_handle
 	{
 		private readonly Abelkhan.client_call_hub_module _client_call_hub_module;
-		private readonly MsgPack.Serialization.MessagePackSerializer<ArrayList> _serialization;
+		private readonly MsgPack.Serialization.MessagePackSerializer<List<MsgPack.MessagePackObject>> _serialization;
 
         public client_msg_handle()
 		{
-            _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+            _serialization = MsgPack.Serialization.MessagePackSerializer.Get<List<MsgPack.MessagePackObject>>();
 
             _client_call_hub_module = new Abelkhan.client_call_hub_module(Abelkhan.ModuleMgrHandle._modulemng);
 			_client_call_hub_module.on_connect_hub += connect_hub;
@@ -56,8 +55,8 @@ namespace Hub
 
                     var _event = _serialization.Unpack(st);
 
-                    var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
-                    var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
+                    var func = _event[0].AsString();
+                    var argvs = _event[1].AsList();
 
                     Hub._gates.current_client_uuid = _proxy._cuuid;
                     Hub._modules.process_module_mothed(func, argvs);

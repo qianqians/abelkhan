@@ -10,7 +10,7 @@ namespace Hub
     public class HubProxy
     {
         private Abelkhan.hub_call_hub_caller _hub_call_hub_caller;
-        private readonly MessagePackSerializer<ArrayList> _serializer = MessagePackSerializer.Get<ArrayList>();
+        private readonly MessagePackSerializer<List<MsgPack.MessagePackObject>> _serializer = MessagePackSerializer.Get<List<MsgPack.MessagePackObject>>();
 
         public HubProxy(string hub_name, string hub_type)
         {

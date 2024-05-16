@@ -14,7 +14,7 @@ namespace Abelkhan
     public class ChannelOnRecv
     {
         private readonly MemoryStream recv_buf = MemoryStreamPool.mstMgr.GetStream();
-        private readonly MessagePackSerializer<ArrayList> serializer = MessagePackSerializer.Get<ArrayList>();
+        private readonly MessagePackSerializer<List<MsgPack.MessagePackObject>> serializer = MessagePackSerializer.Get<List<MsgPack.MessagePackObject>>();
         private readonly Ichannel channel;
 
         public ChannelOnRecv(Ichannel ch)

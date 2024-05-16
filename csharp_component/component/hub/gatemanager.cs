@@ -46,7 +46,7 @@ namespace Hub
         private readonly Dictionary<string, DirectProxy> direct_clients;
         private readonly Dictionary<Abelkhan.Ichannel, DirectProxy> ch_direct_clients;
 
-        private readonly MessagePackSerializer<ArrayList> _serializer = MessagePackSerializer.Get<ArrayList>();
+        private readonly MessagePackSerializer<List<MsgPack.MessagePackObject>> _serializer = MessagePackSerializer.Get<List<MsgPack.MessagePackObject>>();
 
         private readonly Abelkhan.RedisMQ _gate_redismq_conn;
 

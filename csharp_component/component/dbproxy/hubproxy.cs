@@ -2,6 +2,7 @@
 using MsgPack.Serialization;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 namespace DBProxy
@@ -11,8 +12,6 @@ namespace DBProxy
 		public readonly Abelkhan.Ichannel _ch;
 		public HubProxy(Abelkhan.Ichannel ch)
 		{
-			_serializer = MessagePackSerializer.Get<ArrayList>();
-
 			_ch = ch;
 			_caller = new Abelkhan.dbproxy_call_hub_caller(ch, Abelkhan.ModuleMgrHandle._modulemng);
 		}
@@ -33,7 +32,6 @@ namespace DBProxy
 		}
 
         private readonly Abelkhan.dbproxy_call_hub_caller _caller;
-		private readonly MessagePackSerializer<ArrayList> _serializer;
 	}
 }
 

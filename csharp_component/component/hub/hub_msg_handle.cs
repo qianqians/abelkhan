@@ -1,7 +1,5 @@
 ﻿using Abelkhan;
-using System;
-using System.Collections;
-using System.IO;
+using System.Collections.Generic;
 
 namespace Hub
 {
@@ -10,7 +8,7 @@ namespace Hub
         private readonly HubManager _hubmanager;
         private readonly GateManager _gatemanager;
         private readonly Abelkhan.hub_call_hub_module _hub_call_hub_module;
-        private readonly MsgPack.Serialization.MessagePackSerializer<ArrayList> _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+        private readonly MsgPack.Serialization.MessagePackSerializer<List<MsgPack.MessagePackObject>> _serialization = MsgPack.Serialization.MessagePackSerializer.Get<List<MsgPack.MessagePackObject>>();
 
         public hub_msg_handle(HubManager _hubmanager_, GateManager _gatemanager_)
         {
@@ -64,8 +62,8 @@ namespace Hub
 
                 var _event = _serialization.Unpack(st);
 
-                var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
-                var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
+                var func = _event[0].AsString();
+                var argvs = _event[1].AsList();
 
                 if (_hubmanager.get_hub(_hub_call_hub_module.current_ch.Value, out HubProxy _proxy))
                 {
