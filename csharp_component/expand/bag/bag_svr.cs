@@ -16,6 +16,10 @@ namespace Abelkhan
         public Int32 limit_amount;
         public Int32 amount;
         public static MsgPack.MessagePackObjectDictionary item_def_to_protcol(item_def _struct){
+        if (_struct == null) {
+            return null;
+        }
+
             var _protocol = new MsgPack.MessagePackObjectDictionary();
             _protocol.Add("uuid", _struct.uuid);
             _protocol.Add("desc_id", _struct.desc_id);
@@ -24,6 +28,10 @@ namespace Abelkhan
             return _protocol;
         }
         public static item_def protcol_to_item_def(MsgPack.MessagePackObjectDictionary _protocol){
+        if (_protocol == null) {
+            return null;
+        }
+
             var _struct18820fa0_02d9_3ef6_8c40_b67521bb4df7 = new item_def();
             foreach (var i in _protocol){
                 if (((MsgPack.MessagePackObject)i.Key).AsString() == "uuid"){
@@ -48,6 +56,10 @@ namespace Abelkhan
         public Int32 capacity;
         public List<item_def> items;
         public static MsgPack.MessagePackObjectDictionary bag_def_to_protcol(bag_def _struct){
+        if (_struct == null) {
+            return null;
+        }
+
             var _protocol = new MsgPack.MessagePackObjectDictionary();
             _protocol.Add("capacity", _struct.capacity);
             if (_struct.items != null) {
@@ -60,13 +72,17 @@ namespace Abelkhan
             return _protocol;
         }
         public static bag_def protcol_to_bag_def(MsgPack.MessagePackObjectDictionary _protocol){
+        if (_protocol == null) {
+            return null;
+        }
+
             var _struct36247089_d39f_3082_9189_f3b10b7bd024 = new bag_def();
             foreach (var i in _protocol){
                 if (((MsgPack.MessagePackObject)i.Key).AsString() == "capacity"){
                     _struct36247089_d39f_3082_9189_f3b10b7bd024.capacity = ((MsgPack.MessagePackObject)i.Value).AsInt32();
                 }
                 else if (((MsgPack.MessagePackObject)i.Key).AsString() == "items"){
-                    _struct36247089_d39f_3082_9189_f3b10b7bd024.items = new();
+                    _struct36247089_d39f_3082_9189_f3b10b7bd024.items = new List<item_def>();
                     var _protocol_array = ((MsgPack.MessagePackObject)i.Value).AsList();
                     foreach (var v_ in _protocol_array){
                         _struct36247089_d39f_3082_9189_f3b10b7bd024.items.Add(item_def.protcol_to_item_def(((MsgPack.MessagePackObject)v_).AsDictionary()));
