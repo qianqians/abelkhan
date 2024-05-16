@@ -243,7 +243,7 @@ namespace DBProxy
 
         }
 
-        private object _run_mu = new object();
+        private readonly object _run_mu = new();
         public void run()
         {
             if (!Monitor.TryEnter(_run_mu))
