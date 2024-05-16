@@ -47,6 +47,19 @@ namespace Service
             return Tick;
         }
 
+        public static long WeekEndTimetmp()
+        {
+            DateTime now = DateTime.Now;
+            int dayOfWeek = Convert.ToInt32(now.DayOfWeek.ToString("d"));
+            dayOfWeek = dayOfWeek <= 0 ? 7 : dayOfWeek;
+            DateTime endOfWeek = now.AddDays(7 - dayOfWeek).Date;
+            endOfWeek.AddHours(23 - endOfWeek.Hour);
+            endOfWeek.AddMinutes(59 - endOfWeek.Minute);
+            endOfWeek.AddSeconds(59 - endOfWeek.Second);
+
+            return (long)(endOfWeek - new DateTime(1970, 1, 1)).TotalMilliseconds;
+        }
+
         private void addtickhandleimpl()
         {
             if (addtickHandle.Count > 0)

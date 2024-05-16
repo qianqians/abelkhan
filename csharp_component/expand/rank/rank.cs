@@ -224,6 +224,12 @@ namespace Rank
             return task.Task;
         }
 
+        public static Rank get_rank(string name)
+        {
+            rankDict.TryGetValue(name, out var rank);
+            return rank;
+        }
+
         public static void save_rank()
         {
             try
