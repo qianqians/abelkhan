@@ -30,14 +30,14 @@ namespace Hub
 			var rsp = (Abelkhan.client_call_hub_heartbeats_rsp)_client_call_hub_module.rsp.Value;
 			if (Hub._gates.get_directproxy(_client_call_hub_module.current_ch.Value, out DirectProxy _proxy))
             {
-				if (_proxy._theory_timetmp == 0)
+				if (_proxy._theory_timetmp != 0)
                 {
-					_proxy._theory_timetmp = Service.Timerservice.Tick;
+                    _proxy._theory_timetmp += 5000;
                 }
                 else
                 {
-					_proxy._theory_timetmp += 5000;
-				}
+                    _proxy._theory_timetmp = Service.Timerservice.Tick;
+                }
 				_proxy._timetmp = Service.Timerservice.Tick;
 			}
 			rsp.rsp((ulong)Service.Timerservice.Tick);
