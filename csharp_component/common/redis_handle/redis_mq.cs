@@ -76,7 +76,6 @@ namespace Abelkhan
 
             wait_send_data = new();
             send_data = new();
-
             th_recv = Task.Factory.StartNew(th_recv_poll, TaskCreationOptions.LongRunning);
         }
 
