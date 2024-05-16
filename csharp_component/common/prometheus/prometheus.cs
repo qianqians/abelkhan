@@ -6,9 +6,8 @@ namespace Service
 {
     public class PrometheusMetric
     {
-        private MetricServer serverPrometheusMetric;
-
-        private Dictionary<string, Counter> metricCounters;
+        private readonly MetricServer serverPrometheusMetric;
+        private readonly Dictionary<string, Counter> metricCounters = new();
 
         public PrometheusMetric(short port)
         {
