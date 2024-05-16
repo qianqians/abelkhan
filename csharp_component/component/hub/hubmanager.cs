@@ -96,7 +96,7 @@ namespace Hub
         {
         }
 
-        public void call_hub(string hub_name, string func_name, ArrayList _argvs)
+        public void call_hub(string hub_name, string func_name, List<MsgPack.MessagePackObject> _argvs)
         {
             if (hubproxys.TryGetValue(hub_name, out HubProxy _proxy))
             {

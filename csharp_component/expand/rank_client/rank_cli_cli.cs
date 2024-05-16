@@ -259,7 +259,7 @@ namespace Abelkhan
         public rank_cli_service_get_rank_guid_cb get_rank_guid(string rank_name, Int64 guid){
             var uuid_aae4e0b8_0b60_55bf_a8e6_2afd98164325 = (UInt64)Interlocked.Increment(ref uuid_cdcf8098_c212_361e_95df_8b4d8ec6340e);
 
-            var _argv_90f752ce_ee17_38de_b679_4a35e21e4129 = new ArrayList();
+            var _argv_90f752ce_ee17_38de_b679_4a35e21e4129 = new List<MsgPack.MessagePackObject>();
             _argv_90f752ce_ee17_38de_b679_4a35e21e4129.Add(uuid_aae4e0b8_0b60_55bf_a8e6_2afd98164325);
             _argv_90f752ce_ee17_38de_b679_4a35e21e4129.Add(rank_name);
             _argv_90f752ce_ee17_38de_b679_4a35e21e4129.Add(guid);
@@ -274,7 +274,7 @@ namespace Abelkhan
         public rank_cli_service_get_rank_range_cb get_rank_range(string rank_name, Int32 start, Int32 end){
             var uuid_502cc321_083d_54f3_be2e_94e03d09d51d = (UInt64)Interlocked.Increment(ref uuid_cdcf8098_c212_361e_95df_8b4d8ec6340e);
 
-            var _argv_17367d36_e3ba_3b3f_87b8_4f982846a886 = new ArrayList();
+            var _argv_17367d36_e3ba_3b3f_87b8_4f982846a886 = new List<MsgPack.MessagePackObject>();
             _argv_17367d36_e3ba_3b3f_87b8_4f982846a886.Add(uuid_502cc321_083d_54f3_be2e_94e03d09d51d);
             _argv_17367d36_e3ba_3b3f_87b8_4f982846a886.Add(rank_name);
             _argv_17367d36_e3ba_3b3f_87b8_4f982846a886.Add(start);

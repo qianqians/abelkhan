@@ -152,7 +152,7 @@ namespace Abelkhan
         public avatar_get_remote_avatar_cb get_remote_avatar(Int64 guid){
             var uuid_ebef94cb_599c_554a_982d_9e11bd6ce8c3 = (UInt64)Interlocked.Increment(ref uuid_3f335b73_f48e_3b8a_a9b6_e3c5a534be4f);
 
-            var _argv_f7981503_551c_35e6_8df5_ca1daba221e7 = new ArrayList();
+            var _argv_f7981503_551c_35e6_8df5_ca1daba221e7 = new List<MsgPack.MessagePackObject>();
             _argv_f7981503_551c_35e6_8df5_ca1daba221e7.Add(uuid_ebef94cb_599c_554a_982d_9e11bd6ce8c3);
             _argv_f7981503_551c_35e6_8df5_ca1daba221e7.Add(guid);
             Hub.Hub._hubs.call_hub(hub_name_3f335b73_f48e_3b8a_a9b6_e3c5a534be4f, "avatar_get_remote_avatar", _argv_f7981503_551c_35e6_8df5_ca1daba221e7);
@@ -177,14 +177,14 @@ namespace Abelkhan
         }
 
         public void rsp(byte[] doc_6217a4bb_e21e_3fa1_a1c6_ad1267d01e4d){
-            var _argv_f7981503_551c_35e6_8df5_ca1daba221e7 = new ArrayList();
+            var _argv_f7981503_551c_35e6_8df5_ca1daba221e7 = new List<MsgPack.MessagePackObject>();
             _argv_f7981503_551c_35e6_8df5_ca1daba221e7.Add(uuid_3c56f389_4436_3650_a479_d019fab8865d);
             _argv_f7981503_551c_35e6_8df5_ca1daba221e7.Add(doc_6217a4bb_e21e_3fa1_a1c6_ad1267d01e4d);
             Hub.Hub._hubs.call_hub(_hub_name_f7981503_551c_35e6_8df5_ca1daba221e7, "avatar_rsp_cb_get_remote_avatar_rsp", _argv_f7981503_551c_35e6_8df5_ca1daba221e7);
         }
 
         public void err(){
-            var _argv_f7981503_551c_35e6_8df5_ca1daba221e7 = new ArrayList();
+            var _argv_f7981503_551c_35e6_8df5_ca1daba221e7 = new List<MsgPack.MessagePackObject>();
             _argv_f7981503_551c_35e6_8df5_ca1daba221e7.Add(uuid_3c56f389_4436_3650_a479_d019fab8865d);
             Hub.Hub._hubs.call_hub(_hub_name_f7981503_551c_35e6_8df5_ca1daba221e7, "avatar_rsp_cb_get_remote_avatar_err", _argv_f7981503_551c_35e6_8df5_ca1daba221e7);
         }

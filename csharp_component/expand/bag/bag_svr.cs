@@ -65,9 +65,9 @@ namespace Abelkhan
             if (_struct.items != null) {
                 var _array_items = new List<MsgPack.MessagePackObject>();
                 foreach(var v_ in _struct.items){
-                    _array_items.Add( new MsgPack.MessagePackObject(item_def.item_def_to_protcol(v_)));
+                    _array_items.Add( MsgPack.MessagePackObject.FromObject(item_def.item_def_to_protcol(v_)));
                 }
-                _protocol.Add("items", new MsgPack.MessagePackObject(_array_items));
+                _protocol.Add("items", MsgPack.MessagePackObject.FromObject(_array_items));
             }
             return _protocol;
         }
@@ -104,14 +104,14 @@ namespace Abelkhan
         }
 
         public void rsp(bag_def _bag_0989ed80_deae_3d1b_b867_21e2d70ab4b3){
-            var _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b = new ArrayList();
+            var _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b = new List<MsgPack.MessagePackObject>();
             _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b.Add(uuid_82fde665_e33a_3f78_a862_086dfa5e8891);
-            _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b.Add(bag_def.bag_def_to_protcol(_bag_0989ed80_deae_3d1b_b867_21e2d70ab4b3));
+            _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b.Add(MsgPack.MessagePackObject.FromObject(bag_def.bag_def_to_protcol(_bag_0989ed80_deae_3d1b_b867_21e2d70ab4b3)));
             Hub.Hub._gates.call_client(_client_uuid_d3863e11_ea63_38a7_94fc_1673af9ced0b, "bag_service_rsp_cb_get_bag_rsp", _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b);
         }
 
         public void err(){
-            var _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b = new ArrayList();
+            var _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b = new List<MsgPack.MessagePackObject>();
             _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b.Add(uuid_82fde665_e33a_3f78_a862_086dfa5e8891);
             Hub.Hub._gates.call_client(_client_uuid_d3863e11_ea63_38a7_94fc_1673af9ced0b, "bag_service_rsp_cb_get_bag_err", _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b);
         }
@@ -128,13 +128,13 @@ namespace Abelkhan
         }
 
         public void rsp(){
-            var _argv_8e931b2d_2ecb_30da_928a_750ecb587c14 = new ArrayList();
+            var _argv_8e931b2d_2ecb_30da_928a_750ecb587c14 = new List<MsgPack.MessagePackObject>();
             _argv_8e931b2d_2ecb_30da_928a_750ecb587c14.Add(uuid_6a895a27_7c90_3d7f_b9f5_d47cbcbd1584);
             Hub.Hub._gates.call_client(_client_uuid_8e931b2d_2ecb_30da_928a_750ecb587c14, "bag_service_rsp_cb_use_item_rsp", _argv_8e931b2d_2ecb_30da_928a_750ecb587c14);
         }
 
         public void err(){
-            var _argv_8e931b2d_2ecb_30da_928a_750ecb587c14 = new ArrayList();
+            var _argv_8e931b2d_2ecb_30da_928a_750ecb587c14 = new List<MsgPack.MessagePackObject>();
             _argv_8e931b2d_2ecb_30da_928a_750ecb587c14.Add(uuid_6a895a27_7c90_3d7f_b9f5_d47cbcbd1584);
             Hub.Hub._gates.call_client(_client_uuid_8e931b2d_2ecb_30da_928a_750ecb587c14, "bag_service_rsp_cb_use_item_err", _argv_8e931b2d_2ecb_30da_928a_750ecb587c14);
         }

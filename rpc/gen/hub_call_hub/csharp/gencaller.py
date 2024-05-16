@@ -62,7 +62,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                     code += ", "
             code += "){\n"
             _argv_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
-            code += "            var _argv_" + _argv_uuid + " = new ArrayList();\n"
+            code += "            var _argv_" + _argv_uuid + " = new List<MsgPack.MessagePackObject>();\n"
             for _type, _name, _parameter in i[2]:
                 type_ = tools.check_type(_type, dependent_struct, dependent_enum)
                 if type_ in tools.OriginalTypeList:
@@ -70,10 +70,10 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                 elif type_ == tools.TypeType.Enum:
                     code += "            _argv_" + _argv_uuid + ".Add((int)" + _name + ");\n"
                 elif type_ == tools.TypeType.Custom:
-                    code += "            _argv_" + _argv_uuid + ".Add(" + _type + "." + _type + "_to_protcol(" + _name + "));\n"
+                    code += "            _argv_" + _argv_uuid + ".Add(MsgPack.MessagePackObject.FromObject(" + _type + "." + _type + "_to_protcol(" + _name + ")));\n"
                 elif type_ == tools.TypeType.Array:
                     _array_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    code += "            var _array_" + _array_uuid + " = new ArrayList();\n"
+                    code += "            var _array_" + _array_uuid + " = new List<MsgPack.MessagePackObject>();\n"
                     _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_X500, _name)).split('-'))
                     code += "            foreach(var v_" + _v_uuid + " in " + _name + "){\n"
                     array_type = _type[:-2]
@@ -83,11 +83,11 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                     elif array_type_ == tools.TypeType.Enum:
                         code += "                _array_" + _array_uuid + ".Add((int)v_" + _v_uuid + ");\n"
                     elif array_type_ == tools.TypeType.Custom:
-                        code += "                _array_" + _array_uuid + ".Add(" + array_type + "." + array_type + "_to_protcol(v_" + _v_uuid + "));\n"
+                        code += "                _array_" + _array_uuid + ".Add(MsgPack.MessagePackObject.FromObject(" + array_type + "." + array_type + "_to_protcol(v_" + _v_uuid + ")));\n"
                     elif array_type_ == tools.TypeType.Array:
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     code += "            }\n"                                                     
-                    code += "            _argv_" + _argv_uuid + ".Add(_array_" + _array_uuid + ");\n"
+                    code += "            _argv_" + _argv_uuid + ".Add(MsgPack.MessagePackObject.FromObject(_array_" + _array_uuid + "));\n"
             code += "            Hub.Hub._hubs.call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n"
             code += "        }\n\n"
         elif i[1] == "req" and i[3] == "rsp" and i[5] == "err":
@@ -433,7 +433,7 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
             _cb_uuid_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_DNS, func_name)).split('-'))
             code += "            var uuid_" + _cb_uuid_uuid + " = (UInt64)Interlocked.Increment(ref uuid_" + _uuid + ");\n\n"
             _argv_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, func_name)).split('-'))
-            code += "            var _argv_" + _argv_uuid + " = new ArrayList();\n"
+            code += "            var _argv_" + _argv_uuid + " = new List<MsgPack.MessagePackObject>();\n"
             code += "            _argv_" + _argv_uuid + ".Add(uuid_" + _cb_uuid_uuid + ");\n"
             for _type, _name, _parameter in i[2]:
                 type_ = tools.check_type(_type, dependent_struct, dependent_enum)
@@ -442,10 +442,10 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                 elif type_ == tools.TypeType.Enum:
                     code += "            _argv_" + _argv_uuid + ".Add((int)" + _name + ");\n"
                 elif type_ == tools.TypeType.Custom:
-                    code += "            _argv_" + _argv_uuid + ".Add(" + _type + "." + _type + "_to_protcol(" + _name + "));\n"
+                    code += "            _argv_" + _argv_uuid + ".Add(MsgPack.MessagePackObject.FromObject(" + _type + "." + _type + "_to_protcol(" + _name + ")));\n"
                 elif type_ == tools.TypeType.Array:
                     _array_uuid = '_'.join(str(uuid.uuid3(uuid.NAMESPACE_DNS, _name)).split('-'))
-                    code += "            var _array_" + _array_uuid + " = new ArrayList();\n"
+                    code += "            var _array_" + _array_uuid + " = new List<MsgPack.MessagePackObject>();\n"
                     _v_uuid = '_'.join(str(uuid.uuid5(uuid.NAMESPACE_X500, _name)).split('-'))
                     code += "            foreach(var v_" + _v_uuid + " in " + _name + "){\n"
                     array_type = _type[:-2]
@@ -455,11 +455,11 @@ def gen_module_caller(module_name, funcs, dependent_struct, dependent_enum, enum
                     elif array_type_ == tools.TypeType.Enum:
                         code += "                _array_" + _array_uuid + ".Add((int)v_" + _v_uuid + ");\n"
                     elif array_type_ == tools.TypeType.Custom:
-                        code += "                _array_" + _array_uuid + ".Add(" + array_type + "." + array_type + "_to_protcol(v_" + _v_uuid + "));\n"
+                        code += "                _array_" + _array_uuid + ".Add(MsgPack.MessagePackObject.FromObject(" + array_type + "." + array_type + "_to_protcol(v_" + _v_uuid + ")));\n"
                     elif array_type_ == tools.TypeType.Array:
                         raise Exception("not support nested array:%s in func:%s" % (_type, func_name))
                     code += "            }\n"                                                     
-                    code += "            _argv_" + _argv_uuid + ".Add(_array_" + _array_uuid + ");\n"
+                    code += "            _argv_" + _argv_uuid + ".Add(MsgPack.MessagePackObject.FromObject(_array_" + _array_uuid + "));\n"
             code += "            Hub.Hub._hubs.call_hub(hub_name_" + _hub_uuid + ", \"" + module_name + "_" + func_name + "\", _argv_" + _argv_uuid + ");\n\n"
             code += "            var cb_" + func_name + "_obj = new " + module_name + "_" + func_name + "_cb(uuid_" + _cb_uuid_uuid + ", rsp_cb_" + module_name + "_handle);\n"
             code += "            lock(rsp_cb_" + module_name + "_handle.map_" + func_name + ")\n"

@@ -41,14 +41,16 @@ namespace Client
             });
         }
 
-        public void call_hub(string hub, string func, ArrayList argv)
+        public void call_hub(string hub, string func, List<MsgPack.MessagePackObject> argv)
         {
-            var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+            var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<List<MsgPack.MessagePackObject>>();
             using (MemoryStream st = MemoryStreamPool.mstMgr.GetStream())
             {
-                var _event = new ArrayList();
-                _event.Add(func);
-                _event.Add(argv);
+                var _event = new List<MsgPack.MessagePackObject>
+                {
+                    func,
+                    MsgPack.MessagePackObject.FromObject(argv)
+                };
                 _serialization.Pack(st, _event);
                 st.Position = 0;
 
@@ -92,14 +94,16 @@ namespace Client
             });
         }
 
-        public void call_hub(string func, ArrayList argv)
+        public void call_hub(string func, List<MsgPack.MessagePackObject> argv)
         {
-            var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
+            var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<List<MsgPack.MessagePackObject>>();
             using (MemoryStream st = MemoryStreamPool.mstMgr.GetStream())
             {
-                var _event = new ArrayList();
-                _event.Add(func);
-                _event.Add(argv);
+                var _event = new List<MsgPack.MessagePackObject>
+                {
+                    func,
+                    MsgPack.MessagePackObject.FromObject(argv)
+                };
                 _serialization.Pack(st, _event);
                 st.Position = 0;
 
@@ -224,7 +228,7 @@ namespace Client
             _gateproxy?.get_hub_info(hub_type, cb);
         }
 
-        public void call_hub(string hub_name, string func, ArrayList argv)
+        public void call_hub(string hub_name, string func, List<MsgPack.MessagePackObject> argv)
         {
             if (_hubproxy_set.TryGetValue(hub_name, out HubProxy _hubproxy))
             {

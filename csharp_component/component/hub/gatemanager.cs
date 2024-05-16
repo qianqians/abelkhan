@@ -324,13 +324,13 @@ namespace Hub
             }
         }
 
-        public void call_client(String uuid, String func, ArrayList _argvs_list)
+        public void call_client(String uuid, String func, List<MsgPack.MessagePackObject> _argvs_list)
 		{
             using var st = MemoryStreamPool.mstMgr.GetStream();
-            ArrayList _event = new ArrayList
+            var _event = new List<MsgPack.MessagePackObject>()
             {
                 func,
-                _argvs_list
+                MsgPack.MessagePackObject.FromObject(_argvs_list)
             };
             _serializer.Pack(st, _event);
             st.Position = 0;
@@ -385,10 +385,10 @@ namespace Hub
             }
 
             using var st = MemoryStreamPool.mstMgr.GetStream();
-            ArrayList _rpc_argv = new ArrayList
+            var _rpc_argv = new List<MsgPack.MessagePackObject>()
             {
                 func,
-                _argvs_list
+                MsgPack.MessagePackObject.FromObject(_argvs_list)
             };
             _serializer.Pack(st, _rpc_argv);
             st.Position = 0;
@@ -402,14 +402,14 @@ namespace Hub
             if (_direct_clients.Count > 0)
             {
                 using var st_event = MemoryStreamPool.mstMgr.GetStream();
-                var _direct_rpc_argv = new ArrayList
+                var _direct_rpc_argv = new List<MsgPack.MessagePackObject>()
                 {
                     _rpc_bin
                 };
-                ArrayList _event = new ArrayList
+                var _event = new List<MsgPack.MessagePackObject>()
                 {
                     "hub_call_client_call_client",
-                    _direct_rpc_argv
+                    MsgPack.MessagePackObject.FromObject(_direct_rpc_argv)
                 };
                 _serializer.Pack(st_event, _event);
                 st_event.Position = 0;
@@ -434,14 +434,14 @@ namespace Hub
             if (_direct_clients_crypt.Count > 0)
             {
                 using var st_event = MemoryStreamPool.mstMgr.GetStream();
-                var _direct_rpc_argv = new ArrayList
+                var _direct_rpc_argv = new List<MsgPack.MessagePackObject>()
                 {
                     _rpc_bin
                 };
-                ArrayList _event = new ArrayList
+                var _event = new List<MsgPack.MessagePackObject>()
                 {
                     "hub_call_client_call_client",
-                    _direct_rpc_argv
+                    MsgPack.MessagePackObject.FromObject(_direct_rpc_argv)
                 };
                 _serializer.Pack(st_event, _event);
                 st_event.Position = 0;
@@ -473,10 +473,10 @@ namespace Hub
 		public void call_global_client(String func, ArrayList _argvs_list)
 		{
             var st = MemoryStreamPool.mstMgr.GetStream();
-            ArrayList _event = new ArrayList
+            var _event = new List<MsgPack.MessagePackObject>()
             {
                 func,
-                _argvs_list
+                MsgPack.MessagePackObject.FromObject(_argvs_list)
             };
             _serializer.Pack(st, _event);
             st.Position = 0;

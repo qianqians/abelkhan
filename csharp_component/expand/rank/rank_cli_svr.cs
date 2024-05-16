@@ -20,14 +20,14 @@ namespace Abelkhan
         }
 
         public void rsp(rank_item rank_4c7a18ad_077b_37ed_8d4e_92440bd00c2b){
-            var _argv_90f752ce_ee17_38de_b679_4a35e21e4129 = new ArrayList();
+            var _argv_90f752ce_ee17_38de_b679_4a35e21e4129 = new List<MsgPack.MessagePackObject>();
             _argv_90f752ce_ee17_38de_b679_4a35e21e4129.Add(uuid_3eca1bfd_46e9_32ae_ac6c_bba1510a64e4);
-            _argv_90f752ce_ee17_38de_b679_4a35e21e4129.Add(rank_item.rank_item_to_protcol(rank_4c7a18ad_077b_37ed_8d4e_92440bd00c2b));
+            _argv_90f752ce_ee17_38de_b679_4a35e21e4129.Add(MsgPack.MessagePackObject.FromObject(rank_item.rank_item_to_protcol(rank_4c7a18ad_077b_37ed_8d4e_92440bd00c2b)));
             Hub.Hub._gates.call_client(_client_uuid_90f752ce_ee17_38de_b679_4a35e21e4129, "rank_cli_service_rsp_cb_get_rank_guid_rsp", _argv_90f752ce_ee17_38de_b679_4a35e21e4129);
         }
 
         public void err(){
-            var _argv_90f752ce_ee17_38de_b679_4a35e21e4129 = new ArrayList();
+            var _argv_90f752ce_ee17_38de_b679_4a35e21e4129 = new List<MsgPack.MessagePackObject>();
             _argv_90f752ce_ee17_38de_b679_4a35e21e4129.Add(uuid_3eca1bfd_46e9_32ae_ac6c_bba1510a64e4);
             Hub.Hub._gates.call_client(_client_uuid_90f752ce_ee17_38de_b679_4a35e21e4129, "rank_cli_service_rsp_cb_get_rank_guid_err", _argv_90f752ce_ee17_38de_b679_4a35e21e4129);
         }
@@ -44,18 +44,18 @@ namespace Abelkhan
         }
 
         public void rsp(List<rank_item> rank_list_97e71bcb_581e_338e_b072_0ef986ce8722){
-            var _argv_17367d36_e3ba_3b3f_87b8_4f982846a886 = new ArrayList();
+            var _argv_17367d36_e3ba_3b3f_87b8_4f982846a886 = new List<MsgPack.MessagePackObject>();
             _argv_17367d36_e3ba_3b3f_87b8_4f982846a886.Add(uuid_62880434_51e4_376d_ae03_494ca99f5b65);
-            var _array_97e71bcb_581e_338e_b072_0ef986ce8722 = new ArrayList();
+            var _array_97e71bcb_581e_338e_b072_0ef986ce8722 = new List<MsgPack.MessagePackObject>();
             foreach(var v_6fa951c6_19a5_56e0_806f_8685b83ba249 in rank_list_97e71bcb_581e_338e_b072_0ef986ce8722){
-                _array_97e71bcb_581e_338e_b072_0ef986ce8722.Add(rank_item.rank_item_to_protcol(v_6fa951c6_19a5_56e0_806f_8685b83ba249));
+                _array_97e71bcb_581e_338e_b072_0ef986ce8722.Add(MsgPack.MessagePackObject.FromObject(rank_item.rank_item_to_protcol(v_6fa951c6_19a5_56e0_806f_8685b83ba249)));
             }
-            _argv_17367d36_e3ba_3b3f_87b8_4f982846a886.Add(_array_97e71bcb_581e_338e_b072_0ef986ce8722);
+            _argv_17367d36_e3ba_3b3f_87b8_4f982846a886.Add(MsgPack.MessagePackObject.FromObject(_array_97e71bcb_581e_338e_b072_0ef986ce8722));
             Hub.Hub._gates.call_client(_client_uuid_17367d36_e3ba_3b3f_87b8_4f982846a886, "rank_cli_service_rsp_cb_get_rank_range_rsp", _argv_17367d36_e3ba_3b3f_87b8_4f982846a886);
         }
 
         public void err(){
-            var _argv_17367d36_e3ba_3b3f_87b8_4f982846a886 = new ArrayList();
+            var _argv_17367d36_e3ba_3b3f_87b8_4f982846a886 = new List<MsgPack.MessagePackObject>();
             _argv_17367d36_e3ba_3b3f_87b8_4f982846a886.Add(uuid_62880434_51e4_376d_ae03_494ca99f5b65);
             Hub.Hub._gates.call_client(_client_uuid_17367d36_e3ba_3b3f_87b8_4f982846a886, "rank_cli_service_rsp_cb_get_rank_range_err", _argv_17367d36_e3ba_3b3f_87b8_4f982846a886);
         }

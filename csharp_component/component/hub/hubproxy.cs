@@ -40,13 +40,13 @@ namespace Hub
             }
         }
 
-        public void caller_hub(string func_name, ArrayList argvs)
+        public void caller_hub(string func_name, List<MsgPack.MessagePackObject> argvs)
         {
             using var st = MemoryStreamPool.mstMgr.GetStream();
-            var _event = new ArrayList
+            var _event = new List<MsgPack.MessagePackObject>
             {
                 func_name,
-                argvs
+                MsgPack.MessagePackObject.FromObject(argvs)
             };
 
             _serializer.Pack(st, _event);
