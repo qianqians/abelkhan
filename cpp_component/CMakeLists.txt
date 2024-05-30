@@ -43,6 +43,12 @@ INCLUDE_DIRECTORIES(${c_ares_INCLUDE_PATH})
 set(hiredis_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//3rdparty CACHE PATH "hiredis include path")
 INCLUDE_DIRECTORIES(${hiredis_INCLUDE_PATH})
 
+set(bson_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//3rdparty/mongo-c-driver/src/libbson/src CACHE PATH "bson include path")
+INCLUDE_DIRECTORIES(${bson_INCLUDE_PATH})
+
+set(mongoc_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//3rdparty/mongo-c-driver/src/libmongoc/src CACHE PATH "mongoc include path")
+INCLUDE_DIRECTORIES(${mongoc_INCLUDE_PATH})
+
 set(hiredis-cluster_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//3rdparty//hiredis-cluster CACHE PATH "hiredis-cluster include path")
 INCLUDE_DIRECTORIES(${hiredis-cluster_INCLUDE_PATH})
 
@@ -55,5 +61,6 @@ INCLUDE_DIRECTORIES(${msgpack11_INCLUDE_PATH})
 set(concurrent_INCLUDE_PATH ${PROJECT_SOURCE_DIR}//..//tools//juggle//cpp//concurrent CACHE PATH "concurrent include path")
 INCLUDE_DIRECTORIES(${concurrent_INCLUDE_PATH})
 
+add_subdirectory(./component/dbproxy)
 add_subdirectory(./component/hub)
 add_subdirectory(./component/gate)
