@@ -1,8 +1,12 @@
 ﻿using Abelkhan;
 using MongoDB.Bson;
 using Service;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
+using ZstdSharp.Unsafe;
 
 namespace Rank
 {
@@ -11,7 +15,7 @@ namespace Rank
         internal string name;
         internal int capacity;
         internal int total_capacity;
-        internal long base_score = 0;
+        internal long base_score;
         internal SortedList<long, rank_item> rankList = new();
         internal SortedDictionary<long, long> guidRank = new ();
 
@@ -60,7 +64,7 @@ namespace Rank
                 rankList.Remove(oldScore);
             }
 
-            var score = item.score << 32 | (uint.MaxValue - Timerservice.Tick / 1000);
+            var score = item.score << 32 | (int.MaxValue - Timerservice.Tick / 1000);
             if (score < base_score)
             {
                 return -1;
@@ -70,7 +74,7 @@ namespace Rank
             item.rank = rankList.IndexOfKey(score) + 1;
             guidRank[item.guid] = score;
 
-            if (rankList.Count > total_capacity + 100) {
+            if (rankList.Count > total_capacity) {
                 var remove = new List<long>();
                 var removeGuid = new List<long>();
                 for (var i = total_capacity; i < rankList.Count; ++i)
@@ -82,7 +86,7 @@ namespace Rank
                 {
                     rankList.Remove(key);
                 }
-                foreach(var guid in removeGuid)
+                foreach (var guid in removeGuid)
                 {
                     guidRank.Remove(guid);
                 }
@@ -95,9 +99,10 @@ namespace Rank
 
         public void ResetRank()
         {
-            base_score = 0;
             rankList.Clear();
             guidRank.Clear();
+
+            base_score = 0;
         }
 
         public rank_item GetRankGuid(long guid)
@@ -143,12 +148,6 @@ namespace Rank
         }
     }
 
-    public class RankInitInfo
-    {
-        public string name;
-        public int capacity;
-    }
-
     public static class RankModule
     {
         private static string dbName;
@@ -159,7 +158,7 @@ namespace Rank
         private static rank_cli_service_module rank_Cli_Service_Module = new();
         private static rank_svr_service_module rank_svr_Service_Module = new();
 
-        public static Task Init(string _dbName, string _dbCollection, List<RankInitInfo> rankInitInfos)
+        public static Task Init(string _dbName, string _dbCollection, List<string> rankNames)
         {
             var task = new TaskCompletionSource();
 
@@ -173,12 +172,7 @@ namespace Rank
             dbCollection = _dbCollection;
 
             var query = new DBQueryHelper();
-            var names = new BsonArray();
-            foreach (var info in rankInitInfos)
-            {
-                names.Add(info.name);
-            }
-            query._in("name", names);
+            query._in("name", new BsonArray(rankNames));
             Hub.Hub.get_random_dbproxyproxy().getCollection(dbName, dbCollection).getObjectInfo(query.query(), (array) =>
             {
                 foreach(var rankDoc in array)
@@ -204,12 +198,12 @@ namespace Rank
                     rankDict.Add(rank.name, rank);
                 }
 
-                foreach(var info in rankInitInfos)
+                foreach(var rName in rankNames)
                 {
-                    if (!rankDict.ContainsKey(info.name))
+                    if (!rankDict.ContainsKey(rName))
                     {
-                        var rank = new Rank(info.capacity);
-                        rank.name = info.name;
+                        var rank = new Rank(100);
+                        rank.name = rName;
                         rankDict.Add(rank.name, rank);
                     }
                 }
@@ -274,14 +268,21 @@ namespace Rank
         {
             var rsp = rank_svr_Service_Module.rsp as rank_svr_service_update_rank_item_rsp;
 
-            if (rankDict.TryGetValue(rankNmae, out var rankIns))
+            try
             {
-                var rank = rankIns.UpdateRankItem(item);
-                rsp.rsp(rank);
+                if (rankDict.TryGetValue(rankNmae, out var rankIns))
+                {
+                    var rank = rankIns.UpdateRankItem(item);
+                    rsp.rsp(rank);
+                }
+                else
+                {
+                    rsp.err();
+                }
             }
-            else
+            catch(System.Exception ex)
             {
-                rsp.err();
+                Log.Log.err("on_update_rank_item:{0}", ex);
             }
         }
 
@@ -289,14 +290,21 @@ namespace Rank
         {
             var rsp = rank_svr_Service_Module.rsp as rank_svr_service_get_rank_guid_rsp;
 
-            if (rankDict.TryGetValue(rankNmae, out var rankIns))
+            try
             {
-                var rank = rankIns.GetRankGuid(guid);
-                rsp.rsp(rank.rank);
+                if (rankDict.TryGetValue(rankNmae, out var rankIns))
+                {
+                    var rank = rankIns.GetRankGuid(guid);
+                    rsp.rsp(rank.rank);
+                }
+                else
+                {
+                    rsp.err();
+                }
             }
-            else
+            catch (System.Exception ex)
             {
-                rsp.err();
+                Log.Log.err("on_get_rank_guid:{0}", ex);
             }
         }
 
@@ -304,14 +312,21 @@ namespace Rank
         {
             var rsp = rank_Cli_Service_Module.rsp as rank_cli_service_get_rank_range_rsp;
 
-            if (rankDict.TryGetValue(rankNmae, out var rankIns))
+            try
             {
-                var rank = rankIns.GetRankRange(start, end);
-                rsp.rsp(rank);
+                if (rankDict.TryGetValue(rankNmae, out var rankIns))
+                {
+                    var rank = rankIns.GetRankRange(start, end);
+                    rsp.rsp(rank);
+                }
+                else
+                {
+                    rsp.err();
+                }
             }
-            else
+            catch (System.Exception ex)
             {
-                rsp.err();
+                Log.Log.err("on_get_rank_range:{0}", ex);
             }
         }
 
@@ -319,14 +334,21 @@ namespace Rank
         {
             var rsp = rank_Cli_Service_Module.rsp as rank_cli_service_get_rank_guid_rsp;
 
-            if (rankDict.TryGetValue(rankNmae, out var rankIns))
+            try
             {
-                var rank = rankIns.GetRankGuid(guid);
-                rsp.rsp(rank);
+                if (rankDict.TryGetValue(rankNmae, out var rankIns))
+                {
+                    var rank = rankIns.GetRankGuid(guid);
+                    rsp.rsp(rank);
+                }
+                else
+                {
+                    rsp.err();
+                }
             }
-            else
+            catch (System.Exception ex)
             {
-                rsp.err();
+                Log.Log.err("on_get_rank_guid:{0}", ex);
             }
         }
     }
