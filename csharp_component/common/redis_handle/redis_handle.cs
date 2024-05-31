@@ -14,9 +14,9 @@ namespace Abelkhan
         private RedisConnectionHelper _connHelper;
         private IDatabase database;
 
-        public RedisHandle(string connUrl)
+        public RedisHandle(string connUrl, string pwd)
         {
-            _connHelper = new RedisConnectionHelper(connUrl, "RedisForCache");
+            _connHelper = new RedisConnectionHelper(connUrl, "RedisForCache", pwd);
             _connHelper.ConnectOnStartup(ref connectionMultiplexer, ref database);
         }
 

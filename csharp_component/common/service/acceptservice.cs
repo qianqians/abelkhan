@@ -24,7 +24,7 @@ namespace Abelkhan
         }
 
         public static event Action<Abelkhan.Ichannel> on_connect;
-        private static void onConnect(Channel ch)
+        public static void onConnect(Channel ch)
         {
             on_connect?.Invoke(ch);
         }

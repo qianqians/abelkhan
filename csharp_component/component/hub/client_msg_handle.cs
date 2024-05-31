@@ -1,17 +1,18 @@
 ﻿using Abelkhan;
 using System;
-using System.Collections.Generic;
+using System.Collections;
+using System.IO;
 
 namespace Hub
 {
 	public class client_msg_handle
 	{
 		private readonly Abelkhan.client_call_hub_module _client_call_hub_module;
-		private readonly MsgPack.Serialization.MessagePackSerializer<List<MsgPack.MessagePackObject>> _serialization;
+		private readonly MsgPack.Serialization.MessagePackSerializer<ArrayList> _serialization;
 
         public client_msg_handle()
 		{
-            _serialization = MsgPack.Serialization.MessagePackSerializer.Get<List<MsgPack.MessagePackObject>>();
+            _serialization = MsgPack.Serialization.MessagePackSerializer.Get<ArrayList>();
 
             _client_call_hub_module = new Abelkhan.client_call_hub_module(Abelkhan.ModuleMgrHandle._modulemng);
 			_client_call_hub_module.on_connect_hub += connect_hub;
@@ -29,14 +30,14 @@ namespace Hub
 			var rsp = (Abelkhan.client_call_hub_heartbeats_rsp)_client_call_hub_module.rsp.Value;
 			if (Hub._gates.get_directproxy(_client_call_hub_module.current_ch.Value, out DirectProxy _proxy))
             {
-				if (_proxy._theory_timetmp != 0)
+				if (_proxy._theory_timetmp == 0)
                 {
-                    _proxy._theory_timetmp += 5000;
+					_proxy._theory_timetmp = Service.Timerservice.Tick;
                 }
                 else
                 {
-                    _proxy._theory_timetmp = Service.Timerservice.Tick;
-                }
+					_proxy._theory_timetmp += 5000;
+				}
 				_proxy._timetmp = Service.Timerservice.Tick;
 			}
 			rsp.rsp((ulong)Service.Timerservice.Tick);
@@ -55,8 +56,8 @@ namespace Hub
 
                     var _event = _serialization.Unpack(st);
 
-                    var func = _event[0].AsString();
-                    var argvs = _event[1].AsList();
+                    var func = ((MsgPack.MessagePackObject)_event[0]).AsString();
+                    var argvs = ((MsgPack.MessagePackObject)_event[1]).AsList();
 
                     Hub._gates.current_client_uuid = _proxy._cuuid;
                     Hub._modules.process_module_mothed(func, argvs);

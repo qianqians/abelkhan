@@ -81,12 +81,12 @@ def gen(inputdir, commondir, lang, clioutputdir, svroutputdir):
             cpp_code += "namespace abelkhan\n{\n\n"
             cpp_code += "\n}\n"
 
-            if len(svroutputdir) > 0:
-                file = open(svroutputdir + '//' + pretreatment.name + ".h", 'w')
+            if len(clioutputdir) > 0:
+                file = open(clioutputdir + '//' + pretreatment.name + ".h", 'w')
                 file.write(code)
                 file.close()
 
-                file = open(svroutputdir + '//' + pretreatment.name + ".cpp", 'w')
+                file = open(clioutputdir + '//' + pretreatment.name + ".cpp", 'w')
                 file.write(cpp_code)
                 file.close()
         elif lang == 'csharp':

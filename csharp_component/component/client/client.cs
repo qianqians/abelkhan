@@ -41,7 +41,7 @@ namespace Client
             });
         }
 
-        public void call_hub(string hub, string func, List<MsgPack.MessagePackObject> argv)
+        public void call_hub(string hub, string func, ArrayList argv)
         {
             var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<List<MsgPack.MessagePackObject>>();
             using (MemoryStream st = MemoryStreamPool.mstMgr.GetStream())
@@ -94,7 +94,7 @@ namespace Client
             });
         }
 
-        public void call_hub(string func, List<MsgPack.MessagePackObject> argv)
+        public void call_hub(string func, ArrayList argv)
         {
             var _serialization = MsgPack.Serialization.MessagePackSerializer.Get<List<MsgPack.MessagePackObject>>();
             using (MemoryStream st = MemoryStreamPool.mstMgr.GetStream())
@@ -228,7 +228,7 @@ namespace Client
             _gateproxy?.get_hub_info(hub_type, cb);
         }
 
-        public void call_hub(string hub_name, string func, List<MsgPack.MessagePackObject> argv)
+        public void call_hub(string hub_name, string func, ArrayList argv)
         {
             if (_hubproxy_set.TryGetValue(hub_name, out HubProxy _hubproxy))
             {
@@ -382,7 +382,7 @@ namespace Client
             
             while (true)
             {
-                if (!Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, List<MsgPack.MessagePackObject>> _event))
+                if (!Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
                 {
                     break;
                 }

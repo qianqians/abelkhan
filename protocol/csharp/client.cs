@@ -31,13 +31,13 @@ namespace Abelkhan
         }
 
         public void ntf_cuuid(string cuuid){
-            var _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1 = new List<MsgPack.MessagePackObject>();
+            var _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1 = new ArrayList();
             _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1.Add(cuuid);
             call_module_method("gate_call_client_ntf_cuuid", _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1);
         }
 
         public void call_client(string hub_name, byte[] rpc_argv){
-            var _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab = new List<MsgPack.MessagePackObject>();
+            var _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab = new ArrayList();
             _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.Add(hub_name);
             _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.Add(rpc_argv);
             call_module_method("gate_call_client_call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);

@@ -83,7 +83,14 @@ namespace Abelkhan
             _closeHandle = new CloseHandle();
 
             var redismq_url = _root_cfg.get_value_string("redis_for_mq");
-            _redis_mq_service = new Abelkhan.RedisMQ(_timer, redismq_url, name, 333);
+            if (!_root_cfg.has_key("redis_for_mq_pwd"))
+            {
+                _redis_mq_service = new Abelkhan.RedisMQ(_timer, redismq_url, string.Empty, name, 333);
+            }
+            else
+            {
+                _redis_mq_service = new Abelkhan.RedisMQ(_timer, redismq_url, _root_cfg.get_value_string("redis_for_mq_pwd"), name, 333);
+            }
 
             _svrmanager = new SvrManager(_timer, this, _redis_mq_service);
             _svr_msg_handle = new svr_msg_handle(_svrmanager, _closeHandle);
@@ -113,7 +120,7 @@ namespace Abelkhan
             {
                 _timer.poll();
 
-                while (Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, List<MsgPack.MessagePackObject>> _event))
+                while (Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
                 {
                     Abelkhan.ModuleMgrHandle._modulemng.process_event(_event.Item1, _event.Item2);
                 }

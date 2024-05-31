@@ -46,7 +46,7 @@ namespace Hub
         private readonly Dictionary<string, DirectProxy> direct_clients;
         private readonly Dictionary<Abelkhan.Ichannel, DirectProxy> ch_direct_clients;
 
-        private readonly MessagePackSerializer<List<MsgPack.MessagePackObject>> _serializer = MessagePackSerializer.Get<List<MsgPack.MessagePackObject>>();
+        private readonly MessagePackSerializer<ArrayList> _serializer = MessagePackSerializer.Get<ArrayList>();
 
         private readonly Abelkhan.RedisMQ _gate_redismq_conn;
 
@@ -324,13 +324,13 @@ namespace Hub
             }
         }
 
-        public void call_client(String uuid, String func, List<MsgPack.MessagePackObject> _argvs_list)
+        public void call_client(String uuid, String func, ArrayList _argvs_list)
 		{
             using var st = MemoryStreamPool.mstMgr.GetStream();
-            var _event = new List<MsgPack.MessagePackObject>()
+            ArrayList _event = new ArrayList
             {
                 func,
-                MsgPack.MessagePackObject.FromObject(_argvs_list)
+                _argvs_list
             };
             _serializer.Pack(st, _event);
             st.Position = 0;
@@ -377,106 +377,74 @@ namespace Hub
                 {
                     if (!tmp_gates.TryGetValue(_proxy, out var uuidlist))
                     {
-                        uuidlist = new();
-                        tmp_gates.Add(_proxy, uuidlist);
+                        tmp_gates.Add(_proxy, new List<string>());
                     }
                     uuidlist.Add(_uuid);
                 }
             }
 
             using var st = MemoryStreamPool.mstMgr.GetStream();
-            var _rpc_argv = new List<MsgPack.MessagePackObject>()
+            ArrayList _rpc_argv = new ArrayList
             {
                 func,
-                MsgPack.MessagePackObject.FromObject(_argvs_list)
+                _argvs_list
             };
             _serializer.Pack(st, _rpc_argv);
             st.Position = 0;
             var _rpc_bin = st.ToArray();
 
+            using var st_event = MemoryStreamPool.mstMgr.GetStream();
+            var _direct_rpc_argv = new ArrayList
+            {
+                _rpc_bin
+            };
+            ArrayList _event = new ArrayList
+            {
+                "hub_call_client_call_client",
+                _direct_rpc_argv
+            };
+            _serializer.Pack(st_event, _event);
+            st_event.Position = 0;
+            var data = st_event.ToArray();
+
+            using var st_send = MemoryStreamPool.mstMgr.GetStream();
+            var _tmplenght = data.Length;
+            st_send.WriteByte((byte)(_tmplenght & 0xff));
+            st_send.WriteByte((byte)((_tmplenght >> 8) & 0xff));
+            st_send.WriteByte((byte)((_tmplenght >> 16) & 0xff));
+            st_send.WriteByte((byte)((_tmplenght >> 24) & 0xff));
+            st_send.Write(data, 0, _tmplenght);
+            st_send.Position = 0;
+            var buf = st_send.ToArray();
+
+            using var st_send_crypt = MemoryStreamPool.mstMgr.GetStream();
+            st_send_crypt.Write(st_send.GetBuffer());
+            st_send_crypt.Position = 0;
+            var crypt_buf = st_send_crypt.ToArray();
+            Abelkhan.Crypt.crypt_func_send(crypt_buf);
+
+            foreach (var _client in _direct_clients_crypt)
+            {
+                _client.send(crypt_buf);
+            }
+            foreach (var _client in _direct_clients)
+            {
+                _client.send(buf);
+            }
+
             foreach (var _proxy in tmp_gates)
             {
                 _proxy.Key.forward_hub_call_group_client(_proxy.Value, _rpc_bin);
-            }
-
-            if (_direct_clients.Count > 0)
-            {
-                using var st_event = MemoryStreamPool.mstMgr.GetStream();
-                var _direct_rpc_argv = new List<MsgPack.MessagePackObject>()
-                {
-                    _rpc_bin
-                };
-                var _event = new List<MsgPack.MessagePackObject>()
-                {
-                    "hub_call_client_call_client",
-                    MsgPack.MessagePackObject.FromObject(_direct_rpc_argv)
-                };
-                _serializer.Pack(st_event, _event);
-                st_event.Position = 0;
-                var data = st_event.ToArray();
-
-                using var st_send = MemoryStreamPool.mstMgr.GetStream();
-                var _tmplenght = data.Length;
-                st_send.WriteByte((byte)(_tmplenght & 0xff));
-                st_send.WriteByte((byte)((_tmplenght >> 8) & 0xff));
-                st_send.WriteByte((byte)((_tmplenght >> 16) & 0xff));
-                st_send.WriteByte((byte)((_tmplenght >> 24) & 0xff));
-                st_send.Write(data, 0, _tmplenght);
-                st_send.Position = 0;
-                var buf = st_send.ToArray();
-
-                foreach (var _client in _direct_clients)
-                {
-                    _client.send(buf);
-                }
-            }
-
-            if (_direct_clients_crypt.Count > 0)
-            {
-                using var st_event = MemoryStreamPool.mstMgr.GetStream();
-                var _direct_rpc_argv = new List<MsgPack.MessagePackObject>()
-                {
-                    _rpc_bin
-                };
-                var _event = new List<MsgPack.MessagePackObject>()
-                {
-                    "hub_call_client_call_client",
-                    MsgPack.MessagePackObject.FromObject(_direct_rpc_argv)
-                };
-                _serializer.Pack(st_event, _event);
-                st_event.Position = 0;
-                var data = st_event.ToArray();
-
-                using var st_send = MemoryStreamPool.mstMgr.GetStream();
-                var _tmplenght = data.Length;
-                st_send.WriteByte((byte)(_tmplenght & 0xff));
-                st_send.WriteByte((byte)((_tmplenght >> 8) & 0xff));
-                st_send.WriteByte((byte)((_tmplenght >> 16) & 0xff));
-                st_send.WriteByte((byte)((_tmplenght >> 24) & 0xff));
-                st_send.Write(data, 0, _tmplenght);
-                st_send.Position = 0;
-                var buf = st_send.ToArray();
-
-                using var st_send_crypt = MemoryStreamPool.mstMgr.GetStream();
-                st_send_crypt.Write(st_send.GetBuffer());
-                st_send_crypt.Position = 0;
-                var crypt_buf = st_send_crypt.ToArray();
-                Abelkhan.Crypt.crypt_func_send(crypt_buf);
-
-                foreach (var _client in _direct_clients_crypt)
-                {
-                    _client.send(crypt_buf);
-                }
             }
         }
 
 		public void call_global_client(String func, ArrayList _argvs_list)
 		{
             var st = MemoryStreamPool.mstMgr.GetStream();
-            var _event = new List<MsgPack.MessagePackObject>()
+            ArrayList _event = new ArrayList
             {
                 func,
-                MsgPack.MessagePackObject.FromObject(_argvs_list)
+                _argvs_list
             };
             _serializer.Pack(st, _event);
             st.Position = 0;

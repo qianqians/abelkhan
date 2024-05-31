@@ -106,7 +106,14 @@ namespace DBProxy
             _hubmanager = new HubManager();
 
             var redismq_url = _root_config.get_value_string("redis_for_mq");
-            _redis_mq_service = new Abelkhan.RedisMQ(_timer, redismq_url, name);
+            if (!_root_config.has_key("redis_for_mq_pwd"))
+            {
+                _redis_mq_service = new Abelkhan.RedisMQ(_timer, redismq_url, string.Empty, name, 333);
+            }
+            else
+            {
+                _redis_mq_service = new Abelkhan.RedisMQ(_timer, redismq_url, _root_config.get_value_string("redis_for_mq_pwd"), name, 333);
+            }
 
             var _center_ch = _redis_mq_service.connect(_center_config.get_value_string("name"));
             lock (add_chs)
@@ -169,7 +176,7 @@ namespace DBProxy
 
             try
             {
-                while (Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, List<MsgPack.MessagePackObject>> _event))
+                while (Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
                 {
                     Abelkhan.ModuleMgrHandle._modulemng.process_event(_event.Item1, _event.Item2);
                 }

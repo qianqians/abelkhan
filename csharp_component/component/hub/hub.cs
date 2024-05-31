@@ -1,6 +1,5 @@
 ﻿using Abelkhan;
 using ENet.Managed;
-using Service;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -75,10 +74,16 @@ namespace Hub
             _dbproxys = new ConcurrentDictionary<string, DBProxyProxy>();
 
             var redismq_url = _root_config.get_value_string("redis_for_mq");
-            _redis_mq_service = new Abelkhan.RedisMQ(_timer, redismq_url, name);
-            _gates = new GateManager(_redis_mq_service);
+            if (!_root_config.has_key("redis_for_mq_pwd"))
+            {
+                _redis_mq_service = new Abelkhan.RedisMQ(_timer, redismq_url, string.Empty, name, 333);
+            }
+            else
+            {
+                _redis_mq_service = new Abelkhan.RedisMQ(_timer, redismq_url, _root_config.get_value_string("redis_for_mq_pwd"), name, 333);
+            }
 
-            _redis_handle = new RedisHandle(_root_config.get_value_string("redis_for_cache"));
+            _gates = new GateManager(_redis_mq_service);
 
             _closeHandle = new CloseHandle();
             _hubs = new HubManager();
@@ -406,13 +411,14 @@ namespace Hub
         private List<Task> wait_task = new ();
         private async Task<long> poll()
         {
+            
             long tick_begin = _timer.refresh();
 
             try
             {
                 _timer.poll();
 
-                while (Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, List<MsgPack.MessagePackObject>> _event))
+                while (Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
                 {
                     Abelkhan.ModuleMgrHandle._modulemng.process_event(_event.Item1, _event.Item2);
                 }
@@ -444,6 +450,7 @@ namespace Hub
 
             long tick_end = _timer.refresh();
             tick = (uint)(tick_end - tick_begin);
+
             if (tick > 50)
             {
                 Log.Log.trace("poll_tick:{0}", tick);

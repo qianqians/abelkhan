@@ -19,14 +19,7 @@ namespace Common
 		{
             if (motheds.TryGetValue(func_name, out Action<IList<MsgPack.MessagePackObject> > mothed))
 			{
-				try
-				{
-					mothed.Invoke(argvs);
-				}
-				catch (Exception e)
-				{
-                    Log.Log.err("process_module_mothed err:{0}", e.ToString());
-				}
+				mothed.Invoke(argvs);
 			}
 			else
             {

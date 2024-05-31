@@ -114,7 +114,14 @@ namespace Abelkhan
             _center = _center_proxy;
             _redis_mq_service = redis_mq_service;
 
-            _redis_handle = new RedisHandle(_center._root_cfg.get_value_string("redis_for_cache"));
+            if (!_center._root_cfg.has_key("redis_for_mq_pwd"))
+            {
+                _redis_handle = new RedisHandle(_center._root_cfg.get_value_string("redis_for_cache"), _center._root_cfg.get_value_string("redis_for_mq_pwd"));
+            }
+            else
+            {
+                _redis_handle = new RedisHandle(_center._root_cfg.get_value_string("redis_for_cache"), string.Empty);
+            }
 
             dbproxys = new List<SvrProxy>();
             new_svrproxys = new List<SvrProxy>();

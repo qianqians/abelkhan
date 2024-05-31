@@ -10,7 +10,7 @@ namespace Hub
     public class HubProxy
     {
         private Abelkhan.hub_call_hub_caller _hub_call_hub_caller;
-        private readonly MessagePackSerializer<List<MsgPack.MessagePackObject>> _serializer = MessagePackSerializer.Get<List<MsgPack.MessagePackObject>>();
+        private readonly MessagePackSerializer<ArrayList> _serializer = MessagePackSerializer.Get<ArrayList> ();
 
         public HubProxy(string hub_name, string hub_type)
         {
@@ -40,13 +40,13 @@ namespace Hub
             }
         }
 
-        public void caller_hub(string func_name, List<MsgPack.MessagePackObject> argvs)
+        public void caller_hub(string func_name, ArrayList argvs)
         {
             using var st = MemoryStreamPool.mstMgr.GetStream();
-            var _event = new List<MsgPack.MessagePackObject>
+            var _event = new ArrayList
             {
                 func_name,
-                MsgPack.MessagePackObject.FromObject(argvs)
+                argvs
             };
 
             _serializer.Pack(st, _event);

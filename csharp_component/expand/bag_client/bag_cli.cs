@@ -65,9 +65,9 @@ namespace Abelkhan
             if (_struct.items != null) {
                 var _array_items = new List<MsgPack.MessagePackObject>();
                 foreach(var v_ in _struct.items){
-                    _array_items.Add( MsgPack.MessagePackObject.FromObject(item_def.item_def_to_protcol(v_)));
+                    _array_items.Add( new MsgPack.MessagePackObject(item_def.item_def_to_protcol(v_)));
                 }
-                _protocol.Add("items", MsgPack.MessagePackObject.FromObject(_array_items));
+                _protocol.Add("items", new MsgPack.MessagePackObject(_array_items));
             }
             return _protocol;
         }
@@ -338,7 +338,7 @@ namespace Abelkhan
         public bag_service_get_bag_cb get_bag(){
             var uuid_c9d12bc7_0c87_5ba3_ae63_54db2f405700 = (UInt64)Interlocked.Increment(ref uuid_894370de_0386_39f9_9417_050dbc7d5f48);
 
-            var _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b = new List<MsgPack.MessagePackObject>();
+            var _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b = new ArrayList();
             _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b.Add(uuid_c9d12bc7_0c87_5ba3_ae63_54db2f405700);
             _client_handle.call_hub(hub_name_894370de_0386_39f9_9417_050dbc7d5f48, "bag_service_get_bag", _argv_d3863e11_ea63_38a7_94fc_1673af9ced0b);
 
@@ -351,7 +351,7 @@ namespace Abelkhan
         public bag_service_use_item_cb use_item(Int64 uuid){
             var uuid_569d45db_8555_50b6_81fd_aeaa55c518ce = (UInt64)Interlocked.Increment(ref uuid_894370de_0386_39f9_9417_050dbc7d5f48);
 
-            var _argv_8e931b2d_2ecb_30da_928a_750ecb587c14 = new List<MsgPack.MessagePackObject>();
+            var _argv_8e931b2d_2ecb_30da_928a_750ecb587c14 = new ArrayList();
             _argv_8e931b2d_2ecb_30da_928a_750ecb587c14.Add(uuid_569d45db_8555_50b6_81fd_aeaa55c518ce);
             _argv_8e931b2d_2ecb_30da_928a_750ecb587c14.Add(uuid);
             _client_handle.call_hub(hub_name_894370de_0386_39f9_9417_050dbc7d5f48, "bag_service_use_item", _argv_8e931b2d_2ecb_30da_928a_750ecb587c14);

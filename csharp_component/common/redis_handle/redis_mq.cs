@@ -61,7 +61,7 @@ namespace Abelkhan
         private readonly Dictionary<string, Queue<RedisValue>> wait_send_data;
         private readonly Dictionary<string, Queue<RedisValue>> send_data;
 
-        public RedisMQ(Timerservice timer, string connUrl, string _listen_channel_name, long _tick_time = 33)
+        public RedisMQ(Timerservice timer, string connUrl, string pwd, string _listen_channel_name, long _tick_time = 33)
         {
             _timer = timer;
             main_channel_name = _listen_channel_name;
@@ -71,7 +71,7 @@ namespace Abelkhan
             listen_channel_names.Enqueue(_listen_channel_name);
             channels = new ConcurrentDictionary<string, Redischannel>();
 
-            _connHelper = new RedisConnectionHelper(connUrl, "RedisForMQ");
+            _connHelper = new RedisConnectionHelper(connUrl, "RedisForMQ", pwd);
             _connHelper.ConnectOnStartup(ref connectionMultiplexer, ref database);
 
             wait_send_data = new();

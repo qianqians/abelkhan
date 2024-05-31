@@ -35,80 +35,73 @@ namespace Abelkhan
 
         private void poll()
         {
-            try
+            var Event = host.Service(TimeSpan.FromMilliseconds(10));
+
+            switch (Event.Type)
             {
-                var Event = host.Service(TimeSpan.FromMilliseconds(10));
+                case ENetEventType.None:
+                    break ;
 
-                switch (Event.Type)
-                {
-                    case ENetEventType.None:
-                        break;
+                case ENetEventType.Connect:
+                    {
+                        var ep = Event.Peer.GetRemoteEndPoint();
 
-                    case ENetEventType.Connect:
+                        var ip_bytes = ep.Address.GetAddressBytes();
+                        var ip_addr = (ulong)(ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24);
+                        var peerHandle = ip_addr << 32 | (ulong)((UInt32)ep.Port);
+
+                        Log.Log.trace("enetservice poll raddr:{0}", peerHandle);
+                        if (!back_conns.TryGetValue(peerHandle, out EnetChannel ch))
                         {
-                            var ep = Event.Peer.GetRemoteEndPoint();
+                            ch = new EnetChannel(host, Event.Peer);
+                            back_conns.Add(peerHandle, ch);
 
-                            var ip_bytes = ep.Address.GetAddressBytes();
-                            var ip_addr = (ulong)(ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24);
-                            var peerHandle = ip_addr << 32 | (ulong)((UInt32)ep.Port);
-
-                            Log.Log.trace("enetservice poll raddr:{0}", peerHandle);
-                            if (!back_conns.TryGetValue(peerHandle, out EnetChannel ch))
-                            {
-                                ch = new EnetChannel(host, Event.Peer);
-                                back_conns.Add(peerHandle, ch);
-
-                                on_connect?.Invoke(ch);
-                            }
-                            else
-                            {
-                                back_conns.Remove(peerHandle);
-                            }
-
-                            if (conn_cbs.Remove(peerHandle, out Action<EnetChannel> cb))
-                            {
-                                cb(ch);
-                            }
-
-                            if (conns.ContainsKey(peerHandle))
-                            {
-                                conns[peerHandle] = ch;
-                            }
-                            else
-                            {
-                                conns.Add(peerHandle, ch);
-                            }
+                            on_connect?.Invoke(ch);
                         }
-                        break;
-
-                    case ENetEventType.Disconnect:
-                        break;
-
-                    case ENetEventType.Receive:
+                        else
                         {
-                            var ep = Event.Peer.GetRemoteEndPoint();
-
-                            var ip_bytes = ep.Address.GetAddressBytes();
-                            var ip_addr = (ulong)(ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24);
-                            var peerHandle = ip_addr << 32 | (ulong)((UInt32)ep.Port);
-
-                            if (conns.TryGetValue(peerHandle, out EnetChannel ch))
-                            {
-                                ch.onrecv(Event.Packet);
-                            }
-                            Event.Packet.Destroy();
+                            back_conns.Remove(peerHandle);
                         }
-                        break;
 
-                    default:
-                        throw new NotImplementedException();
-                }
-                host.Flush();
+                        if (conn_cbs.Remove(peerHandle, out Action<EnetChannel> cb))
+                        {
+                            cb(ch);
+                        }
+
+                        if (conns.ContainsKey(peerHandle))
+                        {
+                            conns[peerHandle] = ch;
+                        }
+                        else
+                        {
+                            conns.Add(peerHandle, ch);
+                        }
+                    }
+                    break;
+
+                case ENetEventType.Disconnect:
+                    break;
+
+                case ENetEventType.Receive:
+                    {
+                        var ep = Event.Peer.GetRemoteEndPoint();
+
+                        var ip_bytes = ep.Address.GetAddressBytes();
+                        var ip_addr = (ulong)(ip_bytes[0] | ip_bytes[1] << 8 | ip_bytes[2] << 16 | ip_bytes[3] << 24);
+                        var peerHandle = ip_addr << 32 | (ulong)((UInt32)ep.Port);
+
+                        if (conns.TryGetValue(peerHandle, out EnetChannel ch))
+                        {
+                            ch.onrecv(Event.Packet);
+                        }
+                        Event.Packet.Destroy();
+                    }
+                    break;
+
+                default:
+                    throw new NotImplementedException();
             }
-            catch (Exception e)
-            {
-                Log.Log.err("enet poll error:{0}", e.Message);
-            }
+            host.Flush();
         }
 
         public void start()

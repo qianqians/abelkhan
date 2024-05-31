@@ -8,31 +8,39 @@ namespace Service
 {
     public class Mongodbproxy
 	{
-        private readonly MongoClient _mongoclient;
-
-		public Mongodbproxy(string ip, short port)
+        private readonly MongoClient _client;
+	
+        public Mongodbproxy(String ip, short port)
 		{
             var setting = new MongoClientSettings();
             setting.Server = new MongoServerAddress(ip, port);
-            _mongoclient = new MongoClient(setting);
+            _client = new MongoClient(setting);
         }
 
-        public Mongodbproxy(string url)
+        public Mongodbproxy(String url)
         {
             var mongo_url = new MongoUrl(url);
-            _mongoclient = new MongoClient(mongo_url);
+            _client = new MongoClient(mongo_url);
+        }
+
+        private MongoClient getMongoCLient()
+        {
+            return _client;
         }
 
         public void create_index(string db, string collection, string key, bool is_unique)
         {
+            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
             try
             {
                 var builder = new IndexKeysDefinitionBuilder<MongoDB.Bson.BsonDocument>();
-                var opt = new CreateIndexOptions();
-                opt.Unique = is_unique;
+                var opt = new CreateIndexOptions
+                {
+                    Unique = is_unique
+                };
                 var indexModel = new CreateIndexModel<MongoDB.Bson.BsonDocument>(builder.Ascending(key), opt);
                 _collection.Indexes.CreateOne(indexModel);
             }
@@ -44,6 +52,7 @@ namespace Service
 
         public async void check_int_guid(string db, string collection, long _guid)
         {
+            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
@@ -67,6 +76,7 @@ namespace Service
 
         public async Task<bool> save(string db, string collection, byte[] bson_data) 
 		{
+            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
@@ -86,6 +96,7 @@ namespace Service
 
         public async Task<bool> update(string db, string collection, byte[] bson_query, byte[] bson_update, bool upsert)
         {
+            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
@@ -111,6 +122,7 @@ namespace Service
 
         public async Task<MongoDB.Bson.BsonDocument> find_and_modify(string db, string collection, byte[] bson_query, byte[] bson_update, bool _new, bool _upsert)
         {
+            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection) as MongoDB.Driver.IMongoCollection<MongoDB.Bson.BsonDocument>;
 
@@ -142,6 +154,7 @@ namespace Service
 
         public async Task<IAsyncCursor<MongoDB.Bson.BsonDocument>> find(string db, string collection, byte[] bson_query, int skip, int limit, string sort, bool _Ascending)
         {
+            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
@@ -183,6 +196,7 @@ namespace Service
         {
             long c = 0;
 
+            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
@@ -202,6 +216,7 @@ namespace Service
 
 		public async Task<bool> remove(string db, string collection, byte[] bson_query)
         {
+            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
@@ -221,6 +236,7 @@ namespace Service
 
         public async Task<long> get_guid(string db, string collection)
         {
+            var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 

@@ -15,6 +15,7 @@ namespace Abelkhan
 
         string _conUrl;
         string _conName;
+        string _pwd;
         string _conf;
         int _db;
         int _recoverCnt = 0;
@@ -23,10 +24,11 @@ namespace Abelkhan
         private static ManualResetEvent _waitNotify = new ManualResetEvent(false);
 
 
-        public RedisConnectionHelper(string conUrl, string conName, int db = 0)
+        public RedisConnectionHelper(string conUrl, string conName, string pwd, int db = 0)
         {
             _conUrl = conUrl;
             _conName = conName;
+            _pwd = pwd;
             _db = db;
             _conf = BuildConfig(conUrl, conName);
         }
@@ -101,7 +103,11 @@ namespace Abelkhan
         string BuildConfig(string conUrl, string conName)
         {
             Span<char> buf = stackalloc char[512];
-            return string.Create(CultureInfo.InvariantCulture, buf, $"{conUrl},connectRetry={connectRetry},connectTimeout={connectTimeout},keepAlive={keepAlive},resolveDns={true},name={conName}");
+            if (string.IsNullOrEmpty(_pwd))
+            {
+                return string.Create(CultureInfo.InvariantCulture, buf, $"{conUrl},connectRetry={connectRetry},connectTimeout={connectTimeout},keepAlive={keepAlive},resolveDns={true},name={conName}");
+            }
+            return string.Create(CultureInfo.InvariantCulture, buf, $"{conUrl},password={_pwd},connectRetry={connectRetry},connectTimeout={connectTimeout},keepAlive={keepAlive},resolveDns={true},name={conName}");
         }
     }
 

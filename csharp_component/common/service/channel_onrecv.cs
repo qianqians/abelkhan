@@ -14,7 +14,7 @@ namespace Abelkhan
     public class ChannelOnRecv
     {
         private readonly MemoryStream recv_buf = MemoryStreamPool.mstMgr.GetStream();
-        private readonly MessagePackSerializer<List<MsgPack.MessagePackObject>> serializer = MessagePackSerializer.Get<List<MsgPack.MessagePackObject>>();
+        private readonly MessagePackSerializer<ArrayList> serializer = MessagePackSerializer.Get<ArrayList>();
         private readonly Ichannel channel;
 
         public ChannelOnRecv(Ichannel ch)
@@ -25,54 +25,47 @@ namespace Abelkhan
         public event Action<byte[], int, int> on_recv_data;
         public void on_recv(byte[] recv_data)
         {
-            try
+            recv_buf.Write(recv_data, 0, recv_data.Length);
+            var buffer_len = recv_buf.Length;
+
+            int offset = 0;
+            var under_buf = recv_buf.GetBuffer();
+            while (true)
             {
-                recv_buf.Write(recv_data, 0, recv_data.Length);
-                var buffer_len = recv_buf.Length;
-
-                int offset = 0;
-                var under_buf = recv_buf.GetBuffer();
-                while (true)
+                var unread = buffer_len - offset;
+                if (unread < 4)
                 {
-                    var unread = buffer_len - offset;
-                    if (unread < 4)
-                    {
-                        break;
-                    }
-
-                    int len = under_buf[offset];
-                    len |= under_buf[offset + 1] << 8;
-                    len |= under_buf[offset + 2] << 16;
-                    len |= under_buf[offset + 3] << 24;
-
-                    if (unread < len + 4)
-                    {
-                        break;
-                    }
-
-                    offset += 4;
-                    on_recv_data?.Invoke(under_buf, offset, offset + len);
-
-                    using var _tmp = MemoryStreamPool.mstMgr.GetStream();
-                    _tmp.Write(under_buf, offset, len);
-                    _tmp.Position = 0;
-                    var _event = serializer.Unpack(_tmp);
-                    EventQueue.msgQue.Enqueue(Tuple.Create(channel, _event));
-
-                    offset += len;
+                    break;
                 }
 
-                if (offset > 4)
+                int len = under_buf[offset];
+                len |= under_buf[offset + 1] << 8;
+                len |= under_buf[offset + 2] << 16;
+                len |= under_buf[offset + 3] << 24;
+
+                if (unread < len + 4)
                 {
-                    var pos = buffer_len - offset;
-                    Buffer.BlockCopy(under_buf, offset, under_buf, 0, (int)pos);
-                    recv_buf.Seek(pos, SeekOrigin.Begin);
-                    recv_buf.SetLength(pos);
+                    break;
                 }
+
+                offset += 4;
+                on_recv_data?.Invoke(under_buf, offset, offset + len);
+
+                using var _tmp = MemoryStreamPool.mstMgr.GetStream();
+                _tmp.Write(under_buf, offset, len);
+                _tmp.Position = 0;
+                var _event = serializer.Unpack(_tmp);
+                EventQueue.msgQue.Enqueue(Tuple.Create(channel, _event));
+
+                offset += len;
             }
-            catch (System.Exception e)
+
+            if (offset > 4)
             {
-                Log.Log.err("channel_onrecv.on_recv error:{0}!", e);
+                var pos = buffer_len - offset;
+                Buffer.BlockCopy(under_buf, offset, under_buf, 0, (int)pos);
+                recv_buf.Seek(pos, SeekOrigin.Begin);
+                recv_buf.SetLength(pos);
             }
         }
     }
