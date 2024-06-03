@@ -10,6 +10,7 @@
 #include "closehandle.h"
 #include "mongodbproxy.h"
 #include "center_msg_handle.h"
+#include "hub_msg_handle.h"
 
 namespace dbproxy
 {

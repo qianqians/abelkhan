@@ -85,7 +85,7 @@ void mongodbproxy::check_int_guid(std::string db, std::string collection, int64_
 	}
 }
 
-bool mongodbproxy::save(std::string db, std::string collection, std::string bson_data) {
+bool mongodbproxy::save(std::string db, std::string collection, std::vector<uint8_t> bson_data) {
 	bool ret = true;
 
 	try {
@@ -93,7 +93,7 @@ bool mongodbproxy::save(std::string db, std::string collection, std::string bson
 
 		auto _collection = mongoc_client_get_collection(client, db.c_str(), collection.c_str());
 
-		auto _d = bson_new_from_data((const uint8_t *)bson_data.c_str(), bson_data.length());
+		auto _d = bson_new_from_data((const uint8_t *)bson_data.data(), bson_data.size());
 		if (!mongoc_collection_insert_one(_collection, _d, NULL, NULL, &error)) {
 			spdlog::error("mongoc_collection_insert_one error:{0}", error.message);
 			ret = false;
@@ -109,7 +109,7 @@ bool mongodbproxy::save(std::string db, std::string collection, std::string bson
 	return ret;
 }
 
-bool mongodbproxy::update(std::string db, std::string collection, std::string bson_query, std::string bson_update, bool upsert) {
+bool mongodbproxy::update(std::string db, std::string collection, std::vector<uint8_t> bson_query, std::vector<uint8_t> bson_update, bool upsert) {
 	bool ret = true;
 
 	try {
@@ -117,8 +117,8 @@ bool mongodbproxy::update(std::string db, std::string collection, std::string bs
 
 		auto _collection = mongoc_client_get_collection(client, db.c_str(), collection.c_str());
 
-		auto _q = bson_new_from_data((const uint8_t*)bson_query.c_str(), bson_query.length());
-		auto _u = bson_new_from_data((const uint8_t*)bson_update.c_str(), bson_update.length());
+		auto _q = bson_new_from_data((const uint8_t*)bson_query.data(), bson_query.size());
+		auto _u = bson_new_from_data((const uint8_t*)bson_update.data(), bson_update.size());
 		auto _opt = BCON_NEW("upsert", BCON_BOOL(upsert));
 		if (!mongoc_collection_update_many(_collection, _q, _u, _opt, nullptr, &error)) {
 			spdlog::error("mongoc_collection_update_many error:{0}", error.message);
@@ -138,15 +138,15 @@ bool mongodbproxy::update(std::string db, std::string collection, std::string bs
 	return ret;
 }
 
-bson_t* mongodbproxy::find_and_modify(std::string db, std::string collection, std::string bson_query, std::string bson_update, bool _new, bool _upsert) {
+bson_t* mongodbproxy::find_and_modify(std::string db, std::string collection, std::vector<uint8_t> bson_query, std::vector<uint8_t> bson_update, bool _new, bool _upsert) {
 	try {
 		bson_error_t error;
 		bson_t* reply = BCON_NEW();
 
 		auto _collection = mongoc_client_get_collection(client, db.c_str(), collection.c_str());
 
-		auto _q = bson_new_from_data((const uint8_t*)bson_query.c_str(), bson_query.length());
-		auto _u = bson_new_from_data((const uint8_t*)bson_update.c_str(), bson_update.length());
+		auto _q = bson_new_from_data((const uint8_t*)bson_query.data(), bson_query.size());
+		auto _u = bson_new_from_data((const uint8_t*)bson_update.data(), bson_update.size());
 		if (!mongoc_collection_find_and_modify(_collection, _q, nullptr, _u, nullptr, false, _upsert, _new, reply, &error)) {
 			spdlog::error("mongoc_collection_find_and_modify error:{0}", error.message);
 		}
@@ -165,11 +165,11 @@ bson_t* mongodbproxy::find_and_modify(std::string db, std::string collection, st
 	return nullptr;
 }
 
-mongoc_cursor_t* mongodbproxy::find(std::string db, std::string collection, std::string bson_query, int skip, int limit, std::string sort, bool _Ascending) {
+mongoc_cursor_t* mongodbproxy::find(std::string db, std::string collection, std::vector<uint8_t> bson_query, int skip, int limit, std::string sort, bool _Ascending) {
 	try {
 		auto _collection = mongoc_client_get_collection(client, db.c_str(), collection.c_str());
 
-		auto _q = bson_new_from_data((const uint8_t*)bson_query.c_str(), bson_query.length());
+		auto _q = bson_new_from_data((const uint8_t*)bson_query.data(), bson_query.size());
 		auto opts = BCON_NEW("sort", "{", sort.c_str(), BCON_INT32(_Ascending ? 1 : 0), "}", "skip", BCON_INT32(skip), "limit", BCON_INT32(limit));
 		auto _c = mongoc_collection_find_with_opts(_collection, _q, opts, nullptr);
 
@@ -185,13 +185,13 @@ mongoc_cursor_t* mongodbproxy::find(std::string db, std::string collection, std:
 	return nullptr;
 }
 
-int mongodbproxy::count(std::string db, std::string collection, std::string bson_query) {
+int mongodbproxy::count(std::string db, std::string collection, std::vector<uint8_t> bson_query) {
 	try {
 		bson_error_t error;
 
 		auto _collection = mongoc_client_get_collection(client, db.c_str(), collection.c_str());
 
-		auto _q = bson_new_from_data((const uint8_t*)bson_query.c_str(), bson_query.length());
+		auto _q = bson_new_from_data((const uint8_t*)bson_query.data(), bson_query.size());
 		auto _c = (int)mongoc_collection_count_documents(_collection, _q, nullptr, nullptr, nullptr, &error);
 		if (_c < 0) {
 			spdlog::error("mongoc_collection_count_documents error:{0}", error.message);
@@ -209,13 +209,13 @@ int mongodbproxy::count(std::string db, std::string collection, std::string bson
 	return 0;
 }
 
-bool mongodbproxy::remove(std::string db, std::string collection, std::string bson_query) {
+bool mongodbproxy::remove(std::string db, std::string collection, std::vector<uint8_t> bson_query) {
 	try {
 		bson_error_t error;
 
 		auto _collection = mongoc_client_get_collection(client, db.c_str(), collection.c_str());
 
-		auto _q = bson_new_from_data((const uint8_t*)bson_query.c_str(), bson_query.length());
+		auto _q = bson_new_from_data((const uint8_t*)bson_query.data(), bson_query.size());
 		auto _b = mongoc_collection_delete_many(_collection, _q, nullptr, nullptr, &error);
 		if (!_b) {
 			spdlog::error("mongoc_collection_delete_many error:{0}", error.message);

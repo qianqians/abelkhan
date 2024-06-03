@@ -15,7 +15,8 @@ hubproxy::hubproxy(std::shared_ptr<abelkhan::Ichannel> ch) : _caller(ch, service
 void hubproxy::ack_get_object_info(std::string callbackid, bson_t* object_info)
 {
 	auto bin = bson_get_data(object_info);
-	auto bin1 = std::vector<uint8_t>(object_info->len);
+	std::vector<uint8_t> bin1;
+	bin1.resize(object_info->len);
 	memcpy(bin1.data(), bin, object_info->len);
 
 	_caller.ack_get_object_info(callbackid, bin1);
