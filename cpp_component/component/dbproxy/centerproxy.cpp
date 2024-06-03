@@ -59,6 +59,6 @@ void centerproxy::heartbeath()
 void centerproxy::closed()
 {
 	_center_caller.closed();
-
 }
+
 }
