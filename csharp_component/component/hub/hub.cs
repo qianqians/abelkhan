@@ -191,9 +191,12 @@ namespace Hub
                 var is_enet_listen = _config.get_value_bool("enet_listen");
                 if (is_enet_listen)
                 {
+                    ManagedENet.Startup();
+
                     enet_outside_address = new Addressinfo();
                     enet_outside_address.host = _config.get_value_string("enet_outside_host");
                     enet_outside_address.port = (ushort)_config.get_value_int("enet_outside_port");
+
                     _enetservice = new Abelkhan.EnetService(enet_outside_address.host, enet_outside_address.port);
                     _enetservice.on_connect += (ch) => {
                         lock (add_chs)
@@ -408,7 +411,6 @@ namespace Hub
             }
         }
 
-        private List<Task> wait_task = new ();
         private async Task<long> poll()
         {
             

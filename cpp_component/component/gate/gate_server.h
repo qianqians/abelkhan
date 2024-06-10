@@ -98,8 +98,6 @@ private:
 
 	std::shared_ptr<service::redismqservice> _hub_redismq_service;
 
-	std::string center_ip;
-	short center_port;
 	std::shared_ptr<asio::io_service> io_service;
 	std::shared_ptr<service::connectservice> _connectnetworkservice;
 	std::shared_ptr<centerproxy> _centerproxy;
