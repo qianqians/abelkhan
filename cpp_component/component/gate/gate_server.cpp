@@ -104,6 +104,9 @@ void gate_service::init() {
 					ch->disconnect();
 					return;
 				}
+
+				std::scoped_lock<std::mutex> l(_chs_mu);
+				chs.push_back(ch);
 			});
 			heartbeat_flush_host(this, _timerservice->Tick);
 		}

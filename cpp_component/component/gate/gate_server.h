@@ -110,6 +110,9 @@ private:
 
 	concurrent::thread_group _thread_group;
 
+	std::mutex _chs_mu;
+	std::vector<std::shared_ptr<abelkhan::Ichannel>> chs;
+
 	std::mutex _run_mu;
 
 };
