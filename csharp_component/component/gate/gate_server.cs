@@ -37,6 +37,9 @@ namespace Gate {
         private client_msg_handle _client_msg_handle;
 
         private Abelkhan.RedisMQ _hub_redismq_service;
+        private Abelkhan.RedisHandle _redis_handle;
+
+        private Abelkhan.Acceptservice _hub_service;
 
         private CenterProxy _centerproxy;
 
@@ -118,7 +121,6 @@ namespace Gate {
             _clientmanager = new ClientManager(_hubsvrmanager);
             _closehandle = new CloseHandle();
 
-
             var redismq_url = _root_config.get_value_string("redis_for_mq");
             if (!_root_config.has_key("redis_for_mq_pwd"))
             {
@@ -128,6 +130,16 @@ namespace Gate {
             {
                 _hub_redismq_service = new Abelkhan.RedisMQ(_timerservice, redismq_url, _root_config.get_value_string("redis_for_mq_pwd"), gate_name_info.name, 333);
             }
+            
+            var redis_for_cache = _root_config.get_value_string("redis_for_cache");
+            if (!_root_config.has_key("redis_for_cache_pwd"))
+            {
+                _redis_handle = new Abelkhan.RedisHandle(redis_for_cache, string.Empty);
+            }
+            else
+            {
+                _redis_handle = new Abelkhan.RedisHandle(redis_for_cache, _root_config.get_value_string("redis_for_cache_pwd"));
+            }
 
             _center_msg_handle = new center_msg_handle(this, _hubsvrmanager, _timerservice);
             _hub_svr_msg_handle = new hub_svr_msg_handle(_clientmanager, _hubsvrmanager);
@@ -135,6 +147,26 @@ namespace Gate {
 
             var _center_ch = _hub_redismq_service.connect(_center_config.get_value_string("name"));
             init_center(_center_ch);
+
+            if (_config.has_key("tcp_inside_listen"))
+            {
+                var is_tcp_listen = _config.get_value_bool("tcp_inside_listen");
+                if (is_tcp_listen)
+                {
+                    var tcp_inside_host = _config.get_value_string("tcp_inside_host");
+                    var tcp_inside_port = (ushort)_config.get_value_int("tcp_inside_port");
+                    _hub_service = new Abelkhan.Acceptservice(tcp_inside_port);
+                    Acceptservice.on_connect += (ch) => {
+                        lock (add_chs)
+                        {
+                            add_chs.Add(ch);
+                        }
+                    };
+                    _client_service.start();
+
+                    heartbeat_flush_host(0);
+                }
+            }
 
             if (_config.has_key("tcp_listen"))
             {
@@ -365,9 +397,12 @@ namespace Gate {
             });
         }
 
-        private void heartbeat_flush_host(GateService _gate_service, long tick)
+        private void heartbeat_flush_host(long tick)
         {
+            var host = $"{_config.get_value_string("tcp_inside_host")}:{_config.get_value_int("tcp_inside_port")}";
+            _redis_handle.SetStrData(gate_name_info.name, host, 60);
 
+            _timerservice.addticktime(40000, heartbeat_flush_host);
         }
 
 };

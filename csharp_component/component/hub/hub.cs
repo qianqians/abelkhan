@@ -83,6 +83,17 @@ namespace Hub
                 _redis_mq_service = new Abelkhan.RedisMQ(_timer, redismq_url, _root_config.get_value_string("redis_for_mq_pwd"), name, 333);
             }
 
+            var redis_for_cache = _root_config.get_value_string("redis_for_cache");
+            if (!_root_config.has_key("redis_for_cache_pwd"))
+            {
+                _redis_handle = new Abelkhan.RedisHandle(redis_for_cache, string.Empty);
+            }
+            else
+            {
+                _redis_handle = new Abelkhan.RedisHandle(redis_for_cache, _root_config.get_value_string("redis_for_cache_pwd"));
+            }
+            
+
             _gates = new GateManager(_redis_mq_service);
 
             _closeHandle = new CloseHandle();
