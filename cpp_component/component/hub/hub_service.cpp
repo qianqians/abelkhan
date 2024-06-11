@@ -92,6 +92,22 @@ void hub_service::init() {
 	_center_service = std::make_shared<service::connectservice>(_io_service);
 	_dbproxy_service = std::make_shared<service::connectservice>(_io_service);
 
+	if (_config->has_key("tcp_inside_listen")) {
+		auto is_tcp_inside_listen = _config->get_value_bool("tcp_inside_listen");
+		if (is_tcp_inside_listen) {
+			tcp_inside_address_info = std::make_shared<addressinfo>();
+			tcp_inside_address_info->host = _config->get_value_string("tcp_inside_host");
+			tcp_inside_address_info->port = (unsigned short)_config->get_value_int("tcp_inside_port");
+			_hub_tcp_service = std::make_shared<service::acceptservice>(tcp_inside_address_info->host, tcp_inside_address_info->port, _io_service);
+			_hub_tcp_service->sigchannelconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
+				std::scoped_lock<std::mutex> l(_chs_mu);
+				chs.push_back(ch);
+			});
+
+			heartbeat_flush_host(shared_from_this(), _timerservice->Tick);
+		}
+	}
+
 	if (_config->has_key("tcp_listen")) {
 		auto is_tcp_listen = _config->get_value_bool("tcp_listen");
 		if (is_tcp_listen) {

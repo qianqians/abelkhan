@@ -74,14 +74,14 @@ void gate_service::init() {
 	}
 	_hub_redismq_service->start();
 
-	auto redismq_url = _root_config->get_value_string("redis_for_cache");
+	auto redis_cache_url = _root_config->get_value_string("redis_for_cache");
 	auto redis_cache_is_cluster = _root_config->get_value_bool("redis_cache_is_cluster");
 	if (_root_config->has_key("redis_for_cache_pwd")) {
 		auto password = _root_config->get_value_string("redis_for_cache_pwd");
-		_hub_rediscache_service = std::make_shared<service::redismqservice>(redis_cache_is_cluster, gate_name_info.name, redismq_url, password);
+		_hub_rediscache_service = std::make_shared<service::redismqservice>(redis_cache_is_cluster, gate_name_info.name, redis_cache_url, password);
 	}
 	else {
-		_hub_rediscache_service = std::make_shared<service::redismqservice>(redis_cache_is_cluster, gate_name_info.name, redismq_url);
+		_hub_rediscache_service = std::make_shared<service::redismqservice>(redis_cache_is_cluster, gate_name_info.name, redis_cache_url);
 	}
 	_hub_rediscache_service->start();
 	

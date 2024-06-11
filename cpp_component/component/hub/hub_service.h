@@ -99,6 +99,7 @@ public:
 		uint16_t port;
 	};
 	std::shared_ptr<addressinfo> tcp_address_info = nullptr;
+	std::shared_ptr<addressinfo> tcp_inside_address_info = nullptr;
 	std::shared_ptr<addressinfo> websocket_address_info = nullptr;
 	std::shared_ptr<addressinfo> enet_address_info = nullptr;
 
@@ -148,6 +149,7 @@ private:
 	std::shared_ptr<asio::io_service> _io_service;
 	std::shared_ptr<service::connectservice> _center_service;
 	std::shared_ptr<service::connectservice> _dbproxy_service;
+	std::shared_ptr<service::acceptservice> _hub_tcp_service;
 	std::shared_ptr<service::acceptservice> _client_tcp_service;
 
 	std::shared_ptr<service::webacceptservice> _client_websocket_service;
@@ -165,6 +167,9 @@ private:
 	std::map<std::string, std::shared_ptr<dbproxyproxy> > _dbproxyproxys;
 
 	std::mt19937_64 e;
+
+	std::mutex _chs_mu;
+	std::vector<std::shared_ptr<abelkhan::Ichannel>> chs;
 
 	std::mutex _run_mu;
 
