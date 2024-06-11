@@ -97,10 +97,12 @@ private:
 	client_msg_handle* _client_msg_handle;
 
 	std::shared_ptr<service::redismqservice> _hub_redismq_service;
+	std::shared_ptr<service::redismqservice> _hub_rediscache_service;
 
 	std::shared_ptr<asio::io_service> io_service;
 	std::shared_ptr<service::connectservice> _connectnetworkservice;
 	std::shared_ptr<centerproxy> _centerproxy;
+	std::shared_ptr<service::acceptservice> _hub_service;
 
 	std::shared_ptr<service::acceptservice> _client_service;
 	std::shared_ptr<service::webacceptservice> _websocket_service;

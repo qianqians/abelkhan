@@ -74,6 +74,17 @@ void gate_service::init() {
 	}
 	_hub_redismq_service->start();
 
+	auto redismq_url = _root_config->get_value_string("redis_for_cache");
+	auto redis_cache_is_cluster = _root_config->get_value_bool("redis_cache_is_cluster");
+	if (_root_config->has_key("redis_for_cache_pwd")) {
+		auto password = _root_config->get_value_string("redis_for_cache_pwd");
+		_hub_rediscache_service = std::make_shared<service::redismqservice>(redis_cache_is_cluster, gate_name_info.name, redismq_url, password);
+	}
+	else {
+		_hub_rediscache_service = std::make_shared<service::redismqservice>(redis_cache_is_cluster, gate_name_info.name, redismq_url);
+	}
+	_hub_rediscache_service->start();
+	
 	_center_msg_handle = new center_msg_handle(this, _hubsvrmanager, _timerservice, _hub_redismq_service);
 	_hub_svr_msg_handle = new hub_svr_msg_handle(_clientmanager, _hubsvrmanager);
 	_client_msg_handle = new client_msg_handle(_clientmanager, _hubsvrmanager, _timerservice);
@@ -81,10 +92,29 @@ void gate_service::init() {
 	auto _center_ch = _hub_redismq_service->connect(_center_config->get_value_string("name"));
 	init_center(_center_ch);
 
+	if (_config->has_key("tcp_inside_listen")) {
+		auto is_tcp_inside_listen = _config->get_value_bool("tcp_inside_listen");
+		if (is_tcp_inside_listen) {
+			io_service = std::make_shared<asio::io_service>();
+			auto tcp_inside_host = _config->get_value_string("tcp_inside_host");
+			auto tcp_inside_port = (short)_config->get_value_int("tcp_inside_port");
+			_hub_service = std::make_shared<service::acceptservice>(tcp_inside_host, tcp_inside_port, io_service);
+			_hub_service->sigchannelconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
+				if (tick > 100) {
+					ch->disconnect();
+					return;
+				}
+			});
+			heartbeat_flush_host(this, _timerservice->Tick);
+		}
+	}
+
 	if (_config->has_key("tcp_listen")) {
 		auto is_tcp_listen = _config->get_value_bool("tcp_listen");
 		if (is_tcp_listen) {
-			io_service = std::make_shared<asio::io_service>();
+			if (io_service == nullptr) {
+				io_service = std::make_shared<asio::io_service>();
+			}
 			auto tcp_outside_host = _config->get_value_string("tcp_outside_host");
 			auto tcp_outside_port = (short)_config->get_value_int("tcp_outside_port");
 			_client_service = std::make_shared<service::acceptservice>(tcp_outside_host, tcp_outside_port, io_service);
@@ -104,12 +134,6 @@ void gate_service::init() {
 					ch->disconnect();
 				}
 			});
-			heartbeat_flush_host(this, _timerservice->Tick);
-			//_client_service->sigchanneldisconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
-			//	service::gc_put([this, ch]() {
-			//		//_clientmanager->unreg_client(ch);
-			//	});
-			//});
 		}
 	}
 
@@ -140,11 +164,6 @@ void gate_service::init() {
 					ch->disconnect();
 				}
 			});
-			//_websocket_service->sigchanneldisconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
-			//	service::gc_put([this, ch]() {
-			//		//_clientmanager->unreg_client(ch);
-			//	});
-			//});
 		}
 	}
 
@@ -171,11 +190,6 @@ void gate_service::init() {
 					ch->disconnect();
 				}
 			});
-			//_enet_service->sig_disconnect.connect([this](std::shared_ptr<abelkhan::Ichannel> ch) {
-			//	service::gc_put([this, ch]() {
-			//		//_clientmanager->unreg_client(ch);
-			//	});
-			//});	
 		}
 	}
 
@@ -220,12 +234,12 @@ void gate_service::heartbeat_center(gate_service* _gate_service, std::function<v
 }
 
 void gate_service::heartbeat_flush_host(gate_service* _gate_service, int64_t tick) {
-	if (_gate_service->_config->has_key("tcp_listen")) {
-		auto is_tcp_listen = _gate_service->_config->get_value_bool("tcp_listen");
+	if (_gate_service->_config->has_key("tcp_inside_listen")) {
+		auto is_tcp_listen = _gate_service->_config->get_value_bool("tcp_inside_listen");
 		if (is_tcp_listen) {
-			auto tcp_outside_host = _gate_service->_config->get_value_string("tcp_outside_host");
-			auto tcp_outside_port = (short)_gate_service->_config->get_value_int("tcp_outside_port");
-			_gate_service->_hub_redismq_service->set_data(_gate_service->gate_name_info.name, fmt::format("{}:{}", tcp_outside_host, tcp_outside_port), 60);
+			auto tcp_inside_host = _gate_service->_config->get_value_string("tcp_inside_host");
+			auto tcp_inside_port = (short)_gate_service->_config->get_value_int("tcp_inside_port");
+			_gate_service->_hub_redismq_service->set_data(_gate_service->gate_name_info.name, fmt::format("{}:{}", tcp_inside_host, tcp_inside_port), 60);
 		}
 	}
 
