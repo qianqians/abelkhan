@@ -1,7 +1,4 @@
 
-
-using Amazon.Runtime.Internal.Util;
-
 namespace Gate {
 
 	public class client_msg_handle {
