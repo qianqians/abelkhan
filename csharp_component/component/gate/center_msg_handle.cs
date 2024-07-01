@@ -6,16 +6,14 @@ namespace Gate
 
 	public class center_msg_handle
 	{
-		private GateService _gate_service;
-		private HubSvrManager _hubsvrmanager;
-		private Service.Timerservice _timerservice;
+		private readonly GateService _gate_service;
+		private readonly Service.Timerservice _timerservice;
 
-		private Abelkhan.center_call_server_module _center_call_server_module;
+		private readonly Abelkhan.center_call_server_module _center_call_server_module;
 
-		public center_msg_handle(GateService gate_service_, HubSvrManager hubsvrmanager_, Service.Timerservice timerservice_)
+		public center_msg_handle(GateService gate_service_, Service.Timerservice timerservice_)
 		{
 			_gate_service = gate_service_;
-			_hubsvrmanager = hubsvrmanager_;
 			_timerservice = timerservice_;
 
 			_center_call_server_module = new Abelkhan.center_call_server_module(Abelkhan.ModuleMgrHandle._modulemng);

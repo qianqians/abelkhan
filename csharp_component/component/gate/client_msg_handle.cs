@@ -2,16 +2,14 @@
 namespace Gate {
 
 	public class client_msg_handle {
-		private ClientManager _clientmanager;
-		private HubSvrManager _hubsvrmanager;
-		private Service.Timerservice _timerservice;
+		private readonly ClientManager _clientmanager;
+		private readonly HubSvrManager _hubsvrmanager;
 
-		private Abelkhan.client_call_gate_module _client_call_gate_module;
+		private readonly Abelkhan.client_call_gate_module _client_call_gate_module;
 
-		public client_msg_handle(ClientManager clientmanager_, HubSvrManager hubsvrmanager_, Service.Timerservice timerservice_) {
+		public client_msg_handle(ClientManager clientmanager_, HubSvrManager hubsvrmanager_) {
 			_clientmanager = clientmanager_;
 			_hubsvrmanager = hubsvrmanager_;
-			_timerservice = timerservice_;
 
 			_client_call_gate_module = new Abelkhan.client_call_gate_module(Abelkhan.ModuleMgrHandle._modulemng);
 			_client_call_gate_module.on_heartbeats += heartbeats;

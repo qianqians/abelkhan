@@ -4,10 +4,10 @@ using System.Collections.Generic;
 namespace Gate {
 
 	public class hub_svr_msg_handle {
-		private ClientManager _clientmanager;
-		private HubSvrManager _hubsvrmanager;
+		private readonly ClientManager _clientmanager;
+		private readonly HubSvrManager _hubsvrmanager;
 
-		private Abelkhan.hub_call_gate_module _hub_call_gate_module;
+		private readonly Abelkhan.hub_call_gate_module _hub_call_gate_module;
 
 		public hub_svr_msg_handle(ClientManager clientmanager_, HubSvrManager hubsvrmanager_) {
 			_clientmanager = clientmanager_;

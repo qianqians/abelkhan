@@ -141,9 +141,9 @@ namespace Gate {
                 _redis_handle = new Abelkhan.RedisHandle(redis_for_cache, _root_config.get_value_string("redis_for_cache_pwd"));
             }
 
-            _center_msg_handle = new center_msg_handle(this, _hubsvrmanager, _timerservice);
+            _center_msg_handle = new center_msg_handle(this, _timerservice);
             _hub_svr_msg_handle = new hub_svr_msg_handle(_clientmanager, _hubsvrmanager);
-            _client_msg_handle = new client_msg_handle(_clientmanager, _hubsvrmanager, _timerservice);
+            _client_msg_handle = new client_msg_handle(_clientmanager, _hubsvrmanager);
 
             var _center_ch = _hub_redismq_service.connect(_center_config.get_value_string("name"));
             init_center(_center_ch);
