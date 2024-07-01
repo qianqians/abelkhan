@@ -17,9 +17,9 @@ namespace Gate
 
 
 		public ClientProxy(string cuuid, Abelkhan.Ichannel ch) {
-			conn_hubproxys.Clear();
+			conn_hubproxys = new();
 
-			_cuuid = cuuid;
+            _cuuid = cuuid;
 			_ch = ch;
 			_gate_call_client_caller = new Abelkhan.gate_call_client_caller(_ch, Abelkhan.ModuleMgrHandle._modulemng);
 		}
