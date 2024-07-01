@@ -1,7 +1,5 @@
 using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.SignalR;
 
 namespace Gate
 {
@@ -14,7 +12,6 @@ namespace Gate
 
 		public Abelkhan.Ichannel _ch;
 		public Abelkhan.gate_call_client_caller _gate_call_client_caller;
-
 
 		public ClientProxy(string cuuid, Abelkhan.Ichannel ch) {
 			conn_hubproxys = new();
