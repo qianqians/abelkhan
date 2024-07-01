@@ -1,9 +1,7 @@
 using System;
-using System.Threading.Tasks;
 
 namespace Gate
 {
-
 	public struct name_info
 	{
 		public string name;
@@ -14,13 +12,11 @@ namespace Gate
 		public bool is_reg_sucess;
 		public long timetmp;
 
-		private Abelkhan.Ichannel _center_ch;
-		private Abelkhan.center_caller _center_caller;
+		private readonly Abelkhan.center_caller _center_caller;
 
 		public CenterProxy(Abelkhan.Ichannel ch)
 		{
 			is_reg_sucess = false;
-			_center_ch = ch;
 			_center_caller = new Abelkhan.center_caller(ch, Abelkhan.ModuleMgrHandle._modulemng);
 
 			timetmp = Service.Timerservice.Tick;
@@ -79,8 +75,5 @@ namespace Gate
 		{
 			_center_caller.closed();
 		}
-
-
 	}
-
 }

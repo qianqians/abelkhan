@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace Gate
@@ -11,7 +10,7 @@ namespace Gate
 		public uint _tick_time;
 		public Abelkhan.Ichannel _ch;
 
-		private Abelkhan.gate_call_hub_caller _gate_call_hub_caller;
+		private readonly Abelkhan.gate_call_hub_caller _gate_call_hub_caller;
 
 		public HubProxy(string hub_name, string hub_type, Abelkhan.Ichannel ch) {
 			_tick_time = 0;
@@ -21,7 +20,6 @@ namespace Gate
 			_ch = ch;
 
 			_gate_call_hub_caller = new Abelkhan.gate_call_hub_caller(_ch, Abelkhan.ModuleMgrHandle._modulemng);
-
 		}
 
 		public void client_disconnect(string client_cuuid) {
