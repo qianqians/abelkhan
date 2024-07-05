@@ -95,7 +95,7 @@ namespace Hub
                     gates.Add(name, _proxy);
                 }
 
-                ch_gateproxys.Add(ch, _proxy);
+                ch_gateproxys[ch] = _proxy;
                 Log.Log.info("connect gate:{0}", name);
 
                 lock (Hub.add_chs)

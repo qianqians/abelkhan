@@ -53,7 +53,7 @@ namespace Gate
 			if (hub_name_proxy.TryGetValue(hub_name, out var proxy))
 			{
 				wait_destory_proxy.Add(hub_name, proxy);
-				hub_channel_name.Add(ch, hub_name);
+				hub_channel_name[ch] = hub_name;
 				hub_name_proxy[hub_name] = _hubproxy;
 			}
 			else
