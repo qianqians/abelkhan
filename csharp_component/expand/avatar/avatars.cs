@@ -451,7 +451,6 @@ namespace avatar
 
             _avatar_Caller.get_hub(other_hub).get_remote_avatar(guid).callBack((doc_bin) =>
             {
-
                 var avatar = new Avatar(this);
 
                 var doc = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(doc_bin);
