@@ -88,13 +88,9 @@ namespace Hub
                 if (gates.TryGetValue(name, out GateProxy _old_proxy))
                 {
                     _wait_destory_gateproxys.Add(name, _old_proxy);
-                    gates[name] = _proxy;
-                }
-                else
-                {
-                    gates.Add(name, _proxy);
                 }
 
+                gates[name] = _proxy;
                 ch_gateproxys[ch] = _proxy;
                 Log.Log.info("connect gate:{0}", name);
 
