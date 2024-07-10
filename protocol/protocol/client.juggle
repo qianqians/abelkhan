@@ -4,4 +4,8 @@ module gate_call_client{
 
 	call_client ntf(string hub_name, bin rpc_argv);
 
+	migrate_client_start ntf();
+
+	migrate_client_done ntf();
+
 }

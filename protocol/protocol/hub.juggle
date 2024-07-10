@@ -7,6 +7,8 @@ module gate_call_hub{
 	client_exception ntf(string client_uuid);
 
 	client_call_hub ntf(string client_uuid, bin rpc_argv);
+
+	migrate_client ntf(string client_uuid, string target_hub);
 	
 }
 
@@ -17,6 +19,8 @@ module hub_call_hub{
 	seep_client_gate req(string client_uuid, string gate_name) rsp() err(framework_error err);
 	
 	hub_call_hub_mothed ntf(bin rpc_argv);
+
+	migrate_client ntf(string client_uuid, int64 guid);
 	
 }
 

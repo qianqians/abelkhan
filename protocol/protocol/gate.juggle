@@ -13,11 +13,13 @@ module client_call_gate{
 	
 	forward_client_call_hub ntf(string hub_name, bin rpc_argv);
 
+	migrate_client_confirm ntf();
+
 }
 
 module hub_call_gate{
 
-	reg_hub req(string hub_name, string hub_type) rsp() err();
+	reg_hub req(string hub_name, string hub_type, string router_type) rsp() err();
 	
 	tick_hub_health ntf(uint32 tick_time);
 	
@@ -32,5 +34,7 @@ module hub_call_gate{
 	forward_hub_call_group_client ntf(string[] client_uuids, bin rpc_argv);
 
 	forward_hub_call_global_client ntf(bin rpc_argv);
+
+	migrate_client_done ntf(string client_uuid);
 
 }
