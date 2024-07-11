@@ -162,8 +162,8 @@ class center_caller(Icaller):
         _argv_08d68bf2_5282_3fde_ba14_da677a0a04b2.append(svr_name)
         self.call_module_method("center_reg_server_mq", _argv_08d68bf2_5282_3fde_ba14_da677a0a04b2)
 
-        cb_reg_server_mq_obj = center_reg_server_mq_cb(uuid_76a34a7f_e1e5_5f58_931b_9a21db9858bf, rsp_cb_center_handle)
         global rsp_cb_center_handle
+        cb_reg_server_mq_obj = center_reg_server_mq_cb(uuid_76a34a7f_e1e5_5f58_931b_9a21db9858bf, rsp_cb_center_handle)
         if rsp_cb_center_handle:
             rsp_cb_center_handle.map_reg_server_mq[uuid_76a34a7f_e1e5_5f58_931b_9a21db9858bf] = cb_reg_server_mq_obj
         return cb_reg_server_mq_obj
@@ -178,8 +178,8 @@ class center_caller(Icaller):
         _argv_a018be20_2048_315d_9832_8120b194980f.append(svr_name)
         self.call_module_method("center_reconn_reg_server_mq", _argv_a018be20_2048_315d_9832_8120b194980f)
 
-        cb_reconn_reg_server_mq_obj = center_reconn_reg_server_mq_cb(uuid_0012a813_9a7b_57c8_a9d1_9a08790cad21, rsp_cb_center_handle)
         global rsp_cb_center_handle
+        cb_reconn_reg_server_mq_obj = center_reconn_reg_server_mq_cb(uuid_0012a813_9a7b_57c8_a9d1_9a08790cad21, rsp_cb_center_handle)
         if rsp_cb_center_handle:
             rsp_cb_center_handle.map_reconn_reg_server_mq[uuid_0012a813_9a7b_57c8_a9d1_9a08790cad21] = cb_reconn_reg_server_mq_obj
         return cb_reconn_reg_server_mq_obj
@@ -192,8 +192,8 @@ class center_caller(Icaller):
         _argv_af04a217_eafb_393c_9e34_0303485bef77.append(tick)
         self.call_module_method("center_heartbeat", _argv_af04a217_eafb_393c_9e34_0303485bef77)
 
-        cb_heartbeat_obj = center_heartbeat_cb(uuid_9654538a_9916_57dc_8ea5_806086d7a378, rsp_cb_center_handle)
         global rsp_cb_center_handle
+        cb_heartbeat_obj = center_heartbeat_cb(uuid_9654538a_9916_57dc_8ea5_806086d7a378, rsp_cb_center_handle)
         if rsp_cb_center_handle:
             rsp_cb_center_handle.map_heartbeat[uuid_9654538a_9916_57dc_8ea5_806086d7a378] = cb_heartbeat_obj
         return cb_heartbeat_obj
