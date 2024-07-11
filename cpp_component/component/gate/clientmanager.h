@@ -100,6 +100,14 @@ public:
 		_gate_call_client_caller.call_client(hub_name, data);
 	}
 
+	void migrate_client_start(std::string src_hub, std::string target_hub) {
+		_gate_call_client_caller.migrate_client_start(src_hub, target_hub);
+	}
+
+	void migrate_client_done(std::string src_hub, std::string target_hub) {
+		_gate_call_client_caller.migrate_client_done(src_hub, target_hub);
+	}
+
 	void send_buf(char* _data, int datasize);
 
 	bool is_xor_key_crypt() {

@@ -23,6 +23,7 @@ class hubproxy {
 public:
 	std::string _hub_name;
 	std::string _hub_type;
+	std::string _router_type;
 	uint32_t _tick_time;
 	std::shared_ptr<abelkhan::Ichannel> _ch;
 
@@ -30,11 +31,12 @@ private:
 	abelkhan::gate_call_hub_caller _gate_call_hub_caller;
 
 public:
-	hubproxy(std::string& hub_name, std::string& hub_type, std::shared_ptr<abelkhan::Ichannel> ch) : _gate_call_hub_caller(ch, service::_modulemng) {
+	hubproxy(std::string& hub_name, std::string& hub_type, std::string& router_type, std::shared_ptr<abelkhan::Ichannel> ch) : _gate_call_hub_caller(ch, service::_modulemng) {
 		_tick_time = 0;
 
 		_hub_name = hub_name;
 		_hub_type = hub_type;
+		_router_type = router_type;
 		_ch = ch;
 	}
 
@@ -49,6 +51,14 @@ public:
 	void client_call_hub(std::string& client_cuuid, std::vector<uint8_t>& data) {
 		_gate_call_hub_caller.client_call_hub(client_cuuid, data);
 	}
+
+	void  migrate_client(std::string client_uuid, std::string target_hub) {
+		_gate_call_hub_caller.migrate_client(client_uuid, target_hub);
+	}
+
+	bool check_router_dynamic() {
+		return _router_type == "dynamic";
+	}
 };
 
 class hubsvrmanager {
@@ -59,8 +69,8 @@ public:
 	virtual ~hubsvrmanager(){
 	}
 
-	hubproxy* reg_hub(std::string hub_name, std::string& hub_type, std::shared_ptr<abelkhan::Ichannel> ch) {
-		auto _hubproxy = new hubproxy(hub_name, hub_type, ch);
+	hubproxy* reg_hub(std::string& hub_name, std::string& hub_type, std::string& router_type, std::shared_ptr<abelkhan::Ichannel> ch) {
+		auto _hubproxy = new hubproxy(hub_name, hub_type, router_type, ch);
 
 		auto it = hub_name_proxy.find(hub_name);
 		if (it != hub_name_proxy.end()) {
@@ -106,7 +116,28 @@ public:
 		return get_hub(hub_channel_name[hub_channel]);
 	}
 
-	bool get_hub_list(std::string hub_type, abelkhan::hub_info& _info) {
+	std::string hash_hubproxy(std::string cuuid, std::string hub_type) {
+		std::vector<std::string> hub_list;
+		for (auto& it : hub_name_proxy) {
+			if (it.second->_hub_type != hub_type) {
+				continue;
+			}
+
+			hub_list.push_back(it.second->_hub_name);
+		}
+
+		std::string hub_name = "";
+		auto lcount = hub_list.size();
+		if (lcount > 0) {
+			std::sort(hub_list.begin(), hub_list.end());
+			auto index = rand() % lcount;
+			hub_name = hub_list[index];
+		}
+
+		return hub_name;
+	}
+
+	bool get_hub_list(std::string cuuid, std::string hub_type, abelkhan::hub_info& _info) {
 		std::vector<abelkhan::hub_info> hub_list;
 		for (auto& it : hub_name_proxy) {
 			if (it.second->_hub_type != hub_type) {
@@ -115,6 +146,13 @@ public:
 			if (it.second->_tick_time > 100) {
 				continue;
 			}
+
+			if (it.second->check_router_dynamic()) {
+				_info.hub_name = hash_hubproxy(cuuid, hub_type);
+				_info.hub_type = it.second->_hub_type;
+
+				return true;
+			}
 			
 			_info.hub_name = it.second->_hub_name;
 			_info.hub_type = it.second->_hub_type;
@@ -122,8 +160,9 @@ public:
 			hub_list.push_back(_info);
 		}
 
-		if (hub_list.size() > 0) {
-			auto index = rand() % hub_list.size();
+		auto lcount = hub_list.size();
+		if (lcount > 0) {
+			auto index = rand() % lcount;
 			_info = hub_list[index];
 
 			return true;
@@ -138,8 +177,10 @@ public:
 		}
 	}
 
-private:
+public:
 	std::mt19937 rand;
+
+private:
 	std::unordered_map<std::string, hubproxy*> wait_destory_proxy;
 	std::unordered_map<std::string, hubproxy*> hub_name_proxy;
 	std::unordered_map<std::shared_ptr<abelkhan::Ichannel>, std::string> hub_channel_name;

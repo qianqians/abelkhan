@@ -36,6 +36,18 @@ public:
 		_client_call_gate_module->sig_heartbeats.connect(std::bind(&client_msg_handle::heartbeats, this));
 		_client_call_gate_module->sig_get_hub_info.connect(std::bind(&client_msg_handle::get_hub_info, this, std::placeholders::_1));
 		_client_call_gate_module->sig_forward_client_call_hub.connect(std::bind(&client_msg_handle::forward_client_call_hub, this, std::placeholders::_1, std::placeholders::_2));
+		_client_call_gate_module->sig_migrate_client_confirm.connect(std::bind(&client_msg_handle::migrate_client_confirm, this, std::placeholders::_1, std::placeholders::_2));
+	}
+
+	void migrate_client_confirm(std::string src_hub, std::string _target_hub) {
+		auto ch = _client_call_gate_module->current_ch;
+		auto proxy = _clientmanager->get_client(ch);
+		if (proxy != nullptr) {
+			auto hubproxy_ = _hubsvrmanager->get_hub(src_hub);
+			if (hubproxy_) {
+				hubproxy_->migrate_client(proxy->_cuuid, _target_hub);
+			}
+		}
 	}
 
 	void heartbeats() {
@@ -57,8 +69,10 @@ public:
 	void get_hub_info(std::string hub_type) {
 		auto rsp = std::static_pointer_cast<abelkhan::client_call_gate_get_hub_info_rsp>(_client_call_gate_module->rsp);
 
+		auto ch = _client_call_gate_module->current_ch;
+		auto proxy = _clientmanager->get_client(ch);
 		abelkhan::hub_info _info;
-		auto relust = _hubsvrmanager->get_hub_list(hub_type, _info);
+		auto relust = _hubsvrmanager->get_hub_list(proxy->_cuuid, hub_type, _info);
 		if (relust) {
 			rsp->rsp(_info);
 		}
@@ -75,6 +89,20 @@ public:
 			if (hubproxy_) {
 				proxy->conn_hub(hubproxy_);
 				hubproxy_->client_call_hub(proxy->_cuuid, rpc_argv);
+
+				if (hubproxy_->_tick_time > 100)
+				{
+					auto r = _hubsvrmanager->rand() % 100;
+					if (r < 20)
+					{
+						auto target_hub = _hubsvrmanager->hash_hubproxy(proxy->_cuuid, hubproxy_->_hub_type);
+						auto target_hubproxy_ = _hubsvrmanager->get_hub(target_hub);
+						if (target_hub != hub_name && target_hubproxy_->_tick_time <= 50)
+						{
+							proxy->migrate_client_start(hub_name, target_hub);
+						}
+					}
+				}
 			}
 		}
 	}

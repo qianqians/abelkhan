@@ -23,7 +23,7 @@ gateproxy::gateproxy(std::shared_ptr<abelkhan::Ichannel> ch, std::shared_ptr<hub
 }
 
 void gateproxy::reg_hub() {
-	_hub_call_gate_caller->reg_hub(_hub->name_info.name, _hub->hub_type)->callBack([this]() {
+	_hub_call_gate_caller->reg_hub(_hub->name_info.name, _hub->hub_type, "fixed")->callBack([this]() {
 		spdlog::trace("hub reg_hub to gate:{0} sucessed", _gate_name);
 		sig_reg_hub_sucessed.emit();
 	}, [this]() {
