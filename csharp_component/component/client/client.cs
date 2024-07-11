@@ -57,6 +57,11 @@ namespace Client
                 _client_call_gate_caller.forward_client_call_hub(hub, st.ToArray());
             }
         }
+
+        public void migrate_client_confirm(string src_hub, string target_hub)
+        {
+            _client_call_gate_caller.migrate_client_confirm(src_hub, target_hub);
+        }
     }
 
     class HubProxy
@@ -156,9 +161,23 @@ namespace Client
             _gate_call_client_module = new Abelkhan.gate_call_client_module(Abelkhan.ModuleMgrHandle._modulemng);
             _gate_call_client_module.on_ntf_cuuid += ntf_cuuid;
             _gate_call_client_module.on_call_client += gate_call_client;
+            _gate_call_client_module.on_migrate_client_start += _gate_call_client_module_on_migrate_client_start;
+            _gate_call_client_module.on_migrate_client_done += _gate_call_client_module_on_migrate_client_done;
 
             _hub_call_client_module = new Abelkhan.hub_call_client_module(Abelkhan.ModuleMgrHandle._modulemng);
             _hub_call_client_module.on_call_client += hub_call_client;
+        }
+
+        public event Action<string, string> onMigrateClientDone;
+        private void _gate_call_client_module_on_migrate_client_done(string _src_hub, string _target_hub)
+        {
+            onMigrateClientDone?.Invoke(_src_hub, _target_hub);
+        }
+
+        public event Action<string, string> onMigrateClientStart;
+        private void _gate_call_client_module_on_migrate_client_start(string _src_hub, string _target_hub)
+        {
+            onMigrateClientStart?.Invoke(_src_hub, _target_hub);
         }
 
         private void ntf_cuuid(string _uuid)
@@ -240,6 +259,11 @@ namespace Client
             {
                 _gateproxy.call_hub(hub_name, func, argv);
             }
+        }
+
+        public void migrate_client_confirm(string src_hub, string target_hub)
+        {
+            _gateproxy.migrate_client_confirm(src_hub, target_hub);
         }
 
         public event Action onGateConnect;

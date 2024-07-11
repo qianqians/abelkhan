@@ -53,6 +53,11 @@ namespace Client
 
             _client_call_gate_caller.forward_client_call_hub(hub, st.ToArray());
         }
+
+        public void migrate_client_confirm(string src_hub, string target_hub)
+        {
+            _client_call_gate_caller.migrate_client_confirm(src_hub, target_hub);
+        }
     }
 
     class HubProxy
@@ -117,6 +122,9 @@ namespace Client
         public event Action<ulong> onGateTime;
         public event Action<string, ulong> onHubTime;
 
+        public event Action<string, string> onMigrateClientDone;
+        public event Action<string, string> onMigrateClientStart;
+
         private GateProxy _gateproxy;
         private Dictionary<string, HubProxy> _hubproxy_set;
         private Dictionary<Abelkhan.Ichannel, HubProxy> _ch_hubproxy_set;
@@ -127,6 +135,21 @@ namespace Client
             _ch_hubproxy_set = new Dictionary<Abelkhan.Ichannel, HubProxy>();
 
             Robot.timer.addticktime(5000, heartbeats);
+        }
+
+        public void migrate_client_start(string src_hub, string target_hub)
+        {
+            onMigrateClientStart?.Invoke(src_hub, target_hub);
+        }
+
+        public void migrate_client_done(string src_hub, string target_hub)
+        {
+            onMigrateClientDone?.Invoke(src_hub, target_hub);
+        }
+
+        public void migrate_client_confirm(string src_hub, string target_hub)
+        {
+            _gateproxy.migrate_client_confirm(src_hub, target_hub);
         }
 
         public string get_current_hubproxy(Abelkhan.Ichannel current_ch)
@@ -342,9 +365,21 @@ namespace Client
             _gate_call_client_module = new Abelkhan.gate_call_client_module(Abelkhan.ModuleMgrHandle._modulemng);
             _gate_call_client_module.on_ntf_cuuid += ntf_cuuid;
             _gate_call_client_module.on_call_client += gate_call_client;
+            _gate_call_client_module.on_migrate_client_start += _gate_call_client_module_on_migrate_client_start; ;
+            _gate_call_client_module.on_migrate_client_done += _gate_call_client_module_on_migrate_client_done; ;
 
             _hub_call_client_module = new Abelkhan.hub_call_client_module(Abelkhan.ModuleMgrHandle._modulemng);
             _hub_call_client_module.on_call_client += hub_call_client;
+        }
+
+        private void _gate_call_client_module_on_migrate_client_done(string src_hub, string target_hub)
+        {
+            current_robot.migrate_client_done(src_hub, target_hub);
+        }
+
+        private void _gate_call_client_module_on_migrate_client_start(string src_hub, string target_hub)
+        {
+            current_robot.migrate_client_start(src_hub, target_hub);
         }
 
         public void connect_gate(string ip, short port, long timeout)
