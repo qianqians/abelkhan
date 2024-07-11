@@ -107,7 +107,32 @@ namespace Gate
 			return get_hub(proxy_name);
 		}
 
-		public bool get_hub_list(string hub_type, out Abelkhan.hub_info _info)
+		public string hash_hubproxy(string client_uuid, string hub_type)
+		{
+            var hub_list = new List<string>();
+            foreach (var it in hub_name_proxy)
+            {
+                if (it.Value._hub_type != hub_type)
+                {
+                    continue;
+                }
+
+                hub_list.Add(it.Value._hub_name);
+            }
+
+			var hub_name = string.Empty;
+            if (hub_list.Count > 0)
+            {
+                hub_list.Sort();
+
+				var index = client_uuid.GetHashCode() % hub_list.Count;
+                hub_name = hub_list[index];
+            }
+
+            return hub_name;
+        }
+
+		public bool get_hub_list(string client_uuid, string hub_type, out Abelkhan.hub_info _info)
 		{
 			var hub_list = new List<Abelkhan.hub_info>();
 			foreach (var it in hub_name_proxy)
@@ -119,6 +144,15 @@ namespace Gate
 				if (it.Value._tick_time > 50)
 				{
 					continue;
+				}
+
+				if (it.Value.check_router_dynamic())
+				{
+                    _info = new Abelkhan.hub_info();
+                    _info.hub_name = hash_hubproxy(client_uuid, hub_type);
+                    _info.hub_type = it.Value._hub_type;
+
+                    return true;
 				}
 
 				var info = new Abelkhan.hub_info();
