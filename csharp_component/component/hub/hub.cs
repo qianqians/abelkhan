@@ -423,6 +423,11 @@ namespace Hub
             }
         }
 
+        public static async Task migrate_client(string client_uuid, string src_hub)
+        {
+            await on_migrate_client.Invoke(client_uuid, src_hub);
+        }
+
         private async Task<long> poll()
         {
             
@@ -573,6 +578,8 @@ namespace Hub
         public event Action<string> on_client_msg;
 
         public event Action<string> on_direct_client_disconnect;
+
+        public static event Func<string, string, Task> on_migrate_client;
 
     }
 }

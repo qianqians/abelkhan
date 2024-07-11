@@ -19,6 +19,23 @@ namespace Hub
             _gate_call_hub_module.on_client_disconnect += client_disconnect;
             _gate_call_hub_module.on_client_exception += client_exception;
             _gate_call_hub_module.on_client_call_hub += client_call_hub;
+            _gate_call_hub_module.on_migrate_client += _gate_call_hub_module_on_migrate_client;
+        }
+
+        private void _gate_call_hub_module_on_migrate_client(string client_uuid, string target_hub)
+        {
+            try
+            {
+                if (Hub._hubs.get_hub(target_hub, out var _proxy))
+                {
+                    _proxy.client_seep(client_uuid);
+                    _proxy.migrate_client(client_uuid);
+                }
+            }
+            catch (System.Exception e)
+            {
+                Log.Log.err("on_migrate_client exception:{0}", e);
+            }
         }
 
         public void client_disconnect(String client_uuid)

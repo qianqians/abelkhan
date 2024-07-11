@@ -304,6 +304,13 @@ namespace avatar
                     is_register = true;
                 }
             }
+
+            Hub.Hub.on_migrate_client += Hub_on_migrate_client;
+        }
+
+        private async Task Hub_on_migrate_client(string client_uuid, string src_hub)
+        {
+            await load_from_remote(client_uuid, src_hub);
         }
 
         public void init_data_db_opt(Action<AvatarDataDBOptions> configureOptions)
@@ -311,13 +318,13 @@ namespace avatar
             configureOptions.Invoke(opt);
         }
 
-        private void _avatar_Module_on_get_remote_avatar(long guid)
+        private void _avatar_Module_on_get_remote_avatar(string client_uuid)
         {
             var rsp = _avatar_Module.rsp as avatar_get_remote_avatar_rsp;
 
-            if (avatar_guid.TryGetValue(guid, out var _avatar))
+            if (avatar_client_uuid.TryGetValue(client_uuid, out var _avatar))
             {
-                rsp.rsp(_avatar.get_db_doc().ToBson());
+                rsp.rsp(_avatar.Guid, _avatar.get_db_doc().ToBson());
             }
             else
             {
@@ -445,11 +452,11 @@ namespace avatar
             return avatar;
         }
 
-        public Task<Avatar> load_from_remote(long guid, string client_uuid, string other_hub)
+        public Task<Avatar> load_from_remote(string client_uuid, string other_hub)
         {
             var task = new TaskCompletionSource<Avatar>();
 
-            _avatar_Caller.get_hub(other_hub).get_remote_avatar(guid).callBack((doc_bin) =>
+            _avatar_Caller.get_hub(other_hub).get_remote_avatar(client_uuid).callBack((guid, doc_bin) =>
             {
                 var avatar = new Avatar(this);
 

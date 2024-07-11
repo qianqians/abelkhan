@@ -21,6 +21,21 @@ namespace Hub
             _hub_call_hub_module.on_reg_hub += reg_hub;
             _hub_call_hub_module.on_seep_client_gate += seep_client_gate;
             _hub_call_hub_module.on_hub_call_hub_mothed += hub_call_hub_mothed;
+            _hub_call_hub_module.on_migrate_client += _hub_call_hub_module_on_migrate_client;
+        }
+
+        private async void _hub_call_hub_module_on_migrate_client(string client_uuid)
+        {
+            Log.Log.trace("on_migrate_client:{0}!", client_uuid);
+
+            if (_hubmanager.get_hub(_hub_call_hub_module.current_ch.Value, out HubProxy _proxy))
+            {
+                if (_gatemanager.get_gateproxy(client_uuid, out var _pGate))
+                {
+                    await Hub.migrate_client(client_uuid, _proxy.name);
+                    _pGate.migrate_client_done(client_uuid);
+                }
+            }
         }
 
         public void reg_hub(string hub_name, string hub_type)

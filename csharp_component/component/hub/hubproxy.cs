@@ -60,6 +60,11 @@ namespace Hub
             _hub_call_hub_caller.seep_client_gate(client_uuid, Hub._gates.get_client_gate_name(client_uuid));
         }
 
+        public void migrate_client(string client_uuid)
+        {
+            _hub_call_hub_caller.migrate_client(client_uuid);
+        }
+
         public readonly string name;
         public readonly string type;
         public Abelkhan.Ichannel _redis_ch;
