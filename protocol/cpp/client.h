@@ -53,6 +53,16 @@ namespace abelkhan
             call_module_method("gate_call_client_call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
         }
 
+        void migrate_client_start(){
+            msgpack11::MsgPack::array _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee;
+            call_module_method("gate_call_client_migrate_client_start", _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee);
+        }
+
+        void migrate_client_done(){
+            msgpack11::MsgPack::array _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c;
+            call_module_method("gate_call_client_migrate_client_done", _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c);
+        }
+
     };
 /*this module code is codegen by abelkhan codegen for cpp*/
     class gate_call_client_module : public Imodule, public std::enable_shared_from_this<gate_call_client_module>{
@@ -64,6 +74,8 @@ namespace abelkhan
         void Init(std::shared_ptr<modulemng> _modules){
             _modules->reg_method("gate_call_client_ntf_cuuid", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::ntf_cuuid, this, std::placeholders::_1)));
             _modules->reg_method("gate_call_client_call_client", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::call_client, this, std::placeholders::_1)));
+            _modules->reg_method("gate_call_client_migrate_client_start", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::migrate_client_start, this, std::placeholders::_1)));
+            _modules->reg_method("gate_call_client_migrate_client_done", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::migrate_client_done, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string)> sig_ntf_cuuid;
@@ -77,6 +89,16 @@ namespace abelkhan
             auto _hub_name = inArray[0].string_value();
             auto _rpc_argv = inArray[1].binary_items();
             sig_call_client.emit(_hub_name, _rpc_argv);
+        }
+
+        concurrent::signals<void()> sig_migrate_client_start;
+        void migrate_client_start(const msgpack11::MsgPack::array& inArray){
+            sig_migrate_client_start.emit();
+        }
+
+        concurrent::signals<void()> sig_migrate_client_done;
+        void migrate_client_done(const msgpack11::MsgPack::array& inArray){
+            sig_migrate_client_done.emit();
         }
 
     };

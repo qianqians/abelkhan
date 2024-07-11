@@ -41,6 +41,13 @@ export class gate_call_hub_caller extends abelkhan.Icaller {
         this.call_module_method("gate_call_hub_client_call_hub", _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263);
     }
 
+    public migrate_client(client_uuid:string, target_hub:string){
+        let _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9:any[] = [];
+        _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.push(client_uuid);
+        _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.push(target_hub);
+        this.call_module_method("gate_call_hub_migrate_client", _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9);
+    }
+
 }
 export class hub_call_hub_reg_hub_cb{
     private cb_uuid : number;
@@ -231,6 +238,13 @@ export class hub_call_hub_caller extends abelkhan.Icaller {
         this.call_module_method("hub_call_hub_hub_call_hub_mothed", _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e);
     }
 
+    public migrate_client(client_uuid:string, guid:number){
+        let _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9:any[] = [];
+        _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.push(client_uuid);
+        _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.push(guid);
+        this.call_module_method("hub_call_hub_migrate_client", _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9);
+    }
+
 }
 /*this cb code is codegen by abelkhan for ts*/
 export class hub_call_client_rsp_cb extends abelkhan.Imodule {
@@ -378,10 +392,12 @@ export class gate_call_hub_module extends abelkhan.Imodule {
         this.modules.reg_method("gate_call_hub_client_disconnect", [this, this.client_disconnect.bind(this)]);
         this.modules.reg_method("gate_call_hub_client_exception", [this, this.client_exception.bind(this)]);
         this.modules.reg_method("gate_call_hub_client_call_hub", [this, this.client_call_hub.bind(this)]);
+        this.modules.reg_method("gate_call_hub_migrate_client", [this, this.migrate_client.bind(this)]);
 
         this.cb_client_disconnect = null;
         this.cb_client_exception = null;
         this.cb_client_call_hub = null;
+        this.cb_migrate_client = null;
     }
 
     public cb_client_disconnect : (client_uuid:string)=>void | null;
@@ -409,6 +425,16 @@ export class gate_call_hub_module extends abelkhan.Imodule {
         _argv_.push(inArray[1]);
         if (this.cb_client_call_hub){
             this.cb_client_call_hub.apply(null, _argv_);
+        }
+    }
+
+    public cb_migrate_client : (client_uuid:string, target_hub:string)=>void | null;
+    migrate_client(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        _argv_.push(inArray[1]);
+        if (this.cb_migrate_client){
+            this.cb_migrate_client.apply(null, _argv_);
         }
     }
 
@@ -460,10 +486,12 @@ export class hub_call_hub_module extends abelkhan.Imodule {
         this.modules.reg_method("hub_call_hub_reg_hub", [this, this.reg_hub.bind(this)]);
         this.modules.reg_method("hub_call_hub_seep_client_gate", [this, this.seep_client_gate.bind(this)]);
         this.modules.reg_method("hub_call_hub_hub_call_hub_mothed", [this, this.hub_call_hub_mothed.bind(this)]);
+        this.modules.reg_method("hub_call_hub_migrate_client", [this, this.migrate_client.bind(this)]);
 
         this.cb_reg_hub = null;
         this.cb_seep_client_gate = null;
         this.cb_hub_call_hub_mothed = null;
+        this.cb_migrate_client = null;
     }
 
     public cb_reg_hub : (hub_name:string, hub_type:string)=>void | null;
@@ -498,6 +526,16 @@ export class hub_call_hub_module extends abelkhan.Imodule {
         _argv_.push(inArray[0]);
         if (this.cb_hub_call_hub_mothed){
             this.cb_hub_call_hub_mothed.apply(null, _argv_);
+        }
+    }
+
+    public cb_migrate_client : (client_uuid:string, guid:number)=>void | null;
+    migrate_client(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        _argv_.push(inArray[1]);
+        if (this.cb_migrate_client){
+            this.cb_migrate_client.apply(null, _argv_);
         }
     }
 

@@ -60,6 +60,13 @@ namespace abelkhan
             call_module_method("gate_call_hub_client_call_hub", _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263);
         }
 
+        void migrate_client(std::string client_uuid, std::string target_hub){
+            msgpack11::MsgPack::array _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9;
+            _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.push_back(client_uuid);
+            _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.push_back(target_hub);
+            call_module_method("gate_call_hub_migrate_client", _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9);
+        }
+
     };
     class hub_call_hub_rsp_cb;
     class hub_call_hub_reg_hub_cb : public std::enable_shared_from_this<hub_call_hub_reg_hub_cb>{
@@ -233,6 +240,13 @@ namespace abelkhan
             call_module_method("hub_call_hub_hub_call_hub_mothed", _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e);
         }
 
+        void migrate_client(std::string client_uuid, int64_t guid){
+            msgpack11::MsgPack::array _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9;
+            _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.push_back(client_uuid);
+            _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.push_back(guid);
+            call_module_method("hub_call_hub_migrate_client", _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9);
+        }
+
     };
 /*this cb code is codegen by abelkhan for cpp*/
     class hub_call_client_rsp_cb : public Imodule, public std::enable_shared_from_this<hub_call_client_rsp_cb>{
@@ -390,6 +404,7 @@ namespace abelkhan
             _modules->reg_method("gate_call_hub_client_disconnect", std::make_tuple(shared_from_this(), std::bind(&gate_call_hub_module::client_disconnect, this, std::placeholders::_1)));
             _modules->reg_method("gate_call_hub_client_exception", std::make_tuple(shared_from_this(), std::bind(&gate_call_hub_module::client_exception, this, std::placeholders::_1)));
             _modules->reg_method("gate_call_hub_client_call_hub", std::make_tuple(shared_from_this(), std::bind(&gate_call_hub_module::client_call_hub, this, std::placeholders::_1)));
+            _modules->reg_method("gate_call_hub_migrate_client", std::make_tuple(shared_from_this(), std::bind(&gate_call_hub_module::migrate_client, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string)> sig_client_disconnect;
@@ -409,6 +424,13 @@ namespace abelkhan
             auto _client_uuid = inArray[0].string_value();
             auto _rpc_argv = inArray[1].binary_items();
             sig_client_call_hub.emit(_client_uuid, _rpc_argv);
+        }
+
+        concurrent::signals<void(std::string, std::string)> sig_migrate_client;
+        void migrate_client(const msgpack11::MsgPack::array& inArray){
+            auto _client_uuid = inArray[0].string_value();
+            auto _target_hub = inArray[1].string_value();
+            sig_migrate_client.emit(_client_uuid, _target_hub);
         }
 
     };
@@ -471,6 +493,7 @@ namespace abelkhan
             _modules->reg_method("hub_call_hub_reg_hub", std::make_tuple(shared_from_this(), std::bind(&hub_call_hub_module::reg_hub, this, std::placeholders::_1)));
             _modules->reg_method("hub_call_hub_seep_client_gate", std::make_tuple(shared_from_this(), std::bind(&hub_call_hub_module::seep_client_gate, this, std::placeholders::_1)));
             _modules->reg_method("hub_call_hub_hub_call_hub_mothed", std::make_tuple(shared_from_this(), std::bind(&hub_call_hub_module::hub_call_hub_mothed, this, std::placeholders::_1)));
+            _modules->reg_method("hub_call_hub_migrate_client", std::make_tuple(shared_from_this(), std::bind(&hub_call_hub_module::migrate_client, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string, std::string)> sig_reg_hub;
@@ -497,6 +520,13 @@ namespace abelkhan
         void hub_call_hub_mothed(const msgpack11::MsgPack::array& inArray){
             auto _rpc_argv = inArray[0].binary_items();
             sig_hub_call_hub_mothed.emit(_rpc_argv);
+        }
+
+        concurrent::signals<void(std::string, int64_t)> sig_migrate_client;
+        void migrate_client(const msgpack11::MsgPack::array& inArray){
+            auto _client_uuid = inArray[0].string_value();
+            auto _guid = inArray[1].int64_value();
+            sig_migrate_client.emit(_client_uuid, _guid);
         }
 
     };

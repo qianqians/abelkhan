@@ -43,6 +43,16 @@ namespace Abelkhan
             call_module_method("gate_call_client_call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
         }
 
+        public void migrate_client_start(){
+            var _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee = new ArrayList();
+            call_module_method("gate_call_client_migrate_client_start", _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee);
+        }
+
+        public void migrate_client_done(){
+            var _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c = new ArrayList();
+            call_module_method("gate_call_client_migrate_client_done", _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c);
+        }
+
     }
 /*this module code is codegen by Abelkhan codegen for c#*/
     public class gate_call_client_module : Abelkhan.Imodule {
@@ -52,6 +62,8 @@ namespace Abelkhan
             modules = _modules;
             modules.reg_method("gate_call_client_ntf_cuuid", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, ntf_cuuid));
             modules.reg_method("gate_call_client_call_client", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, call_client));
+            modules.reg_method("gate_call_client_migrate_client_start", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, migrate_client_start));
+            modules.reg_method("gate_call_client_migrate_client_done", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, migrate_client_done));
         }
 
         public event Action<string> on_ntf_cuuid;
@@ -68,6 +80,20 @@ namespace Abelkhan
             var _rpc_argv = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
             if (on_call_client != null){
                 on_call_client(_hub_name, _rpc_argv);
+            }
+        }
+
+        public event Action on_migrate_client_start;
+        public void migrate_client_start(IList<MsgPack.MessagePackObject> inArray){
+            if (on_migrate_client_start != null){
+                on_migrate_client_start();
+            }
+        }
+
+        public event Action on_migrate_client_done;
+        public void migrate_client_done(IList<MsgPack.MessagePackObject> inArray){
+            if (on_migrate_client_done != null){
+                on_migrate_client_done();
             }
         }
 

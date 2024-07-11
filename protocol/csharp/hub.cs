@@ -49,6 +49,13 @@ namespace Abelkhan
             call_module_method("gate_call_hub_client_call_hub", _argv_e4b1f5c3_57b2_3ae3_b088_1e3a5d705263);
         }
 
+        public void migrate_client(string client_uuid, string target_hub){
+            var _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9 = new ArrayList();
+            _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.Add(client_uuid);
+            _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.Add(target_hub);
+            call_module_method("gate_call_hub_migrate_client", _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9);
+        }
+
     }
     public class hub_call_hub_reg_hub_cb
     {
@@ -303,6 +310,13 @@ namespace Abelkhan
             call_module_method("hub_call_hub_hub_call_hub_mothed", _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e);
         }
 
+        public void migrate_client(string client_uuid, Int64 guid){
+            var _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9 = new ArrayList();
+            _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.Add(client_uuid);
+            _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.Add(guid);
+            call_module_method("hub_call_hub_migrate_client", _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9);
+        }
+
     }
 /*this cb code is codegen by Abelkhan for c#*/
     public class hub_call_client_rsp_cb : Abelkhan.Imodule {
@@ -485,6 +499,7 @@ namespace Abelkhan
             modules.reg_method("gate_call_hub_client_disconnect", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, client_disconnect));
             modules.reg_method("gate_call_hub_client_exception", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, client_exception));
             modules.reg_method("gate_call_hub_client_call_hub", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, client_call_hub));
+            modules.reg_method("gate_call_hub_migrate_client", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, migrate_client));
         }
 
         public event Action<string> on_client_disconnect;
@@ -509,6 +524,15 @@ namespace Abelkhan
             var _rpc_argv = ((MsgPack.MessagePackObject)inArray[1]).AsBinary();
             if (on_client_call_hub != null){
                 on_client_call_hub(_client_uuid, _rpc_argv);
+            }
+        }
+
+        public event Action<string, string> on_migrate_client;
+        public void migrate_client(IList<MsgPack.MessagePackObject> inArray){
+            var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _target_hub = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            if (on_migrate_client != null){
+                on_migrate_client(_client_uuid, _target_hub);
             }
         }
 
@@ -564,6 +588,7 @@ namespace Abelkhan
             modules.reg_method("hub_call_hub_reg_hub", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, reg_hub));
             modules.reg_method("hub_call_hub_seep_client_gate", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, seep_client_gate));
             modules.reg_method("hub_call_hub_hub_call_hub_mothed", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, hub_call_hub_mothed));
+            modules.reg_method("hub_call_hub_migrate_client", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, migrate_client));
         }
 
         public event Action<string, string> on_reg_hub;
@@ -595,6 +620,15 @@ namespace Abelkhan
             var _rpc_argv = ((MsgPack.MessagePackObject)inArray[0]).AsBinary();
             if (on_hub_call_hub_mothed != null){
                 on_hub_call_hub_mothed(_rpc_argv);
+            }
+        }
+
+        public event Action<string, Int64> on_migrate_client;
+        public void migrate_client(IList<MsgPack.MessagePackObject> inArray){
+            var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _guid = ((MsgPack.MessagePackObject)inArray[1]).AsInt64();
+            if (on_migrate_client != null){
+                on_migrate_client(_client_uuid, _guid);
             }
         }
 

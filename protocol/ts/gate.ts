@@ -216,6 +216,11 @@ export class client_call_gate_caller extends abelkhan.Icaller {
         this.call_module_method("client_call_gate_forward_client_call_hub", _argv_eb5e7a5e_3532_32ad_81f9_9b27aa6833e5);
     }
 
+    public migrate_client_confirm(){
+        let _argv_59ca1ca6_9a1a_39fe_a434_c0cb1665072a:any[] = [];
+        this.call_module_method("client_call_gate_migrate_client_confirm", _argv_59ca1ca6_9a1a_39fe_a434_c0cb1665072a);
+    }
+
 }
 export class hub_call_gate_reg_hub_cb{
     private cb_uuid : number;
@@ -370,12 +375,13 @@ export class hub_call_gate_caller extends abelkhan.Icaller {
         }
     }
 
-    public reg_hub(hub_name:string, hub_type:string){
+    public reg_hub(hub_name:string, hub_type:string, router_type:string){
         let uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106 = Math.round(this.uuid_9796175c_1119_3833_bf31_5ee139b40edc++);
 
         let _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7:any[] = [uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106];
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(hub_name);
         _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(hub_type);
+        _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7.push(router_type);
         this.call_module_method("hub_call_gate_reg_hub", _argv_e096e269_1e08_36d1_9ba4_b7db8c8ff8a7);
 
         let cb_reg_hub_obj = new hub_call_gate_reg_hub_cb(uuid_98c51fef_38ce_530a_b8e9_1adcd50b1106, rsp_cb_hub_call_gate_handle);
@@ -441,6 +447,12 @@ export class hub_call_gate_caller extends abelkhan.Icaller {
         this.call_module_method("hub_call_gate_forward_hub_call_global_client", _argv_f69241c3_642a_3b51_bb37_cf638176493a);
     }
 
+    public migrate_client_done(client_uuid:string){
+        let _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c:any[] = [];
+        _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.push(client_uuid);
+        this.call_module_method("hub_call_gate_migrate_client_done", _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c);
+    }
+
 }
 /*this module code is codegen by abelkhan codegen for typescript*/
 export class client_call_gate_heartbeats_rsp extends abelkhan.Icaller {
@@ -491,10 +503,12 @@ export class client_call_gate_module extends abelkhan.Imodule {
         this.modules.reg_method("client_call_gate_heartbeats", [this, this.heartbeats.bind(this)]);
         this.modules.reg_method("client_call_gate_get_hub_info", [this, this.get_hub_info.bind(this)]);
         this.modules.reg_method("client_call_gate_forward_client_call_hub", [this, this.forward_client_call_hub.bind(this)]);
+        this.modules.reg_method("client_call_gate_migrate_client_confirm", [this, this.migrate_client_confirm.bind(this)]);
 
         this.cb_heartbeats = null;
         this.cb_get_hub_info = null;
         this.cb_forward_client_call_hub = null;
+        this.cb_migrate_client_confirm = null;
     }
 
     public cb_heartbeats : ()=>void | null;
@@ -527,6 +541,14 @@ export class client_call_gate_module extends abelkhan.Imodule {
         _argv_.push(inArray[1]);
         if (this.cb_forward_client_call_hub){
             this.cb_forward_client_call_hub.apply(null, _argv_);
+        }
+    }
+
+    public cb_migrate_client_confirm : ()=>void | null;
+    migrate_client_confirm(inArray:any[]){
+        let _argv_:any[] = [];
+        if (this.cb_migrate_client_confirm){
+            this.cb_migrate_client_confirm.apply(null, _argv_);
         }
     }
 
@@ -583,6 +605,7 @@ export class hub_call_gate_module extends abelkhan.Imodule {
         this.modules.reg_method("hub_call_gate_forward_hub_call_client", [this, this.forward_hub_call_client.bind(this)]);
         this.modules.reg_method("hub_call_gate_forward_hub_call_group_client", [this, this.forward_hub_call_group_client.bind(this)]);
         this.modules.reg_method("hub_call_gate_forward_hub_call_global_client", [this, this.forward_hub_call_global_client.bind(this)]);
+        this.modules.reg_method("hub_call_gate_migrate_client_done", [this, this.migrate_client_done.bind(this)]);
 
         this.cb_reg_hub = null;
         this.cb_tick_hub_health = null;
@@ -592,14 +615,16 @@ export class hub_call_gate_module extends abelkhan.Imodule {
         this.cb_forward_hub_call_client = null;
         this.cb_forward_hub_call_group_client = null;
         this.cb_forward_hub_call_global_client = null;
+        this.cb_migrate_client_done = null;
     }
 
-    public cb_reg_hub : (hub_name:string, hub_type:string)=>void | null;
+    public cb_reg_hub : (hub_name:string, hub_type:string, router_type:string)=>void | null;
     reg_hub(inArray:any[]){
         let _cb_uuid = inArray[0];
         let _argv_:any[] = [];
         _argv_.push(inArray[1]);
         _argv_.push(inArray[2]);
+        _argv_.push(inArray[3]);
         this.rsp = new hub_call_gate_reg_hub_rsp(this.current_ch, _cb_uuid);
         if (this.cb_reg_hub){
             this.cb_reg_hub.apply(null, _argv_);
@@ -676,6 +701,15 @@ export class hub_call_gate_module extends abelkhan.Imodule {
         _argv_.push(inArray[0]);
         if (this.cb_forward_hub_call_global_client){
             this.cb_forward_hub_call_global_client.apply(null, _argv_);
+        }
+    }
+
+    public cb_migrate_client_done : (client_uuid:string)=>void | null;
+    migrate_client_done(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        if (this.cb_migrate_client_done){
+            this.cb_migrate_client_done.apply(null, _argv_);
         }
     }
 

@@ -34,6 +34,16 @@ export class gate_call_client_caller extends abelkhan.Icaller {
         this.call_module_method("gate_call_client_call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
     }
 
+    public migrate_client_start(){
+        let _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee:any[] = [];
+        this.call_module_method("gate_call_client_migrate_client_start", _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee);
+    }
+
+    public migrate_client_done(){
+        let _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c:any[] = [];
+        this.call_module_method("gate_call_client_migrate_client_done", _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c);
+    }
+
 }
 /*this module code is codegen by abelkhan codegen for typescript*/
 export class gate_call_client_module extends abelkhan.Imodule {
@@ -43,9 +53,13 @@ export class gate_call_client_module extends abelkhan.Imodule {
         this.modules = modules;
         this.modules.reg_method("gate_call_client_ntf_cuuid", [this, this.ntf_cuuid.bind(this)]);
         this.modules.reg_method("gate_call_client_call_client", [this, this.call_client.bind(this)]);
+        this.modules.reg_method("gate_call_client_migrate_client_start", [this, this.migrate_client_start.bind(this)]);
+        this.modules.reg_method("gate_call_client_migrate_client_done", [this, this.migrate_client_done.bind(this)]);
 
         this.cb_ntf_cuuid = null;
         this.cb_call_client = null;
+        this.cb_migrate_client_start = null;
+        this.cb_migrate_client_done = null;
     }
 
     public cb_ntf_cuuid : (cuuid:string)=>void | null;
@@ -64,6 +78,22 @@ export class gate_call_client_module extends abelkhan.Imodule {
         _argv_.push(inArray[1]);
         if (this.cb_call_client){
             this.cb_call_client.apply(null, _argv_);
+        }
+    }
+
+    public cb_migrate_client_start : ()=>void | null;
+    migrate_client_start(inArray:any[]){
+        let _argv_:any[] = [];
+        if (this.cb_migrate_client_start){
+            this.cb_migrate_client_start.apply(null, _argv_);
+        }
+    }
+
+    public cb_migrate_client_done : ()=>void | null;
+    migrate_client_done(inArray:any[]){
+        let _argv_:any[] = [];
+        if (this.cb_migrate_client_done){
+            this.cb_migrate_client_done.apply(null, _argv_);
         }
     }
 
