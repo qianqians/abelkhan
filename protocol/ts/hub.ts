@@ -238,10 +238,9 @@ export class hub_call_hub_caller extends abelkhan.Icaller {
         this.call_module_method("hub_call_hub_hub_call_hub_mothed", _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e);
     }
 
-    public migrate_client(client_uuid:string, guid:number){
+    public migrate_client(client_uuid:string){
         let _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9:any[] = [];
         _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.push(client_uuid);
-        _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.push(guid);
         this.call_module_method("hub_call_hub_migrate_client", _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9);
     }
 
@@ -529,11 +528,10 @@ export class hub_call_hub_module extends abelkhan.Imodule {
         }
     }
 
-    public cb_migrate_client : (client_uuid:string, guid:number)=>void | null;
+    public cb_migrate_client : (client_uuid:string)=>void | null;
     migrate_client(inArray:any[]){
         let _argv_:any[] = [];
         _argv_.push(inArray[0]);
-        _argv_.push(inArray[1]);
         if (this.cb_migrate_client){
             this.cb_migrate_client.apply(null, _argv_);
         }

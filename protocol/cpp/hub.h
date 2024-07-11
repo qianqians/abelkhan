@@ -240,10 +240,9 @@ namespace abelkhan
             call_module_method("hub_call_hub_hub_call_hub_mothed", _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e);
         }
 
-        void migrate_client(std::string client_uuid, int64_t guid){
+        void migrate_client(std::string client_uuid){
             msgpack11::MsgPack::array _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9;
             _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.push_back(client_uuid);
-            _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.push_back(guid);
             call_module_method("hub_call_hub_migrate_client", _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9);
         }
 
@@ -522,11 +521,10 @@ namespace abelkhan
             sig_hub_call_hub_mothed.emit(_rpc_argv);
         }
 
-        concurrent::signals<void(std::string, int64_t)> sig_migrate_client;
+        concurrent::signals<void(std::string)> sig_migrate_client;
         void migrate_client(const msgpack11::MsgPack::array& inArray){
             auto _client_uuid = inArray[0].string_value();
-            auto _guid = inArray[1].int64_value();
-            sig_migrate_client.emit(_client_uuid, _guid);
+            sig_migrate_client.emit(_client_uuid);
         }
 
     };

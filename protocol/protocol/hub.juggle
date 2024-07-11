@@ -20,7 +20,7 @@ module hub_call_hub{
 	
 	hub_call_hub_mothed ntf(bin rpc_argv);
 
-	migrate_client ntf(string client_uuid, int64 guid);
+	migrate_client ntf(string client_uuid);
 	
 }
 

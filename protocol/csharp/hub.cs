@@ -310,10 +310,9 @@ namespace Abelkhan
             call_module_method("hub_call_hub_hub_call_hub_mothed", _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e);
         }
 
-        public void migrate_client(string client_uuid, Int64 guid){
+        public void migrate_client(string client_uuid){
             var _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9 = new ArrayList();
             _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.Add(client_uuid);
-            _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.Add(guid);
             call_module_method("hub_call_hub_migrate_client", _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9);
         }
 
@@ -623,12 +622,11 @@ namespace Abelkhan
             }
         }
 
-        public event Action<string, Int64> on_migrate_client;
+        public event Action<string> on_migrate_client;
         public void migrate_client(IList<MsgPack.MessagePackObject> inArray){
             var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
-            var _guid = ((MsgPack.MessagePackObject)inArray[1]).AsInt64();
             if (on_migrate_client != null){
-                on_migrate_client(_client_uuid, _guid);
+                on_migrate_client(_client_uuid);
             }
         }
 

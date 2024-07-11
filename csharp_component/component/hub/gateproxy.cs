@@ -25,7 +25,7 @@ namespace Hub
         {
             Log.Log.trace("begin connect gate server");
 
-			_hub_call_gate_caller.reg_hub(Hub.name, Hub.type).callBack(() =>
+			_hub_call_gate_caller.reg_hub(Hub.name, Hub.type, Hub.router_type).callBack(() =>
 			{
 				Log.Log.trace("connect gate server sucessed");
 			}, () =>

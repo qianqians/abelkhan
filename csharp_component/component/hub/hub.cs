@@ -19,7 +19,7 @@ namespace Hub
             Log.Log.err("unhandle exception:{0}", ex.ToString());
         }
 
-        public Hub(string config_file, string _hub_name, string _hub_type)
+        public Hub(string config_file, string _hub_name, string _hub_type, string _router_type)
 		{
             _config = new Abelkhan.Config(config_file);
 			_center_config = _config.get_value_dict("center");
@@ -27,6 +27,7 @@ namespace Hub
             _config = _config.get_value_dict(_hub_name);
             name = $"{_hub_name}_{Guid.NewGuid().ToString("N")}";
             type = _hub_type;
+            router_type = _router_type;
 
             var log_level = _config.get_value_string("log_level");
             if (log_level == "trace")
@@ -516,6 +517,7 @@ namespace Hub
 
         public static string name;
         public static string type;
+        public static string router_type;
         public static Addressinfo tcp_outside_address = null;
         public static Addressinfo websocket_outside_address = null;
         public static Addressinfo enet_outside_address = null;

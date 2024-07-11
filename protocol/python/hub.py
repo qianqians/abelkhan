@@ -184,10 +184,9 @@ class hub_call_hub_caller(Icaller):
         _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e.append(rpc_argv)
         self.call_module_method("hub_call_hub_hub_call_hub_mothed", _argv_a9f78ac2_6f35_36c5_8d6f_32629449149e)
 
-    def migrate_client(self, client_uuid:str, guid:int):
+    def migrate_client(self, client_uuid:str):
         _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9 = []
         _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.append(client_uuid)
-        _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9.append(guid)
         self.call_module_method("hub_call_hub_migrate_client", _argv_871a9539_533c_387f_b7f2_4bd2ac7f4ef9)
 
 #this cb code is codegen by abelkhan for python
@@ -370,7 +369,7 @@ class hub_call_hub_module(Imodule):
         self.cb_reg_hub : Callable[[str, str]] = None
         self.cb_seep_client_gate : Callable[[str, str]] = None
         self.cb_hub_call_hub_mothed : Callable[[bytes]] = None
-        self.cb_migrate_client : Callable[[str, int]] = None
+        self.cb_migrate_client : Callable[[str]] = None
 
     def reg_hub(self, inArray:list):
         _cb_uuid = inArray[0]
@@ -397,9 +396,8 @@ class hub_call_hub_module(Imodule):
 
     def migrate_client(self, inArray:list):
         _client_uuid = inArray[0]
-        _guid = inArray[1]
         if self.cb_migrate_client:
-            self.cb_migrate_client(_client_uuid, _guid)
+            self.cb_migrate_client(_client_uuid)
 
 class hub_call_client_module(Imodule):
     def __init__(self, modules:modulemng):

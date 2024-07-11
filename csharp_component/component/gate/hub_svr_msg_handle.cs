@@ -23,10 +23,10 @@ namespace Gate {
 			_hub_call_gate_module.on_forward_hub_call_global_client += forward_hub_call_global_client;
 		}
 
-		public void reg_hub(string hub_name, string hub_type) {
+		public void reg_hub(string hub_name, string hub_type, string router_type) {
 			var rsp = (Abelkhan.hub_call_gate_reg_hub_rsp)_hub_call_gate_module.rsp.Value;
 			var ch = _hub_call_gate_module.current_ch.Value;
-			var proxy = _hubsvrmanager.reg_hub(hub_name, hub_type, ch);
+			var proxy = _hubsvrmanager.reg_hub(hub_name, hub_type, router_type, ch);
 			rsp.rsp();
 		}
 

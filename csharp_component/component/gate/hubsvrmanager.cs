@@ -7,17 +7,20 @@ namespace Gate
 	public class HubProxy {
 		public string _hub_name;
 		public string _hub_type;
-		public uint _tick_time;
+		public string _router_type;
+
+        public uint _tick_time;
 		public Abelkhan.Ichannel _ch;
 
 		private readonly Abelkhan.gate_call_hub_caller _gate_call_hub_caller;
 
-		public HubProxy(string hub_name, string hub_type, Abelkhan.Ichannel ch) {
+		public HubProxy(string hub_name, string hub_type, string router_type, Abelkhan.Ichannel ch) {
 			_tick_time = 0;
 
 			_hub_name = hub_name;
 			_hub_type = hub_type;
-			_ch = ch;
+            _router_type = router_type;
+            _ch = ch;
 
 			_gate_call_hub_caller = new Abelkhan.gate_call_hub_caller(_ch, Abelkhan.ModuleMgrHandle._modulemng);
 		}
@@ -33,6 +36,11 @@ namespace Gate
 		public void client_call_hub(string client_cuuid, byte[] data) {
 			_gate_call_hub_caller.client_call_hub(client_cuuid, data);
 		}
+
+		public bool check_router_dynamic()
+		{
+			return _router_type == "dynamic";
+		}
 	}
 
 	public class HubSvrManager
@@ -46,9 +54,9 @@ namespace Gate
 		{
 		}
 
-		public HubProxy reg_hub(string hub_name, string hub_type, Abelkhan.Ichannel ch)
+		public HubProxy reg_hub(string hub_name, string hub_type, string router_type, Abelkhan.Ichannel ch)
 		{
-			var _hubproxy = new HubProxy(hub_name, hub_type, ch);
+			var _hubproxy = new HubProxy(hub_name, hub_type, router_type, ch);
 
 			if (hub_name_proxy.TryGetValue(hub_name, out var proxy))
 			{
