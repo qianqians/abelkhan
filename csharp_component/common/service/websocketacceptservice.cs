@@ -5,6 +5,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using Fleck;
 
@@ -15,7 +16,7 @@ namespace Abelkhan
         private WebSocketServer _server;
 
         public event Action<Abelkhan.Ichannel> on_connect;
-        public WebsocketAcceptService(ushort port, bool is_ssl, string pfx)
+        public WebsocketAcceptService(ushort port, bool is_ssl, string pfx, string password)
         {
             if (!is_ssl)
             {
@@ -23,8 +24,11 @@ namespace Abelkhan
             }
             else
             {
-                _server = new WebSocketServer(string.Format("wss://0.0.0.0:{0}", port));
-                _server.Certificate = new X509Certificate2(pfx);
+                _server = new WebSocketServer(string.Format("wss://0.0.0.0:{0}", port))
+                {
+                    Certificate = new X509Certificate2(pfx, password),
+                    EnabledSslProtocols = SslProtocols.Tls12,
+                };
             }
 
             _server.Start(socket =>
@@ -32,6 +36,24 @@ namespace Abelkhan
                 var ch = new WebsocketChannel(socket);
                 ch.on_connect += on_connect;
             });
+
+            FleckLog.LogAction = (level, message, ex) => {
+                switch (level)
+                {
+                    case LogLevel.Debug:
+                        Log.Log.debug(message, ex);
+                        break;
+                    case LogLevel.Error:
+                        Log.Log.err(message, ex);
+                        break;
+                    case LogLevel.Warn:
+                        Log.Log.warn(message, ex);
+                        break;
+                    default:
+                        Log.Log.info(message, ex);
+                        break;
+                }
+            };
         }
 
     }

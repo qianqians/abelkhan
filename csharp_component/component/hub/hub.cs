@@ -184,10 +184,13 @@ namespace Hub
                     websocket_outside_address.port = (ushort)_config.get_value_int("websocket_outside_port");
                     var is_ssl = _config.get_value_bool("is_ssl");
                     string pfx = "";
-                    if (is_ssl) {
+                    string pwd = "";
+                    if (is_ssl)
+                    {
                         pfx = _config.get_value_string("pfx");
+                        pwd = _config.get_value_string("pwd");
                     }
-                    _websocketacceptservice = new Abelkhan.WebsocketAcceptService(websocket_outside_address.port, is_ssl, pfx);
+                    _websocketacceptservice = new Abelkhan.WebsocketAcceptService(websocket_outside_address.port, is_ssl, pfx, pwd);
                     _websocketacceptservice.on_connect += (ch) =>
                     {
                         lock (add_chs)
