@@ -33,7 +33,7 @@ namespace Hub
                 if (_gatemanager.get_gateproxy(client_uuid, out var _pGate))
                 {
                     await Hub.migrate_client(client_uuid, _proxy.name);
-                    _pGate.migrate_client_done(client_uuid);
+                    _pGate.migrate_client_done(client_uuid, _proxy.name, Hub.name);
                 }
             }
         }

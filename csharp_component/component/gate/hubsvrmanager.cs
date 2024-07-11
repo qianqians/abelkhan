@@ -37,6 +37,11 @@ namespace Gate
 			_gate_call_hub_caller.client_call_hub(client_cuuid, data);
 		}
 
+		public void migrate_client(string client_uuid, string target_hub)
+		{
+			_gate_call_hub_caller.migrate_client(client_uuid, target_hub);
+        }
+
 		public bool check_router_dynamic()
 		{
 			return _router_type == "dynamic";
@@ -45,7 +50,7 @@ namespace Gate
 
 	public class HubSvrManager
 	{
-		private readonly Random rd = new();
+		public readonly Random rd = new();
 		private readonly Dictionary<string, HubProxy> wait_destory_proxy = new();
 		private readonly Dictionary<string, HubProxy> hub_name_proxy = new();
 		private readonly Dictionary<Abelkhan.Ichannel, string> hub_channel_name = new();
@@ -111,7 +116,7 @@ namespace Gate
 				{
 					continue;
 				}
-				if (it.Value._tick_time > 100)
+				if (it.Value._tick_time > 50)
 				{
 					continue;
 				}

@@ -286,8 +286,10 @@ namespace Abelkhan
             call_module_method("client_call_gate_forward_client_call_hub", _argv_eb5e7a5e_3532_32ad_81f9_9b27aa6833e5);
         }
 
-        public void migrate_client_confirm(){
+        public void migrate_client_confirm(string src_hub, string target_hub){
             var _argv_59ca1ca6_9a1a_39fe_a434_c0cb1665072a = new ArrayList();
+            _argv_59ca1ca6_9a1a_39fe_a434_c0cb1665072a.Add(src_hub);
+            _argv_59ca1ca6_9a1a_39fe_a434_c0cb1665072a.Add(target_hub);
             call_module_method("client_call_gate_migrate_client_confirm", _argv_59ca1ca6_9a1a_39fe_a434_c0cb1665072a);
         }
 
@@ -581,9 +583,11 @@ namespace Abelkhan
             call_module_method("hub_call_gate_forward_hub_call_global_client", _argv_f69241c3_642a_3b51_bb37_cf638176493a);
         }
 
-        public void migrate_client_done(string client_uuid){
+        public void migrate_client_done(string client_uuid, string src_hub, string target_hub){
             var _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c = new ArrayList();
             _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.Add(client_uuid);
+            _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.Add(src_hub);
+            _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.Add(target_hub);
             call_module_method("hub_call_gate_migrate_client_done", _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c);
         }
 
@@ -674,10 +678,12 @@ namespace Abelkhan
             }
         }
 
-        public event Action on_migrate_client_confirm;
+        public event Action<string, string> on_migrate_client_confirm;
         public void migrate_client_confirm(IList<MsgPack.MessagePackObject> inArray){
+            var _src_hub = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _target_hub = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             if (on_migrate_client_confirm != null){
-                on_migrate_client_confirm();
+                on_migrate_client_confirm(_src_hub, _target_hub);
             }
         }
 
@@ -819,11 +825,13 @@ namespace Abelkhan
             }
         }
 
-        public event Action<string> on_migrate_client_done;
+        public event Action<string, string, string> on_migrate_client_done;
         public void migrate_client_done(IList<MsgPack.MessagePackObject> inArray){
             var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _src_hub = ((MsgPack.MessagePackObject)inArray[1]).AsString();
+            var _target_hub = ((MsgPack.MessagePackObject)inArray[2]).AsString();
             if (on_migrate_client_done != null){
-                on_migrate_client_done(_client_uuid);
+                on_migrate_client_done(_client_uuid, _src_hub, _target_hub);
             }
         }
 

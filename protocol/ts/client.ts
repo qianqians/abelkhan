@@ -34,13 +34,17 @@ export class gate_call_client_caller extends abelkhan.Icaller {
         this.call_module_method("gate_call_client_call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
     }
 
-    public migrate_client_start(){
+    public migrate_client_start(src_hub:string, target_hub:string){
         let _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee:any[] = [];
+        _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee.push(src_hub);
+        _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee.push(target_hub);
         this.call_module_method("gate_call_client_migrate_client_start", _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee);
     }
 
-    public migrate_client_done(){
+    public migrate_client_done(src_hub:string, target_hub:string){
         let _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c:any[] = [];
+        _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.push(src_hub);
+        _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.push(target_hub);
         this.call_module_method("gate_call_client_migrate_client_done", _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c);
     }
 
@@ -81,17 +85,21 @@ export class gate_call_client_module extends abelkhan.Imodule {
         }
     }
 
-    public cb_migrate_client_start : ()=>void | null;
+    public cb_migrate_client_start : (src_hub:string, target_hub:string)=>void | null;
     migrate_client_start(inArray:any[]){
         let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        _argv_.push(inArray[1]);
         if (this.cb_migrate_client_start){
             this.cb_migrate_client_start.apply(null, _argv_);
         }
     }
 
-    public cb_migrate_client_done : ()=>void | null;
+    public cb_migrate_client_done : (src_hub:string, target_hub:string)=>void | null;
     migrate_client_done(inArray:any[]){
         let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        _argv_.push(inArray[1]);
         if (this.cb_migrate_client_done){
             this.cb_migrate_client_done.apply(null, _argv_);
         }

@@ -1,3 +1,4 @@
+using Abelkhan;
 using System.Collections.Generic;
 
 namespace Gate {
@@ -18,12 +19,28 @@ namespace Gate {
 			_hub_call_gate_module.on_reverse_reg_client_hub += reverse_reg_client_hub;
 			_hub_call_gate_module.on_unreg_client_hub += unreg_client_hub;
 			_hub_call_gate_module.on_disconnect_client += disconnect_client;
-			_hub_call_gate_module.on_forward_hub_call_client += forward_hub_call_client;
+            _hub_call_gate_module.on_migrate_client_done += _hub_call_gate_module_on_migrate_client_done;
+            _hub_call_gate_module.on_forward_hub_call_client += forward_hub_call_client;
 			_hub_call_gate_module.on_forward_hub_call_group_client += forward_hub_call_group_client;
 			_hub_call_gate_module.on_forward_hub_call_global_client += forward_hub_call_global_client;
 		}
 
-		public void reg_hub(string hub_name, string hub_type, string router_type) {
+        private void _hub_call_gate_module_on_migrate_client_done(string client_uuid, string _src_hub, string _target_hub)
+        {
+            var ch = _hub_call_gate_module.current_ch.Value;
+            var hub_proxy = _hubsvrmanager.get_hub(ch);
+            var client_proxy = _clientmanager.get_client(client_uuid);
+            if (client_proxy != null)
+            {
+                client_proxy.migrate_client_done(_src_hub, _target_hub);
+            }
+            else
+            {
+                hub_proxy.client_disconnect(client_uuid);
+            }
+        }
+
+        public void reg_hub(string hub_name, string hub_type, string router_type) {
 			var rsp = (Abelkhan.hub_call_gate_reg_hub_rsp)_hub_call_gate_module.rsp.Value;
 			var ch = _hub_call_gate_module.current_ch.Value;
 			var proxy = _hubsvrmanager.reg_hub(hub_name, hub_type, router_type, ch);

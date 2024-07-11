@@ -166,8 +166,10 @@ class client_call_gate_caller(Icaller):
         _argv_eb5e7a5e_3532_32ad_81f9_9b27aa6833e5.append(rpc_argv)
         self.call_module_method("client_call_gate_forward_client_call_hub", _argv_eb5e7a5e_3532_32ad_81f9_9b27aa6833e5)
 
-    def migrate_client_confirm(self, ):
+    def migrate_client_confirm(self, src_hub:str, target_hub:str):
         _argv_59ca1ca6_9a1a_39fe_a434_c0cb1665072a = []
+        _argv_59ca1ca6_9a1a_39fe_a434_c0cb1665072a.append(src_hub)
+        _argv_59ca1ca6_9a1a_39fe_a434_c0cb1665072a.append(target_hub)
         self.call_module_method("client_call_gate_migrate_client_confirm", _argv_59ca1ca6_9a1a_39fe_a434_c0cb1665072a)
 
 #this cb code is codegen by abelkhan for python
@@ -338,9 +340,11 @@ class hub_call_gate_caller(Icaller):
         _argv_f69241c3_642a_3b51_bb37_cf638176493a.append(rpc_argv)
         self.call_module_method("hub_call_gate_forward_hub_call_global_client", _argv_f69241c3_642a_3b51_bb37_cf638176493a)
 
-    def migrate_client_done(self, client_uuid:str):
+    def migrate_client_done(self, client_uuid:str, src_hub:str, target_hub:str):
         _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c = []
         _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.append(client_uuid)
+        _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.append(src_hub)
+        _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.append(target_hub)
         self.call_module_method("hub_call_gate_migrate_client_done", _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c)
 
 #this module code is codegen by abelkhan codegen for python
@@ -384,7 +388,7 @@ class client_call_gate_module(Imodule):
         self.cb_heartbeats : Callable[[]] = None
         self.cb_get_hub_info : Callable[[str]] = None
         self.cb_forward_client_call_hub : Callable[[str, bytes]] = None
-        self.cb_migrate_client_confirm : Callable[[]] = None
+        self.cb_migrate_client_confirm : Callable[[str, str]] = None
 
     def heartbeats(self, inArray:list):
         _cb_uuid = inArray[0]
@@ -408,8 +412,10 @@ class client_call_gate_module(Imodule):
             self.cb_forward_client_call_hub(_hub_name, _rpc_argv)
 
     def migrate_client_confirm(self, inArray:list):
+        _src_hub = inArray[0]
+        _target_hub = inArray[1]
         if self.cb_migrate_client_confirm:
-            self.cb_migrate_client_confirm()
+            self.cb_migrate_client_confirm(_src_hub, _target_hub)
 
 class hub_call_gate_reg_hub_rsp(Response):
     def __init__(self, _ch:Ichannel, _uuid:int):
@@ -460,7 +466,7 @@ class hub_call_gate_module(Imodule):
         self.cb_forward_hub_call_client : Callable[[str, bytes]] = None
         self.cb_forward_hub_call_group_client : Callable[[list[str], bytes]] = None
         self.cb_forward_hub_call_global_client : Callable[[bytes]] = None
-        self.cb_migrate_client_done : Callable[[str]] = None
+        self.cb_migrate_client_done : Callable[[str, str, str]] = None
 
     def reg_hub(self, inArray:list):
         _cb_uuid = inArray[0]
@@ -516,6 +522,8 @@ class hub_call_gate_module(Imodule):
 
     def migrate_client_done(self, inArray:list):
         _client_uuid = inArray[0]
+        _src_hub = inArray[1]
+        _target_hub = inArray[2]
         if self.cb_migrate_client_done:
-            self.cb_migrate_client_done(_client_uuid)
+            self.cb_migrate_client_done(_client_uuid, _src_hub, _target_hub)
 

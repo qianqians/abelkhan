@@ -42,9 +42,9 @@ namespace Hub
 			_hub_call_gate_caller.tick_hub_health(Hub.tick);
         }
 
-		public void migrate_client_done(string client_uuid)
+		public void migrate_client_done(string client_uuid, string _src_hub, string _target_hub)
 		{
-			_hub_call_gate_caller.migrate_client_done(client_uuid);
+			_hub_call_gate_caller.migrate_client_done(client_uuid, _src_hub, _target_hub);
         }
 
 		public Abelkhan.hub_call_gate_reverse_reg_client_hub_cb reverse_reg_client_hub(string client_uuid)

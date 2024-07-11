@@ -43,13 +43,17 @@ namespace Abelkhan
             call_module_method("gate_call_client_call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
         }
 
-        public void migrate_client_start(){
+        public void migrate_client_start(string src_hub, string target_hub){
             var _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee = new ArrayList();
+            _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee.Add(src_hub);
+            _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee.Add(target_hub);
             call_module_method("gate_call_client_migrate_client_start", _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee);
         }
 
-        public void migrate_client_done(){
+        public void migrate_client_done(string src_hub, string target_hub){
             var _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c = new ArrayList();
+            _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.Add(src_hub);
+            _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.Add(target_hub);
             call_module_method("gate_call_client_migrate_client_done", _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c);
         }
 
@@ -83,17 +87,21 @@ namespace Abelkhan
             }
         }
 
-        public event Action on_migrate_client_start;
+        public event Action<string, string> on_migrate_client_start;
         public void migrate_client_start(IList<MsgPack.MessagePackObject> inArray){
+            var _src_hub = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _target_hub = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             if (on_migrate_client_start != null){
-                on_migrate_client_start();
+                on_migrate_client_start(_src_hub, _target_hub);
             }
         }
 
-        public event Action on_migrate_client_done;
+        public event Action<string, string> on_migrate_client_done;
         public void migrate_client_done(IList<MsgPack.MessagePackObject> inArray){
+            var _src_hub = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _target_hub = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             if (on_migrate_client_done != null){
-                on_migrate_client_done();
+                on_migrate_client_done(_src_hub, _target_hub);
             }
         }
 

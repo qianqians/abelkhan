@@ -44,6 +44,16 @@ namespace Gate
 		{
 			_gate_call_client_caller.call_client(hub_name, data);
 		}
+        
+		public void migrate_client_start(string src_hub, string _target_hub)
+        {
+            _gate_call_client_caller.migrate_client_start(src_hub, _target_hub);
+        }
+
+        public void migrate_client_done(string src_hub, string _target_hub)
+		{
+            _gate_call_client_caller.migrate_client_done(src_hub, _target_hub);
+        }
 
 		public bool is_xor_key_crypt()
 		{

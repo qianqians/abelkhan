@@ -13,7 +13,7 @@ module client_call_gate{
 	
 	forward_client_call_hub ntf(string hub_name, bin rpc_argv);
 
-	migrate_client_confirm ntf();
+	migrate_client_confirm ntf(string src_hub, string target_hub);
 
 }
 
@@ -35,6 +35,6 @@ module hub_call_gate{
 
 	forward_hub_call_global_client ntf(bin rpc_argv);
 
-	migrate_client_done ntf(string client_uuid);
+	migrate_client_done ntf(string client_uuid, string src_hub, string target_hub);
 
 }

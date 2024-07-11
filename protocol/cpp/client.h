@@ -53,13 +53,17 @@ namespace abelkhan
             call_module_method("gate_call_client_call_client", _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab);
         }
 
-        void migrate_client_start(){
+        void migrate_client_start(std::string src_hub, std::string target_hub){
             msgpack11::MsgPack::array _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee;
+            _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee.push_back(src_hub);
+            _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee.push_back(target_hub);
             call_module_method("gate_call_client_migrate_client_start", _argv_c9d99b35_c1ee_347e_8597_4736a13ac8ee);
         }
 
-        void migrate_client_done(){
+        void migrate_client_done(std::string src_hub, std::string target_hub){
             msgpack11::MsgPack::array _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c;
+            _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.push_back(src_hub);
+            _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.push_back(target_hub);
             call_module_method("gate_call_client_migrate_client_done", _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c);
         }
 
@@ -91,14 +95,18 @@ namespace abelkhan
             sig_call_client.emit(_hub_name, _rpc_argv);
         }
 
-        concurrent::signals<void()> sig_migrate_client_start;
+        concurrent::signals<void(std::string, std::string)> sig_migrate_client_start;
         void migrate_client_start(const msgpack11::MsgPack::array& inArray){
-            sig_migrate_client_start.emit();
+            auto _src_hub = inArray[0].string_value();
+            auto _target_hub = inArray[1].string_value();
+            sig_migrate_client_start.emit(_src_hub, _target_hub);
         }
 
-        concurrent::signals<void()> sig_migrate_client_done;
+        concurrent::signals<void(std::string, std::string)> sig_migrate_client_done;
         void migrate_client_done(const msgpack11::MsgPack::array& inArray){
-            sig_migrate_client_done.emit();
+            auto _src_hub = inArray[0].string_value();
+            auto _target_hub = inArray[1].string_value();
+            sig_migrate_client_done.emit(_src_hub, _target_hub);
         }
 
     };

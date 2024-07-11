@@ -216,8 +216,10 @@ export class client_call_gate_caller extends abelkhan.Icaller {
         this.call_module_method("client_call_gate_forward_client_call_hub", _argv_eb5e7a5e_3532_32ad_81f9_9b27aa6833e5);
     }
 
-    public migrate_client_confirm(){
+    public migrate_client_confirm(src_hub:string, target_hub:string){
         let _argv_59ca1ca6_9a1a_39fe_a434_c0cb1665072a:any[] = [];
+        _argv_59ca1ca6_9a1a_39fe_a434_c0cb1665072a.push(src_hub);
+        _argv_59ca1ca6_9a1a_39fe_a434_c0cb1665072a.push(target_hub);
         this.call_module_method("client_call_gate_migrate_client_confirm", _argv_59ca1ca6_9a1a_39fe_a434_c0cb1665072a);
     }
 
@@ -447,9 +449,11 @@ export class hub_call_gate_caller extends abelkhan.Icaller {
         this.call_module_method("hub_call_gate_forward_hub_call_global_client", _argv_f69241c3_642a_3b51_bb37_cf638176493a);
     }
 
-    public migrate_client_done(client_uuid:string){
+    public migrate_client_done(client_uuid:string, src_hub:string, target_hub:string){
         let _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c:any[] = [];
         _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.push(client_uuid);
+        _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.push(src_hub);
+        _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.push(target_hub);
         this.call_module_method("hub_call_gate_migrate_client_done", _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c);
     }
 
@@ -544,9 +548,11 @@ export class client_call_gate_module extends abelkhan.Imodule {
         }
     }
 
-    public cb_migrate_client_confirm : ()=>void | null;
+    public cb_migrate_client_confirm : (src_hub:string, target_hub:string)=>void | null;
     migrate_client_confirm(inArray:any[]){
         let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        _argv_.push(inArray[1]);
         if (this.cb_migrate_client_confirm){
             this.cb_migrate_client_confirm.apply(null, _argv_);
         }
@@ -704,10 +710,12 @@ export class hub_call_gate_module extends abelkhan.Imodule {
         }
     }
 
-    public cb_migrate_client_done : (client_uuid:string)=>void | null;
+    public cb_migrate_client_done : (client_uuid:string, src_hub:string, target_hub:string)=>void | null;
     migrate_client_done(inArray:any[]){
         let _argv_:any[] = [];
         _argv_.push(inArray[0]);
+        _argv_.push(inArray[1]);
+        _argv_.push(inArray[2]);
         if (this.cb_migrate_client_done){
             this.cb_migrate_client_done.apply(null, _argv_);
         }
