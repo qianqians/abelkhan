@@ -301,6 +301,7 @@ namespace avatar
                 if (!is_register)
                 {
                     _avatar_Module.on_get_remote_avatar += _avatar_Module_on_get_remote_avatar;
+                    _avatar_Module.on_migrate_avatar += _avatar_Module_on_migrate_avatar;
                     is_register = true;
                 }
             }
@@ -310,7 +311,7 @@ namespace avatar
 
         private async Task Hub_on_migrate_client(string client_uuid, string src_hub)
         {
-            await load_from_remote(client_uuid, src_hub);
+            await migrate_from_remote(client_uuid, src_hub);
         }
 
         public void init_data_db_opt(Action<AvatarDataDBOptions> configureOptions)
@@ -325,6 +326,24 @@ namespace avatar
             if (avatar_client_uuid.TryGetValue(client_uuid, out var _avatar))
             {
                 rsp.rsp(_avatar.Guid, _avatar.get_db_doc().ToBson());
+            }
+            else
+            {
+                rsp.err();
+            }
+        }
+
+        private void _avatar_Module_on_migrate_avatar(string client_uuid)
+        {
+            var rsp = _avatar_Module.rsp as avatar_migrate_avatar_rsp;
+
+            if (avatar_client_uuid.TryGetValue(client_uuid, out var _avatar))
+            {
+                rsp.rsp(_avatar.Guid, _avatar.get_db_doc().ToBson());
+
+                avatar_client_uuid.Remove(_avatar.ClientUUID);
+                avatar_sdk_uuid.Remove(_avatar.SDKUUID);
+                avatar_guid.Remove(_avatar.Guid);
             }
             else
             {
@@ -457,6 +476,45 @@ namespace avatar
             var task = new TaskCompletionSource<Avatar>();
 
             _avatar_Caller.get_hub(other_hub).get_remote_avatar(client_uuid).callBack((guid, doc_bin) =>
+            {
+                var avatar = new Avatar(this);
+
+                var doc = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(doc_bin);
+                foreach (var (name, load) in hosting_data_template)
+                {
+                    var sub_doc = doc.GetValue(name) as BsonDocument;
+                    var ins = load(sub_doc);
+                    avatar.add_hosting_data(name, ins);
+                }
+                avatar.SDKUUID = doc.GetValue("sdk_uuid").AsString;
+                avatar.Guid = guid;
+
+                avatar_guid[guid] = avatar;
+
+                avatar_sdk_uuid[avatar.SDKUUID] = avatar;
+                avatar_client_uuid[client_uuid] = avatar;
+
+                task.SetResult(avatar);
+
+            }, () =>
+            {
+                Log.Log.err("load from remote error!");
+                task.SetResult(null);
+
+            }).timeout(3000, () =>
+            {
+                Log.Log.err("load from remote timeout!");
+                task.SetResult(null);
+            });
+
+            return task.Task;
+        }
+
+        public Task<Avatar> migrate_from_remote(string client_uuid, string other_hub)
+        {
+            var task = new TaskCompletionSource<Avatar>();
+
+            _avatar_Caller.get_hub(other_hub).migrate_avatar(client_uuid).callBack((guid, doc_bin) =>
             {
                 var avatar = new Avatar(this);
 

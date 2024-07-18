@@ -1,3 +1,4 @@
 module avatar {
+	migrate_avatar req(string client_uuid) rsp(int64 guid, bin doc) err();
 	get_remote_avatar req(string client_uuid) rsp(int64 guid, bin doc) err();
 }
