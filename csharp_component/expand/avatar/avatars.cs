@@ -400,7 +400,7 @@ namespace avatar
             avatar_client_uuid[new_client_uuid] = avatar;
         }
 
-        private Task<Avatar> load_from_db(string sdk_uuid)
+        public Task<Avatar> load_from_db(string sdk_uuid)
         {
             var task = new TaskCompletionSource<Avatar>();
 
@@ -451,7 +451,7 @@ namespace avatar
             return task.Task;
         }
 
-        private async Task<Avatar> create_avatar(string sdk_uuid)
+        public async Task<Avatar> create_avatar(string sdk_uuid)
         {
             var avatar = new Avatar(this);
             avatar.SDKUUID = sdk_uuid;
