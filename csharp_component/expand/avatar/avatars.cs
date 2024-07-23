@@ -565,6 +565,16 @@ namespace avatar
             return avatar;
         }
 
+        public async Task<Avatar> load(string sdk_uuid)
+        {
+            if (!avatar_sdk_uuid.TryGetValue(sdk_uuid, out var avatar))
+            {
+                avatar = await load_from_db(sdk_uuid);
+            }
+
+            return avatar;
+        }
+
         public void bind_avatar(Avatar avatar, string client_uuid)
         {
             avatar_guid[avatar.Guid] = avatar;
