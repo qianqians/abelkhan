@@ -222,7 +222,7 @@ namespace DBProxy
                                         _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _datalist } });
 
                                         count = 0;
-                                        _datalist = new MongoDB.Bson.BsonArray();
+                                        _datalist.Clear();
                                     }
                                 }
                             }
