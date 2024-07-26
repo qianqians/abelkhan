@@ -25,7 +25,7 @@ namespace dy
 
     public class dySdk
     {
-        public static async Task<code2Session> code2Session(string appid, string secret, string code, string anonymous_code)
+        public static async ValueTask<code2Session> code2Session(string appid, string secret, string code, string anonymous_code)
         {
             try
             {

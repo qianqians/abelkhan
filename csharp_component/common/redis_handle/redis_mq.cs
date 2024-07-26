@@ -149,7 +149,7 @@ namespace Abelkhan
             }
         }
 
-        public async Task<long> sendmsg_mq()
+        public async ValueTask<long> sendmsg_mq()
         {
             var tick_begin = _timer.refresh();
             if (wait_send_data.Count > 0)
@@ -234,7 +234,7 @@ namespace Abelkhan
             }
         }
 
-        private async Task<long> recvmsg_mq()
+        private async ValueTask<long> recvmsg_mq()
         {
             var tick_begin = _timer.refresh();
 

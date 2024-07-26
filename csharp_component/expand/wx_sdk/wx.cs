@@ -14,7 +14,7 @@ namespace wx
 
     public class wxSdk
     {
-        public static async Task<code2Session> code2Session(string appid, string secret, string code)
+        public static async ValueTask<code2Session> code2Session(string appid, string secret, string code)
         {
             try
             {

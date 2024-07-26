@@ -74,7 +74,7 @@ namespace Service
             }
         }
 
-        public async Task<bool> save(string db, string collection, byte[] bson_data) 
+        public async ValueTask<bool> save(string db, string collection, byte[] bson_data) 
 		{
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
@@ -94,7 +94,7 @@ namespace Service
             return true;
 		}
 
-        public async Task<bool> update(string db, string collection, byte[] bson_query, byte[] bson_update, bool upsert)
+        public async ValueTask<bool> update(string db, string collection, byte[] bson_query, byte[] bson_update, bool upsert)
         {
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
@@ -120,7 +120,7 @@ namespace Service
             return true;
 		}
 
-        public async Task<MongoDB.Bson.BsonDocument> find_and_modify(string db, string collection, byte[] bson_query, byte[] bson_update, bool _new, bool _upsert)
+        public async ValueTask<MongoDB.Bson.BsonDocument> find_and_modify(string db, string collection, byte[] bson_query, byte[] bson_update, bool _new, bool _upsert)
         {
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
@@ -152,7 +152,7 @@ namespace Service
             return null;
         }
 
-        public async Task<IAsyncCursor<MongoDB.Bson.BsonDocument>> find(string db, string collection, byte[] bson_query, int skip, int limit, string sort, bool _Ascending)
+        public async ValueTask<IAsyncCursor<MongoDB.Bson.BsonDocument>> find(string db, string collection, byte[] bson_query, int skip, int limit, string sort, bool _Ascending)
         {
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
@@ -192,7 +192,7 @@ namespace Service
             return null;
 		}
 
-        public async Task<int> count(string db, string collection, byte[] bson_query)
+        public async ValueTask<int> count(string db, string collection, byte[] bson_query)
         {
             long c = 0;
 
@@ -214,7 +214,7 @@ namespace Service
             return (int)c;
         }
 
-		public async Task<bool> remove(string db, string collection, byte[] bson_query)
+		public async ValueTask<bool> remove(string db, string collection, byte[] bson_query)
         {
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
@@ -234,7 +234,7 @@ namespace Service
             return true;
 		}
 
-        public async Task<long> get_guid(string db, string collection)
+        public async ValueTask<long> get_guid(string db, string collection)
         {
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);

@@ -254,7 +254,7 @@ namespace Gate {
             _timerservice.addticktime(10 * 1000, heartbeat_client);
         }
 
-        private async Task<long> poll()
+        private async ValueTask<long> poll()
         {
             long tick_begin = _timerservice.refresh();
 

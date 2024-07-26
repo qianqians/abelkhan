@@ -451,7 +451,7 @@ namespace avatar
             return task.Task;
         }
 
-        public async Task<Avatar> create_avatar(string sdk_uuid)
+        public async ValueTask<Avatar> create_avatar(string sdk_uuid)
         {
             var avatar = new Avatar(this);
             avatar.SDKUUID = sdk_uuid;
@@ -549,7 +549,7 @@ namespace avatar
             return task.Task;
         }
 
-        public async Task<Avatar> load_or_create(string sdk_uuid, string client_uuid)
+        public async ValueTask<Avatar> load_or_create(string sdk_uuid, string client_uuid)
         {
             if(!avatar_sdk_uuid.TryGetValue(sdk_uuid, out var avatar))
             {
@@ -565,7 +565,7 @@ namespace avatar
             return avatar;
         }
 
-        public async Task<Avatar> load(string sdk_uuid)
+        public async ValueTask<Avatar> load(string sdk_uuid)
         {
             if (!avatar_sdk_uuid.TryGetValue(sdk_uuid, out var avatar))
             {

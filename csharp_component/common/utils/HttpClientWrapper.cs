@@ -13,7 +13,7 @@ namespace Abelkhan
             client.Timeout = TimeSpan.FromSeconds(3);
         }
 
-        public static async Task<HttpResponseMessage> PostAsync(string url, HttpContent content)
+        public static async ValueTask<HttpResponseMessage> PostAsync(string url, HttpContent content)
         {
             try
             {
@@ -28,7 +28,7 @@ namespace Abelkhan
             }
         }
 
-        public static async Task<HttpResponseMessage> GetRspAsync(string url, List<KeyValuePair<string, string>> headers = null)
+        public static async ValueTask<HttpResponseMessage> GetRspAsync(string url, List<KeyValuePair<string, string>> headers = null)
         {
             try
             {

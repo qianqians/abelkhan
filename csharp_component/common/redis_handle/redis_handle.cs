@@ -82,7 +82,7 @@ namespace Abelkhan
             }
         }
 
-        public async Task<T> GetData<T>(string key)
+        public async ValueTask<T> GetData<T>(string key)
         {
             string json = await GetStrData(key);
             if (string.IsNullOrEmpty(json))
@@ -138,7 +138,7 @@ namespace Abelkhan
             }
         }
 
-        public async Task<T> RandomList<T>(string key)
+        public async ValueTask<T> RandomList<T>(string key)
         {
             while (true)
             {
@@ -160,7 +160,7 @@ namespace Abelkhan
             }
         }
 
-        public async Task<T> GetListElem<T>(string key, int index)
+        public async ValueTask<T> GetListElem<T>(string key, int index)
         {
             while (true)
             {
@@ -197,7 +197,7 @@ namespace Abelkhan
             }
         }
 
-        public async Task<List<T> > GetList<T>(string key)
+        public async ValueTask<List<T> > GetList<T>(string key)
         {
             while (true)
             {

@@ -113,7 +113,7 @@ namespace Abelkhan
             _accept_gm_service.start();
         }
 
-        private async Task<long> poll()
+        private async ValueTask<long> poll()
         {
             var tick_begin = _timer.refresh();
             try

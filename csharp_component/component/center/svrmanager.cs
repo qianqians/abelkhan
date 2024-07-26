@@ -184,7 +184,7 @@ namespace Abelkhan
             }
         }
 
-        private async Task<bool> store_svr_info()
+        private async ValueTask<bool> store_svr_info()
         {
             try
             {

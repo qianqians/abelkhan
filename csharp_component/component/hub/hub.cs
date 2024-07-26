@@ -428,7 +428,7 @@ namespace Hub
             await on_migrate_client.Invoke(client_uuid, src_hub);
         }
 
-        private async Task<long> poll()
+        private async ValueTask<long> poll()
         {
             long tick_begin = _timer.refresh();
 

@@ -170,7 +170,7 @@ namespace DBProxy
             _timer.addticktime(3000, heartbeath_center);
         }
 
-		private async Task<long> poll()
+		private async ValueTask<long> poll()
         {
             long tick_begin = _timer.refresh();
 
