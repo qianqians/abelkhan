@@ -236,9 +236,6 @@ namespace Hub
                 }
             }
 
-            _hub_msg_handle = new hub_msg_handle(_hubs, _gates);
-            _center_msg_handle = new center_msg_handle(this, _closeHandle, _centerproxy);
-            _dbproxy_msg_handle = new dbproxy_msg_handle();
             _gate_msg_handle = new gate_msg_handle();
             _client_msg_handle = new client_msg_handle();
 
@@ -250,12 +247,6 @@ namespace Hub
             {
                 on_client_msg?.Invoke(uuid);
             };
-
-            if (_config.has_key("prometheus_port"))
-            {
-                var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
-                _prometheus.Start();
-            }
         }
 
         private async void check_connnect_hub(HubProxy _proxy)
@@ -495,6 +486,17 @@ namespace Hub
                 throw new Abelkhan.Exception("run mast at single thread!");
             }
 
+            if (_config.has_key("prometheus_port"))
+            {
+                var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
+                _prometheus.Start();
+            }
+
+            var _hub_msg_handle = new hub_msg_handle(_hubs, _gates);
+            var _center_msg_handle = new center_msg_handle(this, _closeHandle, _centerproxy);
+            var _dbproxy_msg_handle = new dbproxy_msg_handle();
+
+            rerun:
             try
             {
                 await _run();
@@ -502,12 +504,12 @@ namespace Hub
             catch (Abelkhan.Exception e)
             {
                 Log.Log.err(e.Message);
-                await run();
+                goto rerun;
             }
             catch (System.Exception e)
             {
                 Log.Log.err("{0}", e);
-                await run();
+                goto rerun;
             }
 
             Monitor.Exit(_run_mu);
@@ -565,9 +567,6 @@ namespace Hub
         private uint reconn_count = 0;
         private CenterProxy _centerproxy;
 
-        private readonly center_msg_handle _center_msg_handle;
-        private readonly dbproxy_msg_handle _dbproxy_msg_handle;
-        private readonly hub_msg_handle _hub_msg_handle;
         private readonly gate_msg_handle _gate_msg_handle;
         private readonly client_msg_handle _client_msg_handle;
 

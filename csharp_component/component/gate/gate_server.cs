@@ -23,10 +23,6 @@ namespace Gate {
         private readonly Config _center_config;
         private readonly Config _config;
 
-        private readonly center_msg_handle _center_msg_handle;
-        private readonly hub_svr_msg_handle _hub_svr_msg_handle;
-        private readonly client_msg_handle _client_msg_handle;
-
         private Service.Timerservice _timerservice;
         private HubSvrManager _hubsvrmanager;
         private ClientManager _clientmanager;
@@ -256,16 +252,6 @@ namespace Gate {
             }
 
             _timerservice.addticktime(10 * 1000, heartbeat_client);
-
-            if (_config.has_key("prometheus_port"))
-            {
-                var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
-                _prometheus.Start();
-            }
-
-            _center_msg_handle = new center_msg_handle(this, _timerservice);
-            _hub_svr_msg_handle = new hub_svr_msg_handle(_clientmanager, _hubsvrmanager);
-            _client_msg_handle = new client_msg_handle(_clientmanager, _hubsvrmanager);
         }
 
         private async Task<long> poll()
@@ -325,6 +311,17 @@ namespace Gate {
                 throw new Abelkhan.Exception("run mast at single thread!");
             }
 
+            if (_config.has_key("prometheus_port"))
+            {
+                var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
+                _prometheus.Start();
+            }
+
+            var _center_msg_handle = new center_msg_handle(this, _timerservice);
+            var _hub_svr_msg_handle = new hub_svr_msg_handle(_clientmanager, _hubsvrmanager);
+            var _client_msg_handle = new client_msg_handle(_clientmanager, _hubsvrmanager);
+
+            rerun:
             try
             {
                 await _run();
@@ -332,12 +329,12 @@ namespace Gate {
             catch (Abelkhan.Exception e)
             {
                 Log.Log.err(e.Message);
-                await run();
+                goto rerun;
             }
             catch (System.Exception e)
             {
                 Log.Log.err("{0}", e);
-                await run();
+                goto rerun;
             }
 
             Monitor.Exit(_run_mu);
