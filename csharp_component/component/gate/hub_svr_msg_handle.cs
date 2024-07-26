@@ -104,7 +104,8 @@ namespace Gate {
 			{
 				var client_proxy = _clientmanager.get_client(cuuid);
 				if (client_proxy != null)
-				{
+                {
+                    client_proxy.conn_hub(hub_proxy);
                     clients.Add(client_proxy);
 				}
 				else
@@ -124,7 +125,8 @@ namespace Gate {
 			var hub_proxy = _hubsvrmanager.get_hub(ch);
 
 			_clientmanager.for_each_client((string cuuid, ClientProxy _client) => {
-				_client.call_client(hub_proxy._hub_name, rpc_argv);
+                _client.conn_hub(hub_proxy);
+                _client.call_client(hub_proxy._hub_name, rpc_argv);
 			});
 		}
 	}
