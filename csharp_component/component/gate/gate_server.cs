@@ -270,10 +270,7 @@ namespace Gate {
 
         private async Task<long> poll()
         {
-
             long tick_begin = _timerservice.refresh();
-
-            _timerservice.poll();
 
             while (Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
             {
@@ -296,9 +293,7 @@ namespace Gate {
 
             Abelkhan.TinyTimer.poll();
             
-            long tick_end = _timerservice.refresh();
-            tick = (uint)(tick_end - tick_begin);
-
+            tick = (uint)(_timerservice.poll() - tick_begin);
             if (tick > 50)
             {
                 Log.Log.trace("poll_tick:{0}", tick);

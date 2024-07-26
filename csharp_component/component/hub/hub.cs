@@ -439,10 +439,7 @@ namespace Hub
 
         private async Task<long> poll()
         {
-            
             long tick_begin = _timer.refresh();
-
-            _timer.poll();
 
             while (Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
             {
@@ -465,9 +462,7 @@ namespace Hub
 
             Abelkhan.TinyTimer.poll();
 
-            long tick_end = _timer.refresh();
-            tick = (uint)(tick_end - tick_begin);
-
+            tick = (uint)(_timer.poll() - tick_begin);
             if (tick > 50)
             {
                 Log.Log.trace("poll_tick:{0}", tick);

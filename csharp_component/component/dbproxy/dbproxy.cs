@@ -205,10 +205,9 @@ namespace DBProxy
 
             _ = await _redis_mq_service.sendmsg_mq();
 
-            _timer.poll();
             Abelkhan.TinyTimer.poll();
             
-            tick = (uint)(_timer.refresh() - tick_begin);
+            tick = (uint)(_timer.poll() - tick_begin);
             if (tick > 100)
             {
                 is_busy = true;
