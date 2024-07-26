@@ -331,25 +331,14 @@ namespace Hub
         {
             _centerproxy.closed();
 
-            if (_cryptacceptservice != null)
-            {
-                _cryptacceptservice.close();
-            }
-
-            if (_redis_mq_service != null)
-            {
-                _redis_mq_service.close();
-            }
+            _cryptacceptservice?.close();
+            _redis_mq_service?.close(); 
+            _httpservice?.close();
 
             if (_enetservice != null)
             {
                 _enetservice.stop();
                 ManagedENet.Shutdown();
-            }
-
-            if (_httpservice != null)
-            {
-                _httpservice.close();
             }
 
             _timer.addticktime(3000, (tick) =>

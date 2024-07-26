@@ -343,20 +343,9 @@ namespace Gate {
         {
             _centerproxy.closed();
 
-            if (_hub_service != null)
-            {
-                _hub_service.close();
-            }
-
-            if (_client_service != null)
-            {
-                _client_service.close();
-            }
-
-            if (_hub_redismq_service != null)
-            {
-                _hub_redismq_service.close();
-            }
+            _hub_service?.close();
+            _client_service?.close();
+            _hub_redismq_service?.close();
 
             if (_enet_service != null)
             {
