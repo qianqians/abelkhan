@@ -238,7 +238,7 @@ namespace DBProxy
 
             if (_config.has_key("prometheus_port"))
             {
-                var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
+                _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
                 _prometheus.Start();
             }
 
@@ -272,6 +272,7 @@ namespace DBProxy
         public static Service.Timerservice _timer;
         public static Service.Mongodbproxy _mongodbproxy;
         public static Abelkhan.RedisMQ _redis_mq_service;
+        public static Service.PrometheusMetric _prometheus;
 
         public readonly Abelkhan.Config _root_config;
         public readonly Abelkhan.Config _center_config;

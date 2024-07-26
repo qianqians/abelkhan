@@ -14,6 +14,8 @@ namespace Abelkhan
 {
     public class Center
     {
+        public static Service.PrometheusMetric _prometheus;
+
         private readonly Abelkhan.RedisMQ _redis_mq_service;
         private readonly Acceptservice _accept_gm_service;
         private readonly GMManager _gmmanager;
@@ -169,7 +171,7 @@ namespace Abelkhan
         {
             if (_config.has_key("prometheus_port"))
             {
-                var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
+                _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
                 _prometheus.Start();
             }
 

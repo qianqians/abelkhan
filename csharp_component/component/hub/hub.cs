@@ -477,7 +477,7 @@ namespace Hub
 
             if (_config.has_key("prometheus_port"))
             {
-                var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
+                _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
                 _prometheus.Start();
             }
 
@@ -534,6 +534,7 @@ namespace Hub
         public static bool is_support_take_over_svr = true;
         public static Abelkhan.RedisMQ _redis_mq_service;
         public static Abelkhan.RedisHandle _redis_handle;
+        public static Service.PrometheusMetric _prometheus;
 
         private static Random _r;
         private static ConcurrentDictionary<string, DBProxyProxy> _dbproxys;

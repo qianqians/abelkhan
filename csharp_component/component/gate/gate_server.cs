@@ -39,6 +39,7 @@ namespace Gate {
 
         private static readonly List<Abelkhan.Ichannel> add_chs = new();
         private static readonly List<Abelkhan.Ichannel> remove_chs = new();
+        public static Service.PrometheusMetric _prometheus;
 
         public void on_close_server()
         {
@@ -312,7 +313,7 @@ namespace Gate {
 
             if (_config.has_key("prometheus_port"))
             {
-                var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
+                _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
                 _prometheus.Start();
             }
 
