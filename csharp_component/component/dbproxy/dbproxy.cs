@@ -174,42 +174,31 @@ namespace DBProxy
         {
             long tick_begin = _timer.refresh();
 
-            try
+            while (Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
             {
-                while (Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
-                {
-                    Abelkhan.ModuleMgrHandle._modulemng.process_event(_event.Item1, _event.Item2);
-                }
+                Abelkhan.ModuleMgrHandle._modulemng.process_event(_event.Item1, _event.Item2);
+            }
 
-                if (remove_chs.Count > 0)
+            if (remove_chs.Count > 0)
+            {
+                lock (remove_chs)
                 {
-                    lock (remove_chs)
+                    foreach (var ch in remove_chs)
                     {
-                        foreach (var ch in remove_chs)
+                        lock (add_chs)
                         {
-                            lock (add_chs)
-                            {
-                                add_chs.Remove(ch);
-                            }
+                            add_chs.Remove(ch);
                         }
-                        remove_chs.Clear();
                     }
+                    remove_chs.Clear();
                 }
-
-                _ = await _redis_mq_service.sendmsg_mq();
-
-                _timer.poll();
-                Abelkhan.TinyTimer.poll();
-            }
-            catch (Abelkhan.Exception e)
-            {
-                Log.Log.err(e.Message);
-            }
-            catch (System.Exception e)
-            {
-                Log.Log.err("{0}", e);
             }
 
+            _ = await _redis_mq_service.sendmsg_mq();
+
+            _timer.poll();
+            Abelkhan.TinyTimer.poll();
+            
             tick = (uint)(_timer.refresh() - tick_begin);
             if (tick > 100)
             {
@@ -225,15 +214,6 @@ namespace DBProxy
 
         private async Task _run()
         {
-            var _hub_msg_handle = new hub_msg_handle(_hubmanager);
-            var _center_msg_handle = new center_msg_handle(_closeHandle, _centerproxy, _hubmanager);
-
-            if (_config.has_key("prometheus_port"))
-            {
-                var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
-                _prometheus.Start();
-            }
-
             while (!_closeHandle.is_close())
             {
                 var tick = (uint)await poll();
@@ -247,18 +227,39 @@ namespace DBProxy
 
             _redis_mq_service.close();
             Log.Log.close();
-
         }
 
         private readonly object _run_mu = new();
-        public void run()
+        public async Task run()
         {
             if (!Monitor.TryEnter(_run_mu))
             {
                 throw new Abelkhan.Exception("run mast at single thread!");
             }
 
-            _run().Wait();
+            try
+            {
+                var _hub_msg_handle = new hub_msg_handle(_hubmanager);
+                var _center_msg_handle = new center_msg_handle(_closeHandle, _centerproxy, _hubmanager);
+
+                if (_config.has_key("prometheus_port"))
+                {
+                    var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
+                    _prometheus.Start();
+                }
+
+                await _run();
+            }
+            catch (Abelkhan.Exception e)
+            {
+                Log.Log.err(e.Message);
+                await _run();
+            }
+            catch (System.Exception e)
+            {
+                Log.Log.err("{0}", e);
+                await _run();
+            }
 
             Monitor.Exit(_run_mu);
         }
