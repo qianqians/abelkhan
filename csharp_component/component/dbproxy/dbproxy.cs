@@ -124,6 +124,15 @@ namespace DBProxy
             _centerproxy.reg_dbproxy(() => {
                 heartbeath_center(Service.Timerservice.Tick);
             });
+
+            _hub_msg_handle = new hub_msg_handle(_hubmanager);
+            _center_msg_handle = new center_msg_handle(_closeHandle, _centerproxy, _hubmanager);
+
+            if (_config.has_key("prometheus_port"))
+            {
+                var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
+                _prometheus.Start();
+            }
         }
 
         public Action onCenterCrash;
@@ -239,26 +248,17 @@ namespace DBProxy
 
             try
             {
-                var _hub_msg_handle = new hub_msg_handle(_hubmanager);
-                var _center_msg_handle = new center_msg_handle(_closeHandle, _centerproxy, _hubmanager);
-
-                if (_config.has_key("prometheus_port"))
-                {
-                    var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
-                    _prometheus.Start();
-                }
-
                 await _run();
             }
             catch (Abelkhan.Exception e)
             {
                 Log.Log.err(e.Message);
-                await _run();
+                await run();
             }
             catch (System.Exception e)
             {
                 Log.Log.err("{0}", e);
-                await _run();
+                await run();
             }
 
             Monitor.Exit(_run_mu);
@@ -279,6 +279,9 @@ namespace DBProxy
 
         private readonly List<Abelkhan.Ichannel> add_chs;
         private readonly List<Abelkhan.Ichannel> remove_chs;
+
+        private readonly hub_msg_handle _hub_msg_handle;
+        private readonly center_msg_handle _center_msg_handle;
 
         private uint reconn_count = 0;
 

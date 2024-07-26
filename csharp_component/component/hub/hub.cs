@@ -250,6 +250,12 @@ namespace Hub
             {
                 on_client_msg?.Invoke(uuid);
             };
+
+            if (_config.has_key("prometheus_port"))
+            {
+                var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
+                _prometheus.Start();
+            }
         }
 
         private async void check_connnect_hub(HubProxy _proxy)
@@ -496,23 +502,17 @@ namespace Hub
 
             try
             {
-                if (_config.has_key("prometheus_port"))
-                {
-                    var _prometheus = new Service.PrometheusMetric((short)_config.get_value_int("prometheus_port"));
-                    _prometheus.Start();
-                }
-
                 await _run();
             }
             catch (Abelkhan.Exception e)
             {
                 Log.Log.err(e.Message);
-                await _run();
+                await run();
             }
             catch (System.Exception e)
             {
                 Log.Log.err("{0}", e);
-                await _run();
+                await run();
             }
 
             Monitor.Exit(_run_mu);
