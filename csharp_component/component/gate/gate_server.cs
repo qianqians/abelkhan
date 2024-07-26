@@ -23,20 +23,19 @@ namespace Gate {
         private readonly Config _center_config;
         private readonly Config _config;
 
-        private Service.Timerservice _timerservice;
-        private HubSvrManager _hubsvrmanager;
-        private ClientManager _clientmanager;
+        private readonly Service.Timerservice _timerservice;
+        private readonly HubSvrManager _hubsvrmanager;
+        private readonly ClientManager _clientmanager;
 
-        private Abelkhan.RedisMQ _hub_redismq_service;
-        private Abelkhan.RedisHandle _redis_handle;
-
-        private Abelkhan.Acceptservice _hub_service;
+        private readonly Abelkhan.RedisMQ _hub_redismq_service;
+        private readonly Abelkhan.RedisHandle _redis_handle;
+        private readonly Abelkhan.Acceptservice _hub_service;
 
         private CenterProxy _centerproxy;
 
-        private Abelkhan.CryptAcceptService _client_service;
-        private Abelkhan.WebsocketAcceptService _websocket_service;
-        private Abelkhan.EnetService _enet_service;
+        private readonly Abelkhan.CryptAcceptService _client_service;
+        private readonly Abelkhan.WebsocketAcceptService _websocket_service;
+        private readonly Abelkhan.EnetService _enet_service;
 
         private static readonly List<Abelkhan.Ichannel> add_chs = new();
         private static readonly List<Abelkhan.Ichannel> remove_chs = new();

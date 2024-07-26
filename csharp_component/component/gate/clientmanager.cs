@@ -172,7 +172,5 @@ namespace Gate
                 fn(client.Key, client.Value);
             });
         }
-
 	}
-
 }
