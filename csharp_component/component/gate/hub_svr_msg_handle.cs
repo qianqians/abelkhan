@@ -1,5 +1,7 @@
 using Abelkhan;
+using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Gate {
 
@@ -114,17 +116,17 @@ namespace Gate {
 				}
 			}
 
-			foreach (var client_proxy in clients)
-            {
-                client_proxy.call_client(hub_proxy._hub_name, rpc_argv);
-            }
-		}
+			Parallel.ForEach(clients, client_proxy =>
+			{
+				client_proxy.call_client(hub_proxy._hub_name, rpc_argv);
+			});
+        }
 
 		public void forward_hub_call_global_client(byte[] rpc_argv) {
 			var ch = _hub_call_gate_module.current_ch.Value;
 			var hub_proxy = _hubsvrmanager.get_hub(ch);
 
-			_clientmanager.for_each_client((string cuuid, ClientProxy _client) => {
+			_clientmanager.for_each_client((_, _client) => {
                 _client.conn_hub(hub_proxy);
                 _client.call_client(hub_proxy._hub_name, rpc_argv);
 			});

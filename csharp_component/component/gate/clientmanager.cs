@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Gate
 {
@@ -92,20 +93,20 @@ namespace Gate
 
 			foreach (var _client in remove_client)
 			{
-				foreach (var hubproxy_ in _client.conn_hubproxys)
+				Parallel.ForEach(_client.conn_hubproxys, hubproxy_ =>
 				{
 					hubproxy_.client_disconnect(_client._cuuid);
-				}
+				});
 				unreg_client(_client._ch);
 			}
 
 			foreach (var proxy in exception_client)
 			{
-				foreach (var hubproxy_ in proxy.conn_hubproxys)
-				{
-					hubproxy_.client_exception(proxy._cuuid);
-				}
-			}
+                Parallel.ForEach(proxy.conn_hubproxys, hubproxy_ =>
+                {
+                    hubproxy_.client_exception(proxy._cuuid);
+                });
+            }
 		}
 
 		public ClientProxy reg_client(Abelkhan.Ichannel ch)
@@ -166,11 +167,11 @@ namespace Gate
 
 		public void for_each_client(Action<string, ClientProxy> fn)
 		{
-			foreach (var client in client_uuid_map)
+			Parallel.ForEach(client_uuid_map, client =>
 			{
-				fn(client.Key, client.Value);
-			}
-		}
+                fn(client.Key, client.Value);
+            });
+        }
 
 	}
 
