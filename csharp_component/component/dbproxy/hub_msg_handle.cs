@@ -243,7 +243,6 @@ namespace DBProxy
             else
             {
                 Log.Log.err("hubproxy is null");
-                _hubproxy.ack_get_object_info_end(callbackid);
             }
 
             Log.Log.trace("end get_object_info");
