@@ -163,9 +163,16 @@ namespace Client
             _gate_call_client_module.on_call_client += gate_call_client;
             _gate_call_client_module.on_migrate_client_start += _gate_call_client_module_on_migrate_client_start;
             _gate_call_client_module.on_migrate_client_done += _gate_call_client_module_on_migrate_client_done;
+            _gate_call_client_module.on_hub_loss += _gate_call_client_module_on_hub_loss;
 
             _hub_call_client_module = new Abelkhan.hub_call_client_module(Abelkhan.ModuleMgrHandle._modulemng);
             _hub_call_client_module.on_call_client += hub_call_client;
+        }
+
+        public event Action<string> onHubLoss;
+        private void _gate_call_client_module_on_hub_loss(string hub_name)
+        {
+            onHubLoss?.Invoke(hub_name);
         }
 
         public event Action<string, string> onMigrateClientDone;

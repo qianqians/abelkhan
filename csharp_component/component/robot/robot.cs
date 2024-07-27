@@ -124,6 +124,7 @@ namespace Client
 
         public event Action<string, string> onMigrateClientDone;
         public event Action<string, string> onMigrateClientStart;
+        public event Action<string> onHubLoss;
 
         private GateProxy _gateproxy;
         private Dictionary<string, HubProxy> _hubproxy_set;
@@ -145,6 +146,11 @@ namespace Client
         public void migrate_client_done(string src_hub, string target_hub)
         {
             onMigrateClientDone?.Invoke(src_hub, target_hub);
+        }
+
+        public void hub_loss(string hub_name)
+        {
+            onHubLoss?.Invoke(hub_name);
         }
 
         public void migrate_client_confirm(string src_hub, string target_hub)
@@ -365,11 +371,17 @@ namespace Client
             _gate_call_client_module = new Abelkhan.gate_call_client_module(Abelkhan.ModuleMgrHandle._modulemng);
             _gate_call_client_module.on_ntf_cuuid += ntf_cuuid;
             _gate_call_client_module.on_call_client += gate_call_client;
-            _gate_call_client_module.on_migrate_client_start += _gate_call_client_module_on_migrate_client_start; ;
-            _gate_call_client_module.on_migrate_client_done += _gate_call_client_module_on_migrate_client_done; ;
+            _gate_call_client_module.on_migrate_client_start += _gate_call_client_module_on_migrate_client_start;
+            _gate_call_client_module.on_migrate_client_done += _gate_call_client_module_on_migrate_client_done;
+            _gate_call_client_module.on_hub_loss += _gate_call_client_module_on_hub_loss;
 
             _hub_call_client_module = new Abelkhan.hub_call_client_module(Abelkhan.ModuleMgrHandle._modulemng);
             _hub_call_client_module.on_call_client += hub_call_client;
+        }
+
+        private void _gate_call_client_module_on_hub_loss(string hub_name)
+        {
+            current_robot.hub_loss(hub_name);
         }
 
         private void _gate_call_client_module_on_migrate_client_done(string src_hub, string target_hub)
