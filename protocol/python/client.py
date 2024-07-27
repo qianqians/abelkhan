@@ -46,6 +46,11 @@ class gate_call_client_caller(Icaller):
         _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c.append(target_hub)
         self.call_module_method("gate_call_client_migrate_client_done", _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c)
 
+    def hub_loss(self, hub_name:str):
+        _argv_90f24099_13d8_3e09_b6fa_6d93a3ae6099 = []
+        _argv_90f24099_13d8_3e09_b6fa_6d93a3ae6099.append(hub_name)
+        self.call_module_method("gate_call_client_hub_loss", _argv_90f24099_13d8_3e09_b6fa_6d93a3ae6099)
+
 #this module code is codegen by abelkhan codegen for python
 class gate_call_client_module(Imodule):
     def __init__(self, modules:modulemng):
@@ -55,11 +60,13 @@ class gate_call_client_module(Imodule):
         self.modules.reg_method("gate_call_client_call_client", [self, self.call_client])
         self.modules.reg_method("gate_call_client_migrate_client_start", [self, self.migrate_client_start])
         self.modules.reg_method("gate_call_client_migrate_client_done", [self, self.migrate_client_done])
+        self.modules.reg_method("gate_call_client_hub_loss", [self, self.hub_loss])
 
         self.cb_ntf_cuuid : Callable[[str]] = None
         self.cb_call_client : Callable[[str, bytes]] = None
         self.cb_migrate_client_start : Callable[[str, str]] = None
         self.cb_migrate_client_done : Callable[[str, str]] = None
+        self.cb_hub_loss : Callable[[str]] = None
 
     def ntf_cuuid(self, inArray:list):
         _cuuid = inArray[0]
@@ -83,4 +90,9 @@ class gate_call_client_module(Imodule):
         _target_hub = inArray[1]
         if self.cb_migrate_client_done:
             self.cb_migrate_client_done(_src_hub, _target_hub)
+
+    def hub_loss(self, inArray:list):
+        _hub_name = inArray[0]
+        if self.cb_hub_loss:
+            self.cb_hub_loss(_hub_name)
 

@@ -7,5 +7,7 @@ module gate_call_client{
 	migrate_client_start ntf(string src_hub, string target_hub);
 
 	migrate_client_done ntf(string src_hub, string target_hub);
+	
+	hub_loss ntf(string hub_name);
 
 }

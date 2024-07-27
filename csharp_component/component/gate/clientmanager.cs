@@ -56,6 +56,11 @@ namespace Gate
             _gate_call_client_caller.migrate_client_done(src_hub, _target_hub);
         }
 
+		public void hub_loss(string hub_name)
+		{
+			_gate_call_client_caller.hub_loss(hub_name);
+        }
+
 		public bool is_xor_key_crypt()
 		{
 			return _ch.is_xor_key_crypt();

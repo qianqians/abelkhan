@@ -48,6 +48,12 @@ export class gate_call_client_caller extends abelkhan.Icaller {
         this.call_module_method("gate_call_client_migrate_client_done", _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c);
     }
 
+    public hub_loss(hub_name:string){
+        let _argv_90f24099_13d8_3e09_b6fa_6d93a3ae6099:any[] = [];
+        _argv_90f24099_13d8_3e09_b6fa_6d93a3ae6099.push(hub_name);
+        this.call_module_method("gate_call_client_hub_loss", _argv_90f24099_13d8_3e09_b6fa_6d93a3ae6099);
+    }
+
 }
 /*this module code is codegen by abelkhan codegen for typescript*/
 export class gate_call_client_module extends abelkhan.Imodule {
@@ -59,11 +65,13 @@ export class gate_call_client_module extends abelkhan.Imodule {
         this.modules.reg_method("gate_call_client_call_client", [this, this.call_client.bind(this)]);
         this.modules.reg_method("gate_call_client_migrate_client_start", [this, this.migrate_client_start.bind(this)]);
         this.modules.reg_method("gate_call_client_migrate_client_done", [this, this.migrate_client_done.bind(this)]);
+        this.modules.reg_method("gate_call_client_hub_loss", [this, this.hub_loss.bind(this)]);
 
         this.cb_ntf_cuuid = null;
         this.cb_call_client = null;
         this.cb_migrate_client_start = null;
         this.cb_migrate_client_done = null;
+        this.cb_hub_loss = null;
     }
 
     public cb_ntf_cuuid : (cuuid:string)=>void | null;
@@ -102,6 +110,15 @@ export class gate_call_client_module extends abelkhan.Imodule {
         _argv_.push(inArray[1]);
         if (this.cb_migrate_client_done){
             this.cb_migrate_client_done.apply(null, _argv_);
+        }
+    }
+
+    public cb_hub_loss : (hub_name:string)=>void | null;
+    hub_loss(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        if (this.cb_hub_loss){
+            this.cb_hub_loss.apply(null, _argv_);
         }
     }
 

@@ -57,6 +57,12 @@ namespace Abelkhan
             call_module_method("gate_call_client_migrate_client_done", _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c);
         }
 
+        public void hub_loss(string hub_name){
+            var _argv_90f24099_13d8_3e09_b6fa_6d93a3ae6099 = new List<MsgPack.MessagePackObject>();
+            _argv_90f24099_13d8_3e09_b6fa_6d93a3ae6099.Add(hub_name);
+            call_module_method("gate_call_client_hub_loss", _argv_90f24099_13d8_3e09_b6fa_6d93a3ae6099);
+        }
+
     }
 /*this module code is codegen by Abelkhan codegen for c#*/
     public class gate_call_client_module : Abelkhan.Imodule {
@@ -68,6 +74,7 @@ namespace Abelkhan
             modules.reg_method("gate_call_client_call_client", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, call_client));
             modules.reg_method("gate_call_client_migrate_client_start", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, migrate_client_start));
             modules.reg_method("gate_call_client_migrate_client_done", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, migrate_client_done));
+            modules.reg_method("gate_call_client_hub_loss", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, hub_loss));
         }
 
         public event Action<string> on_ntf_cuuid;
@@ -102,6 +109,14 @@ namespace Abelkhan
             var _target_hub = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             if (on_migrate_client_done != null){
                 on_migrate_client_done(_src_hub, _target_hub);
+            }
+        }
+
+        public event Action<string> on_hub_loss;
+        public void hub_loss(IList<MsgPack.MessagePackObject> inArray){
+            var _hub_name = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            if (on_hub_loss != null){
+                on_hub_loss(_hub_name);
             }
         }
 

@@ -67,6 +67,12 @@ namespace abelkhan
             call_module_method("gate_call_client_migrate_client_done", _argv_7e93ee66_7ffc_3958_b9d8_f5ed2e9be23c);
         }
 
+        void hub_loss(std::string hub_name){
+            msgpack11::MsgPack::array _argv_90f24099_13d8_3e09_b6fa_6d93a3ae6099;
+            _argv_90f24099_13d8_3e09_b6fa_6d93a3ae6099.push_back(hub_name);
+            call_module_method("gate_call_client_hub_loss", _argv_90f24099_13d8_3e09_b6fa_6d93a3ae6099);
+        }
+
     };
 /*this module code is codegen by abelkhan codegen for cpp*/
     class gate_call_client_module : public Imodule, public std::enable_shared_from_this<gate_call_client_module>{
@@ -80,6 +86,7 @@ namespace abelkhan
             _modules->reg_method("gate_call_client_call_client", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::call_client, this, std::placeholders::_1)));
             _modules->reg_method("gate_call_client_migrate_client_start", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::migrate_client_start, this, std::placeholders::_1)));
             _modules->reg_method("gate_call_client_migrate_client_done", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::migrate_client_done, this, std::placeholders::_1)));
+            _modules->reg_method("gate_call_client_hub_loss", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::hub_loss, this, std::placeholders::_1)));
         }
 
         concurrent::signals<void(std::string)> sig_ntf_cuuid;
@@ -107,6 +114,12 @@ namespace abelkhan
             auto _src_hub = inArray[0].string_value();
             auto _target_hub = inArray[1].string_value();
             sig_migrate_client_done.emit(_src_hub, _target_hub);
+        }
+
+        concurrent::signals<void(std::string)> sig_hub_loss;
+        void hub_loss(const msgpack11::MsgPack::array& inArray){
+            auto _hub_name = inArray[0].string_value();
+            sig_hub_loss.emit(_hub_name);
         }
 
     };

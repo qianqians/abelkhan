@@ -108,6 +108,10 @@ public:
 		_gate_call_client_caller.migrate_client_done(src_hub, target_hub);
 	}
 
+	void hub_loss(std::string hub_name) {
+		_gate_call_client_caller.hub_loss(hub_name);
+	}
+
 	void send_buf(char* _data, int datasize);
 
 	bool is_xor_key_crypt() {

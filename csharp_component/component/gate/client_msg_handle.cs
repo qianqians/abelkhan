@@ -66,24 +66,29 @@ namespace Gate {
 			var proxy = _clientmanager.get_client(ch);
 			if (proxy != null) {
 				var hubproxy_ = _hubsvrmanager.get_hub(hub_name);
-				if (hubproxy_ != null) {
+				if (hubproxy_ != null)
+				{
 					proxy.conn_hub(hubproxy_);
 					hubproxy_.client_call_hub(proxy._cuuid, rpc_argv);
 
 					if (hubproxy_._tick_time > 100)
 					{
 						var r = _hubsvrmanager.rd.Next(100);
-                        if (r < 20)
+						if (r < 20)
 						{
-							var target_hub =  _hubsvrmanager.hash_hubproxy(proxy._cuuid, hubproxy_._hub_type);
-                            var target_hubproxy_ = _hubsvrmanager.get_hub(target_hub);
-                            if (target_hub != hub_name && target_hubproxy_._tick_time <= 50)
-                            {
-                                proxy.migrate_client_start(hub_name, target_hub);
-                            }
-                        }
+							var target_hub = _hubsvrmanager.hash_hubproxy(proxy._cuuid, hubproxy_._hub_type);
+							var target_hubproxy_ = _hubsvrmanager.get_hub(target_hub);
+							if (target_hub != hub_name && target_hubproxy_._tick_time <= 50)
+							{
+								proxy.migrate_client_start(hub_name, target_hub);
+							}
+						}
 					}
 				}
+				else
+				{
+					proxy.hub_loss(hub_name);
+                }
 			}
 		}
 	}
