@@ -56,6 +56,7 @@ namespace Abelkhan
         private bool run_flag = true;
 
         private readonly ConcurrentQueue<string> listen_channel_names;
+        private RedisKey[] ch_names = null;
 
         private readonly ConcurrentDictionary<string, Redischannel> channels;
 
@@ -211,10 +212,13 @@ namespace Abelkhan
         private async Task recvmsg_mq_ch()
         {
             var count = listen_channel_names.Count;
-            var ch_names = new RedisKey[count];
-            for (var index =0; index < count; index++)
+            if (ch_names == null || count > ch_names.Length)
             {
-                ch_names[index] = listen_channel_names.ElementAt(index);
+                ch_names = new RedisKey[count];
+                for (var index = 0; index < count; index++)
+                {
+                    ch_names[index] = listen_channel_names.ElementAt(index);
+                }
             }
 
             ListPopResult batch_pop_data = await database.ListRightPopAsync(ch_names, 10);
