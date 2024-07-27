@@ -218,7 +218,7 @@ namespace Abelkhan
                 }
             }
 
-            ListPopResult batch_pop_data = await database.ListRightPopAsync(ch_names, 10);
+            var batch_pop_data = await database.ListRightPopAsync(ch_names, 10);
             while (!batch_pop_data.IsNull)
             {
                 foreach (byte[] pop_data in batch_pop_data.Values) {
