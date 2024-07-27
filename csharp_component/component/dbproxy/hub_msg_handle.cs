@@ -190,14 +190,10 @@ namespace DBProxy
                     var c = await DBProxy._mongodbproxy.find(db, collection, query_data, _limit, _skip, _sort, _Ascending_);
 
                     var _datalist = new MongoDB.Bson.BsonArray();
-                    if (c == null)
+                    if (c != null)
                     {
-                        _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _datalist } });
-                    }
-                    else
-                    {
-                        int count = 0;
-                        int total_count = 0;
+                        var count = 0;
+                        var total_count = 0;
                         while (c.MoveNext())
                         {
                             var _c = c.Current;
@@ -225,7 +221,11 @@ namespace DBProxy
                             _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _datalist } });
                         }
                     }
-
+                    else
+                    {
+                        _hubproxy.ack_get_object_info(callbackid, new MongoDB.Bson.BsonDocument { { "_list", _datalist } });
+                    }
+                    
                     _hubproxy.ack_get_object_info_end(callbackid);
                 }
                 catch (System.Exception ex)
