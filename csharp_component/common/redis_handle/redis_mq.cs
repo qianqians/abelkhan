@@ -246,11 +246,7 @@ namespace Abelkhan
         private async ValueTask<long> recvmsg_mq()
         {
             var tick_begin = _timer.refresh();
-
-            while(run_flag)
-            {
-                await recvmsg_mq_ch();
-            }
+            await recvmsg_mq_ch();
             
             return _timer.refresh() - tick_begin;
         }
@@ -260,10 +256,13 @@ namespace Abelkhan
             rerun:
             try
             {
-                var tick = await recvmsg_mq();
-                if (tick < tick_time)
+                while (run_flag)
                 {
-                    await Task.Delay((int)(tick_time - tick));
+                    var tick = await recvmsg_mq();
+                    if (tick < tick_time)
+                    {
+                        await Task.Delay((int)(tick_time - tick));
+                    }
                 }
             }
             catch (RedisTimeoutException ex)
