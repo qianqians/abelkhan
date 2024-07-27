@@ -23,22 +23,16 @@ namespace Gate
 		}
 
 		public void conn_hub(HubProxy hub_proxy) {
-			lock (conn_hubproxys)
-			{
-                if (conn_hubproxys.Contains(hub_proxy))
-                {
-                    return;
-                }
-                conn_hubproxys.Add(hub_proxy);
+            if (conn_hubproxys.Contains(hub_proxy))
+            {
+                return;
             }
-		}
+            conn_hubproxys.Add(hub_proxy);
+        }
 
 		public void unreg_hub(HubProxy hub_proxy) {
-			lock (conn_hubproxys)
-			{
-				conn_hubproxys.Remove(hub_proxy);
-			}
-		}
+            conn_hubproxys.Remove(hub_proxy);
+        }
 
 		public void ntf_cuuid()
 		{
