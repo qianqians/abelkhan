@@ -210,14 +210,14 @@ namespace Abelkhan
 
         private async Task recvmsg_mq_ch()
         {
-            var ch_names = new List<RedisKey>();
-            foreach (var ch_name in listen_channel_names)
+            var count = listen_channel_names.Count;
+            var ch_names = new RedisKey[count];
+            for (var index =0; index < count; index++)
             {
-                ch_names.Add(ch_name);
+                ch_names[index] = listen_channel_names.ElementAt(index);
             }
-            var key = ch_names.ToArray();
 
-            ListPopResult batch_pop_data = await database.ListRightPopAsync(key, 10);
+            ListPopResult batch_pop_data = await database.ListRightPopAsync(ch_names, 10);
             while (!batch_pop_data.IsNull)
             {
                 foreach (byte[] pop_data in batch_pop_data.Values) {
@@ -238,7 +238,7 @@ namespace Abelkhan
                     ch._channel_onrecv.on_recv(_st.ToArray());
                 }
 
-                batch_pop_data = await database.ListRightPopAsync(key, 10);
+                batch_pop_data = await database.ListRightPopAsync(ch_names, 10);
             }
         }
 
