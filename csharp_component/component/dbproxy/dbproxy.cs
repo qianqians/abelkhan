@@ -242,8 +242,8 @@ namespace DBProxy
                 _prometheus.Start();
             }
 
-            var _hub_msg_handle = new hub_msg_handle(_hubmanager);
-            var _center_msg_handle = new center_msg_handle(_closeHandle, _centerproxy, _hubmanager);
+            _ = new hub_msg_handle(_hubmanager);
+            _ = new center_msg_handle(_closeHandle, _centerproxy, _hubmanager);
 
             rerun:
             try

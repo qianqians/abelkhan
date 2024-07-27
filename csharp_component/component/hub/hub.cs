@@ -481,9 +481,9 @@ namespace Hub
                 _prometheus.Start();
             }
 
-            var _hub_msg_handle = new hub_msg_handle(_hubs, _gates);
-            var _center_msg_handle = new center_msg_handle(this, _closeHandle, _centerproxy);
-            var _dbproxy_msg_handle = new dbproxy_msg_handle();
+            _ = new hub_msg_handle(_hubs, _gates);
+            _ = new center_msg_handle(this, _closeHandle, _centerproxy);
+            _ = new dbproxy_msg_handle();
 
             rerun:
             try

@@ -317,9 +317,9 @@ namespace Gate {
                 _prometheus.Start();
             }
 
-            var _center_msg_handle = new center_msg_handle(this, _timerservice);
-            var _hub_svr_msg_handle = new hub_svr_msg_handle(_clientmanager, _hubsvrmanager);
-            var _client_msg_handle = new client_msg_handle(_clientmanager, _hubsvrmanager);
+            _ = new center_msg_handle(this, _timerservice);
+            _ = new hub_svr_msg_handle(_clientmanager, _hubsvrmanager);
+            _ = new client_msg_handle(_clientmanager, _hubsvrmanager);
 
             rerun:
             try
