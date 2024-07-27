@@ -156,16 +156,14 @@ namespace Gate
 			return client_uuid_map.ContainsKey(uuid);
 		}
 
-		public ClientProxy get_client(Abelkhan.Ichannel ch)
+		public bool get_client(Abelkhan.Ichannel ch, out ClientProxy proxy)
 		{
-			client_map.TryGetValue(ch, out var proxy);
-			return proxy;
+			return client_map.TryGetValue(ch, out proxy);
 		}
 
-		public ClientProxy get_client(string cuuid)
+		public bool get_client(string cuuid, out ClientProxy proxy)
 		{
-			client_uuid_map.TryGetValue(cuuid, out var proxy);
-			return proxy;
+            return client_uuid_map.TryGetValue(cuuid, out proxy);
 		}
 
 		public void for_each_client(Action<string, ClientProxy> fn)

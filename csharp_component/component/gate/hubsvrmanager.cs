@@ -66,16 +66,11 @@ namespace Gate
 			if (hub_name_proxy.TryGetValue(hub_name, out var proxy))
 			{
 				wait_destory_proxy.Add(hub_name, proxy);
-				hub_channel_name[ch] = hub_name;
-				hub_name_proxy[hub_name] = _hubproxy;
-			}
-			else
-			{
-				hub_name_proxy.Add(hub_name, _hubproxy);
-				hub_channel_name.Add(ch, hub_name);
-			}
+            }
+            hub_channel_name[ch] = hub_name;
+            hub_name_proxy[hub_name] = _hubproxy;
 
-			return _hubproxy;
+            return _hubproxy;
 		}
 
 		public void unreg_hub(string hub_name)
@@ -95,16 +90,19 @@ namespace Gate
 			}
 		}
 
-		public HubProxy get_hub(string hub_name)
+		public bool get_hub(string hub_name, out HubProxy proxy)
 		{
-			hub_name_proxy.TryGetValue(hub_name, out var proxy);
-			return proxy;
+			return hub_name_proxy.TryGetValue(hub_name, out proxy);
 		}
 
-		public HubProxy get_hub(Abelkhan.Ichannel hub_channel)
+		public bool get_hub(Abelkhan.Ichannel hub_channel, out HubProxy proxy)
 		{
-			hub_channel_name.TryGetValue(hub_channel, out var proxy_name);
-			return get_hub(proxy_name);
+			if (!hub_channel_name.TryGetValue(hub_channel, out var proxy_name))
+			{
+                proxy = null;
+                return false;
+			}
+			return get_hub(proxy_name, out proxy);
 		}
 
 		public string hash_hubproxy(string client_uuid, string hub_type)
@@ -172,14 +170,6 @@ namespace Gate
 			}
 
 			return false;
-		}
-
-		public void for_each_hub(Action<string, HubProxy> fn)
-		{
-			foreach (var it in hub_name_proxy)
-			{
-				fn(it.Key, it.Value);
-			}
 		}
 	}
 

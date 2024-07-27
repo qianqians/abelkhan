@@ -29,39 +29,37 @@ namespace Gate {
 
         private void _hub_call_gate_module_on_migrate_client_done(string client_uuid, string _src_hub, string _target_hub)
         {
-            var ch = _hub_call_gate_module.current_ch.Value;
-            var hub_proxy = _hubsvrmanager.get_hub(ch);
-            var client_proxy = _clientmanager.get_client(client_uuid);
-            if (client_proxy != null)
+            if (_clientmanager.get_client(client_uuid, out var client_proxy))
             {
                 client_proxy.migrate_client_done(_src_hub, _target_hub);
             }
             else
             {
-                hub_proxy.client_disconnect(client_uuid);
+                var ch = _hub_call_gate_module.current_ch.Value;
+				if (_hubsvrmanager.get_hub(ch, out var hub_proxy))
+				{
+					hub_proxy.client_disconnect(client_uuid);
+				}
             }
         }
 
         public void reg_hub(string hub_name, string hub_type, string router_type) {
 			var rsp = (Abelkhan.hub_call_gate_reg_hub_rsp)_hub_call_gate_module.rsp.Value;
 			var ch = _hub_call_gate_module.current_ch.Value;
-			var proxy = _hubsvrmanager.reg_hub(hub_name, hub_type, router_type, ch);
+			_ = _hubsvrmanager.reg_hub(hub_name, hub_type, router_type, ch);
 			rsp.rsp();
 		}
 
 		public void tick_hub_health(uint tick_time) {
-			var hub_proxy = _hubsvrmanager.get_hub(_hub_call_gate_module.current_ch.Value);
-			if (hub_proxy != null) {
+			if (_hubsvrmanager.get_hub(_hub_call_gate_module.current_ch.Value, out var hub_proxy)) {
 				hub_proxy._tick_time = tick_time;
 			}
 		}
 
 		public void reverse_reg_client_hub(string client_uuid) {
 			var rsp = (Abelkhan.hub_call_gate_reverse_reg_client_hub_rsp)_hub_call_gate_module.rsp.Value;
-			var proxy = _clientmanager.get_client(client_uuid);
-			if (proxy != null) {
-				var hub_proxy = _hubsvrmanager.get_hub(_hub_call_gate_module.current_ch.Value);
-				proxy.conn_hub(hub_proxy);
+			if (_clientmanager.get_client(client_uuid, out var client_proxy) && _hubsvrmanager.get_hub(_hub_call_gate_module.current_ch.Value, out var hub_proxy)) {
+                client_proxy.conn_hub(hub_proxy);
 				rsp.rsp();
 			}
 			else {
@@ -70,66 +68,68 @@ namespace Gate {
 		}
 
 		public void unreg_client_hub(string client_uuid) {
-			var proxy = _clientmanager.get_client(client_uuid);
-			if (proxy != null) {
-				var hub_proxy = _hubsvrmanager.get_hub(_hub_call_gate_module.current_ch.Value);
+			if (_clientmanager.get_client(client_uuid, out var proxy) && _hubsvrmanager.get_hub(_hub_call_gate_module.current_ch.Value, out var hub_proxy)) {
 				proxy.unreg_hub(hub_proxy);
 			}
 		}
 
 		public void disconnect_client(string cuuid) {
-			var proxy = _clientmanager.get_client(cuuid);
-			if (proxy != null) {
+			if (_clientmanager.get_client(cuuid, out var proxy)) {
 				proxy._ch.disconnect();
 			}
 		}
 
 		public void forward_hub_call_client(string cuuid, byte[] rpc_argv) {
 			var ch = _hub_call_gate_module.current_ch.Value;
-			var hub_proxy = _hubsvrmanager.get_hub(ch);
-			var client_proxy = _clientmanager.get_client(cuuid);
-			if (client_proxy != null) {
-				client_proxy.conn_hub(hub_proxy);
-				client_proxy.call_client(hub_proxy._hub_name, rpc_argv);
-			}
-			else {
-				hub_proxy.client_disconnect(cuuid);
-			}
+			if (_hubsvrmanager.get_hub(ch, out var hub_proxy))
+            {
+                if (_clientmanager.get_client(cuuid, out var client_proxy))
+                {
+                    client_proxy.conn_hub(hub_proxy);
+                    client_proxy.call_client(hub_proxy._hub_name, rpc_argv);
+                }
+                else
+                {
+                    hub_proxy.client_disconnect(cuuid);
+                }
+            }
 		}
 
 		public void forward_hub_call_group_client(List<string> cuuids, byte[] rpc_argv) {
 			var ch = _hub_call_gate_module.current_ch.Value;
-			var hub_proxy = _hubsvrmanager.get_hub(ch);
-
-			var clients = new List<ClientProxy>();
-			foreach (var cuuid in cuuids)
+			if (_hubsvrmanager.get_hub(ch, out var hub_proxy))
 			{
-				var client_proxy = _clientmanager.get_client(cuuid);
-				if (client_proxy != null)
-                {
-                    client_proxy.conn_hub(hub_proxy);
-                    clients.Add(client_proxy);
-				}
-				else
+				var clients = new List<ClientProxy>();
+				foreach (var cuuid in cuuids)
 				{
-					hub_proxy.client_disconnect(cuuid);
+					if (_clientmanager.get_client(cuuid, out var client_proxy))
+					{
+						client_proxy.conn_hub(hub_proxy);
+						clients.Add(client_proxy);
+					}
+					else
+					{
+						hub_proxy.client_disconnect(cuuid);
+					}
 				}
-			}
 
-			Parallel.ForEach(clients, client_proxy =>
-			{
-				client_proxy.call_client(hub_proxy._hub_name, rpc_argv);
-			});
+				Parallel.ForEach(clients, client_proxy =>
+				{
+					client_proxy.call_client(hub_proxy._hub_name, rpc_argv);
+				});
+			}
         }
 
 		public void forward_hub_call_global_client(byte[] rpc_argv) {
 			var ch = _hub_call_gate_module.current_ch.Value;
-			var hub_proxy = _hubsvrmanager.get_hub(ch);
-
-			_clientmanager.for_each_client((_, _client) => {
-                _client.conn_hub(hub_proxy);
-                _client.call_client(hub_proxy._hub_name, rpc_argv);
-			});
+			if (_hubsvrmanager.get_hub(ch, out var hub_proxy))
+			{
+				_clientmanager.for_each_client((_, _client) =>
+				{
+					_client.conn_hub(hub_proxy);
+					_client.call_client(hub_proxy._hub_name, rpc_argv);
+				});
+			}
 		}
 	}
 
