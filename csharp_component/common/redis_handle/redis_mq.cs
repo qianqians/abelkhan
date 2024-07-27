@@ -238,11 +238,23 @@ namespace Abelkhan
         {
             var tick_begin = _timer.refresh();
 
+            foreach (var listen_channel_name in listen_channel_names)
+            {
+                await recvmsg_mq_ch(listen_channel_name);
+            }
+            
+            return _timer.refresh() - tick_begin;
+        }
+
+        private async void th_recv_poll()
+        {
+            rerun:
             try
             {
-                foreach (var listen_channel_name in listen_channel_names)
+                var tick = await recvmsg_mq();
+                if (tick < tick_time)
                 {
-                    await recvmsg_mq_ch(listen_channel_name);
+                    await Task.Delay((int)(tick_time - tick));
                 }
             }
             catch (RedisTimeoutException ex)
@@ -260,18 +272,9 @@ namespace Abelkhan
                 Log.Log.err("recvmsg_mq error:{0}", ex);
             }
 
-            return _timer.refresh() - tick_begin;
-        }
-
-        private async void th_recv_poll()
-        {
-            while (run_flag)
+            if (run_flag)
             {
-                var tick = await recvmsg_mq();
-                if (tick < tick_time)
-                {
-                    await Task.Delay((int)(tick_time - tick));
-                }
+                goto rerun;
             }
         }
     }
