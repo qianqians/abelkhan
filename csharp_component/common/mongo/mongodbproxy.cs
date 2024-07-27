@@ -80,16 +80,8 @@ namespace Service
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
-            try
-            {
-                var _d = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_data);
-                await _collection.InsertOneAsync(_d);
-            }
-            catch(System.Exception e)
-            {
-                Log.Log.err("save data faild, {0}", e.Message);
-                return false;
-            }
+            var _d = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_data);
+            await _collection.InsertOneAsync(_d);
 
             return true;
 		}
@@ -100,22 +92,14 @@ namespace Service
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
-            try
-            {
-                var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
-                var _bson_update = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_update);
+            var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
+            var _bson_update = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_update);
 
-                var _query = new BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
-                var _update = new BsonDocumentUpdateDefinition<MongoDB.Bson.BsonDocument>(_bson_update);
-                var options = new UpdateOptions() { IsUpsert = upsert };
+            var _query = new BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
+            var _update = new BsonDocumentUpdateDefinition<MongoDB.Bson.BsonDocument>(_bson_update);
+            var options = new UpdateOptions() { IsUpsert = upsert };
 
-                await _collection.UpdateOneAsync(_query, _update, options);
-            }
-            catch (System.Exception e)
-            {
-                Log.Log.err("update data faild, {0}", e.Message);
-                return false;
-            }
+            await _collection.UpdateOneAsync(_query, _update, options);
 
             return true;
 		}
@@ -126,30 +110,21 @@ namespace Service
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection) as MongoDB.Driver.IMongoCollection<MongoDB.Bson.BsonDocument>;
 
-            try
+            var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
+            var _bson_update = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_update);
+
+            var _query = new BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
+            var _bson_update_impl = new MongoDB.Bson.BsonDocument { { "$set", _bson_update } };
+            var _update = new BsonDocumentUpdateDefinition<MongoDB.Bson.BsonDocument>(_bson_update_impl);
+            var options = new FindOneAndUpdateOptions<MongoDB.Bson.BsonDocument, MongoDB.Bson.BsonDocument>()
             {
-                var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
-                var _bson_update = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_update);
+                ReturnDocument = _new ? ReturnDocument.After : ReturnDocument.Before,
+                IsUpsert = _upsert
+            };
 
-                var _query = new BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
-                var _bson_update_impl = new MongoDB.Bson.BsonDocument { { "$set", _bson_update } };
-                var _update = new BsonDocumentUpdateDefinition<MongoDB.Bson.BsonDocument>(_bson_update_impl);
-                var options = new FindOneAndUpdateOptions<MongoDB.Bson.BsonDocument, MongoDB.Bson.BsonDocument>() 
-                {        
-                    ReturnDocument = _new ? ReturnDocument.After : ReturnDocument.Before,
-                    IsUpsert = _upsert
-                };
+            var r = await _collection.FindOneAndUpdateAsync(_query, _update, options);
 
-                var r = await _collection.FindOneAndUpdateAsync(_query, _update, options);
-
-                return r;
-            }
-            catch (System.Exception e)
-            {
-                Log.Log.err("find_and_modify data faild, {0}", e.Message);
-            }
-
-            return null;
+            return r;
         }
 
         public async ValueTask<IAsyncCursor<MongoDB.Bson.BsonDocument>> find(string db, string collection, byte[] bson_query, int skip, int limit, string sort, bool _Ascending)
@@ -158,60 +133,39 @@ namespace Service
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
-            try
+            var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
+            var _opt = new FindOptions<MongoDB.Bson.BsonDocument>();
+            if (skip > 0)
             {
-                var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
-                var _opt = new FindOptions<MongoDB.Bson.BsonDocument>();
-                if (skip > 0)
-                {
-                    _opt.Skip = skip;
-                }
-                if (limit > 0)
-                {
-                    _opt.Limit = limit;
-                }
-                if (!string.IsNullOrEmpty(sort))
-                {
-                    if (_Ascending)
-                    {
-                        _opt.Sort = Builders<MongoDB.Bson.BsonDocument>.Sort.Ascending(sort);
-                    }
-                    else
-                    {
-                        _opt.Sort = Builders<MongoDB.Bson.BsonDocument>.Sort.Descending(sort);
-                    }
-                }
-
-                return await _collection.FindAsync<MongoDB.Bson.BsonDocument>(_bson_query, _opt);
+                _opt.Skip = skip;
             }
-            catch (System.Exception e)
+            if (limit > 0)
             {
-                Log.Log.err("find faild, {0}", e.Message);
+                _opt.Limit = limit;
+            }
+            if (!string.IsNullOrEmpty(sort))
+            {
+                if (_Ascending)
+                {
+                    _opt.Sort = Builders<MongoDB.Bson.BsonDocument>.Sort.Ascending(sort);
+                }
+                else
+                {
+                    _opt.Sort = Builders<MongoDB.Bson.BsonDocument>.Sort.Descending(sort);
+                }
             }
 
-            return null;
-		}
+            return await _collection.FindAsync<MongoDB.Bson.BsonDocument>(_bson_query, _opt);
+        }
 
         public async ValueTask<int> count(string db, string collection, byte[] bson_query)
         {
-            long c = 0;
-
             var _mongoclient = getMongoCLient();
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
-            try
-            {
-                var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
-                c = await _collection.CountDocumentsAsync(_bson_query);
-            }
-            catch (System.Exception e)
-            {
-                Log.Log.err("count faild, {0}", e.Message);
-                return 0;
-            }
-
-            return (int)c;
+            var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
+            return (int)(await _collection.CountDocumentsAsync(_bson_query));
         }
 
 		public async ValueTask<bool> remove(string db, string collection, byte[] bson_query)
@@ -220,16 +174,8 @@ namespace Service
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
-            try
-            {
-                var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
-                await _collection.DeleteOneAsync(_bson_query);
-            }
-            catch (System.Exception e)
-            {
-                Log.Log.err("remove faild, {0}", e.Message);
-                return false;
-            }
+            var _bson_query = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bson_query);
+            await _collection.DeleteOneAsync(_bson_query);
 
             return true;
 		}
@@ -240,20 +186,12 @@ namespace Service
             var _db = _mongoclient.GetDatabase(db);
             var _collection = _db.GetCollection<MongoDB.Bson.BsonDocument>(collection);
 
-            try
-            {
-                var _bson_query = new MongoDB.Bson.BsonDocument("Guid", "__guid__");
-                var _query = new BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
-                var _bson_update_impl = new MongoDB.Bson.BsonDocument { { "$inc", new MongoDB.Bson.BsonDocument { { "inside_guid", 1 } } } };
+            var _bson_query = new MongoDB.Bson.BsonDocument("Guid", "__guid__");
+            var _query = new BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(_bson_query);
+            var _bson_update_impl = new MongoDB.Bson.BsonDocument { { "$inc", new MongoDB.Bson.BsonDocument { { "inside_guid", 1 } } } };
 
-                var c = await _collection.FindOneAndUpdateAsync<MongoDB.Bson.BsonDocument>(_query, _bson_update_impl);
-                return c.GetValue("inside_guid").ToInt64();
-            }
-            catch (System.Exception e)
-            {
-                Log.Log.err("get_guid data db: {0}, collection: {1}, guid_key: {2} faild, {3}", db, collection, "inside_guid", e);
-                return -1;
-            }
+            var c = await _collection.FindOneAndUpdateAsync<MongoDB.Bson.BsonDocument>(_query, _bson_update_impl);
+            return c.GetValue("inside_guid").ToInt64();
         }
     }
 }

@@ -40,14 +40,7 @@ namespace DBProxy
             try
             {
                 var guid = await DBProxy._mongodbproxy.get_guid(db, collection);
-                if (guid > 0)
-                {
-                    rsp.rsp(guid);
-                }
-                else
-                {
-                    rsp.err();
-                }
+                rsp.rsp(guid);
             }
             catch (System.Exception ex)
             {
