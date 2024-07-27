@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Service;
+using System.Linq;
 
 namespace Abelkhan
 {
@@ -207,12 +208,19 @@ namespace Abelkhan
             return _timer.refresh() - tick_begin;
         }
 
-        private async Task recvmsg_mq_ch(string ch_name)
+        private async Task recvmsg_mq_ch()
         {
-            var batch_pop_data = await database.ListRightPopAsync(ch_name, 10);
-            while (batch_pop_data != null)
+            var ch_names = new List<RedisKey>();
+            foreach (var ch_name in listen_channel_names)
             {
-                foreach (byte[] pop_data in batch_pop_data) {
+                ch_names.Add(ch_name);
+            }
+            var key = ch_names.ToArray();
+
+            ListPopResult batch_pop_data = await database.ListRightPopAsync(key, 10);
+            while (!batch_pop_data.IsNull)
+            {
+                foreach (byte[] pop_data in batch_pop_data.Values) {
                     var _ch_name_size = pop_data[0] | ((uint)pop_data[1] << 8) | ((uint)pop_data[2] << 16) | ((uint)pop_data[3] << 24);
                     var _ch_name = System.Text.Encoding.UTF8.GetString(pop_data, 4, (int)_ch_name_size);
                     var _header_len = 4 + _ch_name_size;
@@ -230,7 +238,7 @@ namespace Abelkhan
                     ch._channel_onrecv.on_recv(_st.ToArray());
                 }
 
-                batch_pop_data = await database.ListRightPopAsync(ch_name, 10);
+                batch_pop_data = await database.ListRightPopAsync(key, 10);
             }
         }
 
@@ -238,9 +246,9 @@ namespace Abelkhan
         {
             var tick_begin = _timer.refresh();
 
-            foreach (var listen_channel_name in listen_channel_names)
+            while(run_flag)
             {
-                await recvmsg_mq_ch(listen_channel_name);
+                await recvmsg_mq_ch();
             }
             
             return _timer.refresh() - tick_begin;
