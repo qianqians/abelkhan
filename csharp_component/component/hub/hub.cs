@@ -438,7 +438,7 @@ namespace Hub
                 }
             }
 
-            _ = await _redis_mq_service.sendmsg_mq();
+            await _redis_mq_service.sendmsg_mq();
 
             Abelkhan.TinyTimer.poll();
 

@@ -139,7 +139,7 @@ namespace Abelkhan
                     }
                 }
 
-                _ = await _redis_mq_service.sendmsg_mq();
+                await _redis_mq_service.sendmsg_mq();
 
                 if (_closeHandle.is_closing && _svrmanager.check_all_hub_closed())
                 {

@@ -275,7 +275,7 @@ namespace Gate {
                 }
             }
 
-            _ = await _hub_redismq_service.sendmsg_mq();
+            await _hub_redismq_service.sendmsg_mq();
 
             Abelkhan.TinyTimer.poll();
             

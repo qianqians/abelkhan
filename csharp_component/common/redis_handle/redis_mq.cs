@@ -151,9 +151,8 @@ namespace Abelkhan
             }
         }
 
-        public async ValueTask<long> sendmsg_mq()
+        public async Task sendmsg_mq()
         {
-            var tick_begin = _timer.refresh();
             if (wait_send_data.Count > 0)
             {
                 lock (wait_send_data)
@@ -205,8 +204,6 @@ namespace Abelkhan
                     }
                 }
             }
-
-            return _timer.refresh() - tick_begin;
         }
 
         private async Task recvmsg_mq_ch()
