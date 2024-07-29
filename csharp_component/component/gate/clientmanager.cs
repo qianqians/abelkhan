@@ -8,12 +8,11 @@ namespace Gate
 	public class ClientProxy {
 		public long _timetmp = 0;
 		public long _theory_timetmp = 0;
-		public string _cuuid;
 
-		public HashSet<HubProxy> conn_hubproxys;
-
-		public Abelkhan.Ichannel _ch;
-		public Abelkhan.gate_call_client_caller _gate_call_client_caller;
+		public readonly string _cuuid;
+		public readonly HashSet<HubProxy> conn_hubproxys;
+		public readonly Abelkhan.Ichannel _ch;
+		public readonly Abelkhan.gate_call_client_caller _gate_call_client_caller;
 
 		public ClientProxy(string cuuid, Abelkhan.Ichannel ch) {
 			conn_hubproxys = new();
