@@ -4,13 +4,15 @@ using System.Collections.Generic;
 namespace Gate
 {
 
-	public class HubProxy {
-		public string _hub_name;
-		public string _hub_type;
-		public string _router_type;
-
+	public class HubProxy
+    {
         public uint _tick_time;
-		public Abelkhan.Ichannel _ch;
+
+        public readonly string _hub_name;
+		public readonly string _hub_type;
+		public readonly string _router_type;
+
+		public readonly Abelkhan.Ichannel _ch;
 
 		private readonly Abelkhan.gate_call_hub_caller _gate_call_hub_caller;
 
