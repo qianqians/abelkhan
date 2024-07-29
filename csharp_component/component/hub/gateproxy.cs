@@ -57,9 +57,9 @@ namespace Hub
 			_hub_call_gate_caller.unreg_client_hub(client_uuid);
 		}
 
-		public void disconnect_client(String uuid)
+		public void disconnect_client(string uuid, string reason)
         {
-			_hub_call_gate_caller.disconnect_client(uuid);
+			_hub_call_gate_caller.disconnect_client(uuid, reason);
         }
 
         public void forward_hub_call_client(String uuid, byte[] rpc_bin)

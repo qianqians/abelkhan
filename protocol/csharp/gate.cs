@@ -553,9 +553,10 @@ namespace Abelkhan
             call_module_method("hub_call_gate_unreg_client_hub", _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae);
         }
 
-        public void disconnect_client(string client_uuid){
+        public void disconnect_client(string client_uuid, string reason){
             var _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85 = new List<MsgPack.MessagePackObject>();
             _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.Add(client_uuid);
+            _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.Add(reason);
             call_module_method("hub_call_gate_disconnect_client", _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85);
         }
 
@@ -787,11 +788,12 @@ namespace Abelkhan
             }
         }
 
-        public event Action<string> on_disconnect_client;
+        public event Action<string, string> on_disconnect_client;
         public void disconnect_client(IList<MsgPack.MessagePackObject> inArray){
             var _client_uuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            var _reason = ((MsgPack.MessagePackObject)inArray[1]).AsString();
             if (on_disconnect_client != null){
-                on_disconnect_client(_client_uuid);
+                on_disconnect_client(_client_uuid, _reason);
             }
         }
 

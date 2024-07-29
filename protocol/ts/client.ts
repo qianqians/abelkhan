@@ -27,6 +27,12 @@ export class gate_call_client_caller extends abelkhan.Icaller {
         this.call_module_method("gate_call_client_ntf_cuuid", _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1);
     }
 
+    public kick_off_reason(reason:string){
+        let _argv_ff383c66_a796_3167_804e_2bbebc0bcb27:any[] = [];
+        _argv_ff383c66_a796_3167_804e_2bbebc0bcb27.push(reason);
+        this.call_module_method("gate_call_client_kick_off_reason", _argv_ff383c66_a796_3167_804e_2bbebc0bcb27);
+    }
+
     public call_client(hub_name:string, rpc_argv:Uint8Array){
         let _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab:any[] = [];
         _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push(hub_name);
@@ -62,12 +68,14 @@ export class gate_call_client_module extends abelkhan.Imodule {
         super("gate_call_client");
         this.modules = modules;
         this.modules.reg_method("gate_call_client_ntf_cuuid", [this, this.ntf_cuuid.bind(this)]);
+        this.modules.reg_method("gate_call_client_kick_off_reason", [this, this.kick_off_reason.bind(this)]);
         this.modules.reg_method("gate_call_client_call_client", [this, this.call_client.bind(this)]);
         this.modules.reg_method("gate_call_client_migrate_client_start", [this, this.migrate_client_start.bind(this)]);
         this.modules.reg_method("gate_call_client_migrate_client_done", [this, this.migrate_client_done.bind(this)]);
         this.modules.reg_method("gate_call_client_hub_loss", [this, this.hub_loss.bind(this)]);
 
         this.cb_ntf_cuuid = null;
+        this.cb_kick_off_reason = null;
         this.cb_call_client = null;
         this.cb_migrate_client_start = null;
         this.cb_migrate_client_done = null;
@@ -80,6 +88,15 @@ export class gate_call_client_module extends abelkhan.Imodule {
         _argv_.push(inArray[0]);
         if (this.cb_ntf_cuuid){
             this.cb_ntf_cuuid.apply(null, _argv_);
+        }
+    }
+
+    public cb_kick_off_reason : (reason:string)=>void | null;
+    kick_off_reason(inArray:any[]){
+        let _argv_:any[] = [];
+        _argv_.push(inArray[0]);
+        if (this.cb_kick_off_reason){
+            this.cb_kick_off_reason.apply(null, _argv_);
         }
     }
 

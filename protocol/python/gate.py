@@ -315,9 +315,10 @@ class hub_call_gate_caller(Icaller):
         _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae.append(client_uuid)
         self.call_module_method("hub_call_gate_unreg_client_hub", _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae)
 
-    def disconnect_client(self, client_uuid:str):
+    def disconnect_client(self, client_uuid:str, reason:str):
         _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85 = []
         _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.append(client_uuid)
+        _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.append(reason)
         self.call_module_method("hub_call_gate_disconnect_client", _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85)
 
     def forward_hub_call_client(self, client_uuid:str, rpc_argv:bytes):
@@ -462,7 +463,7 @@ class hub_call_gate_module(Imodule):
         self.cb_tick_hub_health : Callable[[int]] = None
         self.cb_reverse_reg_client_hub : Callable[[str]] = None
         self.cb_unreg_client_hub : Callable[[str]] = None
-        self.cb_disconnect_client : Callable[[str]] = None
+        self.cb_disconnect_client : Callable[[str, str]] = None
         self.cb_forward_hub_call_client : Callable[[str, bytes]] = None
         self.cb_forward_hub_call_group_client : Callable[[list[str], bytes]] = None
         self.cb_forward_hub_call_global_client : Callable[[bytes]] = None
@@ -498,8 +499,9 @@ class hub_call_gate_module(Imodule):
 
     def disconnect_client(self, inArray:list):
         _client_uuid = inArray[0]
+        _reason = inArray[1]
         if self.cb_disconnect_client:
-            self.cb_disconnect_client(_client_uuid)
+            self.cb_disconnect_client(_client_uuid, _reason)
 
     def forward_hub_call_client(self, inArray:list):
         _client_uuid = inArray[0]

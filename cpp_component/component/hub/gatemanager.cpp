@@ -45,8 +45,8 @@ void gateproxy::unreg_client_hub(std::string client_uuid) {
 	_hub_call_gate_caller->unreg_client_hub(client_uuid);
 }
 
-void gateproxy::disconnect_client(std::string& cuuid) {
-	_hub_call_gate_caller->disconnect_client(cuuid);
+void gateproxy::disconnect_client(std::string& cuuid, std::string& reason) {
+	_hub_call_gate_caller->disconnect_client(cuuid, reason);
 }
 
 void gateproxy::forward_hub_call_client(const std::string& cuuid, const std::vector<uint8_t>& _data_bin) {
@@ -225,10 +225,10 @@ std::shared_ptr<directproxy> gatemanager::get_direct_client(std::shared_ptr<abel
 	return it->second;
 }
 
-void gatemanager::disconnect_client(std::string uuid) {
+void gatemanager::disconnect_client(std::string uuid, std::string reason) {
 	auto it_gate = clients.find(uuid);
 	if (it_gate != clients.end()) {
-		it_gate->second->disconnect_client(uuid);
+		it_gate->second->disconnect_client(uuid, reason);
 		clients.erase(it_gate);
 	}
 

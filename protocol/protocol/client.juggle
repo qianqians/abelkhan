@@ -1,6 +1,8 @@
 module gate_call_client{
 	
 	ntf_cuuid ntf(string cuuid);
+	
+	kick_off_reason ntf(string reason);
 
 	call_client ntf(string hub_name, bin rpc_argv);
 

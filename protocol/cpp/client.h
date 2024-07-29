@@ -46,6 +46,12 @@ namespace abelkhan
             call_module_method("gate_call_client_ntf_cuuid", _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1);
         }
 
+        void kick_off_reason(std::string reason){
+            msgpack11::MsgPack::array _argv_ff383c66_a796_3167_804e_2bbebc0bcb27;
+            _argv_ff383c66_a796_3167_804e_2bbebc0bcb27.push_back(reason);
+            call_module_method("gate_call_client_kick_off_reason", _argv_ff383c66_a796_3167_804e_2bbebc0bcb27);
+        }
+
         void call_client(std::string hub_name, std::vector<uint8_t> rpc_argv){
             msgpack11::MsgPack::array _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab;
             _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.push_back(hub_name);
@@ -83,6 +89,7 @@ namespace abelkhan
 
         void Init(std::shared_ptr<modulemng> _modules){
             _modules->reg_method("gate_call_client_ntf_cuuid", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::ntf_cuuid, this, std::placeholders::_1)));
+            _modules->reg_method("gate_call_client_kick_off_reason", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::kick_off_reason, this, std::placeholders::_1)));
             _modules->reg_method("gate_call_client_call_client", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::call_client, this, std::placeholders::_1)));
             _modules->reg_method("gate_call_client_migrate_client_start", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::migrate_client_start, this, std::placeholders::_1)));
             _modules->reg_method("gate_call_client_migrate_client_done", std::make_tuple(shared_from_this(), std::bind(&gate_call_client_module::migrate_client_done, this, std::placeholders::_1)));
@@ -93,6 +100,12 @@ namespace abelkhan
         void ntf_cuuid(const msgpack11::MsgPack::array& inArray){
             auto _cuuid = inArray[0].string_value();
             sig_ntf_cuuid.emit(_cuuid);
+        }
+
+        concurrent::signals<void(std::string)> sig_kick_off_reason;
+        void kick_off_reason(const msgpack11::MsgPack::array& inArray){
+            auto _reason = inArray[0].string_value();
+            sig_kick_off_reason.emit(_reason);
         }
 
         concurrent::signals<void(std::string, std::vector<uint8_t>)> sig_call_client;

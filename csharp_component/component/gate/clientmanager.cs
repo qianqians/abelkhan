@@ -1,3 +1,4 @@
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -39,7 +40,12 @@ namespace Gate
 			_gate_call_client_caller.ntf_cuuid(_cuuid);
 		}
 
-		public void call_client(string hub_name, byte[] data)
+		public void ntf_reason(string reason)
+		{
+			_gate_call_client_caller.kick_off_reason(reason);
+        }
+
+        public void call_client(string hub_name, byte[] data)
 		{
 			_gate_call_client_caller.call_client(hub_name, data);
 		}

@@ -27,7 +27,7 @@ module hub_call_gate{
 	
 	unreg_client_hub ntf(string client_uuid);
 
-	disconnect_client ntf(string client_uuid);
+	disconnect_client ntf(string client_uuid, string reason);
 
 	forward_hub_call_client ntf(string client_uuid, bin rpc_argv);
 

@@ -419,9 +419,10 @@ export class hub_call_gate_caller extends abelkhan.Icaller {
         this.call_module_method("hub_call_gate_unreg_client_hub", _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae);
     }
 
-    public disconnect_client(client_uuid:string){
+    public disconnect_client(client_uuid:string, reason:string){
         let _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85:any[] = [];
         _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.push(client_uuid);
+        _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.push(reason);
         this.call_module_method("hub_call_gate_disconnect_client", _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85);
     }
 
@@ -668,10 +669,11 @@ export class hub_call_gate_module extends abelkhan.Imodule {
         }
     }
 
-    public cb_disconnect_client : (client_uuid:string)=>void | null;
+    public cb_disconnect_client : (client_uuid:string, reason:string)=>void | null;
     disconnect_client(inArray:any[]){
         let _argv_:any[] = [];
         _argv_.push(inArray[0]);
+        _argv_.push(inArray[1]);
         if (this.cb_disconnect_client){
             this.cb_disconnect_client.apply(null, _argv_);
         }

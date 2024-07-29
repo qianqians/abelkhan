@@ -36,6 +36,12 @@ namespace Abelkhan
             call_module_method("gate_call_client_ntf_cuuid", _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1);
         }
 
+        public void kick_off_reason(string reason){
+            var _argv_ff383c66_a796_3167_804e_2bbebc0bcb27 = new List<MsgPack.MessagePackObject>();
+            _argv_ff383c66_a796_3167_804e_2bbebc0bcb27.Add(reason);
+            call_module_method("gate_call_client_kick_off_reason", _argv_ff383c66_a796_3167_804e_2bbebc0bcb27);
+        }
+
         public void call_client(string hub_name, byte[] rpc_argv){
             var _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab = new List<MsgPack.MessagePackObject>();
             _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.Add(hub_name);
@@ -71,6 +77,7 @@ namespace Abelkhan
         {
             modules = _modules;
             modules.reg_method("gate_call_client_ntf_cuuid", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, ntf_cuuid));
+            modules.reg_method("gate_call_client_kick_off_reason", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, kick_off_reason));
             modules.reg_method("gate_call_client_call_client", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, call_client));
             modules.reg_method("gate_call_client_migrate_client_start", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, migrate_client_start));
             modules.reg_method("gate_call_client_migrate_client_done", Tuple.Create<Abelkhan.Imodule, Action<IList<MsgPack.MessagePackObject> > >((Abelkhan.Imodule)this, migrate_client_done));
@@ -82,6 +89,14 @@ namespace Abelkhan
             var _cuuid = ((MsgPack.MessagePackObject)inArray[0]).AsString();
             if (on_ntf_cuuid != null){
                 on_ntf_cuuid(_cuuid);
+            }
+        }
+
+        public event Action<string> on_kick_off_reason;
+        public void kick_off_reason(IList<MsgPack.MessagePackObject> inArray){
+            var _reason = ((MsgPack.MessagePackObject)inArray[0]).AsString();
+            if (on_kick_off_reason != null){
+                on_kick_off_reason(_reason);
             }
         }
 

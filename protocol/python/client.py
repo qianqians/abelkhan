@@ -28,6 +28,11 @@ class gate_call_client_caller(Icaller):
         _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1.append(cuuid)
         self.call_module_method("gate_call_client_ntf_cuuid", _argv_edc5d0e5_3fa8_3367_9d68_fa4111673ae1)
 
+    def kick_off_reason(self, reason:str):
+        _argv_ff383c66_a796_3167_804e_2bbebc0bcb27 = []
+        _argv_ff383c66_a796_3167_804e_2bbebc0bcb27.append(reason)
+        self.call_module_method("gate_call_client_kick_off_reason", _argv_ff383c66_a796_3167_804e_2bbebc0bcb27)
+
     def call_client(self, hub_name:str, rpc_argv:bytes):
         _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab = []
         _argv_623087d1_9b59_38f3_9ea7_54d2c06e5bab.append(hub_name)
@@ -57,12 +62,14 @@ class gate_call_client_module(Imodule):
         super(gate_call_client_module, self)
         self.modules = modules
         self.modules.reg_method("gate_call_client_ntf_cuuid", [self, self.ntf_cuuid])
+        self.modules.reg_method("gate_call_client_kick_off_reason", [self, self.kick_off_reason])
         self.modules.reg_method("gate_call_client_call_client", [self, self.call_client])
         self.modules.reg_method("gate_call_client_migrate_client_start", [self, self.migrate_client_start])
         self.modules.reg_method("gate_call_client_migrate_client_done", [self, self.migrate_client_done])
         self.modules.reg_method("gate_call_client_hub_loss", [self, self.hub_loss])
 
         self.cb_ntf_cuuid : Callable[[str]] = None
+        self.cb_kick_off_reason : Callable[[str]] = None
         self.cb_call_client : Callable[[str, bytes]] = None
         self.cb_migrate_client_start : Callable[[str, str]] = None
         self.cb_migrate_client_done : Callable[[str, str]] = None
@@ -72,6 +79,11 @@ class gate_call_client_module(Imodule):
         _cuuid = inArray[0]
         if self.cb_ntf_cuuid:
             self.cb_ntf_cuuid(_cuuid)
+
+    def kick_off_reason(self, inArray:list):
+        _reason = inArray[0]
+        if self.cb_kick_off_reason:
+            self.cb_kick_off_reason(_reason)
 
     def call_client(self, inArray:list):
         _hub_name = inArray[0]

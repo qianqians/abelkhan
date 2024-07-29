@@ -308,11 +308,11 @@ namespace Hub
             return ch_direct_clients.TryGetValue(direct_ch, out _proxy);
         }
 
-        public void disconnect_client(String uuid)
+        public void disconnect_client(string uuid, string reason)
         {
             if (clients.Remove(uuid, out GateProxy _proxy))
             {
-                _proxy.disconnect_client(uuid);
+                _proxy.disconnect_client(uuid, reason);
             }
 
             if (direct_clients.Remove(uuid, out DirectProxy _directproxy)) {

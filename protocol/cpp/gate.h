@@ -396,9 +396,10 @@ namespace abelkhan
             call_module_method("hub_call_gate_unreg_client_hub", _argv_3567e5c7_8e81_35c5_a6b6_c22d8e655aae);
         }
 
-        void disconnect_client(std::string client_uuid){
+        void disconnect_client(std::string client_uuid, std::string reason){
             msgpack11::MsgPack::array _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85;
             _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.push_back(client_uuid);
+            _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85.push_back(reason);
             call_module_method("hub_call_gate_disconnect_client", _argv_4a07b4a0_1928_3c70_bef9_f3790d8c9a85);
         }
 
@@ -630,10 +631,11 @@ namespace abelkhan
             sig_unreg_client_hub.emit(_client_uuid);
         }
 
-        concurrent::signals<void(std::string)> sig_disconnect_client;
+        concurrent::signals<void(std::string, std::string)> sig_disconnect_client;
         void disconnect_client(const msgpack11::MsgPack::array& inArray){
             auto _client_uuid = inArray[0].string_value();
-            sig_disconnect_client.emit(_client_uuid);
+            auto _reason = inArray[1].string_value();
+            sig_disconnect_client.emit(_client_uuid, _reason);
         }
 
         concurrent::signals<void(std::string, std::vector<uint8_t>)> sig_forward_hub_call_client;

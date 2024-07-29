@@ -49,7 +49,7 @@ public:
 
 	void unreg_client_hub(std::string client_uuid);
 
-	void disconnect_client(std::string& cuuid);
+	void disconnect_client(std::string& cuuid, std::string& reason);
 
 	void forward_hub_call_client(const std::string& cuuid, const std::vector<uint8_t>& rpc_argv);
 
@@ -99,7 +99,7 @@ public:
 
 	std::shared_ptr<directproxy> get_direct_client(std::shared_ptr<abelkhan::Ichannel> direct_ch);
 
-	void disconnect_client(std::string uuid);
+	void disconnect_client(std::string uuid, std::string reason);
 
 	void call_client(const std::string& uuid, const std::string& func, const msgpack11::MsgPack::array& argvs);
 

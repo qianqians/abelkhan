@@ -73,9 +73,10 @@ namespace Gate {
 			}
 		}
 
-		public void disconnect_client(string cuuid) {
+		public void disconnect_client(string cuuid, string reason) {
 			if (_clientmanager.get_client(cuuid, out var proxy)) {
-				proxy._ch.disconnect();
+                proxy.ntf_reason(reason);
+                proxy._ch.disconnect();
 			}
 		}
 

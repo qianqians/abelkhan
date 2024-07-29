@@ -40,7 +40,7 @@ public:
 		_hub_call_gate_module->sig_tick_hub_health.connect(std::bind(&hub_svr_msg_handle::tick_hub_health, this, std::placeholders::_1));
 		_hub_call_gate_module->sig_reverse_reg_client_hub.connect(std::bind(&hub_svr_msg_handle::reverse_reg_client_hub, this, std::placeholders::_1));
 		_hub_call_gate_module->sig_unreg_client_hub.connect(std::bind(&hub_svr_msg_handle::unreg_client_hub, this, std::placeholders::_1));
-		_hub_call_gate_module->sig_disconnect_client.connect(std::bind(&hub_svr_msg_handle::disconnect_client, this, std::placeholders::_1));
+		_hub_call_gate_module->sig_disconnect_client.connect(std::bind(&hub_svr_msg_handle::disconnect_client, this, std::placeholders::_1, std::placeholders::_2));
 		_hub_call_gate_module->sig_forward_hub_call_client.connect(std::bind(&hub_svr_msg_handle::forward_hub_call_client, this, std::placeholders::_1, std::placeholders::_2));
 		_hub_call_gate_module->sig_forward_hub_call_group_client.connect(std::bind(&hub_svr_msg_handle::forward_hub_call_group_client, this, std::placeholders::_1, std::placeholders::_2));
 		_hub_call_gate_module->sig_forward_hub_call_global_client.connect(std::bind(&hub_svr_msg_handle::forward_hub_call_global_client, this, std::placeholders::_1));
@@ -97,9 +97,10 @@ public:
 		}
 	}
 
-	void disconnect_client(std::string cuuid) {
+	void disconnect_client(std::string cuuid, std::string reason) {
 		auto proxy = _clientmanager->get_client(cuuid);
 		if (proxy) {
+			proxy->kick_off_reason(reason);
 			proxy->_ch->disconnect();
 		}
 	}

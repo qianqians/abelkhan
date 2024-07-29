@@ -96,6 +96,10 @@ public:
 		_gate_call_client_caller.ntf_cuuid(_cuuid);
 	}
 
+	void kick_off_reason(std::string reason) {
+		_gate_call_client_caller.kick_off_reason(reason);
+	}
+
 	void call_client(std::string hub_name, std::vector<uint8_t>& data) {
 		_gate_call_client_caller.call_client(hub_name, data);
 	}

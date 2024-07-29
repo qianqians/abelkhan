@@ -160,6 +160,7 @@ namespace Client
 
             _gate_call_client_module = new Abelkhan.gate_call_client_module(Abelkhan.ModuleMgrHandle._modulemng);
             _gate_call_client_module.on_ntf_cuuid += ntf_cuuid;
+            _gate_call_client_module.on_kick_off_reason += _gate_call_client_module_on_kick_off_reason;
             _gate_call_client_module.on_call_client += gate_call_client;
             _gate_call_client_module.on_migrate_client_start += _gate_call_client_module_on_migrate_client_start;
             _gate_call_client_module.on_migrate_client_done += _gate_call_client_module_on_migrate_client_done;
@@ -167,6 +168,12 @@ namespace Client
 
             _hub_call_client_module = new Abelkhan.hub_call_client_module(Abelkhan.ModuleMgrHandle._modulemng);
             _hub_call_client_module.on_call_client += hub_call_client;
+        }
+
+        public event Action<string> onKickOff;
+        private void _gate_call_client_module_on_kick_off_reason(string reason)
+        {
+            onKickOff?.Invoke(reason);
         }
 
         public event Action<string> onHubLoss;
