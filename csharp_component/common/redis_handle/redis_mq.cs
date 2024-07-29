@@ -181,27 +181,27 @@ namespace Abelkhan
                     }
                 }
 
-                while (true)
+                retry:
+                try
                 {
-                    try
-                    {
-                        await database.ListLeftPushAsync(ch_name, push_data_array);
-                        break;
-                    }
-                    catch (RedisTimeoutException ex)
-                    {
-                        Log.Log.err("ListLeftPushAsync error:{0}", ex);
-                        Recover(ex);
-                    }
-                    catch (RedisConnectionException ex)
-                    {
-                        Log.Log.err("ListLeftPushAsync error:{0}", ex);
-                        Recover(ex);
-                    }
-                    catch (System.Exception ex)
-                    {
-                        Log.Log.err("sendmsg_mq error:{0}", ex);
-                    }
+                    await database.ListLeftPushAsync(ch_name, push_data_array);
+                }
+                catch (RedisTimeoutException ex)
+                {
+                    Log.Log.err("ListLeftPushAsync error:{0}", ex);
+                    Recover(ex);
+                    goto retry;
+                }
+                catch (RedisConnectionException ex)
+                {
+                    Log.Log.err("ListLeftPushAsync error:{0}", ex);
+                    Recover(ex);
+                    goto retry;
+                }
+                catch (System.Exception ex)
+                {
+                    Log.Log.err("sendmsg_mq error:{0}", ex);
+                    goto retry;
                 }
             }
         }
