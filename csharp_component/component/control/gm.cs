@@ -53,7 +53,7 @@ namespace GM
 
         public long poll()
         {
-            long tick_begin = timer.poll();
+            long tick_begin = timer.refresh(); 
 
             try
             {
@@ -74,6 +74,8 @@ namespace GM
             {
                 Log.Log.err("{0}", e);
             }
+
+            timer.poll();
 
             long tick_end = timer.refresh();
 

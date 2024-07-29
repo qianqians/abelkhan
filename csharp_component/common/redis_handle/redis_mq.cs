@@ -61,7 +61,7 @@ namespace Abelkhan
         private readonly ConcurrentDictionary<string, Redischannel> channels;
 
         private readonly Dictionary<string, Queue<RedisValue>> wait_send_data;
-        private readonly Dictionary<string, Queue<RedisValue>> send_data;
+        private readonly List<KeyValuePair<string, Queue<RedisValue>>> send_data;
 
         public RedisMQ(Timerservice timer, string connUrl, string pwd, string _listen_channel_name, long _tick_time = 33)
         {
@@ -129,7 +129,7 @@ namespace Abelkhan
                 st.Write(data, 0, data.Length);
                 st.Position = 0;
 
-                if (!send_data.TryGetValue(ch_name, out Queue<RedisValue> send_queue))
+                if (!wait_send_data.TryGetValue(ch_name, out Queue<RedisValue> send_queue))
                 {
                     lock (wait_send_data)
                     {
@@ -159,9 +159,11 @@ namespace Abelkhan
                 {
                     foreach (var (ch_name, send_queue) in wait_send_data)
                     {
-                        send_data.Add(ch_name, send_queue);
+                        if (send_queue.Count > 0)
+                        {
+                            send_data.Add(KeyValuePair.Create(ch_name, send_queue));
+                        }
                     }
-                    wait_send_data.Clear();
                 }
             }
 
@@ -170,15 +172,8 @@ namespace Abelkhan
                 RedisValue[] push_data_array = null;
                 lock (send_queue)
                 {
-                    if (send_queue.Count > 0)
-                    {
-                        push_data_array = send_queue.ToArray();
-                        send_queue.Clear();
-                    }
-                    else
-                    {
-                        continue;
-                    }
+                    push_data_array = send_queue.ToArray();
+                    send_queue.Clear();
                 }
 
                 retry:
@@ -204,6 +199,7 @@ namespace Abelkhan
                     goto retry;
                 }
             }
+            send_data.Clear();
         }
 
         private async Task recvmsg_mq_ch()

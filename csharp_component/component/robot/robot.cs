@@ -463,7 +463,7 @@ namespace Client
 
         public long poll()
         {
-            long tick_begin = timer.poll();
+            long tick_begin = timer.refresh();
 
             while (true)
             {
@@ -486,6 +486,7 @@ namespace Client
             }
 			
             Abelkhan.TinyTimer.poll();
+            timer.poll();
 
             long tick_end = timer.refresh();
 

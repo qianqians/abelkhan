@@ -438,11 +438,12 @@ namespace Hub
                 }
             }
 
+            Abelkhan.TinyTimer.poll();
+            _timer.poll();
+
             await _redis_mq_service.sendmsg_mq();
 
-            Abelkhan.TinyTimer.poll();
-
-            tick = (uint)(_timer.poll() - tick_begin);
+            tick = (uint)(_timer.refresh() - tick_begin);
             if (tick > 50)
             {
                 Log.Log.trace("poll_tick:{0}", tick);

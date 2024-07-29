@@ -458,13 +458,10 @@ namespace Service
             addticktime(888, pollloopweekdaytimehandleimpl);
         }
 
-        public long poll()
+        public void poll()
 		{
             refresh();
             polltickhandleimpl();
-            refresh();
-
-            return Tick;
         }
 
 		public object addticktime(long process, Action<long> handle)

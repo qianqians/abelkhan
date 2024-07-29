@@ -413,11 +413,10 @@ namespace Client
             }
         }
 
-        public Int64 poll()
+        public long poll()
         {
-            Int64 tick_begin = timer.poll();
+            long tick_begin = timer.refresh();
 
-            
             while (true)
             {
                 if (!Abelkhan.EventQueue.msgQue.TryDequeue(out Tuple<Abelkhan.Ichannel, ArrayList> _event))
@@ -437,10 +436,9 @@ namespace Client
             }
 
             Abelkhan.TinyTimer.poll();
-			
-            Int64 tick_end = timer.refresh();
+            timer.poll();
 
-            return tick_end - tick_begin;
+            return timer.refresh() - tick_begin;
         }
 
     }
