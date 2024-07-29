@@ -8,6 +8,7 @@ namespace Gate {
 	public class hub_svr_msg_handle {
 		private readonly ClientManager _clientmanager;
 		private readonly HubSvrManager _hubsvrmanager;
+		private readonly List<ClientProxy> clients = new ();
 
 		private readonly Abelkhan.hub_call_gate_module _hub_call_gate_module;
 
@@ -100,8 +101,7 @@ namespace Gate {
 			var ch = _hub_call_gate_module.current_ch.Value;
 			if (_hubsvrmanager.get_hub(ch, out var hub_proxy))
 			{
-				var clients = new List<ClientProxy>();
-				foreach (var cuuid in cuuids)
+                foreach (var cuuid in cuuids)
 				{
 					if (_clientmanager.get_client(cuuid, out var client_proxy))
 					{
@@ -118,7 +118,8 @@ namespace Gate {
                     client_proxy.conn_hub(hub_proxy);
                     client_proxy.call_client(hub_proxy._hub_name, rpc_argv);
 				});
-			}
+                clients.Clear();
+            }
         }
 
 		public void forward_hub_call_global_client(byte[] rpc_argv) {
