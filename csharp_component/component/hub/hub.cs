@@ -432,7 +432,10 @@ namespace Hub
                 {
                     foreach (var ch in remove_chs)
                     {
-                        add_chs.Remove(ch);
+                        lock (add_chs)
+                        {
+                            add_chs.Remove(ch);
+                        }
                     }
                     remove_chs.Clear();
                 }
