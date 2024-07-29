@@ -174,7 +174,7 @@ namespace Gate
 
 		public void for_each_client(Action<string, ClientProxy> fn)
 		{
-			Parallel.ForEach(client_uuid_map, client =>
+			_ = Parallel.ForEach(client_uuid_map, client =>
 			{
                 fn(client.Key, client.Value);
             });

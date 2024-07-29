@@ -113,7 +113,7 @@ namespace Gate {
 					}
 				}
 
-				Parallel.ForEach(clients, client_proxy =>
+				_ = Parallel.ForEach(clients, client_proxy =>
                 {
                     client_proxy.conn_hub(hub_proxy);
                     client_proxy.call_client(hub_proxy._hub_name, rpc_argv);
