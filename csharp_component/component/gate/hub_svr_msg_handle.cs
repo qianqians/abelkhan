@@ -105,7 +105,6 @@ namespace Gate {
 				{
 					if (_clientmanager.get_client(cuuid, out var client_proxy))
 					{
-						client_proxy.conn_hub(hub_proxy);
 						clients.Add(client_proxy);
 					}
 					else
@@ -115,8 +114,9 @@ namespace Gate {
 				}
 
 				Parallel.ForEach(clients, client_proxy =>
-				{
-					client_proxy.call_client(hub_proxy._hub_name, rpc_argv);
+                {
+                    client_proxy.conn_hub(hub_proxy);
+                    client_proxy.call_client(hub_proxy._hub_name, rpc_argv);
 				});
 			}
         }
