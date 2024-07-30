@@ -8,7 +8,7 @@ namespace Service
 	{
 		public Timerservice()
 		{
-            tickHandledict = new SortedList<long, HandleImpl>();
+            tickHandledict = new SortedDictionary<long, HandleImpl>();
             addtickHandle = new Dictionary<long, HandleImpl>();
 
             daytimeHandledict = new Dictionary<day_time, List<HandleImpl>>();
@@ -720,7 +720,7 @@ namespace Service
             }
         }
 
-        private readonly SortedList<long, HandleImpl> tickHandledict;
+        private readonly SortedDictionary<long, HandleImpl> tickHandledict;
         private readonly Dictionary<long, HandleImpl> addtickHandle;
 
         private readonly Dictionary<month_day_time, List<HandleImpl>> monthtimeHandledict;

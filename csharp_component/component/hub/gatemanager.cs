@@ -179,16 +179,16 @@ namespace Hub
 
         public void client_connect(string client_uuid, Abelkhan.Ichannel gate_ch)
         {
-            if (ch_gateproxys.TryGetValue(gate_ch, out GateProxy _proxy))
+            if (!clients.ContainsKey(client_uuid))
             {
-                if (!clients.ContainsKey(client_uuid))
+                if (ch_gateproxys.TryGetValue(gate_ch, out GateProxy _proxy))
                 {
                     clients.Add(client_uuid, _proxy);
                 }
-            }
-            else
-            {
-                Log.Log.err("invaild gate:{0}, ch_gateproxys.count:{1}", gate_ch, ch_gateproxys.Count);
+                else
+                {
+                    Log.Log.err("invaild gate:{0}, ch_gateproxys.count:{1}", gate_ch, ch_gateproxys.Count);
+                }
             }
 
             Log.Log.trace("client {0} connected", client_uuid);
