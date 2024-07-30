@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Hub
 {
@@ -390,12 +391,11 @@ namespace Hub
 
             if (tmp_gates.Count > 0)
             {
-                foreach (var _proxy in tmp_gates)
+                _ = Parallel.ForEach(tmp_gates, _proxy =>
                 {
                     _proxy.Key.forward_hub_call_group_client(_proxy.Value, _rpc_bin);
-                }
+                });
             }
-
 
             if (_direct_clients.Count > 0 || _direct_clients_crypt.Count > 0)
             {
@@ -425,10 +425,10 @@ namespace Hub
 
                 if (_direct_clients.Count > 0)
                 {
-                    foreach (var _client in _direct_clients)
+                    _ = Parallel.ForEach(_direct_clients, _client =>
                     {
                         _client.send(buf);
-                    }
+                    });
                 }
 
                 if (_direct_clients_crypt.Count > 0)
@@ -439,10 +439,10 @@ namespace Hub
                     var crypt_buf = st_send_crypt.ToArray();
                     Abelkhan.Crypt.crypt_func_send(crypt_buf);
 
-                    foreach (var _client in _direct_clients_crypt)
+                    _ = Parallel.ForEach(_direct_clients_crypt, _client =>
                     {
                         _client.send(crypt_buf);
-                    }
+                    });
                 }
             }
         }
@@ -458,10 +458,10 @@ namespace Hub
             _serializer.Pack(st, _event);
             st.Position = 0;
             var _rpc_bin = st.ToArray();
-            foreach (var _proxy in ch_gateproxys)
-			{
-				_proxy.Value.forward_hub_call_global_client(_rpc_bin);
-			}
+            _ = Parallel.ForEach(ch_gateproxys, _proxy =>
+            {
+                _proxy.Value.forward_hub_call_global_client(_rpc_bin);
+            });
 		}
 	}
 }
