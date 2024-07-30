@@ -338,9 +338,9 @@ namespace Hub
             }
             else
             {
-                if (clients.ContainsKey(uuid))
+                if (clients.TryGetValue(uuid, out var _cli))
                 {
-                    clients[uuid].forward_hub_call_client(uuid, _rpc_bin);
+                    _cli.forward_hub_call_client(uuid, _rpc_bin);
                 }
                 else
                 {
