@@ -61,7 +61,7 @@ namespace Abelkhan
         private readonly ConcurrentDictionary<string, Redischannel> channels;
 
         private readonly Dictionary<string, Queue<RedisValue>> wait_send_data;
-        private readonly List<KeyValuePair<string, Queue<RedisValue>>> send_data;
+        private readonly List<KeyValuePair<string, RedisValue[]>> send_data;
 
         public RedisMQ(Timerservice timer, string connUrl, string pwd, string _listen_channel_name, long _tick_time = 33)
         {
@@ -160,49 +160,46 @@ namespace Abelkhan
                 {
                     foreach (var (ch_name, send_queue) in wait_send_data)
                     {
-                        if (send_queue.Count > 0)
+                        lock (send_queue)
                         {
-                            send_data.Add(KeyValuePair.Create(ch_name, send_queue));
+                            if (send_queue.Count > 0)
+                            {
+                                send_data.Add(KeyValuePair.Create(ch_name, send_queue.ToArray()));
+                                send_queue.Clear();
+                            }
                         }
                     }
                 }
-            }
 
-            foreach (var (ch_name, send_queue) in send_data)
-            {
-                RedisValue[] push_data_array = null;
-                lock (send_queue)
+                foreach (var (ch_name, push_data_array) in send_data)
                 {
-                    push_data_array = send_queue.ToArray();
-                    send_queue.Clear();
+                    retry:
+                    try
+                    {
+                        waits.Add(database.ListLeftPushAsync(ch_name, push_data_array));
+                    }
+                    catch (RedisTimeoutException ex)
+                    {
+                        Log.Log.err("ListLeftPushAsync error:{0}", ex);
+                        Recover(ex);
+                        goto retry;
+                    }
+                    catch (RedisConnectionException ex)
+                    {
+                        Log.Log.err("ListLeftPushAsync error:{0}", ex);
+                        Recover(ex);
+                        goto retry;
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Log.Log.err("sendmsg_mq error:{0}", ex);
+                        goto retry;
+                    }
                 }
-
-                retry:
-                try
-                {
-                    waits.Add(database.ListLeftPushAsync(ch_name, push_data_array));
-                }
-                catch (RedisTimeoutException ex)
-                {
-                    Log.Log.err("ListLeftPushAsync error:{0}", ex);
-                    Recover(ex);
-                    goto retry;
-                }
-                catch (RedisConnectionException ex)
-                {
-                    Log.Log.err("ListLeftPushAsync error:{0}", ex);
-                    Recover(ex);
-                    goto retry;
-                }
-                catch (System.Exception ex)
-                {
-                    Log.Log.err("sendmsg_mq error:{0}", ex);
-                    goto retry;
-                }
+                await Task.WhenAll(waits);
+                waits.Clear();
+                send_data.Clear();
             }
-            await Task.WhenAll(waits);
-            waits.Clear();
-            send_data.Clear();
         }
 
         private async Task recvmsg_mq_ch()
