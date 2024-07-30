@@ -120,7 +120,7 @@ namespace GM
             GM _gm = new GM(args, gm_name);
             bool runing = true;
 
-            Dictionary<String, Handle> cmd_callback = new Dictionary<string, Handle>();
+            Dictionary<string, Handle> cmd_callback = new Dictionary<string, Handle>();
             cmd_callback.Add("close", (string[] cmds) => {
                 _gm._center_proxy.close_clutter(_gm.gm_name);
             });

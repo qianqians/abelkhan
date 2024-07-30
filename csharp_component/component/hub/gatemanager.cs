@@ -67,7 +67,7 @@ namespace Hub
             Hub._timer.addticktime(10000, heartbeat_client);
         }
 
-        public async void connect_gate(String name)
+        public async void connect_gate(string name)
         {
             Ichannel ch = null;
             if (Hub.OnCheckConnGate != null && Hub.OnCheckConnGate())
@@ -114,12 +114,11 @@ namespace Hub
 
         public string get_client_gate_name(string session_uuid)
         {
-            clients.TryGetValue(session_uuid, out GateProxy _client_gate_proxy);
-            if (_client_gate_proxy != null)
+            if (clients.TryGetValue(session_uuid, out GateProxy _client_gate_proxy))
             {
                 return _client_gate_proxy._name;
             }
-            return null;
+            return string.Empty;
         }
 
         public event Action<string> on_gate_closed;
@@ -212,7 +211,7 @@ namespace Hub
         }
 
         public event Action<string> clientDisconnect;
-        public void client_disconnect(String client_uuid)
+        public void client_disconnect(string client_uuid)
         {
             if (clients.Remove(client_uuid))
             {
@@ -221,12 +220,12 @@ namespace Hub
         }
 
         public event Action<string> clientException;
-        public void client_exception(String client_uuid)
+        public void client_exception(string client_uuid)
         {
             clientException?.Invoke(client_uuid);
         }
 
-        public void direct_client_connect(String client_uuid, Abelkhan.Ichannel direct_ch)
+        public void direct_client_connect(string client_uuid, Abelkhan.Ichannel direct_ch)
         {
             if (direct_clients.Remove(client_uuid, out DirectProxy _directproxy))
             {
@@ -320,7 +319,7 @@ namespace Hub
             }
         }
 
-        public void call_client(String uuid, String func, ArrayList _argvs_list)
+        public void call_client(string uuid, string func, ArrayList _argvs_list)
 		{
             using var st = MemoryStreamPool.mstMgr.GetStream();
             ArrayList _event = new ArrayList
@@ -349,7 +348,7 @@ namespace Hub
             }
         }
 
-        public void call_group_client(List<string> uuids, String func, ArrayList _argvs_list)
+        public void call_group_client(List<string> uuids, string func, ArrayList _argvs_list)
         {
             var _direct_clients = new List<Abelkhan.Ichannel>();
             var _direct_clients_crypt = new List<Abelkhan.Ichannel>();
@@ -434,7 +433,7 @@ namespace Hub
             }
         }
 
-		public void call_global_client(String func, ArrayList _argvs_list)
+		public void call_global_client(string func, ArrayList _argvs_list)
 		{
             var st = MemoryStreamPool.mstMgr.GetStream();
             ArrayList _event = new ArrayList

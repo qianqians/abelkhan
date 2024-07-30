@@ -15,7 +15,7 @@ namespace Hub
 			_dbproxy_call_hub_module.on_ack_get_object_info_end += ack_get_object_info_end;
 		}
 
-		public void ack_get_object_info(String callbackid, byte[] obejct_array)
+		public void ack_get_object_info(string callbackid, byte[] obejct_array)
 		{
 			if (DBProxyProxy.onGetObjectInfo_callback_set.TryGetValue(callbackid, out Action<MongoDB.Bson.BsonArray> cb))
             {
@@ -24,7 +24,7 @@ namespace Hub
             }
 		}
 
-		public void ack_get_object_info_end(String callbackid)
+		public void ack_get_object_info_end(string callbackid)
 		{
 			if (DBProxyProxy.onGetObjectInfo_end_cb_set.Remove(callbackid, out Action _end))
 			{

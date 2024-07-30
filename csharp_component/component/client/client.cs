@@ -125,7 +125,7 @@ namespace Client
         public event Action<ulong> onGateTime;
         public event Action<string, ulong> onHubTime;
 
-        public String uuid;
+        public string uuid;
         public Service.Timerservice timer;
         public Common.ModuleManager modulemanager;
 

@@ -10,7 +10,7 @@ namespace Hub
     {
         public HubProxy current_hubproxy = null;
 
-        private readonly Dictionary<String, HubProxy> hubproxys;
+        private readonly Dictionary<string, HubProxy> hubproxys;
         private readonly Dictionary<Abelkhan.Ichannel, HubProxy> ch_hubproxys;
 
         public HubManager()

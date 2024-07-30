@@ -10,14 +10,14 @@ namespace Service
 	{
         private readonly MongoClient _client;
 	
-        public Mongodbproxy(String ip, short port)
+        public Mongodbproxy(string ip, short port)
 		{
             var setting = new MongoClientSettings();
             setting.Server = new MongoServerAddress(ip, port);
             _client = new MongoClient(setting);
         }
 
-        public Mongodbproxy(String url)
+        public Mongodbproxy(string url)
         {
             var mongo_url = new MongoUrl(url);
             _client = new MongoClient(mongo_url);

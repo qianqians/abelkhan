@@ -7,8 +7,8 @@ namespace Hub
 {
 	public class DBProxyProxy
 	{
-        public static Dictionary<String, Action<MongoDB.Bson.BsonArray> > onGetObjectInfo_callback_set;
-        public static Dictionary<String, Action> onGetObjectInfo_end_cb_set;
+        public static Dictionary<string, Action<MongoDB.Bson.BsonArray> > onGetObjectInfo_callback_set;
+        public static Dictionary<string, Action> onGetObjectInfo_end_cb_set;
 
         public string db_name;
         public Abelkhan.Ichannel ch;
@@ -30,14 +30,14 @@ namespace Hub
 
             _hub_call_dbproxy_caller = new Abelkhan.hub_call_dbproxy_caller(ch, Abelkhan.ModuleMgrHandle._modulemng);
 
-            onGetObjectInfo_callback_set = new Dictionary<String, Action<MongoDB.Bson.BsonArray> >();
-            onGetObjectInfo_end_cb_set = new Dictionary<String, Action>();
+            onGetObjectInfo_callback_set = new Dictionary<string, Action<MongoDB.Bson.BsonArray> >();
+            onGetObjectInfo_end_cb_set = new Dictionary<string, Action>();
 
             _Collections = new System.Collections.Concurrent.ConcurrentDictionary<string, Collection>();
         }
 
         public event Action on_connect_dbproxy_sucessed;
-		public void reg_hub(String name)
+		public void reg_hub(string name)
         {
             Log.Log.trace("begin connect dbproxy server");
 

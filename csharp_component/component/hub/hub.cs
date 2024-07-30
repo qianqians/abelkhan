@@ -402,7 +402,7 @@ namespace Hub
             onDBProxyInit?.Invoke();
         }
 
-        public void reg_hub(String hub_name)
+        public void reg_hub(string hub_name)
         {
             if (!_hubs.get_hub(hub_name, out var _))
             {

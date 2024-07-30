@@ -15,7 +15,7 @@ namespace Common
 			motheds.Add(cb_name, cb);
 		}
 
-		public void process_module_mothed(String func_name, IList<MsgPack.MessagePackObject> argvs)
+		public void process_module_mothed(string func_name, IList<MsgPack.MessagePackObject> argvs)
 		{
             if (motheds.TryGetValue(func_name, out Action<IList<MsgPack.MessagePackObject> > mothed))
 			{
@@ -24,7 +24,7 @@ namespace Common
 			else
             {
                 Log.Log.err("do not have a mothed name:{0}", func_name);
-				throw new moduleException(String.Format("modulemanager.process_module_mothed unreg mothed name:{0}!", func_name));
+				throw new moduleException(string.Format("modulemanager.process_module_mothed unreg mothed name:{0}!", func_name));
 			}
 		}
 

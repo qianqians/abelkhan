@@ -70,7 +70,7 @@ namespace Hub
             }
 		}
 
-        private void distribute_server_mq(String type, String name)
+        private void distribute_server_mq(string type, string name)
 		{
 			Log.Log.trace("recv distribute server address");
 

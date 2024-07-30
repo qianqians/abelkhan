@@ -62,7 +62,7 @@ namespace Hub
 			_hub_call_gate_caller.disconnect_client(uuid, reason);
         }
 
-        public void forward_hub_call_client(String uuid, byte[] rpc_bin)
+        public void forward_hub_call_client(string uuid, byte[] rpc_bin)
         {
 			_hub_call_gate_caller.forward_hub_call_client(uuid, rpc_bin);
 		}

@@ -5,7 +5,7 @@ namespace Abelkhan
 {
 	public class Config
 	{
-		public Config(String file_path)
+		public Config(string file_path)
 		{
 			FileStream fs = File.OpenRead(file_path);
 			byte[] data = new byte[fs.Length];
@@ -30,43 +30,43 @@ namespace Abelkhan
 			handle = sub_handle;
 		}
 
-		public bool has_key(String key)
+		public bool has_key(string key)
 		{
 			return ((Newtonsoft.Json.Linq.JObject)handle).ContainsKey(key);
 		}
 
-		public bool get_value_bool(String key)
+		public bool get_value_bool(string key)
 		{
 			return (bool)(handle[key]);
 		}
 
-		public int get_value_int(String key)
+		public int get_value_int(string key)
 		{
 			return (int)(handle[key]);
 		}
 
-		public uint get_value_uint(String key)
+		public uint get_value_uint(string key)
 		{
 			return (uint)(handle[key]);
 		}
 
-		public float get_value_float(String key)
+		public float get_value_float(string key)
 		{
 			return (float)(handle[key]);
 		}
 
-		public string get_value_string(String key)
+		public string get_value_string(string key)
 		{
 			return (string)(handle[key]);
 		}
 
-		public Config get_value_dict(String key)
+		public Config get_value_dict(string key)
 		{
 			var _handle = (Newtonsoft.Json.Linq.JToken)(handle[key]);
 			return new Config(_handle);
 		}
 
-		public Config get_value_list(String key)
+		public Config get_value_list(string key)
 		{
 			var _handle = (handle[key]);
 			return new Config(_handle);

@@ -17,7 +17,7 @@ namespace DBProxy
 			hubproxys = new Dictionary<Abelkhan.Ichannel, HubProxy> ();
 		}
 
-		public HubProxy reg_hub(Abelkhan.Ichannel ch, String name)
+		public HubProxy reg_hub(Abelkhan.Ichannel ch, string name)
 		{
 			HubProxy _hubproxy = new HubProxy (ch);
 			if (hubproxys_name.TryGetValue(name, out HubProxy _old_proxy))

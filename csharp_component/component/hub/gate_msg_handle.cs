@@ -38,18 +38,18 @@ namespace Hub
             }
         }
 
-        public void client_disconnect(String client_uuid)
+        public void client_disconnect(string client_uuid)
         {
             Hub._gates.client_disconnect(client_uuid);
         }
 
-        public void client_exception(String client_uuid)
+        public void client_exception(string client_uuid)
         {
             Hub._gates.client_exception(client_uuid);
         }
 
         public Action<string> on_client_msg;
-        public void client_call_hub(String uuid, byte[] rpc_argv)
+        public void client_call_hub(string uuid, byte[] rpc_argv)
 		{
             try
             {
