@@ -151,6 +151,7 @@ namespace Abelkhan
             }
         }
 
+        private List<Task<long> > waits = new List<Task<long>>();
         public async Task sendmsg_mq()
         {
             if (wait_send_data.Count > 0)
@@ -179,7 +180,7 @@ namespace Abelkhan
                 retry:
                 try
                 {
-                    await database.ListLeftPushAsync(ch_name, push_data_array);
+                    waits.Add(database.ListLeftPushAsync(ch_name, push_data_array));
                 }
                 catch (RedisTimeoutException ex)
                 {
@@ -199,6 +200,8 @@ namespace Abelkhan
                     goto retry;
                 }
             }
+            await Task.WhenAll(waits);
+            waits.Clear();
             send_data.Clear();
         }
 
