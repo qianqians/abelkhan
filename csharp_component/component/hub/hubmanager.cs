@@ -27,23 +27,19 @@ namespace Hub
             {
                 if (ch.GetType() == typeof(Abelkhan.Channel))
                 {
-                    if (_old_proxy._tcp_ch == null)
+                    var is_reconn = _old_proxy._tcp_ch != null;
+                    _old_proxy.set_tcp_ch(ch);
+                    ch_hubproxys[ch] = _old_proxy;
+                    if (is_reconn)
                     {
-                        _old_proxy.set_tcp_ch(ch);
-                    }
-                    else
-                    {
-                        _old_proxy.set_tcp_ch(ch);
                         on_hubproxy_reconn?.Invoke(_old_proxy);
                     }
                 }
                 else if (ch.GetType() == typeof(Abelkhan.Redischannel))
                 {
-                    HubProxy _proxy = new HubProxy(hub_name, hub_type);
-                    _proxy.set_redis_ch(ch);
-                    ch_hubproxys[ch] = _proxy;
-
-                    on_hubproxy_reconn?.Invoke(_proxy);
+                    _old_proxy.set_redis_ch(ch);
+                    ch_hubproxys[ch] = _old_proxy;
+                    on_hubproxy_reconn?.Invoke(_old_proxy);
                 }
             }
             else
