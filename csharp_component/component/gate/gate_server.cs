@@ -291,7 +291,7 @@ namespace Gate {
             return tick;
         }
 
-        private async Task _run()
+        private async ValueTask _run()
         {
             while (!_closehandle.is_closed)
             {

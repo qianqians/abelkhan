@@ -152,7 +152,7 @@ namespace Abelkhan
         }
 
         private List<Task<long> > waits = new List<Task<long>>();
-        public async Task sendmsg_mq()
+        public async ValueTask sendmsg_mq()
         {
             if (wait_send_data.Count > 0)
             {
@@ -202,7 +202,7 @@ namespace Abelkhan
             }
         }
 
-        private async Task recvmsg_mq_ch()
+        private async ValueTask recvmsg_mq_ch()
         {
             var count = listen_channel_names.Count;
             if (ch_names == null || count > ch_names.Length)

@@ -106,13 +106,13 @@ namespace Abelkhan
 
         public void start()
         {
-            run_t = new Task(()=>
+            run_t = Task.Factory.StartNew(()=>
             {
                 while (run_flag)
                 {
                     poll();
                 }
-            });
+            }, TaskCreationOptions.LongRunning);
             run_t.Start();
         }
 

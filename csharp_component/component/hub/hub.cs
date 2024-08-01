@@ -412,7 +412,7 @@ namespace Hub
             }
         }
 
-        public static async Task migrate_client(string client_uuid, string src_hub)
+        public static async ValueTask migrate_client(string client_uuid, string src_hub)
         {
             await on_migrate_client.Invoke(client_uuid, src_hub);
         }
@@ -455,7 +455,7 @@ namespace Hub
             return tick;
         }
 
-        private async Task _run()
+        private async ValueTask _run()
         {
             while (!_closeHandle.is_close)
             {
@@ -573,7 +573,7 @@ namespace Hub
 
         public event Action<string> on_direct_client_disconnect;
 
-        public static event Func<string, string, Task> on_migrate_client;
+        public static event Func<string, string, ValueTask> on_migrate_client;
 
     }
 }

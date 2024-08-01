@@ -181,7 +181,7 @@ namespace Abelkhan
             }
         }
 
-        public async Task DeleteListElem(string key, int index)
+        public async ValueTask DeleteListElem(string key, int index)
         {
             while (true)
             {
@@ -222,7 +222,7 @@ namespace Abelkhan
             }
         }
 
-        public async Task Lock(string key, string token, uint timeout)
+        public async ValueTask Lock(string key, string token, uint timeout)
         {
             var wait_time = 8;
             while (true)
@@ -232,9 +232,7 @@ namespace Abelkhan
                     var ret = await database.LockTakeAsync(key, token, System.TimeSpan.FromMilliseconds(timeout));
                     if (!ret)
                     {
-                        var task = new TaskCompletionSource();
-                        var tasks = new Task[1] { task.Task };
-                        Task.WaitAny(tasks, wait_time);
+                        await Task.Delay(wait_time);
                         wait_time *= 2;
                         continue;
                     }
@@ -247,7 +245,7 @@ namespace Abelkhan
             }
         }
 
-        public async Task UnLock(string key, string token)
+        public async ValueTask UnLock(string key, string token)
         {
             while (true)
             {

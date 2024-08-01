@@ -59,7 +59,7 @@ namespace OfflineMsg
             return task.Task;
         }
 
-        public async Task process_offline_msg(string player_guid)
+        public async ValueTask process_offline_msg(string player_guid)
         {
             try
             {

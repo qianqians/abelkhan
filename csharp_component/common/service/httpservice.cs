@@ -33,7 +33,7 @@ namespace Service
             length = _length;
         }
 
-        public Task Response(int status /*Microsoft.AspNetCore.Http.StatusCodes*/, Dictionary<string, string> headers, byte[] buf) {
+        public ValueTask Response(int status /*Microsoft.AspNetCore.Http.StatusCodes*/, Dictionary<string, string> headers, byte[] buf) {
             try {
                 foreach (var h in headers) {
                     rsp.Headers[h.Key] = h.Value;
@@ -41,13 +41,13 @@ namespace Service
 
                 rsp.StatusCode = status;
 
-                return rsp.Body.WriteAsync(buf).AsTask();
+                return rsp.Body.WriteAsync(buf);
 
             } catch (Exception ex) {
                 Log.Log.err("Response Exception:{0}", ex);
             } finally {
             }
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
     }
 
@@ -193,7 +193,7 @@ namespace Service
         }
 
         public void run() {
-            _t = new Task(RunServerAsync, TaskCreationOptions.LongRunning);
+            _t = Task.Factory.StartNew(RunServerAsync, TaskCreationOptions.LongRunning);
             _t.Start();
         }
 

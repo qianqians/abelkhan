@@ -309,7 +309,7 @@ namespace avatar
             Hub.Hub.on_migrate_client += Hub_on_migrate_client;
         }
 
-        private async Task Hub_on_migrate_client(string client_uuid, string src_hub)
+        private async ValueTask Hub_on_migrate_client(string client_uuid, string src_hub)
         {
             await migrate_from_remote(client_uuid, src_hub);
         }

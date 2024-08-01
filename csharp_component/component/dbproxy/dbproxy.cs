@@ -212,7 +212,7 @@ namespace DBProxy
             return tick;
         }
 
-        private async Task _run()
+        private async ValueTask _run()
         {
             while (!_closeHandle.is_close())
             {

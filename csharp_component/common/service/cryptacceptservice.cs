@@ -35,7 +35,7 @@ namespace Abelkhan
             on_disconnect?.Invoke(ch);
         }
 
-        private async Task ProcessLinesAsync(Socket socket)
+        private async ValueTask ProcessLinesAsync(Socket socket)
         {
             var ch = new Channel(socket);
             Acceptservice.onConnect(ch);
@@ -80,7 +80,7 @@ namespace Abelkhan
 
         public void start()
         {
-            _t = new Task(RunServerAsync, TaskCreationOptions.LongRunning);
+            _t = Task.Factory.StartNew(RunServerAsync, TaskCreationOptions.LongRunning);
             _t.Start();
         }
 
