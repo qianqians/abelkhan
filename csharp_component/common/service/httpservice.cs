@@ -194,7 +194,6 @@ namespace Service
 
         public void run() {
             _t = Task.Factory.StartNew(RunServerAsync, TaskCreationOptions.LongRunning);
-            _t.Start();
         }
 
         public async void close() {

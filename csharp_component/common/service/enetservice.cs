@@ -113,7 +113,6 @@ namespace Abelkhan
                     poll();
                 }
             }, TaskCreationOptions.LongRunning);
-            run_t.Start();
         }
 
         public void stop()
