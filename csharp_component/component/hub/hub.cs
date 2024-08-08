@@ -414,7 +414,7 @@ namespace Hub
 
         public static async ValueTask migrate_client(string client_uuid, string src_hub)
         {
-            await on_migrate_client.Invoke(client_uuid, src_hub);
+            await on_migrate_client?.Invoke(client_uuid, src_hub);
         }
 
         private async ValueTask<long> poll()
@@ -573,7 +573,7 @@ namespace Hub
 
         public event Action<string> on_direct_client_disconnect;
 
-        public static event Func<string, string, ValueTask> on_migrate_client;
+        public static event Func<string, string, Task> on_migrate_client;
 
     }
 }

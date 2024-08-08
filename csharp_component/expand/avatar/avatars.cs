@@ -310,7 +310,7 @@ namespace avatar
         }
 
         public event Action<Avatar> onMigrateAvatar;
-        private async ValueTask Hub_on_migrate_client(string client_uuid, string src_hub)
+        private async Task Hub_on_migrate_client(string client_uuid, string src_hub)
         {
             var avatar = await migrate_from_remote(client_uuid, src_hub);
             onMigrateAvatar?.Invoke(avatar);
