@@ -57,12 +57,8 @@ namespace Log
 
         static void output(StackFrame sf, long tmptime, string level, string log, params object[] agrvs)
         {
-            log = string.Format(log, agrvs);
-
             var startTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var time = startTime.AddMilliseconds((double)tmptime);
-
-            var strlog = $"[{time}] [{level}] [{sf.GetMethod().DeclaringType.FullName}] [{sf.GetMethod().Name}]:{log}";
 
             lock (logFile)
             {
@@ -98,7 +94,7 @@ namespace Log
                         };
                     }
                 }
-                fs.WriteLine(strlog);
+                fs.WriteLine($"[{time}] [{level}] [{sf.GetMethod().DeclaringType.FullName}] [{sf.GetMethod().Name}]:{log}", agrvs);
             }
         }
 
