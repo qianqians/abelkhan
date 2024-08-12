@@ -66,7 +66,7 @@ namespace Log
 
             lock (logFile)
             {
-                var realLogFile = logPath + "/" + logFile;
+                var realLogFile = $"{logPath}/{logFile}";
                 {
                     if (!System.IO.File.Exists(realLogFile))
                     {
@@ -84,11 +84,11 @@ namespace Log
                             AutoFlush = true
                         };
                     }
-                    System.IO.FileInfo finfo = new System.IO.FileInfo(realLogFile);
+                    System.IO.FileInfo finfo = new(realLogFile);
                     if (finfo.Length > 1024 * 1024 * 32)
                     {
                         fs.Close();
-                        var tmpfile = $"{realLogFile}.{time.ToString("yyyy_MM_dd_h_m_s")}";
+                        var tmpfile = $"{realLogFile}.{time:yyyy_MM_dd_h_m_s}";
                         finfo.MoveTo(tmpfile);
                         var tmp = System.IO.File.Create(realLogFile);
                         tmp.Close();
