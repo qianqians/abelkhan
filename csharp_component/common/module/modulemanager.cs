@@ -28,7 +28,7 @@ namespace Common
 			}
 		}
 
-		private Dictionary<string, Action<IList<MsgPack.MessagePackObject> > > motheds;
+		private readonly Dictionary<string, Action<IList<MsgPack.MessagePackObject> > > motheds;
 	}
 }
 

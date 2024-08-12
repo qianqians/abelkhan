@@ -11,7 +11,7 @@ namespace Abelkhan
     public class RedisHandle
     {
         private ConnectionMultiplexer connectionMultiplexer;
-        private RedisConnectionHelper _connHelper;
+        private readonly RedisConnectionHelper _connHelper;
         private IDatabase database;
 
         public RedisHandle(string connUrl, string pwd)
