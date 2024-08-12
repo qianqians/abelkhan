@@ -55,7 +55,7 @@ namespace Log
             output(new System.Diagnostics.StackFrame(1), Service.Timerservice.Tick, "err", log, agrvs);
         }
 
-        static void output(StackFrame sf, long tmptime, string level, string log, params object[] agrvs)
+        static private void output(StackFrame sf, long tmptime, string level, string log, params object[] agrvs)
         {
             var startTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var time = startTime.AddMilliseconds(tmptime);
