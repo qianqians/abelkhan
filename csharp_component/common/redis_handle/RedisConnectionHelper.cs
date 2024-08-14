@@ -8,20 +8,20 @@ namespace Abelkhan
 
     public class RedisConnectionHelper
     {
-        public static int connectRetry = 3;
-        public static int connectTimeout = 5000;
-        public static int keepAlive = 30;
-        public static bool resolveDns = true;
+        private static readonly int connectRetry = 3;
+        private static readonly int connectTimeout = 5000;
+        private static readonly int keepAlive = 30;
+        private static readonly bool resolveDns = true;
+        private static readonly ManualResetEvent _waitNotify = new ManualResetEvent(false);
 
-        string _conUrl;
-        string _conName;
-        string _pwd;
-        string _conf;
-        int _db;
-        int _recoverCnt = 0;
-        private Int32 _inRecover = 0;
-        private int _waitTimeout = 15000; //15s
-        private static ManualResetEvent _waitNotify = new ManualResetEvent(false);
+        private readonly int _waitTimeout = 15000; //15s
+        private readonly string _conUrl;
+        private readonly string _conName;
+        private readonly string _pwd;
+        private readonly string _conf;
+        private readonly int _db;
+        private int _recoverCnt = 0;
+        private int _inRecover = 0;
 
 
         public RedisConnectionHelper(string conUrl, string conName, string pwd, int db = 0)
