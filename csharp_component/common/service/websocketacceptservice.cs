@@ -13,7 +13,7 @@ namespace Abelkhan
 {
     public class WebsocketAcceptService
     {
-        private WebSocketServer _server;
+        private readonly WebSocketServer _server;
 
         public event Action<Abelkhan.Ichannel> on_connect;
         public WebsocketAcceptService(ushort port, bool is_ssl, string pfx, string password)
