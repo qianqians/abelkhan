@@ -60,7 +60,7 @@ namespace Abelkhan
 
         private readonly ConcurrentDictionary<string, Redischannel> channels;
 
-        private readonly Dictionary<string, Queue<RedisValue>> wait_send_data;
+        private readonly ConcurrentDictionary<string, Queue<RedisValue>> wait_send_data;
         private readonly List<KeyValuePair<string, RedisValue[]>> send_data;
 
         public RedisMQ(Timerservice timer, string connUrl, string pwd, string _listen_channel_name, long _tick_time = 33)
@@ -136,7 +136,7 @@ namespace Abelkhan
                         if (!wait_send_data.TryGetValue(ch_name, out send_queue))
                         {
                             send_queue = new();
-                            wait_send_data.Add(ch_name, send_queue);
+                            wait_send_data.TryAdd(ch_name, send_queue);
                         }
                     }
                 }
