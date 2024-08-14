@@ -2,3 +2,6 @@
 
 # IDE1006: 命名样式
 dotnet_diagnostic.IDE1006.severity = silent
+
+# Default severity for analyzer diagnostics with category 'Style'
+dotnet_analyzer_diagnostic.category-Style.severity = none
