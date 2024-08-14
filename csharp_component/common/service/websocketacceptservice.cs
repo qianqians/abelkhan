@@ -28,7 +28,9 @@ namespace Abelkhan
                 {
                     Certificate = new X509Certificate2(pfx, password),
                     EnabledSslProtocols = SslProtocols.Tls12,
+                    RestartAfterListenError = true,
                 };
+                _server.ListenerSocket.NoDelay = true;
             }
 
             _server.Start(socket =>
