@@ -32,7 +32,7 @@ namespace Abelkhan
             {
                 throw new SaveDataHelperException("repeat set value json_data is set!");
             }
-            set_data.Add(key, "\"" + v + "\"");
+            set_data.Add(key, $"\"{v}\"");
             return this;
         }
 
@@ -96,7 +96,7 @@ namespace Abelkhan
             {
                 throw new UpdateDataHelperException("repeat set value json_data is set!");
             }
-            set_data.Add(key, "\"" + v + "\"");
+            set_data.Add(key, $"\"{v}\"");
             return this;
         }
 

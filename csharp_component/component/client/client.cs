@@ -216,7 +216,7 @@ namespace Client
 
                 current_hub = hub_name;
                 modulemanager.process_module_mothed(func, argvs);
-                current_hub = "";
+                current_hub = string.Empty;
             }
         }
 
@@ -237,7 +237,7 @@ namespace Client
 
                 current_hub = _hubproxy._hub_name;
                 modulemanager.process_module_mothed(func, argvs);
-                current_hub = "";
+                current_hub = string.Empty;
             }
         }
 

@@ -65,7 +65,7 @@ namespace Hub
                 Hub._gates.client_connect(uuid, _gate_call_hub_module.current_ch.Value);
                 Hub._modules.process_module_mothed(func, argvs);
                 on_client_msg?.Invoke(uuid);
-                Hub._gates.current_client_uuid = "";
+                Hub._gates.current_client_uuid = string.Empty;
             }
             catch (System.Exception e)
             {

@@ -62,7 +62,7 @@ namespace Hub
                     Hub._gates.current_client_uuid = _proxy._cuuid;
                     Hub._modules.process_module_mothed(func, argvs);
                     on_client_msg?.Invoke(_proxy._cuuid);
-                    Hub._gates.current_client_uuid = "";
+                    Hub._gates.current_client_uuid = string.Empty;
                 }
 				catch (System.Exception e)
 				{

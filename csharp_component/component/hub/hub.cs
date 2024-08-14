@@ -183,8 +183,8 @@ namespace Hub
                     websocket_outside_address.host = _config.get_value_string("websocket_outside_host");
                     websocket_outside_address.port = (ushort)_config.get_value_int("websocket_outside_port");
                     var is_ssl = _config.get_value_bool("is_ssl");
-                    string pfx = "";
-                    string pwd = "";
+                    string pfx = string.Empty;
+                    string pwd = string.Empty;
                     if (is_ssl)
                     {
                         pfx = _config.get_value_string("pfx");

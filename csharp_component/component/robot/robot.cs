@@ -164,7 +164,7 @@ namespace Client
             {
                 return _proxy._hub_name;
             }
-            return "";
+            return string.Empty;
         }
 
         private void heartbeats(long tick)
@@ -441,7 +441,7 @@ namespace Client
 
             current_hub = hub_name;
             modulemanager.process_module_mothed(func, argvs);
-            current_hub = "";
+            current_hub = string.Empty;
         }
 
         private void hub_call_client(byte[] rpc_argv)
@@ -458,7 +458,7 @@ namespace Client
 
             current_hub = current_robot.get_current_hubproxy(_hub_call_client_module.current_ch.Value);
             modulemanager.process_module_mothed(func, argvs);
-            current_hub = "";
+            current_hub = string.Empty;
         }
 
         public long poll()
