@@ -13,10 +13,10 @@ namespace Abelkhan
 
     public class WebsocketChannel : Abelkhan.Ichannel
     {
-        private IWebSocketConnection _socket;
-        private object lockobj;
+        private readonly IWebSocketConnection _socket;
+        private readonly object lockobj;
 
-        public ChannelOnRecv _channel_onrecv;
+        public readonly ChannelOnRecv _channel_onrecv;
 
         public event Action<WebsocketChannel> on_connect;
         public WebsocketChannel(IWebSocketConnection socket)
