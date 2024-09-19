@@ -11,7 +11,6 @@ namespace Abelkhan
         private static readonly int connectRetry = 3;
         private static readonly int connectTimeout = 5000;
         private static readonly int keepAlive = 30;
-        private static readonly bool resolveDns = true;
         private static readonly ManualResetEvent _waitNotify = new ManualResetEvent(false);
 
         private readonly int _waitTimeout = 15000; //15s
