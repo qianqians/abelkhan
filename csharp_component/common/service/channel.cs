@@ -40,9 +40,13 @@ namespace Abelkhan
 
         public void send(byte[] data)
         {
+            var send_len = 0;
             lock (lockobj)
             {
-                s.Send(data);
+                while (send_len < data.Length)
+                {
+                    send_len += s.Send(data, send_len, data.Length - send_len, SocketFlags.None);
+                }
             }
         }
     }
