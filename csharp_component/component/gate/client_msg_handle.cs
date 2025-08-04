@@ -43,11 +43,17 @@ namespace Gate {
 			rsp.rsp((ulong)Service.Timerservice.Tick);
 		}
 
-		private void get_hub_info(string hub_type) {
-			var rsp = (Abelkhan.client_call_gate_get_hub_info_rsp)_client_call_gate_module.rsp.Value;
+		private void get_hub_info(string hub_type)
+        {
+            Log.Log.trace("get_hub_info begin@");
+            var rsp = (Abelkhan.client_call_gate_get_hub_info_rsp)_client_call_gate_module.rsp.Value;
             var ch = _client_call_gate_module.current_ch.Value;
-            if (_clientmanager.get_client(ch, out var proxy) && _hubsvrmanager.get_hub_list(proxy._cuuid, hub_type, out var _info)) {
-				rsp.rsp(_info);
+            if (_clientmanager.get_client(ch, out var proxy)) {
+				Log.Log.trace("get client proxy:{0}", proxy._cuuid);
+				if (_hubsvrmanager.get_hub_list(proxy._cuuid, hub_type, out var _info))
+				{
+					rsp.rsp(_info);
+				}
 			}
 			else {
 				rsp.err();

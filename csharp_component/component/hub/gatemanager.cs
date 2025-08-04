@@ -88,7 +88,7 @@ namespace Hub
 
                 if (gates.TryGetValue(name, out GateProxy _old_proxy))
                 {
-                    _wait_destory_gateproxys.Add(name, _old_proxy);
+                    _wait_destory_gateproxys[name] = _old_proxy;
                 }
 
                 gates[name] = _proxy;
@@ -373,7 +373,8 @@ namespace Hub
                 {
                     if (!tmp_gates.TryGetValue(_proxy, out var uuidlist))
                     {
-                        tmp_gates.Add(_proxy, new List<string>());
+                        uuidlist = new List<string>();
+                        tmp_gates.Add(_proxy, uuidlist);
                     }
                     uuidlist.Add(_uuid);
                 }

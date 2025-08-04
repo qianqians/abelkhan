@@ -89,11 +89,11 @@ namespace Gate
 			foreach (var item in client_map)
 			{
 				var proxy = item.Value;
-				if (proxy._timetmp > 0 && (proxy._timetmp + 10 * 1000) < ticktime)
+				if (proxy._timetmp > 0 && (proxy._timetmp + 60 * 1000) < ticktime)
 				{
 					remove_client.Add(proxy);
 				}
-				if (proxy._timetmp > 0 && proxy._theory_timetmp > 0 && (proxy._theory_timetmp - proxy._timetmp) > 10 * 1000)
+				if (proxy._timetmp > 0 && proxy._theory_timetmp > 0 && (proxy._theory_timetmp - proxy._timetmp) > 30 * 1000)
 				{
 					exception_client.Add(proxy);
 				}

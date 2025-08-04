@@ -63,6 +63,8 @@ namespace Gate
 
 		public HubProxy reg_hub(string hub_name, string hub_type, string router_type, Abelkhan.Ichannel ch)
 		{
+			Log.Log.trace($"reg_hub hub_name:{hub_name} hub_type:{hub_type} router_type:{router_type}");
+
 			var _hubproxy = new HubProxy(hub_name, hub_type, router_type, ch);
 
 			if (hub_name_proxy.TryGetValue(hub_name, out var proxy))
@@ -160,7 +162,8 @@ namespace Gate
                 info.hub_type = it.Value._hub_type;
 
 				hub_list.Add(info);
-			}
+                Log.Log.trace($"get_hub_list info.hub_name:{info.hub_name} info.hub_type:{info.hub_type}");
+            }
 
 			_info = null;
             if (hub_list.Count > 0)
