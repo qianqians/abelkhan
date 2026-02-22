@@ -131,7 +131,6 @@ namespace Service
         public static Dictionary<string, Func<AbelkhanHttpRequest, Task> > get_callbacks = new Dictionary<string, Func<AbelkhanHttpRequest, Task> >();
         public static Dictionary<string, Func<AbelkhanHttpRequest, Task> > post_callbacks = new Dictionary<string, Func<AbelkhanHttpRequest, Task> >();
  
-
         private string _host;
         private int _port;
         private IHost _h;
