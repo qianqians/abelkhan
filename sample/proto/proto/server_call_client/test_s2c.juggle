@@ -1,3 +1,0 @@
-module test_s2c {
-	ping req() rsp() err();
-}
