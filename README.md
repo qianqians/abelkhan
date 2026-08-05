@@ -4,7 +4,7 @@ abelkhan是一个轻量级的游戏服务器框架，基于c#开发，使用mong
 ## 架构
 * 基于consul实现服务发现
 * 基于Apache Fory实现序列化/反序列化  
-&amp;
+&nbsp;
 * dbproxy 数据库代理
 * gate 网关服务器
 * hub 微服务节点
