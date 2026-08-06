@@ -7,13 +7,13 @@ public class TcpNetwork : INetwork
     public readonly OnReceive OnReceiveData = new();
     private Action<byte[]>? _onReceiveTcpData;
 
+    public Task? T;
     private readonly Socket _socket;
     private readonly Lock _lockObject = new();
 
     public TcpNetwork(Socket s)
     {
         _socket = s;
-
         OnReceiveData.OnReceiveData += _onReceiveTcpData;
     }
     
@@ -34,11 +34,23 @@ public class TcpNetwork : INetwork
         _onReceiveTcpData += onReceive;
     }
 
-    public void Close()
+    public async void Close()
     {
-        lock (_lockObject)
+        try
         {
-            _socket.Close();
+            lock (_lockObject)
+            {
+                _socket.Close();
+            }
+
+            if (T != null)
+            {
+                await T;
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error("TcpNetwork Close error:{0}", ex);
         }
     }
 }

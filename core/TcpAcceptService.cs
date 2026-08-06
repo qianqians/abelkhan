@@ -16,17 +16,13 @@ public class TcpAcceptService(ushort port)
         OnListenAccept?.Invoke(i);
     }
 
-    private async ValueTask ProcessLinesAsync(Socket socket)
+    private async Task ProcessLinesAsync(Socket socket, TcpNetwork i)
     {
-        var i = new TcpNetwork(socket);
-        ListenAccept(i);
-
         var stream = new NetworkStream(socket);
         var reader = PipeReader.Create(stream);
 
         while (_run)
         {
-
             try
             {
                 ReadResult result = await reader.ReadAsync();
@@ -36,7 +32,7 @@ public class TcpAcceptService(ushort port)
 
                 reader.AdvanceTo(buffer.Start, buffer.End);
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 Log.Error("OnReceive.OnReceiveData error:{0}!", e);
                 break;
@@ -57,7 +53,9 @@ public class TcpAcceptService(ushort port)
             while (_run)
             {
                 var socket = await listenSocket.AcceptAsync();
-                _ = ProcessLinesAsync(socket);
+                var i = new TcpNetwork(socket);
+                i.T = ProcessLinesAsync(socket, i);
+                ListenAccept(i);
             }
         }
         catch (Exception ex)
@@ -85,7 +83,7 @@ public class TcpAcceptService(ushort port)
         }
         catch (Exception ex)
         {
-            Log.Error("Close error:{0}", ex);
+            Log.Error("TcpAcceptService Close error:{0}", ex);
         }
     }
 }
