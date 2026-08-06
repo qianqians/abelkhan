@@ -6,7 +6,7 @@ public class OnReceive
     private static readonly Microsoft.IO.RecyclableMemoryStreamManager StreamPool = new();
     private readonly Microsoft.IO.RecyclableMemoryStream _receiveBuf = StreamPool.GetStream();
 
-    public readonly Action<byte[]>? OnReceiveData = null;
+    public Action<byte[]>? OnReceiveData = null;
     public void Receive(byte[] data)
     {
         _receiveBuf.Write(data, 0, data.Length);

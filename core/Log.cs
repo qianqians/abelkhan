@@ -2,7 +2,7 @@
  
 namespace core;
 
-public class Log
+public static class Log
 {
     public enum EmLogMode
     {
