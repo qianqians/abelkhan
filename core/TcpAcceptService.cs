@@ -51,7 +51,7 @@ public class TcpAcceptService(ushort port)
         try
         {
             var listenSocket = new Socket(SocketType.Stream, ProtocolType.Tcp);
-            listenSocket.Bind(new IPEndPoint(IPAddress.Loopback, port));
+            listenSocket.Bind(new IPEndPoint(IPAddress.Any, port));
             listenSocket.Listen(128);
 
             while (_run)
