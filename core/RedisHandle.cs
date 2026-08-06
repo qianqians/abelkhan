@@ -7,13 +7,12 @@ namespace core;
 
 public class RedisConnectionHelper
 {
-    private static readonly int ConnectRetry = 3;
-    private static readonly int ConnectTimeout = 5000;
-    private static readonly int KeepAlive = 30;
+    private const int ConnectRetry = 3;
+    private const int ConnectTimeout = 5000;
+    private const int KeepAlive = 30;
     private static readonly ManualResetEvent WaitNotify = new(false);
 
-    private readonly int _waitTimeout = 15_000;
-    private readonly string _conUrl;
+    private const int WaitTimeout = 15_000;
     private readonly string _conName;
     private readonly string _pwd;
     private readonly string _conf;
@@ -24,7 +23,6 @@ public class RedisConnectionHelper
 
     public RedisConnectionHelper(string conUrl, string conName, string pwd, int db = 0)
     {
-        _conUrl = conUrl;
         _conName = conName;
         _pwd = pwd;
         _db = db;
@@ -91,9 +89,9 @@ public class RedisConnectionHelper
         }
         else
         {
-            if (!WaitNotify.WaitOne(_waitTimeout))
+            if (!WaitNotify.WaitOne(WaitTimeout))
             {
-                Log.Error($"_waitNotifyTimeout after {_waitTimeout}ms");
+                Log.Error($"_waitNotifyTimeout after {WaitTimeout}ms");
                 Thread.Sleep(10);
                 Environment.Exit(1);
             }
