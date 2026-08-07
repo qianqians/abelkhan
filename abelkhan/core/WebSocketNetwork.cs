@@ -17,7 +17,7 @@ public class WebSocketNetwork : INetwork
         OnReceiveData.OnReceiveData += _onReceiveWebSocketData;
     }
     
-    public async Task Send(byte[] data, uint size)
+    public async Task Send(byte[] data)
     {
         using (await _lockObject.LockAsync())
         {

@@ -16,14 +16,14 @@ public class TcpNetwork : INetwork
         OnReceiveData.OnReceiveData += _onReceiveTcpData;
     }
     
-    public async Task Send(byte[] data, uint size)
+    public async Task Send(byte[] data)
     {
         var sendLen = 0;
         using (await _lockObject.LockAsync())
         {
             while (sendLen < data.Length)
             {
-                sendLen += await _socket.SendAsync(data);
+                sendLen += _socket.Send(data);
             }
         }
     }

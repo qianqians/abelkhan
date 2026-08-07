@@ -2,7 +2,7 @@
 
 public interface INetwork
 {
-    Task Send(byte[] data, uint size);
+    Task Send(byte[] data);
     void OnReceive(Action<byte[]> onReceive);
     Task Close();
 }
