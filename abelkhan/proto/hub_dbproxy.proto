@@ -1,0 +1,36 @@
+syntax = "proto3"; 
+
+message AckGetGuid {
+	string callback_id = 1;
+	uint64 guid = 2;
+}
+
+message AckCreateObject {
+	string callback_id = 1;
+	bool result = 2;
+}
+
+message AckUpdataObject {
+	string callback_id = 1;
+	bool result = 2;
+}
+
+message AckFindAndModify {
+	string callback_id = 1;
+	bytes object_info = 2;
+}
+
+message AckRemoveObject {
+	string callback_id = 1;
+	bool result = 2;
+}
+
+message AckGetObjectCount {
+	string callback_id = 1;
+	uint32 count = 2;
+}
+
+message AckGetObjectInfo {
+	string callback_id = 1;
+	bytes object_info = 2;
+}

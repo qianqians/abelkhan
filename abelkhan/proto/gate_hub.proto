@@ -1,0 +1,48 @@
+syntax = "proto3"; 
+import "common.proto";
+
+message HubCreateeRemoteEntity {
+	repeated string conn_id = 1;
+	string owner_conn_id = 2;
+	string entity_id = 3;
+	string entity_type = 4;
+	bytes argv = 5;
+}
+ 
+message HubDeleteRemoteEntity {
+	string entity_id = 1;
+}
+
+message HubRefreshEntity {
+	string conn_id = 1;
+	string entity_id = 2;
+	string entity_type = 3;
+	bytes argv = 4;
+}
+
+message HubRequestClient {
+  string conn_id = 1;
+  string msg_id = 2;
+  CallRpc event = 3;
+}
+
+message HubResponseClient {
+  string conn_id = 1;
+  string msg_id = 2;
+  string errMsg = 3;
+  bytes content = 4;
+}
+
+message HubNotifyClient {
+  repeated string conn_id = 1;
+  CallRpc event = 2;
+}
+
+message HubCallGlobal {
+	CallRpc event = 1;
+}
+
+message HubKickOffClient {
+	string conn_id = 1;
+	string prompt_info = 2;
+}

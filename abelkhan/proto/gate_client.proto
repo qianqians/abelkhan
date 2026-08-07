@@ -1,0 +1,32 @@
+syntax = "proto3"; 
+import "common.proto";
+
+message ClientRequestReconnect {
+	string account_id = 1;
+	bytes argv = 2;
+}
+
+message ClientRequestService {
+	string service_name = 1;
+	bytes argv = 2;
+}
+
+message ClientRequestHub {
+  string msg_id = 1;
+  CallRpc event = 2;
+}
+
+message  ClientResponseHub {
+  string msg_id = 1;
+  string errMsg = 2;
+  bytes content = 3;
+}
+
+message ClientNotifyHub {
+  CallRpc event = 1;
+}
+
+message VersionHandshake {
+  uint32 minVersion = 1;
+  uint32 maxVersion = 2;
+}

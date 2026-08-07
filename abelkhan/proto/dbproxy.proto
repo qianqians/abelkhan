@@ -1,0 +1,57 @@
+syntax = "proto3"; 
+
+message DBInfo {
+  string instance = 1;
+  string db = 2;
+  string collection = 3;
+}
+
+message GetGuidEvent {
+  DBInfo db_Info = 1;
+  string callback_id = 2;
+}
+
+message CreateObjectEvent {
+  DBInfo db_Info = 1;
+  string callback_id = 2;
+  bytes object_info = 3;
+}
+
+message UpdateObjectEvent {
+  DBInfo db_Info = 1;
+  string callback_id = 2;
+  bytes query_info = 3;
+  bytes updata_info = 4;
+  bool is_upsert = 5;
+}
+
+message FindAndModifyEvent {
+  DBInfo db_Info = 1;
+  string callback_id = 2;
+  bytes query_info = 3;
+  bytes updata_info = 4;
+  bool is_new = 5;
+  bool is_upsert = 6;
+}
+
+message RemoveObjectEvent {
+  DBInfo db_Info = 1;
+  string callback_id = 2;
+  bytes query_info = 3;
+}
+
+message GetObjectInfoEvent {
+  DBInfo db_Info = 1;
+  string callback_id = 2;
+  bytes query_info = 3;
+  uint32 skip = 4;
+  uint32 limit = 5;
+  string sort = 6;
+  bool ascending = 7;
+}
+
+message GetObjectCountEvent {
+  DBInfo db_Info = 1;
+  string callback_id = 2;
+  bytes query_info = 3;
+}
