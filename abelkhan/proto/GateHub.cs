@@ -28,24 +28,25 @@ public static partial class GateHubReflection {
           "CRIMCgRhcmd2GAUgASgMIioKFUh1YkRlbGV0ZVJlbW90ZUVudGl0eRIRCgll",
           "bnRpdHlfaWQYASABKAkiWQoQSHViUmVmcmVzaEVudGl0eRIPCgdjb25uX2lk",
           "GAEgASgJEhEKCWVudGl0eV9pZBgCIAEoCRITCgtlbnRpdHlfdHlwZRgDIAEo",
-          "CRIMCgRhcmd2GAQgASgMIkwKEEh1YlJlcXVlc3RDbGllbnQSDwoHY29ubl9p",
-          "ZBgBIAEoCRIOCgZtc2dfaWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxs",
-          "UnBjIlUKEUh1YlJlc3BvbnNlQ2xpZW50Eg8KB2Nvbm5faWQYASABKAkSDgoG",
-          "bXNnX2lkGAIgASgJEg4KBmVyck1zZxgDIAEoCRIPCgdjb250ZW50GAQgASgM",
-          "IjsKD0h1Yk5vdGlmeUNsaWVudBIPCgdjb25uX2lkGAEgAygJEhcKBWV2ZW50",
-          "GAIgASgLMgguQ2FsbFJwYyIoCg1IdWJDYWxsR2xvYmFsEhcKBWV2ZW50GAEg",
-          "ASgLMgguQ2FsbFJwYyI4ChBIdWJLaWNrT2ZmQ2xpZW50Eg8KB2Nvbm5faWQY",
-          "ASABKAkSEwoLcHJvbXB0X2luZm8YAiABKAliBnByb3RvMw=="));
+          "CRIMCgRhcmd2GAQgASgMIlcKG0dhdGVGb3J3YXJkSHViUmVxdWVzdENsaWVu",
+          "dBIPCgdjb25uX2lkGAEgASgJEg4KBm1zZ19pZBgCIAEoCRIXCgVldmVudBgD",
+          "IAEoCzIILkNhbGxScGMiYAocR2F0ZUZvcndhcmRIdWJSZXNwb25zZUNsaWVu",
+          "dBIPCgdjb25uX2lkGAEgASgJEg4KBm1zZ19pZBgCIAEoCRIOCgZlcnJNc2cY",
+          "AyABKAkSDwoHY29udGVudBgEIAEoDCJGChpHYXRlRm9yd2FyZEh1Yk5vdGlm",
+          "eUNsaWVudBIPCgdjb25uX2lkGAEgAygJEhcKBWV2ZW50GAIgASgLMgguQ2Fs",
+          "bFJwYyIzChhHYXRlRm9yd2FyZEh1YkNhbGxHbG9iYWwSFwoFZXZlbnQYASAB",
+          "KAsyCC5DYWxsUnBjIjgKEEh1YktpY2tPZmZDbGllbnQSDwoHY29ubl9pZBgB",
+          "IAEoCRITCgtwcm9tcHRfaW5mbxgCIAEoCWIGcHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
           new pbr::GeneratedClrTypeInfo(typeof(global::HubCreateeRemoteEntity), global::HubCreateeRemoteEntity.Parser, new[]{ "ConnId", "OwnerConnId", "EntityId", "EntityType", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubDeleteRemoteEntity), global::HubDeleteRemoteEntity.Parser, new[]{ "EntityId" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubRefreshEntity), global::HubRefreshEntity.Parser, new[]{ "ConnId", "EntityId", "EntityType", "Argv" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::HubRequestClient), global::HubRequestClient.Parser, new[]{ "ConnId", "MsgId", "Event" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::HubResponseClient), global::HubResponseClient.Parser, new[]{ "ConnId", "MsgId", "ErrMsg", "Content" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::HubNotifyClient), global::HubNotifyClient.Parser, new[]{ "ConnId", "Event" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::HubCallGlobal), global::HubCallGlobal.Parser, new[]{ "Event" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubRequestClient), global::GateForwardHubRequestClient.Parser, new[]{ "ConnId", "MsgId", "Event" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubResponseClient), global::GateForwardHubResponseClient.Parser, new[]{ "ConnId", "MsgId", "ErrMsg", "Content" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubNotifyClient), global::GateForwardHubNotifyClient.Parser, new[]{ "ConnId", "Event" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubCallGlobal), global::GateForwardHubCallGlobal.Parser, new[]{ "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubKickOffClient), global::HubKickOffClient.Parser, new[]{ "ConnId", "PromptInfo" }, null, null, null, null)
         }));
   }
@@ -896,16 +897,16 @@ public sealed partial class HubRefreshEntity : pb::IMessage<HubRefreshEntity>
 }
 
 [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
+public sealed partial class GateForwardHubRequestClient : pb::IMessage<GateForwardHubRequestClient>
 #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     , pb::IBufferMessage
 #endif
 {
-  private static readonly pb::MessageParser<HubRequestClient> _parser = new pb::MessageParser<HubRequestClient>(() => new HubRequestClient());
+  private static readonly pb::MessageParser<GateForwardHubRequestClient> _parser = new pb::MessageParser<GateForwardHubRequestClient>(() => new GateForwardHubRequestClient());
   private pb::UnknownFieldSet _unknownFields;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public static pb::MessageParser<HubRequestClient> Parser { get { return _parser; } }
+  public static pb::MessageParser<GateForwardHubRequestClient> Parser { get { return _parser; } }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -921,7 +922,7 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public HubRequestClient() {
+  public GateForwardHubRequestClient() {
     OnConstruction();
   }
 
@@ -929,7 +930,7 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public HubRequestClient(HubRequestClient other) : this() {
+  public GateForwardHubRequestClient(GateForwardHubRequestClient other) : this() {
     connId_ = other.connId_;
     msgId_ = other.msgId_;
     event_ = other.event_ != null ? other.event_.Clone() : null;
@@ -938,8 +939,8 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public HubRequestClient Clone() {
-    return new HubRequestClient(this);
+  public GateForwardHubRequestClient Clone() {
+    return new GateForwardHubRequestClient(this);
   }
 
   /// <summary>Field number for the "conn_id" field.</summary>
@@ -981,12 +982,12 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
-    return Equals(other as HubRequestClient);
+    return Equals(other as GateForwardHubRequestClient);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public bool Equals(HubRequestClient other) {
+  public bool Equals(GateForwardHubRequestClient other) {
     if (ReferenceEquals(other, null)) {
       return false;
     }
@@ -1085,7 +1086,7 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public void MergeFrom(HubRequestClient other) {
+  public void MergeFrom(GateForwardHubRequestClient other) {
     if (other == null) {
       return;
     }
@@ -1177,16 +1178,16 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
 }
 
 [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-public sealed partial class HubResponseClient : pb::IMessage<HubResponseClient>
+public sealed partial class GateForwardHubResponseClient : pb::IMessage<GateForwardHubResponseClient>
 #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     , pb::IBufferMessage
 #endif
 {
-  private static readonly pb::MessageParser<HubResponseClient> _parser = new pb::MessageParser<HubResponseClient>(() => new HubResponseClient());
+  private static readonly pb::MessageParser<GateForwardHubResponseClient> _parser = new pb::MessageParser<GateForwardHubResponseClient>(() => new GateForwardHubResponseClient());
   private pb::UnknownFieldSet _unknownFields;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public static pb::MessageParser<HubResponseClient> Parser { get { return _parser; } }
+  public static pb::MessageParser<GateForwardHubResponseClient> Parser { get { return _parser; } }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -1202,7 +1203,7 @@ public sealed partial class HubResponseClient : pb::IMessage<HubResponseClient>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public HubResponseClient() {
+  public GateForwardHubResponseClient() {
     OnConstruction();
   }
 
@@ -1210,7 +1211,7 @@ public sealed partial class HubResponseClient : pb::IMessage<HubResponseClient>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public HubResponseClient(HubResponseClient other) : this() {
+  public GateForwardHubResponseClient(GateForwardHubResponseClient other) : this() {
     connId_ = other.connId_;
     msgId_ = other.msgId_;
     errMsg_ = other.errMsg_;
@@ -1220,8 +1221,8 @@ public sealed partial class HubResponseClient : pb::IMessage<HubResponseClient>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public HubResponseClient Clone() {
-    return new HubResponseClient(this);
+  public GateForwardHubResponseClient Clone() {
+    return new GateForwardHubResponseClient(this);
   }
 
   /// <summary>Field number for the "conn_id" field.</summary>
@@ -1275,12 +1276,12 @@ public sealed partial class HubResponseClient : pb::IMessage<HubResponseClient>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
-    return Equals(other as HubResponseClient);
+    return Equals(other as GateForwardHubResponseClient);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public bool Equals(HubResponseClient other) {
+  public bool Equals(GateForwardHubResponseClient other) {
     if (ReferenceEquals(other, null)) {
       return false;
     }
@@ -1392,7 +1393,7 @@ public sealed partial class HubResponseClient : pb::IMessage<HubResponseClient>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public void MergeFrom(HubResponseClient other) {
+  public void MergeFrom(GateForwardHubResponseClient other) {
     if (other == null) {
       return;
     }
@@ -1486,16 +1487,16 @@ public sealed partial class HubResponseClient : pb::IMessage<HubResponseClient>
 }
 
 [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-public sealed partial class HubNotifyClient : pb::IMessage<HubNotifyClient>
+public sealed partial class GateForwardHubNotifyClient : pb::IMessage<GateForwardHubNotifyClient>
 #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     , pb::IBufferMessage
 #endif
 {
-  private static readonly pb::MessageParser<HubNotifyClient> _parser = new pb::MessageParser<HubNotifyClient>(() => new HubNotifyClient());
+  private static readonly pb::MessageParser<GateForwardHubNotifyClient> _parser = new pb::MessageParser<GateForwardHubNotifyClient>(() => new GateForwardHubNotifyClient());
   private pb::UnknownFieldSet _unknownFields;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public static pb::MessageParser<HubNotifyClient> Parser { get { return _parser; } }
+  public static pb::MessageParser<GateForwardHubNotifyClient> Parser { get { return _parser; } }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -1511,7 +1512,7 @@ public sealed partial class HubNotifyClient : pb::IMessage<HubNotifyClient>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public HubNotifyClient() {
+  public GateForwardHubNotifyClient() {
     OnConstruction();
   }
 
@@ -1519,7 +1520,7 @@ public sealed partial class HubNotifyClient : pb::IMessage<HubNotifyClient>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public HubNotifyClient(HubNotifyClient other) : this() {
+  public GateForwardHubNotifyClient(GateForwardHubNotifyClient other) : this() {
     connId_ = other.connId_.Clone();
     event_ = other.event_ != null ? other.event_.Clone() : null;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -1527,8 +1528,8 @@ public sealed partial class HubNotifyClient : pb::IMessage<HubNotifyClient>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public HubNotifyClient Clone() {
-    return new HubNotifyClient(this);
+  public GateForwardHubNotifyClient Clone() {
+    return new GateForwardHubNotifyClient(this);
   }
 
   /// <summary>Field number for the "conn_id" field.</summary>
@@ -1557,12 +1558,12 @@ public sealed partial class HubNotifyClient : pb::IMessage<HubNotifyClient>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
-    return Equals(other as HubNotifyClient);
+    return Equals(other as GateForwardHubNotifyClient);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public bool Equals(HubNotifyClient other) {
+  public bool Equals(GateForwardHubNotifyClient other) {
     if (ReferenceEquals(other, null)) {
       return false;
     }
@@ -1640,7 +1641,7 @@ public sealed partial class HubNotifyClient : pb::IMessage<HubNotifyClient>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public void MergeFrom(HubNotifyClient other) {
+  public void MergeFrom(GateForwardHubNotifyClient other) {
     if (other == null) {
       return;
     }
@@ -1719,16 +1720,16 @@ public sealed partial class HubNotifyClient : pb::IMessage<HubNotifyClient>
 }
 
 [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-public sealed partial class HubCallGlobal : pb::IMessage<HubCallGlobal>
+public sealed partial class GateForwardHubCallGlobal : pb::IMessage<GateForwardHubCallGlobal>
 #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     , pb::IBufferMessage
 #endif
 {
-  private static readonly pb::MessageParser<HubCallGlobal> _parser = new pb::MessageParser<HubCallGlobal>(() => new HubCallGlobal());
+  private static readonly pb::MessageParser<GateForwardHubCallGlobal> _parser = new pb::MessageParser<GateForwardHubCallGlobal>(() => new GateForwardHubCallGlobal());
   private pb::UnknownFieldSet _unknownFields;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public static pb::MessageParser<HubCallGlobal> Parser { get { return _parser; } }
+  public static pb::MessageParser<GateForwardHubCallGlobal> Parser { get { return _parser; } }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -1744,7 +1745,7 @@ public sealed partial class HubCallGlobal : pb::IMessage<HubCallGlobal>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public HubCallGlobal() {
+  public GateForwardHubCallGlobal() {
     OnConstruction();
   }
 
@@ -1752,15 +1753,15 @@ public sealed partial class HubCallGlobal : pb::IMessage<HubCallGlobal>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public HubCallGlobal(HubCallGlobal other) : this() {
+  public GateForwardHubCallGlobal(GateForwardHubCallGlobal other) : this() {
     event_ = other.event_ != null ? other.event_.Clone() : null;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public HubCallGlobal Clone() {
-    return new HubCallGlobal(this);
+  public GateForwardHubCallGlobal Clone() {
+    return new GateForwardHubCallGlobal(this);
   }
 
   /// <summary>Field number for the "event" field.</summary>
@@ -1778,12 +1779,12 @@ public sealed partial class HubCallGlobal : pb::IMessage<HubCallGlobal>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
-    return Equals(other as HubCallGlobal);
+    return Equals(other as GateForwardHubCallGlobal);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public bool Equals(HubCallGlobal other) {
+  public bool Equals(GateForwardHubCallGlobal other) {
     if (ReferenceEquals(other, null)) {
       return false;
     }
@@ -1856,7 +1857,7 @@ public sealed partial class HubCallGlobal : pb::IMessage<HubCallGlobal>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public void MergeFrom(HubCallGlobal other) {
+  public void MergeFrom(GateForwardHubCallGlobal other) {
     if (other == null) {
       return;
     }

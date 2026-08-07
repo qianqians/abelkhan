@@ -20,25 +20,25 @@ message HubRefreshEntity {
 	bytes argv = 4;
 }
 
-message HubRequestClient {
+message GateForwardHubRequestClient {
   string conn_id = 1;
   string msg_id = 2;
   CallRpc event = 3;
 }
 
-message HubResponseClient {
+message GateForwardHubResponseClient {
   string conn_id = 1;
   string msg_id = 2;
   string errMsg = 3;
   bytes content = 4;
 }
 
-message HubNotifyClient {
+message GateForwardHubNotifyClient {
   repeated string conn_id = 1;
   CallRpc event = 2;
 }
 
-message HubCallGlobal {
+message GateForwardHubCallGlobal {
 	CallRpc event = 1;
 }
 

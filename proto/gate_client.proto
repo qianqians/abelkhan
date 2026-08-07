@@ -11,18 +11,18 @@ message ClientRequestService {
 	bytes argv = 2;
 }
 
-message ClientRequestHub {
+message GateForwardClientRequestHub {
   string msg_id = 1;
   CallRpc event = 2;
 }
 
-message  ClientResponseHub {
+message GateForwardClientResponseHub {
   string msg_id = 1;
   string errMsg = 2;
   bytes content = 3;
 }
 
-message ClientNotifyHub {
+message GateForwardClientNotifyHub {
   CallRpc event = 1;
 }
 

@@ -24,6 +24,7 @@ public class TcpNetwork : INetwork
             while (sendLen < data.Length)
             {
                 sendLen += _socket.Send(data);
+                await Task.Delay(1);
             }
         }
     }
