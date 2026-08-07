@@ -1,36 +1,33 @@
-﻿using System.Net.Sockets;
+﻿using System.Net.WebSockets;
 namespace core;
+// ReSharper disable MemberCanBePrivate.Global
 
-public class TcpNetwork : INetwork
+public class WebSocketNetwork : INetwork
 {
     public readonly OnReceive OnReceiveData = new();
-    private Action<byte[]>? _onReceiveTcpData;
+    private Action<byte[]>? _onReceiveWebSocketData;
 
     public Task? T;
-    private readonly Socket _socket;
+    private readonly WebSocket _socket;
     private readonly Nito.AsyncEx.AsyncLock _lockObject = new();
 
-    public TcpNetwork(Socket s)
+    public WebSocketNetwork(WebSocket s)
     {
         _socket = s;
-        OnReceiveData.OnReceiveData += _onReceiveTcpData;
+        OnReceiveData.OnReceiveData += _onReceiveWebSocketData;
     }
     
     public async Task Send(byte[] data, uint size)
     {
-        var sendLen = 0;
         using (await _lockObject.LockAsync())
         {
-            while (sendLen < data.Length)
-            {
-                sendLen += await _socket.SendAsync(data);
-            }
+            await _socket.SendAsync(data, WebSocketMessageType.Binary, true, CancellationToken.None);
         }
     }
     
     public void OnReceive(Action<byte[]> onReceive)
     {
-        _onReceiveTcpData += onReceive;
+        _onReceiveWebSocketData += onReceive;
     }
 
     public async Task Close()
@@ -39,7 +36,7 @@ public class TcpNetwork : INetwork
         {
             using (await _lockObject.LockAsync())
             {
-                _socket.Close();
+                await _socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
             }
 
             if (T != null)

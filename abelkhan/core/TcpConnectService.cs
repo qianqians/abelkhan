@@ -2,13 +2,12 @@
 using System.Net.Sockets;
 using System.Net;
 using System.IO.Pipelines;
-using System.Runtime.InteropServices.ComTypes;
 
 namespace core;
 
 public class TcpConnectService
 {
-    public static event Action<INetwork>? OnConnect = null;
+    public event Action<INetwork>? OnConnect = null;
     
     private async Task ProcessLinesAsync(Socket socket, TcpNetwork i)
     {
@@ -21,12 +20,10 @@ public class TcpConnectService
             {
                 ReadResult result = await reader.ReadAsync();
                 ReadOnlySequence<byte> buffer = result.Buffer;
-
-                i.OnReceiveData.OnReceiveData?.Invoke(buffer.ToArray());
-
+                i.OnReceiveData.Receive(buffer.ToArray());
                 reader.AdvanceTo(buffer.Start, buffer.End);
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 Log.Error("OnReceive.OnReceiveData error:{0}!", e);
                 break;

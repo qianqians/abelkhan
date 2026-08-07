@@ -10,8 +10,8 @@ public class TcpAcceptService(ushort port)
     private bool _run = true;
     private Task? _t;
 
-    public static event Action<INetwork>? OnListenAccept = null;
-    private static void ListenAccept(INetwork i)
+    public event Action<INetwork>? OnListenAccept = null;
+    private void ListenAccept(INetwork i)
     {
         OnListenAccept?.Invoke(i);
     }
@@ -27,9 +27,7 @@ public class TcpAcceptService(ushort port)
             {
                 ReadResult result = await reader.ReadAsync();
                 ReadOnlySequence<byte> buffer = result.Buffer;
-
-                i.OnReceiveData.OnReceiveData?.Invoke(buffer.ToArray());
-
+                i.OnReceiveData.Receive(buffer.ToArray());
                 reader.AdvanceTo(buffer.Start, buffer.End);
             }
             catch (Exception e)
