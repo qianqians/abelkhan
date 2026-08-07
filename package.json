@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "ts-proto": "^2.11.6"
+  }
+}
