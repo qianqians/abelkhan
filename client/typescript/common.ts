@@ -17,6 +17,21 @@ export interface CallRpc {
 export interface HeartBeats {
 }
 
+export interface Request {
+  msgId: string;
+  event: CallRpc | undefined;
+}
+
+export interface Response {
+  msgId: string;
+  errMsg: string;
+  content: Uint8Array;
+}
+
+export interface Notify {
+  event: CallRpc | undefined;
+}
+
 function createBaseCallRpc(): CallRpc {
   return { protoName: "", content: new Uint8Array(0) };
 }
@@ -132,6 +147,244 @@ export const HeartBeats: MessageFns<HeartBeats> = {
   },
   fromPartial<I extends Exact<DeepPartial<HeartBeats>, I>>(_: I): HeartBeats {
     const message = createBaseHeartBeats();
+    return message;
+  },
+};
+
+function createBaseRequest(): Request {
+  return { msgId: "", event: undefined };
+}
+
+export const Request: MessageFns<Request> = {
+  encode(message: Request, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.msgId !== "") {
+      writer.uint32(10).string(message.msgId);
+    }
+    if (message.event !== undefined) {
+      CallRpc.encode(message.event, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Request {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.msgId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.event = CallRpc.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Request {
+    return {
+      msgId: isSet(object.msgId)
+        ? globalThis.String(object.msgId)
+        : isSet(object.msg_id)
+        ? globalThis.String(object.msg_id)
+        : "",
+      event: isSet(object.event) ? CallRpc.fromJSON(object.event) : undefined,
+    };
+  },
+
+  toJSON(message: Request): unknown {
+    const obj: any = {};
+    if (message.msgId !== "") {
+      obj.msgId = message.msgId;
+    }
+    if (message.event !== undefined) {
+      obj.event = CallRpc.toJSON(message.event);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Request>, I>>(base?: I): Request {
+    return Request.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Request>, I>>(object: I): Request {
+    const message = createBaseRequest();
+    message.msgId = object.msgId ?? "";
+    message.event = (object.event !== undefined && object.event !== null)
+      ? CallRpc.fromPartial(object.event)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseResponse(): Response {
+  return { msgId: "", errMsg: "", content: new Uint8Array(0) };
+}
+
+export const Response: MessageFns<Response> = {
+  encode(message: Response, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.msgId !== "") {
+      writer.uint32(10).string(message.msgId);
+    }
+    if (message.errMsg !== "") {
+      writer.uint32(18).string(message.errMsg);
+    }
+    if (message.content.length !== 0) {
+      writer.uint32(26).bytes(message.content);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Response {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.msgId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.errMsg = reader.string();
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.content = reader.bytes();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Response {
+    return {
+      msgId: isSet(object.msgId)
+        ? globalThis.String(object.msgId)
+        : isSet(object.msg_id)
+        ? globalThis.String(object.msg_id)
+        : "",
+      errMsg: isSet(object.errMsg) ? globalThis.String(object.errMsg) : "",
+      content: isSet(object.content) ? bytesFromBase64(object.content) : new Uint8Array(0),
+    };
+  },
+
+  toJSON(message: Response): unknown {
+    const obj: any = {};
+    if (message.msgId !== "") {
+      obj.msgId = message.msgId;
+    }
+    if (message.errMsg !== "") {
+      obj.errMsg = message.errMsg;
+    }
+    if (message.content.length !== 0) {
+      obj.content = base64FromBytes(message.content);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Response>, I>>(base?: I): Response {
+    return Response.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Response>, I>>(object: I): Response {
+    const message = createBaseResponse();
+    message.msgId = object.msgId ?? "";
+    message.errMsg = object.errMsg ?? "";
+    message.content = object.content ?? new Uint8Array(0);
+    return message;
+  },
+};
+
+function createBaseNotify(): Notify {
+  return { event: undefined };
+}
+
+export const Notify: MessageFns<Notify> = {
+  encode(message: Notify, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.event !== undefined) {
+      CallRpc.encode(message.event, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Notify {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseNotify();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.event = CallRpc.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Notify {
+    return { event: isSet(object.event) ? CallRpc.fromJSON(object.event) : undefined };
+  },
+
+  toJSON(message: Notify): unknown {
+    const obj: any = {};
+    if (message.event !== undefined) {
+      obj.event = CallRpc.toJSON(message.event);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Notify>, I>>(base?: I): Notify {
+    return Notify.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Notify>, I>>(object: I): Notify {
+    const message = createBaseNotify();
+    message.event = (object.event !== undefined && object.event !== null)
+      ? CallRpc.fromPartial(object.event)
+      : undefined;
     return message;
   },
 };

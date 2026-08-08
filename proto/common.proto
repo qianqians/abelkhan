@@ -7,3 +7,18 @@ message CallRpc {
 
 message HeartBeats {
 }
+
+message Request {
+  string msg_id = 1;
+  CallRpc event = 2;
+}
+
+message Response {
+  string msg_id = 1;
+  string errMsg = 2;
+  bytes content = 3;
+}
+
+message Notify {
+  CallRpc event = 1;
+}
