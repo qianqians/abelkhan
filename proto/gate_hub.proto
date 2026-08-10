@@ -22,15 +22,13 @@ message HubRefreshEntity {
 
 message GateForwardHubRequestClient {
   string conn_id = 1;
-  string msg_id = 2;
-  CallRpc event = 3;
+  CallRpc event = 2;
 }
 
 message GateForwardHubResponseClient {
   string conn_id = 1;
-  string msg_id = 2;
-  string errMsg = 3;
-  bytes content = 4;
+  string errMsg = 2;
+  bytes content = 3;
 }
 
 message GateForwardHubNotifyClient {

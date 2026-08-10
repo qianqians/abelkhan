@@ -25,7 +25,7 @@ export interface Request {
 export interface Response {
   msgId: string;
   errMsg: string;
-  content: Uint8Array;
+  event: CallRpc | undefined;
 }
 
 export interface Notify {
@@ -246,7 +246,7 @@ export const Request: MessageFns<Request> = {
 };
 
 function createBaseResponse(): Response {
-  return { msgId: "", errMsg: "", content: new Uint8Array(0) };
+  return { msgId: "", errMsg: "", event: undefined };
 }
 
 export const Response: MessageFns<Response> = {
@@ -257,8 +257,8 @@ export const Response: MessageFns<Response> = {
     if (message.errMsg !== "") {
       writer.uint32(18).string(message.errMsg);
     }
-    if (message.content.length !== 0) {
-      writer.uint32(26).bytes(message.content);
+    if (message.event !== undefined) {
+      CallRpc.encode(message.event, writer.uint32(26).fork()).join();
     }
     return writer;
   },
@@ -291,7 +291,7 @@ export const Response: MessageFns<Response> = {
             break;
           }
 
-          message.content = reader.bytes();
+          message.event = CallRpc.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -315,7 +315,7 @@ export const Response: MessageFns<Response> = {
         : isSet(object.err_msg)
         ? globalThis.String(object.err_msg)
         : "",
-      content: isSet(object.content) ? bytesFromBase64(object.content) : new Uint8Array(0),
+      event: isSet(object.event) ? CallRpc.fromJSON(object.event) : undefined,
     };
   },
 
@@ -327,8 +327,8 @@ export const Response: MessageFns<Response> = {
     if (message.errMsg !== "") {
       obj.errMsg = message.errMsg;
     }
-    if (message.content.length !== 0) {
-      obj.content = base64FromBytes(message.content);
+    if (message.event !== undefined) {
+      obj.event = CallRpc.toJSON(message.event);
     }
     return obj;
   },
@@ -340,7 +340,9 @@ export const Response: MessageFns<Response> = {
     const message = createBaseResponse();
     message.msgId = object.msgId ?? "";
     message.errMsg = object.errMsg ?? "";
-    message.content = object.content ?? new Uint8Array(0);
+    message.event = (object.event !== undefined && object.event !== null)
+      ? CallRpc.fromPartial(object.event)
+      : undefined;
     return message;
   },
 };

@@ -4,7 +4,7 @@ using consts;
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 namespace gate;
 
-struct GateConfig()
+public struct GateConfig()
 {
     public string GateId = string.Empty;
     public string RedisUrl = string.Empty;
@@ -14,6 +14,8 @@ struct GateConfig()
     public string Pfx = string.Empty;
     public string PfxPassword  = string.Empty;
     public string EnterService = string.Empty;
+    public uint MinVersion = 0;
+    public uint MaxVersion = 0;
 }
 
 class Main
@@ -21,7 +23,7 @@ class Main
     private RedisHandle? _redis;
     private TcpAcceptService? _internal;
     private WebSocketAcceptService? _external;
-    private Dictionary<string, Clients>? _clients;
+    private Dictionary<string, Client>? _clients;
 
     public async void Start(GateConfig cfg)
     {
@@ -36,18 +38,25 @@ class Main
             _external = new(cfg.PortExternal, cfg.Pfx, cfg.PfxPassword);
             _external.OnListenAccept += async network =>
             {
+                var rpc = new WRpc();
+                
                 var netGuid = Guid.NewGuid().ToString();
-                await network.Send(WRpc.Notify(Consts.NotifyConnId, new NotifyConnID()
+                await network.Send(rpc.Notify(Consts.NotifyConnId, new NotifyConnID()
                 {
                     ConnId = netGuid,
                 }));
-                await _redis.PushList(cfg.EnterService, WRpc.Notify(Consts.EnterGame, new GateForwardClientRequestService()
+                await _redis.PushList(cfg.EnterService, rpc.Notify(Consts.EnterGame, new GateForwardClientRequestService()
                 {
                     ServiceName  = cfg.EnterService,
                     GateName = cfg.GateId,
                     ConnId = netGuid,
                 }));
-                _clients.Add(netGuid, new Clients(network, _redis));
+                
+                network.OnReceive(rpc.OnNetworkData);
+                var cli = new Client(netGuid, network, _redis);
+                var msgHandle = new ClientMsgHandle(cfg, rpc, cli);
+                
+                _clients.Add(netGuid, cli);
             };
             _external.Start();
             

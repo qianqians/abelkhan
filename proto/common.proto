@@ -16,7 +16,7 @@ message Request {
 message Response {
   string msg_id = 1;
   string err_msg = 2;
-  bytes content = 3;
+  CallRpc event = 3;
 }
 
 message Notify {

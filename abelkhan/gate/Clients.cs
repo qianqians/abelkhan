@@ -1,10 +1,19 @@
 ﻿using core;
+using engine;
 using consts;
 
 namespace gate;
 
-public class Clients(INetwork clientNetwork, RedisHandle redis)
+public class Client(string connId, INetwork clientNetwork, RedisHandle redis)
 {
+    public string ConnId
+    {
+        get
+        {
+            return connId;
+        }
+    }
+    
     private readonly Dictionary<string, INetwork> _dictEntityNetwork = new();
 
     public void RegisterNetwork(string entity, INetwork network)

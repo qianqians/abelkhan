@@ -24,20 +24,20 @@ public static partial class CommonReflection {
         string.Concat(
           "Cgxjb21tb24ucHJvdG8iLgoHQ2FsbFJwYxISCgpwcm90b19uYW1lGAEgASgJ",
           "Eg8KB2NvbnRlbnQYAiABKAwiDAoKSGVhcnRCZWF0cyIyCgdSZXF1ZXN0Eg4K",
-          "Bm1zZ19pZBgBIAEoCRIXCgVldmVudBgCIAEoCzIILkNhbGxScGMiPAoIUmVz",
-          "cG9uc2USDgoGbXNnX2lkGAEgASgJEg8KB2Vycl9tc2cYAiABKAkSDwoHY29u",
-          "dGVudBgDIAEoDCI0CgZOb3RpZnkSEQoJZW50aXR5X2lkGAEgASgJEhcKBWV2",
-          "ZW50GAIgASgLMgguQ2FsbFJwYyKCAQoDTXNnEhcKA3JlcRgBIAEoCzIILlJl",
-          "cXVlc3RIABIYCgNyc3AYAiABKAsyCS5SZXNwb25zZUgAEhkKBm5vdGlmeRgD",
-          "IAEoCzIHLk5vdGlmeUgAEiIKC2hlYXJ0X2JlYXRzGAQgASgLMgsuSGVhcnRC",
-          "ZWF0c0gAQgkKB3BheWxvYWRiBnByb3RvMw=="));
+          "Bm1zZ19pZBgBIAEoCRIXCgVldmVudBgCIAEoCzIILkNhbGxScGMiRAoIUmVz",
+          "cG9uc2USDgoGbXNnX2lkGAEgASgJEg8KB2Vycl9tc2cYAiABKAkSFwoFZXZl",
+          "bnQYAyABKAsyCC5DYWxsUnBjIjQKBk5vdGlmeRIRCgllbnRpdHlfaWQYASAB",
+          "KAkSFwoFZXZlbnQYAiABKAsyCC5DYWxsUnBjIoIBCgNNc2cSFwoDcmVxGAEg",
+          "ASgLMgguUmVxdWVzdEgAEhgKA3JzcBgCIAEoCzIJLlJlc3BvbnNlSAASGQoG",
+          "bm90aWZ5GAMgASgLMgcuTm90aWZ5SAASIgoLaGVhcnRfYmVhdHMYBCABKAsy",
+          "Cy5IZWFydEJlYXRzSABCCQoHcGF5bG9hZGIGcHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
           new pbr::GeneratedClrTypeInfo(typeof(global::CallRpc), global::CallRpc.Parser, new[]{ "ProtoName", "Content" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HeartBeats), global::HeartBeats.Parser, null, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Request), global::Request.Parser, new[]{ "MsgId", "Event" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::Response), global::Response.Parser, new[]{ "MsgId", "ErrMsg", "Content" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::Response), global::Response.Parser, new[]{ "MsgId", "ErrMsg", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Notify), global::Notify.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Msg), global::Msg.Parser, new[]{ "Req", "Rsp", "Notify", "HeartBeats" }, new[]{ "Payload" }, null, null, null)
         }));
@@ -723,7 +723,7 @@ public sealed partial class Response : pb::IMessage<Response>
   public Response(Response other) : this() {
     msgId_ = other.msgId_;
     errMsg_ = other.errMsg_;
-    content_ = other.content_;
+    event_ = other.event_ != null ? other.event_.Clone() : null;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -757,15 +757,15 @@ public sealed partial class Response : pb::IMessage<Response>
     }
   }
 
-  /// <summary>Field number for the "content" field.</summary>
-  public const int ContentFieldNumber = 3;
-  private pb::ByteString content_ = pb::ByteString.Empty;
+  /// <summary>Field number for the "event" field.</summary>
+  public const int EventFieldNumber = 3;
+  private global::CallRpc event_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public pb::ByteString Content {
-    get { return content_; }
+  public global::CallRpc Event {
+    get { return event_; }
     set {
-      content_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      event_ = value;
     }
   }
 
@@ -786,7 +786,7 @@ public sealed partial class Response : pb::IMessage<Response>
     }
     if (MsgId != other.MsgId) return false;
     if (ErrMsg != other.ErrMsg) return false;
-    if (Content != other.Content) return false;
+    if (!object.Equals(Event, other.Event)) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -796,7 +796,7 @@ public sealed partial class Response : pb::IMessage<Response>
     int hash = 1;
     if (MsgId.Length != 0) hash ^= MsgId.GetHashCode();
     if (ErrMsg.Length != 0) hash ^= ErrMsg.GetHashCode();
-    if (Content.Length != 0) hash ^= Content.GetHashCode();
+    if (event_ != null) hash ^= Event.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -823,9 +823,9 @@ public sealed partial class Response : pb::IMessage<Response>
       output.WriteRawTag(18);
       output.WriteString(ErrMsg);
     }
-    if (Content.Length != 0) {
+    if (event_ != null) {
       output.WriteRawTag(26);
-      output.WriteBytes(Content);
+      output.WriteMessage(Event);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
@@ -845,9 +845,9 @@ public sealed partial class Response : pb::IMessage<Response>
       output.WriteRawTag(18);
       output.WriteString(ErrMsg);
     }
-    if (Content.Length != 0) {
+    if (event_ != null) {
       output.WriteRawTag(26);
-      output.WriteBytes(Content);
+      output.WriteMessage(Event);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
@@ -865,8 +865,8 @@ public sealed partial class Response : pb::IMessage<Response>
     if (ErrMsg.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(ErrMsg);
     }
-    if (Content.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeBytesSize(Content);
+    if (event_ != null) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(Event);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -886,8 +886,11 @@ public sealed partial class Response : pb::IMessage<Response>
     if (other.ErrMsg.Length != 0) {
       ErrMsg = other.ErrMsg;
     }
-    if (other.Content.Length != 0) {
-      Content = other.Content;
+    if (other.event_ != null) {
+      if (event_ == null) {
+        Event = new global::CallRpc();
+      }
+      Event.MergeFrom(other.Event);
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -917,7 +920,10 @@ public sealed partial class Response : pb::IMessage<Response>
           break;
         }
         case 26: {
-          Content = input.ReadBytes();
+          if (event_ == null) {
+            Event = new global::CallRpc();
+          }
+          input.ReadMessage(Event);
           break;
         }
       }
@@ -948,7 +954,10 @@ public sealed partial class Response : pb::IMessage<Response>
           break;
         }
         case 26: {
-          Content = input.ReadBytes();
+          if (event_ == null) {
+            Event = new global::CallRpc();
+          }
+          input.ReadMessage(Event);
           break;
         }
       }

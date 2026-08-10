@@ -19,8 +19,9 @@ message GateForwardClientRequestHub {
 
 message GateForwardClientResponseHub {
   string msg_id = 1;
-  string err_msg = 2;
-  bytes content = 3;
+  string entity_id = 2;
+  string err_msg = 3;
+  bytes content = 4;
 }
 
 message GateForwardClientNotifyHub {

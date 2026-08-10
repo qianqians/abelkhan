@@ -1,10 +1,9 @@
 ﻿using Google.Protobuf;
-using Google.Protobuf.Reflection;
 namespace engine;
 
-public static class WRpc
+public class WRpc
 {
-    public static byte[] Notify<T>(string method, T argv) where T : IMessage<T>, new()
+    public byte[] Notify<T>(string method, T argv) where T : IMessage<T>, new()
     {
         var call = new CallRpc()
         {
@@ -22,7 +21,7 @@ public static class WRpc
         return msg.ToByteArray();
     }
 
-    public static byte[] Request<T>(string method, string msgId, T argv) where T : IMessage<T>, new()
+    public byte[] Request<T>(string method, string msgId, T argv) where T : IMessage<T>, new()
     {
         var call = new CallRpc()
         {
@@ -41,11 +40,30 @@ public static class WRpc
         return msg.ToByteArray();
     }
 
-    public static event Action<Request>? OnRequest;
-    public static event Action<Response>? OnResponse;
-    public static event Action<Notify>? OnNotify;
+    public byte[] Response<T>(string method, string msgId, T argv) where T : IMessage<T>, new()
+    {
+        var call = new CallRpc()
+        {
+            ProtoName = method,
+            Content = argv.ToByteString(),
+        };
+        var rsp = new Response()
+        {
+            MsgId = msgId,
+            Event = call,
+        };
+        var msg = new Msg()
+        {
+            Rsp = rsp,
+        };
+        return msg.ToByteArray();
+    }
 
-    public static void OnNetworkData(byte[] data)
+    public event Action<Request>? OnRequest;
+    public event Action<Response>? OnResponse;
+    public event Action<Notify>? OnNotify;
+
+    public void OnNetworkData(byte[] data)
     {
         var parser = new MessageParser<Msg>(() => new Msg());
         var msg = parser.ParseFrom(data);
@@ -61,11 +79,11 @@ public static class WRpc
                 OnNotify?.Invoke(msg.Notify);
                 break;
             default:
-                throw new ArgumentException("message: " + msg.PayloadCase.ToString());
+                throw new ArgumentException($"message:{msg.PayloadCase.ToString()}");
         }
     }
     
-    public static T OnMsg<T>(byte[] data) where T : IMessage<T>, new()
+    public T OnMsg<T>(byte[] data) where T : IMessage<T>, new()
     {
         return new MessageParser<T>(() => new T()).ParseFrom(data);
     }

@@ -15,10 +15,6 @@ message GateForwardClientRequestService {
   bytes argv = 4;
 }
 
-message KickOffClient {
-  string conn_id = 1;
-}
-
 message ClientDisconnnect {
   string conn_id = 1;
 }
@@ -26,14 +22,12 @@ message ClientDisconnnect {
 message ClientRequestHub {
   string conn_id = 1;
   string entity_id = 2;
-  string msg_id = 3;
-  CallRpc event = 4;
+  CallRpc event = 3;
 }
 
 message ClientResponseHub {
-  string msg_id = 1;
-  string errMsg = 2;
-  bytes content = 3;
+  string errMsg = 1;
+  bytes content = 2;
 }
 
 message ClientNotifyHub {

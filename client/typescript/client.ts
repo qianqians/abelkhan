@@ -37,18 +37,20 @@ export interface NotifyConnID {
 }
 
 export interface HubRequestClient {
-  msgId: string;
   event: CallRpc | undefined;
 }
 
 export interface HubResponseClient {
-  msgId: string;
   errMsg: string;
   content: Uint8Array;
 }
 
 export interface HubNotifyClient {
   event: CallRpc | undefined;
+}
+
+export interface KickOff {
+  promptInfo: string;
 }
 
 function createBaseCreatePlayerEntity(): CreatePlayerEntity {
@@ -480,16 +482,13 @@ export const NotifyConnID: MessageFns<NotifyConnID> = {
 };
 
 function createBaseHubRequestClient(): HubRequestClient {
-  return { msgId: "", event: undefined };
+  return { event: undefined };
 }
 
 export const HubRequestClient: MessageFns<HubRequestClient> = {
   encode(message: HubRequestClient, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.msgId !== "") {
-      writer.uint32(10).string(message.msgId);
-    }
     if (message.event !== undefined) {
-      CallRpc.encode(message.event, writer.uint32(18).fork()).join();
+      CallRpc.encode(message.event, writer.uint32(10).fork()).join();
     }
     return writer;
   },
@@ -506,14 +505,6 @@ export const HubRequestClient: MessageFns<HubRequestClient> = {
             break;
           }
 
-          message.msgId = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
           message.event = CallRpc.decode(reader, reader.uint32());
           continue;
         }
@@ -527,21 +518,11 @@ export const HubRequestClient: MessageFns<HubRequestClient> = {
   },
 
   fromJSON(object: any): HubRequestClient {
-    return {
-      msgId: isSet(object.msgId)
-        ? globalThis.String(object.msgId)
-        : isSet(object.msg_id)
-        ? globalThis.String(object.msg_id)
-        : "",
-      event: isSet(object.event) ? CallRpc.fromJSON(object.event) : undefined,
-    };
+    return { event: isSet(object.event) ? CallRpc.fromJSON(object.event) : undefined };
   },
 
   toJSON(message: HubRequestClient): unknown {
     const obj: any = {};
-    if (message.msgId !== "") {
-      obj.msgId = message.msgId;
-    }
     if (message.event !== undefined) {
       obj.event = CallRpc.toJSON(message.event);
     }
@@ -553,7 +534,6 @@ export const HubRequestClient: MessageFns<HubRequestClient> = {
   },
   fromPartial<I extends Exact<DeepPartial<HubRequestClient>, I>>(object: I): HubRequestClient {
     const message = createBaseHubRequestClient();
-    message.msgId = object.msgId ?? "";
     message.event = (object.event !== undefined && object.event !== null)
       ? CallRpc.fromPartial(object.event)
       : undefined;
@@ -562,19 +542,16 @@ export const HubRequestClient: MessageFns<HubRequestClient> = {
 };
 
 function createBaseHubResponseClient(): HubResponseClient {
-  return { msgId: "", errMsg: "", content: new Uint8Array(0) };
+  return { errMsg: "", content: new Uint8Array(0) };
 }
 
 export const HubResponseClient: MessageFns<HubResponseClient> = {
   encode(message: HubResponseClient, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.msgId !== "") {
-      writer.uint32(10).string(message.msgId);
-    }
     if (message.errMsg !== "") {
-      writer.uint32(18).string(message.errMsg);
+      writer.uint32(10).string(message.errMsg);
     }
     if (message.content.length !== 0) {
-      writer.uint32(26).bytes(message.content);
+      writer.uint32(18).bytes(message.content);
     }
     return writer;
   },
@@ -591,19 +568,11 @@ export const HubResponseClient: MessageFns<HubResponseClient> = {
             break;
           }
 
-          message.msgId = reader.string();
+          message.errMsg = reader.string();
           continue;
         }
         case 2: {
           if (tag !== 18) {
-            break;
-          }
-
-          message.errMsg = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 26) {
             break;
           }
 
@@ -621,11 +590,6 @@ export const HubResponseClient: MessageFns<HubResponseClient> = {
 
   fromJSON(object: any): HubResponseClient {
     return {
-      msgId: isSet(object.msgId)
-        ? globalThis.String(object.msgId)
-        : isSet(object.msg_id)
-        ? globalThis.String(object.msg_id)
-        : "",
       errMsg: isSet(object.errMsg) ? globalThis.String(object.errMsg) : "",
       content: isSet(object.content) ? bytesFromBase64(object.content) : new Uint8Array(0),
     };
@@ -633,9 +597,6 @@ export const HubResponseClient: MessageFns<HubResponseClient> = {
 
   toJSON(message: HubResponseClient): unknown {
     const obj: any = {};
-    if (message.msgId !== "") {
-      obj.msgId = message.msgId;
-    }
     if (message.errMsg !== "") {
       obj.errMsg = message.errMsg;
     }
@@ -650,7 +611,6 @@ export const HubResponseClient: MessageFns<HubResponseClient> = {
   },
   fromPartial<I extends Exact<DeepPartial<HubResponseClient>, I>>(object: I): HubResponseClient {
     const message = createBaseHubResponseClient();
-    message.msgId = object.msgId ?? "";
     message.errMsg = object.errMsg ?? "";
     message.content = object.content ?? new Uint8Array(0);
     return message;
@@ -713,6 +673,70 @@ export const HubNotifyClient: MessageFns<HubNotifyClient> = {
     message.event = (object.event !== undefined && object.event !== null)
       ? CallRpc.fromPartial(object.event)
       : undefined;
+    return message;
+  },
+};
+
+function createBaseKickOff(): KickOff {
+  return { promptInfo: "" };
+}
+
+export const KickOff: MessageFns<KickOff> = {
+  encode(message: KickOff, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.promptInfo !== "") {
+      writer.uint32(10).string(message.promptInfo);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): KickOff {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseKickOff();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.promptInfo = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): KickOff {
+    return {
+      promptInfo: isSet(object.promptInfo)
+        ? globalThis.String(object.promptInfo)
+        : isSet(object.prompt_info)
+        ? globalThis.String(object.prompt_info)
+        : "",
+    };
+  },
+
+  toJSON(message: KickOff): unknown {
+    const obj: any = {};
+    if (message.promptInfo !== "") {
+      obj.promptInfo = message.promptInfo;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<KickOff>, I>>(base?: I): KickOff {
+    return KickOff.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<KickOff>, I>>(object: I): KickOff {
+    const message = createBaseKickOff();
+    message.promptInfo = object.promptInfo ?? "";
     return message;
   },
 };

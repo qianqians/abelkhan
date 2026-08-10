@@ -27,19 +27,19 @@ public static partial class GateClientReflection {
           "ASgMIjoKFENsaWVudFJlcXVlc3RTZXJ2aWNlEhQKDHNlcnZpY2VfbmFtZRgB",
           "IAEoCRIMCgRhcmd2GAIgASgMIlkKG0dhdGVGb3J3YXJkQ2xpZW50UmVxdWVz",
           "dEh1YhIOCgZtc2dfaWQYASABKAkSEQoJZW50aXR5X2lkGAIgASgJEhcKBWV2",
-          "ZW50GAMgASgLMgguQ2FsbFJwYyJQChxHYXRlRm9yd2FyZENsaWVudFJlc3Bv",
-          "bnNlSHViEg4KBm1zZ19pZBgBIAEoCRIPCgdlcnJfbXNnGAIgASgJEg8KB2Nv",
-          "bnRlbnQYAyABKAwiSAoaR2F0ZUZvcndhcmRDbGllbnROb3RpZnlIdWISEQoJ",
-          "ZW50aXR5X2lkGAEgASgJEhcKBWV2ZW50GAIgASgLMgguQ2FsbFJwYyI8ChBW",
-          "ZXJzaW9uSGFuZHNoYWtlEhMKC21pbl92ZXJzaW9uGAEgASgNEhMKC21heF92",
-          "ZXJzaW9uGAIgASgNYgZwcm90bzM="));
+          "ZW50GAMgASgLMgguQ2FsbFJwYyJjChxHYXRlRm9yd2FyZENsaWVudFJlc3Bv",
+          "bnNlSHViEg4KBm1zZ19pZBgBIAEoCRIRCgllbnRpdHlfaWQYAiABKAkSDwoH",
+          "ZXJyX21zZxgDIAEoCRIPCgdjb250ZW50GAQgASgMIkgKGkdhdGVGb3J3YXJk",
+          "Q2xpZW50Tm90aWZ5SHViEhEKCWVudGl0eV9pZBgBIAEoCRIXCgVldmVudBgC",
+          "IAEoCzIILkNhbGxScGMiPAoQVmVyc2lvbkhhbmRzaGFrZRITCgttaW5fdmVy",
+          "c2lvbhgBIAEoDRITCgttYXhfdmVyc2lvbhgCIAEoDWIGcHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientRequestReconnect), global::ClientRequestReconnect.Parser, new[]{ "AccountId", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientRequestService), global::ClientRequestService.Parser, new[]{ "ServiceName", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientRequestHub), global::GateForwardClientRequestHub.Parser, new[]{ "MsgId", "EntityId", "Event" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientResponseHub), global::GateForwardClientResponseHub.Parser, new[]{ "MsgId", "ErrMsg", "Content" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientResponseHub), global::GateForwardClientResponseHub.Parser, new[]{ "MsgId", "EntityId", "ErrMsg", "Content" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientNotifyHub), global::GateForwardClientNotifyHub.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::VersionHandshake), global::VersionHandshake.Parser, new[]{ "MinVersion", "MaxVersion" }, null, null, null, null)
         }));
@@ -835,6 +835,7 @@ public sealed partial class GateForwardClientResponseHub : pb::IMessage<GateForw
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public GateForwardClientResponseHub(GateForwardClientResponseHub other) : this() {
     msgId_ = other.msgId_;
+    entityId_ = other.entityId_;
     errMsg_ = other.errMsg_;
     content_ = other.content_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -858,8 +859,20 @@ public sealed partial class GateForwardClientResponseHub : pb::IMessage<GateForw
     }
   }
 
+  /// <summary>Field number for the "entity_id" field.</summary>
+  public const int EntityIdFieldNumber = 2;
+  private string entityId_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string EntityId {
+    get { return entityId_; }
+    set {
+      entityId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
   /// <summary>Field number for the "err_msg" field.</summary>
-  public const int ErrMsgFieldNumber = 2;
+  public const int ErrMsgFieldNumber = 3;
   private string errMsg_ = "";
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -871,7 +884,7 @@ public sealed partial class GateForwardClientResponseHub : pb::IMessage<GateForw
   }
 
   /// <summary>Field number for the "content" field.</summary>
-  public const int ContentFieldNumber = 3;
+  public const int ContentFieldNumber = 4;
   private pb::ByteString content_ = pb::ByteString.Empty;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -898,6 +911,7 @@ public sealed partial class GateForwardClientResponseHub : pb::IMessage<GateForw
       return true;
     }
     if (MsgId != other.MsgId) return false;
+    if (EntityId != other.EntityId) return false;
     if (ErrMsg != other.ErrMsg) return false;
     if (Content != other.Content) return false;
     return Equals(_unknownFields, other._unknownFields);
@@ -908,6 +922,7 @@ public sealed partial class GateForwardClientResponseHub : pb::IMessage<GateForw
   public override int GetHashCode() {
     int hash = 1;
     if (MsgId.Length != 0) hash ^= MsgId.GetHashCode();
+    if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
     if (ErrMsg.Length != 0) hash ^= ErrMsg.GetHashCode();
     if (Content.Length != 0) hash ^= Content.GetHashCode();
     if (_unknownFields != null) {
@@ -932,12 +947,16 @@ public sealed partial class GateForwardClientResponseHub : pb::IMessage<GateForw
       output.WriteRawTag(10);
       output.WriteString(MsgId);
     }
-    if (ErrMsg.Length != 0) {
+    if (EntityId.Length != 0) {
       output.WriteRawTag(18);
+      output.WriteString(EntityId);
+    }
+    if (ErrMsg.Length != 0) {
+      output.WriteRawTag(26);
       output.WriteString(ErrMsg);
     }
     if (Content.Length != 0) {
-      output.WriteRawTag(26);
+      output.WriteRawTag(34);
       output.WriteBytes(Content);
     }
     if (_unknownFields != null) {
@@ -954,12 +973,16 @@ public sealed partial class GateForwardClientResponseHub : pb::IMessage<GateForw
       output.WriteRawTag(10);
       output.WriteString(MsgId);
     }
-    if (ErrMsg.Length != 0) {
+    if (EntityId.Length != 0) {
       output.WriteRawTag(18);
+      output.WriteString(EntityId);
+    }
+    if (ErrMsg.Length != 0) {
+      output.WriteRawTag(26);
       output.WriteString(ErrMsg);
     }
     if (Content.Length != 0) {
-      output.WriteRawTag(26);
+      output.WriteRawTag(34);
       output.WriteBytes(Content);
     }
     if (_unknownFields != null) {
@@ -974,6 +997,9 @@ public sealed partial class GateForwardClientResponseHub : pb::IMessage<GateForw
     int size = 0;
     if (MsgId.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(MsgId);
+    }
+    if (EntityId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(EntityId);
     }
     if (ErrMsg.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(ErrMsg);
@@ -995,6 +1021,9 @@ public sealed partial class GateForwardClientResponseHub : pb::IMessage<GateForw
     }
     if (other.MsgId.Length != 0) {
       MsgId = other.MsgId;
+    }
+    if (other.EntityId.Length != 0) {
+      EntityId = other.EntityId;
     }
     if (other.ErrMsg.Length != 0) {
       ErrMsg = other.ErrMsg;
@@ -1026,10 +1055,14 @@ public sealed partial class GateForwardClientResponseHub : pb::IMessage<GateForw
           break;
         }
         case 18: {
-          ErrMsg = input.ReadString();
+          EntityId = input.ReadString();
           break;
         }
         case 26: {
+          ErrMsg = input.ReadString();
+          break;
+        }
+        case 34: {
           Content = input.ReadBytes();
           break;
         }
@@ -1057,10 +1090,14 @@ public sealed partial class GateForwardClientResponseHub : pb::IMessage<GateForw
           break;
         }
         case 18: {
-          ErrMsg = input.ReadString();
+          EntityId = input.ReadString();
           break;
         }
         case 26: {
+          ErrMsg = input.ReadString();
+          break;
+        }
+        case 34: {
           Content = input.ReadBytes();
           break;
         }

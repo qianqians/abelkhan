@@ -28,16 +28,18 @@ message NotifyConnID {
 }
 
 message HubRequestClient {
-  string msg_id = 1;
-  CallRpc event = 2;
+  CallRpc event = 1;
 }
 
 message HubResponseClient {
-  string msg_id = 1;
-  string errMsg = 2;
-  bytes content = 3;
+  string errMsg = 1;
+  bytes content = 2;
 }
 
 message HubNotifyClient {
   CallRpc event = 1;
+}
+
+message KickOff {
+	string prompt_info = 1;
 }
