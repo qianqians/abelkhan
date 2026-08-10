@@ -32,6 +32,13 @@ export interface Notify {
   event: CallRpc | undefined;
 }
 
+export interface Msg {
+  req?: Request | undefined;
+  rsp?: Response | undefined;
+  notify?: Notify | undefined;
+  heartBeats?: HeartBeats | undefined;
+}
+
 function createBaseCallRpc(): CallRpc {
   return { protoName: "", content: new Uint8Array(0) };
 }
@@ -81,7 +88,11 @@ export const CallRpc: MessageFns<CallRpc> = {
 
   fromJSON(object: any): CallRpc {
     return {
-      protoName: isSet(object.protoName) ? globalThis.String(object.protoName) : "",
+      protoName: isSet(object.protoName)
+        ? globalThis.String(object.protoName)
+        : isSet(object.proto_name)
+        ? globalThis.String(object.proto_name)
+        : "",
       content: isSet(object.content) ? bytesFromBase64(object.content) : new Uint8Array(0),
     };
   },
@@ -298,7 +309,11 @@ export const Response: MessageFns<Response> = {
         : isSet(object.msg_id)
         ? globalThis.String(object.msg_id)
         : "",
-      errMsg: isSet(object.errMsg) ? globalThis.String(object.errMsg) : "",
+      errMsg: isSet(object.errMsg)
+        ? globalThis.String(object.errMsg)
+        : isSet(object.err_msg)
+        ? globalThis.String(object.err_msg)
+        : "",
       content: isSet(object.content) ? bytesFromBase64(object.content) : new Uint8Array(0),
     };
   },
@@ -384,6 +399,122 @@ export const Notify: MessageFns<Notify> = {
     const message = createBaseNotify();
     message.event = (object.event !== undefined && object.event !== null)
       ? CallRpc.fromPartial(object.event)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseMsg(): Msg {
+  return { req: undefined, rsp: undefined, notify: undefined, heartBeats: undefined };
+}
+
+export const Msg: MessageFns<Msg> = {
+  encode(message: Msg, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.req !== undefined) {
+      Request.encode(message.req, writer.uint32(10).fork()).join();
+    }
+    if (message.rsp !== undefined) {
+      Response.encode(message.rsp, writer.uint32(18).fork()).join();
+    }
+    if (message.notify !== undefined) {
+      Notify.encode(message.notify, writer.uint32(26).fork()).join();
+    }
+    if (message.heartBeats !== undefined) {
+      HeartBeats.encode(message.heartBeats, writer.uint32(34).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): Msg {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsg();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.req = Request.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.rsp = Response.decode(reader, reader.uint32());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.notify = Notify.decode(reader, reader.uint32());
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.heartBeats = HeartBeats.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Msg {
+    return {
+      req: isSet(object.req) ? Request.fromJSON(object.req) : undefined,
+      rsp: isSet(object.rsp) ? Response.fromJSON(object.rsp) : undefined,
+      notify: isSet(object.notify) ? Notify.fromJSON(object.notify) : undefined,
+      heartBeats: isSet(object.heartBeats)
+        ? HeartBeats.fromJSON(object.heartBeats)
+        : isSet(object.heart_beats)
+        ? HeartBeats.fromJSON(object.heart_beats)
+        : undefined,
+    };
+  },
+
+  toJSON(message: Msg): unknown {
+    const obj: any = {};
+    if (message.req !== undefined) {
+      obj.req = Request.toJSON(message.req);
+    }
+    if (message.rsp !== undefined) {
+      obj.rsp = Response.toJSON(message.rsp);
+    }
+    if (message.notify !== undefined) {
+      obj.notify = Notify.toJSON(message.notify);
+    }
+    if (message.heartBeats !== undefined) {
+      obj.heartBeats = HeartBeats.toJSON(message.heartBeats);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Msg>, I>>(base?: I): Msg {
+    return Msg.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Msg>, I>>(object: I): Msg {
+    const message = createBaseMsg();
+    message.req = (object.req !== undefined && object.req !== null) ? Request.fromPartial(object.req) : undefined;
+    message.rsp = (object.rsp !== undefined && object.rsp !== null) ? Response.fromPartial(object.rsp) : undefined;
+    message.notify = (object.notify !== undefined && object.notify !== null)
+      ? Notify.fromPartial(object.notify)
+      : undefined;
+    message.heartBeats = (object.heartBeats !== undefined && object.heartBeats !== null)
+      ? HeartBeats.fromPartial(object.heartBeats)
       : undefined;
     return message;
   },

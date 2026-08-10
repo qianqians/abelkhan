@@ -22,11 +22,14 @@ public static partial class CommonReflection {
   static CommonReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "Cgxjb21tb24ucHJvdG8iLQoHQ2FsbFJwYxIRCglwcm90b05hbWUYASABKAkS",
-          "DwoHY29udGVudBgCIAEoDCIMCgpIZWFydEJlYXRzIjIKB1JlcXVlc3QSDgoG",
-          "bXNnX2lkGAEgASgJEhcKBWV2ZW50GAIgASgLMgguQ2FsbFJwYyI7CghSZXNw",
-          "b25zZRIOCgZtc2dfaWQYASABKAkSDgoGZXJyTXNnGAIgASgJEg8KB2NvbnRl",
-          "bnQYAyABKAwiIQoGTm90aWZ5EhcKBWV2ZW50GAEgASgLMgguQ2FsbFJwY2IG",
+          "Cgxjb21tb24ucHJvdG8iLgoHQ2FsbFJwYxISCgpwcm90b19uYW1lGAEgASgJ",
+          "Eg8KB2NvbnRlbnQYAiABKAwiDAoKSGVhcnRCZWF0cyIyCgdSZXF1ZXN0Eg4K",
+          "Bm1zZ19pZBgBIAEoCRIXCgVldmVudBgCIAEoCzIILkNhbGxScGMiPAoIUmVz",
+          "cG9uc2USDgoGbXNnX2lkGAEgASgJEg8KB2Vycl9tc2cYAiABKAkSDwoHY29u",
+          "dGVudBgDIAEoDCIhCgZOb3RpZnkSFwoFZXZlbnQYASABKAsyCC5DYWxsUnBj",
+          "IoIBCgNNc2cSFwoDcmVxGAEgASgLMgguUmVxdWVzdEgAEhgKA3JzcBgCIAEo",
+          "CzIJLlJlc3BvbnNlSAASGQoGbm90aWZ5GAMgASgLMgcuTm90aWZ5SAASIgoL",
+          "aGVhcnRfYmVhdHMYBCABKAsyCy5IZWFydEJlYXRzSABCCQoHcGF5bG9hZGIG",
           "cHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
@@ -35,7 +38,8 @@ public static partial class CommonReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::HeartBeats), global::HeartBeats.Parser, null, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Request), global::Request.Parser, new[]{ "MsgId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Response), global::Response.Parser, new[]{ "MsgId", "ErrMsg", "Content" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::Notify), global::Notify.Parser, new[]{ "Event" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::Notify), global::Notify.Parser, new[]{ "Event" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::Msg), global::Msg.Parser, new[]{ "Req", "Rsp", "Notify", "HeartBeats" }, new[]{ "Payload" }, null, null, null)
         }));
   }
   #endregion
@@ -88,7 +92,7 @@ public sealed partial class CallRpc : pb::IMessage<CallRpc>
     return new CallRpc(this);
   }
 
-  /// <summary>Field number for the "protoName" field.</summary>
+  /// <summary>Field number for the "proto_name" field.</summary>
   public const int ProtoNameFieldNumber = 1;
   private string protoName_ = "";
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -741,7 +745,7 @@ public sealed partial class Response : pb::IMessage<Response>
     }
   }
 
-  /// <summary>Field number for the "errMsg" field.</summary>
+  /// <summary>Field number for the "err_msg" field.</summary>
   public const int ErrMsgFieldNumber = 2;
   private string errMsg_ = "";
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1152,6 +1156,406 @@ public sealed partial class Notify : pb::IMessage<Notify>
             Event = new global::CallRpc();
           }
           input.ReadMessage(Event);
+          break;
+        }
+      }
+    }
+  }
+  #endif
+
+}
+
+[global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
+public sealed partial class Msg : pb::IMessage<Msg>
+#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    , pb::IBufferMessage
+#endif
+{
+  private static readonly pb::MessageParser<Msg> _parser = new pb::MessageParser<Msg>(() => new Msg());
+  private pb::UnknownFieldSet _unknownFields;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pb::MessageParser<Msg> Parser { get { return _parser; } }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pbr::MessageDescriptor Descriptor {
+    get { return global::CommonReflection.Descriptor.MessageTypes[5]; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  pbr::MessageDescriptor pb::IMessage.Descriptor {
+    get { return Descriptor; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public Msg() {
+    OnConstruction();
+  }
+
+  partial void OnConstruction();
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public Msg(Msg other) : this() {
+    switch (other.PayloadCase) {
+      case PayloadOneofCase.Req:
+        Req = other.Req.Clone();
+        break;
+      case PayloadOneofCase.Rsp:
+        Rsp = other.Rsp.Clone();
+        break;
+      case PayloadOneofCase.Notify:
+        Notify = other.Notify.Clone();
+        break;
+      case PayloadOneofCase.HeartBeats:
+        HeartBeats = other.HeartBeats.Clone();
+        break;
+    }
+
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public Msg Clone() {
+    return new Msg(this);
+  }
+
+  /// <summary>Field number for the "req" field.</summary>
+  public const int ReqFieldNumber = 1;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public global::Request Req {
+    get { return payloadCase_ == PayloadOneofCase.Req ? (global::Request) payload_ : null; }
+    set {
+      payload_ = value;
+      payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Req;
+    }
+  }
+
+  /// <summary>Field number for the "rsp" field.</summary>
+  public const int RspFieldNumber = 2;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public global::Response Rsp {
+    get { return payloadCase_ == PayloadOneofCase.Rsp ? (global::Response) payload_ : null; }
+    set {
+      payload_ = value;
+      payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Rsp;
+    }
+  }
+
+  /// <summary>Field number for the "notify" field.</summary>
+  public const int NotifyFieldNumber = 3;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public global::Notify Notify {
+    get { return payloadCase_ == PayloadOneofCase.Notify ? (global::Notify) payload_ : null; }
+    set {
+      payload_ = value;
+      payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.Notify;
+    }
+  }
+
+  /// <summary>Field number for the "heart_beats" field.</summary>
+  public const int HeartBeatsFieldNumber = 4;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public global::HeartBeats HeartBeats {
+    get { return payloadCase_ == PayloadOneofCase.HeartBeats ? (global::HeartBeats) payload_ : null; }
+    set {
+      payload_ = value;
+      payloadCase_ = value == null ? PayloadOneofCase.None : PayloadOneofCase.HeartBeats;
+    }
+  }
+
+  private object payload_;
+  /// <summary>Enum of possible cases for the "payload" oneof.</summary>
+  public enum PayloadOneofCase {
+    None = 0,
+    Req = 1,
+    Rsp = 2,
+    Notify = 3,
+    HeartBeats = 4,
+  }
+  private PayloadOneofCase payloadCase_ = PayloadOneofCase.None;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public PayloadOneofCase PayloadCase {
+    get { return payloadCase_; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void ClearPayload() {
+    payloadCase_ = PayloadOneofCase.None;
+    payload_ = null;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override bool Equals(object other) {
+    return Equals(other as Msg);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool Equals(Msg other) {
+    if (ReferenceEquals(other, null)) {
+      return false;
+    }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    if (!object.Equals(Req, other.Req)) return false;
+    if (!object.Equals(Rsp, other.Rsp)) return false;
+    if (!object.Equals(Notify, other.Notify)) return false;
+    if (!object.Equals(HeartBeats, other.HeartBeats)) return false;
+    if (PayloadCase != other.PayloadCase) return false;
+    return Equals(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override int GetHashCode() {
+    int hash = 1;
+    if (payloadCase_ == PayloadOneofCase.Req) hash ^= Req.GetHashCode();
+    if (payloadCase_ == PayloadOneofCase.Rsp) hash ^= Rsp.GetHashCode();
+    if (payloadCase_ == PayloadOneofCase.Notify) hash ^= Notify.GetHashCode();
+    if (payloadCase_ == PayloadOneofCase.HeartBeats) hash ^= HeartBeats.GetHashCode();
+    hash ^= (int) payloadCase_;
+    if (_unknownFields != null) {
+      hash ^= _unknownFields.GetHashCode();
+    }
+    return hash;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override string ToString() {
+    return pb::JsonFormatter.ToDiagnosticString(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void WriteTo(pb::CodedOutputStream output) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    output.WriteRawMessage(this);
+  #else
+    if (payloadCase_ == PayloadOneofCase.Req) {
+      output.WriteRawTag(10);
+      output.WriteMessage(Req);
+    }
+    if (payloadCase_ == PayloadOneofCase.Rsp) {
+      output.WriteRawTag(18);
+      output.WriteMessage(Rsp);
+    }
+    if (payloadCase_ == PayloadOneofCase.Notify) {
+      output.WriteRawTag(26);
+      output.WriteMessage(Notify);
+    }
+    if (payloadCase_ == PayloadOneofCase.HeartBeats) {
+      output.WriteRawTag(34);
+      output.WriteMessage(HeartBeats);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(output);
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+    if (payloadCase_ == PayloadOneofCase.Req) {
+      output.WriteRawTag(10);
+      output.WriteMessage(Req);
+    }
+    if (payloadCase_ == PayloadOneofCase.Rsp) {
+      output.WriteRawTag(18);
+      output.WriteMessage(Rsp);
+    }
+    if (payloadCase_ == PayloadOneofCase.Notify) {
+      output.WriteRawTag(26);
+      output.WriteMessage(Notify);
+    }
+    if (payloadCase_ == PayloadOneofCase.HeartBeats) {
+      output.WriteRawTag(34);
+      output.WriteMessage(HeartBeats);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(ref output);
+    }
+  }
+  #endif
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public int CalculateSize() {
+    int size = 0;
+    if (payloadCase_ == PayloadOneofCase.Req) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(Req);
+    }
+    if (payloadCase_ == PayloadOneofCase.Rsp) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(Rsp);
+    }
+    if (payloadCase_ == PayloadOneofCase.Notify) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(Notify);
+    }
+    if (payloadCase_ == PayloadOneofCase.HeartBeats) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(HeartBeats);
+    }
+    if (_unknownFields != null) {
+      size += _unknownFields.CalculateSize();
+    }
+    return size;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(Msg other) {
+    if (other == null) {
+      return;
+    }
+    switch (other.PayloadCase) {
+      case PayloadOneofCase.Req:
+        if (Req == null) {
+          Req = new global::Request();
+        }
+        Req.MergeFrom(other.Req);
+        break;
+      case PayloadOneofCase.Rsp:
+        if (Rsp == null) {
+          Rsp = new global::Response();
+        }
+        Rsp.MergeFrom(other.Rsp);
+        break;
+      case PayloadOneofCase.Notify:
+        if (Notify == null) {
+          Notify = new global::Notify();
+        }
+        Notify.MergeFrom(other.Notify);
+        break;
+      case PayloadOneofCase.HeartBeats:
+        if (HeartBeats == null) {
+          HeartBeats = new global::HeartBeats();
+        }
+        HeartBeats.MergeFrom(other.HeartBeats);
+        break;
+    }
+
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(pb::CodedInputStream input) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    input.ReadRawMessage(this);
+  #else
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+    if ((tag & 7) == 4) {
+      // Abort on any end group tag.
+      return;
+    }
+    switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+          break;
+        case 10: {
+          global::Request subBuilder = new global::Request();
+          if (payloadCase_ == PayloadOneofCase.Req) {
+            subBuilder.MergeFrom(Req);
+          }
+          input.ReadMessage(subBuilder);
+          Req = subBuilder;
+          break;
+        }
+        case 18: {
+          global::Response subBuilder = new global::Response();
+          if (payloadCase_ == PayloadOneofCase.Rsp) {
+            subBuilder.MergeFrom(Rsp);
+          }
+          input.ReadMessage(subBuilder);
+          Rsp = subBuilder;
+          break;
+        }
+        case 26: {
+          global::Notify subBuilder = new global::Notify();
+          if (payloadCase_ == PayloadOneofCase.Notify) {
+            subBuilder.MergeFrom(Notify);
+          }
+          input.ReadMessage(subBuilder);
+          Notify = subBuilder;
+          break;
+        }
+        case 34: {
+          global::HeartBeats subBuilder = new global::HeartBeats();
+          if (payloadCase_ == PayloadOneofCase.HeartBeats) {
+            subBuilder.MergeFrom(HeartBeats);
+          }
+          input.ReadMessage(subBuilder);
+          HeartBeats = subBuilder;
+          break;
+        }
+      }
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+    if ((tag & 7) == 4) {
+      // Abort on any end group tag.
+      return;
+    }
+    switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+          break;
+        case 10: {
+          global::Request subBuilder = new global::Request();
+          if (payloadCase_ == PayloadOneofCase.Req) {
+            subBuilder.MergeFrom(Req);
+          }
+          input.ReadMessage(subBuilder);
+          Req = subBuilder;
+          break;
+        }
+        case 18: {
+          global::Response subBuilder = new global::Response();
+          if (payloadCase_ == PayloadOneofCase.Rsp) {
+            subBuilder.MergeFrom(Rsp);
+          }
+          input.ReadMessage(subBuilder);
+          Rsp = subBuilder;
+          break;
+        }
+        case 26: {
+          global::Notify subBuilder = new global::Notify();
+          if (payloadCase_ == PayloadOneofCase.Notify) {
+            subBuilder.MergeFrom(Notify);
+          }
+          input.ReadMessage(subBuilder);
+          Notify = subBuilder;
+          break;
+        }
+        case 34: {
+          global::HeartBeats subBuilder = new global::HeartBeats();
+          if (payloadCase_ == PayloadOneofCase.HeartBeats) {
+            subBuilder.MergeFrom(HeartBeats);
+          }
+          input.ReadMessage(subBuilder);
+          HeartBeats = subBuilder;
           break;
         }
       }
