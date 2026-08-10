@@ -25,21 +25,22 @@ public static partial class GateClientReflection {
           "ChFnYXRlX2NsaWVudC5wcm90bxoMY29tbW9uLnByb3RvIjoKFkNsaWVudFJl",
           "cXVlc3RSZWNvbm5lY3QSEgoKYWNjb3VudF9pZBgBIAEoCRIMCgRhcmd2GAIg",
           "ASgMIjoKFENsaWVudFJlcXVlc3RTZXJ2aWNlEhQKDHNlcnZpY2VfbmFtZRgB",
-          "IAEoCRIMCgRhcmd2GAIgASgMIkYKG0dhdGVGb3J3YXJkQ2xpZW50UmVxdWVz",
-          "dEh1YhIOCgZtc2dfaWQYASABKAkSFwoFZXZlbnQYAiABKAsyCC5DYWxsUnBj",
-          "Ik8KHEdhdGVGb3J3YXJkQ2xpZW50UmVzcG9uc2VIdWISDgoGbXNnX2lkGAEg",
-          "ASgJEg4KBmVyck1zZxgCIAEoCRIPCgdjb250ZW50GAMgASgMIjUKGkdhdGVG",
-          "b3J3YXJkQ2xpZW50Tm90aWZ5SHViEhcKBWV2ZW50GAEgASgLMgguQ2FsbFJw",
-          "YyI6ChBWZXJzaW9uSGFuZHNoYWtlEhIKCm1pblZlcnNpb24YASABKA0SEgoK",
-          "bWF4VmVyc2lvbhgCIAEoDWIGcHJvdG8z"));
+          "IAEoCRIMCgRhcmd2GAIgASgMIlkKG0dhdGVGb3J3YXJkQ2xpZW50UmVxdWVz",
+          "dEh1YhIOCgZtc2dfaWQYASABKAkSEQoJZW50aXR5X2lkGAIgASgJEhcKBWV2",
+          "ZW50GAMgASgLMgguQ2FsbFJwYyJQChxHYXRlRm9yd2FyZENsaWVudFJlc3Bv",
+          "bnNlSHViEg4KBm1zZ19pZBgBIAEoCRIPCgdlcnJfbXNnGAIgASgJEg8KB2Nv",
+          "bnRlbnQYAyABKAwiSAoaR2F0ZUZvcndhcmRDbGllbnROb3RpZnlIdWISEQoJ",
+          "ZW50aXR5X2lkGAEgASgJEhcKBWV2ZW50GAIgASgLMgguQ2FsbFJwYyI8ChBW",
+          "ZXJzaW9uSGFuZHNoYWtlEhMKC21pbl92ZXJzaW9uGAEgASgNEhMKC21heF92",
+          "ZXJzaW9uGAIgASgNYgZwcm90bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientRequestReconnect), global::ClientRequestReconnect.Parser, new[]{ "AccountId", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientRequestService), global::ClientRequestService.Parser, new[]{ "ServiceName", "Argv" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientRequestHub), global::GateForwardClientRequestHub.Parser, new[]{ "MsgId", "Event" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientRequestHub), global::GateForwardClientRequestHub.Parser, new[]{ "MsgId", "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientResponseHub), global::GateForwardClientResponseHub.Parser, new[]{ "MsgId", "ErrMsg", "Content" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientNotifyHub), global::GateForwardClientNotifyHub.Parser, new[]{ "Event" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientNotifyHub), global::GateForwardClientNotifyHub.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::VersionHandshake), global::VersionHandshake.Parser, new[]{ "MinVersion", "MaxVersion" }, null, null, null, null)
         }));
   }
@@ -553,6 +554,7 @@ public sealed partial class GateForwardClientRequestHub : pb::IMessage<GateForwa
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public GateForwardClientRequestHub(GateForwardClientRequestHub other) : this() {
     msgId_ = other.msgId_;
+    entityId_ = other.entityId_;
     event_ = other.event_ != null ? other.event_.Clone() : null;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
@@ -575,8 +577,20 @@ public sealed partial class GateForwardClientRequestHub : pb::IMessage<GateForwa
     }
   }
 
+  /// <summary>Field number for the "entity_id" field.</summary>
+  public const int EntityIdFieldNumber = 2;
+  private string entityId_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string EntityId {
+    get { return entityId_; }
+    set {
+      entityId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
   /// <summary>Field number for the "event" field.</summary>
-  public const int EventFieldNumber = 2;
+  public const int EventFieldNumber = 3;
   private global::CallRpc event_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -603,6 +617,7 @@ public sealed partial class GateForwardClientRequestHub : pb::IMessage<GateForwa
       return true;
     }
     if (MsgId != other.MsgId) return false;
+    if (EntityId != other.EntityId) return false;
     if (!object.Equals(Event, other.Event)) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -612,6 +627,7 @@ public sealed partial class GateForwardClientRequestHub : pb::IMessage<GateForwa
   public override int GetHashCode() {
     int hash = 1;
     if (MsgId.Length != 0) hash ^= MsgId.GetHashCode();
+    if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
     if (event_ != null) hash ^= Event.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -635,8 +651,12 @@ public sealed partial class GateForwardClientRequestHub : pb::IMessage<GateForwa
       output.WriteRawTag(10);
       output.WriteString(MsgId);
     }
-    if (event_ != null) {
+    if (EntityId.Length != 0) {
       output.WriteRawTag(18);
+      output.WriteString(EntityId);
+    }
+    if (event_ != null) {
+      output.WriteRawTag(26);
       output.WriteMessage(Event);
     }
     if (_unknownFields != null) {
@@ -653,8 +673,12 @@ public sealed partial class GateForwardClientRequestHub : pb::IMessage<GateForwa
       output.WriteRawTag(10);
       output.WriteString(MsgId);
     }
-    if (event_ != null) {
+    if (EntityId.Length != 0) {
       output.WriteRawTag(18);
+      output.WriteString(EntityId);
+    }
+    if (event_ != null) {
+      output.WriteRawTag(26);
       output.WriteMessage(Event);
     }
     if (_unknownFields != null) {
@@ -669,6 +693,9 @@ public sealed partial class GateForwardClientRequestHub : pb::IMessage<GateForwa
     int size = 0;
     if (MsgId.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(MsgId);
+    }
+    if (EntityId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(EntityId);
     }
     if (event_ != null) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(Event);
@@ -687,6 +714,9 @@ public sealed partial class GateForwardClientRequestHub : pb::IMessage<GateForwa
     }
     if (other.MsgId.Length != 0) {
       MsgId = other.MsgId;
+    }
+    if (other.EntityId.Length != 0) {
+      EntityId = other.EntityId;
     }
     if (other.event_ != null) {
       if (event_ == null) {
@@ -718,6 +748,10 @@ public sealed partial class GateForwardClientRequestHub : pb::IMessage<GateForwa
           break;
         }
         case 18: {
+          EntityId = input.ReadString();
+          break;
+        }
+        case 26: {
           if (event_ == null) {
             Event = new global::CallRpc();
           }
@@ -748,6 +782,10 @@ public sealed partial class GateForwardClientRequestHub : pb::IMessage<GateForwa
           break;
         }
         case 18: {
+          EntityId = input.ReadString();
+          break;
+        }
+        case 26: {
           if (event_ == null) {
             Event = new global::CallRpc();
           }
@@ -820,7 +858,7 @@ public sealed partial class GateForwardClientResponseHub : pb::IMessage<GateForw
     }
   }
 
-  /// <summary>Field number for the "errMsg" field.</summary>
+  /// <summary>Field number for the "err_msg" field.</summary>
   public const int ErrMsgFieldNumber = 2;
   private string errMsg_ = "";
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1068,6 +1106,7 @@ public sealed partial class GateForwardClientNotifyHub : pb::IMessage<GateForwar
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public GateForwardClientNotifyHub(GateForwardClientNotifyHub other) : this() {
+    entityId_ = other.entityId_;
     event_ = other.event_ != null ? other.event_.Clone() : null;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
@@ -1078,8 +1117,20 @@ public sealed partial class GateForwardClientNotifyHub : pb::IMessage<GateForwar
     return new GateForwardClientNotifyHub(this);
   }
 
+  /// <summary>Field number for the "entity_id" field.</summary>
+  public const int EntityIdFieldNumber = 1;
+  private string entityId_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string EntityId {
+    get { return entityId_; }
+    set {
+      entityId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
   /// <summary>Field number for the "event" field.</summary>
-  public const int EventFieldNumber = 1;
+  public const int EventFieldNumber = 2;
   private global::CallRpc event_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -1105,6 +1156,7 @@ public sealed partial class GateForwardClientNotifyHub : pb::IMessage<GateForwar
     if (ReferenceEquals(other, this)) {
       return true;
     }
+    if (EntityId != other.EntityId) return false;
     if (!object.Equals(Event, other.Event)) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -1113,6 +1165,7 @@ public sealed partial class GateForwardClientNotifyHub : pb::IMessage<GateForwar
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
+    if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
     if (event_ != null) hash ^= Event.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -1132,8 +1185,12 @@ public sealed partial class GateForwardClientNotifyHub : pb::IMessage<GateForwar
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    if (event_ != null) {
+    if (EntityId.Length != 0) {
       output.WriteRawTag(10);
+      output.WriteString(EntityId);
+    }
+    if (event_ != null) {
+      output.WriteRawTag(18);
       output.WriteMessage(Event);
     }
     if (_unknownFields != null) {
@@ -1146,8 +1203,12 @@ public sealed partial class GateForwardClientNotifyHub : pb::IMessage<GateForwar
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    if (event_ != null) {
+    if (EntityId.Length != 0) {
       output.WriteRawTag(10);
+      output.WriteString(EntityId);
+    }
+    if (event_ != null) {
+      output.WriteRawTag(18);
       output.WriteMessage(Event);
     }
     if (_unknownFields != null) {
@@ -1160,6 +1221,9 @@ public sealed partial class GateForwardClientNotifyHub : pb::IMessage<GateForwar
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
+    if (EntityId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(EntityId);
+    }
     if (event_ != null) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(Event);
     }
@@ -1174,6 +1238,9 @@ public sealed partial class GateForwardClientNotifyHub : pb::IMessage<GateForwar
   public void MergeFrom(GateForwardClientNotifyHub other) {
     if (other == null) {
       return;
+    }
+    if (other.EntityId.Length != 0) {
+      EntityId = other.EntityId;
     }
     if (other.event_ != null) {
       if (event_ == null) {
@@ -1201,6 +1268,10 @@ public sealed partial class GateForwardClientNotifyHub : pb::IMessage<GateForwar
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 10: {
+          EntityId = input.ReadString();
+          break;
+        }
+        case 18: {
           if (event_ == null) {
             Event = new global::CallRpc();
           }
@@ -1227,6 +1298,10 @@ public sealed partial class GateForwardClientNotifyHub : pb::IMessage<GateForwar
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
         case 10: {
+          EntityId = input.ReadString();
+          break;
+        }
+        case 18: {
           if (event_ == null) {
             Event = new global::CallRpc();
           }
@@ -1286,7 +1361,7 @@ public sealed partial class VersionHandshake : pb::IMessage<VersionHandshake>
     return new VersionHandshake(this);
   }
 
-  /// <summary>Field number for the "minVersion" field.</summary>
+  /// <summary>Field number for the "min_version" field.</summary>
   public const int MinVersionFieldNumber = 1;
   private uint minVersion_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1298,7 +1373,7 @@ public sealed partial class VersionHandshake : pb::IMessage<VersionHandshake>
     }
   }
 
-  /// <summary>Field number for the "maxVersion" field.</summary>
+  /// <summary>Field number for the "max_version" field.</summary>
   public const int MaxVersionFieldNumber = 2;
   private uint maxVersion_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

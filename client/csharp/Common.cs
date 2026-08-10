@@ -26,11 +26,11 @@ public static partial class CommonReflection {
           "Eg8KB2NvbnRlbnQYAiABKAwiDAoKSGVhcnRCZWF0cyIyCgdSZXF1ZXN0Eg4K",
           "Bm1zZ19pZBgBIAEoCRIXCgVldmVudBgCIAEoCzIILkNhbGxScGMiPAoIUmVz",
           "cG9uc2USDgoGbXNnX2lkGAEgASgJEg8KB2Vycl9tc2cYAiABKAkSDwoHY29u",
-          "dGVudBgDIAEoDCIhCgZOb3RpZnkSFwoFZXZlbnQYASABKAsyCC5DYWxsUnBj",
-          "IoIBCgNNc2cSFwoDcmVxGAEgASgLMgguUmVxdWVzdEgAEhgKA3JzcBgCIAEo",
-          "CzIJLlJlc3BvbnNlSAASGQoGbm90aWZ5GAMgASgLMgcuTm90aWZ5SAASIgoL",
-          "aGVhcnRfYmVhdHMYBCABKAsyCy5IZWFydEJlYXRzSABCCQoHcGF5bG9hZGIG",
-          "cHJvdG8z"));
+          "dGVudBgDIAEoDCI0CgZOb3RpZnkSEQoJZW50aXR5X2lkGAEgASgJEhcKBWV2",
+          "ZW50GAIgASgLMgguQ2FsbFJwYyKCAQoDTXNnEhcKA3JlcRgBIAEoCzIILlJl",
+          "cXVlc3RIABIYCgNyc3AYAiABKAsyCS5SZXNwb25zZUgAEhkKBm5vdGlmeRgD",
+          "IAEoCzIHLk5vdGlmeUgAEiIKC2hlYXJ0X2JlYXRzGAQgASgLMgsuSGVhcnRC",
+          "ZWF0c0gAQgkKB3BheWxvYWRiBnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -38,7 +38,7 @@ public static partial class CommonReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::HeartBeats), global::HeartBeats.Parser, null, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Request), global::Request.Parser, new[]{ "MsgId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Response), global::Response.Parser, new[]{ "MsgId", "ErrMsg", "Content" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::Notify), global::Notify.Parser, new[]{ "Event" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::Notify), global::Notify.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Msg), global::Msg.Parser, new[]{ "Req", "Rsp", "Notify", "HeartBeats" }, new[]{ "Payload" }, null, null, null)
         }));
   }
@@ -993,6 +993,7 @@ public sealed partial class Notify : pb::IMessage<Notify>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public Notify(Notify other) : this() {
+    entityId_ = other.entityId_;
     event_ = other.event_ != null ? other.event_.Clone() : null;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
@@ -1003,8 +1004,20 @@ public sealed partial class Notify : pb::IMessage<Notify>
     return new Notify(this);
   }
 
+  /// <summary>Field number for the "entity_id" field.</summary>
+  public const int EntityIdFieldNumber = 1;
+  private string entityId_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string EntityId {
+    get { return entityId_; }
+    set {
+      entityId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
   /// <summary>Field number for the "event" field.</summary>
-  public const int EventFieldNumber = 1;
+  public const int EventFieldNumber = 2;
   private global::CallRpc event_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -1030,6 +1043,7 @@ public sealed partial class Notify : pb::IMessage<Notify>
     if (ReferenceEquals(other, this)) {
       return true;
     }
+    if (EntityId != other.EntityId) return false;
     if (!object.Equals(Event, other.Event)) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -1038,6 +1052,7 @@ public sealed partial class Notify : pb::IMessage<Notify>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
+    if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
     if (event_ != null) hash ^= Event.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -1057,8 +1072,12 @@ public sealed partial class Notify : pb::IMessage<Notify>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    if (event_ != null) {
+    if (EntityId.Length != 0) {
       output.WriteRawTag(10);
+      output.WriteString(EntityId);
+    }
+    if (event_ != null) {
+      output.WriteRawTag(18);
       output.WriteMessage(Event);
     }
     if (_unknownFields != null) {
@@ -1071,8 +1090,12 @@ public sealed partial class Notify : pb::IMessage<Notify>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    if (event_ != null) {
+    if (EntityId.Length != 0) {
       output.WriteRawTag(10);
+      output.WriteString(EntityId);
+    }
+    if (event_ != null) {
+      output.WriteRawTag(18);
       output.WriteMessage(Event);
     }
     if (_unknownFields != null) {
@@ -1085,6 +1108,9 @@ public sealed partial class Notify : pb::IMessage<Notify>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
+    if (EntityId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(EntityId);
+    }
     if (event_ != null) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(Event);
     }
@@ -1099,6 +1125,9 @@ public sealed partial class Notify : pb::IMessage<Notify>
   public void MergeFrom(Notify other) {
     if (other == null) {
       return;
+    }
+    if (other.EntityId.Length != 0) {
+      EntityId = other.EntityId;
     }
     if (other.event_ != null) {
       if (event_ == null) {
@@ -1126,6 +1155,10 @@ public sealed partial class Notify : pb::IMessage<Notify>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 10: {
+          EntityId = input.ReadString();
+          break;
+        }
+        case 18: {
           if (event_ == null) {
             Event = new global::CallRpc();
           }
@@ -1152,6 +1185,10 @@ public sealed partial class Notify : pb::IMessage<Notify>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
         case 10: {
+          EntityId = input.ReadString();
+          break;
+        }
+        case 18: {
           if (event_ == null) {
             Event = new global::CallRpc();
           }

@@ -67,7 +67,7 @@ public class TcpAcceptService(ushort port)
         _t = Task.Factory.StartNew(RunServerAsync, TaskCreationOptions.LongRunning);
     }
 
-    public async void Close()
+    public void Close()
     {
         try
         {
@@ -75,13 +75,20 @@ public class TcpAcceptService(ushort port)
             {
                 return;
             }
-            
             _run = false;
-            await _t;
         }
         catch (Exception ex)
         {
             Log.Error("TcpAcceptService Close error:{0}", ex);
         }
+    }
+
+    public async Task Join()
+    {
+        if (_t == null)
+        {
+            return;
+        }
+        await _t;
     }
 }

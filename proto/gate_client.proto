@@ -13,20 +13,22 @@ message ClientRequestService {
 
 message GateForwardClientRequestHub {
   string msg_id = 1;
-  CallRpc event = 2;
+  string entity_id = 2;
+  CallRpc event = 3;
 }
 
 message GateForwardClientResponseHub {
   string msg_id = 1;
-  string errMsg = 2;
+  string err_msg = 2;
   bytes content = 3;
 }
 
 message GateForwardClientNotifyHub {
-  CallRpc event = 1;
+  string entity_id = 1;
+  CallRpc event = 2;
 }
 
 message VersionHandshake {
-  uint32 minVersion = 1;
-  uint32 maxVersion = 2;
+  uint32 min_version = 1;
+  uint32 max_version = 2;
 }

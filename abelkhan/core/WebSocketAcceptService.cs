@@ -72,13 +72,20 @@ public class WebSocketAcceptService
             {
                 return;
             }
-
             await app.StopAsync();
-            await _t;
         }
         catch (Exception ex)
         {
             Log.Error("TcpAcceptService Close error:{0}", ex);
         }
+    }
+
+    public async Task Join()
+    {
+        if (_t == null)
+        {
+            return;
+        }
+        await _t;
     }
 }
