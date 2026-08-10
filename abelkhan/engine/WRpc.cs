@@ -2,9 +2,9 @@
 using Google.Protobuf.Reflection;
 namespace engine;
 
-class WRpc
+public static class WRpc
 {
-    public byte[] Notify<T>(string method, T argv) where T : IMessage<T>, new()
+    public static byte[] Notify<T>(string method, T argv) where T : IMessage<T>, new()
     {
         var call = new CallRpc()
         {
@@ -22,7 +22,7 @@ class WRpc
         return msg.ToByteArray();
     }
 
-    public byte[] Request<T>(string method, string msgId, T argv) where T : IMessage<T>, new()
+    public static byte[] Request<T>(string method, string msgId, T argv) where T : IMessage<T>, new()
     {
         var call = new CallRpc()
         {
@@ -41,11 +41,11 @@ class WRpc
         return msg.ToByteArray();
     }
 
-    public event Action<Request>? OnRequest;
-    public event Action<Response>? OnResponse;
-    public event Action<Notify>? OnNotify;
+    public static event Action<Request>? OnRequest;
+    public static event Action<Response>? OnResponse;
+    public static event Action<Notify>? OnNotify;
 
-    public void OnNetworkData(byte[] data)
+    public static void OnNetworkData(byte[] data)
     {
         var parser = new MessageParser<Msg>(() => new Msg());
         var msg = parser.ParseFrom(data);
@@ -65,7 +65,7 @@ class WRpc
         }
     }
     
-    public T OnMsg<T>(byte[] data) where T : IMessage<T>, new()
+    public static T OnMsg<T>(byte[] data) where T : IMessage<T>, new()
     {
         return new MessageParser<T>(() => new T()).ParseFrom(data);
     }

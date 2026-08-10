@@ -229,6 +229,26 @@ public class RedisHandle
         }
     }
 
+    public Task<long> PushList(string key, byte[] data)
+    {
+        if (_database == null)
+        {
+            return Task.FromResult((long)0);
+        }
+        
+        while (true)
+        {
+            try
+            {
+                return _database.ListLeftPushAsync(key, data);
+            }
+            catch (RedisTimeoutException e)
+            {
+                Recover(e);
+            }
+        }
+    }
+    
     public Task<long> PushList<T>(string key, T data)
     {
         if (_database == null)
