@@ -25,14 +25,33 @@ class Main
     private WebSocketAcceptService? _external;
     private Dictionary<string, Client>? _clients;
 
+    private void OnRedisMsg()
+    {
+        
+    }
+
+    private void OnRedisReliabilityMsg()
+    {
+        
+    }
+
     public async void Start(GateConfig cfg)
     {
         try
         {
+            _clients = new();
             _redis = new RedisHandle(cfg.RedisUrl, cfg.RedisPwd);
-            _clients  = new();
-            
+            OnRedisMsg();
+            OnRedisReliabilityMsg();
+
             _internal = new(cfg.PortInternal);
+            _internal.OnListenAccept += async network =>
+            {
+                var rpc = new WRpc();
+
+                _ = new HubMsgHandle(network, _clients, rpc, new HubGeneralMsgHandle(_clients, rpc));
+                network.OnReceive(rpc.OnNetworkData);
+            };
             _internal.Start();
 
             _external = new(cfg.PortExternal, cfg.Pfx, cfg.PfxPassword);
@@ -51,10 +70,10 @@ class Main
                     GateName = cfg.GateId,
                     ConnId = netGuid,
                 }));
-                
-                network.OnReceive(rpc.OnNetworkData);
+
                 var cli = new Client(netGuid, network, _redis);
-                var msgHandle = new ClientMsgHandle(cfg, rpc, cli);
+                _ = new ClientMsgHandle(cfg, rpc, cli);
+                network.OnReceive(rpc.OnNetworkData);
                 
                 _clients.Add(netGuid, cli);
             };

@@ -29,7 +29,6 @@ export interface Response {
 }
 
 export interface Notify {
-  entityId: string;
   event: CallRpc | undefined;
 }
 
@@ -348,16 +347,13 @@ export const Response: MessageFns<Response> = {
 };
 
 function createBaseNotify(): Notify {
-  return { entityId: "", event: undefined };
+  return { event: undefined };
 }
 
 export const Notify: MessageFns<Notify> = {
   encode(message: Notify, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.entityId !== "") {
-      writer.uint32(10).string(message.entityId);
-    }
     if (message.event !== undefined) {
-      CallRpc.encode(message.event, writer.uint32(18).fork()).join();
+      CallRpc.encode(message.event, writer.uint32(10).fork()).join();
     }
     return writer;
   },
@@ -374,14 +370,6 @@ export const Notify: MessageFns<Notify> = {
             break;
           }
 
-          message.entityId = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
           message.event = CallRpc.decode(reader, reader.uint32());
           continue;
         }
@@ -395,21 +383,11 @@ export const Notify: MessageFns<Notify> = {
   },
 
   fromJSON(object: any): Notify {
-    return {
-      entityId: isSet(object.entityId)
-        ? globalThis.String(object.entityId)
-        : isSet(object.entity_id)
-        ? globalThis.String(object.entity_id)
-        : "",
-      event: isSet(object.event) ? CallRpc.fromJSON(object.event) : undefined,
-    };
+    return { event: isSet(object.event) ? CallRpc.fromJSON(object.event) : undefined };
   },
 
   toJSON(message: Notify): unknown {
     const obj: any = {};
-    if (message.entityId !== "") {
-      obj.entityId = message.entityId;
-    }
     if (message.event !== undefined) {
       obj.event = CallRpc.toJSON(message.event);
     }
@@ -421,7 +399,6 @@ export const Notify: MessageFns<Notify> = {
   },
   fromPartial<I extends Exact<DeepPartial<Notify>, I>>(object: I): Notify {
     const message = createBaseNotify();
-    message.entityId = object.entityId ?? "";
     message.event = (object.event !== undefined && object.event !== null)
       ? CallRpc.fromPartial(object.event)
       : undefined;

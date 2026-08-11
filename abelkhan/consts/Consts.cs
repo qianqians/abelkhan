@@ -3,7 +3,6 @@
 // ReSharper disable once ClassNeverInstantiated.Global
 public class Consts
 {
-    public static readonly string NotifyConnId = "notify_conn_id";
     public static readonly string EnterGame = "enter_game";
     public static readonly string EntityServerMq =  "entity_{0}_server_mq";
     public static readonly string Kickoff = "server_kickoff_client";
@@ -21,4 +20,23 @@ public class Consts
     public const string ClientRequestHub = "client_request_hub";
     public const string ClientResponseHub = "client_response_hub";
     public const string ClientNotifyHub =  "client_notify_hub";
+
+    public const string HubCreateRemoteEntity = "hub_create_remote_entity";
+    public const string HubDeleteRemoteEntity = "hub_delete_remote_entity";
+    public const string HubRefreshEntity = "hub_refresh_entity";
+    public const string GateForwardHubRequestClient =  "gate_forward_hub_request_client";
+    public const string GateForwardHubResponseClient =  "gate_forward_hub_response_client";
+    public const string GateForwardHubNotifyClient =  "gate_forward_hub_notify_client";
+    public const string GateForwardHubCallGlobal = "gate_forward_hub_call_global";
+    public const string HubKickOffClient = "hub_kickoff_client";
+    
+    public const string CreatePlayerEntity = "create_player_entity"; 
+    public const string CreateRemoteEntity = "create_remote_entity"; 
+    public const string DeleteRemoteEntity = "delete_remote_entity";
+    public const string RefreshEntity = "refresh_entity";
+    public const string NotifyConnId = "notify_conn_id";
+    public const string HubRequestClient = "hub_request_client";
+    public const string HubResponseClient = "hub_response_client";
+    public const string HubNotifyClient = "hub_notify_client";
+    public const string KickOff = "kickoff";
 }

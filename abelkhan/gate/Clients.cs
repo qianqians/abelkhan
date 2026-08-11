@@ -6,14 +6,8 @@ namespace gate;
 
 public class Client(string connId, INetwork clientNetwork, RedisHandle redis)
 {
-    public string ConnId
-    {
-        get
-        {
-            return connId;
-        }
-    }
-    
+    public string ConnId => connId;
+
     private readonly Dictionary<string, INetwork> _dictEntityNetwork = new();
 
     public void RegisterNetwork(string entity, INetwork network)

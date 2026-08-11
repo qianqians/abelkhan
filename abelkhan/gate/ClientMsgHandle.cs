@@ -76,7 +76,7 @@ public class ClientMsgHandle
                 break;
             }
             default:
-                throw  new ArgumentException($"ntf.Event.ProtoName:{ntf.Event.ProtoName}");
+                throw  new ArgumentException($"ClientMsgHandle ntf.Event.ProtoName:{ntf.Event.ProtoName}");
         }
     }
 
@@ -98,7 +98,7 @@ public class ClientMsgHandle
             }
             default:
             {
-                throw new ArgumentException($"req.Event.ProtoName:{req.Event.ProtoName}");
+                throw new ArgumentException($"ClientMsgHandle req.Event.ProtoName:{req.Event.ProtoName}");
             }
         }
     }
@@ -112,6 +112,7 @@ public class ClientMsgHandle
                 var msg = _rpc.OnMsg<GateForwardClientResponseHub>(rsp.Event.Content.ToByteArray());
                 var forward = new ClientResponseHub()
                 {
+                    EntityId =  msg.EntityId,
                     ErrMsg = msg.ErrMsg,
                     Content = msg.Content,
                 };
@@ -120,7 +121,7 @@ public class ClientMsgHandle
             }
             default:
             {
-                throw new ArgumentException($"rsp.Event.ProtoName:{rsp.Event.ProtoName}");
+                throw new ArgumentException($"ClientMsgHandle rsp.Event.ProtoName:{rsp.Event.ProtoName}");
             }
         }
     }

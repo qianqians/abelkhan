@@ -26,8 +26,9 @@ message ClientRequestHub {
 }
 
 message ClientResponseHub {
-  string errMsg = 1;
-  bytes content = 2;
+  string entity_id = 1;
+  string errMsg = 2;
+  bytes content = 3;
 }
 
 message ClientNotifyHub {

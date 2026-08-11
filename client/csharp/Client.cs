@@ -29,11 +29,11 @@ public static partial class ClientReflection {
           "IicKEkRlbGV0ZVJlbW90ZUVudGl0eRIRCgllbnRpdHlfaWQYASABKAkiRQoN",
           "UmVmcmVzaEVudGl0eRIRCgllbnRpdHlfaWQYASABKAkSEwoLZW50aXR5X3R5",
           "cGUYAiABKAkSDAoEYXJndhgDIAEoDCIfCgxOb3RpZnlDb25uSUQSDwoHY29u",
-          "bl9pZBgBIAEoCSIrChBIdWJSZXF1ZXN0Q2xpZW50EhcKBWV2ZW50GAEgASgL",
-          "MgguQ2FsbFJwYyI0ChFIdWJSZXNwb25zZUNsaWVudBIOCgZlcnJNc2cYASAB",
-          "KAkSDwoHY29udGVudBgCIAEoDCIqCg9IdWJOb3RpZnlDbGllbnQSFwoFZXZl",
-          "bnQYASABKAsyCC5DYWxsUnBjIh4KB0tpY2tPZmYSEwoLcHJvbXB0X2luZm8Y",
-          "ASABKAliBnByb3RvMw=="));
+          "bl9pZBgBIAEoCSI+ChBIdWJSZXF1ZXN0Q2xpZW50EhEKCWVudGl0eV9pZBgB",
+          "IAEoCRIXCgVldmVudBgCIAEoCzIILkNhbGxScGMiNAoRSHViUmVzcG9uc2VD",
+          "bGllbnQSDgoGZXJyTXNnGAEgASgJEg8KB2NvbnRlbnQYAiABKAwiKgoPSHVi",
+          "Tm90aWZ5Q2xpZW50EhcKBWV2ZW50GAEgASgLMgguQ2FsbFJwYyIeCgdLaWNr",
+          "T2ZmEhMKC3Byb21wdF9pbmZvGAEgASgJYgZwcm90bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -42,7 +42,7 @@ public static partial class ClientReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::DeleteRemoteEntity), global::DeleteRemoteEntity.Parser, new[]{ "EntityId" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::RefreshEntity), global::RefreshEntity.Parser, new[]{ "EntityId", "EntityType", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::NotifyConnID), global::NotifyConnID.Parser, new[]{ "ConnId" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::HubRequestClient), global::HubRequestClient.Parser, new[]{ "Event" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::HubRequestClient), global::HubRequestClient.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubResponseClient), global::HubResponseClient.Parser, new[]{ "ErrMsg", "Content" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubNotifyClient), global::HubNotifyClient.Parser, new[]{ "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::KickOff), global::KickOff.Parser, new[]{ "PromptInfo" }, null, null, null, null)
@@ -1299,6 +1299,7 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public HubRequestClient(HubRequestClient other) : this() {
+    entityId_ = other.entityId_;
     event_ = other.event_ != null ? other.event_.Clone() : null;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
@@ -1309,8 +1310,20 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
     return new HubRequestClient(this);
   }
 
+  /// <summary>Field number for the "entity_id" field.</summary>
+  public const int EntityIdFieldNumber = 1;
+  private string entityId_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string EntityId {
+    get { return entityId_; }
+    set {
+      entityId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
   /// <summary>Field number for the "event" field.</summary>
-  public const int EventFieldNumber = 1;
+  public const int EventFieldNumber = 2;
   private global::CallRpc event_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -1336,6 +1349,7 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
     if (ReferenceEquals(other, this)) {
       return true;
     }
+    if (EntityId != other.EntityId) return false;
     if (!object.Equals(Event, other.Event)) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -1344,6 +1358,7 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
+    if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
     if (event_ != null) hash ^= Event.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -1363,8 +1378,12 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    if (event_ != null) {
+    if (EntityId.Length != 0) {
       output.WriteRawTag(10);
+      output.WriteString(EntityId);
+    }
+    if (event_ != null) {
+      output.WriteRawTag(18);
       output.WriteMessage(Event);
     }
     if (_unknownFields != null) {
@@ -1377,8 +1396,12 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    if (event_ != null) {
+    if (EntityId.Length != 0) {
       output.WriteRawTag(10);
+      output.WriteString(EntityId);
+    }
+    if (event_ != null) {
+      output.WriteRawTag(18);
       output.WriteMessage(Event);
     }
     if (_unknownFields != null) {
@@ -1391,6 +1414,9 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
+    if (EntityId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(EntityId);
+    }
     if (event_ != null) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(Event);
     }
@@ -1405,6 +1431,9 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
   public void MergeFrom(HubRequestClient other) {
     if (other == null) {
       return;
+    }
+    if (other.EntityId.Length != 0) {
+      EntityId = other.EntityId;
     }
     if (other.event_ != null) {
       if (event_ == null) {
@@ -1432,6 +1461,10 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 10: {
+          EntityId = input.ReadString();
+          break;
+        }
+        case 18: {
           if (event_ == null) {
             Event = new global::CallRpc();
           }
@@ -1458,6 +1491,10 @@ public sealed partial class HubRequestClient : pb::IMessage<HubRequestClient>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
         case 10: {
+          EntityId = input.ReadString();
+          break;
+        }
+        case 18: {
           if (event_ == null) {
             Event = new global::CallRpc();
           }

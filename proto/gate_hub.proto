@@ -1,46 +1,51 @@
 syntax = "proto3"; 
 import "common.proto";
 
-message HubCreateeRemoteEntity {
-	repeated string conn_id = 1;
-	string owner_conn_id = 2;
-	string entity_id = 3;
-	string entity_type = 4;
-	bytes argv = 5;
+message HubCreateRemoteEntity {
+  repeated string conn_id = 1;
+  string owner_conn_id = 2;
+  bool is_direct = 3;
+  string entity_id = 4;
+  string entity_type = 5;
+  bytes argv = 6;
 }
  
 message HubDeleteRemoteEntity {
-	string entity_id = 1;
+  repeated string conn_id = 1;
+  string entity_id = 2;
 }
 
 message HubRefreshEntity {
-	string conn_id = 1;
-	string entity_id = 2;
-	string entity_type = 3;
-	bytes argv = 4;
+  repeated string conn_id = 1;
+  string entity_id = 2;
+  string entity_type = 3;
+  bytes argv = 4;
 }
 
 message GateForwardHubRequestClient {
   string conn_id = 1;
-  CallRpc event = 2;
+  string entity_id = 2;
+  CallRpc event = 3;
 }
 
 message GateForwardHubResponseClient {
   string conn_id = 1;
-  string errMsg = 2;
-  bytes content = 3;
+  string entity_id = 2;
+  string errMsg = 3;
+  bytes content = 4;
 }
 
 message GateForwardHubNotifyClient {
   repeated string conn_id = 1;
-  CallRpc event = 2;
+  string entity_id = 2;
+  CallRpc event = 3;
 }
 
 message GateForwardHubCallGlobal {
-	CallRpc event = 1;
+  CallRpc event = 1;
 }
 
 message HubKickOffClient {
-	string conn_id = 1;
-	string prompt_info = 2;
+  string conn_id = 1;
+  string prompt_info = 2;
 }

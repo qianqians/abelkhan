@@ -20,8 +20,7 @@ message Response {
 }
 
 message Notify {
-  string entity_id = 1;
-  CallRpc event = 2;
+  CallRpc event = 1;
 }
 
 message Msg {

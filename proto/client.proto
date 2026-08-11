@@ -2,33 +2,34 @@ syntax = "proto3";
 import "common.proto";
 
 message CreatePlayerEntity {
-	string entity_id = 1;
-	string entity_type = 2;
-	bytes argv = 3;
+  string entity_id = 1;
+  string entity_type = 2;
+  bytes argv = 3;
 }
 
 message CreateRemoteEntity {
-	string entity_id = 1;
-	string entity_type = 2;
-	bytes argv = 3;
+  string entity_id = 1;
+  string entity_type = 2;
+  bytes argv = 3;
 }
 
 message DeleteRemoteEntity {
-	string entity_id = 1;
+  string entity_id = 1;
 }
 
 message RefreshEntity {
-	string entity_id = 1;
-	string entity_type = 2;
-	bytes argv = 3;
+  string entity_id = 1;
+  string entity_type = 2;
+  bytes argv = 3;
 }
 
 message NotifyConnID {
-	string conn_id = 1;
+  string conn_id = 1;
 }
 
 message HubRequestClient {
-  CallRpc event = 1;
+  string entity_id = 1;
+  CallRpc event = 2;
 }
 
 message HubResponseClient {
@@ -41,5 +42,5 @@ message HubNotifyClient {
 }
 
 message KickOff {
-	string prompt_info = 1;
+  string prompt_info = 1;
 }

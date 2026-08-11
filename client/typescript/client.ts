@@ -37,6 +37,7 @@ export interface NotifyConnID {
 }
 
 export interface HubRequestClient {
+  entityId: string;
   event: CallRpc | undefined;
 }
 
@@ -482,13 +483,16 @@ export const NotifyConnID: MessageFns<NotifyConnID> = {
 };
 
 function createBaseHubRequestClient(): HubRequestClient {
-  return { event: undefined };
+  return { entityId: "", event: undefined };
 }
 
 export const HubRequestClient: MessageFns<HubRequestClient> = {
   encode(message: HubRequestClient, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.entityId !== "") {
+      writer.uint32(10).string(message.entityId);
+    }
     if (message.event !== undefined) {
-      CallRpc.encode(message.event, writer.uint32(10).fork()).join();
+      CallRpc.encode(message.event, writer.uint32(18).fork()).join();
     }
     return writer;
   },
@@ -505,6 +509,14 @@ export const HubRequestClient: MessageFns<HubRequestClient> = {
             break;
           }
 
+          message.entityId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
           message.event = CallRpc.decode(reader, reader.uint32());
           continue;
         }
@@ -518,11 +530,21 @@ export const HubRequestClient: MessageFns<HubRequestClient> = {
   },
 
   fromJSON(object: any): HubRequestClient {
-    return { event: isSet(object.event) ? CallRpc.fromJSON(object.event) : undefined };
+    return {
+      entityId: isSet(object.entityId)
+        ? globalThis.String(object.entityId)
+        : isSet(object.entity_id)
+        ? globalThis.String(object.entity_id)
+        : "",
+      event: isSet(object.event) ? CallRpc.fromJSON(object.event) : undefined,
+    };
   },
 
   toJSON(message: HubRequestClient): unknown {
     const obj: any = {};
+    if (message.entityId !== "") {
+      obj.entityId = message.entityId;
+    }
     if (message.event !== undefined) {
       obj.event = CallRpc.toJSON(message.event);
     }
@@ -534,6 +556,7 @@ export const HubRequestClient: MessageFns<HubRequestClient> = {
   },
   fromPartial<I extends Exact<DeepPartial<HubRequestClient>, I>>(object: I): HubRequestClient {
     const message = createBaseHubRequestClient();
+    message.entityId = object.entityId ?? "";
     message.event = (object.event !== undefined && object.event !== null)
       ? CallRpc.fromPartial(object.event)
       : undefined;
