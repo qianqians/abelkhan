@@ -47,7 +47,9 @@ export interface HubResponseClient {
 }
 
 export interface HubNotifyClient {
+  entityId: string;
   event: CallRpc | undefined;
+  callbackId: string;
 }
 
 export interface KickOff {
@@ -641,13 +643,19 @@ export const HubResponseClient: MessageFns<HubResponseClient> = {
 };
 
 function createBaseHubNotifyClient(): HubNotifyClient {
-  return { event: undefined };
+  return { entityId: "", event: undefined, callbackId: "" };
 }
 
 export const HubNotifyClient: MessageFns<HubNotifyClient> = {
   encode(message: HubNotifyClient, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.entityId !== "") {
+      writer.uint32(10).string(message.entityId);
+    }
     if (message.event !== undefined) {
-      CallRpc.encode(message.event, writer.uint32(10).fork()).join();
+      CallRpc.encode(message.event, writer.uint32(18).fork()).join();
+    }
+    if (message.callbackId !== "") {
+      writer.uint32(26).string(message.callbackId);
     }
     return writer;
   },
@@ -664,7 +672,23 @@ export const HubNotifyClient: MessageFns<HubNotifyClient> = {
             break;
           }
 
+          message.entityId = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
           message.event = CallRpc.decode(reader, reader.uint32());
+          continue;
+        }
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.callbackId = reader.string();
           continue;
         }
       }
@@ -677,13 +701,31 @@ export const HubNotifyClient: MessageFns<HubNotifyClient> = {
   },
 
   fromJSON(object: any): HubNotifyClient {
-    return { event: isSet(object.event) ? CallRpc.fromJSON(object.event) : undefined };
+    return {
+      entityId: isSet(object.entityId)
+        ? globalThis.String(object.entityId)
+        : isSet(object.entity_id)
+        ? globalThis.String(object.entity_id)
+        : "",
+      event: isSet(object.event) ? CallRpc.fromJSON(object.event) : undefined,
+      callbackId: isSet(object.callbackId)
+        ? globalThis.String(object.callbackId)
+        : isSet(object.callback_id)
+        ? globalThis.String(object.callback_id)
+        : "",
+    };
   },
 
   toJSON(message: HubNotifyClient): unknown {
     const obj: any = {};
+    if (message.entityId !== "") {
+      obj.entityId = message.entityId;
+    }
     if (message.event !== undefined) {
       obj.event = CallRpc.toJSON(message.event);
+    }
+    if (message.callbackId !== "") {
+      obj.callbackId = message.callbackId;
     }
     return obj;
   },
@@ -693,9 +735,11 @@ export const HubNotifyClient: MessageFns<HubNotifyClient> = {
   },
   fromPartial<I extends Exact<DeepPartial<HubNotifyClient>, I>>(object: I): HubNotifyClient {
     const message = createBaseHubNotifyClient();
+    message.entityId = object.entityId ?? "";
     message.event = (object.event !== undefined && object.event !== null)
       ? CallRpc.fromPartial(object.event)
       : undefined;
+    message.callbackId = object.callbackId ?? "";
     return message;
   },
 };

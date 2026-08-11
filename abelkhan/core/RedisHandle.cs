@@ -260,7 +260,7 @@ public class RedisHandle
         {
             try
             {
-                return _database.ListLeftPushAsync(key, JsonConvert.SerializeObject(data));
+                return _database.ListRightPushAsync(key, JsonConvert.SerializeObject(data));
             }
             catch (RedisTimeoutException e)
             {
@@ -269,19 +269,19 @@ public class RedisHandle
         }
     }
 
-    public void PopList(string key, long count)
+    public async Task<List<byte[]>?>? PopList(string key, long count)
     {
         if (_database == null)
         {
-            return;
+            return null;
         }
         
         while (true)
         {
             try
             {
-                _database.ListRightPopAsync(key, count);
-                return;
+                var result = await _database.ListLeftPopAsync(key, count);
+                return result.Select(d => (byte[])d!).ToList();
             }
             catch (RedisTimeoutException e)
             {
@@ -290,7 +290,7 @@ public class RedisHandle
         }
     }
 
-    public async ValueTask<T?> RandomList<T>(string key)
+    public async Task<T?> RandomList<T>(string key)
     {
         if (_database == null)
         {
@@ -317,7 +317,33 @@ public class RedisHandle
         }
     }
 
-    public async ValueTask<T?> GetListElem<T>(string key, int index)
+    public async Task<byte[]?> GetListElem(string key, int index)
+    {
+        if (_database == null)
+        {
+            return null;
+        }
+        
+        while (true)
+        {
+            try
+            {
+                var count = await _database.ListLengthAsync(key);
+                var json = await _database.ListGetByIndexAsync(key, index);
+                if (json.IsNull)
+                {
+                    return null;
+                }
+                return json!;
+            }
+            catch (RedisTimeoutException e)
+            {
+                Recover(e);
+            }
+        }
+    }
+    
+    public async Task<T?> GetListElem<T>(string key, int index)
     {
         if (_database == null)
         {
@@ -341,6 +367,16 @@ public class RedisHandle
                 Recover(e);
             }
         }
+    }
+
+    public Task<T?> Front<T>(string key)
+    {
+        return GetListElem<T>(key, 0);
+    }
+    
+    public Task<byte[]?> Front(string key)
+    {
+        return GetListElem(key, 0);
     }
 
     public async ValueTask DeleteListElem(string key, int index)

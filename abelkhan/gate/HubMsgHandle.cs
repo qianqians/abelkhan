@@ -3,22 +3,13 @@ using core;
 using engine;
 namespace gate;
 
-public class HubGeneralMsgHandle
+public class HubGeneralMsgHandle(Dictionary<string, Client> clients, WRpc rpc)
 {   
-    private readonly Dictionary<string, Client> _clients;
-    private readonly WRpc _rpc;
-
-    public HubGeneralMsgHandle(Dictionary<string, Client> clients, WRpc rpc)
-    {
-        _clients = clients;
-        _rpc  = rpc;
-    }
-
-    public void OnHubCreateRemoteEntity(INetwork network, HubCreateRemoteEntity msg)
+    public void OnHubCreateRemoteEntity(INetwork? network, HubCreateRemoteEntity msg)
     {
         if (string.IsNullOrEmpty(msg.OwnerConnId))
         {
-            if (_clients.TryGetValue(msg.OwnerConnId, out var client))
+            if (clients.TryGetValue(msg.OwnerConnId, out var client))
             {
                 var forward = new CreatePlayerEntity()
                 {
@@ -26,8 +17,12 @@ public class HubGeneralMsgHandle
                     EntityType = msg.EntityType,
                     Argv = msg.Argv,
                 };
-                _ = client.SendToClient(_rpc.Notify(Consts.CreatePlayerEntity, forward));
-                client.RegisterNetwork(msg.EntityId, network);
+                _ = client.SendToClient(rpc.Notify(Consts.CreatePlayerEntity, forward));
+
+                if (msg.IsDirect && network != null)
+                {
+                    client.RegisterNetwork(msg.EntityId, network);
+                }
             }
             else
             {
@@ -43,9 +38,9 @@ public class HubGeneralMsgHandle
         };
         foreach (var guid in msg.ConnId)
         {
-            if (_clients.TryGetValue(guid, out var cli))
+            if (clients.TryGetValue(guid, out var cli))
             {
-                _ = cli.SendToClient(_rpc.Notify(Consts.CreateRemoteEntity, forwardMsg));
+                _ = cli.SendToClient(rpc.Notify(Consts.CreateRemoteEntity, forwardMsg));
             }
         }
     }
@@ -58,9 +53,9 @@ public class HubGeneralMsgHandle
         };
         foreach (var guid in msg.ConnId)
         {
-            if (_clients.TryGetValue(guid, out var cli))
+            if (clients.TryGetValue(guid, out var cli))
             {
-                _ = cli.SendToClient(_rpc.Notify(Consts.DeleteRemoteEntity, forward));
+                _ = cli.SendToClient(rpc.Notify(Consts.DeleteRemoteEntity, forward));
             }
         }
     }
@@ -75,20 +70,79 @@ public class HubGeneralMsgHandle
         };
         foreach (var guid in msg.ConnId)
         {
-            if (_clients.TryGetValue(guid, out var cli))
+            if (clients.TryGetValue(guid, out var cli))
             {
-                _ = cli.SendToClient(_rpc.Notify(Consts.RefreshEntity, forward));
+                _ = cli.SendToClient(rpc.Notify(Consts.RefreshEntity, forward));
             }
         }
     }
 
-    public void OnGateForwardHubResponseClient(GateForwardHubResponseClient msg) { }
+    public void OnGateForwardHubRequestClient(GateForwardHubRequestClient msg)
+    {
+        var forward = new HubRequestClient()
+        {
+            EntityId = msg.EntityId,
+            Event = msg.Event,
+        };
+        if (clients.TryGetValue(msg.ConnId, out var cli))
+        {
+            _ = cli.SendToClient(rpc.Request(Consts.HubRequestClient, Guid.NewGuid().ToString(), forward));
+        }
+    }
 
-    public void OnGateForwardHubNotifyClient(GateForwardHubNotifyClient msg) {}
+    public void OnGateForwardHubResponseClient(string msgId, GateForwardHubResponseClient msg)
+    {
+        var forward = new HubResponseClient()
+        {
+            ErrMsg = msg.ErrMsg,
+            Content = msg.Content,
+        };
+        if (clients.TryGetValue(msg.ConnId, out var cli))
+        {
+            _ = cli.SendToClient(rpc.Response(Consts.HubResponseClient, msgId, forward));
+        }
+    }
 
-    public void OnGateForwardHubCallGlobal(GateForwardHubCallGlobal msg) {}
+    public void OnGateForwardHubNotifyClient(GateForwardHubNotifyClient msg)
+    {
+        var forward = new HubNotifyClient()
+        {
+            EntityId = msg.EntityId,
+            Event = msg.Event,
+        };
+        foreach (var guid in msg.ConnId)
+        {
+            if (clients.TryGetValue(guid, out var cli))
+            {
+                _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClient, forward));
+            }
+        }
+    }
 
-    public void OnHubKickOffClient(HubKickOffClient msg) {}
+    public void OnGateForwardHubCallGlobal(GateForwardHubCallGlobal msg)
+    {
+        var forward = new HubNotifyClient()
+        {
+            EntityId = msg.EntityId,
+            Event = msg.Event,
+        };
+        foreach (var (_, cli) in clients)
+        {
+            _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClient, forward));
+        }
+    }
+
+    public void OnHubKickOffClient(HubKickOffClient msg)
+    {
+        var forward = new KickOff()
+        {
+            PromptInfo = msg.PromptInfo,
+        };
+        if (clients.TryGetValue(msg.ConnId, out var cli))
+        {
+            _ = cli.SendToClient(rpc.Notify(Consts.KickOff, forward));
+        }
+    }
 
 }
 
@@ -146,16 +200,7 @@ public class HubMsgHandle
         {
             case Consts.GateForwardHubRequestClient:
             {
-                var msg = _rpc.OnMsg<GateForwardHubRequestClient>(req.Event.Content.ToByteArray());
-                var forward = new HubRequestClient()
-                {
-                    EntityId = msg.EntityId,
-                    Event = msg.Event,
-                };
-                if (_clients.TryGetValue(msg.ConnId, out var cli))
-                {
-                    _ = cli.SendToClient(_rpc.Request(Consts.HubRequestClient, Guid.NewGuid().ToString(), forward));
-                }
+                _msgHandle.OnGateForwardHubRequestClient(_rpc.OnMsg<GateForwardHubRequestClient>(req.Event.Content.ToByteArray()));
                 break;
             }
             default:
@@ -171,16 +216,7 @@ public class HubMsgHandle
         {
             case Consts.GateForwardHubResponseClient:
             {
-                var msg = _rpc.OnMsg<GateForwardHubResponseClient>(rsp.Event.Content.ToByteArray());
-                var forward = new HubResponseClient()
-                {
-                    ErrMsg = msg.ErrMsg,
-                    Content = msg.Content,
-                };
-                if (_clients.TryGetValue(msg.ConnId, out var cli))
-                {
-                    _ = cli.SendToClient(_rpc.Response(Consts.HubResponseClient, rsp.MsgId, forward));
-                }
+                _msgHandle.OnGateForwardHubResponseClient(rsp.MsgId, _rpc.OnMsg<GateForwardHubResponseClient>(rsp.Event.Content.ToByteArray()));
                 break;
             }
             default:

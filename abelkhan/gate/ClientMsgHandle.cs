@@ -1,4 +1,5 @@
-﻿using consts;
+﻿using System.Collections.Concurrent;
+using consts;
 using engine;
 using Google.Protobuf;
 namespace gate;
@@ -8,12 +9,14 @@ public class ClientMsgHandle
     private readonly GateConfig _cfg;
     private readonly WRpc _rpc;
     private readonly Client _client;
+    private readonly ConcurrentQueue<string> _clientReliabilityQueue;
     
-    public ClientMsgHandle(GateConfig cfg, WRpc rpc, Client client)
+    public ClientMsgHandle(GateConfig cfg, WRpc rpc, Client client, ConcurrentQueue<string> clientReliabilityQueue)
     {
         _cfg = cfg;
         _rpc = rpc;
         _client = client;
+        _clientReliabilityQueue = clientReliabilityQueue;
         
         rpc.OnNotify += OnNotify;
         rpc.OnRequest += OnRequest;
@@ -71,7 +74,15 @@ public class ClientMsgHandle
                     {
                         PromptInfo = "unsupported game version!",
                     };
-                    _ = _client.SendToClient(_rpc.Notify(Consts.Kickoff, ntfKick));
+                    _ = _client.SendToClient(_rpc.Notify(Consts.KickOff, ntfKick));
+                }
+                break;
+            }
+            case Consts.CallBackReliabilityMsg:
+            {
+                if (!string.IsNullOrEmpty(_client.ConnId))
+                {
+                    _clientReliabilityQueue.Enqueue(_client.ConnId);
                 }
                 break;
             }

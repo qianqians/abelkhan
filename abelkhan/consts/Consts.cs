@@ -4,8 +4,9 @@
 public class Consts
 {
     public static readonly string EnterGame = "enter_game";
+    public static readonly string EntityClientMq =  "entity_{0}_client_mq";
+    public static readonly string EntityReliabilityClientMq =  "entity_reliability_{0}_client_mq";
     public static readonly string EntityServerMq =  "entity_{0}_server_mq";
-    public static readonly string Kickoff = "server_kickoff_client";
 
     public const string ClientRequestReconnect = "client_request_reconnect";
     public const string ClientRequestService = "client_request_service";
@@ -13,6 +14,7 @@ public class Consts
     public const string GateForwardClientResponseHub = "gate_forward_client_response_hub";
     public const string GateForwardClientNotifyHub = "Gate_forward_client_notify_hub";
     public const string VersionHandshake  = "version_handshake";
+    public const string CallBackReliabilityMsg = "call_back_reliability_msg";
     
     public const string GateForwardClientRequestReconnect = "gate_forward_client_request_reconnect";
     public const string GateForwardClientRequestService = "gate_forward_client_request_service";

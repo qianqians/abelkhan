@@ -33,3 +33,7 @@ message VersionHandshake {
   uint32 min_version = 1;
   uint32 max_version = 2;
 }
+
+message CallBackReliabilityMsg {
+  string callback_id = 1;
+}

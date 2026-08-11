@@ -1,4 +1,6 @@
-﻿using core;
+﻿using System.Collections.Concurrent;
+using Google.Protobuf;
+using core;
 using engine;
 using consts;
 // ReSharper disable FieldCanBeMadeReadOnly.Global
@@ -25,30 +27,121 @@ class Main
     private WebSocketAcceptService? _external;
     private Dictionary<string, Client>? _clients;
 
-    private void OnRedisMsg()
+    private bool _isRun = true;
+    private Task? _tWait;
+    private ConcurrentQueue<string>? _clientWaitQueue;
+    private Task? _tWaitReliability;
+    private ConcurrentQueue<string>? _clientReliabilityQueue;
+
+    private void StartRedisMsg()
     {
+        var rpc = new WRpc();
+        _ = new HubMsgHandle(null!, _clients!, rpc, new HubGeneralMsgHandle(_clients!, rpc));
         
+        _tWait = Task.Factory.StartNew(async () =>
+        {
+            while (_isRun)
+            {
+                if (_clientWaitQueue!.TryDequeue(out var guid))
+                {
+                    await Task.Delay(1);
+                    continue;
+                }
+
+                var msg = await _redis?.PopList(string.Format(Consts.EntityClientMq, guid), 8)!;
+                if (msg == null)
+                {
+                    await Task.Delay(1);
+                    continue;
+                }
+                
+                foreach (var m in msg)
+                {
+                    rpc.OnNetworkData(m);
+                }
+
+                if (!string.IsNullOrEmpty(guid))
+                {
+                    _clientWaitQueue.Enqueue(guid);
+                }
+            }
+        }, TaskCreationOptions.LongRunning);
     }
 
-    private void OnRedisReliabilityMsg()
+    private void StartRedisReliabilityMsg()
     {
+        var rpc = new WRpc();
+        _ = new HubMsgHandle(null!, _clients!, rpc, new HubGeneralMsgHandle(_clients!, rpc));
         
+        _tWaitReliability = Task.Factory.StartNew(async () =>
+        {
+            while (_isRun)
+            {
+                if (_clientReliabilityQueue!.TryDequeue(out var guid))
+                {
+                    await Task.Delay(1);
+                    continue;
+                }
+
+                var data = await _redis?.Front(string.Format(Consts.EntityReliabilityClientMq, guid))!;
+                if (data == null)
+                {
+                    await Task.Delay(1);
+                    continue;
+                }
+                var parser = new MessageParser<Msg>(() => new Msg());
+                var msg = parser.ParseFrom(data);
+                if (msg == null)
+                {
+                    await Task.Delay(1);
+                    continue;
+                }
+                if (msg.PayloadCase != Msg.PayloadOneofCase.Notify)
+                {
+                    await Task.Delay(1);
+                    continue;
+                }
+                if (msg.Notify.Event.ProtoName != Consts.GateForwardHubNotifyClient)
+                {
+                    await Task.Delay(1);
+                    continue;
+                }
+                
+                var ev = rpc.OnMsg<GateForwardHubNotifyClient>(msg.Notify.Event.ToByteArray());
+                if (ev.ConnId.Count <= 0 || ev.ConnId.Count > 1)
+                {
+                    await Task.Delay(1);
+                    continue;
+                }
+                var forward = new HubNotifyClient()
+                {
+                    EntityId = ev.EntityId,
+                    Event = ev.Event,
+                };
+                if (_clients!.TryGetValue(ev.ConnId[0], out var cli))
+                {
+                    _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClient, forward));
+                }
+            }
+        }, TaskCreationOptions.LongRunning);
     }
 
     public async void Start(GateConfig cfg)
     {
         try
         {
+            _clientWaitQueue = new();
+            _clientReliabilityQueue = new();
+            
             _clients = new();
             _redis = new RedisHandle(cfg.RedisUrl, cfg.RedisPwd);
-            OnRedisMsg();
-            OnRedisReliabilityMsg();
+            StartRedisMsg();
+            StartRedisReliabilityMsg();
 
             _internal = new(cfg.PortInternal);
             _internal.OnListenAccept += async network =>
             {
                 var rpc = new WRpc();
-
                 _ = new HubMsgHandle(network, _clients, rpc, new HubGeneralMsgHandle(_clients, rpc));
                 network.OnReceive(rpc.OnNetworkData);
             };
@@ -72,15 +165,20 @@ class Main
                 }));
 
                 var cli = new Client(netGuid, network, _redis);
-                _ = new ClientMsgHandle(cfg, rpc, cli);
+                _ = new ClientMsgHandle(cfg, rpc, cli, _clientReliabilityQueue);
                 network.OnReceive(rpc.OnNetworkData);
                 
                 _clients.Add(netGuid, cli);
+                _clientWaitQueue.Enqueue(netGuid);
+                _clientReliabilityQueue.Enqueue(netGuid);
             };
             _external.Start();
             
             await _internal.Join();
             await _external.Join();
+
+            _isRun = false;
+            Task.WaitAll(_tWait!, _tWaitReliability!);
         }
         catch (Exception ex)
         {
