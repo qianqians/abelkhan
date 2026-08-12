@@ -3,6 +3,7 @@ using Google.Protobuf;
 using core;
 using engine;
 using consts;
+
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 namespace gate;
 
@@ -26,6 +27,7 @@ class Main
     private TcpAcceptService? _internal;
     private WebSocketAcceptService? _external;
     private Dictionary<string, Client>? _clients;
+    private Dictionary<string, Client>? _entityClients; 
 
     private bool _isRun = true;
     private Task? _tWait;
@@ -35,13 +37,13 @@ class Main
 
     private void StartRedisMsg()
     {
-        var rpc = new WRpc();
-        _ = new HubMsgHandle(rpc, new HubGeneralMsgHandle(_clients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
-        
         _tWait = Task.Factory.StartNew(async () =>
         {
             while (_isRun)
             {
+                var rpc = new WRpc();
+                _ = new HubMsgHandle(rpc, new HubGeneralMsgHandle(_clients!, _entityClients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
+
                 if (_clientWaitQueue!.TryDequeue(out var playerId))
                 {
                     await Task.Delay(1);
@@ -56,17 +58,17 @@ class Main
                 var msg = await _redis?.PopList(string.Format(Consts.EntityClientMq, playerId), 8)!;
                 if (msg == null)
                 {
-                    if (!string.IsNullOrEmpty(playerId))
-                    {
-                        _clientWaitQueue.Enqueue(playerId);
-                    }
+                    _clientWaitQueue.Enqueue(playerId);
                     await Task.Delay(1);
                     continue;
                 }
                 
                 foreach (var m in msg)
                 {
-                    rpc.OnNetworkData(m);
+                    if (!OnMqMsg(rpc, m))
+                    {
+                        await Task.Delay(1);
+                    }
                 }
 
                 _clientWaitQueue.Enqueue(playerId);
@@ -76,11 +78,11 @@ class Main
 
     private void StartRedisReliabilityMsg()
     {
-        var rpc = new WRpc();
-        _ = new HubMsgHandle(rpc, new HubGeneralMsgHandle(_clients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
-        
         _tWaitReliability = Task.Factory.StartNew(async () =>
         {
+            var rpc = new WRpc();
+            _ = new HubMsgHandle(rpc, new HubGeneralMsgHandle(_clients!, _entityClients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
+
             while (_isRun)
             {
                 if (_clientReliabilityQueue!.TryDequeue(out var playerId))
@@ -100,41 +102,43 @@ class Main
                     await Task.Delay(1);
                     continue;
                 }
-                var parser = new MessageParser<Msg>(() => new Msg());
-                var msg = parser.ParseFrom(data);
-                if (msg == null)
+                if (!OnMqMsg(rpc, data))
                 {
                     await Task.Delay(1);
-                    continue;
-                }
-                if (msg.PayloadCase != Msg.PayloadOneofCase.Notify)
-                {
-                    await Task.Delay(1);
-                    continue;
-                }
-                if (msg.Notify.Event.ProtoName != Consts.GateForwardHubNotifyClient)
-                {
-                    await Task.Delay(1);
-                    continue;
-                }
-                
-                var ev = rpc.OnMsg<GateForwardHubNotifyClient>(msg.Notify.Event.ToByteArray());
-                if (ev.ConnId.Count <= 0 || ev.ConnId.Count > 1)
-                {
-                    await Task.Delay(1);
-                    continue;
-                }
-                var forward = new HubNotifyClient()
-                {
-                    EntityId = ev.EntityId,
-                    Event = ev.Event,
-                };
-                if (_clients!.TryGetValue(ev.ConnId[0], out var cli))
-                {
-                    _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClient, forward));
                 }
             }
         }, TaskCreationOptions.LongRunning);
+    }
+
+    private bool OnMqMsg(WRpc rpc, byte[] data)
+    {
+        var parser = new MessageParser<Msg>(() => new Msg());
+        var msg = parser.ParseFrom(data);
+        if (msg == null)
+        {
+            return false;
+        }
+        if (msg.PayloadCase != Msg.PayloadOneofCase.Notify)
+        {
+            return false;
+        }
+        if (msg.Notify.Event.ProtoName != Consts.GateForwardHubNotifyClientMq)
+        {
+            return false;
+        }
+                
+        var ev = rpc.OnMsg<GateForwardHubNotifyClientMq>(msg.Notify.Event.Content.ToByteArray());
+        var forward = new HubNotifyClient()
+        {
+            EntityId = ev.EntityId,
+            Event = ev.Event,
+        };
+        if (_entityClients!.TryGetValue(ev.EntityId, out var cli))
+        {
+            _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClient, forward));
+        }
+        
+        return true;
     }
 
     public async void Start(GateConfig cfg)
@@ -145,6 +149,7 @@ class Main
             _clientReliabilityQueue = new();
             
             _clients = new();
+            _entityClients = new Dictionary<string, Client>();
             _redis = new RedisHandle(cfg.RedisUrl, cfg.RedisPwd);
             StartRedisMsg();
             StartRedisReliabilityMsg();
@@ -153,7 +158,7 @@ class Main
             _internal.OnListenAccept += async network =>
             {
                 var rpc = new WRpc();
-                _ = new HubMsgHandle(network, rpc, new HubGeneralMsgHandle(_clients, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
+                _ = new HubMsgHandle(network, rpc, new HubGeneralMsgHandle(_clients, _entityClients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
                 network.OnReceive(rpc.OnNetworkData);
             };
             _internal.Start();
@@ -176,7 +181,7 @@ class Main
                 }));
 
                 var cli = new Client(netGuid, network, _redis);
-                _ = new ClientMsgHandle(cfg, rpc, cli, _clientReliabilityQueue);
+                _ = new ClientMsgHandle(cfg, _redis, rpc, cli, _clientReliabilityQueue);
                 network.OnReceive(rpc.OnNetworkData);
                 
                 _clients.Add(netGuid, cli);

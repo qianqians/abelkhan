@@ -40,7 +40,11 @@ message HubResponseClient {
 message HubNotifyClient {
   string entity_id = 1;
   CallRpc event = 2;
-  string callback_id = 3;
+}
+
+message HubNotifyClientMq {
+  string entity_id = 1;
+  CallRpc event = 2;
 }
 
 message KickOff {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using consts;
+using core;
 using engine;
 using Google.Protobuf;
 namespace gate;
@@ -7,13 +8,15 @@ namespace gate;
 public class ClientMsgHandle
 {
     private readonly GateConfig _cfg;
+    private readonly RedisHandle _redis;
     private readonly WRpc _rpc;
     private readonly Client _client;
     private readonly ConcurrentQueue<string> _clientReliabilityQueue;
     
-    public ClientMsgHandle(GateConfig cfg, WRpc rpc, Client client, ConcurrentQueue<string> clientReliabilityQueue)
+    public ClientMsgHandle(GateConfig cfg, RedisHandle redis, WRpc rpc, Client client, ConcurrentQueue<string> clientReliabilityQueue)
     {
         _cfg = cfg;
+        _redis = redis;
         _rpc = rpc;
         _client = client;
         _clientReliabilityQueue = clientReliabilityQueue;
@@ -83,6 +86,7 @@ public class ClientMsgHandle
                 var msg = _rpc.OnMsg<CallBackReliabilityMsg>(ntf.Event.Content.ToByteArray());
                 if (!string.IsNullOrEmpty(msg.EntityId))
                 {
+                    _ = _redis.DeleteListElem(string.Format(Consts.EntityReliabilityClientMq, msg.EntityId));
                     _clientReliabilityQueue.Enqueue(msg.EntityId);
                 }
                 break;

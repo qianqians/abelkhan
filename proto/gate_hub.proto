@@ -41,6 +41,11 @@ message GateForwardHubNotifyClient {
   CallRpc event = 3;
 }
 
+message GateForwardHubNotifyClientMq {
+  string entity_id = 1;
+  CallRpc event = 2;
+}
+
 message GateForwardHubCallGlobal {
   string entity_id = 1;
   CallRpc event = 2;

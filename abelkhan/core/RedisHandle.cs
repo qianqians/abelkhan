@@ -379,7 +379,7 @@ public class RedisHandle
         return GetListElem(key, 0);
     }
 
-    public async ValueTask DeleteListElem(string key, int index)
+    public async ValueTask DeleteListElem(string key)
     {
         if (_database == null)
         {
@@ -390,8 +390,7 @@ public class RedisHandle
         {
             try
             {
-                var v = await _database.ListGetByIndexAsync(key, index);
-                await _database.ListRemoveAsync(key, v);
+                var v = await _database.ListLeftPopAsync(key, (long)1);
             }
             catch (RedisTimeoutException e)
             {

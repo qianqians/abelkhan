@@ -4,7 +4,7 @@ using core;
 using engine;
 namespace gate;
 
-public class HubGeneralMsgHandle(Dictionary<string, Client> clients, ConcurrentQueue<string> clientWaitQueue, ConcurrentQueue<string> clientReliabilityQueue, WRpc rpc)
+public class HubGeneralMsgHandle(Dictionary<string, Client> clients, Dictionary<string, Client> entityClients, ConcurrentQueue<string> clientWaitQueue, ConcurrentQueue<string> clientReliabilityQueue, WRpc rpc)
 {   
     public void OnHubCreateRemoteEntity(INetwork? network, HubCreateRemoteEntity msg)
     {
@@ -27,6 +27,8 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients, ConcurrentQ
                 
                 clientWaitQueue.Enqueue(msg.EntityId);
                 clientReliabilityQueue.Enqueue(msg.EntityId);
+                
+                entityClients.Add(msg.EntityId, client);
             }
             else
             {
@@ -62,6 +64,7 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients, ConcurrentQ
                 _ = cli.SendToClient(rpc.Notify(Consts.DeleteRemoteEntity, forward));
             }
         }
+        entityClients.Remove(msg.EntityId);
     }
 
     public void OnHubRefreshEntity(HubRefreshEntity msg)

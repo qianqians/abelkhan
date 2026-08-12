@@ -32,9 +32,8 @@ public static partial class GateClientReflection {
           "ZXJyX21zZxgDIAEoCRIPCgdjb250ZW50GAQgASgMIkgKGkdhdGVGb3J3YXJk",
           "Q2xpZW50Tm90aWZ5SHViEhEKCWVudGl0eV9pZBgBIAEoCRIXCgVldmVudBgC",
           "IAEoCzIILkNhbGxScGMiPAoQVmVyc2lvbkhhbmRzaGFrZRITCgttaW5fdmVy",
-          "c2lvbhgBIAEoDRITCgttYXhfdmVyc2lvbhgCIAEoDSJAChZDYWxsQmFja1Jl",
-          "bGlhYmlsaXR5TXNnEhEKCWVudGl0eV9pZBgBIAEoCRITCgtjYWxsYmFja19p",
-          "ZBgCIAEoCWIGcHJvdG8z"));
+          "c2lvbhgBIAEoDRITCgttYXhfdmVyc2lvbhgCIAEoDSIrChZDYWxsQmFja1Jl",
+          "bGlhYmlsaXR5TXNnEhEKCWVudGl0eV9pZBgBIAEoCWIGcHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -44,7 +43,7 @@ public static partial class GateClientReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientResponseHub), global::GateForwardClientResponseHub.Parser, new[]{ "MsgId", "EntityId", "ErrMsg", "Content" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientNotifyHub), global::GateForwardClientNotifyHub.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::VersionHandshake), global::VersionHandshake.Parser, new[]{ "MinVersion", "MaxVersion" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::CallBackReliabilityMsg), global::CallBackReliabilityMsg.Parser, new[]{ "EntityId", "CallbackId" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::CallBackReliabilityMsg), global::CallBackReliabilityMsg.Parser, new[]{ "EntityId" }, null, null, null, null)
         }));
   }
   #endregion
@@ -1626,7 +1625,6 @@ public sealed partial class CallBackReliabilityMsg : pb::IMessage<CallBackReliab
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public CallBackReliabilityMsg(CallBackReliabilityMsg other) : this() {
     entityId_ = other.entityId_;
-    callbackId_ = other.callbackId_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -1648,18 +1646,6 @@ public sealed partial class CallBackReliabilityMsg : pb::IMessage<CallBackReliab
     }
   }
 
-  /// <summary>Field number for the "callback_id" field.</summary>
-  public const int CallbackIdFieldNumber = 2;
-  private string callbackId_ = "";
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public string CallbackId {
-    get { return callbackId_; }
-    set {
-      callbackId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-    }
-  }
-
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
@@ -1676,7 +1662,6 @@ public sealed partial class CallBackReliabilityMsg : pb::IMessage<CallBackReliab
       return true;
     }
     if (EntityId != other.EntityId) return false;
-    if (CallbackId != other.CallbackId) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -1685,7 +1670,6 @@ public sealed partial class CallBackReliabilityMsg : pb::IMessage<CallBackReliab
   public override int GetHashCode() {
     int hash = 1;
     if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
-    if (CallbackId.Length != 0) hash ^= CallbackId.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -1708,10 +1692,6 @@ public sealed partial class CallBackReliabilityMsg : pb::IMessage<CallBackReliab
       output.WriteRawTag(10);
       output.WriteString(EntityId);
     }
-    if (CallbackId.Length != 0) {
-      output.WriteRawTag(18);
-      output.WriteString(CallbackId);
-    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -1726,10 +1706,6 @@ public sealed partial class CallBackReliabilityMsg : pb::IMessage<CallBackReliab
       output.WriteRawTag(10);
       output.WriteString(EntityId);
     }
-    if (CallbackId.Length != 0) {
-      output.WriteRawTag(18);
-      output.WriteString(CallbackId);
-    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -1742,9 +1718,6 @@ public sealed partial class CallBackReliabilityMsg : pb::IMessage<CallBackReliab
     int size = 0;
     if (EntityId.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(EntityId);
-    }
-    if (CallbackId.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeStringSize(CallbackId);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -1760,9 +1733,6 @@ public sealed partial class CallBackReliabilityMsg : pb::IMessage<CallBackReliab
     }
     if (other.EntityId.Length != 0) {
       EntityId = other.EntityId;
-    }
-    if (other.CallbackId.Length != 0) {
-      CallbackId = other.CallbackId;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -1787,10 +1757,6 @@ public sealed partial class CallBackReliabilityMsg : pb::IMessage<CallBackReliab
           EntityId = input.ReadString();
           break;
         }
-        case 18: {
-          CallbackId = input.ReadString();
-          break;
-        }
       }
     }
   #endif
@@ -1812,10 +1778,6 @@ public sealed partial class CallBackReliabilityMsg : pb::IMessage<CallBackReliab
           break;
         case 10: {
           EntityId = input.ReadString();
-          break;
-        }
-        case 18: {
-          CallbackId = input.ReadString();
           break;
         }
       }

@@ -30,6 +30,7 @@ public class Consts
     public const string GateForwardHubResponseClient =  "gate_forward_hub_response_client";
     public const string GateForwardHubNotifyClient =  "gate_forward_hub_notify_client";
     public const string GateForwardHubCallGlobal = "gate_forward_hub_call_global";
+    public const string GateForwardHubNotifyClientMq = "gate_forward_hub_notify_client_mq";
     public const string HubKickOffClient = "hub_kickoff_client";
     
     public const string CreatePlayerEntity = "create_player_entity"; 
@@ -40,5 +41,6 @@ public class Consts
     public const string HubRequestClient = "hub_request_client";
     public const string HubResponseClient = "hub_response_client";
     public const string HubNotifyClient = "hub_notify_client";
+    public const string HubNotifyClientMq = "hub_notify_client_mq";
     public const string KickOff = "kickoff";
 }

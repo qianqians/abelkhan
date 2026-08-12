@@ -35,10 +35,12 @@ public static partial class GateHubReflection {
           "b25uX2lkGAEgASgJEhEKCWVudGl0eV9pZBgCIAEoCRIOCgZlcnJNc2cYAyAB",
           "KAkSDwoHY29udGVudBgEIAEoDCJZChpHYXRlRm9yd2FyZEh1Yk5vdGlmeUNs",
           "aWVudBIPCgdjb25uX2lkGAEgAygJEhEKCWVudGl0eV9pZBgCIAEoCRIXCgVl",
-          "dmVudBgDIAEoCzIILkNhbGxScGMiRgoYR2F0ZUZvcndhcmRIdWJDYWxsR2xv",
-          "YmFsEhEKCWVudGl0eV9pZBgBIAEoCRIXCgVldmVudBgCIAEoCzIILkNhbGxS",
-          "cGMiOAoQSHViS2lja09mZkNsaWVudBIPCgdjb25uX2lkGAEgASgJEhMKC3By",
-          "b21wdF9pbmZvGAIgASgJYgZwcm90bzM="));
+          "dmVudBgDIAEoCzIILkNhbGxScGMiSgocR2F0ZUZvcndhcmRIdWJOb3RpZnlD",
+          "bGllbnRNcRIRCgllbnRpdHlfaWQYASABKAkSFwoFZXZlbnQYAiABKAsyCC5D",
+          "YWxsUnBjIkYKGEdhdGVGb3J3YXJkSHViQ2FsbEdsb2JhbBIRCgllbnRpdHlf",
+          "aWQYASABKAkSFwoFZXZlbnQYAiABKAsyCC5DYWxsUnBjIjgKEEh1YktpY2tP",
+          "ZmZDbGllbnQSDwoHY29ubl9pZBgBIAEoCRITCgtwcm9tcHRfaW5mbxgCIAEo",
+          "CWIGcHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -48,6 +50,7 @@ public static partial class GateHubReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubRequestClient), global::GateForwardHubRequestClient.Parser, new[]{ "ConnId", "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubResponseClient), global::GateForwardHubResponseClient.Parser, new[]{ "ConnId", "EntityId", "ErrMsg", "Content" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubNotifyClient), global::GateForwardHubNotifyClient.Parser, new[]{ "ConnId", "EntityId", "Event" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubNotifyClientMq), global::GateForwardHubNotifyClientMq.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubCallGlobal), global::GateForwardHubCallGlobal.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubKickOffClient), global::HubKickOffClient.Parser, new[]{ "ConnId", "PromptInfo" }, null, null, null, null)
         }));
@@ -1811,6 +1814,250 @@ public sealed partial class GateForwardHubNotifyClient : pb::IMessage<GateForwar
 }
 
 [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
+public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForwardHubNotifyClientMq>
+#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    , pb::IBufferMessage
+#endif
+{
+  private static readonly pb::MessageParser<GateForwardHubNotifyClientMq> _parser = new pb::MessageParser<GateForwardHubNotifyClientMq>(() => new GateForwardHubNotifyClientMq());
+  private pb::UnknownFieldSet _unknownFields;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pb::MessageParser<GateForwardHubNotifyClientMq> Parser { get { return _parser; } }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pbr::MessageDescriptor Descriptor {
+    get { return global::GateHubReflection.Descriptor.MessageTypes[6]; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  pbr::MessageDescriptor pb::IMessage.Descriptor {
+    get { return Descriptor; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public GateForwardHubNotifyClientMq() {
+    OnConstruction();
+  }
+
+  partial void OnConstruction();
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public GateForwardHubNotifyClientMq(GateForwardHubNotifyClientMq other) : this() {
+    entityId_ = other.entityId_;
+    event_ = other.event_ != null ? other.event_.Clone() : null;
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public GateForwardHubNotifyClientMq Clone() {
+    return new GateForwardHubNotifyClientMq(this);
+  }
+
+  /// <summary>Field number for the "entity_id" field.</summary>
+  public const int EntityIdFieldNumber = 1;
+  private string entityId_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string EntityId {
+    get { return entityId_; }
+    set {
+      entityId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "event" field.</summary>
+  public const int EventFieldNumber = 2;
+  private global::CallRpc event_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public global::CallRpc Event {
+    get { return event_; }
+    set {
+      event_ = value;
+    }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override bool Equals(object other) {
+    return Equals(other as GateForwardHubNotifyClientMq);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool Equals(GateForwardHubNotifyClientMq other) {
+    if (ReferenceEquals(other, null)) {
+      return false;
+    }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    if (EntityId != other.EntityId) return false;
+    if (!object.Equals(Event, other.Event)) return false;
+    return Equals(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override int GetHashCode() {
+    int hash = 1;
+    if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
+    if (event_ != null) hash ^= Event.GetHashCode();
+    if (_unknownFields != null) {
+      hash ^= _unknownFields.GetHashCode();
+    }
+    return hash;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override string ToString() {
+    return pb::JsonFormatter.ToDiagnosticString(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void WriteTo(pb::CodedOutputStream output) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    output.WriteRawMessage(this);
+  #else
+    if (EntityId.Length != 0) {
+      output.WriteRawTag(10);
+      output.WriteString(EntityId);
+    }
+    if (event_ != null) {
+      output.WriteRawTag(18);
+      output.WriteMessage(Event);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(output);
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+    if (EntityId.Length != 0) {
+      output.WriteRawTag(10);
+      output.WriteString(EntityId);
+    }
+    if (event_ != null) {
+      output.WriteRawTag(18);
+      output.WriteMessage(Event);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(ref output);
+    }
+  }
+  #endif
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public int CalculateSize() {
+    int size = 0;
+    if (EntityId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(EntityId);
+    }
+    if (event_ != null) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(Event);
+    }
+    if (_unknownFields != null) {
+      size += _unknownFields.CalculateSize();
+    }
+    return size;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(GateForwardHubNotifyClientMq other) {
+    if (other == null) {
+      return;
+    }
+    if (other.EntityId.Length != 0) {
+      EntityId = other.EntityId;
+    }
+    if (other.event_ != null) {
+      if (event_ == null) {
+        Event = new global::CallRpc();
+      }
+      Event.MergeFrom(other.Event);
+    }
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(pb::CodedInputStream input) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    input.ReadRawMessage(this);
+  #else
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+    if ((tag & 7) == 4) {
+      // Abort on any end group tag.
+      return;
+    }
+    switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+          break;
+        case 10: {
+          EntityId = input.ReadString();
+          break;
+        }
+        case 18: {
+          if (event_ == null) {
+            Event = new global::CallRpc();
+          }
+          input.ReadMessage(Event);
+          break;
+        }
+      }
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+    if ((tag & 7) == 4) {
+      // Abort on any end group tag.
+      return;
+    }
+    switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+          break;
+        case 10: {
+          EntityId = input.ReadString();
+          break;
+        }
+        case 18: {
+          if (event_ == null) {
+            Event = new global::CallRpc();
+          }
+          input.ReadMessage(Event);
+          break;
+        }
+      }
+    }
+  }
+  #endif
+
+}
+
+[global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
 public sealed partial class GateForwardHubCallGlobal : pb::IMessage<GateForwardHubCallGlobal>
 #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     , pb::IBufferMessage
@@ -1825,7 +2072,7 @@ public sealed partial class GateForwardHubCallGlobal : pb::IMessage<GateForwardH
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public static pbr::MessageDescriptor Descriptor {
-    get { return global::GateHubReflection.Descriptor.MessageTypes[6]; }
+    get { return global::GateHubReflection.Descriptor.MessageTypes[7]; }
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -2069,7 +2316,7 @@ public sealed partial class HubKickOffClient : pb::IMessage<HubKickOffClient>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public static pbr::MessageDescriptor Descriptor {
-    get { return global::GateHubReflection.Descriptor.MessageTypes[7]; }
+    get { return global::GateHubReflection.Descriptor.MessageTypes[8]; }
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
