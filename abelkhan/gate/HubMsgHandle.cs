@@ -152,13 +152,23 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients, ConcurrentQ
 
 public class HubMsgHandle
 {
-    private readonly INetwork _network;
+    private readonly INetwork? _network;
     private readonly WRpc _rpc;
     private readonly HubGeneralMsgHandle _msgHandle;
     
     public HubMsgHandle(INetwork network, WRpc rpc, HubGeneralMsgHandle msgHandle)
     {
         _network = network;
+        _rpc  = rpc;
+        _msgHandle = msgHandle;
+        
+        rpc.OnNotify += OnNotify;
+        rpc.OnRequest += OnRequest;
+        rpc.OnResponse += OnResponse;
+    }
+    
+    public HubMsgHandle(WRpc rpc, HubGeneralMsgHandle msgHandle)
+    {
         _rpc  = rpc;
         _msgHandle = msgHandle;
         

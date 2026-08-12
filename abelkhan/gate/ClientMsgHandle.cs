@@ -80,9 +80,10 @@ public class ClientMsgHandle
             }
             case Consts.CallBackReliabilityMsg:
             {
-                if (!string.IsNullOrEmpty(_client.ConnId))
+                var msg = _rpc.OnMsg<CallBackReliabilityMsg>(ntf.Event.Content.ToByteArray());
+                if (!string.IsNullOrEmpty(msg.EntityId))
                 {
-                    _clientReliabilityQueue.Enqueue(_client.ConnId);
+                    _clientReliabilityQueue.Enqueue(msg.EntityId);
                 }
                 break;
             }

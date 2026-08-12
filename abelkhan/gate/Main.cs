@@ -36,13 +36,18 @@ class Main
     private void StartRedisMsg()
     {
         var rpc = new WRpc();
-        _ = new HubMsgHandle(null!, rpc, new HubGeneralMsgHandle(_clients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
+        _ = new HubMsgHandle(rpc, new HubGeneralMsgHandle(_clients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
         
         _tWait = Task.Factory.StartNew(async () =>
         {
             while (_isRun)
             {
                 if (_clientWaitQueue!.TryDequeue(out var playerId))
+                {
+                    await Task.Delay(1);
+                    continue;
+                }
+                if (string.IsNullOrEmpty(playerId))
                 {
                     await Task.Delay(1);
                     continue;
@@ -64,10 +69,7 @@ class Main
                     rpc.OnNetworkData(m);
                 }
 
-                if (!string.IsNullOrEmpty(playerId))
-                {
-                    _clientWaitQueue.Enqueue(playerId);
-                }
+                _clientWaitQueue.Enqueue(playerId);
             }
         }, TaskCreationOptions.LongRunning);
     }
@@ -75,19 +77,24 @@ class Main
     private void StartRedisReliabilityMsg()
     {
         var rpc = new WRpc();
-        _ = new HubMsgHandle(null!, rpc, new HubGeneralMsgHandle(_clients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
+        _ = new HubMsgHandle(rpc, new HubGeneralMsgHandle(_clients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
         
         _tWaitReliability = Task.Factory.StartNew(async () =>
         {
             while (_isRun)
             {
-                if (_clientReliabilityQueue!.TryDequeue(out var guid))
+                if (_clientReliabilityQueue!.TryDequeue(out var playerId))
                 {
                     await Task.Delay(1);
                     continue;
                 }
-
-                var data = await _redis?.Front(string.Format(Consts.EntityReliabilityClientMq, guid))!;
+                if (string.IsNullOrEmpty(playerId))
+                {
+                    await Task.Delay(1);
+                    continue;
+                }
+                
+                var data = await _redis?.Front(string.Format(Consts.EntityReliabilityClientMq, playerId))!;
                 if (data == null)
                 {
                     await Task.Delay(1);

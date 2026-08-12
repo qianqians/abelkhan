@@ -35,5 +35,6 @@ message VersionHandshake {
 }
 
 message CallBackReliabilityMsg {
-  string callback_id = 1;
+  string entity_id = 1;
+  string callback_id = 2;
 }
