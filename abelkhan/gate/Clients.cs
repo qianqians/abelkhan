@@ -8,6 +8,8 @@ public class Client(string connId, INetwork clientNetwork, RedisHandle redis)
 {
     public string ConnId => connId;
 
+    public long LastEventTime { set; get; } = TimerService.Tick;
+
     private readonly Dictionary<string, INetwork> _dictEntityNetwork = new();
 
     public void RegisterNetwork(string entity, INetwork network)

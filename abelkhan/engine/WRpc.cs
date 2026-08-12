@@ -62,6 +62,7 @@ public class WRpc
     public event Action<Request>? OnRequest;
     public event Action<Response>? OnResponse;
     public event Action<Notify>? OnNotify;
+    public event Action<HeartBeats>? OnHeartBeats;
 
     public void OnNetworkData(byte[] data)
     {
@@ -77,6 +78,9 @@ public class WRpc
                 break;
             case Msg.PayloadOneofCase.Notify:
                 OnNotify?.Invoke(msg.Notify);
+                break;
+            case Msg.PayloadOneofCase.HeartBeats:
+                OnHeartBeats?.Invoke(msg.HeartBeats);
                 break;
             default:
                 throw new ArgumentException($"message:{msg.PayloadCase.ToString()}");

@@ -141,7 +141,7 @@ class Main
         return true;
     }
 
-    public async void Start(GateConfig cfg)
+    public async void Run(GateConfig cfg)
     {
         try
         {
@@ -155,7 +155,7 @@ class Main
             StartRedisReliabilityMsg();
 
             _internal = new(cfg.PortInternal);
-            _internal.OnListenAccept += async network =>
+            _internal.OnListenAccept += network =>
             {
                 var rpc = new WRpc();
                 _ = new HubMsgHandle(network, rpc, new HubGeneralMsgHandle(_clients, _entityClients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
@@ -183,10 +183,44 @@ class Main
                 var cli = new Client(netGuid, network, _redis);
                 _ = new ClientMsgHandle(cfg, _redis, rpc, cli, _clientReliabilityQueue);
                 network.OnReceive(rpc.OnNetworkData);
-                
-                _clients.Add(netGuid, cli);
+
+                lock (_clients)
+                {
+                    _clients.Add(netGuid, cli);
+                }
             };
             _external.Start();
+
+            var timer = new TimerService();
+            var removeList = new List<string>();
+            timer.AddTickTime(3000, (tick) =>
+            {
+                lock (_clients)
+                {
+                    foreach (var (uuid, client) in _clients)
+                    {
+                        if (5000 < (tick-client.LastEventTime))
+                        {
+                            removeList.Add(uuid);
+                        }
+                    }
+                    foreach (var uuid in removeList)
+                    {
+                        _clients.Remove(uuid);
+                    }
+                }
+                removeList.Clear();
+            });
+            while (!_isRun)
+            {
+                var begin = TimerService.Tick;
+                timer.Poll();
+                var detail = TimerService.Tick - begin;
+                if (detail < 16)
+                {
+                    await Task.Delay((int)(16-detail));
+                }
+            }
             
             await _internal.Join();
             await _external.Join();

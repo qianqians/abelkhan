@@ -24,10 +24,17 @@ public class ClientMsgHandle
         rpc.OnNotify += OnNotify;
         rpc.OnRequest += OnRequest;
         rpc.OnResponse += OnResponse;
+        rpc.OnHeartBeats += OnHeartBeats;
+    }
+
+    private void OnHeartBeats(HeartBeats _)
+    {
+        _client.LastEventTime = TimerService.Tick;
     }
 
     private void OnNotify(Notify ntf)
     {
+        _client.LastEventTime = TimerService.Tick;
         switch (ntf.Event.ProtoName)
         {
             case Consts.ClientRequestReconnect:
@@ -98,6 +105,7 @@ public class ClientMsgHandle
 
     private void OnRequest(Request req)
     {
+        _client.LastEventTime = TimerService.Tick;
         switch (req.Event.ProtoName)
         {
             case Consts.GateForwardClientRequestHub:
@@ -121,6 +129,7 @@ public class ClientMsgHandle
 
     private void OnResponse(Response rsp)
     {
+        _client.LastEventTime = TimerService.Tick;
         switch (rsp.Event.ProtoName)
         {
             case Consts.GateForwardClientResponseHub:

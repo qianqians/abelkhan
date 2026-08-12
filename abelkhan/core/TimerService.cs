@@ -441,6 +441,7 @@ public class TimerService
     {
         Tick = Refresh();
         PollTickHandleImpl();
+        Tick = Refresh();
     }
 
 	public object AddTickTime(long process, Action<long> handle)
