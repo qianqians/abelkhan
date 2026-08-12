@@ -36,21 +36,25 @@ class Main
     private void StartRedisMsg()
     {
         var rpc = new WRpc();
-        _ = new HubMsgHandle(null!, _clients!, rpc, new HubGeneralMsgHandle(_clients!, rpc));
+        _ = new HubMsgHandle(null!, rpc, new HubGeneralMsgHandle(_clients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
         
         _tWait = Task.Factory.StartNew(async () =>
         {
             while (_isRun)
             {
-                if (_clientWaitQueue!.TryDequeue(out var guid))
+                if (_clientWaitQueue!.TryDequeue(out var playerId))
                 {
                     await Task.Delay(1);
                     continue;
                 }
 
-                var msg = await _redis?.PopList(string.Format(Consts.EntityClientMq, guid), 8)!;
+                var msg = await _redis?.PopList(string.Format(Consts.EntityClientMq, playerId), 8)!;
                 if (msg == null)
                 {
+                    if (!string.IsNullOrEmpty(playerId))
+                    {
+                        _clientWaitQueue.Enqueue(playerId);
+                    }
                     await Task.Delay(1);
                     continue;
                 }
@@ -60,9 +64,9 @@ class Main
                     rpc.OnNetworkData(m);
                 }
 
-                if (!string.IsNullOrEmpty(guid))
+                if (!string.IsNullOrEmpty(playerId))
                 {
-                    _clientWaitQueue.Enqueue(guid);
+                    _clientWaitQueue.Enqueue(playerId);
                 }
             }
         }, TaskCreationOptions.LongRunning);
@@ -71,7 +75,7 @@ class Main
     private void StartRedisReliabilityMsg()
     {
         var rpc = new WRpc();
-        _ = new HubMsgHandle(null!, _clients!, rpc, new HubGeneralMsgHandle(_clients!, rpc));
+        _ = new HubMsgHandle(null!, rpc, new HubGeneralMsgHandle(_clients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
         
         _tWaitReliability = Task.Factory.StartNew(async () =>
         {
@@ -142,7 +146,7 @@ class Main
             _internal.OnListenAccept += async network =>
             {
                 var rpc = new WRpc();
-                _ = new HubMsgHandle(network, _clients, rpc, new HubGeneralMsgHandle(_clients, rpc));
+                _ = new HubMsgHandle(network, rpc, new HubGeneralMsgHandle(_clients, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
                 network.OnReceive(rpc.OnNetworkData);
             };
             _internal.Start();
@@ -169,8 +173,6 @@ class Main
                 network.OnReceive(rpc.OnNetworkData);
                 
                 _clients.Add(netGuid, cli);
-                _clientWaitQueue.Enqueue(netGuid);
-                _clientReliabilityQueue.Enqueue(netGuid);
             };
             _external.Start();
             

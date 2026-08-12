@@ -1,9 +1,10 @@
-﻿using consts;
+﻿using System.Collections.Concurrent;
+using consts;
 using core;
 using engine;
 namespace gate;
 
-public class HubGeneralMsgHandle(Dictionary<string, Client> clients, WRpc rpc)
+public class HubGeneralMsgHandle(Dictionary<string, Client> clients, ConcurrentQueue<string> clientWaitQueue, ConcurrentQueue<string> clientReliabilityQueue, WRpc rpc)
 {   
     public void OnHubCreateRemoteEntity(INetwork? network, HubCreateRemoteEntity msg)
     {
@@ -23,6 +24,9 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients, WRpc rpc)
                 {
                     client.RegisterNetwork(msg.EntityId, network);
                 }
+                
+                clientWaitQueue.Enqueue(msg.EntityId);
+                clientReliabilityQueue.Enqueue(msg.EntityId);
             }
             else
             {
@@ -148,15 +152,13 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients, WRpc rpc)
 
 public class HubMsgHandle
 {
-    private readonly Dictionary<string, Client> _clients;
     private readonly INetwork _network;
     private readonly WRpc _rpc;
     private readonly HubGeneralMsgHandle _msgHandle;
     
-    public HubMsgHandle(INetwork network, Dictionary<string, Client> clients, WRpc rpc, HubGeneralMsgHandle msgHandle)
+    public HubMsgHandle(INetwork network, WRpc rpc, HubGeneralMsgHandle msgHandle)
     {
         _network = network;
-        _clients = clients;
         _rpc  = rpc;
         _msgHandle = msgHandle;
         
