@@ -5,37 +5,30 @@ using engine;
 namespace gate;
 
 public class HubGeneralMsgHandle(Dictionary<string, Client> clients, Dictionary<string, Client> entityClients, ConcurrentQueue<string> clientWaitQueue, ConcurrentQueue<string> clientReliabilityQueue, WRpc rpc)
-{   
-    public void OnHubCreateRemoteEntity(INetwork? network, HubCreateRemoteEntity msg)
+{
+    public void OnHubCreatePlayerEntity(INetwork? network, HubCreatePlayerEntity msg)
     {
-        if (string.IsNullOrEmpty(msg.OwnerConnId))
+        var forward = new CreatePlayerEntity()
         {
-            if (clients.TryGetValue(msg.OwnerConnId, out var client))
+            EntityId = msg.EntityId,
+            EntityType = msg.EntityType,
+            Argv = msg.Argv,
+        };
+        if (clients.TryGetValue(msg.ConnId, out var cli))
+        {
+            _ = cli.SendToClient(rpc.Notify(Consts.CreatePlayerEntity, forward));
+            if (network != null)
             {
-                var forward = new CreatePlayerEntity()
-                {
-                    EntityId = msg.EntityId,
-                    EntityType = msg.EntityType,
-                    Argv = msg.Argv,
-                };
-                _ = client.SendToClient(rpc.Notify(Consts.CreatePlayerEntity, forward));
-
-                if (msg.IsDirect && network != null)
-                {
-                    client.RegisterNetwork(msg.EntityId, network);
-                }
-                
-                clientWaitQueue.Enqueue(msg.EntityId);
-                clientReliabilityQueue.Enqueue(msg.EntityId);
-                
-                entityClients.Add(msg.EntityId, client);
+                cli.RegisterNetwork(msg.EntityId, network);
             }
-            else
-            {
-                Log.Error($"OnHubCreateRemoteEntity not found Entity:{msg.EntityId}");
-            }
+            clientWaitQueue.Enqueue(msg.AccountId);
+            clientReliabilityQueue.Enqueue(msg.AccountId);
+            entityClients.Add(msg.AccountId, cli);
         }
-        
+    }
+    
+    public void OnHubCreateRemoteEntity(HubCreateRemoteEntity msg)
+    {
         var forwardMsg = new CreateRemoteEntity()
         {
             EntityId = msg.EntityId,
@@ -184,8 +177,11 @@ public class HubMsgHandle
     {
         switch (ntf.Event.ProtoName)
         {
+            case Consts.HubCreatePlayerEntity:
+                _msgHandle.OnHubCreatePlayerEntity(_network, _rpc.OnMsg<HubCreatePlayerEntity>(ntf.Event.Content.ToByteArray()));
+                break;
             case Consts.HubCreateRemoteEntity:
-                _msgHandle.OnHubCreateRemoteEntity(_network, _rpc.OnMsg<HubCreateRemoteEntity>(ntf.Event.Content.ToByteArray()));
+                _msgHandle.OnHubCreateRemoteEntity(_rpc.OnMsg<HubCreateRemoteEntity>(ntf.Event.Content.ToByteArray()));
                 break;
             case Consts.HubDeleteRemoteEntity:
                 _msgHandle.OnHubDeleteRemoteEntity(_rpc.OnMsg<HubDeleteRemoteEntity>(ntf.Event.Content.ToByteArray()));

@@ -46,33 +46,42 @@ class Main
                 var rpc = new WRpc();
                 _ = new HubMsgHandle(rpc, new HubGeneralMsgHandle(_clients!, _entityClients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
 
-                if (_clientWaitQueue == null || !_clientWaitQueue.TryDequeue(out var playerId))
+                if (_clientWaitQueue == null || !_clientWaitQueue.TryDequeue(out var accountId))
                 {
                     await Task.Delay(1);
                     continue;
                 }
-                if (string.IsNullOrEmpty(playerId))
+                if (string.IsNullOrEmpty(accountId))
                 {
                     await Task.Delay(1);
                     continue;
                 }
 
-                var msg = await _redis?.PopList(string.Format(Consts.EntityClientMq, playerId), 8)!;
-                if (msg == null)
+                do
                 {
-                    _clientWaitQueue.Enqueue(playerId);
-                    await Task.Delay(1);
-                    continue;
-                }
-                foreach (var m in msg)
-                {
-                    if (!OnMqMsg(false, rpc, m))
+                    var data = await _redis?.PopList(string.Format(Consts.EntityClientMq, accountId), 8)!;
+                    if (data == null)
                     {
                         await Task.Delay(1);
+                        break;
                     }
-                }
 
-                _clientWaitQueue.Enqueue(playerId);
+                    var hasCli = true;
+                    foreach (var msg in data)
+                    {
+                        if (!OnMqMsg(false, accountId, rpc, msg))
+                        {
+                            hasCli = false;
+                        }
+                    }
+                    if (!hasCli)
+                    {
+                        break;
+                    }
+                    
+                    _clientWaitQueue.Enqueue(accountId);
+                    
+                } while (false);
             }
         }, TaskCreationOptions.LongRunning);
     }
@@ -86,32 +95,30 @@ class Main
 
             while (_isRun)
             {
-                if (_clientReliabilityQueue == null || !_clientReliabilityQueue.TryDequeue(out var playerId))
+                if (_clientReliabilityQueue == null || !_clientReliabilityQueue.TryDequeue(out var accountId))
                 {
                     await Task.Delay(1);
                     continue;
                 }
-                if (string.IsNullOrEmpty(playerId))
+                if (string.IsNullOrEmpty(accountId))
                 {
                     await Task.Delay(1);
                     continue;
                 }
                 
-                var data = await _redis?.Front(string.Format(Consts.EntityReliabilityClientMq, playerId))!;
+                var data = await _redis?.Front(string.Format(Consts.EntityReliabilityClientMq, accountId))!;
                 if (data == null)
                 {
                     await Task.Delay(1);
                     continue;
                 }
-                if (!OnMqMsg(true, rpc, data))
-                {
-                    await Task.Delay(1);
-                }
+
+                OnMqMsg(true, accountId, rpc, data);
             }
         }, TaskCreationOptions.LongRunning);
     }
 
-    private bool OnMqMsg(bool needAck, WRpc rpc, byte[] data)
+    private bool OnMqMsg(bool needAck, string accountId, WRpc rpc, byte[] data)
     {
         var parser = new MessageParser<Msg>(() => new Msg());
         var msg = parser.ParseFrom(data);
@@ -135,9 +142,13 @@ class Main
             Event = ev.Event,
             NeedAck = needAck,
         };
-        if (_entityClients!.TryGetValue(ev.EntityId, out var cli))
+        if (accountId == ev.AccountId && _entityClients!.TryGetValue(accountId, out var cli))
         {
             _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClientMq, forward));
+        }
+        else
+        {
+            return false;
         }
         
         return true;

@@ -23,6 +23,7 @@ public class Consts
     public const string ClientResponseHub = "client_response_hub";
     public const string ClientNotifyHub =  "client_notify_hub";
 
+    public const string HubCreatePlayerEntity = "hub_create_player_entity";
     public const string HubCreateRemoteEntity = "hub_create_remote_entity";
     public const string HubDeleteRemoteEntity = "hub_delete_remote_entity";
     public const string HubRefreshEntity = "hub_refresh_entity";
