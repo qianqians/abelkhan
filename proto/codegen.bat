@@ -7,7 +7,7 @@ protoc --csharp_out=../abelkhan/proto  --proto_path=../proto  ../proto/gate_clie
 protoc --csharp_out=../abelkhan/proto  --proto_path=../proto  ../proto/gate_hub.proto
 protoc --csharp_out=../abelkhan/proto  --proto_path=../proto  ../proto/hub_dbproxy.proto
 protoc --csharp_out=../abelkhan/proto  --proto_path=../proto  ../proto/hub_gate.proto
-
+protoc --csharp_out=../abelkhan/proto  --proto_path=../proto  ../proto/hub_hub.proto
 
 protoc --csharp_out=../client/csharp  --proto_path=../proto  ../proto/common.proto
 protoc --csharp_out=../client/csharp  --proto_path=../proto  ../proto/client.proto

@@ -2,7 +2,7 @@ syntax = "proto3";
 import "common.proto";
 
 message ClientRequestReconnect {
-	string account_id = 1;
+	string user_id = 1;
 	bytes argv = 2;
 }
 

@@ -22,38 +22,38 @@ public static partial class GateHubReflection {
   static GateHubReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "Cg5nYXRlX2h1Yi5wcm90bxoMY29tbW9uLnByb3RvInIKFUh1YkNyZWF0ZVBs",
-          "YXllckVudGl0eRIPCgdjb25uX2lkGAEgASgJEhIKCmFjY291bnRfaWQYAiAB",
-          "KAkSEQoJZW50aXR5X2lkGAMgASgJEhMKC2VudGl0eV90eXBlGAQgASgJEgwK",
-          "BGFyZ3YYBSABKAwiXgoVSHViQ3JlYXRlUmVtb3RlRW50aXR5Eg8KB2Nvbm5f",
-          "aWQYASADKAkSEQoJZW50aXR5X2lkGAIgASgJEhMKC2VudGl0eV90eXBlGAMg",
-          "ASgJEgwKBGFyZ3YYBCABKAwiOwoVSHViRGVsZXRlUmVtb3RlRW50aXR5Eg8K",
-          "B2Nvbm5faWQYASADKAkSEQoJZW50aXR5X2lkGAIgASgJIlkKEEh1YlJlZnJl",
-          "c2hFbnRpdHkSDwoHY29ubl9pZBgBIAMoCRIRCgllbnRpdHlfaWQYAiABKAkS",
-          "EwoLZW50aXR5X3R5cGUYAyABKAkSDAoEYXJndhgEIAEoDCJaChtHYXRlRm9y",
-          "d2FyZEh1YlJlcXVlc3RDbGllbnQSDwoHY29ubl9pZBgBIAEoCRIRCgllbnRp",
-          "dHlfaWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxsUnBjImMKHEdhdGVG",
-          "b3J3YXJkSHViUmVzcG9uc2VDbGllbnQSDwoHY29ubl9pZBgBIAEoCRIRCgll",
-          "bnRpdHlfaWQYAiABKAkSDgoGZXJyTXNnGAMgASgJEg8KB2NvbnRlbnQYBCAB",
-          "KAwiWQoaR2F0ZUZvcndhcmRIdWJOb3RpZnlDbGllbnQSDwoHY29ubl9pZBgB",
-          "IAMoCRIRCgllbnRpdHlfaWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxs",
-          "UnBjIl4KHEdhdGVGb3J3YXJkSHViTm90aWZ5Q2xpZW50TXESEgoKYWNjb3Vu",
-          "dF9pZBgBIAEoCRIRCgllbnRpdHlfaWQYAiABKAkSFwoFZXZlbnQYAyABKAsy",
-          "CC5DYWxsUnBjIkYKGEdhdGVGb3J3YXJkSHViQ2FsbEdsb2JhbBIRCgllbnRp",
-          "dHlfaWQYASABKAkSFwoFZXZlbnQYAiABKAsyCC5DYWxsUnBjIjgKEEh1Yktp",
-          "Y2tPZmZDbGllbnQSDwoHY29ubl9pZBgBIAEoCRITCgtwcm9tcHRfaW5mbxgC",
-          "IAEoCWIGcHJvdG8z"));
+          "Cg5nYXRlX2h1Yi5wcm90bxoMY29tbW9uLnByb3RvIm8KFUh1YkNyZWF0ZVBs",
+          "YXllckVudGl0eRIPCgdjb25uX2lkGAEgASgJEg8KB3VzZXJfaWQYAiABKAkS",
+          "EQoJZW50aXR5X2lkGAMgASgJEhMKC2VudGl0eV90eXBlGAQgASgJEgwKBGFy",
+          "Z3YYBSABKAwiXgoVSHViQ3JlYXRlUmVtb3RlRW50aXR5Eg8KB2Nvbm5faWQY",
+          "ASADKAkSEQoJZW50aXR5X2lkGAIgASgJEhMKC2VudGl0eV90eXBlGAMgASgJ",
+          "EgwKBGFyZ3YYBCABKAwiOwoVSHViRGVsZXRlUmVtb3RlRW50aXR5Eg8KB2Nv",
+          "bm5faWQYASADKAkSEQoJZW50aXR5X2lkGAIgASgJIlkKEEh1YlJlZnJlc2hF",
+          "bnRpdHkSDwoHY29ubl9pZBgBIAMoCRIRCgllbnRpdHlfaWQYAiABKAkSEwoL",
+          "ZW50aXR5X3R5cGUYAyABKAkSDAoEYXJndhgEIAEoDCJaChtHYXRlRm9yd2Fy",
+          "ZEh1YlJlcXVlc3RDbGllbnQSDwoHY29ubl9pZBgBIAEoCRIRCgllbnRpdHlf",
+          "aWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxsUnBjImMKHEdhdGVGb3J3",
+          "YXJkSHViUmVzcG9uc2VDbGllbnQSDwoHY29ubl9pZBgBIAEoCRIRCgllbnRp",
+          "dHlfaWQYAiABKAkSDgoGZXJyTXNnGAMgASgJEg8KB2NvbnRlbnQYBCABKAwi",
+          "WQoaR2F0ZUZvcndhcmRIdWJOb3RpZnlDbGllbnQSDwoHY29ubl9pZBgBIAMo",
+          "CRIRCgllbnRpdHlfaWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxsUnBj",
+          "IlsKHEdhdGVGb3J3YXJkSHViTm90aWZ5Q2xpZW50TXESDwoHdXNlcl9pZBgB",
+          "IAEoCRIRCgllbnRpdHlfaWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxs",
+          "UnBjIkYKGEdhdGVGb3J3YXJkSHViQ2FsbEdsb2JhbBIRCgllbnRpdHlfaWQY",
+          "ASABKAkSFwoFZXZlbnQYAiABKAsyCC5DYWxsUnBjIjgKEEh1YktpY2tPZmZD",
+          "bGllbnQSDwoHY29ubl9pZBgBIAEoCRITCgtwcm9tcHRfaW5mbxgCIAEoCWIG",
+          "cHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::HubCreatePlayerEntity), global::HubCreatePlayerEntity.Parser, new[]{ "ConnId", "AccountId", "EntityId", "EntityType", "Argv" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::HubCreatePlayerEntity), global::HubCreatePlayerEntity.Parser, new[]{ "ConnId", "UserId", "EntityId", "EntityType", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubCreateRemoteEntity), global::HubCreateRemoteEntity.Parser, new[]{ "ConnId", "EntityId", "EntityType", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubDeleteRemoteEntity), global::HubDeleteRemoteEntity.Parser, new[]{ "ConnId", "EntityId" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubRefreshEntity), global::HubRefreshEntity.Parser, new[]{ "ConnId", "EntityId", "EntityType", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubRequestClient), global::GateForwardHubRequestClient.Parser, new[]{ "ConnId", "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubResponseClient), global::GateForwardHubResponseClient.Parser, new[]{ "ConnId", "EntityId", "ErrMsg", "Content" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubNotifyClient), global::GateForwardHubNotifyClient.Parser, new[]{ "ConnId", "EntityId", "Event" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubNotifyClientMq), global::GateForwardHubNotifyClientMq.Parser, new[]{ "AccountId", "EntityId", "Event" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubNotifyClientMq), global::GateForwardHubNotifyClientMq.Parser, new[]{ "UserId", "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubCallGlobal), global::GateForwardHubCallGlobal.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubKickOffClient), global::HubKickOffClient.Parser, new[]{ "ConnId", "PromptInfo" }, null, null, null, null)
         }));
@@ -98,7 +98,7 @@ public sealed partial class HubCreatePlayerEntity : pb::IMessage<HubCreatePlayer
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public HubCreatePlayerEntity(HubCreatePlayerEntity other) : this() {
     connId_ = other.connId_;
-    accountId_ = other.accountId_;
+    userId_ = other.userId_;
     entityId_ = other.entityId_;
     entityType_ = other.entityType_;
     argv_ = other.argv_;
@@ -123,15 +123,15 @@ public sealed partial class HubCreatePlayerEntity : pb::IMessage<HubCreatePlayer
     }
   }
 
-  /// <summary>Field number for the "account_id" field.</summary>
-  public const int AccountIdFieldNumber = 2;
-  private string accountId_ = "";
+  /// <summary>Field number for the "user_id" field.</summary>
+  public const int UserIdFieldNumber = 2;
+  private string userId_ = "";
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public string AccountId {
-    get { return accountId_; }
+  public string UserId {
+    get { return userId_; }
     set {
-      accountId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      userId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
     }
   }
 
@@ -187,7 +187,7 @@ public sealed partial class HubCreatePlayerEntity : pb::IMessage<HubCreatePlayer
       return true;
     }
     if (ConnId != other.ConnId) return false;
-    if (AccountId != other.AccountId) return false;
+    if (UserId != other.UserId) return false;
     if (EntityId != other.EntityId) return false;
     if (EntityType != other.EntityType) return false;
     if (Argv != other.Argv) return false;
@@ -199,7 +199,7 @@ public sealed partial class HubCreatePlayerEntity : pb::IMessage<HubCreatePlayer
   public override int GetHashCode() {
     int hash = 1;
     if (ConnId.Length != 0) hash ^= ConnId.GetHashCode();
-    if (AccountId.Length != 0) hash ^= AccountId.GetHashCode();
+    if (UserId.Length != 0) hash ^= UserId.GetHashCode();
     if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
     if (EntityType.Length != 0) hash ^= EntityType.GetHashCode();
     if (Argv.Length != 0) hash ^= Argv.GetHashCode();
@@ -225,9 +225,9 @@ public sealed partial class HubCreatePlayerEntity : pb::IMessage<HubCreatePlayer
       output.WriteRawTag(10);
       output.WriteString(ConnId);
     }
-    if (AccountId.Length != 0) {
+    if (UserId.Length != 0) {
       output.WriteRawTag(18);
-      output.WriteString(AccountId);
+      output.WriteString(UserId);
     }
     if (EntityId.Length != 0) {
       output.WriteRawTag(26);
@@ -255,9 +255,9 @@ public sealed partial class HubCreatePlayerEntity : pb::IMessage<HubCreatePlayer
       output.WriteRawTag(10);
       output.WriteString(ConnId);
     }
-    if (AccountId.Length != 0) {
+    if (UserId.Length != 0) {
       output.WriteRawTag(18);
-      output.WriteString(AccountId);
+      output.WriteString(UserId);
     }
     if (EntityId.Length != 0) {
       output.WriteRawTag(26);
@@ -284,8 +284,8 @@ public sealed partial class HubCreatePlayerEntity : pb::IMessage<HubCreatePlayer
     if (ConnId.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(ConnId);
     }
-    if (AccountId.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeStringSize(AccountId);
+    if (UserId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(UserId);
     }
     if (EntityId.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(EntityId);
@@ -311,8 +311,8 @@ public sealed partial class HubCreatePlayerEntity : pb::IMessage<HubCreatePlayer
     if (other.ConnId.Length != 0) {
       ConnId = other.ConnId;
     }
-    if (other.AccountId.Length != 0) {
-      AccountId = other.AccountId;
+    if (other.UserId.Length != 0) {
+      UserId = other.UserId;
     }
     if (other.EntityId.Length != 0) {
       EntityId = other.EntityId;
@@ -347,7 +347,7 @@ public sealed partial class HubCreatePlayerEntity : pb::IMessage<HubCreatePlayer
           break;
         }
         case 18: {
-          AccountId = input.ReadString();
+          UserId = input.ReadString();
           break;
         }
         case 26: {
@@ -386,7 +386,7 @@ public sealed partial class HubCreatePlayerEntity : pb::IMessage<HubCreatePlayer
           break;
         }
         case 18: {
-          AccountId = input.ReadString();
+          UserId = input.ReadString();
           break;
         }
         case 26: {
@@ -2123,7 +2123,7 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public GateForwardHubNotifyClientMq(GateForwardHubNotifyClientMq other) : this() {
-    accountId_ = other.accountId_;
+    userId_ = other.userId_;
     entityId_ = other.entityId_;
     event_ = other.event_ != null ? other.event_.Clone() : null;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -2135,15 +2135,15 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
     return new GateForwardHubNotifyClientMq(this);
   }
 
-  /// <summary>Field number for the "account_id" field.</summary>
-  public const int AccountIdFieldNumber = 1;
-  private string accountId_ = "";
+  /// <summary>Field number for the "user_id" field.</summary>
+  public const int UserIdFieldNumber = 1;
+  private string userId_ = "";
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public string AccountId {
-    get { return accountId_; }
+  public string UserId {
+    get { return userId_; }
     set {
-      accountId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      userId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
     }
   }
 
@@ -2186,7 +2186,7 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
     if (ReferenceEquals(other, this)) {
       return true;
     }
-    if (AccountId != other.AccountId) return false;
+    if (UserId != other.UserId) return false;
     if (EntityId != other.EntityId) return false;
     if (!object.Equals(Event, other.Event)) return false;
     return Equals(_unknownFields, other._unknownFields);
@@ -2196,7 +2196,7 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
-    if (AccountId.Length != 0) hash ^= AccountId.GetHashCode();
+    if (UserId.Length != 0) hash ^= UserId.GetHashCode();
     if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
     if (event_ != null) hash ^= Event.GetHashCode();
     if (_unknownFields != null) {
@@ -2217,9 +2217,9 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    if (AccountId.Length != 0) {
+    if (UserId.Length != 0) {
       output.WriteRawTag(10);
-      output.WriteString(AccountId);
+      output.WriteString(UserId);
     }
     if (EntityId.Length != 0) {
       output.WriteRawTag(18);
@@ -2239,9 +2239,9 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    if (AccountId.Length != 0) {
+    if (UserId.Length != 0) {
       output.WriteRawTag(10);
-      output.WriteString(AccountId);
+      output.WriteString(UserId);
     }
     if (EntityId.Length != 0) {
       output.WriteRawTag(18);
@@ -2261,8 +2261,8 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
-    if (AccountId.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeStringSize(AccountId);
+    if (UserId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(UserId);
     }
     if (EntityId.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(EntityId);
@@ -2282,8 +2282,8 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
     if (other == null) {
       return;
     }
-    if (other.AccountId.Length != 0) {
-      AccountId = other.AccountId;
+    if (other.UserId.Length != 0) {
+      UserId = other.UserId;
     }
     if (other.EntityId.Length != 0) {
       EntityId = other.EntityId;
@@ -2314,7 +2314,7 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 10: {
-          AccountId = input.ReadString();
+          UserId = input.ReadString();
           break;
         }
         case 18: {
@@ -2348,7 +2348,7 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
         case 10: {
-          AccountId = input.ReadString();
+          UserId = input.ReadString();
           break;
         }
         case 18: {

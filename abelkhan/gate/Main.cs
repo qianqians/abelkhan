@@ -44,14 +44,15 @@ class Main
             while (_isRun)
             {
                 var rpc = new WRpc();
-                _ = new HubMsgHandle(rpc, new HubGeneralMsgHandle(_clients!, _entityClients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
+                var h = new HubGeneralMsgHandle(_clients!, _entityClients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc);
+                _ = new HubMsgHandle(rpc, h);
 
-                if (_clientWaitQueue == null || !_clientWaitQueue.TryDequeue(out var accountId))
+                if (_clientWaitQueue == null || !_clientWaitQueue.TryDequeue(out var userId))
                 {
                     await Task.Delay(1);
                     continue;
                 }
-                if (string.IsNullOrEmpty(accountId))
+                if (string.IsNullOrEmpty(userId))
                 {
                     await Task.Delay(1);
                     continue;
@@ -59,7 +60,7 @@ class Main
 
                 do
                 {
-                    var data = await _redis?.PopList(string.Format(Consts.EntityClientMq, accountId), 8)!;
+                    var data = await _redis?.PopList(string.Format(Consts.EntityClientMq, userId), 8)!;
                     if (data == null)
                     {
                         await Task.Delay(1);
@@ -69,7 +70,7 @@ class Main
                     var hasCli = true;
                     foreach (var msg in data)
                     {
-                        if (!OnMqMsg(false, accountId, rpc, msg))
+                        if (!OnMqMsg(false, userId, rpc, msg))
                         {
                             hasCli = false;
                         }
@@ -79,7 +80,7 @@ class Main
                         break;
                     }
                     
-                    _clientWaitQueue.Enqueue(accountId);
+                    _clientWaitQueue.Enqueue(userId);
                     
                 } while (false);
             }
@@ -91,34 +92,35 @@ class Main
         _tWaitReliability = Task.Factory.StartNew(async () =>
         {
             var rpc = new WRpc();
-            _ = new HubMsgHandle(rpc, new HubGeneralMsgHandle(_clients!, _entityClients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
+            var h = new HubGeneralMsgHandle(_clients!, _entityClients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc);
+            _ = new HubMsgHandle(rpc, h);
 
             while (_isRun)
             {
-                if (_clientReliabilityQueue == null || !_clientReliabilityQueue.TryDequeue(out var accountId))
+                if (_clientReliabilityQueue == null || !_clientReliabilityQueue.TryDequeue(out var userId))
                 {
                     await Task.Delay(1);
                     continue;
                 }
-                if (string.IsNullOrEmpty(accountId))
+                if (string.IsNullOrEmpty(userId))
                 {
                     await Task.Delay(1);
                     continue;
                 }
                 
-                var data = await _redis?.Front(string.Format(Consts.EntityReliabilityClientMq, accountId))!;
+                var data = await _redis?.Front(string.Format(Consts.EntityReliabilityClientMq, userId))!;
                 if (data == null)
                 {
                     await Task.Delay(1);
                     continue;
                 }
 
-                OnMqMsg(true, accountId, rpc, data);
+                OnMqMsg(true, userId, rpc, data);
             }
         }, TaskCreationOptions.LongRunning);
     }
 
-    private bool OnMqMsg(bool needAck, string accountId, WRpc rpc, byte[] data)
+    private bool OnMqMsg(bool needAck, string userId, WRpc rpc, byte[] data)
     {
         var parser = new MessageParser<Msg>(() => new Msg());
         var msg = parser.ParseFrom(data);
@@ -142,7 +144,7 @@ class Main
             Event = ev.Event,
             NeedAck = needAck,
         };
-        if (accountId == ev.AccountId && _entityClients!.TryGetValue(accountId, out var cli))
+        if (userId == ev.UserId && _entityClients!.TryGetValue(userId, out var cli))
         {
             _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClientMq, forward));
         }

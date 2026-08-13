@@ -22,22 +22,22 @@ public static partial class HubGateReflection {
   static HubGateReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "Cg5odWJfZ2F0ZS5wcm90bxoMY29tbW9uLnByb3RvImkKIUdhdGVGb3J3YXJk",
+          "Cg5odWJfZ2F0ZS5wcm90bxoMY29tbW9uLnByb3RvImYKIUdhdGVGb3J3YXJk",
           "Q2xpZW50UmVxdWVzdFJlY29ubmVjdBIRCglnYXRlX25hbWUYASABKAkSDwoH",
-          "Y29ubl9pZBgCIAEoCRISCgphY2NvdW50X2lkGAMgASgJEgwKBGFyZ3YYBCAB",
-          "KAwiaQofR2F0ZUZvcndhcmRDbGllbnRSZXF1ZXN0U2VydmljZRIUCgxzZXJ2",
-          "aWNlX25hbWUYASABKAkSEQoJZ2F0ZV9uYW1lGAIgASgJEg8KB2Nvbm5faWQY",
-          "AyABKAkSDAoEYXJndhgEIAEoDCIkChFDbGllbnREaXNjb25ubmVjdBIPCgdj",
-          "b25uX2lkGAEgASgJIk8KEENsaWVudFJlcXVlc3RIdWISDwoHY29ubl9pZBgB",
-          "IAEoCRIRCgllbnRpdHlfaWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxs",
-          "UnBjIkcKEUNsaWVudFJlc3BvbnNlSHViEhEKCWVudGl0eV9pZBgBIAEoCRIO",
-          "CgZlcnJNc2cYAiABKAkSDwoHY29udGVudBgDIAEoDCJOCg9DbGllbnROb3Rp",
-          "ZnlIdWISDwoHY29ubl9pZBgBIAEoCRIRCgllbnRpdHlfaWQYAiABKAkSFwoF",
-          "ZXZlbnQYAyABKAsyCC5DYWxsUnBjYgZwcm90bzM="));
+          "Y29ubl9pZBgCIAEoCRIPCgd1c2VyX2lkGAMgASgJEgwKBGFyZ3YYBCABKAwi",
+          "aQofR2F0ZUZvcndhcmRDbGllbnRSZXF1ZXN0U2VydmljZRIUCgxzZXJ2aWNl",
+          "X25hbWUYASABKAkSEQoJZ2F0ZV9uYW1lGAIgASgJEg8KB2Nvbm5faWQYAyAB",
+          "KAkSDAoEYXJndhgEIAEoDCIkChFDbGllbnREaXNjb25ubmVjdBIPCgdjb25u",
+          "X2lkGAEgASgJIk8KEENsaWVudFJlcXVlc3RIdWISDwoHY29ubl9pZBgBIAEo",
+          "CRIRCgllbnRpdHlfaWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxsUnBj",
+          "IkcKEUNsaWVudFJlc3BvbnNlSHViEhEKCWVudGl0eV9pZBgBIAEoCRIOCgZl",
+          "cnJNc2cYAiABKAkSDwoHY29udGVudBgDIAEoDCJOCg9DbGllbnROb3RpZnlI",
+          "dWISDwoHY29ubl9pZBgBIAEoCRIRCgllbnRpdHlfaWQYAiABKAkSFwoFZXZl",
+          "bnQYAyABKAsyCC5DYWxsUnBjYgZwcm90bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientRequestReconnect), global::GateForwardClientRequestReconnect.Parser, new[]{ "GateName", "ConnId", "AccountId", "Argv" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientRequestReconnect), global::GateForwardClientRequestReconnect.Parser, new[]{ "GateName", "ConnId", "UserId", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientRequestService), global::GateForwardClientRequestService.Parser, new[]{ "ServiceName", "GateName", "ConnId", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientDisconnnect), global::ClientDisconnnect.Parser, new[]{ "ConnId" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientRequestHub), global::ClientRequestHub.Parser, new[]{ "ConnId", "EntityId", "Event" }, null, null, null, null),
@@ -86,7 +86,7 @@ public sealed partial class GateForwardClientRequestReconnect : pb::IMessage<Gat
   public GateForwardClientRequestReconnect(GateForwardClientRequestReconnect other) : this() {
     gateName_ = other.gateName_;
     connId_ = other.connId_;
-    accountId_ = other.accountId_;
+    userId_ = other.userId_;
     argv_ = other.argv_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
@@ -121,15 +121,15 @@ public sealed partial class GateForwardClientRequestReconnect : pb::IMessage<Gat
     }
   }
 
-  /// <summary>Field number for the "account_id" field.</summary>
-  public const int AccountIdFieldNumber = 3;
-  private string accountId_ = "";
+  /// <summary>Field number for the "user_id" field.</summary>
+  public const int UserIdFieldNumber = 3;
+  private string userId_ = "";
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public string AccountId {
-    get { return accountId_; }
+  public string UserId {
+    get { return userId_; }
     set {
-      accountId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      userId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
     }
   }
 
@@ -162,7 +162,7 @@ public sealed partial class GateForwardClientRequestReconnect : pb::IMessage<Gat
     }
     if (GateName != other.GateName) return false;
     if (ConnId != other.ConnId) return false;
-    if (AccountId != other.AccountId) return false;
+    if (UserId != other.UserId) return false;
     if (Argv != other.Argv) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -173,7 +173,7 @@ public sealed partial class GateForwardClientRequestReconnect : pb::IMessage<Gat
     int hash = 1;
     if (GateName.Length != 0) hash ^= GateName.GetHashCode();
     if (ConnId.Length != 0) hash ^= ConnId.GetHashCode();
-    if (AccountId.Length != 0) hash ^= AccountId.GetHashCode();
+    if (UserId.Length != 0) hash ^= UserId.GetHashCode();
     if (Argv.Length != 0) hash ^= Argv.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -201,9 +201,9 @@ public sealed partial class GateForwardClientRequestReconnect : pb::IMessage<Gat
       output.WriteRawTag(18);
       output.WriteString(ConnId);
     }
-    if (AccountId.Length != 0) {
+    if (UserId.Length != 0) {
       output.WriteRawTag(26);
-      output.WriteString(AccountId);
+      output.WriteString(UserId);
     }
     if (Argv.Length != 0) {
       output.WriteRawTag(34);
@@ -227,9 +227,9 @@ public sealed partial class GateForwardClientRequestReconnect : pb::IMessage<Gat
       output.WriteRawTag(18);
       output.WriteString(ConnId);
     }
-    if (AccountId.Length != 0) {
+    if (UserId.Length != 0) {
       output.WriteRawTag(26);
-      output.WriteString(AccountId);
+      output.WriteString(UserId);
     }
     if (Argv.Length != 0) {
       output.WriteRawTag(34);
@@ -251,8 +251,8 @@ public sealed partial class GateForwardClientRequestReconnect : pb::IMessage<Gat
     if (ConnId.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(ConnId);
     }
-    if (AccountId.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeStringSize(AccountId);
+    if (UserId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(UserId);
     }
     if (Argv.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeBytesSize(Argv);
@@ -275,8 +275,8 @@ public sealed partial class GateForwardClientRequestReconnect : pb::IMessage<Gat
     if (other.ConnId.Length != 0) {
       ConnId = other.ConnId;
     }
-    if (other.AccountId.Length != 0) {
-      AccountId = other.AccountId;
+    if (other.UserId.Length != 0) {
+      UserId = other.UserId;
     }
     if (other.Argv.Length != 0) {
       Argv = other.Argv;
@@ -309,7 +309,7 @@ public sealed partial class GateForwardClientRequestReconnect : pb::IMessage<Gat
           break;
         }
         case 26: {
-          AccountId = input.ReadString();
+          UserId = input.ReadString();
           break;
         }
         case 34: {
@@ -344,7 +344,7 @@ public sealed partial class GateForwardClientRequestReconnect : pb::IMessage<Gat
           break;
         }
         case 26: {
-          AccountId = input.ReadString();
+          UserId = input.ReadString();
           break;
         }
         case 34: {

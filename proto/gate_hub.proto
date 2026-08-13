@@ -3,7 +3,7 @@ import "common.proto";
 
 message HubCreatePlayerEntity {
   string conn_id = 1;
-  string account_id = 2;
+  string user_id = 2;
   string entity_id = 3;
   string entity_type = 4;
   bytes argv = 5;
@@ -48,7 +48,7 @@ message GateForwardHubNotifyClient {
 }
 
 message GateForwardHubNotifyClientMq {
-  string account_id = 1;
+  string user_id = 1;
   string entity_id = 2;
   CallRpc event = 3;
 }

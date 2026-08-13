@@ -1,0 +1,8 @@
+syntax = "proto3"; 
+
+message TakeOverUser {
+  string user_id = 1;
+  string gate_name = 2;
+  string conn_id = 3;
+  bytes argv = 4;
+}

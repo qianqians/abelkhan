@@ -21,9 +21,9 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients, Dictionary<
             {
                 cli.RegisterNetwork(msg.EntityId, network);
             }
-            clientWaitQueue.Enqueue(msg.AccountId);
-            clientReliabilityQueue.Enqueue(msg.AccountId);
-            entityClients.Add(msg.AccountId, cli);
+            clientWaitQueue.Enqueue(msg.UserId);
+            clientReliabilityQueue.Enqueue(msg.UserId);
+            entityClients.Add(msg.UserId, cli);
         }
     }
     

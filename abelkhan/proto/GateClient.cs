@@ -22,22 +22,22 @@ public static partial class GateClientReflection {
   static GateClientReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "ChFnYXRlX2NsaWVudC5wcm90bxoMY29tbW9uLnByb3RvIjoKFkNsaWVudFJl",
-          "cXVlc3RSZWNvbm5lY3QSEgoKYWNjb3VudF9pZBgBIAEoCRIMCgRhcmd2GAIg",
-          "ASgMIjoKFENsaWVudFJlcXVlc3RTZXJ2aWNlEhQKDHNlcnZpY2VfbmFtZRgB",
-          "IAEoCRIMCgRhcmd2GAIgASgMIlkKG0dhdGVGb3J3YXJkQ2xpZW50UmVxdWVz",
-          "dEh1YhIOCgZtc2dfaWQYASABKAkSEQoJZW50aXR5X2lkGAIgASgJEhcKBWV2",
-          "ZW50GAMgASgLMgguQ2FsbFJwYyJjChxHYXRlRm9yd2FyZENsaWVudFJlc3Bv",
-          "bnNlSHViEg4KBm1zZ19pZBgBIAEoCRIRCgllbnRpdHlfaWQYAiABKAkSDwoH",
-          "ZXJyX21zZxgDIAEoCRIPCgdjb250ZW50GAQgASgMIkgKGkdhdGVGb3J3YXJk",
-          "Q2xpZW50Tm90aWZ5SHViEhEKCWVudGl0eV9pZBgBIAEoCRIXCgVldmVudBgC",
-          "IAEoCzIILkNhbGxScGMiPAoQVmVyc2lvbkhhbmRzaGFrZRITCgttaW5fdmVy",
-          "c2lvbhgBIAEoDRITCgttYXhfdmVyc2lvbhgCIAEoDSImChFBY2tSZWxpYWJp",
-          "bGl0eU1zZxIRCgllbnRpdHlfaWQYASABKAliBnByb3RvMw=="));
+          "ChFnYXRlX2NsaWVudC5wcm90bxoMY29tbW9uLnByb3RvIjcKFkNsaWVudFJl",
+          "cXVlc3RSZWNvbm5lY3QSDwoHdXNlcl9pZBgBIAEoCRIMCgRhcmd2GAIgASgM",
+          "IjoKFENsaWVudFJlcXVlc3RTZXJ2aWNlEhQKDHNlcnZpY2VfbmFtZRgBIAEo",
+          "CRIMCgRhcmd2GAIgASgMIlkKG0dhdGVGb3J3YXJkQ2xpZW50UmVxdWVzdEh1",
+          "YhIOCgZtc2dfaWQYASABKAkSEQoJZW50aXR5X2lkGAIgASgJEhcKBWV2ZW50",
+          "GAMgASgLMgguQ2FsbFJwYyJjChxHYXRlRm9yd2FyZENsaWVudFJlc3BvbnNl",
+          "SHViEg4KBm1zZ19pZBgBIAEoCRIRCgllbnRpdHlfaWQYAiABKAkSDwoHZXJy",
+          "X21zZxgDIAEoCRIPCgdjb250ZW50GAQgASgMIkgKGkdhdGVGb3J3YXJkQ2xp",
+          "ZW50Tm90aWZ5SHViEhEKCWVudGl0eV9pZBgBIAEoCRIXCgVldmVudBgCIAEo",
+          "CzIILkNhbGxScGMiPAoQVmVyc2lvbkhhbmRzaGFrZRITCgttaW5fdmVyc2lv",
+          "bhgBIAEoDRITCgttYXhfdmVyc2lvbhgCIAEoDSImChFBY2tSZWxpYWJpbGl0",
+          "eU1zZxIRCgllbnRpdHlfaWQYASABKAliBnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::ClientRequestReconnect), global::ClientRequestReconnect.Parser, new[]{ "AccountId", "Argv" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::ClientRequestReconnect), global::ClientRequestReconnect.Parser, new[]{ "UserId", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientRequestService), global::ClientRequestService.Parser, new[]{ "ServiceName", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientRequestHub), global::GateForwardClientRequestHub.Parser, new[]{ "MsgId", "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientResponseHub), global::GateForwardClientResponseHub.Parser, new[]{ "MsgId", "EntityId", "ErrMsg", "Content" }, null, null, null, null),
@@ -85,7 +85,7 @@ public sealed partial class ClientRequestReconnect : pb::IMessage<ClientRequestR
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public ClientRequestReconnect(ClientRequestReconnect other) : this() {
-    accountId_ = other.accountId_;
+    userId_ = other.userId_;
     argv_ = other.argv_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
@@ -96,15 +96,15 @@ public sealed partial class ClientRequestReconnect : pb::IMessage<ClientRequestR
     return new ClientRequestReconnect(this);
   }
 
-  /// <summary>Field number for the "account_id" field.</summary>
-  public const int AccountIdFieldNumber = 1;
-  private string accountId_ = "";
+  /// <summary>Field number for the "user_id" field.</summary>
+  public const int UserIdFieldNumber = 1;
+  private string userId_ = "";
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public string AccountId {
-    get { return accountId_; }
+  public string UserId {
+    get { return userId_; }
     set {
-      accountId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      userId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
     }
   }
 
@@ -135,7 +135,7 @@ public sealed partial class ClientRequestReconnect : pb::IMessage<ClientRequestR
     if (ReferenceEquals(other, this)) {
       return true;
     }
-    if (AccountId != other.AccountId) return false;
+    if (UserId != other.UserId) return false;
     if (Argv != other.Argv) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -144,7 +144,7 @@ public sealed partial class ClientRequestReconnect : pb::IMessage<ClientRequestR
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
-    if (AccountId.Length != 0) hash ^= AccountId.GetHashCode();
+    if (UserId.Length != 0) hash ^= UserId.GetHashCode();
     if (Argv.Length != 0) hash ^= Argv.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -164,9 +164,9 @@ public sealed partial class ClientRequestReconnect : pb::IMessage<ClientRequestR
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    if (AccountId.Length != 0) {
+    if (UserId.Length != 0) {
       output.WriteRawTag(10);
-      output.WriteString(AccountId);
+      output.WriteString(UserId);
     }
     if (Argv.Length != 0) {
       output.WriteRawTag(18);
@@ -182,9 +182,9 @@ public sealed partial class ClientRequestReconnect : pb::IMessage<ClientRequestR
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    if (AccountId.Length != 0) {
+    if (UserId.Length != 0) {
       output.WriteRawTag(10);
-      output.WriteString(AccountId);
+      output.WriteString(UserId);
     }
     if (Argv.Length != 0) {
       output.WriteRawTag(18);
@@ -200,8 +200,8 @@ public sealed partial class ClientRequestReconnect : pb::IMessage<ClientRequestR
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
-    if (AccountId.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeStringSize(AccountId);
+    if (UserId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(UserId);
     }
     if (Argv.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeBytesSize(Argv);
@@ -218,8 +218,8 @@ public sealed partial class ClientRequestReconnect : pb::IMessage<ClientRequestR
     if (other == null) {
       return;
     }
-    if (other.AccountId.Length != 0) {
-      AccountId = other.AccountId;
+    if (other.UserId.Length != 0) {
+      UserId = other.UserId;
     }
     if (other.Argv.Length != 0) {
       Argv = other.Argv;
@@ -244,7 +244,7 @@ public sealed partial class ClientRequestReconnect : pb::IMessage<ClientRequestR
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 10: {
-          AccountId = input.ReadString();
+          UserId = input.ReadString();
           break;
         }
         case 18: {
@@ -271,7 +271,7 @@ public sealed partial class ClientRequestReconnect : pb::IMessage<ClientRequestR
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
         case 10: {
-          AccountId = input.ReadString();
+          UserId = input.ReadString();
           break;
         }
         case 18: {

@@ -44,7 +44,7 @@ public class ClientMsgHandle
                 {
                     GateName = _cfg.GateId,
                     ConnId = _client.ConnId,
-                    AccountId = msg.AccountId,
+                    UserId = msg.UserId,
                     Argv = msg.Argv,
                 };
                 _ = _client.SendToServer(_cfg.EnterService, _rpc.Notify(Consts.GateForwardClientRequestReconnect, forward));
