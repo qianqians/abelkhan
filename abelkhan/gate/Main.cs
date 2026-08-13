@@ -62,7 +62,6 @@ class Main
                     await Task.Delay(1);
                     continue;
                 }
-                
                 foreach (var m in msg)
                 {
                     if (!OnMqMsg(rpc, m))
@@ -192,24 +191,30 @@ class Main
             _external.Start();
 
             var timer = new TimerService();
-            var removeList = new List<string>();
             timer.AddTickTime(3000, (tick) =>
             {
                 lock (_clients)
                 {
-                    foreach (var (uuid, client) in _clients)
-                    {
-                        if (5000 < (tick-client.LastEventTime))
-                        {
-                            removeList.Add(uuid);
-                        }
-                    }
+                    var removeList = _clients
+                        .Where((kv, _) => 5000 < (tick-kv.Value.LastEventTime))
+                        .Select(kv => kv.Key)
+                        .ToList();
+                    
                     foreach (var uuid in removeList)
                     {
-                        _clients.Remove(uuid);
+                        if (_clients.Remove(uuid, out var cli))
+                        {
+                            var removeEntity = _entityClients
+                                .Where((kv, _) => kv.Value.ConnId == cli.ConnId)
+                                .Select(kv => kv.Key)
+                                .ToList();
+                            foreach (var entityId in removeEntity)
+                            {
+                                _entityClients.Remove(entityId);
+                            }
+                        }
                     }
                 }
-                removeList.Clear();
             });
             while (!_isRun)
             {
@@ -225,7 +230,6 @@ class Main
             await _internal.Join();
             await _external.Join();
 
-            _isRun = false;
             Task.WaitAll(_tWait!, _tWaitReliability!);
         }
         catch (Exception ex)
@@ -233,5 +237,9 @@ class Main
             Log.Error("gate Main run error:{0}", ex);
         }
     }
-    
+
+    public void Stop()
+    {
+        _isRun = false;
+    }
 }
