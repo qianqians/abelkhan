@@ -28,7 +28,8 @@ class Main
     private WebSocketAcceptService? _external;
     private Dictionary<string, Client>? _clients;
     private Dictionary<string, Client>? _entityClients;
-    private List<HubMsgHandle> _hubs;
+    // ReSharper disable once CollectionNeverQueried.Local
+    private List<HubMsgHandle>? _hubs;
 
     private bool _isRun = true;
     private Task? _tWait;
