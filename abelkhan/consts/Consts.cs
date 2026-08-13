@@ -14,7 +14,7 @@ public class Consts
     public const string GateForwardClientResponseHub = "gate_forward_client_response_hub";
     public const string GateForwardClientNotifyHub = "Gate_forward_client_notify_hub";
     public const string VersionHandshake  = "version_handshake";
-    public const string CallBackReliabilityMsg = "call_back_reliability_msg";
+    public const string AckReliabilityMsg = "ack_reliability_msg";
     
     public const string GateForwardClientRequestReconnect = "gate_forward_client_request_reconnect";
     public const string GateForwardClientRequestService = "gate_forward_client_request_service";

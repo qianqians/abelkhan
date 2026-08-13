@@ -45,6 +45,7 @@ message HubNotifyClient {
 message HubNotifyClientMq {
   string entity_id = 1;
   CallRpc event = 2;
+  bool need_ack = 3;
 }
 
 message KickOff {

@@ -88,9 +88,9 @@ public class ClientMsgHandle
                 }
                 break;
             }
-            case Consts.CallBackReliabilityMsg:
+            case Consts.AckReliabilityMsg:
             {
-                var msg = _rpc.OnMsg<CallBackReliabilityMsg>(ntf.Event.Content.ToByteArray());
+                var msg = _rpc.OnMsg<AckReliabilityMsg>(ntf.Event.Content.ToByteArray());
                 if (!string.IsNullOrEmpty(msg.EntityId))
                 {
                     _ = _redis.DeleteListElem(string.Format(Consts.EntityReliabilityClientMq, msg.EntityId));

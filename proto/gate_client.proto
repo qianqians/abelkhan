@@ -34,6 +34,6 @@ message VersionHandshake {
   uint32 max_version = 2;
 }
 
-message CallBackReliabilityMsg {
+message AckReliabilityMsg {
   string entity_id = 1;
 }

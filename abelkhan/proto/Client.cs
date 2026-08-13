@@ -33,9 +33,9 @@ public static partial class ClientReflection {
           "IAEoCRIXCgVldmVudBgCIAEoCzIILkNhbGxScGMiNAoRSHViUmVzcG9uc2VD",
           "bGllbnQSDgoGZXJyTXNnGAEgASgJEg8KB2NvbnRlbnQYAiABKAwiPQoPSHVi",
           "Tm90aWZ5Q2xpZW50EhEKCWVudGl0eV9pZBgBIAEoCRIXCgVldmVudBgCIAEo",
-          "CzIILkNhbGxScGMiPwoRSHViTm90aWZ5Q2xpZW50TXESEQoJZW50aXR5X2lk",
-          "GAEgASgJEhcKBWV2ZW50GAIgASgLMgguQ2FsbFJwYyIeCgdLaWNrT2ZmEhMK",
-          "C3Byb21wdF9pbmZvGAEgASgJYgZwcm90bzM="));
+          "CzIILkNhbGxScGMiUQoRSHViTm90aWZ5Q2xpZW50TXESEQoJZW50aXR5X2lk",
+          "GAEgASgJEhcKBWV2ZW50GAIgASgLMgguQ2FsbFJwYxIQCghuZWVkX2FjaxgD",
+          "IAEoCCIeCgdLaWNrT2ZmEhMKC3Byb21wdF9pbmZvGAEgASgJYgZwcm90bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -47,7 +47,7 @@ public static partial class ClientReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::HubRequestClient), global::HubRequestClient.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubResponseClient), global::HubResponseClient.Parser, new[]{ "ErrMsg", "Content" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubNotifyClient), global::HubNotifyClient.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::HubNotifyClientMq), global::HubNotifyClientMq.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::HubNotifyClientMq), global::HubNotifyClientMq.Parser, new[]{ "EntityId", "Event", "NeedAck" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::KickOff), global::KickOff.Parser, new[]{ "PromptInfo" }, null, null, null, null)
         }));
   }
@@ -2027,6 +2027,7 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
   public HubNotifyClientMq(HubNotifyClientMq other) : this() {
     entityId_ = other.entityId_;
     event_ = other.event_ != null ? other.event_.Clone() : null;
+    needAck_ = other.needAck_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -2060,6 +2061,18 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
     }
   }
 
+  /// <summary>Field number for the "need_ack" field.</summary>
+  public const int NeedAckFieldNumber = 3;
+  private bool needAck_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool NeedAck {
+    get { return needAck_; }
+    set {
+      needAck_ = value;
+    }
+  }
+
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
@@ -2077,6 +2090,7 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
     }
     if (EntityId != other.EntityId) return false;
     if (!object.Equals(Event, other.Event)) return false;
+    if (NeedAck != other.NeedAck) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -2086,6 +2100,7 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
     int hash = 1;
     if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
     if (event_ != null) hash ^= Event.GetHashCode();
+    if (NeedAck != false) hash ^= NeedAck.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -2112,6 +2127,10 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
       output.WriteRawTag(18);
       output.WriteMessage(Event);
     }
+    if (NeedAck != false) {
+      output.WriteRawTag(24);
+      output.WriteBool(NeedAck);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -2130,6 +2149,10 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
       output.WriteRawTag(18);
       output.WriteMessage(Event);
     }
+    if (NeedAck != false) {
+      output.WriteRawTag(24);
+      output.WriteBool(NeedAck);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -2145,6 +2168,9 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
     }
     if (event_ != null) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(Event);
+    }
+    if (NeedAck != false) {
+      size += 1 + 1;
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -2166,6 +2192,9 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
         Event = new global::CallRpc();
       }
       Event.MergeFrom(other.Event);
+    }
+    if (other.NeedAck != false) {
+      NeedAck = other.NeedAck;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -2197,6 +2226,10 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
           input.ReadMessage(Event);
           break;
         }
+        case 24: {
+          NeedAck = input.ReadBool();
+          break;
+        }
       }
     }
   #endif
@@ -2225,6 +2258,10 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
             Event = new global::CallRpc();
           }
           input.ReadMessage(Event);
+          break;
+        }
+        case 24: {
+          NeedAck = input.ReadBool();
           break;
         }
       }

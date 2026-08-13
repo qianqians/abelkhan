@@ -54,6 +54,7 @@ export interface HubNotifyClient {
 export interface HubNotifyClientMq {
   entityId: string;
   event: CallRpc | undefined;
+  needAck: boolean;
 }
 
 export interface KickOff {
@@ -729,7 +730,7 @@ export const HubNotifyClient: MessageFns<HubNotifyClient> = {
 };
 
 function createBaseHubNotifyClientMq(): HubNotifyClientMq {
-  return { entityId: "", event: undefined };
+  return { entityId: "", event: undefined, needAck: false };
 }
 
 export const HubNotifyClientMq: MessageFns<HubNotifyClientMq> = {
@@ -739,6 +740,9 @@ export const HubNotifyClientMq: MessageFns<HubNotifyClientMq> = {
     }
     if (message.event !== undefined) {
       CallRpc.encode(message.event, writer.uint32(18).fork()).join();
+    }
+    if (message.needAck !== false) {
+      writer.uint32(24).bool(message.needAck);
     }
     return writer;
   },
@@ -766,6 +770,14 @@ export const HubNotifyClientMq: MessageFns<HubNotifyClientMq> = {
           message.event = CallRpc.decode(reader, reader.uint32());
           continue;
         }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.needAck = reader.bool();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -783,6 +795,11 @@ export const HubNotifyClientMq: MessageFns<HubNotifyClientMq> = {
         ? globalThis.String(object.entity_id)
         : "",
       event: isSet(object.event) ? CallRpc.fromJSON(object.event) : undefined,
+      needAck: isSet(object.needAck)
+        ? globalThis.Boolean(object.needAck)
+        : isSet(object.need_ack)
+        ? globalThis.Boolean(object.need_ack)
+        : false,
     };
   },
 
@@ -793,6 +810,9 @@ export const HubNotifyClientMq: MessageFns<HubNotifyClientMq> = {
     }
     if (message.event !== undefined) {
       obj.event = CallRpc.toJSON(message.event);
+    }
+    if (message.needAck !== false) {
+      obj.needAck = message.needAck;
     }
     return obj;
   },
@@ -806,6 +826,7 @@ export const HubNotifyClientMq: MessageFns<HubNotifyClientMq> = {
     message.event = (object.event !== undefined && object.event !== null)
       ? CallRpc.fromPartial(object.event)
       : undefined;
+    message.needAck = object.needAck ?? false;
     return message;
   },
 };

@@ -45,7 +45,7 @@ class Main
                 var rpc = new WRpc();
                 _ = new HubMsgHandle(rpc, new HubGeneralMsgHandle(_clients!, _entityClients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
 
-                if (_clientWaitQueue!.TryDequeue(out var playerId))
+                if (_clientWaitQueue == null || !_clientWaitQueue.TryDequeue(out var playerId))
                 {
                     await Task.Delay(1);
                     continue;
@@ -65,7 +65,7 @@ class Main
                 }
                 foreach (var m in msg)
                 {
-                    if (!OnMqMsg(rpc, m))
+                    if (!OnMqMsg(false, rpc, m))
                     {
                         await Task.Delay(1);
                     }
@@ -85,7 +85,7 @@ class Main
 
             while (_isRun)
             {
-                if (_clientReliabilityQueue!.TryDequeue(out var playerId))
+                if (_clientReliabilityQueue == null || !_clientReliabilityQueue.TryDequeue(out var playerId))
                 {
                     await Task.Delay(1);
                     continue;
@@ -102,7 +102,7 @@ class Main
                     await Task.Delay(1);
                     continue;
                 }
-                if (!OnMqMsg(rpc, data))
+                if (!OnMqMsg(true, rpc, data))
                 {
                     await Task.Delay(1);
                 }
@@ -110,7 +110,7 @@ class Main
         }, TaskCreationOptions.LongRunning);
     }
 
-    private bool OnMqMsg(WRpc rpc, byte[] data)
+    private bool OnMqMsg(bool needAck, WRpc rpc, byte[] data)
     {
         var parser = new MessageParser<Msg>(() => new Msg());
         var msg = parser.ParseFrom(data);
@@ -128,14 +128,15 @@ class Main
         }
                 
         var ev = rpc.OnMsg<GateForwardHubNotifyClientMq>(msg.Notify.Event.Content.ToByteArray());
-        var forward = new HubNotifyClient()
+        var forward = new HubNotifyClientMq()
         {
             EntityId = ev.EntityId,
             Event = ev.Event,
+            NeedAck = needAck,
         };
         if (_entityClients!.TryGetValue(ev.EntityId, out var cli))
         {
-            _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClient, forward));
+            _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClientMq, forward));
         }
         
         return true;

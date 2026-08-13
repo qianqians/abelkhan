@@ -32,8 +32,8 @@ public static partial class GateClientReflection {
           "ZXJyX21zZxgDIAEoCRIPCgdjb250ZW50GAQgASgMIkgKGkdhdGVGb3J3YXJk",
           "Q2xpZW50Tm90aWZ5SHViEhEKCWVudGl0eV9pZBgBIAEoCRIXCgVldmVudBgC",
           "IAEoCzIILkNhbGxScGMiPAoQVmVyc2lvbkhhbmRzaGFrZRITCgttaW5fdmVy",
-          "c2lvbhgBIAEoDRITCgttYXhfdmVyc2lvbhgCIAEoDSIrChZDYWxsQmFja1Jl",
-          "bGlhYmlsaXR5TXNnEhEKCWVudGl0eV9pZBgBIAEoCWIGcHJvdG8z"));
+          "c2lvbhgBIAEoDRITCgttYXhfdmVyc2lvbhgCIAEoDSImChFBY2tSZWxpYWJp",
+          "bGl0eU1zZxIRCgllbnRpdHlfaWQYASABKAliBnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -43,7 +43,7 @@ public static partial class GateClientReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientResponseHub), global::GateForwardClientResponseHub.Parser, new[]{ "MsgId", "EntityId", "ErrMsg", "Content" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientNotifyHub), global::GateForwardClientNotifyHub.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::VersionHandshake), global::VersionHandshake.Parser, new[]{ "MinVersion", "MaxVersion" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::CallBackReliabilityMsg), global::CallBackReliabilityMsg.Parser, new[]{ "EntityId" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::AckReliabilityMsg), global::AckReliabilityMsg.Parser, new[]{ "EntityId" }, null, null, null, null)
         }));
   }
   #endregion
@@ -1590,16 +1590,16 @@ public sealed partial class VersionHandshake : pb::IMessage<VersionHandshake>
 }
 
 [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-public sealed partial class CallBackReliabilityMsg : pb::IMessage<CallBackReliabilityMsg>
+public sealed partial class AckReliabilityMsg : pb::IMessage<AckReliabilityMsg>
 #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     , pb::IBufferMessage
 #endif
 {
-  private static readonly pb::MessageParser<CallBackReliabilityMsg> _parser = new pb::MessageParser<CallBackReliabilityMsg>(() => new CallBackReliabilityMsg());
+  private static readonly pb::MessageParser<AckReliabilityMsg> _parser = new pb::MessageParser<AckReliabilityMsg>(() => new AckReliabilityMsg());
   private pb::UnknownFieldSet _unknownFields;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public static pb::MessageParser<CallBackReliabilityMsg> Parser { get { return _parser; } }
+  public static pb::MessageParser<AckReliabilityMsg> Parser { get { return _parser; } }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -1615,7 +1615,7 @@ public sealed partial class CallBackReliabilityMsg : pb::IMessage<CallBackReliab
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public CallBackReliabilityMsg() {
+  public AckReliabilityMsg() {
     OnConstruction();
   }
 
@@ -1623,15 +1623,15 @@ public sealed partial class CallBackReliabilityMsg : pb::IMessage<CallBackReliab
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public CallBackReliabilityMsg(CallBackReliabilityMsg other) : this() {
+  public AckReliabilityMsg(AckReliabilityMsg other) : this() {
     entityId_ = other.entityId_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public CallBackReliabilityMsg Clone() {
-    return new CallBackReliabilityMsg(this);
+  public AckReliabilityMsg Clone() {
+    return new AckReliabilityMsg(this);
   }
 
   /// <summary>Field number for the "entity_id" field.</summary>
@@ -1649,12 +1649,12 @@ public sealed partial class CallBackReliabilityMsg : pb::IMessage<CallBackReliab
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
-    return Equals(other as CallBackReliabilityMsg);
+    return Equals(other as AckReliabilityMsg);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public bool Equals(CallBackReliabilityMsg other) {
+  public bool Equals(AckReliabilityMsg other) {
     if (ReferenceEquals(other, null)) {
       return false;
     }
@@ -1727,7 +1727,7 @@ public sealed partial class CallBackReliabilityMsg : pb::IMessage<CallBackReliab
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public void MergeFrom(CallBackReliabilityMsg other) {
+  public void MergeFrom(AckReliabilityMsg other) {
     if (other == null) {
       return;
     }
