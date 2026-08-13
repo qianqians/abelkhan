@@ -27,7 +27,8 @@ class Main
     private TcpAcceptService? _internal;
     private WebSocketAcceptService? _external;
     private Dictionary<string, Client>? _clients;
-    private Dictionary<string, Client>? _entityClients; 
+    private Dictionary<string, Client>? _entityClients;
+    private List<HubMsgHandle> _hubs;
 
     private bool _isRun = true;
     private Task? _tWait;
@@ -149,6 +150,8 @@ class Main
             
             _clients = new();
             _entityClients = new Dictionary<string, Client>();
+            _hubs = new();
+            
             _redis = new RedisHandle(cfg.RedisUrl, cfg.RedisPwd);
             StartRedisMsg();
             StartRedisReliabilityMsg();
@@ -157,7 +160,8 @@ class Main
             _internal.OnListenAccept += network =>
             {
                 var rpc = new WRpc();
-                _ = new HubMsgHandle(network, rpc, new HubGeneralMsgHandle(_clients, _entityClients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc));
+                var h = new HubGeneralMsgHandle(_clients, _entityClients, _clientWaitQueue, _clientReliabilityQueue, rpc);
+                _hubs.Add(new HubMsgHandle(network, rpc, h));
                 network.OnReceive(rpc.OnNetworkData);
             };
             _internal.Start();
