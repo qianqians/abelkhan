@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Runtime.InteropServices;
 using Google.Protobuf;
 using core;
 using engine;
@@ -21,7 +22,7 @@ public struct GateConfig()
     public uint MaxVersion = 0;
 }
 
-class Main
+class MainClass
 {
     private RedisHandle? _redis;
     private TcpAcceptService? _internal;
@@ -235,6 +236,7 @@ class Main
                     }
                 }
             });
+            
             while (!_isRun)
             {
                 var begin = TimerService.Tick;
@@ -257,8 +259,46 @@ class Main
         }
     }
 
-    public void Stop()
+    private void Stop()
     {
         _isRun = false;
+    }
+    
+    void HandleSignal(PosixSignalContext context)
+    {
+        context.Cancel = true;
+        Stop();
+    }
+    
+    static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        var ex = e.ExceptionObject as System.Exception;
+        Log.Error($"not handle exception:{ex}");
+    }
+    
+    public static void Main(string[] args)
+    {
+        FileStream fs = File.OpenRead(args[0]);
+        byte[] data = new byte[fs.Length];
+        int offset = 0;
+        int remaining = data.Length;
+        while (remaining > 0)
+        {
+
+            int read = fs.Read(data, offset, remaining);
+            if (read <= 0)
+                throw new EndOfStreamException("file read at" + read.ToString() + " failed");
+
+            remaining -= read;
+            offset += read;
+        }
+        var cfg = Newtonsoft.Json.JsonConvert.DeserializeObject<GateConfig>(System.Text.Encoding.Default.GetString(data));
+        
+        AppDomain.CurrentDomain.UnhandledException += UnhandledException;
+        
+        var instance = new MainClass();
+        using var sigTermReg = PosixSignalRegistration.Create(PosixSignal.SIGTERM, instance.HandleSignal);
+        using var sigIntReg  = PosixSignalRegistration.Create(PosixSignal.SIGINT, instance.HandleSignal);
+        instance.Run(cfg);
     }
 }
