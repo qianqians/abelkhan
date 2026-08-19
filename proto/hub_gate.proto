@@ -15,7 +15,7 @@ message GateForwardClientRequestService {
   bytes argv = 4;
 }
 
-message ClientDisconnnect {
+message ClientDisconnect {
   string conn_id = 1;
 }
 

@@ -27,19 +27,19 @@ public static partial class HubGateReflection {
           "Y29ubl9pZBgCIAEoCRIPCgd1c2VyX2lkGAMgASgJEgwKBGFyZ3YYBCABKAwi",
           "aQofR2F0ZUZvcndhcmRDbGllbnRSZXF1ZXN0U2VydmljZRIUCgxzZXJ2aWNl",
           "X25hbWUYASABKAkSEQoJZ2F0ZV9uYW1lGAIgASgJEg8KB2Nvbm5faWQYAyAB",
-          "KAkSDAoEYXJndhgEIAEoDCIkChFDbGllbnREaXNjb25ubmVjdBIPCgdjb25u",
-          "X2lkGAEgASgJIk8KEENsaWVudFJlcXVlc3RIdWISDwoHY29ubl9pZBgBIAEo",
-          "CRIRCgllbnRpdHlfaWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxsUnBj",
-          "IkcKEUNsaWVudFJlc3BvbnNlSHViEhEKCWVudGl0eV9pZBgBIAEoCRIOCgZl",
-          "cnJNc2cYAiABKAkSDwoHY29udGVudBgDIAEoDCJOCg9DbGllbnROb3RpZnlI",
-          "dWISDwoHY29ubl9pZBgBIAEoCRIRCgllbnRpdHlfaWQYAiABKAkSFwoFZXZl",
-          "bnQYAyABKAsyCC5DYWxsUnBjYgZwcm90bzM="));
+          "KAkSDAoEYXJndhgEIAEoDCIjChBDbGllbnREaXNjb25uZWN0Eg8KB2Nvbm5f",
+          "aWQYASABKAkiTwoQQ2xpZW50UmVxdWVzdEh1YhIPCgdjb25uX2lkGAEgASgJ",
+          "EhEKCWVudGl0eV9pZBgCIAEoCRIXCgVldmVudBgDIAEoCzIILkNhbGxScGMi",
+          "RwoRQ2xpZW50UmVzcG9uc2VIdWISEQoJZW50aXR5X2lkGAEgASgJEg4KBmVy",
+          "ck1zZxgCIAEoCRIPCgdjb250ZW50GAMgASgMIk4KD0NsaWVudE5vdGlmeUh1",
+          "YhIPCgdjb25uX2lkGAEgASgJEhEKCWVudGl0eV9pZBgCIAEoCRIXCgVldmVu",
+          "dBgDIAEoCzIILkNhbGxScGNiBnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientRequestReconnect), global::GateForwardClientRequestReconnect.Parser, new[]{ "GateName", "ConnId", "UserId", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientRequestService), global::GateForwardClientRequestService.Parser, new[]{ "ServiceName", "GateName", "ConnId", "Argv" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::ClientDisconnnect), global::ClientDisconnnect.Parser, new[]{ "ConnId" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::ClientDisconnect), global::ClientDisconnect.Parser, new[]{ "ConnId" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientRequestHub), global::ClientRequestHub.Parser, new[]{ "ConnId", "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientResponseHub), global::ClientResponseHub.Parser, new[]{ "EntityId", "ErrMsg", "Content" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientNotifyHub), global::ClientNotifyHub.Parser, new[]{ "ConnId", "EntityId", "Event" }, null, null, null, null)
@@ -668,16 +668,16 @@ public sealed partial class GateForwardClientRequestService : pb::IMessage<GateF
 }
 
 [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-public sealed partial class ClientDisconnnect : pb::IMessage<ClientDisconnnect>
+public sealed partial class ClientDisconnect : pb::IMessage<ClientDisconnect>
 #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     , pb::IBufferMessage
 #endif
 {
-  private static readonly pb::MessageParser<ClientDisconnnect> _parser = new pb::MessageParser<ClientDisconnnect>(() => new ClientDisconnnect());
+  private static readonly pb::MessageParser<ClientDisconnect> _parser = new pb::MessageParser<ClientDisconnect>(() => new ClientDisconnect());
   private pb::UnknownFieldSet _unknownFields;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public static pb::MessageParser<ClientDisconnnect> Parser { get { return _parser; } }
+  public static pb::MessageParser<ClientDisconnect> Parser { get { return _parser; } }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -693,7 +693,7 @@ public sealed partial class ClientDisconnnect : pb::IMessage<ClientDisconnnect>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public ClientDisconnnect() {
+  public ClientDisconnect() {
     OnConstruction();
   }
 
@@ -701,15 +701,15 @@ public sealed partial class ClientDisconnnect : pb::IMessage<ClientDisconnnect>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public ClientDisconnnect(ClientDisconnnect other) : this() {
+  public ClientDisconnect(ClientDisconnect other) : this() {
     connId_ = other.connId_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public ClientDisconnnect Clone() {
-    return new ClientDisconnnect(this);
+  public ClientDisconnect Clone() {
+    return new ClientDisconnect(this);
   }
 
   /// <summary>Field number for the "conn_id" field.</summary>
@@ -727,12 +727,12 @@ public sealed partial class ClientDisconnnect : pb::IMessage<ClientDisconnnect>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
-    return Equals(other as ClientDisconnnect);
+    return Equals(other as ClientDisconnect);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public bool Equals(ClientDisconnnect other) {
+  public bool Equals(ClientDisconnect other) {
     if (ReferenceEquals(other, null)) {
       return false;
     }
@@ -805,7 +805,7 @@ public sealed partial class ClientDisconnnect : pb::IMessage<ClientDisconnnect>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public void MergeFrom(ClientDisconnnect other) {
+  public void MergeFrom(ClientDisconnect other) {
     if (other == null) {
       return;
     }

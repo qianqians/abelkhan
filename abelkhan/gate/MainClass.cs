@@ -298,7 +298,7 @@ class MainClass
         
         var instance = new MainClass();
         using var sigTermReg = PosixSignalRegistration.Create(PosixSignal.SIGTERM, instance.HandleSignal);
-        using var sigIntReg  = PosixSignalRegistration.Create(PosixSignal.SIGINT, instance.HandleSignal);
+        using var sigIntReg = PosixSignalRegistration.Create(PosixSignal.SIGINT, instance.HandleSignal);
         instance.Run(cfg);
     }
 }
