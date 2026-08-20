@@ -1,14 +1,18 @@
 ﻿using consts;
 using engine;
+using core;
 namespace hub;
 
 public class GateMsgHandle
 {
     private readonly WRpc _rpc;
+    private readonly Dictionary<string, Entity> _entities;
     
-    public GateMsgHandle(WRpc rpc)
+    public GateMsgHandle(WRpc rpc, Dictionary<string, Entity> entities)
     {
         _rpc = rpc;
+        _entities = entities;
+        
         _rpc.OnNotify += OnNotify;
         _rpc.OnRequest += OnRequest;
         _rpc.OnResponse += OnResponse;
@@ -39,7 +43,7 @@ public class GateMsgHandle
         {
             case Consts.ClientRequestHub:
             {
-                OnClientRequestHub(_rpc.OnMsg<ClientRequestHub>(req.Event.Content.ToByteArray()));
+                OnClientRequestHub(req.MsgId, _rpc.OnMsg<ClientRequestHub>(req.Event.Content.ToByteArray()));
                 break;
             }
             default:
@@ -53,7 +57,7 @@ public class GateMsgHandle
         {
             case Consts.ClientResponseHub:
             {
-                OnClientResponseHub(_rpc.OnMsg<ClientResponseHub>(rsp.Event.Content.ToByteArray()));
+                OnClientResponseHub(rsp.MsgId, _rpc.OnMsg<ClientResponseHub>(rsp.Event.Content.ToByteArray()));
                 break;
             }
             default:
@@ -63,21 +67,24 @@ public class GateMsgHandle
 
     private void OnClientDisconnect(ClientDisconnect msg)
     {
-        
+        Log.Info("Client:{0} Disconnect", msg.ConnId);
     }
 
-    private void OnClientRequestHub(ClientRequestHub msg)
+    private void OnClientRequestHub(string msgId, ClientRequestHub msg)
     {
         
     }
 
-    private void OnClientResponseHub(ClientResponseHub msg)
+    private void OnClientResponseHub(string msgId, ClientResponseHub msg)
     {
         
     }
 
     private void OnClientNotifyHub(ClientNotifyHub msg)
     {
-        
+        if (_entities.TryGetValue(msg.EntityId, out var entity))
+        {
+            entity.OnDoMsg(msg.ConnId, msg.Event.ProtoName, msg.Event.Content);
+        }
     }
 }

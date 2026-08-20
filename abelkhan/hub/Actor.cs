@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace engine;
+namespace hub;
 
 interface IJob
 {
