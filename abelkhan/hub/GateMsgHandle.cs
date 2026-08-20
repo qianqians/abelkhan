@@ -72,7 +72,14 @@ public class GateMsgHandle
 
     private void OnClientRequestHub(string msgId, ClientRequestHub msg)
     {
-        
+        if (_entities.TryGetValue(msg.EntityId, out var entity))
+        {
+            entity.OnDoMsg(msg.ConnId, msg.Event.ProtoName, msg.Event.Content);
+        } 
+        else
+        {
+            Log.Error($"OnClientRequestHub Entity:{msg.EntityId} not found!");
+        }
     }
 
     private void OnClientResponseHub(string msgId, ClientResponseHub msg)
@@ -85,6 +92,10 @@ public class GateMsgHandle
         if (_entities.TryGetValue(msg.EntityId, out var entity))
         {
             entity.OnDoMsg(msg.ConnId, msg.Event.ProtoName, msg.Event.Content);
+        }
+        else
+        {
+            Log.Error($"OnClientNotifyHub Entity:{msg.EntityId} not found!");
         }
     }
 }
