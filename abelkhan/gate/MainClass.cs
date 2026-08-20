@@ -1,25 +1,31 @@
 ﻿using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using Google.Protobuf;
+using Consul;
 using core;
 using engine;
 using consts;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 namespace gate;
 
 public struct GateConfig()
 {
-    public string GateId = string.Empty;
-    public string RedisUrl = string.Empty;
-    public string RedisPwd  = string.Empty;
-    public ushort PortInternal = 0;
-    public ushort PortExternal = 0;
-    public string Pfx = string.Empty;
-    public string PfxPassword  = string.Empty;
-    public string EnterService = string.Empty;
-    public uint MinVersion = 0;
-    public uint MaxVersion = 0;
+    public readonly string GateId = string.Empty;
+    public readonly string RedisUrl = string.Empty;
+    public readonly string RedisPwd  = string.Empty;
+    public readonly string Ip = string.Empty;
+    public readonly ushort PortInternal = 0;
+    public readonly ushort PortExternal = 0;
+    public readonly ushort PortHealth = 0;
+    public readonly string Pfx = string.Empty;
+    public readonly string PfxPassword  = string.Empty;
+    public readonly string ConsulUrl  = string.Empty;
+    public readonly string EnterService = string.Empty;
+    public readonly uint MinVersion = 0;
+    public readonly uint MaxVersion = 0;
 }
 
 class MainClass
@@ -37,6 +43,8 @@ class MainClass
     private ConcurrentQueue<string>? _clientWaitQueue;
     private Task? _tWaitReliability;
     private ConcurrentQueue<string>? _clientReliabilityQueue;
+    private readonly TimerService _timer = new();
+    private ConsulClient? _consul;
 
     private void StartRedisMsg()
     {
@@ -157,7 +165,67 @@ class MainClass
         return true;
     }
 
-    public async void Run(GateConfig cfg)
+    private async Task ReportServiceConsul(GateConfig cfg)
+    {
+        _consul = new (c =>
+        {
+            c.Address = new Uri(cfg.ConsulUrl);
+        });
+        var registration = new AgentServiceRegistration
+        {
+            ID = cfg.GateId,
+            Name = "Gateway",
+            Address = cfg.Ip,
+            Port = cfg.PortInternal,
+            Tags = ["v1", "api"],
+            Check = new AgentServiceCheck
+            {
+                DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(5),
+                Interval = TimeSpan.FromSeconds(10),
+                HTTP = $"http://{cfg.Ip}:{cfg.PortHealth}/health",
+                Timeout = TimeSpan.FromSeconds(5)
+            }
+        };
+        await _consul.Agent.ServiceRegister(registration);
+    }
+
+    private void TickClients(long tick)
+    {
+        do
+        {
+            if (_clients == null)
+            {
+                break;
+            }
+
+            lock (_clients)
+            {
+                var removeList = _clients
+                    .Where((kv, _) => 5000 < (tick - kv.Value.LastEventTime))
+                    .Select(kv => kv.Key)
+                    .ToList();
+
+                foreach (var uuid in removeList)
+                {
+                    if (_clients.Remove(uuid, out var cli))
+                    {
+                        var removeEntity = _entityClients
+                            .Where((kv, _) => kv.Value.ConnId == cli.ConnId)
+                            .Select(kv => kv.Key)
+                            .ToList();
+                        foreach (var entityId in removeEntity)
+                        {
+                            _entityClients.Remove(entityId);
+                        }
+                    }
+                }
+            }
+        } while (false);
+        
+        _timer.AddTickTime(3000, TickClients);
+    }
+
+    private async void Run(GateConfig cfg)
     {
         try
         {
@@ -210,37 +278,18 @@ class MainClass
             };
             _external.Start();
 
-            var timer = new TimerService();
-            timer.AddTickTime(3000, (tick) =>
-            {
-                lock (_clients)
-                {
-                    var removeList = _clients
-                        .Where((kv, _) => 5000 < (tick-kv.Value.LastEventTime))
-                        .Select(kv => kv.Key)
-                        .ToList();
-                    
-                    foreach (var uuid in removeList)
-                    {
-                        if (_clients.Remove(uuid, out var cli))
-                        {
-                            var removeEntity = _entityClients
-                                .Where((kv, _) => kv.Value.ConnId == cli.ConnId)
-                                .Select(kv => kv.Key)
-                                .ToList();
-                            foreach (var entityId in removeEntity)
-                            {
-                                _entityClients.Remove(entityId);
-                            }
-                        }
-                    }
-                }
-            });
+            _timer.AddTickTime(3000, TickClients);
+            
+            var app = WebApplication.Create();
+            app.MapGet("/health", () => Results.Ok("healthy"));
+            _ = app.RunAsync($"http://{cfg.Ip}:{cfg.PortHealth}");
+            
+            await ReportServiceConsul(cfg);
             
             while (!_isRun)
             {
                 var begin = TimerService.Tick;
-                timer.Poll();
+                _timer.Poll();
                 var detail = TimerService.Tick - begin;
                 if (detail < 16)
                 {
@@ -284,11 +333,11 @@ class MainClass
         int remaining = data.Length;
         while (remaining > 0)
         {
-
             int read = fs.Read(data, offset, remaining);
             if (read <= 0)
-                throw new EndOfStreamException("file read at" + read.ToString() + " failed");
-
+            {
+                throw new EndOfStreamException($"file read at:{read} failed");
+            }
             remaining -= read;
             offset += read;
         }

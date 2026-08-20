@@ -1,22 +1,22 @@
 ﻿using core;
 using Google.Protobuf;
-
 namespace hub;
 
-public class Entity : Actor
+public class Entity(Dictionary<string, GateNetwork> gateNetworks)
 {
     private readonly Dictionary<string, Func<string, ByteString, Task>> _onMsg = new();
-    
-    public Entity()
+    private readonly Dictionary<string, ClientNetwork> _clients = new();
+
+    private class ClientNetwork(GateNetwork gateNetwork, string connId)
     {
     }
-
+    
     private void Response(string connId, byte[] data)
     {
         
     }
 
-    public void RegisterNotify<T>(string method, Action<T> callback)
+    private void RegisterNotify<T>(string method, Action<T> callback)
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
@@ -35,7 +35,7 @@ public class Entity : Actor
         });
     }
     
-    public void RegisterNotify<T>(string method, Func<T, Task> callback)
+    private void RegisterNotify<T>(string method, Func<T, Task> callback)
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
@@ -53,7 +53,7 @@ public class Entity : Actor
         });
     }
 
-    public void RegisterRequest<T0, T1>(string method, Func<T0, T1> callback)
+    private void RegisterRequest<T0, T1>(string method, Func<T0, T1> callback)
         where T0 : IMessage<T0>, new()
         where T1 : IMessage<T1>, new()
     {
@@ -74,7 +74,7 @@ public class Entity : Actor
         });
     }
     
-    public void RegisterRequest<T0, T1>(string method, Func<T0, Task<T1>> callback)
+    private void RegisterRequest<T0, T1>(string method, Func<T0, Task<T1>> callback)
         where T0 : IMessage<T0>, new()
         where T1 : IMessage<T1>, new()
     {
