@@ -16,7 +16,7 @@ public class Entity : Actor
         
     }
 
-    public void Register<T>(string method, Action<T> callback)
+    public void RegisterNotify<T>(string method, Action<T> callback)
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
@@ -29,13 +29,13 @@ public class Entity : Actor
             }
             catch (Exception ex)
             {
-                Log.Error($"Do Request method:{method} ex:{ex}");
+                Log.Error($"Do Notify method:{method} ex:{ex}");
             }
             return Task.CompletedTask;
         });
     }
     
-    public void Register<T>(string method, Func<T, Task> callback)
+    public void RegisterNotify<T>(string method, Func<T, Task> callback)
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
@@ -48,12 +48,12 @@ public class Entity : Actor
             }
             catch (Exception ex)
             {
-                Log.Error($"Do Request method:{method} ex:{ex}");
+                Log.Error($"Do Notify method:{method} ex:{ex}");
             }
         });
     }
 
-    public void Register<T0, T1>(string method, Func<T0, T1> callback)
+    public void RegisterRequest<T0, T1>(string method, Func<T0, T1> callback)
         where T0 : IMessage<T0>, new()
         where T1 : IMessage<T1>, new()
     {
@@ -74,7 +74,7 @@ public class Entity : Actor
         });
     }
     
-    public void Register<T0, T1>(string method, Func<T0, Task<T1>> callback)
+    public void RegisterRequest<T0, T1>(string method, Func<T0, Task<T1>> callback)
         where T0 : IMessage<T0>, new()
         where T1 : IMessage<T1>, new()
     {
