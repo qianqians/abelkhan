@@ -104,12 +104,12 @@ public class Entity : Actor
             }
             catch(Exception ex)
             {
-                Log.Error($"OnRequest method:{method} ex:{ex}");
+                Log.Error($"OnDoMsg method:{method} ex:{ex}");
             }
         }
         else
         {
-            Log.Error($"OnRequest method:{method} not exist");
+            Log.Error($"OnDoMsg method:{method} not exist");
         }
     }
 }
