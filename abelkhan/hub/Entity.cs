@@ -16,7 +16,7 @@ public class Entity : Actor
         
     }
 
-    public void Request<T>(string method, Action<T> callback)
+    public void Register<T>(string method, Action<T> callback)
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
@@ -35,7 +35,7 @@ public class Entity : Actor
         });
     }
     
-    public void Request<T>(string method, Func<T, Task> callback)
+    public void Register<T>(string method, Func<T, Task> callback)
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
@@ -53,7 +53,7 @@ public class Entity : Actor
         });
     }
 
-    public void Request<T0, T1>(string method, Func<T0, T1> callback)
+    public void Register<T0, T1>(string method, Func<T0, T1> callback)
         where T0 : IMessage<T0>, new()
         where T1 : IMessage<T1>, new()
     {
@@ -74,7 +74,7 @@ public class Entity : Actor
         });
     }
     
-    public void Request<T0, T1>(string method, Func<T0, Task<T1>> callback)
+    public void Register<T0, T1>(string method, Func<T0, Task<T1>> callback)
         where T0 : IMessage<T0>, new()
         where T1 : IMessage<T1>, new()
     {
