@@ -101,7 +101,7 @@ public class MainClass
                 }
             };
             using var cts = new CancellationTokenSource();
-            CancellationToken stoppingToken = cts.Token;
+            var stoppingToken = cts.Token;
             _ = _serviceWatcher.ExecuteAsync(stoppingToken);
 
             while (!_isRun)
@@ -111,6 +111,7 @@ public class MainClass
                 var detail = TimerService.Tick - begin;
                 if (detail < 16)
                 {
+                    // ReSharper disable once MethodSupportsCancellation
                     await Task.Delay((int)(16 - detail));
                 }
             }
