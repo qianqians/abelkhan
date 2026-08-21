@@ -18,7 +18,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
         }
     }
 
-    private async Task SendToGate(string connId, string userId, byte[] message)
+    private async Task SendToGate(string connId, byte[] message)
     {
         if (_clients.TryGetValue(connId, out var client))
         {
@@ -26,7 +26,10 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
         }
         else
         {
-            await redis.PushList(string.Format(Consts.EntityClientMq, userId), message);
+            if (mappingUser.TryGetValue(connId, out var userId))
+            {
+                await redis.PushList(string.Format(Consts.EntityClientMq, userId), message);
+            }
         }
     }
 
@@ -58,7 +61,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
                     Content = msg.ToByteString(),
                 }
             };
-            await SendToGate(connId, userId, req.ToByteArray());
+            await SendToGate(connId, req.ToByteArray());
             _requestCallbacks.Add(req.MsgId, (string errMsg, byte[] content) =>
             {
                 if (!string.IsNullOrEmpty(errMsg))
@@ -91,57 +94,48 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
     protected async Task Notify<T>(string connId, string method, T argv)
         where T : IMessage<T>
     {
-        if (mappingUser.TryGetValue(connId, out var userId))
+        var callRpc = new CallRpc()
         {
-            var callRpc = new CallRpc()
+            ProtoName = method,
+            Content = argv.ToByteString()
+        };
+        var msg = new GateForwardHubNotifyClient()
+        {
+            EntityId = entityId,
+            Event = callRpc,
+        };
+        msg.ConnId.Add(connId);
+        var ntf = new Notify()
+        {
+            Event = new CallRpc()
             {
-                ProtoName = method,
-                Content = argv.ToByteString()
-            };
-            var msg = new GateForwardHubNotifyClient()
-            {
-                EntityId = entityId,
-                Event = callRpc,
-            };
-            msg.ConnId.Add(connId);
-            var ntf = new Notify()
-            {
-                Event = new CallRpc()
-                {
-                    ProtoName = consts.Consts.GateForwardHubNotifyClient,
-                    Content = msg.ToByteString(),
-                }
-            };
-            await SendToGate(connId, userId, ntf.ToByteArray());
-        }
+                ProtoName = consts.Consts.GateForwardHubNotifyClient,
+                Content = msg.ToByteString(),
+            }
+        };
+        await SendToGate(connId, ntf.ToByteArray());
     }
-    
+
     protected async Task Response(string connId, byte[] data)
     {
-        if (mappingUser.TryGetValue(connId, out var userId))
+        var msg = new GateForwardHubResponseClient
         {
-            var msg = new GateForwardHubResponseClient
-            {
-                ConnId = connId,
-                EntityId = entityId,
-                Content = ByteString.CopyFrom(data)
-            };
-            await SendToGate(connId, userId, msg.ToByteArray());
-        }
+            ConnId = connId,
+            EntityId = entityId,
+            Content = ByteString.CopyFrom(data)
+        };
+        await SendToGate(connId, msg.ToByteArray());
     }
 
     protected async Task Error(string connId, string err)
     {
-        if (mappingUser.TryGetValue(connId, out var userId))
+        var msg = new GateForwardHubResponseClient
         {
-            var msg = new GateForwardHubResponseClient
-            {
-                ConnId = connId,
-                EntityId = entityId,
-                ErrMsg = err
-            };
-            await SendToGate(connId, userId, msg.ToByteArray());
-        }
+            ConnId = connId,
+            EntityId = entityId,
+            ErrMsg = err
+        };
+        await SendToGate(connId, msg.ToByteArray());
     }
 
     protected virtual void RegisterNotify<T>(string method, Action<T> callback)
