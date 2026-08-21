@@ -4,13 +4,13 @@ using engine;
 using Google.Protobuf;
 namespace hub;
 
-public class Entity(string entityId, RedisHandle redis, Dictionary<string, GateNetwork> gateNetworks, Dictionary<string, string> mappingUser)
+public class Entity(string entityId, RedisHandle redis, Dictionary<string, string> mappingUser)
 {
     private readonly Dictionary<string, Func<string, GateNetwork, ByteString, Task>> _onMsg = new();
     private readonly Dictionary<string, ClientNetwork> _clients = new();
     private readonly Dictionary<string, Action<string, byte[]>> _requestCallbacks = new();
 
-    private class ClientNetwork(GateNetwork gateNetwork, string connId)
+    private class ClientNetwork(GateNetwork gateNetwork)
     {
         public async Task Send(byte[] message)
         {
@@ -30,7 +30,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, GateN
         }
     }
 
-    private async Task<Result<T1, string>> Request<T0, T1>(string connId, string method, T0 argv) 
+    protected virtual async Task<Result<T1, string>> Request<T0, T1>(string connId, string method, T0 argv) 
         where T0 : IMessage<T0>
         where T1 : IMessage<T1>, new()
     {
@@ -88,7 +88,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, GateN
         }
     }
 
-    private async Task Notify<T>(string connId, string method, T argv)
+    protected async Task Notify<T>(string connId, string method, T argv)
         where T : IMessage<T>
     {
         if (mappingUser.TryGetValue(connId, out var userId))
@@ -116,7 +116,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, GateN
         }
     }
     
-    private async Task Response(string connId, byte[] data)
+    protected async Task Response(string connId, byte[] data)
     {
         if (mappingUser.TryGetValue(connId, out var userId))
         {
@@ -130,7 +130,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, GateN
         }
     }
 
-    private async Task Error(string connId, string err)
+    protected async Task Error(string connId, string err)
     {
         if (mappingUser.TryGetValue(connId, out var userId))
         {
@@ -144,7 +144,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, GateN
         }
     }
 
-    private void RegisterNotify<T>(string method, Action<T> callback)
+    protected virtual void RegisterNotify<T>(string method, Action<T> callback)
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
@@ -154,7 +154,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, GateN
             {
                 if (!_clients.ContainsKey(connId))
                 {
-                    _clients.Add(connId, new ClientNetwork(gateNetwork, connId));
+                    _clients.Add(connId, new ClientNetwork(gateNetwork));
                 }
 
                 var t = parser.ParseFrom(data);
@@ -168,7 +168,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, GateN
         });
     }
     
-    private void RegisterNotify<T>(string method, Func<T, Task> callback)
+    protected virtual void RegisterNotify<T>(string method, Func<T, Task> callback)
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
@@ -178,7 +178,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, GateN
             {
                 if (!_clients.ContainsKey(connId))
                 {
-                    _clients.Add(connId, new ClientNetwork(gateNetwork, connId));
+                    _clients.Add(connId, new ClientNetwork(gateNetwork));
                 }
                 
                 var t = parser.ParseFrom(data);
@@ -191,7 +191,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, GateN
         });
     }
 
-    private void RegisterRequest<T0, T1>(string method, Func<T0, Result<T1, string>> callback)
+    protected virtual void RegisterRequest<T0, T1>(string method, Func<T0, Result<T1, string>> callback)
         where T0 : IMessage<T0>, new()
         where T1 : IMessage<T1>, new()
     {
@@ -202,7 +202,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, GateN
             {
                 if (!_clients.ContainsKey(connId))
                 {
-                    _clients.Add(connId, new ClientNetwork(gateNetwork, connId));
+                    _clients.Add(connId, new ClientNetwork(gateNetwork));
                 }
                 
                 var t = parser.ParseFrom(data);
@@ -223,7 +223,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, GateN
         });
     }
     
-    private void RegisterRequest<T0, T1>(string method, Func<T0, Task<Result<T1, string>>> callback)
+    protected virtual void RegisterRequest<T0, T1>(string method, Func<T0, Task<Result<T1, string>>> callback)
         where T0 : IMessage<T0>, new()
         where T1 : IMessage<T1>, new()
     {
@@ -234,7 +234,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, GateN
             {
                 if (!_clients.ContainsKey(connId))
                 {
-                    _clients.Add(connId, new ClientNetwork(gateNetwork, connId));
+                    _clients.Add(connId, new ClientNetwork(gateNetwork));
                 }
                 
                 var t = parser.ParseFrom(data);
