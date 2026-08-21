@@ -33,7 +33,7 @@ public class TcpConnectService
         await reader.CompleteAsync();
     }
     
-    public void Connect(IPAddress address, short port)
+    public void Connect(IPAddress address, ushort port)
     {
         Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         s.Connect(address, port);

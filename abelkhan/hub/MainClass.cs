@@ -1,6 +1,8 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Net;
+using System.Runtime.InteropServices;
 using Consul;
 using core;
+using engine;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
@@ -21,18 +23,16 @@ public class MainClass
 {
     private RedisHandle? _redis;
     private readonly Dictionary<string, Entity> _entities = new();
-    private readonly Dictionary<string, GateNetwork> _gates = new();
-    private readonly TcpConnectService _service = new();
+    // ReSharper disable once CollectionNeverQueried.Local
+    private readonly List<GateMsgHandle> _gates = new();
+    private readonly TcpConnectService _serviceGate = new();
+    private readonly TcpConnectService _serviceDb = new();
     private readonly TimerService _timer = new();
     
     private bool _isRun = true;
     private ConsulClient? _consul;
     private ConsulServiceWatcher? _serviceWatcher;
     
-    public MainClass()
-    {
-    }
-
     private async Task ReportServiceConsul(HubConfig cfg)
     {
         _consul = new (c =>
@@ -79,10 +79,26 @@ public class MainClass
             _ = app.RunAsync($"http://{cfg.Ip}:{cfg.PortHealth}");
             await ReportServiceConsul(cfg);
 
+            _serviceGate.OnConnect += (network) =>
+            {
+                var rpc = new WRpc();
+                _gates.Add(new GateMsgHandle(rpc, new GateNetwork(network), _entities));
+            };
+            _serviceDb.OnConnect += (network) =>
+            {
+            }; 
+                
             _serviceWatcher = new(_consul!);
             _serviceWatcher.OnNewService += (string serviceName, string ip, ushort port) =>
             {
-
+                if (serviceName.Equals("gate", StringComparison.OrdinalIgnoreCase))
+                {
+                    _serviceGate.Connect(IPAddress.Parse(ip), port);
+                }
+                else if (serviceName.Equals("db_proxy", StringComparison.OrdinalIgnoreCase))
+                {
+                    _serviceDb.Connect(IPAddress.Parse(ip), port);
+                }
             };
             using var cts = new CancellationTokenSource();
             CancellationToken stoppingToken = cts.Token;

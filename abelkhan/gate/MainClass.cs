@@ -174,7 +174,7 @@ class MainClass
         var registration = new AgentServiceRegistration
         {
             ID = cfg.GateId,
-            Name = "Gateway",
+            Name = "gate",
             Address = cfg.Ip,
             Port = cfg.PortInternal,
             Tags = ["v1", "api"],
