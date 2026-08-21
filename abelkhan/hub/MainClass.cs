@@ -104,7 +104,7 @@ public class MainClass
             var stoppingToken = cts.Token;
             _ = _serviceWatcher.ExecuteAsync(stoppingToken);
 
-            while (!_isRun)
+            while (_isRun)
             {
                 var begin = TimerService.Tick;
                 _timer.Poll();

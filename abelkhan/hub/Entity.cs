@@ -6,7 +6,8 @@ namespace hub;
 
 public class Entity(string entityId, RedisHandle redis, Dictionary<string, string> mappingUser)
 {
-    private readonly Dictionary<string, Func<string, GateNetwork, ByteString, Task>> _onMsg = new();
+    private readonly WRpc _rpc = new();
+    private readonly Dictionary<string, Func<string, string, GateNetwork, ByteString, Task>> _onMsg = new();
     private readonly Dictionary<string, ClientNetwork> _clients = new();
     private readonly Dictionary<string, Action<string, byte[]>> _requestCallbacks = new();
 
@@ -45,17 +46,10 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
                 EntityId = entityId,
                 Event = callRpc,
             };
-            var req = new Request()
-            {
-                MsgId = Guid.NewGuid().ToString(),
-                Event = new CallRpc()
-                {
-                    ProtoName = consts.Consts.GateForwardHubRequestClient,
-                    Content = msg.ToByteString(),
-                }
-            };
-            await SendToGate(connId, req.ToByteArray());
-            _requestCallbacks.Add(req.MsgId, (string errMsg, byte[] content) =>
+            var msgId = Guid.NewGuid().ToString();
+            await SendToGate(connId, _rpc.Request(Consts.GateForwardHubRequestClient, msgId, msg));
+            
+            _requestCallbacks.Add(msgId, (string errMsg, byte[] content) =>
             {
                 if (!string.IsNullOrEmpty(errMsg))
                 {
@@ -98,18 +92,10 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
             EntityId = entityId,
             Event = callRpc,
         };
-        var ntf = new Notify()
-        {
-            Event = new CallRpc()
-            {
-                ProtoName = consts.Consts.GateForwardHubNotifyClient,
-                Content = msg.ToByteString(),
-            }
-        };
-        await SendToGate(connId, ntf.ToByteArray());
+        await SendToGate(connId, _rpc.Notify(Consts.GateForwardHubNotifyClient, msg));
     }
 
-    protected async Task Response(string connId, byte[] data)
+    protected async Task Response(string connId, string msgId, byte[] data)
     {
         var msg = new GateForwardHubResponseClient
         {
@@ -117,10 +103,10 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
             EntityId = entityId,
             Content = ByteString.CopyFrom(data)
         };
-        await SendToGate(connId, msg.ToByteArray());
+        await SendToGate(connId, _rpc.Response(Consts.GateForwardHubResponseClient, msgId, msg));
     }
 
-    protected async Task Error(string connId, string err)
+    protected async Task Error(string connId, string msgId, string err)
     {
         var msg = new GateForwardHubResponseClient
         {
@@ -128,7 +114,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
             EntityId = entityId,
             ErrMsg = err
         };
-        await SendToGate(connId, msg.ToByteArray());
+        await SendToGate(connId, _rpc.Response(Consts.GateForwardHubResponseClient, msgId, msg));
     }
 
     private async Task SendToListMq(string userId, bool isReliability, byte[] message)
@@ -157,22 +143,14 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
             EntityId = entityId,
             Event = callRpc,
         };
-        var ntf = new Notify()
-        {
-            Event = new CallRpc()
-            {
-                ProtoName = consts.Consts.GateForwardHubNotifyClient,
-                Content = msg.ToByteString(),
-            }
-        };
-        await SendToListMq(userId, isReliability, ntf.ToByteArray());
+        await SendToListMq(userId, isReliability, _rpc.Notify(Consts.GateForwardHubNotifyClientMq, msg));
     }
     
     protected virtual void RegisterNotify<T>(string method, Action<T> callback)
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
-        _onMsg.Add(method, (string connId, GateNetwork gateNetwork, ByteString data) =>
+        _onMsg.Add(method, (string connId, string msgId, GateNetwork gateNetwork, ByteString data) =>
         {
             try
             {
@@ -196,7 +174,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
-        _onMsg.Add(method, async (string connId, GateNetwork gateNetwork, ByteString data) =>
+        _onMsg.Add(method, async (string connId, string msgId, GateNetwork gateNetwork, ByteString data) =>
         {
             try
             {
@@ -220,7 +198,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
         where T1 : IMessage<T1>, new()
     {
         var parser = new MessageParser<T0>(() => new T0());
-        _onMsg.Add(method, async (string connId, GateNetwork gateNetwork, ByteString data) =>
+        _onMsg.Add(method, async (string connId, string msgId, GateNetwork gateNetwork, ByteString data) =>
         {
             try
             {
@@ -233,11 +211,11 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
                 var ret = callback(t);
                 if (ret.IsOk)
                 {
-                    await Response(connId, ret.Value.ToByteArray());
+                    await Response(connId, msgId, ret.Value.ToByteArray());
                 }
                 else
                 {
-                    await Error(connId, ret.Error);
+                    await Error(connId, msgId, ret.Error);
                 }
             }
             catch (Exception ex)
@@ -252,7 +230,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
         where T1 : IMessage<T1>, new()
     {
         var parser = new MessageParser<T0>(() => new T0());
-        _onMsg.Add(method, async (string connId, GateNetwork gateNetwork, ByteString data) =>
+        _onMsg.Add(method, async (string connId, string msgId, GateNetwork gateNetwork, ByteString data) =>
         {
             try
             {
@@ -265,11 +243,11 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
                 var ret = await callback(t);
                 if (ret.IsOk)
                 {
-                    await Response(connId, ret.Value.ToByteArray());
+                    await Response(connId, msgId, ret.Value.ToByteArray());
                 }
                 else
                 {
-                    await Error(connId, ret.Error);
+                    await Error(connId, msgId, ret.Error);
                 }
             }
             catch (Exception ex)
@@ -279,13 +257,13 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
         });
     }
     
-    public void OnDoMsg(string connId, GateNetwork gate, string method, ByteString message)
+    public void OnDoMsg(string connId, string msgId, GateNetwork gate, string method, ByteString message)
     {
         if (_onMsg.TryGetValue(method, out var action))
         {
             try
             {
-                action(connId, gate, message);
+                action(connId, msgId, gate, message);
             }
             catch(Exception ex)
             {

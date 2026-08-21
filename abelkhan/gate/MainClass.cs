@@ -286,7 +286,7 @@ class MainClass
             
             await ReportServiceConsul(cfg);
             
-            while (!_isRun)
+            while (_isRun)
             {
                 var begin = TimerService.Tick;
                 _timer.Poll();

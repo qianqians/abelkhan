@@ -1,21 +1,13 @@
 ﻿using System.Net.Sockets;
 namespace core;
 
-public class TcpNetwork : INetwork
+public class TcpNetwork(Socket s) : INetwork
 {
     public readonly OnReceive OnReceiveData = new();
-    private Action<byte[]>? _onReceiveTcpData;
 
     public Task? T;
-    private readonly Socket _socket;
     private readonly Nito.AsyncEx.AsyncLock _lockObject = new();
 
-    public TcpNetwork(Socket s)
-    {
-        _socket = s;
-        OnReceiveData.OnReceiveData += _onReceiveTcpData;
-    }
-    
     public async Task Send(byte[] data)
     {
         var sendLen = 0;
@@ -23,7 +15,7 @@ public class TcpNetwork : INetwork
         {
             while (sendLen < data.Length)
             {
-                sendLen += _socket.Send(data);
+                sendLen += s.Send(data);
                 await Task.Delay(1);
             }
         }
@@ -31,7 +23,7 @@ public class TcpNetwork : INetwork
     
     public void OnReceive(Action<byte[]> onReceive)
     {
-        _onReceiveTcpData += onReceive;
+        OnReceiveData.OnReceiveData += onReceive;
     }
 
     public async Task Close()
@@ -40,7 +32,7 @@ public class TcpNetwork : INetwork
         {
             using (await _lockObject.LockAsync())
             {
-                _socket.Close();
+                s.Close();
             }
 
             if (T != null)

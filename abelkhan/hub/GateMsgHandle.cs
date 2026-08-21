@@ -76,7 +76,7 @@ public class GateMsgHandle
     {
         if (_entities.TryGetValue(msg.EntityId, out var entity))
         {
-            entity.OnDoMsg(msg.ConnId, _gate, msg.Event.ProtoName, msg.Event.Content);
+            entity.OnDoMsg(msg.ConnId, msgId, _gate, msg.Event.ProtoName, msg.Event.Content);
         } 
         else
         {
@@ -100,7 +100,7 @@ public class GateMsgHandle
     {
         if (_entities.TryGetValue(msg.EntityId, out var entity))
         {
-            entity.OnDoMsg(msg.ConnId, _gate, msg.Event.ProtoName, msg.Event.Content);
+            entity.OnDoMsg(msg.ConnId, string.Empty, _gate, msg.Event.ProtoName, msg.Event.Content);
         }
         else
         {
