@@ -11,7 +11,6 @@ public struct HubConfig()
     public readonly string HubId = string.Empty;
     public readonly string ServiceName = string.Empty;
     public readonly string Ip = string.Empty;
-    public readonly ushort PortInternal = 0;
     public readonly ushort PortHealth = 0;
     public readonly string ConsulUrl  = string.Empty;
     public readonly string RedisUrl = string.Empty;
@@ -24,11 +23,11 @@ public class MainClass
     private readonly Dictionary<string, Entity> _entities = new();
     private readonly Dictionary<string, GateNetwork> _gates = new();
     private readonly TcpConnectService _service = new();
-    private TcpAcceptService? _internal;
     private readonly TimerService _timer = new();
     
     private bool _isRun = true;
     private ConsulClient? _consul;
+    private ConsulServiceWatcher? _serviceWatcher;
     
     public MainClass()
     {
@@ -45,7 +44,7 @@ public class MainClass
             ID = cfg.HubId,
             Name = cfg.ServiceName,
             Address = cfg.Ip,
-            Port = cfg.PortInternal,
+            Port = -1,
             Tags = ["v1", "api"],
             Check = new AgentServiceCheck
             {
@@ -78,8 +77,16 @@ public class MainClass
             var app = WebApplication.Create();
             app.MapGet("/health", () => Results.Ok("healthy"));
             _ = app.RunAsync($"http://{cfg.Ip}:{cfg.PortHealth}");
-
             await ReportServiceConsul(cfg);
+
+            _serviceWatcher = new(_consul!);
+            _serviceWatcher.OnNewService += (string serviceName, string ip, ushort port) =>
+            {
+
+            };
+            using var cts = new CancellationTokenSource();
+            CancellationToken stoppingToken = cts.Token;
+            _ = _serviceWatcher.ExecuteAsync(stoppingToken);
 
             while (!_isRun)
             {
@@ -91,10 +98,8 @@ public class MainClass
                     await Task.Delay((int)(16 - detail));
                 }
             }
-
-            _internal = new(cfg.PortInternal);
-
-            await _internal.Join();
+            
+            await cts.CancelAsync();
         }
         catch (Exception ex)
         {

@@ -31,15 +31,6 @@ public static class Log
         Output(new System.Diagnostics.StackFrame(1),TimerService.Tick, "debug", log, argv);
     }
 
-    public static void Info(string log, params object[] argv)
-    {
-        if (LogMode > EmLogMode.Info)
-        {
-            return;
-        }
-        Output(new System.Diagnostics.StackFrame(1), TimerService.Tick, "info", log, argv);
-    }
-
     public static void Warn(string log, params object[] argv)
     {
         if (LogMode > EmLogMode.Warn)
@@ -47,6 +38,11 @@ public static class Log
             return;
         }
         Output(new System.Diagnostics.StackFrame(1), TimerService.Tick, "warn", log, argv);
+    }
+
+    public static void Info(string log, params object[] argv)
+    {
+        Output(new System.Diagnostics.StackFrame(1), TimerService.Tick, "info", log, argv);
     }
 
     public static void Error(string log, params object[] argv)
