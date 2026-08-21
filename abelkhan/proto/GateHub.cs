@@ -35,7 +35,7 @@ public static partial class GateHubReflection {
           "aWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxsUnBjImMKHEdhdGVGb3J3",
           "YXJkSHViUmVzcG9uc2VDbGllbnQSDwoHY29ubl9pZBgBIAEoCRIRCgllbnRp",
           "dHlfaWQYAiABKAkSDgoGZXJyTXNnGAMgASgJEg8KB2NvbnRlbnQYBCABKAwi",
-          "WQoaR2F0ZUZvcndhcmRIdWJOb3RpZnlDbGllbnQSDwoHY29ubl9pZBgBIAMo",
+          "WQoaR2F0ZUZvcndhcmRIdWJOb3RpZnlDbGllbnQSDwoHY29ubl9pZBgBIAEo",
           "CRIRCgllbnRpdHlfaWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxsUnBj",
           "IlsKHEdhdGVGb3J3YXJkSHViTm90aWZ5Q2xpZW50TXESDwoHdXNlcl9pZBgB",
           "IAEoCRIRCgllbnRpdHlfaWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxs",
@@ -1853,7 +1853,7 @@ public sealed partial class GateForwardHubNotifyClient : pb::IMessage<GateForwar
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public GateForwardHubNotifyClient(GateForwardHubNotifyClient other) : this() {
-    connId_ = other.connId_.Clone();
+    connId_ = other.connId_;
     entityId_ = other.entityId_;
     event_ = other.event_ != null ? other.event_.Clone() : null;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -1867,13 +1867,14 @@ public sealed partial class GateForwardHubNotifyClient : pb::IMessage<GateForwar
 
   /// <summary>Field number for the "conn_id" field.</summary>
   public const int ConnIdFieldNumber = 1;
-  private static readonly pb::FieldCodec<string> _repeated_connId_codec
-      = pb::FieldCodec.ForString(10);
-  private readonly pbc::RepeatedField<string> connId_ = new pbc::RepeatedField<string>();
+  private string connId_ = "";
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public pbc::RepeatedField<string> ConnId {
+  public string ConnId {
     get { return connId_; }
+    set {
+      connId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
   }
 
   /// <summary>Field number for the "entity_id" field.</summary>
@@ -1915,7 +1916,7 @@ public sealed partial class GateForwardHubNotifyClient : pb::IMessage<GateForwar
     if (ReferenceEquals(other, this)) {
       return true;
     }
-    if(!connId_.Equals(other.connId_)) return false;
+    if (ConnId != other.ConnId) return false;
     if (EntityId != other.EntityId) return false;
     if (!object.Equals(Event, other.Event)) return false;
     return Equals(_unknownFields, other._unknownFields);
@@ -1925,7 +1926,7 @@ public sealed partial class GateForwardHubNotifyClient : pb::IMessage<GateForwar
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
-    hash ^= connId_.GetHashCode();
+    if (ConnId.Length != 0) hash ^= ConnId.GetHashCode();
     if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
     if (event_ != null) hash ^= Event.GetHashCode();
     if (_unknownFields != null) {
@@ -1946,7 +1947,10 @@ public sealed partial class GateForwardHubNotifyClient : pb::IMessage<GateForwar
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    connId_.WriteTo(output, _repeated_connId_codec);
+    if (ConnId.Length != 0) {
+      output.WriteRawTag(10);
+      output.WriteString(ConnId);
+    }
     if (EntityId.Length != 0) {
       output.WriteRawTag(18);
       output.WriteString(EntityId);
@@ -1965,7 +1969,10 @@ public sealed partial class GateForwardHubNotifyClient : pb::IMessage<GateForwar
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    connId_.WriteTo(ref output, _repeated_connId_codec);
+    if (ConnId.Length != 0) {
+      output.WriteRawTag(10);
+      output.WriteString(ConnId);
+    }
     if (EntityId.Length != 0) {
       output.WriteRawTag(18);
       output.WriteString(EntityId);
@@ -1984,7 +1991,9 @@ public sealed partial class GateForwardHubNotifyClient : pb::IMessage<GateForwar
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
-    size += connId_.CalculateSize(_repeated_connId_codec);
+    if (ConnId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(ConnId);
+    }
     if (EntityId.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(EntityId);
     }
@@ -2003,7 +2012,9 @@ public sealed partial class GateForwardHubNotifyClient : pb::IMessage<GateForwar
     if (other == null) {
       return;
     }
-    connId_.Add(other.connId_);
+    if (other.ConnId.Length != 0) {
+      ConnId = other.ConnId;
+    }
     if (other.EntityId.Length != 0) {
       EntityId = other.EntityId;
     }
@@ -2033,7 +2044,7 @@ public sealed partial class GateForwardHubNotifyClient : pb::IMessage<GateForwar
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 10: {
-          connId_.AddEntriesFrom(input, _repeated_connId_codec);
+          ConnId = input.ReadString();
           break;
         }
         case 18: {
@@ -2067,7 +2078,7 @@ public sealed partial class GateForwardHubNotifyClient : pb::IMessage<GateForwar
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
         case 10: {
-          connId_.AddEntriesFrom(ref input, _repeated_connId_codec);
+          ConnId = input.ReadString();
           break;
         }
         case 18: {

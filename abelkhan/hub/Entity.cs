@@ -24,13 +24,6 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
         {
             await client.Send(message);
         }
-        else
-        {
-            if (mappingUser.TryGetValue(connId, out var userId))
-            {
-                await redis.PushList(string.Format(Consts.EntityClientMq, userId), message);
-            }
-        }
     }
 
     protected virtual async Task<Result<T1, string>> Request<T0, T1>(string connId, string method, T0 argv) 
@@ -101,10 +94,10 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
         };
         var msg = new GateForwardHubNotifyClient()
         {
+            ConnId = connId,
             EntityId = entityId,
             Event = callRpc,
         };
-        msg.ConnId.Add(connId);
         var ntf = new Notify()
         {
             Event = new CallRpc()
@@ -138,6 +131,43 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
         await SendToGate(connId, msg.ToByteArray());
     }
 
+    private async Task SendToListMq(string userId, bool isReliability, byte[] message)
+    {
+        if (isReliability)
+        {
+            await redis.PushList(string.Format(Consts.EntityReliabilityClientMq, userId), message);
+        }
+        else
+        {
+            await redis.PushList(string.Format(Consts.EntityClientMq, userId), message);
+        }
+    }
+    
+    protected async Task NotifyListMq<T>(string userId, bool isReliability, string method, T argv)
+        where T : IMessage<T>
+    {
+        var callRpc = new CallRpc()
+        {
+            ProtoName = method,
+            Content = argv.ToByteString()
+        };
+        var msg = new GateForwardHubNotifyClientMq()
+        {
+            UserId = userId,
+            EntityId = entityId,
+            Event = callRpc,
+        };
+        var ntf = new Notify()
+        {
+            Event = new CallRpc()
+            {
+                ProtoName = consts.Consts.GateForwardHubNotifyClient,
+                Content = msg.ToByteString(),
+            }
+        };
+        await SendToListMq(userId, isReliability, ntf.ToByteArray());
+    }
+    
     protected virtual void RegisterNotify<T>(string method, Action<T> callback)
         where T : IMessage<T>, new()
     {

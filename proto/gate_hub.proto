@@ -42,7 +42,7 @@ message GateForwardHubResponseClient {
 }
 
 message GateForwardHubNotifyClient {
-  repeated string conn_id = 1;
+  string conn_id = 1;
   string entity_id = 2;
   CallRpc event = 3;
 }

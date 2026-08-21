@@ -110,12 +110,9 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients, Dictionary<
             EntityId = msg.EntityId,
             Event = msg.Event,
         };
-        foreach (var guid in msg.ConnId)
+        if (clients.TryGetValue(msg.ConnId, out var cli))
         {
-            if (clients.TryGetValue(guid, out var cli))
-            {
-                _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClient, forward));
-            }
+            _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClient, forward));
         }
     }
 
