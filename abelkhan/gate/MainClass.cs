@@ -193,7 +193,7 @@ class MainClass
     {
         do
         {
-            if (_clients == null)
+            if (_clients == null || _entityClients == null)
             {
                 break;
             }

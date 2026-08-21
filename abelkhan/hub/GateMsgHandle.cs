@@ -6,11 +6,13 @@ namespace hub;
 public class GateMsgHandle
 {
     private readonly WRpc _rpc;
+    private readonly GateNetwork _gate;
     private readonly Dictionary<string, Entity> _entities;
     
-    public GateMsgHandle(WRpc rpc, Dictionary<string, Entity> entities)
+    public GateMsgHandle(WRpc rpc, GateNetwork gate, Dictionary<string, Entity> entities)
     {
         _rpc = rpc;
+        _gate = gate;
         _entities = entities;
         
         _rpc.OnNotify += OnNotify;
@@ -74,7 +76,7 @@ public class GateMsgHandle
     {
         if (_entities.TryGetValue(msg.EntityId, out var entity))
         {
-            entity.OnDoMsg(msg.ConnId, msg.Event.ProtoName, msg.Event.Content);
+            entity.OnDoMsg(msg.ConnId, _gate, msg.Event.ProtoName, msg.Event.Content);
         } 
         else
         {
@@ -84,14 +86,21 @@ public class GateMsgHandle
 
     private void OnClientResponseHub(string msgId, ClientResponseHub msg)
     {
-        
+        if (_entities.TryGetValue(msg.EntityId, out var entity))
+        {
+            entity.OnResponse(msgId, msg.ErrMsg, msg.Content.ToByteArray());
+        }
+        else
+        {
+            Log.Error($"OnClientResponseHub Entity:{msg.EntityId} not found!");
+        }
     }
 
     private void OnClientNotifyHub(ClientNotifyHub msg)
     {
         if (_entities.TryGetValue(msg.EntityId, out var entity))
         {
-            entity.OnDoMsg(msg.ConnId, msg.Event.ProtoName, msg.Event.Content);
+            entity.OnDoMsg(msg.ConnId, _gate, msg.Event.ProtoName, msg.Event.Content);
         }
         else
         {

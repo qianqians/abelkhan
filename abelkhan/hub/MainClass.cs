@@ -20,6 +20,7 @@ public struct HubConfig()
 
 public class MainClass
 {
+    private RedisHandle? _redis;
     private readonly Dictionary<string, Entity> _entities = new();
     private readonly Dictionary<string, GateNetwork> _gates = new();
     private readonly TcpConnectService _service = new();
@@ -72,6 +73,8 @@ public class MainClass
     {
         try
         {
+            _redis = new RedisHandle(cfg.RedisUrl, cfg.RedisPwd);
+            
             var app = WebApplication.Create();
             app.MapGet("/health", () => Results.Ok("healthy"));
             _ = app.RunAsync($"http://{cfg.Ip}:{cfg.PortHealth}");
