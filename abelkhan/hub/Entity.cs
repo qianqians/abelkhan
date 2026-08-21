@@ -74,7 +74,7 @@ public class Entity(string entityId, RedisHandle redis, Dictionary<string, strin
 
     public void OnResponse(string msgId, string errMsg, byte[] data)
     {
-        if (_requestCallbacks.TryGetValue(msgId, out var callback))
+        if (_requestCallbacks.Remove(msgId, out var callback))
         {
             callback(errMsg, data);
         }
