@@ -13,10 +13,11 @@ public class TcpNetwork(Socket s) : INetwork
         var sendLen = 0;
         using (await _lockObject.LockAsync())
         {
+            sendLen += s.Send(data, sendLen, data.Length, SocketFlags.None);
             while (sendLen < data.Length)
             {
-                sendLen += s.Send(data);
                 await Task.Delay(1);
+                sendLen += s.Send(data, sendLen, data.Length - sendLen, SocketFlags.None);
             }
         }
     }

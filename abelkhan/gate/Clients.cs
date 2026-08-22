@@ -14,7 +14,10 @@ public class Client(string connId, INetwork clientNetwork, RedisHandle redis)
 
     public void RegisterNetwork(string entity, INetwork network)
     {
-        _dictEntityNetwork.Add(entity, network);
+        lock (_dictEntityNetwork)
+        {
+            _dictEntityNetwork[entity] = network;
+        }
     }
     
     public async Task SendToClient(byte[] message)
@@ -24,7 +27,12 @@ public class Client(string connId, INetwork clientNetwork, RedisHandle redis)
 
     public async Task SendToServer(string entity, byte[] message)
     {
-        if (_dictEntityNetwork.TryGetValue(entity, out var network))
+        INetwork? network;
+        lock (_dictEntityNetwork)
+        {
+            _dictEntityNetwork.TryGetValue(entity, out network);
+        }
+        if (network != null)
         {
             await network.Send(message);
         }

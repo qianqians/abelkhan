@@ -26,11 +26,8 @@ public class TimerService
     {
         var now = DateTime.Now;
         var dayOfWeek = Convert.ToInt32(now.DayOfWeek.ToString("d"));
-        dayOfWeek = dayOfWeek <= 0 ? 7 : dayOfWeek;
-        var endOfWeek = now.AddDays(7 - dayOfWeek).Date;
-        _ = endOfWeek.AddHours(23 - endOfWeek.Hour);
-        _ = endOfWeek.AddMinutes(59 - endOfWeek.Minute);
-        _ = endOfWeek.AddSeconds(59 - endOfWeek.Second);
+        dayOfWeek = dayOfWeek == 0 ? 7 : dayOfWeek;
+        var endOfWeek = now.AddDays(7 - dayOfWeek).Date.AddDays(1).AddTicks(-1);
 
         return (long)(endOfWeek - new DateTime(1970, 1, 1)).TotalMilliseconds;
     }

@@ -13,7 +13,17 @@ public class WebSocketConnectService
             var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
             if (result.MessageType == WebSocketMessageType.Binary)
             {
-                i.OnReceiveData.Receive(buffer.AsSpan(0, result.Count).ToArray());
+                try
+                {
+                    i.OnReceiveData.Receive(buffer.AsSpan(0, result.Count).ToArray());
+                    i.OnReceiveData.Receive(buffer.AsSpan(0, result.Count).ToArray());
+                }
+                catch (Exception e)
+                {
+                    await i.Close();
+                    Log.Error("WebSocketConnectService OnReceive.OnReceiveData error:{0}!", e);
+                    break;
+                }
             }
         }
     }

@@ -36,11 +36,11 @@ public class OnReceive
             using var tmp = StreamPool.GetStream();
             tmp.Write(underBuf, offset, len);
             tmp.Position = 0;
-            OnReceiveData?.Invoke(tmp.GetBuffer());
+            OnReceiveData?.Invoke(tmp.ToArray());
             offset += len;
         }
 
-        if (offset > 4)
+        if (offset > 0)
         {
             var pos = bufferLen - offset;
             Buffer.BlockCopy(underBuf, offset, underBuf, 0, (int)pos);

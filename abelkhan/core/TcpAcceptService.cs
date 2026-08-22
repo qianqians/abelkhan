@@ -32,7 +32,8 @@ public class TcpAcceptService(ushort port)
             }
             catch (Exception e)
             {
-                Log.Error("OnReceive.OnReceiveData error:{0}!", e);
+                await i.Close();
+                Log.Error("TcpAcceptService OnReceive.OnReceiveData error:{0}!", e);
                 break;
             }
         }

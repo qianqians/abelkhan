@@ -10,7 +10,7 @@ public class RedisConnectionHelper
     private const int ConnectRetry = 3;
     private const int ConnectTimeout = 5000;
     private const int KeepAlive = 30;
-    private static readonly ManualResetEvent WaitNotify = new(false);
+    private readonly ManualResetEvent _waitNotify = new(false);
 
     private const int WaitTimeout = 15_000;
     private readonly string _conName;
@@ -76,20 +76,20 @@ public class RedisConnectionHelper
             {
                 afterRecover();
             }
-            _inRecover = 0;
-            if (!WaitNotify.Set())
+            Interlocked.Exchange(ref _inRecover, 0);
+            if (!_waitNotify.Set())
             {
                 Log.Error("_waitNotify.Set() failed");
             }
             Thread.Sleep(10);
-            if (!WaitNotify.Reset())
+            if (!_waitNotify.Reset())
             {
                 Log.Error("_waitNotify.ReSet() failed");
             }
         }
         else
         {
-            if (!WaitNotify.WaitOne(WaitTimeout))
+            if (!_waitNotify.WaitOne(WaitTimeout))
             {
                 Log.Error($"_waitNotifyTimeout after {WaitTimeout}ms");
                 Thread.Sleep(10);
@@ -240,7 +240,7 @@ public class RedisHandle
         {
             try
             {
-                return _database.ListLeftPushAsync(key, data);
+                return _database.ListRightPushAsync(key, data);
             }
             catch (RedisTimeoutException e)
             {
@@ -440,7 +440,7 @@ public class RedisHandle
             return;
         }
         
-        var waitTime = 8;
+        var waitTime = 1;
         while (true)
         {
             try
@@ -449,7 +449,10 @@ public class RedisHandle
                 if (!ret)
                 {
                     await Task.Delay(waitTime);
-                    waitTime *= 2;
+                    if (waitTime < 32)
+                    {
+                        waitTime *= 2;
+                    }
                     continue;
                 }
                 break;
