@@ -16,11 +16,10 @@ public class WebSocketConnectService
                 try
                 {
                     i.OnReceiveData.Receive(buffer.AsSpan(0, result.Count).ToArray());
-                    i.OnReceiveData.Receive(buffer.AsSpan(0, result.Count).ToArray());
                 }
                 catch (Exception e)
                 {
-                    await i.Close();
+                    webSocket.Abort();
                     Log.Error("WebSocketConnectService OnReceive.OnReceiveData error:{0}!", e);
                     break;
                 }

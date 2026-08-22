@@ -25,7 +25,7 @@ public class TcpConnectService
             }
             catch (Exception e)
             {
-                await i.Close();
+                socket.Close();
                 Log.Error("TcpConnectService OnReceive.OnReceiveData error:{0}!", e);
                 break;
             }

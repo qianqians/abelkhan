@@ -30,7 +30,7 @@ public class WebSocketAcceptService
                 }
                 catch (Exception e)
                 {
-                    await i.Close();
+                    webSocket.Abort();
                     Log.Error("WebSocketAcceptService OnReceive.OnReceiveData error:{0}!", e);
                     break;
                 }
