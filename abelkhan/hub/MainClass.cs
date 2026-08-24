@@ -22,7 +22,7 @@ public struct HubConfig()
 public class MainClass
 {
     private RedisHandle? _redis;
-    private readonly Dictionary<string, Entity> _entities = new();
+    private readonly Dictionary<string, BaseEntity> _entities = new();
     // ReSharper disable once CollectionNeverQueried.Local
     private readonly List<GateMsgHandle> _gates = new();
     private readonly TcpConnectService _serviceGate = new();

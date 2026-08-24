@@ -10,19 +10,18 @@ message HubCreatePlayerEntity {
 }
 
 message HubCreateRemoteEntity {
-  repeated string conn_id = 1;
+  string conn_id = 1;
   string entity_id = 2;
   string entity_type = 3;
   bytes argv = 4;
 }
  
 message HubDeleteRemoteEntity {
-  repeated string conn_id = 1;
-  string entity_id = 2;
+  string entity_id = 1;
 }
 
 message HubRefreshEntity {
-  repeated string conn_id = 1;
+  string conn_id = 1;
   string entity_id = 2;
   string entity_type = 3;
   bytes argv = 4;

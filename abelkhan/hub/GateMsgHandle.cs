@@ -7,9 +7,9 @@ public class GateMsgHandle
 {
     private readonly WRpc _rpc;
     private readonly GateNetwork _gate;
-    private readonly Dictionary<string, Entity> _entities;
+    private readonly Dictionary<string, BaseEntity> _entities;
     
-    public GateMsgHandle(WRpc rpc, GateNetwork gate, Dictionary<string, Entity> entities)
+    public GateMsgHandle(WRpc rpc, GateNetwork gate, Dictionary<string, BaseEntity> entities)
     {
         _rpc = rpc;
         _gate = gate;

@@ -23,7 +23,10 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients, Dictionary<
             }
             clientWaitQueue.Enqueue(msg.UserId);
             clientReliabilityQueue.Enqueue(msg.UserId);
-            entityClients.Add(msg.UserId, cli);
+            lock (entityClients)
+            {
+                entityClients.Add(msg.UserId, cli);
+            }
         }
     }
     
@@ -35,12 +38,9 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients, Dictionary<
             EntityType = msg.EntityType,
             Argv = msg.Argv,
         };
-        foreach (var guid in msg.ConnId)
+        if (clients.TryGetValue(msg.ConnId, out var cli))
         {
-            if (clients.TryGetValue(guid, out var cli))
-            {
-                _ = cli.SendToClient(rpc.Notify(Consts.CreateRemoteEntity, forwardMsg));
-            }
+            _ = cli.SendToClient(rpc.Notify(Consts.CreateRemoteEntity, forwardMsg));
         }
     }
 
@@ -50,14 +50,14 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients, Dictionary<
         {
             EntityId = msg.EntityId,
         };
-        foreach (var guid in msg.ConnId)
+        foreach (var (_, cli) in clients)
         {
-            if (clients.TryGetValue(guid, out var cli))
-            {
-                _ = cli.SendToClient(rpc.Notify(Consts.DeleteRemoteEntity, forward));
-            }
+            _ = cli.SendToClient(rpc.Notify(Consts.DeleteRemoteEntity, forward));
         }
-        entityClients.Remove(msg.EntityId);
+        lock (entityClients)
+        {
+            entityClients.Remove(msg.EntityId);
+        }
     }
 
     public void OnHubRefreshEntity(HubRefreshEntity msg)
@@ -68,12 +68,9 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients, Dictionary<
             EntityType = msg.EntityType,
             Argv = msg.Argv,
         };
-        foreach (var guid in msg.ConnId)
+        if (clients.TryGetValue(msg.ConnId, out var cli))
         {
-            if (clients.TryGetValue(guid, out var cli))
-            {
-                _ = cli.SendToClient(rpc.Notify(Consts.RefreshEntity, forward));
-            }
+            _ = cli.SendToClient(rpc.Notify(Consts.RefreshEntity, forward));
         }
     }
 
