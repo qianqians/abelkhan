@@ -4,7 +4,7 @@ using engine;
 using Google.Protobuf;
 namespace hub;
 
-public abstract class BaseEntity(string entityId, string entityType, RedisHandle redis)
+public abstract class BaseEntity(string entityId, string entityType, RedisHandle redis) : Actor
 {
     private readonly WRpc _rpc = new();
     private readonly Dictionary<string, Func<string, string, GateNetwork, ByteString, Task>> _onMsg = new();
