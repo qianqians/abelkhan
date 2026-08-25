@@ -6,6 +6,8 @@ namespace hub;
 
 public abstract class BaseEntity(string entityId, string entityType, RedisHandle redis) : Actor
 {
+    public string EntityId => entityId;
+    
     private readonly WRpc _rpc = new();
     private readonly Dictionary<string, Func<string, string, GateNetwork, ByteString, Task>> _onMsg = new();
     private readonly Dictionary<string, ClientNetwork> _clients = new();
@@ -19,7 +21,7 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         }
     }
 
-    private async Task SendToGate(string connId, byte[] message)
+    internal async Task SendToGate(string connId, byte[] message)
     {
         if (_clients.TryGetValue(connId, out var client))
         {

@@ -1,7 +1,12 @@
-﻿namespace hub;
+﻿using consts;
+using engine;
+using Google.Protobuf;
+
+namespace hub;
 
 public class Group()
 {
+    private readonly WRpc _rpc = new();
     private readonly List<Client> _clients = new();
     private readonly List<Entity> _entities = new();
     private readonly List<Player> _players = new();
@@ -60,5 +65,25 @@ public class Group()
             await player.DeleteRemoteEntity(cli);
         }
         _players.Remove(player);
+    }
+
+    public async Task Notify<T>(BaseEntity entity, string method, T argv)
+        where T : IMessage<T>
+    {
+        var callRpc = new CallRpc()
+        {
+            ProtoName = method,
+            Content = argv.ToByteString()
+        };
+        foreach (var cli in _clients)
+        {
+            var msg = new GateForwardHubNotifyClient()
+            {
+                ConnId = cli.ConnId,
+                EntityId = entity.EntityId,
+                Event = callRpc,
+            };
+            await entity.SendToGate(cli.ConnId, _rpc.Notify(Consts.GateForwardHubNotifyClient, msg));
+        }
     }
 }
