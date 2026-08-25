@@ -50,12 +50,12 @@ class MainClass
     {
         _tWait = Task.Factory.StartNew(async () =>
         {
+            var rpc = new WRpc();
+            var h = new HubGeneralMsgHandle(_clients!, _entityClients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc);
+            _ = new HubMsgHandle(rpc, h);
+
             while (_isRun)
             {
-                var rpc = new WRpc();
-                var h = new HubGeneralMsgHandle(_clients!, _entityClients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc);
-                _ = new HubMsgHandle(rpc, h);
-
                 if (_clientWaitQueue == null || !_clientWaitQueue.TryDequeue(out var userId))
                 {
                     await Task.Delay(1);

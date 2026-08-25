@@ -3,6 +3,37 @@ using engine;
 using core;
 namespace hub;
 
+public class GateMsgMqHandle
+{
+    private readonly WRpc _rpc;
+    private readonly List<Client> _clients;
+
+    public GateMsgMqHandle(WRpc rpc, List<Client> clients)
+    {
+        _rpc = rpc;
+        _clients = clients;
+        
+        _rpc.OnNotify += OnNotify;
+    }
+
+    private void OnNotify(Notify ntf)
+    {
+        switch (ntf.Event.ProtoName)
+        {
+            case Consts.GateForwardClientRequestReconnect:
+            {
+                break;
+            }
+            case Consts.GateForwardClientRequestService:
+            {
+                break;
+            }
+            default:
+                throw  new ArgumentException($"GateMsgHandle ntf.Event.ProtoName:{ntf.Event.ProtoName}");
+        }
+    }
+}
+
 public class GateMsgHandle
 {
     private readonly WRpc _rpc;
