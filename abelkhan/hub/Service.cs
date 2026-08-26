@@ -5,13 +5,15 @@ using Newtonsoft.Json.Linq;
 
 namespace hub;
 
-public abstract class Service(ConcurrentDictionary<string, Client> clients, ConcurrentDictionary<string, GateNetwork> gates)
+public abstract class Service(
+    ConcurrentDictionary<string, Client> clients,
+    ConcurrentDictionary<string, GateNetwork> gates)
 {
     private readonly Group _group = new();
 
-    protected abstract BaseEntity CreateEntity(string gateName, string cliConnId, IMessage info);
+    protected abstract BaseEntity CreateEntity(string gateName, string cliConnId, byte[] info);
 
-    public virtual async Task EchoQueryServiceEntity(string gateName, string cliConnId, IMessage info)
+    public virtual async Task EchoQueryServiceEntity(string gateName, string cliConnId, byte[] info)
     {
         var e = CreateEntity(gateName, cliConnId, info);
         switch (e)
@@ -27,7 +29,7 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients, Conc
         }
     }
 
-    public virtual async Task EchoQueryServiceExt(List<(string, string, IMessage)> infoData)
+    public virtual async Task EchoQueryServiceExt(List<(string, string, byte[])> infoData)
     {
         try
         {

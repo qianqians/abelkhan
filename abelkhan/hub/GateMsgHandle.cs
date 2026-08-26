@@ -1,4 +1,5 @@
-﻿using consts;
+﻿using System.Collections.Concurrent;
+using consts;
 using engine;
 using core;
 namespace hub;
@@ -14,7 +15,7 @@ public class GateMsgMqHandle
     }
 
     public event Action<string, string, string>? OnReconnect;
-    public event Action<string, string, string>? OnRequestService;
+    public event Action<string, string, string, byte[]>? OnRequestService;
 
     private void OnNotify(Notify ntf)
     {
@@ -29,7 +30,7 @@ public class GateMsgMqHandle
             case Consts.GateForwardClientRequestService:
             {
                 var msg = _rpc.OnMsg<GateForwardClientRequestService>(ntf.Event.Content.ToByteArray());
-                OnRequestService?.Invoke(msg.ServiceName, msg.GateName, msg.ConnId);
+                OnRequestService?.Invoke(msg.ServiceName, msg.GateName, msg.ConnId, msg.Argv.ToByteArray());
                 break;
             }
             default:
@@ -42,9 +43,9 @@ public class GateMsgHandle
 {
     private readonly WRpc _rpc;
     private readonly GateNetwork _gate;
-    private readonly Dictionary<string, BaseEntity> _entities;
+    private readonly ConcurrentDictionary<string, BaseEntity> _entities;
     
-    public GateMsgHandle(WRpc rpc, GateNetwork gate, Dictionary<string, BaseEntity> entities)
+    public GateMsgHandle(WRpc rpc, GateNetwork gate, ConcurrentDictionary<string, BaseEntity> entities)
     {
         _rpc = rpc;
         _gate = gate;

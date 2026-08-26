@@ -24,17 +24,20 @@ public struct HubConfig()
 public class MainClass
 {
     private RedisHandle? _redis;
-    private readonly Dictionary<string, BaseEntity> _entities = new();
+    private readonly Dictionary<string, Service>  _services = new();
+    private readonly ConcurrentDictionary<string, BaseEntity> _entities = new();
     // ReSharper disable once CollectionNeverQueried.Local
     private readonly ConcurrentDictionary<string, GateMsgHandle> _gateMsgHandles = new();
+    // ReSharper disable once CollectionNeverQueried.Local
     private readonly ConcurrentDictionary<string, Client> _clients = new();
+    // ReSharper disable once CollectionNeverQueried.Local
     private readonly ConcurrentDictionary<string, GateNetwork> _gates = new();
     private readonly TcpConnectService _serviceGate = new();
     private readonly TcpConnectService _serviceDb = new();
     private readonly TimerService _timer = new();
     
     private Task? _tWait;
-    private ConcurrentQueue<string> _gateWaitQueue = new();
+    private readonly ConcurrentQueue<string> _gateWaitQueue = new();
     
     private bool _isRun = true;
     private ConsulClient? _consul;
@@ -42,10 +45,18 @@ public class MainClass
 
     private void OnReconnect(string userId, string gateName, string connId)
     {
-        _clients[userId] = new Client(userId, gateName, connId);
+        var cli = new Client(userId, gateName, connId);
+        _clients.AddOrUpdate(userId, cli, (_, _) => cli);
     }
-    
-    public event Action<string, string, string>? OnRequestService;
+
+    // ReSharper disable once AsyncVoidMethod
+    private async void OnRequestService(string serviceName, string gateName, string connId, byte[] data)
+    {
+        if (_services.TryGetValue(serviceName, out var service))
+        {
+            await service.EchoQueryServiceEntity(gateName, connId, data);
+        }
+    }
     
     private void StartRedisMsg()
     {
@@ -54,10 +65,7 @@ public class MainClass
             var rpc = new WRpc();
             var h = new GateMsgMqHandle(rpc);
             h.OnReconnect += OnReconnect;
-            h.OnRequestService += (string serviceName, string gateName, string connId) =>
-            {
-                OnRequestService?.Invoke(serviceName, gateName, connId);
-            };
+            h.OnRequestService += OnRequestService;
 
             while (_isRun)
             {
@@ -189,13 +197,13 @@ public class MainClass
         }
     }
 
-    static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    void UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
         var ex = e.ExceptionObject as System.Exception;
         Log.Error($"not handle exception:{ex}");
     }
     
-    public static void Main(string[] args)
+    public void RunMain(string[] args)
     {
         FileStream fs = File.OpenRead(args[0]);
         byte[] data = new byte[fs.Length];
