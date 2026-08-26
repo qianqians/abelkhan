@@ -55,7 +55,8 @@ public class GateMsgHandle
         _rpc.OnResponse += OnResponse;
     }
 
-    private void OnNotify(Notify ntf)
+    // ReSharper disable once AsyncVoidMethod
+    private async void OnNotify(Notify ntf)
     {
         switch (ntf.Event.ProtoName)
         {
@@ -66,7 +67,7 @@ public class GateMsgHandle
             }
             case Consts.ClientNotifyHub:
             {
-                OnClientNotifyHub(_rpc.OnMsg<ClientNotifyHub>(ntf.Event.Content.ToByteArray()));
+                await OnClientNotifyHub(_rpc.OnMsg<ClientNotifyHub>(ntf.Event.Content.ToByteArray()));
                 break;
             }
             default:
@@ -74,13 +75,14 @@ public class GateMsgHandle
         }
     }
 
-    private void OnRequest(Request req)
+    // ReSharper disable once AsyncVoidMethod
+    private async void OnRequest(Request req)
     {
         switch (req.Event.ProtoName)
         {
             case Consts.ClientRequestHub:
             {
-                OnClientRequestHub(req.MsgId, _rpc.OnMsg<ClientRequestHub>(req.Event.Content.ToByteArray()));
+                await OnClientRequestHub(req.MsgId, _rpc.OnMsg<ClientRequestHub>(req.Event.Content.ToByteArray()));
                 break;
             }
             default:
@@ -107,11 +109,11 @@ public class GateMsgHandle
         Log.Info("Client:{0} Disconnect", msg.ConnId);
     }
 
-    private void OnClientRequestHub(string msgId, ClientRequestHub msg)
+    private async Task OnClientRequestHub(string msgId, ClientRequestHub msg)
     {
         if (_entities.TryGetValue(msg.EntityId, out var entity))
         {
-            entity.OnDoMsg(msg.ConnId, msgId, _gate, msg.Event.ProtoName, msg.Event.Content);
+            await entity.OnDoMsg(msg.ConnId, msgId, _gate, msg.Event.ProtoName, msg.Event.Content);
         } 
         else
         {
@@ -131,11 +133,11 @@ public class GateMsgHandle
         }
     }
 
-    private void OnClientNotifyHub(ClientNotifyHub msg)
+    private async Task OnClientNotifyHub(ClientNotifyHub msg)
     {
         if (_entities.TryGetValue(msg.EntityId, out var entity))
         {
-            entity.OnDoMsg(msg.ConnId, string.Empty, _gate, msg.Event.ProtoName, msg.Event.Content);
+            await entity.OnDoMsg(msg.ConnId, string.Empty, _gate, msg.Event.ProtoName, msg.Event.Content);
         }
         else
         {

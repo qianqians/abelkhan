@@ -89,9 +89,9 @@ class MainClass
                         break;
                     }
                     
-                    _clientWaitQueue.Enqueue(userId);
-                    
                 } while (false);
+                    
+                _clientWaitQueue.Enqueue(userId);
             }
         }, TaskCreationOptions.LongRunning);
     }

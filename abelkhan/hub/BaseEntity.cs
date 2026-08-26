@@ -1,36 +1,39 @@
-﻿using consts;
+﻿using System.Collections.Concurrent;
+using consts;
 using core;
 using engine;
 using Google.Protobuf;
 namespace hub;
 
-public abstract class BaseEntity(string entityId, string entityType, RedisHandle redis) : Actor
+public abstract class BaseEntity(string entityId, string entityType, RedisHandle redis,
+    ConcurrentDictionary<string, Client> clients,
+    ConcurrentDictionary<string, GateNetwork> gates) : Actor
 {
     public string EntityId => entityId;
     
     private readonly WRpc _rpc = new();
     private readonly Dictionary<string, Func<string, string, GateNetwork, ByteString, Task>> _onMsg = new();
-    private readonly Dictionary<string, ClientNetwork> _clients = new();
     private readonly Dictionary<string, Action<string, byte[]>> _requestCallbacks = new();
 
-    private class ClientNetwork(GateNetwork gateNetwork)
+    internal async Task SendToGate(string userId, byte[] message)
     {
-        public async Task Send(byte[] message)
+        if (!clients.TryGetValue(userId, out var cli))
         {
-            await gateNetwork.Send(message);
+            Log.Error($"SendToGate userId:{userId} not found!");
+            return;
         }
-    }
-
-    internal async Task SendToGate(string connId, byte[] message)
-    {
-        if (_clients.TryGetValue(connId, out var client))
+        
+        if (!gates.TryGetValue(cli.GateName, out var gate))
         {
-            await client.Send(message);
+            Log.Error($"SendToGate connId:{cli.GateName} not found!");
+            return;
         }
+        
+        await gate.Send(message);
     }
 
     public abstract IMessage FullInfo();
-    
+    // ReSharper disable once MemberCanBeProtected.Global
     public abstract IMessage ClientInfo();
     
     protected virtual async Task CreateRemotePlayer(Client client)
@@ -67,10 +70,15 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         await SendToGate(client.ConnId, _rpc.Notify(Consts.HubDeleteRemoteEntity, msg));
     }
 
-    public virtual async Task<Result<T1, string>> Request<T0, T1>(string connId, string method, T0 argv) 
+    public virtual async Task<Result<T1, string>> Request<T0, T1>(string userId, string method, T0 argv) 
         where T0 : IMessage<T0>
         where T1 : IMessage<T1>, new()
     {
+        if (!clients.TryGetValue(userId, out var client))
+        {
+            Log.Error($"Request {userId} not found!");
+        }
+        
         var t = new TaskCompletionSource<Result<T1, string>>();
         var callRpc = new CallRpc()
         {
@@ -79,12 +87,12 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         };
         var msg = new GateForwardHubRequestClient()
         {
-            ConnId = connId,
+            ConnId = client!.ConnId,
             EntityId = entityId,
             Event = callRpc,
         };
         var msgId = Guid.NewGuid().ToString();
-        await SendToGate(connId, _rpc.Request(Consts.GateForwardHubRequestClient, msgId, msg));
+        await SendToGate(client.ConnId, _rpc.Request(Consts.GateForwardHubRequestClient, msgId, msg));
             
         _requestCallbacks.Add(msgId, (string errMsg, byte[] content) =>
         {
@@ -113,7 +121,7 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         }
     }
 
-    public async Task Notify<T>(string connId, string method, T argv)
+    public async Task Notify<T>(Client client, string method, T argv)
         where T : IMessage<T>
     {
         var callRpc = new CallRpc()
@@ -123,11 +131,11 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         };
         var msg = new GateForwardHubNotifyClient()
         {
-            ConnId = connId,
+            ConnId = client.ConnId,
             EntityId = entityId,
             Event = callRpc,
         };
-        await SendToGate(connId, _rpc.Notify(Consts.GateForwardHubNotifyClient, msg));
+        await SendToGate(client.ConnId, _rpc.Notify(Consts.GateForwardHubNotifyClient, msg));
     }
 
     private async Task Response(string connId, string msgId, byte[] data)
@@ -164,7 +172,7 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         }
     }
     
-    public async Task NotifyListMq<T>(string userId, bool isReliability, string method, T argv)
+    public async Task NotifyListMq<T>(Client client, bool isReliability, string method, T argv)
         where T : IMessage<T>
     {
         var callRpc = new CallRpc()
@@ -174,14 +182,29 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         };
         var msg = new GateForwardHubNotifyClientMq()
         {
-            UserId = userId,
+            UserId = client.UserId,
             EntityId = entityId,
             Event = callRpc,
         };
-        await SendToListMq(userId, isReliability, _rpc.Notify(Consts.GateForwardHubNotifyClientMq, msg));
+        await SendToListMq(client.UserId, isReliability, _rpc.Notify(Consts.GateForwardHubNotifyClientMq, msg));
+    }
+
+
+    private bool TryGetClient(string connId, out Client? client)
+    {
+        client = null;
+        foreach (var (_, cli) in clients)
+        {
+            if (cli.ConnId == connId)
+            {
+                client = cli;
+                return true;
+            }
+        }
+        return false;
     }
     
-    public virtual void RegisterNotify<T>(string method, Action<T> callback)
+    public virtual void RegisterNotify<T>(string method, Action<string, T> callback)
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
@@ -189,13 +212,15 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         {
             try
             {
-                if (!_clients.ContainsKey(connId))
+                if (TryGetClient(connId, out var client))
                 {
-                    _clients.Add(connId, new ClientNetwork(gateNetwork));
+                    var t = parser.ParseFrom(data);
+                    callback(client!.UserId, t);
                 }
-
-                var t = parser.ParseFrom(data);
-                callback(t);
+                else 
+                {
+                    Log.Error($"OnNotify method:{method} connId:{connId} not found!");
+                }
             }
             catch (Exception ex)
             {
@@ -205,7 +230,7 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         });
     }
     
-    public virtual void RegisterNotify<T>(string method, Func<T, Task> callback)
+    public virtual void RegisterNotify<T>(string method, Func<string, T, Task> callback)
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
@@ -213,13 +238,15 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         {
             try
             {
-                if (!_clients.ContainsKey(connId))
+                if (TryGetClient(connId, out var client))
                 {
-                    _clients.Add(connId, new ClientNetwork(gateNetwork));
+                    var t = parser.ParseFrom(data);
+                    await callback(client!.UserId, t);
                 }
-                
-                var t = parser.ParseFrom(data);
-                await callback(t);
+                else 
+                {
+                    Log.Error($"OnNotifyAsync method:{method} connId:{connId} not found!");
+                }
             }
             catch (Exception ex)
             {
@@ -237,20 +264,22 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         {
             try
             {
-                if (!_clients.ContainsKey(connId))
+                if (TryGetClient(connId, out var client))
                 {
-                    _clients.Add(connId, new ClientNetwork(gateNetwork));
+                    var t = parser.ParseFrom(data);
+                    var ret = callback(t);
+                    if (ret.IsOk)
+                    {
+                        await Response(client!.UserId, msgId, ret.Value.ToByteArray());
+                    }
+                    else
+                    {
+                        await Error(client!.UserId, msgId, ret.Error);
+                    }
                 }
-                
-                var t = parser.ParseFrom(data);
-                var ret = callback(t);
-                if (ret.IsOk)
+                else 
                 {
-                    await Response(connId, msgId, ret.Value.ToByteArray());
-                }
-                else
-                {
-                    await Error(connId, msgId, ret.Error);
+                    Log.Error($"OnRequest method:{method} connId:{connId} not found!");
                 }
             }
             catch (Exception ex)
@@ -269,20 +298,22 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         {
             try
             {
-                if (!_clients.ContainsKey(connId))
+                if (TryGetClient(connId, out var client))
                 {
-                    _clients.Add(connId, new ClientNetwork(gateNetwork));
+                    var t = parser.ParseFrom(data);
+                    var ret = await callback(t);
+                    if (ret.IsOk)
+                    {
+                        await Response(client!.UserId, msgId, ret.Value.ToByteArray());
+                    }
+                    else
+                    {
+                        await Error(client!.UserId, msgId, ret.Error);
+                    }
                 }
-                
-                var t = parser.ParseFrom(data);
-                var ret = await callback(t);
-                if (ret.IsOk)
+                else 
                 {
-                    await Response(connId, msgId, ret.Value.ToByteArray());
-                }
-                else
-                {
-                    await Error(connId, msgId, ret.Error);
+                    Log.Error($"OnRequestAsync method:{method} connId:{connId} not found!");
                 }
             }
             catch (Exception ex)
@@ -292,13 +323,13 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         });
     }
 
-    public void OnDoMsg(string connId, string msgId, GateNetwork gate, string method, ByteString message)
+    public async Task OnDoMsg(string connId, string msgId, GateNetwork gate, string method, ByteString message)
     {
         if (_onMsg.TryGetValue(method, out var action))
         {
             try
             {
-                action(connId, msgId, gate, message);
+                await action(connId, msgId, gate, message);
             }
             catch(Exception ex)
             {

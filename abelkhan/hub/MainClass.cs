@@ -39,6 +39,13 @@ public class MainClass
     private bool _isRun = true;
     private ConsulClient? _consul;
     private ConsulServiceWatcher? _serviceWatcher;
+
+    private void OnReconnect(string userId, string gateName, string connId)
+    {
+        _clients[userId] = new Client(userId, gateName, connId);
+    }
+    
+    public event Action<string, string, string>? OnRequestService;
     
     private void StartRedisMsg()
     {
@@ -46,6 +53,11 @@ public class MainClass
         {
             var rpc = new WRpc();
             var h = new GateMsgMqHandle(rpc);
+            h.OnReconnect += OnReconnect;
+            h.OnRequestService += (string serviceName, string gateName, string connId) =>
+            {
+                OnRequestService?.Invoke(serviceName, gateName, connId);
+            };
 
             while (_isRun)
             {
@@ -75,6 +87,8 @@ public class MainClass
                     }
                     
                 } while (false);
+                    
+                _gateWaitQueue.Enqueue(entityId);
             }
         }, TaskCreationOptions.LongRunning);
     }

@@ -1,14 +1,15 @@
-﻿using core;
+﻿using System.Collections.Concurrent;
+using core;
 using Google.Protobuf;
 using Newtonsoft.Json.Linq;
 
 namespace hub;
 
-public abstract class Service
+public abstract class Service(ConcurrentDictionary<string, Client> clients, ConcurrentDictionary<string, GateNetwork> gates)
 {
     private readonly Group _group = new();
 
-    protected abstract BaseEntity CreateEntity(string entityId, string entityType, IMessage info);
+    protected abstract BaseEntity CreateEntity(string gateName, string cliConnId, IMessage info);
 
     public virtual async Task EchoQueryServiceEntity(string gateName, string cliConnId, IMessage info)
     {
