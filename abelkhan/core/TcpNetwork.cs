@@ -10,14 +10,21 @@ public class TcpNetwork(Socket s) : INetwork
 
     public async Task Send(byte[] data)
     {
+        var sendData = new byte[data.Length+4];
+        sendData[0] = (byte)(data.Length & 0xff);
+        sendData[1] = (byte)(data.Length >> 8 & 0xff);
+        sendData[2] = (byte)(data.Length >> 16 & 0xff);
+        sendData[3] = (byte)(data.Length >> 24 & 0xff);
+        data.CopyTo(sendData, 4);
+        
         var sendLen = 0;
         using (await _lockObject.LockAsync())
         {
-            sendLen += s.Send(data, sendLen, data.Length, SocketFlags.None);
+            sendLen += s.Send(sendData, sendLen, sendData.Length, SocketFlags.None);
             while (sendLen < data.Length)
             {
                 await Task.Delay(1);
-                sendLen += s.Send(data, sendLen, data.Length - sendLen, SocketFlags.None);
+                sendLen += s.Send(sendData, sendLen, sendData.Length - sendLen, SocketFlags.None);
             }
         }
     }

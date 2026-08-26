@@ -54,7 +54,8 @@ public class MainClass
     {
         if (_services.TryGetValue(serviceName, out var service))
         {
-            await service.EchoQueryServiceEntity(gateName, connId, data);
+            var e = await service.EchoQueryServiceEntity(gateName, connId, data);
+            _entities.TryAdd(e.EntityId, e);
         }
     }
     
@@ -136,7 +137,7 @@ public class MainClass
         _isRun = false;
     }
     
-    private async void Run(HubConfig cfg)
+    private async Task Run(HubConfig cfg)
     {
         try
         {
@@ -226,6 +227,6 @@ public class MainClass
         var instance = new MainClass();
         using var sigTermReg = PosixSignalRegistration.Create(PosixSignal.SIGTERM, instance.HandleSignal);
         using var sigIntReg = PosixSignalRegistration.Create(PosixSignal.SIGINT, instance.HandleSignal);
-        instance.Run(cfg);
+        instance.Run(cfg).Wait();
     }
 }

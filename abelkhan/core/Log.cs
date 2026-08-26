@@ -19,7 +19,7 @@ public static class Log
         {
             return;
         }
-        Output(new StackFrame(1), TimerService.Tick, "trace", log, argv);
+        Output(new StackFrame(1), TimerService.Tick, "trace", string.Format(log, argv));
     }
 
     public static void Debug(string log, params object[] argv)
@@ -28,7 +28,7 @@ public static class Log
         {
             return;
         }
-        Output(new System.Diagnostics.StackFrame(1),TimerService.Tick, "debug", log, argv);
+        Output(new System.Diagnostics.StackFrame(1),TimerService.Tick, "debug", string.Format(log, argv));
     }
 
     public static void Warn(string log, params object[] argv)
@@ -37,20 +37,20 @@ public static class Log
         {
             return;
         }
-        Output(new System.Diagnostics.StackFrame(1), TimerService.Tick, "warn", log, argv);
+        Output(new System.Diagnostics.StackFrame(1), TimerService.Tick, "warn", string.Format(log, argv));
     }
 
     public static void Info(string log, params object[] argv)
     {
-        Output(new System.Diagnostics.StackFrame(1), TimerService.Tick, "info", log, argv);
+        Output(new System.Diagnostics.StackFrame(1), TimerService.Tick, "info", string.Format(log, argv));
     }
 
     public static void Error(string log, params object[] argv)
     {
-        Output(new System.Diagnostics.StackFrame(1), TimerService.Tick, "err", log, argv);
+        Output(new System.Diagnostics.StackFrame(1), TimerService.Tick, "err", string.Format(log, argv));
     }
 
-    private static void Output(StackFrame sf, long timestamp, string level, string log, params object[] argv)
+    private static void Output(StackFrame sf, long timestamp, string level, string log)
     {
         var startTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var time = startTime.AddMilliseconds(timestamp);
@@ -86,7 +86,7 @@ public static class Log
                     };
                 }
             }
-            _fs.WriteLine($"[{time}] [{level}] [{sf.GetMethod()?.DeclaringType?.FullName}] [{sf.GetMethod()?.Name}]:{log}", argv);
+            _fs.WriteLine($"[{time}] [{level}] [{sf.GetMethod()?.DeclaringType?.FullName}] [{sf.GetMethod()?.Name}]:{log}");
         }
     }
 

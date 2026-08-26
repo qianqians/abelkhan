@@ -27,6 +27,11 @@ public class OnReceive
             len |= underBuf[offset + 2] << 16;
             len |= underBuf[offset + 3] << 24;
 
+            if (len < 0 || len > 65536)
+            {
+                break;
+            }
+
             if (unread < len + 4)
             {
                 break;

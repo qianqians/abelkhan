@@ -196,7 +196,7 @@ public class TimerService
                     }
                     catch (System.Exception e)
                     {
-                        Log.Error("System.Exceptio{0}", e);
+                        Log.Error("System.Exception{0}", e);
                     }
                 }
             }
@@ -407,7 +407,7 @@ public class TimerService
                     }
                     catch (System.Exception e)
                     {
-                        Log.Error("System.Exceptio{0}", e);
+                        Log.Error("System.Exception{0}", e);
                     }
                 }
             }

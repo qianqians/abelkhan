@@ -13,7 +13,7 @@ public abstract class Service(
 
     protected abstract BaseEntity CreateEntity(string gateName, string cliConnId, byte[] info);
 
-    public virtual async Task EchoQueryServiceEntity(string gateName, string cliConnId, byte[] info)
+    public virtual async Task<BaseEntity> EchoQueryServiceEntity(string gateName, string cliConnId, byte[] info)
     {
         var e = CreateEntity(gateName, cliConnId, info);
         switch (e)
@@ -27,9 +27,10 @@ public abstract class Service(
             default:
                 throw new ArgumentException($"EchoQueryServiceEntity CreateEntity err {gateName}_{cliConnId}_{info}");
         }
+        return e;
     }
 
-    public virtual async Task EchoQueryServiceExt(List<(string, string, byte[])> infoData)
+    public virtual async Task<List<BaseEntity>?> EchoQueryServiceExt(List<(string, string, byte[])> infoData)
     {
         try
         {
@@ -54,10 +55,12 @@ public abstract class Service(
                         throw new ArgumentException($"EchoQueryServiceExt err:{e}");
                 } 
             }
+            return lEntities;
         }
         catch (Exception ex)
         {
             Log.Error($"EchoQueryServiceExt err:{ex}");
         }
+        return null;
     }
 }

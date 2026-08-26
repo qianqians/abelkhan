@@ -74,50 +74,62 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         where T0 : IMessage<T0>
         where T1 : IMessage<T1>, new()
     {
-        if (!clients.TryGetValue(userId, out var client))
-        {
-            Log.Error($"Request {userId} not found!");
-        }
-        
         var t = new TaskCompletionSource<Result<T1, string>>();
-        var callRpc = new CallRpc()
+
+        if (clients.TryGetValue(userId, out var client))
         {
-            ProtoName = method,
-            Content = argv.ToByteString()
-        };
-        var msg = new GateForwardHubRequestClient()
-        {
-            ConnId = client!.ConnId,
-            EntityId = entityId,
-            Event = callRpc,
-        };
-        var msgId = Guid.NewGuid().ToString();
-        await SendToGate(client.ConnId, _rpc.Request(Consts.GateForwardHubRequestClient, msgId, msg));
-            
-        _requestCallbacks.Add(msgId, (string errMsg, byte[] content) =>
-        {
-            if (!string.IsNullOrEmpty(errMsg))
+            var callRpc = new CallRpc()
             {
-                t.SetResult(Result<T1, string>.Err(errMsg));
-            }
-            else
+                ProtoName = method,
+                Content = argv.ToByteString()
+            };
+            var msg = new GateForwardHubRequestClient()
             {
-                var parser = new MessageParser<T1>(() => new T1());
-                t.SetResult(Result<T1, string>.Ok(parser.ParseFrom(content)));
+                ConnId = client!.ConnId,
+                EntityId = entityId,
+                Event = callRpc,
+            };
+            var msgId = Guid.NewGuid().ToString();
+            await SendToGate(client.ConnId, _rpc.Request(Consts.GateForwardHubRequestClient, msgId, msg));
+
+            lock (_requestCallbacks)
+            {
+                _requestCallbacks.Add(msgId, (string errMsg, byte[] content) =>
+                {
+                    if (!string.IsNullOrEmpty(errMsg))
+                    {
+                        t.SetResult(Result<T1, string>.Err(errMsg));
+                    }
+                    else
+                    {
+                        var parser = new MessageParser<T1>(() => new T1());
+                        t.SetResult(Result<T1, string>.Ok(parser.ParseFrom(content)));
+                    }
+                });
             }
-        });
+        }
+        else
+        {
+            var err = $"Request {userId} not found!";
+            Log.Error(err);
+            t.SetResult(Result<T1, string>.Err(err));
+        }
+
         return await t.Task;
     }
 
     public void OnResponse(string msgId, string errMsg, byte[] data)
     {
-        if (_requestCallbacks.Remove(msgId, out var callback))
+        lock (_requestCallbacks)
         {
-            callback(errMsg, data);
-        }
-        else
-        {
-            Log.Error($"OnResponse Msg:{msgId} not found!");
+            if (_requestCallbacks.Remove(msgId, out var callback))
+            {
+                callback(errMsg, data);
+            }
+            else
+            {
+                Log.Error($"OnResponse Msg:{msgId} not found!");
+            }
         }
     }
 

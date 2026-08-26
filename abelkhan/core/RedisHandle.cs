@@ -12,7 +12,7 @@ public class RedisConnectionHelper
     private const int KeepAlive = 30;
     private readonly ManualResetEvent _waitNotify = new(false);
 
-    private const int WaitTimeout = 15_000;
+    private const int WaitTimeout = 16;
     private readonly string _conName;
     private readonly string _pwd;
     private readonly string _conf;
@@ -70,7 +70,6 @@ public class RedisConnectionHelper
             {
                 Log.Error("Exit due to Recover-Failure! RecoverCount:{0}, connectRetry:{1}, connectTimeout:{2}ms, _conf:{3}", _recoverCnt, ConnectRetry, ConnectTimeout, _conf);
                 Thread.Sleep(10);
-                Environment.Exit(1);
             }
             if (afterRecover != null)
             {
@@ -93,7 +92,6 @@ public class RedisConnectionHelper
             {
                 Log.Error($"_waitNotifyTimeout after {WaitTimeout}ms");
                 Thread.Sleep(10);
-                Environment.Exit(1);
             }
         }
     }
@@ -391,6 +389,7 @@ public class RedisHandle
             try
             {
                 var v = await _database.ListLeftPopAsync(key, (long)1);
+                break;
             }
             catch (RedisTimeoutException e)
             {

@@ -205,17 +205,20 @@ class MainClass
                     .Select(kv => kv.Key)
                     .ToList();
 
-                foreach (var uuid in removeList)
+                lock (_entityClients)
                 {
-                    if (_clients.Remove(uuid, out var cli))
+                    foreach (var uuid in removeList)
                     {
-                        var removeEntity = _entityClients
-                            .Where((kv, _) => kv.Value.ConnId == cli.ConnId)
-                            .Select(kv => kv.Key)
-                            .ToList();
-                        foreach (var entityId in removeEntity)
+                        if (_clients.Remove(uuid, out var cli))
                         {
-                            _entityClients.Remove(entityId);
+                            var removeEntity = _entityClients
+                                .Where((kv, _) => kv.Value.ConnId == cli.ConnId)
+                                .Select(kv => kv.Key)
+                                .ToList();
+                            foreach (var entityId in removeEntity)
+                            {
+                                _entityClients.Remove(entityId);
+                            }
                         }
                     }
                 }
@@ -225,7 +228,7 @@ class MainClass
         _timer.AddTickTime(3000, TickClients);
     }
 
-    private async void Run(GateConfig cfg)
+    private async Task Run(GateConfig cfg)
     {
         try
         {
@@ -348,6 +351,6 @@ class MainClass
         var instance = new MainClass();
         using var sigTermReg = PosixSignalRegistration.Create(PosixSignal.SIGTERM, instance.HandleSignal);
         using var sigIntReg = PosixSignalRegistration.Create(PosixSignal.SIGINT, instance.HandleSignal);
-        instance.Run(cfg);
+        instance.Run(cfg).Wait();
     }
 }

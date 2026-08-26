@@ -41,7 +41,7 @@ public class TcpAcceptService(ushort port)
         await reader.CompleteAsync();
     }
 
-    private async void RunServerAsync()
+    private async Task RunServerAsync()
     {
         try
         {

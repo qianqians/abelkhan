@@ -59,49 +59,79 @@ public class GateMsgHandle
     // ReSharper disable once AsyncVoidMethod
     private async void OnNotify(Notify ntf)
     {
-        switch (ntf.Event.ProtoName)
+        try
         {
-            case Consts.ClientDisconnect:
+            switch (ntf.Event.ProtoName)
             {
-                OnClientDisconnect(_rpc.OnMsg<ClientDisconnect>(ntf.Event.Content.ToByteArray()));
-                break;
+                case Consts.ClientDisconnect:
+                {
+                    OnClientDisconnect(_rpc.OnMsg<ClientDisconnect>(ntf.Event.Content.ToByteArray()));
+                    break;
+                }
+                case Consts.ClientNotifyHub:
+                {
+                    await OnClientNotifyHub(_rpc.OnMsg<ClientNotifyHub>(ntf.Event.Content.ToByteArray()));
+                    break;
+                }
+                default:
+                {
+                    Log.Error($"GateMsgHandle ntf.Event.ProtoName:{ntf.Event.ProtoName}");
+                    break;
+                }
             }
-            case Consts.ClientNotifyHub:
-            {
-                await OnClientNotifyHub(_rpc.OnMsg<ClientNotifyHub>(ntf.Event.Content.ToByteArray()));
-                break;
-            }
-            default:
-                throw  new ArgumentException($"GateMsgHandle ntf.Event.ProtoName:{ntf.Event.ProtoName}");
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"GateMsgHandle ntf.Event.ProtoName:{ntf.Event.ProtoName} ex:{ex}");
         }
     }
 
     // ReSharper disable once AsyncVoidMethod
     private async void OnRequest(Request req)
     {
-        switch (req.Event.ProtoName)
+        try
         {
-            case Consts.ClientRequestHub:
+            switch (req.Event.ProtoName)
             {
-                await OnClientRequestHub(req.MsgId, _rpc.OnMsg<ClientRequestHub>(req.Event.Content.ToByteArray()));
-                break;
+                case Consts.ClientRequestHub:
+                {
+                    await OnClientRequestHub(req.MsgId, _rpc.OnMsg<ClientRequestHub>(req.Event.Content.ToByteArray()));
+                    break;
+                }
+                default:
+                {
+                    Log.Error($"GateMsgHandle req.Event.ProtoName:{req.Event.ProtoName}");
+                    break;
+                }
             }
-            default:
-                throw new ArgumentException($"GateMsgHandle req.Event.ProtoName:{req.Event.ProtoName}");
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"GateMsgHandle req.Event.ProtoName:{req.Event.ProtoName} ex:{ex}");
         }
     }
 
     private void OnResponse(Response rsp)
     {
-        switch (rsp.Event.ProtoName)
+        try
         {
-            case Consts.ClientResponseHub:
+            switch (rsp.Event.ProtoName)
             {
-                OnClientResponseHub(rsp.MsgId, _rpc.OnMsg<ClientResponseHub>(rsp.Event.Content.ToByteArray()));
-                break;
+                case Consts.ClientResponseHub:
+                {
+                    OnClientResponseHub(rsp.MsgId, _rpc.OnMsg<ClientResponseHub>(rsp.Event.Content.ToByteArray()));
+                    break;
+                }
+                default:
+                {
+                    Log.Error($"GateMsgHandle rsp.Event.ProtoName:{rsp.Event.ProtoName}");
+                    break;
+                }
             }
-            default:
-                throw new ArgumentException($"GateMsgHandle rsp.Event.ProtoName:{rsp.Event.ProtoName}");
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"GateMsgHandle rsp.Event.ProtoName:{rsp.Event.ProtoName} ex:{ex}");
         }
     }
 
@@ -114,7 +144,14 @@ public class GateMsgHandle
     {
         if (_entities.TryGetValue(msg.EntityId, out var entity))
         {
-            await entity.OnDoMsg(msg.ConnId, msgId, _gate, msg.Event.ProtoName, msg.Event.Content);
+            try
+            {
+                await entity.OnDoMsg(msg.ConnId, msgId, _gate, msg.Event.ProtoName, msg.Event.Content);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"OnClientRequestHub Entity:{msg.EntityId} failed! {ex}");
+            }
         } 
         else
         {
@@ -138,7 +175,14 @@ public class GateMsgHandle
     {
         if (_entities.TryGetValue(msg.EntityId, out var entity))
         {
-            await entity.OnDoMsg(msg.ConnId, string.Empty, _gate, msg.Event.ProtoName, msg.Event.Content);
+            try
+            {
+                await entity.OnDoMsg(msg.ConnId, string.Empty, _gate, msg.Event.ProtoName, msg.Event.Content);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"OnClientNotifyHub Entity:{msg.EntityId} failed! {ex}");
+            }
         }
         else
         {

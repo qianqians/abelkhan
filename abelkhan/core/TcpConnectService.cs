@@ -36,10 +36,17 @@ public class TcpConnectService
     
     public void Connect(string id, IPAddress address, ushort port)
     {
-        Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        s.Connect(address, port);
-        var i = new TcpNetwork(s);
-        i.T = ProcessLinesAsync(s, i);
-        OnConnect?.Invoke(id, i);
+        try
+        {
+            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            s.Connect(address, port);
+            var i = new TcpNetwork(s);
+            i.T = ProcessLinesAsync(s, i);
+            OnConnect?.Invoke(id, i);
+        }
+        catch (Exception e)
+        {
+            Log.Error("TcpConnectService OnConnect error:{0}!", e);
+        }
     }
 }
