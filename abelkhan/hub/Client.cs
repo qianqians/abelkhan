@@ -1,8 +1,8 @@
 ﻿namespace hub;
 
-public class Client(string entityId, string userId, string connId)
+public class Client(string userId, string gateName, string connId)
 {
-    public string EntityId => entityId;
     public string UserId => userId;
+    public string GateName => gateName;
     public string ConnId => connId;
 }

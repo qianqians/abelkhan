@@ -7,7 +7,7 @@ namespace core;
 
 public class TcpConnectService
 {
-    public event Action<INetwork>? OnConnect = null;
+    public event Action<string, INetwork>? OnConnect = null;
     
     private async Task ProcessLinesAsync(Socket socket, TcpNetwork i)
     {
@@ -34,12 +34,12 @@ public class TcpConnectService
         await reader.CompleteAsync();
     }
     
-    public void Connect(IPAddress address, ushort port)
+    public void Connect(string id, IPAddress address, ushort port)
     {
         Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         s.Connect(address, port);
         var i = new TcpNetwork(s);
         i.T = ProcessLinesAsync(s, i);
-        OnConnect?.Invoke(i);
+        OnConnect?.Invoke(id, i);
     }
 }

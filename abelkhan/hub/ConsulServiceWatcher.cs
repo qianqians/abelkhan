@@ -74,10 +74,10 @@ public class ConsulServiceWatcher(IConsulClient consulClient)
         _knownServiceInstances[serviceName] = currentIds;
     }
 
-    public event Action<string, string, ushort>? OnNewService;
+    public event Action<string, string, string, ushort>? OnNewService;
     private void OnNewServerRegistered(string serviceName, AgentService service)
     {
-        OnNewService?.Invoke(serviceName, service.ID, (ushort)service.Port);
+        OnNewService?.Invoke(serviceName, service.ID, service.Address, (ushort)service.Port);
         Log.Info($"[New Server Registered] ServiceName:{serviceName}, InstanceID:{service.ID}, Address:{service.Address}:{service.Port}");
     }
 }

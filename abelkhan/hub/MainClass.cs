@@ -1,5 +1,7 @@
-﻿using System.Net;
+﻿using System.Collections.Concurrent;
+using System.Net;
 using System.Runtime.InteropServices;
+using consts;
 using Consul;
 using core;
 using engine;
@@ -24,14 +26,58 @@ public class MainClass
     private RedisHandle? _redis;
     private readonly Dictionary<string, BaseEntity> _entities = new();
     // ReSharper disable once CollectionNeverQueried.Local
-    private readonly List<GateMsgHandle> _gates = new();
+    private readonly ConcurrentDictionary<string, GateMsgHandle> _gateMsgHandles = new();
+    private readonly ConcurrentDictionary<string, Client> _clients = new();
+    private readonly ConcurrentDictionary<string, GateNetwork> _gates = new();
     private readonly TcpConnectService _serviceGate = new();
     private readonly TcpConnectService _serviceDb = new();
     private readonly TimerService _timer = new();
     
+    private Task? _tWait;
+    private ConcurrentQueue<string> _gateWaitQueue = new();
+    
     private bool _isRun = true;
     private ConsulClient? _consul;
     private ConsulServiceWatcher? _serviceWatcher;
+    
+    private void StartRedisMsg()
+    {
+        _tWait = Task.Factory.StartNew(async () =>
+        {
+            var rpc = new WRpc();
+            var h = new GateMsgMqHandle(rpc);
+
+            while (_isRun)
+            {
+                if (_gateWaitQueue == null || !_gateWaitQueue.TryDequeue(out var entityId))
+                {
+                    await Task.Delay(1);
+                    continue;
+                }
+                if (string.IsNullOrEmpty(entityId))
+                {
+                    await Task.Delay(1);
+                    continue;
+                }
+
+                do
+                {
+                    var data = await _redis?.PopList(string.Format(Consts.EntityServerMq, entityId), 8)!;
+                    if (data == null)
+                    {
+                        await Task.Delay(1);
+                        break;
+                    }
+
+                    foreach (var msg in data)
+                    {
+                        rpc.OnNetworkData(msg);
+                    }
+                    
+                } while (false);
+            }
+        }, TaskCreationOptions.LongRunning);
+    }
     
     private async Task ReportServiceConsul(HubConfig cfg)
     {
@@ -73,31 +119,35 @@ public class MainClass
         try
         {
             _redis = new RedisHandle(cfg.RedisUrl, cfg.RedisPwd);
+            StartRedisMsg();
             
             var app = WebApplication.Create();
             app.MapGet("/health", () => Results.Ok("healthy"));
             _ = app.RunAsync($"http://{cfg.Ip}:{cfg.PortHealth}");
             await ReportServiceConsul(cfg);
 
-            _serviceGate.OnConnect += (network) =>
+            _serviceGate.OnConnect += (id, network) =>
             {
                 var rpc = new WRpc();
-                _gates.Add(new GateMsgHandle(rpc, new GateNetwork(network), _entities));
+                var gate = new GateNetwork(network);
+                _gates.TryAdd(id, gate);
+                _gateMsgHandles.TryAdd(id, new GateMsgHandle(rpc, gate, _entities));
+                network.OnReceive(rpc.OnNetworkData);
             };
-            _serviceDb.OnConnect += (network) =>
+            _serviceDb.OnConnect += (id, network) =>
             {
             }; 
                 
             _serviceWatcher = new(_consul!);
-            _serviceWatcher.OnNewService += (string serviceName, string ip, ushort port) =>
+            _serviceWatcher.OnNewService += (string serviceName, string id, string ip, ushort port) =>
             {
                 if (serviceName.Equals("gate", StringComparison.OrdinalIgnoreCase))
                 {
-                    _serviceGate.Connect(IPAddress.Parse(ip), port);
+                    _serviceGate.Connect(id, IPAddress.Parse(ip), port);
                 }
                 else if (serviceName.Equals("db_proxy", StringComparison.OrdinalIgnoreCase))
                 {
-                    _serviceDb.Connect(IPAddress.Parse(ip), port);
+                    _serviceDb.Connect(id, IPAddress.Parse(ip), port);
                 }
             };
             using var cts = new CancellationTokenSource();
@@ -117,6 +167,7 @@ public class MainClass
             }
             
             await cts.CancelAsync();
+            await _tWait!;
         }
         catch (Exception ex)
         {

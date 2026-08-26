@@ -6,15 +6,15 @@ namespace hub;
 public class GateMsgMqHandle
 {
     private readonly WRpc _rpc;
-    private readonly List<Client> _clients;
 
-    public GateMsgMqHandle(WRpc rpc, List<Client> clients)
+    public GateMsgMqHandle(WRpc rpc)
     {
         _rpc = rpc;
-        _clients = clients;
-        
         _rpc.OnNotify += OnNotify;
     }
+
+    public event Action<string, string, string>? OnReconnect;
+    public event Action<string, string, string>? OnRequestService;
 
     private void OnNotify(Notify ntf)
     {
@@ -22,10 +22,14 @@ public class GateMsgMqHandle
         {
             case Consts.GateForwardClientRequestReconnect:
             {
+                var msg = _rpc.OnMsg<GateForwardClientRequestReconnect>(ntf.Event.Content.ToByteArray());
+                OnReconnect?.Invoke(msg.UserId, msg.GateName, msg.ConnId);
                 break;
             }
             case Consts.GateForwardClientRequestService:
             {
+                var msg = _rpc.OnMsg<GateForwardClientRequestService>(ntf.Event.Content.ToByteArray());
+                OnRequestService?.Invoke(msg.ServiceName, msg.GateName, msg.ConnId);
                 break;
             }
             default:
