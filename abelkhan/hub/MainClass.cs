@@ -43,6 +43,11 @@ public class MainClass
     private ConsulClient? _consul;
     private ConsulServiceWatcher? _serviceWatcher;
 
+    public void RegisterService(string serviceName, Service service)
+    {
+        _services[serviceName] = service;
+    }
+
     private void OnReconnect(string userId, string gateName, string connId)
     {
         var cli = new Client(userId, gateName, connId);
