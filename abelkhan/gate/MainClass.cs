@@ -288,8 +288,14 @@ class MainClass
                 try
                 {
                     var rpc = new WRpc();
-
                     var netGuid = Guid.NewGuid().ToString();
+                    var cli = new Client(netGuid, network, _redis);
+                    lock (_clientReliabilityQueue)
+                    {
+                        _ = new ClientMsgHandle(cfg, _redis, rpc, cli, _clientReliabilityQueue);
+                    }
+                    network.OnReceive(rpc.OnNetworkData);
+
                     await network.Send(rpc.Notify(Consts.NotifyConnId, new NotifyConnID()
                     {
                         ConnId = netGuid,
@@ -300,16 +306,9 @@ class MainClass
                             ServiceName = cfg.EnterService,
                             GateName = cfg.GateId,
                             ConnId = netGuid,
-                        }));
-
-                    var cli = new Client(netGuid, network, _redis);
-                    lock (_clientReliabilityQueue)
-                    {
-                        _ = new ClientMsgHandle(cfg, _redis, rpc, cli, _clientReliabilityQueue);
-                    }
-
-                    network.OnReceive(rpc.OnNetworkData);
-
+                        })
+                    );
+                    
                     lock (_clients)
                     {
                         _clients.Add(netGuid, cli);
