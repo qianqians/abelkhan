@@ -249,14 +249,8 @@ class MainClass
                     if (_clients.Remove(uuid, out var cli))
                     {
                         _ = cli.Close();
-                        lock (_clientWaitQueue)
-                        {
-                            while(_clientWaitQueue.Remove(cli.UserId!));
-                        }
-                        lock (_clientReliabilityQueue)
-                        {
-                            while(_clientReliabilityQueue.Remove(cli.UserId!));
-                        }
+                        lock (_clientWaitQueue) while(_clientWaitQueue.Remove(cli.UserId!));
+                        lock (_clientReliabilityQueue) while(_clientReliabilityQueue.Remove(cli.UserId!));
                     }
                 }
             }
