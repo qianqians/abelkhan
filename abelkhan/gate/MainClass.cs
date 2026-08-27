@@ -272,13 +272,13 @@ class MainClass
             _internal = new(cfg.PortInternal);
             _internal.OnListenAccept += network =>
             {
+                var rpc = new WRpc();
                 lock (_clients)
                 {
-                    var rpc = new WRpc();
                     var h = new HubGeneralMsgHandle(_clients, _clientWaitQueue, _clientReliabilityQueue, rpc);
                     _hubs.Add(new HubMsgHandle(network, rpc, h));
-                    network.OnReceive(rpc.OnNetworkData);
                 }
+                network.OnReceive(rpc.OnNetworkData);
             };
             _internal.Start();
 
