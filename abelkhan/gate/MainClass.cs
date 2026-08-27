@@ -240,7 +240,7 @@ class MainClass
             lock (_clients)
             {
                 var removeList = _clients
-                    .Where((kv, _) => 5000 < (tick - kv.Value.LastEventTime))
+                    .Where((kv, _) => 10_000 < (tick - kv.Value.LastEventTime))
                     .Select(kv => kv.Key)
                     .ToList();
                 
