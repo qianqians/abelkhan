@@ -10,61 +10,80 @@ public class Group()
     private readonly List<Client> _clients = new();
     private readonly List<Entity> _entities = new();
     private readonly List<Player> _players = new();
+    private readonly Nito.AsyncEx.AsyncLock _lockObject = new();
 
     public async Task Join(Client client)
     {
-        foreach (var e in _entities)
+        using (await _lockObject.LockAsync())
         {
-            await e.CreateRemoteEntity(client);
-        }
+            foreach (var e in _entities)
+            {
+                await e.CreateRemoteEntity(client);
+            }
 
-        foreach (var p in _players)
-        {
-            await p.CreateRemotePlayer(client);
+            foreach (var p in _players)
+            {
+                await p.CreateRemotePlayer(client);
+            }
+
+            _clients.Add(client);
         }
-        
-        _clients.Add(client);
     }
 
-    public void Leave(Client client)
+    public async Task Leave(Client client)
     {
-        _clients.Remove(client);
+        using (await _lockObject.LockAsync())
+        {
+            _clients.Remove(client);
+        }
     }
 
     public async Task CreateRemoteEntity(Entity entity)
     {
-        foreach (var cli in _clients)
+        using (await _lockObject.LockAsync())
         {
-            await entity.CreateRemoteEntity(cli);
+            foreach (var cli in _clients)
+            {
+                await entity.CreateRemoteEntity(cli);
+            }
+            _entities.Add(entity);
         }
-        _entities.Add(entity);
     }
 
     public async Task RemoveEntity(Entity entity)
     {
-        foreach (var cli in _clients)
+        using (await _lockObject.LockAsync())
         {
-            await entity.DeleteRemoteEntity(cli);
+            foreach (var cli in _clients)
+            {
+                await entity.DeleteRemoteEntity(cli);
+            }
+            _entities.Remove(entity);
         }
-        _entities.Remove(entity);
     }
 
     public async Task CreateRemotePlayer(Player player)
     {
-        foreach (var cli in _clients)
+        using (await _lockObject.LockAsync())
         {
-            await player.CreateRemotePlayer(cli);
+            foreach (var cli in _clients)
+            {
+                await player.CreateRemotePlayer(cli);
+            }
+            _players.Add(player);
         }
-        _players.Add(player);
     }
 
     public async Task RemovePlayer(Player player)
     {
-        foreach (var cli in _clients)
+        using (await _lockObject.LockAsync())
         {
-            await player.DeleteRemoteEntity(cli);
+            foreach (var cli in _clients)
+            {
+                await player.DeleteRemoteEntity(cli);
+            }
+            _players.Remove(player);
         }
-        _players.Remove(player);
     }
 
     public async Task Notify<T>(BaseEntity entity, string method, T argv)
@@ -75,15 +94,18 @@ public class Group()
             ProtoName = method,
             Content = argv.ToByteString()
         };
-        foreach (var cli in _clients)
+        using (await _lockObject.LockAsync())
         {
-            var msg = new GateForwardHubNotifyClient()
+            foreach (var cli in _clients)
             {
-                ConnId = cli.ConnId,
-                EntityId = entity.EntityId,
-                Event = callRpc,
-            };
-            await entity.SendToGate(cli.UserId, _rpc.Notify(Consts.GateForwardHubNotifyClient, msg));
+                var msg = new GateForwardHubNotifyClient()
+                {
+                    ConnId = cli.ConnId,
+                    EntityId = entity.EntityId,
+                    Event = callRpc,
+                };
+                await entity.SendToGate(cli.UserId, _rpc.Notify(Consts.GateForwardHubNotifyClient, msg));
+            }
         }
     }
 }

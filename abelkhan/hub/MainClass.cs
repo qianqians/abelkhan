@@ -57,10 +57,17 @@ public class MainClass
     // ReSharper disable once AsyncVoidMethod
     private async void OnRequestService(string serviceName, string gateName, string connId, byte[] data)
     {
-        if (_services.TryGetValue(serviceName, out var service))
+        try
         {
-            var e = await service.EchoQueryServiceEntity(gateName, connId, data);
-            _entities.TryAdd(e.EntityId, e);
+            if (_services.TryGetValue(serviceName, out var service))
+            {
+                var e = await service.EchoQueryServiceEntity(gateName, connId, data);
+                _entities.TryAdd(e.EntityId, e);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"OnRequestService:{ex}");
         }
     }
     

@@ -18,16 +18,28 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
             EntityType = msg.EntityType,
             Argv = msg.Argv,
         };
-        if (clients.TryGetValue(msg.ConnId, out var cli))
+        lock (clients)
         {
-            _ = cli.SendToClient(rpc.Notify(Consts.CreatePlayerEntity, forward));
-            if (network != null)
+            if (clients.TryGetValue(msg.ConnId, out var cli))
             {
-                cli.RegisterNetwork(msg.EntityId, network);
+                _ = cli.SendToClient(rpc.Notify(Consts.CreatePlayerEntity, forward));
+                if (network != null)
+                {
+                    cli.RegisterNetwork(msg.EntityId, network);
+                }
+
+                if (!clientWaitQueue.Contains(msg.UserId))
+                {
+                    clientWaitQueue.AddToBack(msg.UserId);
+                }
+
+                if (!clientReliabilityQueue.Contains(msg.UserId))
+                {
+                    clientReliabilityQueue.AddToBack(msg.UserId);
+                }
+
+                cli.UserId = msg.UserId;
             }
-            clientWaitQueue.AddToBack(msg.UserId);
-            clientReliabilityQueue.AddToBack(msg.UserId);
-            cli.UserId = msg.UserId;
         }
     }
     
@@ -39,9 +51,12 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
             EntityType = msg.EntityType,
             Argv = msg.Argv,
         };
-        if (clients.TryGetValue(msg.ConnId, out var cli))
+        lock (clients)
         {
-            _ = cli.SendToClient(rpc.Notify(Consts.CreateRemoteEntity, forwardMsg));
+            if (clients.TryGetValue(msg.ConnId, out var cli))
+            {
+                _ = cli.SendToClient(rpc.Notify(Consts.CreateRemoteEntity, forwardMsg));
+            }
         }
     }
 
@@ -68,9 +83,12 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
             EntityType = msg.EntityType,
             Argv = msg.Argv,
         };
-        if (clients.TryGetValue(msg.ConnId, out var cli))
+        lock (clients)
         {
-            _ = cli.SendToClient(rpc.Notify(Consts.RefreshEntity, forward));
+            if (clients.TryGetValue(msg.ConnId, out var cli))
+            {
+                _ = cli.SendToClient(rpc.Notify(Consts.RefreshEntity, forward));
+            }
         }
     }
 
@@ -81,9 +99,12 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
             EntityId = msg.EntityId,
             Event = msg.Event,
         };
-        if (clients.TryGetValue(msg.ConnId, out var cli))
+        lock (clients)
         {
-            _ = cli.SendToClient(rpc.Request(Consts.HubRequestClient, Guid.NewGuid().ToString(), forward));
+            if (clients.TryGetValue(msg.ConnId, out var cli))
+            {
+                _ = cli.SendToClient(rpc.Request(Consts.HubRequestClient, Guid.NewGuid().ToString(), forward));
+            }
         }
     }
 
@@ -94,9 +115,12 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
             ErrMsg = msg.ErrMsg,
             Content = msg.Content,
         };
-        if (clients.TryGetValue(msg.ConnId, out var cli))
+        lock (clients)
         {
-            _ = cli.SendToClient(rpc.Response(Consts.HubResponseClient, msgId, forward));
+            if (clients.TryGetValue(msg.ConnId, out var cli))
+            {
+                _ = cli.SendToClient(rpc.Response(Consts.HubResponseClient, msgId, forward));
+            }
         }
     }
 
@@ -107,9 +131,12 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
             EntityId = msg.EntityId,
             Event = msg.Event,
         };
-        if (clients.TryGetValue(msg.ConnId, out var cli))
+        lock (clients)
         {
-            _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClient, forward));
+            if (clients.TryGetValue(msg.ConnId, out var cli))
+            {
+                _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClient, forward));
+            }
         }
     }
 
@@ -135,9 +162,12 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
         {
             PromptInfo = msg.PromptInfo,
         };
-        if (clients.TryGetValue(msg.ConnId, out var cli))
+        lock (clients)
         {
-            _ = cli.SendToClient(rpc.Notify(Consts.KickOff, forward));
+            if (clients.TryGetValue(msg.ConnId, out var cli))
+            {
+                _ = cli.SendToClient(rpc.Notify(Consts.KickOff, forward));
+            }
         }
     }
 
@@ -197,7 +227,8 @@ public class HubMsgHandle
                 break;
             default:
             {
-                throw new ArgumentException($"HubMsgHandle ntf.Event.ProtoName:{ntf.Event.ProtoName}");
+                Log.Error($"HubMsgHandle ntf.Event.ProtoName:{ntf.Event.ProtoName}");
+                break;
             }
         }
     }
@@ -213,7 +244,8 @@ public class HubMsgHandle
             }
             default:
             {
-                throw new ArgumentException($"HubMsgHandle req.Event.ProtoName:{req.Event.ProtoName}");
+                Log.Error($"HubMsgHandle req.Event.ProtoName:{req.Event.ProtoName}");
+                break;
             }
         }
     }
@@ -229,7 +261,8 @@ public class HubMsgHandle
             }
             default:
             {
-                throw new ArgumentException($"HubMsgHandle rsp.Event.ProtoName:{rsp.Event.ProtoName}");
+                Log.Error($"HubMsgHandle rsp.Event.ProtoName:{rsp.Event.ProtoName}");
+                break;
             }
         }
     }

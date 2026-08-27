@@ -24,7 +24,7 @@ public class TimerService
 
     public static long WeekEndTimestamp()
     {
-        var now = DateTime.Now;
+        var now = DateTime.UtcNow;
         var dayOfWeek = Convert.ToInt32(now.DayOfWeek.ToString("d"));
         dayOfWeek = dayOfWeek == 0 ? 7 : dayOfWeek;
         var endOfWeek = now.AddDays(7 - dayOfWeek).Date.AddDays(1).AddTicks(-1);
@@ -117,7 +117,7 @@ public class TimerService
     {
         AddDayTimeHandleImpl();
 
-        var t = DateTime.Now;
+        var t = DateTime.UtcNow;
         List<DayTime> list = new();
         foreach (var item in _dayTimeHandleDict)
         {
@@ -174,7 +174,7 @@ public class TimerService
         AddTimeHandleImpl();
 
         List<WeekDayTime> list = new();
-        var t = DateTime.Now;
+        var t = DateTime.UtcNow;
         foreach (var (key, value) in _timeHandleDict)
         {
             if (key.Day == t.DayOfWeek && key.Hour == t.Hour && key.Minute == t.Minute && key.Second <= t.Second)
@@ -196,7 +196,7 @@ public class TimerService
                     }
                     catch (System.Exception e)
                     {
-                        Log.Error("System.Exception{0}", e);
+                        Log.Error("System.Exception:{0}", e);
                     }
                 }
             }
@@ -230,7 +230,7 @@ public class TimerService
         AddMonthTimeHandleImpl();
 
         List<MonthDayTime> list = new();
-        var t = DateTime.Now;
+        var t = DateTime.UtcNow;
         foreach (var (key, value) in _monthTimeHandleDict)
         {
             if (key.Month == t.Month && key.Day == t.Day && key.Hour == t.Hour && key.Minute == t.Minute && key.Second == t.Second)
@@ -285,7 +285,7 @@ public class TimerService
     {
         AddLoopDayTimeHandleImpl();
 
-        var t = DateTime.Now;
+        var t = DateTime.UtcNow;
         if (t is { Hour: 0, Minute: 0 } && (Tick - _loopDayTick) >= 24 * 60 * 60 * 1000)
         {
             foreach (var item in _loopDayTimeHandle)
@@ -369,7 +369,7 @@ public class TimerService
     {
         AddLoopWeekDayTimeHandleImpl();
 
-        var t = DateTime.Now;
+        var t = DateTime.UtcNow;
         if (t is { DayOfWeek: DayOfWeek.Sunday, Hour: 0, Minute: 0, Second: 0 } && (Tick - _loopWeekDayTick) >= 7 * 24 * 60 * 60 * 1000)
         {
             foreach (var (key, value) in _loopWeekDayTimeHandle)

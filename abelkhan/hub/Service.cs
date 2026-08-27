@@ -25,7 +25,8 @@ public abstract class Service(
                 await _group.CreateRemotePlayer(player);
                 break;
             default:
-                throw new ArgumentException($"EchoQueryServiceEntity CreateEntity err {gateName}_{cliConnId}_{info}");
+                Log.Error($"EchoQueryServiceEntity CreateEntity err {gateName}_{cliConnId}_{info}");
+                break;
         }
         return e;
     }

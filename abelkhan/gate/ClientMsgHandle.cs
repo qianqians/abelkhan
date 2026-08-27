@@ -93,7 +93,7 @@ public class ClientMsgHandle
                 var msg = _rpc.OnMsg<AckReliabilityMsg>(ntf.Event.Content.ToByteArray());
                 if (!string.IsNullOrEmpty(msg.EntityId))
                 {
-                    _ = _redis.DeleteListElem(string.Format(Consts.EntityReliabilityClientMq, msg.EntityId));
+                    _ = _redis.DeleteListElem(string.Format(Consts.EntityReliabilityClientMq, _client.UserId!));
                     lock (_clientReliabilityQueue)
                     {
                         _clientReliabilityQueue.AddToBack(_client.UserId!);

@@ -3,7 +3,6 @@
 // ReSharper disable once ClassNeverInstantiated.Global
 public class Consts
 {
-    public static readonly string EnterGame = "enter_game";
     public static readonly string EntityClientMq =  "entity_{0}_client_mq";
     public static readonly string EntityReliabilityClientMq =  "entity_reliability_{0}_client_mq";
     public static readonly string EntityServerMq =  "entity_{0}_server_mq";

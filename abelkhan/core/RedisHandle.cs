@@ -12,7 +12,7 @@ public class RedisConnectionHelper
     private const int KeepAlive = 30;
     private readonly ManualResetEvent _waitNotify = new(false);
 
-    private const int WaitTimeout = 100;
+    private const int WaitTimeout = 999;
     private readonly string _conName;
     private readonly string _pwd;
     private readonly string _conf;
@@ -40,7 +40,7 @@ public class RedisConnectionHelper
             connectionMultiplexer = ConnectionMultiplexer.Connect(_conf);
             database = connectionMultiplexer.GetDatabase(_db);
         }
-        catch (RedisConnectionException ex)
+        catch (Exception ex)
         {
             Log.Error("Can NOT connect to Redis! connectRetry:{0}, connectTimeout:{1}ms, ex:{2}, _conf:{3}", ConnectRetry, ConnectTimeout, ex, _conf);
             throw;
@@ -143,7 +143,7 @@ public class RedisHandle
             {
                 return _database.KeyExpireAsync(key, System.TimeSpan.FromMilliseconds(timeout));
             }
-            catch (RedisTimeoutException e)
+            catch (Exception e)
             {
                 Recover(e);
             }
@@ -170,7 +170,7 @@ public class RedisHandle
                     return _database.StringSetAsync(key, data);
                 }
             }
-            catch (RedisTimeoutException e)
+            catch (Exception e)
             {
                 Recover(e);
             }
@@ -195,7 +195,7 @@ public class RedisHandle
             {
                 return _database.StringGetAsync(key);
             }
-            catch (RedisTimeoutException e)
+            catch (Exception e)
             {
                 Recover(e);
             }
@@ -225,7 +225,7 @@ public class RedisHandle
             {
                 return _database.KeyDelete(key);
             }
-            catch (RedisTimeoutException e)
+            catch (Exception e)
             {
                 Recover(e);
             }
@@ -245,7 +245,7 @@ public class RedisHandle
             {
                 return _database.ListRightPushAsync(key, data);
             }
-            catch (RedisTimeoutException e)
+            catch (Exception e)
             {
                 Recover(e);
             }
@@ -265,7 +265,7 @@ public class RedisHandle
             {
                 return _database.ListRightPushAsync(key, JsonConvert.SerializeObject(data));
             }
-            catch (RedisTimeoutException e)
+            catch (Exception e)
             {
                 Recover(e);
             }
@@ -286,7 +286,7 @@ public class RedisHandle
                 var result = await _database.ListLeftPopAsync(key, count);
                 return result.Select(d => (byte[])d!).ToList();
             }
-            catch (RedisTimeoutException e)
+            catch (Exception e)
             {
                 Recover(e);
             }
@@ -313,7 +313,7 @@ public class RedisHandle
                 }
                 return JsonConvert.DeserializeObject<T>(json!);
             }
-            catch (RedisTimeoutException e)
+            catch (Exception e)
             {
                 Recover(e);
             }
@@ -339,7 +339,7 @@ public class RedisHandle
                 }
                 return json!;
             }
-            catch (RedisTimeoutException e)
+            catch (Exception e)
             {
                 Recover(e);
             }
@@ -365,7 +365,7 @@ public class RedisHandle
                 }
                 return JsonConvert.DeserializeObject<T>(json!);
             }
-            catch (RedisTimeoutException e)
+            catch (Exception e)
             {
                 Recover(e);
             }
@@ -396,7 +396,7 @@ public class RedisHandle
                 var v = await _database.ListLeftPopAsync(key, (long)1);
                 break;
             }
-            catch (RedisTimeoutException e)
+            catch (Exception e)
             {
                 Recover(e);
             }
@@ -430,7 +430,7 @@ public class RedisHandle
                 }
                 return dataResult;
             }
-            catch (RedisTimeoutException e)
+            catch (Exception e)
             {
                 Recover(e);
             }
@@ -461,7 +461,7 @@ public class RedisHandle
                 }
                 break;
             }
-            catch (RedisTimeoutException e)
+            catch (Exception e)
             {
                 Recover(e);
             }
@@ -482,7 +482,7 @@ public class RedisHandle
                 await _database.LockReleaseAsync(key, token);
                 break;
             }
-            catch (RedisTimeoutException e)
+            catch (Exception e)
             {
                 Recover(e);
             }

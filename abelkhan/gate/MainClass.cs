@@ -180,23 +180,24 @@ class MainClass
             Event = ev.Event,
             NeedAck = needAck,
         };
-        lock (_clients)
+
+        if (userId == ev.UserId)
         {
-            if (userId == ev.UserId)
+            lock (_clients)
             {
                 foreach (var (_, cli) in _clients)
                 {
-                    if (cli.UserId == ev.UserId)
+                    if (cli.UserId == userId)
                     {
                         _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClientMq, forward));
                         break;
                     }
                 }
             }
-            else
-            {
-                return false;
-            }
+        }
+        else
+        {
+            return false;
         }
 
         return true;
@@ -284,30 +285,39 @@ class MainClass
             _external = new(cfg.PortExternal, cfg.Pfx, cfg.PfxPassword);
             _external.OnListenAccept += async network =>
             {
-                var rpc = new WRpc();
-                
-                var netGuid = Guid.NewGuid().ToString();
-                await network.Send(rpc.Notify(Consts.NotifyConnId, new NotifyConnID()
+                try
                 {
-                    ConnId = netGuid,
-                }));
-                await _redis.PushList(cfg.EnterService, rpc.Notify(Consts.EnterGame, new GateForwardClientRequestService()
-                {
-                    ServiceName  = cfg.EnterService,
-                    GateName = cfg.GateId,
-                    ConnId = netGuid,
-                }));
+                    var rpc = new WRpc();
 
-                var cli = new Client(netGuid, network, _redis);
-                lock (_clientReliabilityQueue)
-                {
-                    _ = new ClientMsgHandle(cfg, _redis, rpc, cli, _clientReliabilityQueue);
+                    var netGuid = Guid.NewGuid().ToString();
+                    await network.Send(rpc.Notify(Consts.NotifyConnId, new NotifyConnID()
+                    {
+                        ConnId = netGuid,
+                    }));
+                    await _redis.PushList(cfg.EnterService, rpc.Notify(Consts.GateForwardClientRequestService,
+                        new GateForwardClientRequestService()
+                        {
+                            ServiceName = cfg.EnterService,
+                            GateName = cfg.GateId,
+                            ConnId = netGuid,
+                        }));
+
+                    var cli = new Client(netGuid, network, _redis);
+                    lock (_clientReliabilityQueue)
+                    {
+                        _ = new ClientMsgHandle(cfg, _redis, rpc, cli, _clientReliabilityQueue);
+                    }
+
+                    network.OnReceive(rpc.OnNetworkData);
+
+                    lock (_clients)
+                    {
+                        _clients.Add(netGuid, cli);
+                    }
                 }
-                network.OnReceive(rpc.OnNetworkData);
-
-                lock (_clients)
+                catch (Exception ex)
                 {
-                    _clients.Add(netGuid, cli);
+                    Log.Error($"gate: {cfg.GateId} {ex}");
                 }
             };
             _external.Start();
@@ -334,7 +344,8 @@ class MainClass
             await _internal.Join();
             await _external.Join();
 
-            Task.WaitAll(_tWait!, _tWaitReliability!);
+            await _tWait!;
+            await _tWaitReliability!;
         }
         catch (Exception ex)
         {
