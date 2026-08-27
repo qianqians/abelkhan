@@ -20,7 +20,11 @@ public class TcpConnectService
             {
                 ReadResult result = await reader.ReadAsync();
                 ReadOnlySequence<byte> buffer = result.Buffer;
-                _ = i.OnReceiveData.Receive(buffer.ToArray());
+                if (!i.OnReceiveData.Receive(buffer.ToArray()))
+                {
+                    await i.Close();
+                    Log.Error("TcpConnectService OnReceive.OnReceiveData error!");
+                }
                 reader.AdvanceTo(buffer.Start, buffer.End);
             }
             catch (Exception e)

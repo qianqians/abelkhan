@@ -245,11 +245,11 @@ class MainClass
                         _ = cli.Close();
                         lock (_clientWaitQueue)
                         {
-                            _clientWaitQueue.Remove(cli.UserId!);
+                            while(_clientWaitQueue.Remove(cli.UserId!));
                         }
                         lock (_clientReliabilityQueue)
                         {
-                            _clientReliabilityQueue.Remove(cli.UserId!);
+                            while(_clientReliabilityQueue.Remove(cli.UserId!));
                         }
                     }
                 }
