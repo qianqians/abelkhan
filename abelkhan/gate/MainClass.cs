@@ -7,6 +7,7 @@ using engine;
 using consts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Nito.Collections;
 
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 namespace gate;
@@ -33,16 +34,15 @@ class MainClass
     private RedisHandle? _redis;
     private TcpAcceptService? _internal;
     private WebSocketAcceptService? _external;
-    private Dictionary<string, Client>? _clients;
-    private Dictionary<string, Client>? _entityClients;
+    private readonly Dictionary<string, Client> _clients = new();
     // ReSharper disable once CollectionNeverQueried.Local
     private List<HubMsgHandle>? _hubs;
 
     private bool _isRun = true;
     private Task? _tWait;
-    private ConcurrentQueue<string>? _clientWaitQueue;
+    private readonly Deque<string> _clientWaitQueue = new();
     private Task? _tWaitReliability;
-    private ConcurrentQueue<string>? _clientReliabilityQueue;
+    private readonly Deque<string> _clientReliabilityQueue = new();
     private readonly TimerService _timer = new();
     private ConsulClient? _consul;
 
@@ -51,15 +51,27 @@ class MainClass
         _tWait = Task.Factory.StartNew(async () =>
         {
             var rpc = new WRpc();
-            var h = new HubGeneralMsgHandle(_clients!, _entityClients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc);
-            _ = new HubMsgHandle(rpc, h);
+            lock (_clients)
+            {
+                var h = new HubGeneralMsgHandle(_clients, _clientWaitQueue, _clientReliabilityQueue, rpc);
+                _ = new HubMsgHandle(rpc, h);
+            }
 
             while (_isRun)
             {
-                if (_clientWaitQueue == null || !_clientWaitQueue.TryDequeue(out var userId))
+                if (_clientWaitQueue == null)
                 {
                     await Task.Delay(1);
                     continue;
+                }
+
+                string userId = string.Empty;
+                lock (_clientWaitQueue)
+                {
+                    if (_clientWaitQueue.Count > 0)
+                    {
+                        userId = _clientWaitQueue.RemoveFromFront();
+                    }
                 }
                 if (string.IsNullOrEmpty(userId))
                 {
@@ -90,8 +102,11 @@ class MainClass
                     }
                     
                 } while (false);
-                    
-                _clientWaitQueue.Enqueue(userId);
+
+                lock (_clientWaitQueue)
+                {
+                    _clientWaitQueue.AddToBack(userId);
+                }
             }
         }, TaskCreationOptions.LongRunning);
     }
@@ -101,15 +116,27 @@ class MainClass
         _tWaitReliability = Task.Factory.StartNew(async () =>
         {
             var rpc = new WRpc();
-            var h = new HubGeneralMsgHandle(_clients!, _entityClients!, _clientWaitQueue!, _clientReliabilityQueue!, rpc);
-            _ = new HubMsgHandle(rpc, h);
-
+            lock(_clients) 
+            {
+                var h = new HubGeneralMsgHandle(_clients, _clientWaitQueue, _clientReliabilityQueue, rpc);
+                _ = new HubMsgHandle(rpc, h);
+            }
+            
             while (_isRun)
             {
-                if (_clientReliabilityQueue == null || !_clientReliabilityQueue.TryDequeue(out var userId))
+                if (_clientReliabilityQueue == null)
                 {
                     await Task.Delay(1);
                     continue;
+                }
+                
+                string userId = string.Empty;
+                lock (_clientReliabilityQueue)
+                {
+                    if (_clientReliabilityQueue.Count > 0)
+                    {
+                        userId = _clientReliabilityQueue.RemoveFromFront();
+                    }
                 }
                 if (string.IsNullOrEmpty(userId))
                 {
@@ -153,15 +180,25 @@ class MainClass
             Event = ev.Event,
             NeedAck = needAck,
         };
-        if (userId == ev.UserId && _entityClients!.TryGetValue(userId, out var cli))
+        lock (_clients)
         {
-            _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClientMq, forward));
+            if (userId == ev.UserId)
+            {
+                foreach (var (_, cli) in _clients)
+                {
+                    if (cli.UserId == ev.UserId)
+                    {
+                        _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClientMq, forward));
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
-        else
-        {
-            return false;
-        }
-        
+
         return true;
     }
 
@@ -193,32 +230,25 @@ class MainClass
     {
         do
         {
-            if (_clients == null || _entityClients == null)
-            {
-                break;
-            }
-
             lock (_clients)
             {
                 var removeList = _clients
                     .Where((kv, _) => 5000 < (tick - kv.Value.LastEventTime))
                     .Select(kv => kv.Key)
                     .ToList();
-
-                lock (_entityClients)
+                
+                foreach (var uuid in removeList)
                 {
-                    foreach (var uuid in removeList)
+                    if (_clients.Remove(uuid, out var cli))
                     {
-                        if (_clients.Remove(uuid, out var cli))
+                        _ = cli.Close();
+                        lock (_clientWaitQueue)
                         {
-                            var removeEntity = _entityClients
-                                .Where((kv, _) => kv.Value.ConnId == cli.ConnId)
-                                .Select(kv => kv.Key)
-                                .ToList();
-                            foreach (var entityId in removeEntity)
-                            {
-                                _entityClients.Remove(entityId);
-                            }
+                            _clientWaitQueue.Remove(cli.UserId!);
+                        }
+                        lock (_clientReliabilityQueue)
+                        {
+                            _clientReliabilityQueue.Remove(cli.UserId!);
                         }
                     }
                 }
@@ -232,11 +262,6 @@ class MainClass
     {
         try
         {
-            _clientWaitQueue = new();
-            _clientReliabilityQueue = new();
-            
-            _clients = new();
-            _entityClients = new Dictionary<string, Client>();
             _hubs = new();
             
             _redis = new RedisHandle(cfg.RedisUrl, cfg.RedisPwd);
@@ -246,10 +271,13 @@ class MainClass
             _internal = new(cfg.PortInternal);
             _internal.OnListenAccept += network =>
             {
-                var rpc = new WRpc();
-                var h = new HubGeneralMsgHandle(_clients, _entityClients, _clientWaitQueue, _clientReliabilityQueue, rpc);
-                _hubs.Add(new HubMsgHandle(network, rpc, h));
-                network.OnReceive(rpc.OnNetworkData);
+                lock (_clients)
+                {
+                    var rpc = new WRpc();
+                    var h = new HubGeneralMsgHandle(_clients, _clientWaitQueue, _clientReliabilityQueue, rpc);
+                    _hubs.Add(new HubMsgHandle(network, rpc, h));
+                    network.OnReceive(rpc.OnNetworkData);
+                }
             };
             _internal.Start();
 
@@ -271,7 +299,10 @@ class MainClass
                 }));
 
                 var cli = new Client(netGuid, network, _redis);
-                _ = new ClientMsgHandle(cfg, _redis, rpc, cli, _clientReliabilityQueue);
+                lock (_clientReliabilityQueue)
+                {
+                    _ = new ClientMsgHandle(cfg, _redis, rpc, cli, _clientReliabilityQueue);
+                }
                 network.OnReceive(rpc.OnNetworkData);
 
                 lock (_clients)
@@ -324,7 +355,7 @@ class MainClass
     
     static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-        var ex = e.ExceptionObject as System.Exception;
+        var ex = e.ExceptionObject as Exception;
         Log.Error($"not handle exception:{ex}");
     }
     

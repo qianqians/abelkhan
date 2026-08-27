@@ -8,6 +8,7 @@ namespace core;
 public class TcpAcceptService(ushort port)
 {
     private bool _run = true;
+    private Socket? _listenSocket;
     private Task? _t;
 
     public event Action<INetwork>? OnListenAccept = null;
@@ -27,7 +28,7 @@ public class TcpAcceptService(ushort port)
             {
                 ReadResult result = await reader.ReadAsync();
                 ReadOnlySequence<byte> buffer = result.Buffer;
-                i.OnReceiveData.Receive(buffer.ToArray());
+                _ = i.OnReceiveData.Receive(buffer.ToArray());
                 reader.AdvanceTo(buffer.Start, buffer.End);
             }
             catch (Exception e)
@@ -45,13 +46,13 @@ public class TcpAcceptService(ushort port)
     {
         try
         {
-            var listenSocket = new Socket(SocketType.Stream, ProtocolType.Tcp);
-            listenSocket.Bind(new IPEndPoint(IPAddress.Any, port));
-            listenSocket.Listen(128);
+            _listenSocket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+            _listenSocket.Bind(new IPEndPoint(IPAddress.Any, port));
+            _listenSocket.Listen(128);
 
             while (_run)
             {
-                var socket = await listenSocket.AcceptAsync();
+                var socket = await _listenSocket.AcceptAsync();
                 var i = new TcpNetwork(socket);
                 i.T = ProcessLinesAsync(socket, i);
                 ListenAccept(i);
@@ -77,6 +78,7 @@ public class TcpAcceptService(ushort port)
                 return;
             }
             _run = false;
+            _listenSocket?.Close();
         }
         catch (Exception ex)
         {

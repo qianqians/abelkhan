@@ -7,7 +7,7 @@ public class WebSocketConnectService
     
     private async Task HandleWebSocketAsync(WebSocket webSocket, WebSocketNetwork i)
     {
-        var buffer = new byte[1024 * 4];
+        var buffer = new byte[1024 * 64];
         while (webSocket.State == WebSocketState.Open)
         {
             var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
@@ -15,7 +15,10 @@ public class WebSocketConnectService
             {
                 try
                 {
-                    i.OnReceiveData.Receive(buffer.AsSpan(0, result.Count).ToArray());
+                    if (!i.OnReceiveData.Receive(buffer.AsSpan(0, result.Count).ToArray()))
+                    {
+                        await i.Close();
+                    }
                 }
                 catch (Exception e)
                 {

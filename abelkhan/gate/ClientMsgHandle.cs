@@ -1,8 +1,8 @@
-﻿using System.Collections.Concurrent;
-using consts;
+﻿using consts;
 using core;
 using engine;
-using Google.Protobuf;
+using Nito.Collections;
+
 namespace gate;
 
 public class ClientMsgHandle
@@ -11,9 +11,9 @@ public class ClientMsgHandle
     private readonly RedisHandle _redis;
     private readonly WRpc _rpc;
     private readonly Client _client;
-    private readonly ConcurrentQueue<string> _clientReliabilityQueue;
+    private readonly Deque<string> _clientReliabilityQueue;
     
-    public ClientMsgHandle(GateConfig cfg, RedisHandle redis, WRpc rpc, Client client, ConcurrentQueue<string> clientReliabilityQueue)
+    public ClientMsgHandle(GateConfig cfg, RedisHandle redis, WRpc rpc, Client client, Deque<string> clientReliabilityQueue)
     {
         _cfg = cfg;
         _redis = redis;
@@ -94,7 +94,10 @@ public class ClientMsgHandle
                 if (!string.IsNullOrEmpty(msg.EntityId))
                 {
                     _ = _redis.DeleteListElem(string.Format(Consts.EntityReliabilityClientMq, msg.EntityId));
-                    _clientReliabilityQueue.Enqueue(msg.EntityId);
+                    lock (_clientReliabilityQueue)
+                    {
+                        _clientReliabilityQueue.AddToBack(_client.UserId!);
+                    }
                 }
                 break;
             }

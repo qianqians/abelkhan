@@ -7,9 +7,8 @@ namespace gate;
 public class Client(string connId, INetwork clientNetwork, RedisHandle redis)
 {
     public string ConnId => connId;
-
+    public string? UserId { set; get; }
     public long LastEventTime { set; get; } = TimerService.Tick;
-
     private readonly Dictionary<string, INetwork> _dictEntityNetwork = new();
 
     public void RegisterNetwork(string entity, INetwork network)
@@ -23,6 +22,11 @@ public class Client(string connId, INetwork clientNetwork, RedisHandle redis)
     public async Task SendToClient(byte[] message)
     {
         await clientNetwork.Send(message);
+    }
+
+    public Task Close()
+    {
+        return clientNetwork.Close();
     }
 
     public async Task SendToServer(string entity, byte[] message)

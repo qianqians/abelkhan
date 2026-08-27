@@ -26,7 +26,10 @@ public class WebSocketAcceptService
             {
                 try
                 {
-                    i.OnReceiveData.Receive(buffer.AsSpan(0, result.Count).ToArray());
+                    if (!i.OnReceiveData.Receive(buffer.AsSpan(0, result.Count).ToArray()))
+                    {
+                        await i.Close();
+                    }
                 }
                 catch (Exception e)
                 {

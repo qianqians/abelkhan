@@ -7,7 +7,7 @@ public class OnReceive
     private readonly Microsoft.IO.RecyclableMemoryStream _receiveBuf = StreamPool.GetStream();
 
     public Action<byte[]>? OnReceiveData = null;
-    public void Receive(byte[] data)
+    public bool Receive(byte[] data)
     {
         _receiveBuf.Write(data, 0, data.Length);
         var bufferLen = _receiveBuf.Length;
@@ -29,7 +29,7 @@ public class OnReceive
 
             if (len < 0 || len > 65536)
             {
-                break;
+                return false;
             }
 
             if (unread < len + 4)
@@ -52,5 +52,7 @@ public class OnReceive
             _receiveBuf.Seek(pos, SeekOrigin.Begin);
             _receiveBuf.SetLength(pos);
         }
+
+        return true;
     }
 }

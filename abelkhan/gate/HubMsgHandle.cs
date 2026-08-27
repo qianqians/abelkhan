@@ -2,12 +2,13 @@
 using consts;
 using core;
 using engine;
+using Nito.Collections;
+
 namespace gate;
 
 public class HubGeneralMsgHandle(Dictionary<string, Client> clients, 
-    Dictionary<string, Client> entityClients, 
-    ConcurrentQueue<string> clientWaitQueue, 
-    ConcurrentQueue<string> clientReliabilityQueue, WRpc rpc)
+    Deque<string> clientWaitQueue, 
+    Deque<string> clientReliabilityQueue, WRpc rpc)
 {
     public void OnHubCreatePlayerEntity(INetwork? network, HubCreatePlayerEntity msg)
     {
@@ -24,12 +25,9 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
             {
                 cli.RegisterNetwork(msg.EntityId, network);
             }
-            clientWaitQueue.Enqueue(msg.UserId);
-            clientReliabilityQueue.Enqueue(msg.UserId);
-            lock (entityClients)
-            {
-                entityClients[msg.UserId] = cli;
-            }
+            clientWaitQueue.AddToBack(msg.UserId);
+            clientReliabilityQueue.AddToBack(msg.UserId);
+            cli.UserId = msg.UserId;
         }
     }
     
@@ -53,13 +51,12 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
         {
             EntityId = msg.EntityId,
         };
-        foreach (var (_, cli) in clients)
+        lock (clients)
         {
-            _ = cli.SendToClient(rpc.Notify(Consts.DeleteRemoteEntity, forward));
-        }
-        lock (entityClients)
-        {
-            entityClients.Remove(msg.EntityId);
+            foreach (var (_, cli) in clients)
+            {
+                _ = cli.SendToClient(rpc.Notify(Consts.DeleteRemoteEntity, forward));
+            }
         }
     }
 
@@ -123,9 +120,12 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
             EntityId = msg.EntityId,
             Event = msg.Event,
         };
-        foreach (var (_, cli) in clients)
+        lock (clients)
         {
-            _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClient, forward));
+            foreach (var (_, cli) in clients)
+            {
+                _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClient, forward));
+            }
         }
     }
 

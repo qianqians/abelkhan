@@ -93,11 +93,11 @@ public class RedisConnectionHelper
                 }
             }
         }
-        catch (RedisConnectionException)
+        catch (Exception ex)
         {
-            Log.Error("Exit due to Recover-Failure! RecoverCount:{0}, connectRetry:{1}, connectTimeout:{2}ms, _conf:{3}",
-                _recoverCnt, ConnectRetry, ConnectTimeout, _conf);
-            Thread.Sleep(10);
+            Log.Error("Exit due to Recover-Failure! RecoverCount:{0}, connectRetry:{1}, connectTimeout:{2}ms, _conf:{3}, ex:{4}",
+                _recoverCnt, ConnectRetry, ConnectTimeout, _conf, ex);
+            Interlocked.Exchange(ref _inRecover, 0);
         }
     }
 
