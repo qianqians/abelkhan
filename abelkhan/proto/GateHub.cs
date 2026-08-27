@@ -27,27 +27,28 @@ public static partial class GateHubReflection {
           "EQoJZW50aXR5X2lkGAMgASgJEhMKC2VudGl0eV90eXBlGAQgASgJEgwKBGFy",
           "Z3YYBSABKAwiXgoVSHViQ3JlYXRlUmVtb3RlRW50aXR5Eg8KB2Nvbm5faWQY",
           "ASABKAkSEQoJZW50aXR5X2lkGAIgASgJEhMKC2VudGl0eV90eXBlGAMgASgJ",
-          "EgwKBGFyZ3YYBCABKAwiKgoVSHViRGVsZXRlUmVtb3RlRW50aXR5EhEKCWVu",
-          "dGl0eV9pZBgBIAEoCSJZChBIdWJSZWZyZXNoRW50aXR5Eg8KB2Nvbm5faWQY",
-          "ASABKAkSEQoJZW50aXR5X2lkGAIgASgJEhMKC2VudGl0eV90eXBlGAMgASgJ",
-          "EgwKBGFyZ3YYBCABKAwiWgobR2F0ZUZvcndhcmRIdWJSZXF1ZXN0Q2xpZW50",
-          "Eg8KB2Nvbm5faWQYASABKAkSEQoJZW50aXR5X2lkGAIgASgJEhcKBWV2ZW50",
-          "GAMgASgLMgguQ2FsbFJwYyJjChxHYXRlRm9yd2FyZEh1YlJlc3BvbnNlQ2xp",
-          "ZW50Eg8KB2Nvbm5faWQYASABKAkSEQoJZW50aXR5X2lkGAIgASgJEg4KBmVy",
-          "ck1zZxgDIAEoCRIPCgdjb250ZW50GAQgASgMIlkKGkdhdGVGb3J3YXJkSHVi",
-          "Tm90aWZ5Q2xpZW50Eg8KB2Nvbm5faWQYASABKAkSEQoJZW50aXR5X2lkGAIg",
-          "ASgJEhcKBWV2ZW50GAMgASgLMgguQ2FsbFJwYyJbChxHYXRlRm9yd2FyZEh1",
-          "Yk5vdGlmeUNsaWVudE1xEg8KB3VzZXJfaWQYASABKAkSEQoJZW50aXR5X2lk",
-          "GAIgASgJEhcKBWV2ZW50GAMgASgLMgguQ2FsbFJwYyJGChhHYXRlRm9yd2Fy",
-          "ZEh1YkNhbGxHbG9iYWwSEQoJZW50aXR5X2lkGAEgASgJEhcKBWV2ZW50GAIg",
-          "ASgLMgguQ2FsbFJwYyI4ChBIdWJLaWNrT2ZmQ2xpZW50Eg8KB2Nvbm5faWQY",
-          "ASABKAkSEwoLcHJvbXB0X2luZm8YAiABKAliBnByb3RvMw=="));
+          "EgwKBGFyZ3YYBCABKAwiOwoVSHViRGVsZXRlUmVtb3RlRW50aXR5Eg8KB2Nv",
+          "bm5faWQYASABKAkSEQoJZW50aXR5X2lkGAIgASgJIlkKEEh1YlJlZnJlc2hF",
+          "bnRpdHkSDwoHY29ubl9pZBgBIAEoCRIRCgllbnRpdHlfaWQYAiABKAkSEwoL",
+          "ZW50aXR5X3R5cGUYAyABKAkSDAoEYXJndhgEIAEoDCJaChtHYXRlRm9yd2Fy",
+          "ZEh1YlJlcXVlc3RDbGllbnQSDwoHY29ubl9pZBgBIAEoCRIRCgllbnRpdHlf",
+          "aWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxsUnBjImMKHEdhdGVGb3J3",
+          "YXJkSHViUmVzcG9uc2VDbGllbnQSDwoHY29ubl9pZBgBIAEoCRIRCgllbnRp",
+          "dHlfaWQYAiABKAkSDgoGZXJyTXNnGAMgASgJEg8KB2NvbnRlbnQYBCABKAwi",
+          "WQoaR2F0ZUZvcndhcmRIdWJOb3RpZnlDbGllbnQSDwoHY29ubl9pZBgBIAEo",
+          "CRIRCgllbnRpdHlfaWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxsUnBj",
+          "IlsKHEdhdGVGb3J3YXJkSHViTm90aWZ5Q2xpZW50TXESDwoHdXNlcl9pZBgB",
+          "IAEoCRIRCgllbnRpdHlfaWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxs",
+          "UnBjIkYKGEdhdGVGb3J3YXJkSHViQ2FsbEdsb2JhbBIRCgllbnRpdHlfaWQY",
+          "ASABKAkSFwoFZXZlbnQYAiABKAsyCC5DYWxsUnBjIjgKEEh1YktpY2tPZmZD",
+          "bGllbnQSDwoHY29ubl9pZBgBIAEoCRITCgtwcm9tcHRfaW5mbxgCIAEoCWIG",
+          "cHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
           new pbr::GeneratedClrTypeInfo(typeof(global::HubCreatePlayerEntity), global::HubCreatePlayerEntity.Parser, new[]{ "ConnId", "UserId", "EntityId", "EntityType", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubCreateRemoteEntity), global::HubCreateRemoteEntity.Parser, new[]{ "ConnId", "EntityId", "EntityType", "Argv" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::HubDeleteRemoteEntity), global::HubDeleteRemoteEntity.Parser, new[]{ "EntityId" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::HubDeleteRemoteEntity), global::HubDeleteRemoteEntity.Parser, new[]{ "ConnId", "EntityId" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubRefreshEntity), global::HubRefreshEntity.Parser, new[]{ "ConnId", "EntityId", "EntityType", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubRequestClient), global::GateForwardHubRequestClient.Parser, new[]{ "ConnId", "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubResponseClient), global::GateForwardHubResponseClient.Parser, new[]{ "ConnId", "EntityId", "ErrMsg", "Content" }, null, null, null, null),
@@ -751,6 +752,7 @@ public sealed partial class HubDeleteRemoteEntity : pb::IMessage<HubDeleteRemote
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public HubDeleteRemoteEntity(HubDeleteRemoteEntity other) : this() {
+    connId_ = other.connId_;
     entityId_ = other.entityId_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
@@ -761,8 +763,20 @@ public sealed partial class HubDeleteRemoteEntity : pb::IMessage<HubDeleteRemote
     return new HubDeleteRemoteEntity(this);
   }
 
+  /// <summary>Field number for the "conn_id" field.</summary>
+  public const int ConnIdFieldNumber = 1;
+  private string connId_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string ConnId {
+    get { return connId_; }
+    set {
+      connId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
   /// <summary>Field number for the "entity_id" field.</summary>
-  public const int EntityIdFieldNumber = 1;
+  public const int EntityIdFieldNumber = 2;
   private string entityId_ = "";
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -788,6 +802,7 @@ public sealed partial class HubDeleteRemoteEntity : pb::IMessage<HubDeleteRemote
     if (ReferenceEquals(other, this)) {
       return true;
     }
+    if (ConnId != other.ConnId) return false;
     if (EntityId != other.EntityId) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
@@ -796,6 +811,7 @@ public sealed partial class HubDeleteRemoteEntity : pb::IMessage<HubDeleteRemote
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
+    if (ConnId.Length != 0) hash ^= ConnId.GetHashCode();
     if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
@@ -815,8 +831,12 @@ public sealed partial class HubDeleteRemoteEntity : pb::IMessage<HubDeleteRemote
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    if (EntityId.Length != 0) {
+    if (ConnId.Length != 0) {
       output.WriteRawTag(10);
+      output.WriteString(ConnId);
+    }
+    if (EntityId.Length != 0) {
+      output.WriteRawTag(18);
       output.WriteString(EntityId);
     }
     if (_unknownFields != null) {
@@ -829,8 +849,12 @@ public sealed partial class HubDeleteRemoteEntity : pb::IMessage<HubDeleteRemote
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    if (EntityId.Length != 0) {
+    if (ConnId.Length != 0) {
       output.WriteRawTag(10);
+      output.WriteString(ConnId);
+    }
+    if (EntityId.Length != 0) {
+      output.WriteRawTag(18);
       output.WriteString(EntityId);
     }
     if (_unknownFields != null) {
@@ -843,6 +867,9 @@ public sealed partial class HubDeleteRemoteEntity : pb::IMessage<HubDeleteRemote
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
+    if (ConnId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(ConnId);
+    }
     if (EntityId.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(EntityId);
     }
@@ -857,6 +884,9 @@ public sealed partial class HubDeleteRemoteEntity : pb::IMessage<HubDeleteRemote
   public void MergeFrom(HubDeleteRemoteEntity other) {
     if (other == null) {
       return;
+    }
+    if (other.ConnId.Length != 0) {
+      ConnId = other.ConnId;
     }
     if (other.EntityId.Length != 0) {
       EntityId = other.EntityId;
@@ -881,6 +911,10 @@ public sealed partial class HubDeleteRemoteEntity : pb::IMessage<HubDeleteRemote
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 10: {
+          ConnId = input.ReadString();
+          break;
+        }
+        case 18: {
           EntityId = input.ReadString();
           break;
         }
@@ -904,6 +938,10 @@ public sealed partial class HubDeleteRemoteEntity : pb::IMessage<HubDeleteRemote
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
         case 10: {
+          ConnId = input.ReadString();
+          break;
+        }
+        case 18: {
           EntityId = input.ReadString();
           break;
         }

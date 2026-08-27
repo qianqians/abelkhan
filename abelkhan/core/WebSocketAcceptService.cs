@@ -28,17 +28,18 @@ public class WebSocketAcceptService
                 {
                     if (!i.OnReceiveData.Receive(buffer.AsSpan(0, result.Count).ToArray()))
                     {
-                        await i.Close();
+                        Log.Error("WebSocketAcceptService OnReceive.OnReceiveData error!");
+                        break;
                     }
                 }
                 catch (Exception e)
                 {
-                    webSocket.Abort();
                     Log.Error("WebSocketAcceptService OnReceive.OnReceiveData error:{0}!", e);
                     break;
                 }
             }
         }
+        webSocket.Abort();
     }
     
     public WebSocketAcceptService(ushort port, string pfx, string password)

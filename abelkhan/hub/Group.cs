@@ -10,29 +10,33 @@ public class Group()
     private readonly List<Client> _clients = new();
     private readonly List<Entity> _entities = new();
     private readonly List<Player> _players = new();
-    private readonly Nito.AsyncEx.AsyncLock _lockObject = new();
+    private readonly object _lockObject = new();
 
     public async Task Join(Client client)
     {
-        using (await _lockObject.LockAsync())
+        Entity[] entityCopy;
+        Player[] playerCopy;
+        lock (_lockObject)
         {
-            foreach (var e in _entities)
-            {
-                await e.CreateRemoteEntity(client);
-            }
-
-            foreach (var p in _players)
-            {
-                await p.CreateRemotePlayer(client);
-            }
-
+            entityCopy = _entities.ToArray();
+            playerCopy = _players.ToArray();
             _clients.Add(client);
+        }
+        
+        foreach (var e in entityCopy)
+        {
+            await e.CreateRemoteEntity(client);
+        }
+
+        foreach (var p in playerCopy)
+        {
+            await p.CreateRemotePlayer(client);
         }
     }
 
-    public async Task Leave(Client client)
+    public void Leave(Client client)
     {
-        using (await _lockObject.LockAsync())
+        lock (_lockObject)
         {
             _clients.Remove(client);
         }
@@ -40,49 +44,57 @@ public class Group()
 
     public async Task CreateRemoteEntity(Entity entity)
     {
-        using (await _lockObject.LockAsync())
+        Client[] cliCopy;
+        lock (_lockObject)
         {
-            foreach (var cli in _clients)
-            {
-                await entity.CreateRemoteEntity(cli);
-            }
+            cliCopy = _clients.ToArray();
             _entities.Add(entity);
+        }
+        foreach (var cli in cliCopy)
+        {
+            await entity.CreateRemoteEntity(cli);
         }
     }
 
     public async Task RemoveEntity(Entity entity)
     {
-        using (await _lockObject.LockAsync())
+        Client[] cliCopy;
+        lock (_lockObject)
         {
-            foreach (var cli in _clients)
-            {
-                await entity.DeleteRemoteEntity(cli);
-            }
+            cliCopy = _clients.ToArray();
             _entities.Remove(entity);
+        }
+        foreach (var cli in cliCopy)
+        {
+            await entity.DeleteRemoteEntity(cli);
         }
     }
 
     public async Task CreateRemotePlayer(Player player)
     {
-        using (await _lockObject.LockAsync())
+        Client[] cliCopy;
+        lock (_lockObject)
         {
-            foreach (var cli in _clients)
-            {
-                await player.CreateRemotePlayer(cli);
-            }
+            cliCopy = _clients.ToArray();
             _players.Add(player);
+        }
+        foreach (var cli in cliCopy)
+        {
+            await player.CreateRemotePlayer(cli);
         }
     }
 
     public async Task RemovePlayer(Player player)
     {
-        using (await _lockObject.LockAsync())
+        Client[] cliCopy;
+        lock (_lockObject)
         {
-            foreach (var cli in _clients)
-            {
-                await player.DeleteRemoteEntity(cli);
-            }
+            cliCopy = _clients.ToArray();
             _players.Remove(player);
+        }
+        foreach (var cli in cliCopy)
+        {
+            await player.DeleteRemoteEntity(cli);
         }
     }
 
@@ -94,18 +106,20 @@ public class Group()
             ProtoName = method,
             Content = argv.ToByteString()
         };
-        using (await _lockObject.LockAsync())
+        Client[] cliCopy;
+        lock (_lockObject)
         {
-            foreach (var cli in _clients)
+            cliCopy = _clients.ToArray();
+        }
+        foreach (var cli in cliCopy)
+        {
+            var msg = new GateForwardHubNotifyClient()
             {
-                var msg = new GateForwardHubNotifyClient()
-                {
-                    ConnId = cli.ConnId,
-                    EntityId = entity.EntityId,
-                    Event = callRpc,
-                };
-                await entity.SendToGate(cli.UserId, _rpc.Notify(Consts.GateForwardHubNotifyClient, msg));
-            }
+                ConnId = cli.ConnId,
+                EntityId = entity.EntityId,
+                Event = callRpc,
+            };
+            await entity.SendToGate(cli.UserId, _rpc.Notify(Consts.GateForwardHubNotifyClient, msg));
         }
     }
 }

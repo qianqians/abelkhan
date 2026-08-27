@@ -17,17 +17,18 @@ public class WebSocketConnectService
                 {
                     if (!i.OnReceiveData.Receive(buffer.AsSpan(0, result.Count).ToArray()))
                     {
-                        await i.Close();
+                        Log.Error("WebSocketConnectService OnReceive.OnReceiveData error!");
+                        break;
                     }
                 }
                 catch (Exception e)
                 {
-                    webSocket.Abort();
                     Log.Error("WebSocketConnectService OnReceive.OnReceiveData error:{0}!", e);
                     break;
                 }
             }
         }
+        webSocket.Abort();
     }
     
     public async Task Connect(string wss)

@@ -27,21 +27,27 @@ public class TcpAcceptService(ushort port)
             try
             {
                 ReadResult result = await reader.ReadAsync();
+                if (result.IsCompleted || result.IsCanceled)
+                {
+                    break;
+                }
+
                 ReadOnlySequence<byte> buffer = result.Buffer;
                 if (!i.OnReceiveData.Receive(buffer.ToArray()))
                 {
-                    await i.Close();
                     Log.Error("TcpAcceptService OnReceive.OnReceiveData error!");
+                    break;
                 }
+
                 reader.AdvanceTo(buffer.Start, buffer.End);
             }
             catch (Exception e)
             {
-                socket.Close();
                 Log.Error("TcpAcceptService OnReceive.OnReceiveData error:{0}!", e);
                 break;
             }
         }
+        socket.Close();
 
         await reader.CompleteAsync();
     }

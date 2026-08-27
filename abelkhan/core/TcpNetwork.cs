@@ -38,11 +38,7 @@ public class TcpNetwork(Socket s) : INetwork
     {
         try
         {
-            using (await _lockObject.LockAsync())
-            {
-                s.Close();
-            }
-
+            s.Close();
             if (T != null)
             {
                 await T;

@@ -12,30 +12,36 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
 {
     public void OnHubCreatePlayerEntity(INetwork? network, HubCreatePlayerEntity msg)
     {
-        var forward = new CreatePlayerEntity()
-        {
-            EntityId = msg.EntityId,
-            EntityType = msg.EntityType,
-            Argv = msg.Argv,
-        };
         lock (clients)
         {
             if (clients.TryGetValue(msg.ConnId, out var cli))
             {
+                var forward = new CreatePlayerEntity()
+                {
+                    EntityId = msg.EntityId,
+                    EntityType = msg.EntityType,
+                    Argv = msg.Argv,
+                };
                 _ = cli.SendToClient(rpc.Notify(Consts.CreatePlayerEntity, forward));
                 if (network != null)
                 {
                     cli.RegisterNetwork(msg.EntityId, network);
                 }
 
-                if (!clientWaitQueue.Contains(msg.UserId))
+                lock (clientWaitQueue)
                 {
-                    clientWaitQueue.AddToBack(msg.UserId);
+                    if (!clientWaitQueue.Contains(msg.UserId))
+                    {
+                        clientWaitQueue.AddToBack(msg.UserId);
+                    }
                 }
 
-                if (!clientReliabilityQueue.Contains(msg.UserId))
+                lock (clientReliabilityQueue)
                 {
-                    clientReliabilityQueue.AddToBack(msg.UserId);
+                    if (!clientReliabilityQueue.Contains(msg.UserId))
+                    {
+                        clientReliabilityQueue.AddToBack(msg.UserId);
+                    }
                 }
 
                 cli.UserId = msg.UserId;
@@ -68,7 +74,7 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
         };
         lock (clients)
         {
-            foreach (var (_, cli) in clients)
+            if (clients.TryGetValue(msg.ConnId, out var cli))
             {
                 _ = cli.SendToClient(rpc.Notify(Consts.DeleteRemoteEntity, forward));
             }
@@ -92,7 +98,7 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
         }
     }
 
-    public void OnGateForwardHubRequestClient(GateForwardHubRequestClient msg)
+    public void OnGateForwardHubRequestClient(string msgId, GateForwardHubRequestClient msg)
     {
         var forward = new HubRequestClient()
         {
@@ -103,7 +109,7 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
         {
             if (clients.TryGetValue(msg.ConnId, out var cli))
             {
-                _ = cli.SendToClient(rpc.Request(Consts.HubRequestClient, Guid.NewGuid().ToString(), forward));
+                _ = cli.SendToClient(rpc.Request(Consts.HubRequestClient, msgId, forward));
             }
         }
     }
@@ -147,12 +153,14 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
             EntityId = msg.EntityId,
             Event = msg.Event,
         };
+        List<Client> cliList;
         lock (clients)
         {
-            foreach (var (_, cli) in clients)
-            {
-                _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClient, forward));
-            }
+            cliList = clients.Select(cli => cli.Value).ToList();
+        }
+        foreach (var cli in cliList)
+        {
+            _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClient, forward));
         }
     }
 
@@ -239,7 +247,7 @@ public class HubMsgHandle
         {
             case Consts.GateForwardHubRequestClient:
             {
-                _msgHandle.OnGateForwardHubRequestClient(_rpc.OnMsg<GateForwardHubRequestClient>(req.Event.Content.ToByteArray()));
+                _msgHandle.OnGateForwardHubRequestClient(req.MsgId, _rpc.OnMsg<GateForwardHubRequestClient>(req.Event.Content.ToByteArray()));
                 break;
             }
             default:

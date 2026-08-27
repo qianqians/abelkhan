@@ -14,19 +14,19 @@ namespace gate;
 
 public struct GateConfig()
 {
-    public readonly string GateId = string.Empty;
-    public readonly string RedisUrl = string.Empty;
-    public readonly string RedisPwd  = string.Empty;
-    public readonly string Ip = string.Empty;
-    public readonly ushort PortInternal = 0;
-    public readonly ushort PortExternal = 0;
-    public readonly ushort PortHealth = 0;
-    public readonly string Pfx = string.Empty;
-    public readonly string PfxPassword  = string.Empty;
-    public readonly string ConsulUrl  = string.Empty;
-    public readonly string EnterService = string.Empty;
-    public readonly uint MinVersion = 0;
-    public readonly uint MaxVersion = 0;
+    public string GateId { get; set; } = string.Empty;
+    public string RedisUrl { get; set; } = string.Empty;
+    public string RedisPwd { get; set; } = string.Empty;
+    public string Ip { get; set; } = string.Empty;
+    public ushort PortInternal { get; set; } = 0;
+    public ushort PortExternal { get; set; } = 0;
+    public ushort PortHealth { get; set; } = 0;
+    public string Pfx { get; set; } = string.Empty;
+    public string PfxPassword { get; set; } = string.Empty;
+    public string ConsulUrl { get; set; } = string.Empty;
+    public string EnterService { get; set; } = string.Empty;
+    public uint MinVersion { get; set; } = 0;
+    public uint MaxVersion { get; set; } = 0;
 }
 
 class MainClass
@@ -108,7 +108,7 @@ class MainClass
                     _clientWaitQueue.AddToBack(userId);
                 }
             }
-        }, TaskCreationOptions.LongRunning);
+        }, TaskCreationOptions.LongRunning).Unwrap();
     }
 
     private void StartRedisReliabilityMsg()
@@ -148,12 +148,16 @@ class MainClass
                 if (data == null)
                 {
                     await Task.Delay(1);
+                    lock (_clientReliabilityQueue)
+                    {
+                        _clientReliabilityQueue.AddToBack(userId);
+                    }
                     continue;
                 }
 
                 OnMqMsg(true, userId, rpc, data);
             }
-        }, TaskCreationOptions.LongRunning);
+        }, TaskCreationOptions.LongRunning).Unwrap();
     }
 
     private bool OnMqMsg(bool needAck, string userId, WRpc rpc, byte[] data)
@@ -174,24 +178,26 @@ class MainClass
         }
                 
         var ev = rpc.OnMsg<GateForwardHubNotifyClientMq>(msg.Notify.Event.Content.ToByteArray());
-        var forward = new HubNotifyClientMq()
-        {
-            EntityId = ev.EntityId,
-            Event = ev.Event,
-            NeedAck = needAck,
-        };
-
         if (userId == ev.UserId)
         {
+            var forward = new HubNotifyClientMq()
+            {
+                EntityId = ev.EntityId,
+                Event = ev.Event,
+                NeedAck = needAck,
+            };
+
+            Client[] cliCopy;
             lock (_clients)
             {
-                foreach (var (_, cli) in _clients)
+                cliCopy = _clients.Select(kv=>kv.Value).ToArray();
+            }
+            foreach (var cli in cliCopy)
+            {
+                if (cli.UserId == userId)
                 {
-                    if (cli.UserId == userId)
-                    {
-                        _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClientMq, forward));
-                        break;
-                    }
+                    _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClientMq, forward));
+                    break;
                 }
             }
         }

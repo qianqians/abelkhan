@@ -12,19 +12,19 @@ namespace hub;
 
 public struct HubConfig()
 {
-    public readonly string HubId = string.Empty;
-    public readonly string ServiceName = string.Empty;
-    public readonly string Ip = string.Empty;
-    public readonly ushort PortHealth = 0;
-    public readonly string ConsulUrl  = string.Empty;
-    public readonly string RedisUrl = string.Empty;
-    public readonly string RedisPwd  = string.Empty;
+    public string HubId { get; set; } = string.Empty;
+    public string ServiceName { get; set; } = string.Empty;
+    public string Ip { get; set; } = string.Empty;
+    public ushort PortHealth { get; set; } = 0;
+    public string ConsulUrl { get; set; } = string.Empty;
+    public string RedisUrl { get; set; } = string.Empty;
+    public string RedisPwd { get; set; } = string.Empty;
 }
 
 public class MainClass
 {
     private RedisHandle? _redis;
-    private readonly Dictionary<string, Service>  _services = new();
+    private readonly ConcurrentDictionary<string, Service>  _services = new();
     private readonly ConcurrentDictionary<string, BaseEntity> _entities = new();
     // ReSharper disable once CollectionNeverQueried.Local
     private readonly ConcurrentDictionary<string, GateMsgHandle> _gateMsgHandles = new();
@@ -111,7 +111,7 @@ public class MainClass
                     
                 _gateWaitQueue.Enqueue(entityId);
             }
-        }, TaskCreationOptions.LongRunning);
+        }, TaskCreationOptions.LongRunning).Unwrap();
     }
     
     private async Task ReportServiceConsul(HubConfig cfg)
@@ -236,9 +236,8 @@ public class MainClass
 
         AppDomain.CurrentDomain.UnhandledException += UnhandledException;
         
-        var instance = new MainClass();
-        using var sigTermReg = PosixSignalRegistration.Create(PosixSignal.SIGTERM, instance.HandleSignal);
-        using var sigIntReg = PosixSignalRegistration.Create(PosixSignal.SIGINT, instance.HandleSignal);
-        instance.Run(cfg).Wait();
+        using var sigTermReg = PosixSignalRegistration.Create(PosixSignal.SIGTERM, HandleSignal);
+        using var sigIntReg = PosixSignalRegistration.Create(PosixSignal.SIGINT, HandleSignal);
+        Run(cfg).Wait();
     }
 }

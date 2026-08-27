@@ -91,7 +91,7 @@ public class ClientMsgHandle
             case Consts.AckReliabilityMsg:
             {
                 var msg = _rpc.OnMsg<AckReliabilityMsg>(ntf.Event.Content.ToByteArray());
-                if (!string.IsNullOrEmpty(msg.EntityId))
+                if (!string.IsNullOrEmpty(msg.EntityId) && !string.IsNullOrEmpty(_client.UserId))
                 {
                     _ = _redis.DeleteListElem(string.Format(Consts.EntityReliabilityClientMq, _client.UserId!));
                     lock (_clientReliabilityQueue)
@@ -102,7 +102,10 @@ public class ClientMsgHandle
                 break;
             }
             default:
-                throw  new ArgumentException($"ClientMsgHandle ntf.Event.ProtoName:{ntf.Event.ProtoName}");
+            {
+                Log.Error($"ClientMsgHandle ntf.Event.ProtoName:{ntf.Event.ProtoName}");
+                break;
+            }
         }
     }
 
@@ -125,7 +128,8 @@ public class ClientMsgHandle
             }
             default:
             {
-                throw new ArgumentException($"ClientMsgHandle req.Event.ProtoName:{req.Event.ProtoName}");
+                Log.Error($"ClientMsgHandle req.Event.ProtoName:{req.Event.ProtoName}");
+                break;
             }
         }
     }
@@ -149,7 +153,8 @@ public class ClientMsgHandle
             }
             default:
             {
-                throw new ArgumentException($"ClientMsgHandle rsp.Event.ProtoName:{rsp.Event.ProtoName}");
+                Log.Error($"ClientMsgHandle rsp.Event.ProtoName:{rsp.Event.ProtoName}");
+                break;
             }
         }
     }

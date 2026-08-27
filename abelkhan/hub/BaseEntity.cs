@@ -65,6 +65,7 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
     {
         var msg = new HubDeleteRemoteEntity()
         {
+            ConnId = client.ConnId,
             EntityId = entityId,
         };
         await SendToGate(client.UserId, _rpc.Notify(Consts.HubDeleteRemoteEntity, msg));
@@ -289,11 +290,11 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
                     var ret = callback(t);
                     if (ret.IsOk)
                     {
-                        await Response(client!.UserId, msgId, ret.Value.ToByteArray());
+                        await Response(client!.ConnId, msgId, ret.Value.ToByteArray());
                     }
                     else
                     {
-                        await Error(client!.UserId, msgId, ret.Error);
+                        await Error(client!.ConnId, msgId, ret.Error);
                     }
                 }
                 else 
@@ -323,11 +324,11 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
                     var ret = await callback(t);
                     if (ret.IsOk)
                     {
-                        await Response(client!.UserId, msgId, ret.Value.ToByteArray());
+                        await Response(client!.ConnId, msgId, ret.Value.ToByteArray());
                     }
                     else
                     {
-                        await Error(client!.UserId, msgId, ret.Error);
+                        await Error(client!.ConnId, msgId, ret.Error);
                     }
                 }
                 else 
