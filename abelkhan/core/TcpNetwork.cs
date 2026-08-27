@@ -21,7 +21,7 @@ public class TcpNetwork(Socket s) : INetwork
         using (await _lockObject.LockAsync())
         {
             sendLen += s.Send(sendData, sendLen, sendData.Length, SocketFlags.None);
-            while (sendLen < data.Length)
+            while (sendLen < sendData.Length)
             {
                 await Task.Delay(1);
                 sendLen += s.Send(sendData, sendLen, sendData.Length - sendLen, SocketFlags.None);

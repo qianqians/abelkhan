@@ -4,7 +4,10 @@ using core;
 using engine;
 namespace gate;
 
-public class HubGeneralMsgHandle(Dictionary<string, Client> clients, Dictionary<string, Client> entityClients, ConcurrentQueue<string> clientWaitQueue, ConcurrentQueue<string> clientReliabilityQueue, WRpc rpc)
+public class HubGeneralMsgHandle(Dictionary<string, Client> clients, 
+    Dictionary<string, Client> entityClients, 
+    ConcurrentQueue<string> clientWaitQueue, 
+    ConcurrentQueue<string> clientReliabilityQueue, WRpc rpc)
 {
     public void OnHubCreatePlayerEntity(INetwork? network, HubCreatePlayerEntity msg)
     {
@@ -25,7 +28,7 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients, Dictionary<
             clientReliabilityQueue.Enqueue(msg.UserId);
             lock (entityClients)
             {
-                entityClients.Add(msg.UserId, cli);
+                entityClients[msg.UserId] = cli;
             }
         }
     }

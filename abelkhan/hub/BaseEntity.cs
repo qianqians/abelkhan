@@ -46,7 +46,7 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
             EntityType = entityType,
             Argv = ClientInfo().ToByteString(),
         };
-        await SendToGate(client.ConnId, _rpc.Notify(Consts.HubCreatePlayerEntity, msg));
+        await SendToGate(client.UserId, _rpc.Notify(Consts.HubCreatePlayerEntity, msg));
     }
     
     protected virtual async Task CreateRemoteEntity(Client client)
@@ -58,7 +58,7 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
             EntityType = entityType,
             Argv = ClientInfo().ToByteString(),
         };
-        await SendToGate(client.ConnId, _rpc.Notify(Consts.HubCreateRemoteEntity, msg));
+        await SendToGate(client.UserId, _rpc.Notify(Consts.HubCreateRemoteEntity, msg));
     }
 
     public virtual async Task DeleteRemoteEntity(Client client)
@@ -67,7 +67,7 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         {
             EntityId = entityId,
         };
-        await SendToGate(client.ConnId, _rpc.Notify(Consts.HubDeleteRemoteEntity, msg));
+        await SendToGate(client.UserId, _rpc.Notify(Consts.HubDeleteRemoteEntity, msg));
     }
 
     public virtual async Task<Result<T1, string>> Request<T0, T1>(string userId, string method, T0 argv) 
@@ -90,7 +90,7 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
                 Event = callRpc,
             };
             var msgId = Guid.NewGuid().ToString();
-            await SendToGate(client.ConnId, _rpc.Request(Consts.GateForwardHubRequestClient, msgId, msg));
+            await SendToGate(client.UserId, _rpc.Request(Consts.GateForwardHubRequestClient, msgId, msg));
 
             lock (_requestCallbacks)
             {
@@ -133,21 +133,28 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         }
     }
 
-    public async Task Notify<T>(Client client, string method, T argv)
+    public async Task Notify<T>(string userId, string method, T argv)
         where T : IMessage<T>
     {
-        var callRpc = new CallRpc()
+        if (clients.TryGetValue(userId, out var client))
         {
-            ProtoName = method,
-            Content = argv.ToByteString()
-        };
-        var msg = new GateForwardHubNotifyClient()
+            var callRpc = new CallRpc()
+            {
+                ProtoName = method,
+                Content = argv.ToByteString()
+            };
+            var msg = new GateForwardHubNotifyClient()
+            {
+                ConnId = client.ConnId,
+                EntityId = entityId,
+                Event = callRpc,
+            };
+            await SendToGate(client.UserId, _rpc.Notify(Consts.GateForwardHubNotifyClient, msg));
+        }
+        else
         {
-            ConnId = client.ConnId,
-            EntityId = entityId,
-            Event = callRpc,
-        };
-        await SendToGate(client.ConnId, _rpc.Notify(Consts.GateForwardHubNotifyClient, msg));
+            Log.Error($"Notify {userId} not found!");
+        }
     }
 
     private async Task Response(string connId, string msgId, byte[] data)

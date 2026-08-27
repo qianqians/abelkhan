@@ -65,7 +65,7 @@ public class TcpAcceptService(ushort port)
 
     public void Start()
     {
-        _t = Task.Factory.StartNew(RunServerAsync, TaskCreationOptions.LongRunning);
+        _t = Task.Factory.StartNew(RunServerAsync, TaskCreationOptions.LongRunning).Unwrap();
     }
 
     public void Close()

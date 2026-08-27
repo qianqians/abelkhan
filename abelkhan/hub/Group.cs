@@ -83,7 +83,7 @@ public class Group()
                 EntityId = entity.EntityId,
                 Event = callRpc,
             };
-            await entity.SendToGate(cli.ConnId, _rpc.Notify(Consts.GateForwardHubNotifyClient, msg));
+            await entity.SendToGate(cli.UserId, _rpc.Notify(Consts.GateForwardHubNotifyClient, msg));
         }
     }
 }

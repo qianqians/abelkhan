@@ -12,7 +12,7 @@ public class RedisConnectionHelper
     private const int KeepAlive = 30;
     private readonly ManualResetEvent _waitNotify = new(false);
 
-    private const int WaitTimeout = 16;
+    private const int WaitTimeout = 100;
     private readonly string _conName;
     private readonly string _pwd;
     private readonly string _conf;
@@ -49,50 +49,55 @@ public class RedisConnectionHelper
 
     public void Recover(ref ConnectionMultiplexer? connectionMultiplexer, ref IDatabase? database, Exception? e, Action? afterRecover = null)
     {
-        if (Interlocked.CompareExchange(ref _inRecover, 1, 0) == 0)
+        Log.Info("Reconnect for {0}, count={1}", _conName, ++_recoverCnt);
+        try
         {
-            if (e != null)
+            if (Interlocked.CompareExchange(ref _inRecover, 1, 0) == 0)
             {
-                Log.Error("Redis Exception:{0}", e);
-            }
+                if (e != null)
+                {
+                    Log.Error("Redis Exception:{0}", e);
+                }
 
-            Log.Info("Reconnect for {0}, count={1}", _conName, ++_recoverCnt);
-            try
-            {
                 if (connectionMultiplexer != null)
                 {
                     connectionMultiplexer.Close(allowCommandsToComplete: false);
                 }
+
                 connectionMultiplexer = ConnectionMultiplexer.Connect(_conf);
                 database = connectionMultiplexer.GetDatabase(_db);
-            }
-            catch (RedisConnectionException)
-            {
-                Log.Error("Exit due to Recover-Failure! RecoverCount:{0}, connectRetry:{1}, connectTimeout:{2}ms, _conf:{3}", _recoverCnt, ConnectRetry, ConnectTimeout, _conf);
+
+                if (afterRecover != null)
+                {
+                    afterRecover();
+                }
+
+                Interlocked.Exchange(ref _inRecover, 0);
+                if (!_waitNotify.Set())
+                {
+                    Log.Error("_waitNotify.Set() failed");
+                }
+
                 Thread.Sleep(10);
+                if (!_waitNotify.Reset())
+                {
+                    Log.Error("_waitNotify.ReSet() failed");
+                }
             }
-            if (afterRecover != null)
+            else
             {
-                afterRecover();
-            }
-            Interlocked.Exchange(ref _inRecover, 0);
-            if (!_waitNotify.Set())
-            {
-                Log.Error("_waitNotify.Set() failed");
-            }
-            Thread.Sleep(10);
-            if (!_waitNotify.Reset())
-            {
-                Log.Error("_waitNotify.ReSet() failed");
+                if (!_waitNotify.WaitOne(WaitTimeout))
+                {
+                    Log.Error($"_waitNotifyTimeout after {WaitTimeout}ms");
+                    Thread.Sleep(10);
+                }
             }
         }
-        else
+        catch (RedisConnectionException)
         {
-            if (!_waitNotify.WaitOne(WaitTimeout))
-            {
-                Log.Error($"_waitNotifyTimeout after {WaitTimeout}ms");
-                Thread.Sleep(10);
-            }
+            Log.Error("Exit due to Recover-Failure! RecoverCount:{0}, connectRetry:{1}, connectTimeout:{2}ms, _conf:{3}",
+                _recoverCnt, ConnectRetry, ConnectTimeout, _conf);
+            Thread.Sleep(10);
         }
     }
 

@@ -19,22 +19,32 @@ public class GateMsgMqHandle
 
     private void OnNotify(Notify ntf)
     {
-        switch (ntf.Event.ProtoName)
+        try
         {
-            case Consts.GateForwardClientRequestReconnect:
+            switch (ntf.Event.ProtoName)
             {
-                var msg = _rpc.OnMsg<GateForwardClientRequestReconnect>(ntf.Event.Content.ToByteArray());
-                OnReconnect?.Invoke(msg.UserId, msg.GateName, msg.ConnId);
-                break;
+                case Consts.GateForwardClientRequestReconnect:
+                {
+                    var msg = _rpc.OnMsg<GateForwardClientRequestReconnect>(ntf.Event.Content.ToByteArray());
+                    OnReconnect?.Invoke(msg.UserId, msg.GateName, msg.ConnId);
+                    break;
+                }
+                case Consts.GateForwardClientRequestService:
+                {
+                    var msg = _rpc.OnMsg<GateForwardClientRequestService>(ntf.Event.Content.ToByteArray());
+                    OnRequestService?.Invoke(msg.ServiceName, msg.GateName, msg.ConnId, msg.Argv.ToByteArray());
+                    break;
+                }
+                default:
+                {
+                    Log.Error($"GateMsgHandle ntf.Event.ProtoName:{ntf.Event.ProtoName}");
+                    break;
+                }
             }
-            case Consts.GateForwardClientRequestService:
-            {
-                var msg = _rpc.OnMsg<GateForwardClientRequestService>(ntf.Event.Content.ToByteArray());
-                OnRequestService?.Invoke(msg.ServiceName, msg.GateName, msg.ConnId, msg.Argv.ToByteArray());
-                break;
-            }
-            default:
-                throw  new ArgumentException($"GateMsgHandle ntf.Event.ProtoName:{ntf.Event.ProtoName}");
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"GateMsgMqHandle ntf.Event.ProtoName:{ntf.Event.ProtoName} ex:{ex}");
         }
     }
 }
