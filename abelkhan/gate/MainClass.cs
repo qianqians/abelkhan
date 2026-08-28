@@ -243,7 +243,7 @@ class MainClass
                     .Where((kv, _) => 10_000 < (tick - kv.Value.LastEventTime))
                     .Select(kv => kv.Key)
                     .ToList();
-                
+
                 foreach (var uuid in removeList)
                 {
                     if (_clients.Remove(uuid, out var cli))
@@ -321,14 +321,13 @@ class MainClass
             };
             _external.Start();
 
-            _timer.AddTickTime(3000, TickClients);
-            
             var app = WebApplication.Create();
             app.MapGet("/health", () => Results.Ok("healthy"));
             _ = app.RunAsync($"http://{cfg.Ip}:{cfg.PortHealth}");
             
             await ReportServiceConsul(cfg);
             
+            _timer.AddTickTime(3000, TickClients);
             while (_isRun)
             {
                 var begin = TimerService.Tick;

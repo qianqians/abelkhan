@@ -42,7 +42,27 @@ public class MainClass
     private bool _isRun = true;
     private ConsulClient? _consul;
     private ConsulServiceWatcher? _serviceWatcher;
+    
+    private void TickClients(long tick)
+    {
+        do
+        {
+            var removeList = _clients
+                .Where((kv, _) => 8_000 < (tick - kv.Value.LastEventTime))
+                .Select(kv => kv.Key)
+                .ToList();
 
+            foreach (var uuid in removeList)
+            {
+                if (_clients.Remove(uuid, out var _))
+                {
+                }
+            }
+        } while (false);
+        
+        _timer.AddTickTime(3000, TickClients);
+    }
+    
     public void RegisterService(string serviceName, Service service)
     {
         _services[serviceName] = service;
@@ -166,7 +186,8 @@ public class MainClass
                 var rpc = new WRpc();
                 var gate = new GateNetwork(network);
                 _gates.TryAdd(id, gate);
-                _gateMsgHandles.TryAdd(id, new GateMsgHandle(rpc, gate, _entities));
+                var handle = new GateMsgHandle(rpc, gate, _entities);
+                _gateMsgHandles.TryAdd(id, handle);
                 network.OnReceive(rpc.OnNetworkData);
             };
             _serviceDb.OnConnect += (id, network) =>
@@ -189,6 +210,7 @@ public class MainClass
             var stoppingToken = cts.Token;
             _ = _serviceWatcher.ExecuteAsync(stoppingToken);
 
+            _timer.AddTickTime(3000, TickClients);
             while (_isRun)
             {
                 var begin = TimerService.Tick;
