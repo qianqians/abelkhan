@@ -60,7 +60,7 @@ public class WebSocketAcceptService
         {
             if (context.WebSockets.IsWebSocketRequest)
             {
-                using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                var webSocket = await context.WebSockets.AcceptWebSocketAsync();
                 var i = new WebSocketNetwork(webSocket);
                 i.T = HandleWebSocketAsync(webSocket, i);
                 ListenAccept(i);
