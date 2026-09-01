@@ -116,7 +116,7 @@ public class MainClass
                 do
                 {
                     var data = await _redis?.PopList(string.Format(Consts.EntityServerMq, entityId), 8)!;
-                    if (data == null)
+                    if (data == null || data.Count == 0)
                     {
                         await Task.Delay(1);
                         break;
@@ -167,6 +167,8 @@ public class MainClass
     private void Stop()
     {
         _isRun = false;
+        _serviceGate.Close();
+        _serviceDb.Close();
     }
     
     private async Task Run(HubConfig cfg)
@@ -185,9 +187,9 @@ public class MainClass
             {
                 var rpc = new WRpc();
                 var gate = new GateNetwork(network);
-                _gates.TryAdd(id, gate);
+                _gates[id] = gate;
                 var handle = new GateMsgHandle(rpc, gate, _entities);
-                _gateMsgHandles.TryAdd(id, handle);
+                _gateMsgHandles[id] = handle;
                 network.OnReceive(rpc.OnNetworkData);
             };
             _serviceDb.OnConnect += (id, network) =>

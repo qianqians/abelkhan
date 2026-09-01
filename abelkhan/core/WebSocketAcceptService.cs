@@ -77,7 +77,7 @@ public class WebSocketAcceptService
         _t = Task.Factory.StartNew(() => { app.Run(); }, TaskCreationOptions.LongRunning);
     }
 
-    public async void Close()
+    public async Task Close()
     {
         try
         {

@@ -36,5 +36,5 @@ public class Client(string userId, string gateName, string connId)
         set => _connId = value;
     }
 
-    public long LastEventTime { private set; get; }
+    public long LastEventTime { private set; get; } = TimerService.Tick;
 }

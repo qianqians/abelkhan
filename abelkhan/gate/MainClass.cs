@@ -82,7 +82,7 @@ class MainClass
                 do
                 {
                     var data = await _redis?.PopList(string.Format(Consts.EntityClientMq, userId), 8)!;
-                    if (data == null)
+                    if (data == null || data.Count == 0)
                     {
                         await Task.Delay(1);
                         break;
@@ -145,7 +145,7 @@ class MainClass
                 }
                 
                 var data = await _redis?.Front(string.Format(Consts.EntityReliabilityClientMq, userId))!;
-                if (data == null)
+                if (data == null || data.Length == 0)
                 {
                     await Task.Delay(1);
                     lock (_clientReliabilityQueue)
@@ -354,6 +354,8 @@ class MainClass
     private void Stop()
     {
         _isRun = false;
+        _internal?.Close();
+        _ = _external?.Close();
     }
     
     void HandleSignal(PosixSignalContext context)
