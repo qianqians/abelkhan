@@ -53,7 +53,8 @@ public abstract class Service(
                         await _group.CreateRemotePlayer(player);
                         break;
                     default:
-                        throw new ArgumentException($"EchoQueryServiceExt err:{e}");
+                        Log.Error($"EchoQueryServiceExt err:{e}");
+                        break;
                 } 
             }
             return lEntities;

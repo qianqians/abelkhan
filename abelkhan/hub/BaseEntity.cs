@@ -14,7 +14,7 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
     private readonly WRpc _rpc = new();
     private readonly Dictionary<string, Func<string, string, GateNetwork, ByteString, Task>> _onMsg = new();
     private readonly Dictionary<string, Action<string, byte[]>> _requestCallbacks = new();
-
+    
     internal async Task SendToGate(string userId, byte[] message)
     {
         if (!clients.TryGetValue(userId, out var cli))

@@ -43,6 +43,7 @@ public class MainClass
     private ConsulClient? _consul;
     private ConsulServiceWatcher? _serviceWatcher;
     
+    public event Action<Client>? OnClientConnected;
     private void TickClients(long tick)
     {
         do
@@ -50,12 +51,13 @@ public class MainClass
             var removeList = _clients
                 .Where((kv, _) => 8_000 < (tick - kv.Value.LastEventTime))
                 .Select(kv => kv.Key)
-                .ToList();
+                .ToArray();
 
             foreach (var uuid in removeList)
             {
-                if (_clients.Remove(uuid, out var _))
+                if (_clients.Remove(uuid, out var cli))
                 {
+                    OnClientConnected?.Invoke(cli);
                 }
             }
         } while (false);

@@ -67,7 +67,7 @@ public class GateMsgHandle
     }
 
     // ReSharper disable once AsyncVoidMethod
-    private async void OnNotify(Notify ntf)
+    private void OnNotify(Notify ntf)
     {
         try
         {
@@ -80,7 +80,7 @@ public class GateMsgHandle
                 }
                 case Consts.ClientNotifyHub:
                 {
-                    await OnClientNotifyHub(_rpc.OnMsg<ClientNotifyHub>(ntf.Event.Content.ToByteArray()));
+                    OnClientNotifyHub(_rpc.OnMsg<ClientNotifyHub>(ntf.Event.Content.ToByteArray()));
                     break;
                 }
                 default:
@@ -97,7 +97,7 @@ public class GateMsgHandle
     }
 
     // ReSharper disable once AsyncVoidMethod
-    private async void OnRequest(Request req)
+    private void OnRequest(Request req)
     {
         try
         {
@@ -105,7 +105,7 @@ public class GateMsgHandle
             {
                 case Consts.ClientRequestHub:
                 {
-                    await OnClientRequestHub(req.MsgId, _rpc.OnMsg<ClientRequestHub>(req.Event.Content.ToByteArray()));
+                    OnClientRequestHub(req.MsgId, _rpc.OnMsg<ClientRequestHub>(req.Event.Content.ToByteArray()));
                     break;
                 }
                 default:
@@ -150,13 +150,16 @@ public class GateMsgHandle
         Log.Info("Client:{0} Disconnect", msg.ConnId);
     }
 
-    private async Task OnClientRequestHub(string msgId, ClientRequestHub msg)
+    private void OnClientRequestHub(string msgId, ClientRequestHub msg)
     {
         if (_entities.TryGetValue(msg.EntityId, out var entity))
         {
             try
             {
-                await entity.OnDoMsg(msg.ConnId, msgId, _gate, msg.Event.ProtoName, msg.Event.Content);
+                entity.PostTask(async () =>
+                {
+                    await entity.OnDoMsg(msg.ConnId, msgId, _gate, msg.Event.ProtoName, msg.Event.Content);
+                });
             }
             catch (Exception ex)
             {
@@ -173,7 +176,10 @@ public class GateMsgHandle
     {
         if (_entities.TryGetValue(msg.EntityId, out var entity))
         {
-            entity.OnResponse(msgId, msg.ErrMsg, msg.Content.ToByteArray());
+            entity.PostTask(() =>
+            {
+                entity.OnResponse(msgId, msg.ErrMsg, msg.Content.ToByteArray());
+            });
         }
         else
         {
@@ -181,13 +187,16 @@ public class GateMsgHandle
         }
     }
 
-    private async Task OnClientNotifyHub(ClientNotifyHub msg)
+    private void OnClientNotifyHub(ClientNotifyHub msg)
     {
         if (_entities.TryGetValue(msg.EntityId, out var entity))
         {
             try
             {
-                await entity.OnDoMsg(msg.ConnId, string.Empty, _gate, msg.Event.ProtoName, msg.Event.Content);
+                entity.PostTask(async () =>
+                {
+                    await entity.OnDoMsg(msg.ConnId, string.Empty, _gate, msg.Event.ProtoName, msg.Event.Content);
+                });
             }
             catch (Exception ex)
             {
