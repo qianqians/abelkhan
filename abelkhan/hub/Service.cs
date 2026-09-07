@@ -36,9 +36,8 @@ public abstract class Service(
         try
         {
             var lEntities = new List<BaseEntity>();
-            foreach (var i in infoData)
+            foreach (var (gateName, cliConnId, info) in infoData)
             {
-                var (gateName, cliConnId, info) = i;
                 lEntities.Add(CreateEntity(gateName, cliConnId, info));
             }
 
