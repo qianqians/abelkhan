@@ -38,23 +38,7 @@ public abstract class Service(
             var lEntities = new List<BaseEntity>();
             foreach (var (gateName, cliConnId, info) in infoData)
             {
-                lEntities.Add(CreateEntity(gateName, cliConnId, info));
-            }
-
-            foreach (var e in lEntities)
-            {
-                switch (e)
-                {
-                    case Entity entity:
-                        await _group.CreateRemoteEntity(entity);
-                        break;
-                    case Player player:
-                        await _group.CreateRemotePlayer(player);
-                        break;
-                    default:
-                        Log.Error($"EchoQueryServiceExt err:{e}");
-                        break;
-                } 
+                lEntities.Add(await EchoQueryServiceEntity(gateName, cliConnId, info));
             }
             return lEntities;
         }
