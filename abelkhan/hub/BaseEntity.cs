@@ -3,6 +3,8 @@ using consts;
 using core;
 using engine;
 using Google.Protobuf;
+using MongoDB.Bson;
+
 namespace hub;
 
 public abstract class BaseEntity(string entityId, string entityType, RedisHandle redis,
@@ -32,9 +34,9 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         await gate.Send(message);
     }
 
-    public abstract IMessage FullInfo();
+    public abstract BsonDocument FullInfo();
     // ReSharper disable once MemberCanBeProtected.Global
-    public abstract IMessage ClientInfo();
+    public abstract BsonDocument ClientInfo();
     
     protected virtual async Task CreateRemotePlayer(Client client)
     {
@@ -44,7 +46,7 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
             UserId = client.UserId,
             EntityId = entityId,
             EntityType = entityType,
-            Argv = ClientInfo().ToByteString(),
+            Argv = ByteString.CopyFrom(ClientInfo().ToBson()),
         };
         await SendToGate(client.UserId, _rpc.Notify(Consts.HubCreatePlayerEntity, msg));
     }
@@ -56,7 +58,7 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
             ConnId = client.ConnId,
             EntityId = entityId,
             EntityType = entityType,
-            Argv = ClientInfo().ToByteString(),
+            Argv = ByteString.CopyFrom(ClientInfo().ToBson()),
         };
         await SendToGate(client.UserId, _rpc.Notify(Consts.HubCreateRemoteEntity, msg));
     }

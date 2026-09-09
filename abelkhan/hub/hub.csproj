@@ -12,4 +12,8 @@
       <ProjectReference Include="..\engine\engine.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="MongoDB.Bson" Version="3.11.1" />
+    </ItemGroup>
+
 </Project>
