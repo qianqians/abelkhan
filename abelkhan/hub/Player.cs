@@ -19,6 +19,11 @@ public abstract class Player(
     public abstract override BsonDocument FullInfo();
     public abstract override BsonDocument ClientInfo();
 
+    public void Save()
+    {
+        var info = FullInfo();
+    }
+
     public new async Task CreateRemotePlayer(Client client)
     {
         await base.CreateRemotePlayer(client);

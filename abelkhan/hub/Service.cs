@@ -12,8 +12,7 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
     public virtual async Task<Player> EchoQueryServiceEntity(string gateName, string cliConnId, byte[] info)
     {
         var player = CreateEntity(gateName, cliConnId, info);
-        var cli = new Client(player.UserId, gateName, cliConnId);
-        cli = clients.AddOrUpdate(player.UserId, cli, (key, old) => old);
+        var cli = clients.AddOrUpdate(player.UserId, key => new Client(player.UserId, gateName, cliConnId), (key, old) => old);
         await player.CreateRemotePlayer(cli);
         await _group.CreateRemotePlayer(player);
         return player;
