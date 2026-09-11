@@ -12,6 +12,7 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
     ConcurrentDictionary<string, GateNetwork> gates) : Actor
 {
     public string EntityId => entityId;
+    public string EntityType => entityType;
     
     private readonly WRpc _rpc = new();
     private readonly Dictionary<string, Func<string, string, GateNetwork, ByteString, Task>> _onMsg = new();
