@@ -33,7 +33,6 @@ public class MainClass
     // ReSharper disable once CollectionNeverQueried.Local
     private readonly ConcurrentDictionary<string, GateNetwork> _gates = new();
     private readonly TcpConnectService _serviceGate = new();
-    private readonly TcpConnectService _serviceDb = new();
     private readonly TimerService _timer = new();
     
     private Task? _tWait;
@@ -73,7 +72,7 @@ public class MainClass
     private void OnReconnect(string userId, string gateName, string connId)
     {
         var cli = new Client(userId, gateName, connId);
-        _clients.AddOrUpdate(userId, cli, (_, _) => cli);
+        _ = _clients.AddOrUpdate(userId, cli, (_, _) => cli);
     }
 
     // ReSharper disable once AsyncVoidMethod
@@ -170,7 +169,6 @@ public class MainClass
     {
         _isRun = false;
         _serviceGate.Close();
-        _serviceDb.Close();
     }
     
     private async Task Run(HubConfig cfg)
@@ -194,9 +192,6 @@ public class MainClass
                 _gateMsgHandles[id] = handle;
                 network.OnReceive(rpc.OnNetworkData);
             };
-            _serviceDb.OnConnect += (id, network) =>
-            {
-            }; 
                 
             _serviceWatcher = new(_consul!);
             _serviceWatcher.OnNewService += (string serviceName, string id, string ip, ushort port) =>
@@ -204,10 +199,6 @@ public class MainClass
                 if (serviceName.Equals("gate", StringComparison.OrdinalIgnoreCase))
                 {
                     _serviceGate.Connect(id, IPAddress.Parse(ip), port);
-                }
-                else if (serviceName.Equals("db_proxy", StringComparison.OrdinalIgnoreCase))
-                {
-                    _serviceDb.Connect(id, IPAddress.Parse(ip), port);
                 }
             };
             using var cts = new CancellationTokenSource();

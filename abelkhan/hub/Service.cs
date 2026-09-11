@@ -1,34 +1,22 @@
 ﻿using System.Collections.Concurrent;
 using core;
-using Google.Protobuf;
-using Newtonsoft.Json.Linq;
 
 namespace hub;
 
-public abstract class Service(
-    ConcurrentDictionary<string, Client> clients,
-    ConcurrentDictionary<string, GateNetwork> gates)
+public abstract class Service(ConcurrentDictionary<string, Client> clients)
 {
     private readonly Group _group = new();
 
-    protected abstract BaseEntity CreateEntity(string gateName, string cliConnId, byte[] info);
+    protected abstract Player CreateEntity(string gateName, string cliConnId, byte[] info);
 
-    public virtual async Task<BaseEntity> EchoQueryServiceEntity(string gateName, string cliConnId, byte[] info)
+    public virtual async Task<Player> EchoQueryServiceEntity(string gateName, string cliConnId, byte[] info)
     {
-        var e = CreateEntity(gateName, cliConnId, info);
-        switch (e)
-        {
-            case Entity entity:
-                await _group.CreateRemoteEntity(entity);
-                break;
-            case Player player:
-                await _group.CreateRemotePlayer(player);
-                break;
-            default:
-                Log.Error($"EchoQueryServiceEntity CreateEntity err {gateName}_{cliConnId}_{info}");
-                break;
-        }
-        return e;
+        var player = CreateEntity(gateName, cliConnId, info);
+        var cli = new Client(player.UserId, gateName, cliConnId);
+        cli = clients.AddOrUpdate(player.UserId, cli, (key, old) => old);
+        await player.CreateRemotePlayer(cli);
+        await _group.CreateRemotePlayer(player);
+        return player;
     }
 
     public virtual async Task<List<BaseEntity>?> EchoQueryServiceExt(List<(string, string, byte[])> infoData)

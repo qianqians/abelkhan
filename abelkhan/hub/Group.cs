@@ -10,7 +10,7 @@ public class Group()
     private readonly List<Client> _clients = new();
     private readonly List<Entity> _entities = new();
     private readonly List<Player> _players = new();
-    private readonly object _lockObject = new();
+    private readonly Lock _lockObject = new();
 
     public async Task Join(Client client)
     {
