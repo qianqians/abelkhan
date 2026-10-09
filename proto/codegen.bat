@@ -9,5 +9,6 @@ protoc --csharp_out=../abelkhan/proto  --proto_path=../proto  ../proto/hub_hub.p
 
 protoc --csharp_out=../client/csharp  --proto_path=../proto  ../proto/common.proto
 protoc --csharp_out=../client/csharp  --proto_path=../proto  ../proto/client.proto
+protoc --csharp_out=../client/csharp  --proto_path=../proto  ../proto/gate_client.proto
 
 pause

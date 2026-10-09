@@ -37,12 +37,12 @@ public static partial class GateHubReflection {
           "dHlfaWQYAiABKAkSDgoGZXJyTXNnGAMgASgJEg8KB2NvbnRlbnQYBCABKAwi",
           "WQoaR2F0ZUZvcndhcmRIdWJOb3RpZnlDbGllbnQSDwoHY29ubl9pZBgBIAEo",
           "CRIRCgllbnRpdHlfaWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxsUnBj",
-          "IlsKHEdhdGVGb3J3YXJkSHViTm90aWZ5Q2xpZW50TXESDwoHdXNlcl9pZBgB",
+          "ImgKHEdhdGVGb3J3YXJkSHViTm90aWZ5Q2xpZW50TXESDwoHdXNlcl9pZBgB",
           "IAEoCRIRCgllbnRpdHlfaWQYAiABKAkSFwoFZXZlbnQYAyABKAsyCC5DYWxs",
-          "UnBjIkYKGEdhdGVGb3J3YXJkSHViQ2FsbEdsb2JhbBIRCgllbnRpdHlfaWQY",
-          "ASABKAkSFwoFZXZlbnQYAiABKAsyCC5DYWxsUnBjIjgKEEh1YktpY2tPZmZD",
-          "bGllbnQSDwoHY29ubl9pZBgBIAEoCRITCgtwcm9tcHRfaW5mbxgCIAEoCWIG",
-          "cHJvdG8z"));
+          "UnBjEgsKA3NlcRgEIAEoBCJGChhHYXRlRm9yd2FyZEh1YkNhbGxHbG9iYWwS",
+          "EQoJZW50aXR5X2lkGAEgASgJEhcKBWV2ZW50GAIgASgLMgguQ2FsbFJwYyI4",
+          "ChBIdWJLaWNrT2ZmQ2xpZW50Eg8KB2Nvbm5faWQYASABKAkSEwoLcHJvbXB0",
+          "X2luZm8YAiABKAliBnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -53,7 +53,7 @@ public static partial class GateHubReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubRequestClient), global::GateForwardHubRequestClient.Parser, new[]{ "ConnId", "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubResponseClient), global::GateForwardHubResponseClient.Parser, new[]{ "ConnId", "EntityId", "ErrMsg", "Content" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubNotifyClient), global::GateForwardHubNotifyClient.Parser, new[]{ "ConnId", "EntityId", "Event" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubNotifyClientMq), global::GateForwardHubNotifyClientMq.Parser, new[]{ "UserId", "EntityId", "Event" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubNotifyClientMq), global::GateForwardHubNotifyClientMq.Parser, new[]{ "UserId", "EntityId", "Event", "Seq" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardHubCallGlobal), global::GateForwardHubCallGlobal.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubKickOffClient), global::HubKickOffClient.Parser, new[]{ "ConnId", "PromptInfo" }, null, null, null, null)
         }));
@@ -2219,6 +2219,10 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
   /// <summary>Field number for the "seq" field.</summary>
   public const int SeqFieldNumber = 4;
   private ulong seq_;
+  /// <summary>
+  /// 可靠消息的唯一序号：hub 投递时赋值（重投沿用同一份消息所以序号不变），
+  /// gate 用它校验客户端 ack 的是不是队头那一条，并原样转给客户端的 HubNotifyClientMq
+  /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public ulong Seq {

@@ -33,9 +33,10 @@ public static partial class ClientReflection {
           "IAEoCRIXCgVldmVudBgCIAEoCzIILkNhbGxScGMiNAoRSHViUmVzcG9uc2VD",
           "bGllbnQSDgoGZXJyTXNnGAEgASgJEg8KB2NvbnRlbnQYAiABKAwiPQoPSHVi",
           "Tm90aWZ5Q2xpZW50EhEKCWVudGl0eV9pZBgBIAEoCRIXCgVldmVudBgCIAEo",
-          "CzIILkNhbGxScGMiUQoRSHViTm90aWZ5Q2xpZW50TXESEQoJZW50aXR5X2lk",
+          "CzIILkNhbGxScGMiXgoRSHViTm90aWZ5Q2xpZW50TXESEQoJZW50aXR5X2lk",
           "GAEgASgJEhcKBWV2ZW50GAIgASgLMgguQ2FsbFJwYxIQCghuZWVkX2FjaxgD",
-          "IAEoCCIeCgdLaWNrT2ZmEhMKC3Byb21wdF9pbmZvGAEgASgJYgZwcm90bzM="));
+          "IAEoCBILCgNzZXEYBCABKAQiHgoHS2lja09mZhITCgtwcm9tcHRfaW5mbxgB",
+          "IAEoCWIGcHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -47,7 +48,7 @@ public static partial class ClientReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::HubRequestClient), global::HubRequestClient.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubResponseClient), global::HubResponseClient.Parser, new[]{ "ErrMsg", "Content" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::HubNotifyClient), global::HubNotifyClient.Parser, new[]{ "EntityId", "Event" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::HubNotifyClientMq), global::HubNotifyClientMq.Parser, new[]{ "EntityId", "Event", "NeedAck" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::HubNotifyClientMq), global::HubNotifyClientMq.Parser, new[]{ "EntityId", "Event", "NeedAck", "Seq" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::KickOff), global::KickOff.Parser, new[]{ "PromptInfo" }, null, null, null, null)
         }));
   }
@@ -2077,6 +2078,11 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
   /// <summary>Field number for the "seq" field.</summary>
   public const int SeqFieldNumber = 4;
   private ulong seq_;
+  /// <summary>
+  /// 可靠消息的唯一序号（hub 投递时赋值，超时重投保持不变）。
+  /// 客户端收到后原样回填到 AckReliabilityMsg.seq，gate 靠它判断这条 ack
+  /// 确认的是不是 Redis 队头那一条，从而让重复 ack 被忽略而不是误弹出下一条。
+  /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public ulong Seq {
