@@ -88,19 +88,13 @@ class MainClass
                         break;
                     }
 
-                    var hasCli = true;
                     foreach (var msg in data)
                     {
                         if (!OnMqMsg(false, userId, rpc, msg))
                         {
-                            hasCli = false;
+                            Log.Error("OnMqMsg return false userId:{0}", userId);
                         }
                     }
-                    if (!hasCli)
-                    {
-                        break;
-                    }
-                    
                 } while (false);
 
                 lock (_clientWaitQueue)
