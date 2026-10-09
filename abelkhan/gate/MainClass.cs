@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using Google.Protobuf;
 using Consul;
@@ -43,6 +43,10 @@ class MainClass
     private readonly Deque<string> _clientWaitQueue = new();
     private Task? _tWaitReliability;
     private readonly Deque<string> _clientReliabilityQueue = new();
+    // 可靠消息投出后等 ack 的超时：超时还没等到 ack 就重新入队再投一次
+    private const long ReliabilityAckTimeoutMs = 3000;
+    private readonly Dictionary<string, long> _reliabilityAckDeadline = new();
+    private long _lastReliabilityTimeoutCheck;
     private readonly TimerService _timer = new();
     private ConsulClient? _consul;
 
@@ -99,7 +103,10 @@ class MainClass
 
                 lock (_clientWaitQueue)
                 {
-                    _clientWaitQueue.AddToBack(userId);
+                    if (!_clientWaitQueue.Contains(userId))
+                    {
+                        _clientWaitQueue.AddToBack(userId);
+                    }
                 }
             }
         }, TaskCreationOptions.LongRunning).Unwrap();
@@ -118,6 +125,9 @@ class MainClass
             
             while (_isRun)
             {
+                // 超时没等到 ack 的可靠消息，重新入队重投
+                RetryReliabilityTimeout();
+
                 if (_clientReliabilityQueue == null)
                 {
                     await Task.Delay(1);
@@ -144,14 +154,75 @@ class MainClass
                     await Task.Delay(1);
                     lock (_clientReliabilityQueue)
                     {
-                        _clientReliabilityQueue.AddToBack(userId);
+                        if (!_clientReliabilityQueue.Contains(userId))
+                        {
+                            _clientReliabilityQueue.AddToBack(userId);
+                        }
                     }
                     continue;
                 }
 
                 OnMqMsg(true, userId, rpc, data);
+                // 记下等 ack 的截止时间：客户端 ack 会把它从 Redis 出队；
+                // 超时还没等到 ack，就由 RetryReliabilityTimeout 重新入队再投一次
+                lock (_reliabilityAckDeadline)
+                {
+                    _reliabilityAckDeadline[userId] = TimerService.Tick + ReliabilityAckTimeoutMs;
+                }
             }
         }, TaskCreationOptions.LongRunning).Unwrap();
+    }
+
+    // 投出去的可靠消息超过 ReliabilityAckTimeoutMs 还没等到 ack（客户端掉线或 ack 丢失），
+    // 就把 userId 重新入队再投一次：否则 userId 只能靠 ack 回到队列，ack 一丢这个用户就永远不再投递
+    private void RetryReliabilityTimeout()
+    {
+        var now = TimerService.Tick;
+        if (now - _lastReliabilityTimeoutCheck < 100)
+        {
+            return;
+        }
+        _lastReliabilityTimeoutCheck = now;
+
+        List<string>? timeoutUserIds = null;
+        lock (_reliabilityAckDeadline)
+        {
+            foreach (var (userId, deadline) in _reliabilityAckDeadline)
+            {
+                if (now < deadline)
+                {
+                    continue;
+                }
+
+                timeoutUserIds ??= new List<string>();
+                timeoutUserIds.Add(userId);
+            }
+
+            if (timeoutUserIds != null)
+            {
+                foreach (var userId in timeoutUserIds)
+                {
+                    _reliabilityAckDeadline.Remove(userId);
+                }
+            }
+        }
+
+        if (timeoutUserIds == null)
+        {
+            return;
+        }
+
+        lock (_clientReliabilityQueue)
+        {
+            foreach (var userId in timeoutUserIds)
+            {
+                // 去重：ack 可能刚好把它放回队列了
+                if (!_clientReliabilityQueue.Contains(userId))
+                {
+                    _clientReliabilityQueue.AddToBack(userId);
+                }
+            }
+        }
     }
 
     private bool OnMqMsg(bool needAck, string userId, WRpc rpc, byte[] data)
@@ -245,6 +316,11 @@ class MainClass
                         _ = cli.Close();
                         lock (_clientWaitQueue) while(_clientWaitQueue.Remove(cli.UserId!));
                         lock (_clientReliabilityQueue) while(_clientReliabilityQueue.Remove(cli.UserId!));
+                        if (!string.IsNullOrEmpty(cli.UserId))
+                        {
+                            // 连接已经清理了，别再把它当成超时重投的对象
+                            lock (_reliabilityAckDeadline) _reliabilityAckDeadline.Remove(cli.UserId);
+                        }
                     }
                 }
             }

@@ -32,7 +32,10 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
                 {
                     if (!clientWaitQueue.Contains(msg.UserId))
                     {
-                        clientWaitQueue.AddToBack(msg.UserId);
+                        if (!clientWaitQueue.Contains(msg.UserId))
+                        {
+                            clientWaitQueue.AddToBack(msg.UserId);
+                        }
                     }
                 }
 
@@ -40,7 +43,10 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
                 {
                     if (!clientReliabilityQueue.Contains(msg.UserId))
                     {
-                        clientReliabilityQueue.AddToBack(msg.UserId);
+                        if (!clientReliabilityQueue.Contains(msg.UserId))
+                        {
+                            clientReliabilityQueue.AddToBack(msg.UserId);
+                        }
                     }
                 }
 

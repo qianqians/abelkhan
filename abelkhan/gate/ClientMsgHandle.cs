@@ -96,7 +96,10 @@ public class ClientMsgHandle
                     _ = _redis.DeleteListElem(string.Format(Consts.EntityReliabilityClientMq, _client.UserId!));
                     lock (_clientReliabilityQueue)
                     {
-                        _clientReliabilityQueue.AddToBack(_client.UserId!);
+                        if (!_clientReliabilityQueue.Contains(_client.UserId))
+                        {
+                            _clientReliabilityQueue.AddToBack(_client.UserId!);
+                        }
                     }
                 }
                 break;
