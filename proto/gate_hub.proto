@@ -51,6 +51,9 @@ message GateForwardHubNotifyClientMq {
   string user_id = 1;
   string entity_id = 2;
   CallRpc event = 3;
+  // 可靠消息的唯一序号：hub 投递时赋值（重投沿用同一份消息所以序号不变），
+  // gate 用它校验客户端 ack 的是不是队头那一条，并原样转给客户端的 HubNotifyClientMq
+  uint64 seq = 4;
 }
 
 message GateForwardHubCallGlobal {

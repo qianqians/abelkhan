@@ -34,6 +34,10 @@ message VersionHandshake {
   uint32 max_version = 2;
 }
 
+// 客户端确认收到可靠消息。gate 靠 seq 判断这条 ack 确认的是不是 Redis 队头那一条；
+// seq 为 0 时退回按 entity_id 比对。
 message AckReliabilityMsg {
   string entity_id = 1;
+  // 客户端把收到的 HubNotifyClientMq.seq 原样回填
+  uint64 seq = 2;
 }

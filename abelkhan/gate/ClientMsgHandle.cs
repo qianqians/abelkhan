@@ -1,6 +1,7 @@
-﻿using consts;
+using consts;
 using core;
 using engine;
+using Google.Protobuf;
 using Nito.Collections;
 
 namespace gate;
@@ -91,17 +92,22 @@ public class ClientMsgHandle
             case Consts.AckReliabilityMsg:
             {
                 var msg = _rpc.OnMsg<AckReliabilityMsg>(ntf.Event.Content.ToByteArray());
-                if (!string.IsNullOrEmpty(msg.EntityId) && !string.IsNullOrEmpty(_client.UserId))
+                var userId = _client.UserId;
+                if (string.IsNullOrEmpty(userId))
                 {
-                    _ = _redis.DeleteListElem(string.Format(Consts.EntityReliabilityClientMq, _client.UserId!));
-                    lock (_clientReliabilityQueue)
-                    {
-                        if (!_clientReliabilityQueue.Contains(_client.UserId))
-                        {
-                            _clientReliabilityQueue.AddToBack(_client.UserId!);
-                        }
-                    }
+                    break;
                 }
+
+                // 序号取 AckReliabilityMsg.seq；为 0（老客户端）则退回按 entity_id 比对
+                var ackSeq = msg.Seq;
+                if (ackSeq == 0 && string.IsNullOrEmpty(msg.EntityId))
+                {
+                    break;
+                }
+
+                // 出队前要先确认 ack 的就是 Redis 队头那一条：超时重投会让客户端对同一份消息
+                // ack 两次，无条件出队会把还没投递的下一条弹掉（丢消息）
+                _ = AckReliability(userId, ackSeq, msg.EntityId);
                 break;
             }
             default:
@@ -109,6 +115,88 @@ public class ClientMsgHandle
                 Log.Error($"ClientMsgHandle ntf.Event.ProtoName:{ntf.Event.ProtoName}");
                 break;
             }
+        }
+    }
+
+    // 同一个 userId 的 ack 串行处理：否则两条重复 ack 可能同时读到同一个队头、
+    // 各自通过校验再各出队一次，把还没投递的下一条弹掉。
+    // 用 64 个桶（按 userId 散列）而不是每个 userId 一个锁，避免锁对象无限增长。
+    private static readonly SemaphoreSlim[] AckLocks = CreateAckLocks();
+
+    private static SemaphoreSlim[] CreateAckLocks()
+    {
+        var locks = new SemaphoreSlim[64];
+        for (var i = 0; i < locks.Length; i++)
+        {
+            locks[i] = new SemaphoreSlim(1, 1);
+        }
+        return locks;
+    }
+
+    // ack 与 Redis 队头比对通过才出队；不通过（重投产生的重复 ack、迟到的 ack）直接忽略，
+    // 不出队也不回队：正在等 ack 的那条消息由超时重投负责，回队反而会让它被立刻重发
+    private async Task AckReliability(string userId, ulong ackSeq, string ackEntityId)
+    {
+        var ackLock = AckLocks[(uint)userId.GetHashCode() % (uint)AckLocks.Length];
+        await ackLock.WaitAsync();
+        try
+        {
+            var key = string.Format(Consts.EntityReliabilityClientMq, userId);
+            var head = await _redis.Front(key);
+            if (head != null && head.Length > 0 && !IsAckedHead(head, ackSeq, ackEntityId))
+            {
+                Log.Error($"gate: ack not match head, ignore userId:{userId} ack_seq:{ackSeq} ack_entity_id:{ackEntityId}");
+                return;
+            }
+
+            await _redis.DeleteListElem(key);
+
+            lock (_clientReliabilityQueue)
+            {
+                if (!_clientReliabilityQueue.Contains(userId))
+                {
+                    _clientReliabilityQueue.AddToBack(userId);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Error($"gate: ack reliability err userId:{userId} {e}");
+        }
+        finally
+        {
+            ackLock.Release();
+        }
+    }
+
+    // 队头那条可靠消息是不是这条 ack 所确认的；解析不了就按"不匹配"处理（宁可不出队）
+    private bool IsAckedHead(byte[] head, ulong ackSeq, string ackEntityId)
+    {
+        try
+        {
+            var parser = new MessageParser<Msg>(() => new Msg());
+            var msg = parser.ParseFrom(head);
+            if (msg.PayloadCase != Msg.PayloadOneofCase.Notify ||
+                msg.Notify.Event.ProtoName != Consts.GateForwardHubNotifyClientMq)
+            {
+                return false;
+            }
+
+            var ev = _rpc.OnMsg<GateForwardHubNotifyClientMq>(msg.Notify.Event.Content.ToByteArray());
+            if (ackSeq != 0)
+            {
+                // seq 是 hub 投递时赋的唯一值，重投的副本沿用同一个值：
+                // 重复 ack 到来时队头已经是下一条（seq 不同），会被忽略
+                return ev.Seq == ackSeq;
+            }
+
+            // 老客户端没回填 seq，退回按 entity_id 比对
+            return string.IsNullOrEmpty(ev.EntityId) || ev.EntityId == ackEntityId;
+        }
+        catch (Exception e)
+        {
+            Log.Error($"gate: parse reliability head err:{e}");
+            return false;
         }
     }
 

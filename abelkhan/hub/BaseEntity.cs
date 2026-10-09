@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using consts;
 using core;
 using engine;
@@ -195,6 +195,16 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         }
     }
     
+    // 可靠消息序号的起点用 31 位随机数：序号只要在"同一 userId 的消息流"里唯一即可，
+    // 随机起点避免多进程（跨服接管）各自都从 1 开始而产生重复；同时保证序号一直小于 2^53，
+    // 这样 JS/TS 客户端用 double 表示也不会丢精度（用 bigint 也照样正确）
+    private static long _reliabilitySeq = Random.Shared.Next();
+
+    private static ulong NextReliabilitySeq()
+    {
+        return (ulong)Interlocked.Increment(ref _reliabilitySeq);
+    }
+
     public async Task NotifyListMq<T>(Client client, bool isReliability, string method, T argv)
         where T : IMessage<T>
     {
@@ -209,6 +219,13 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
             EntityId = entityId,
             Event = callRpc,
         };
+        if (isReliability)
+        {
+            // 可靠消息带唯一序号：gate 靠它判断客户端 ack 的是不是队头那一条。
+            // 超时重投用的是 Redis 里同一份消息，序号不变，所以重复 ack 会被忽略，
+            // 不会把还没投递给客户端的下一条弹掉。
+            msg.Seq = NextReliabilitySeq();
+        }
         await SendToListMq(client.UserId, isReliability, _rpc.Notify(Consts.GateForwardHubNotifyClientMq, msg));
     }
 

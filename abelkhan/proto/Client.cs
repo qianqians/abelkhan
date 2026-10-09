@@ -2028,6 +2028,7 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
     entityId_ = other.entityId_;
     event_ = other.event_ != null ? other.event_.Clone() : null;
     needAck_ = other.needAck_;
+    seq_ = other.seq_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -2073,6 +2074,18 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
     }
   }
 
+  /// <summary>Field number for the "seq" field.</summary>
+  public const int SeqFieldNumber = 4;
+  private ulong seq_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public ulong Seq {
+    get { return seq_; }
+    set {
+      seq_ = value;
+    }
+  }
+
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
@@ -2091,6 +2104,7 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
     if (EntityId != other.EntityId) return false;
     if (!object.Equals(Event, other.Event)) return false;
     if (NeedAck != other.NeedAck) return false;
+    if (Seq != other.Seq) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -2101,6 +2115,7 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
     if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
     if (event_ != null) hash ^= Event.GetHashCode();
     if (NeedAck != false) hash ^= NeedAck.GetHashCode();
+    if (Seq != 0UL) hash ^= Seq.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -2131,6 +2146,10 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
       output.WriteRawTag(24);
       output.WriteBool(NeedAck);
     }
+    if (Seq != 0UL) {
+      output.WriteRawTag(32);
+      output.WriteUInt64(Seq);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -2153,6 +2172,10 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
       output.WriteRawTag(24);
       output.WriteBool(NeedAck);
     }
+    if (Seq != 0UL) {
+      output.WriteRawTag(32);
+      output.WriteUInt64(Seq);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -2171,6 +2194,9 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
     }
     if (NeedAck != false) {
       size += 1 + 1;
+    }
+    if (Seq != 0UL) {
+      size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Seq);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -2195,6 +2221,9 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
     }
     if (other.NeedAck != false) {
       NeedAck = other.NeedAck;
+    }
+    if (other.Seq != 0UL) {
+      Seq = other.Seq;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -2230,6 +2259,10 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
           NeedAck = input.ReadBool();
           break;
         }
+        case 32: {
+          Seq = input.ReadUInt64();
+          break;
+        }
       }
     }
   #endif
@@ -2262,6 +2295,10 @@ public sealed partial class HubNotifyClientMq : pb::IMessage<HubNotifyClientMq>
         }
         case 24: {
           NeedAck = input.ReadBool();
+          break;
+        }
+        case 32: {
+          Seq = input.ReadUInt64();
           break;
         }
       }

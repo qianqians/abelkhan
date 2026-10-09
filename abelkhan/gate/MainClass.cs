@@ -44,7 +44,8 @@ class MainClass
     private Task? _tWaitReliability;
     private readonly Deque<string> _clientReliabilityQueue = new();
     // 可靠消息投出后等 ack 的超时：超时还没等到 ack 就重新入队再投一次
-    private const long ReliabilityAckTimeoutMs = 3000;
+    // （调大是为了少制造重复副本：重投产生的重复 ack 目前只能靠 entity_id 兜一部分）
+    private const long ReliabilityAckTimeoutMs = 10_000;
     private readonly Dictionary<string, long> _reliabilityAckDeadline = new();
     private long _lastReliabilityTimeoutCheck;
     private readonly TimerService _timer = new();
@@ -63,12 +64,6 @@ class MainClass
 
             while (_isRun)
             {
-                if (_clientWaitQueue == null)
-                {
-                    await Task.Delay(1);
-                    continue;
-                }
-
                 string userId = string.Empty;
                 lock (_clientWaitQueue)
                 {
@@ -128,12 +123,6 @@ class MainClass
                 // 超时没等到 ack 的可靠消息，重新入队重投
                 RetryReliabilityTimeout();
 
-                if (_clientReliabilityQueue == null)
-                {
-                    await Task.Delay(1);
-                    continue;
-                }
-                
                 string userId = string.Empty;
                 lock (_clientReliabilityQueue)
                 {
@@ -250,6 +239,8 @@ class MainClass
                 EntityId = ev.EntityId,
                 Event = ev.Event,
                 NeedAck = needAck,
+                // 可靠消息的序号（hub 赋的）原样转给客户端，客户端 ack 时回填到 AckReliabilityMsg.seq
+                Seq = ev.Seq,
             };
 
             Client[] cliCopy;

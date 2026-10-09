@@ -2170,6 +2170,7 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
     userId_ = other.userId_;
     entityId_ = other.entityId_;
     event_ = other.event_ != null ? other.event_.Clone() : null;
+    seq_ = other.seq_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -2215,6 +2216,18 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
     }
   }
 
+  /// <summary>Field number for the "seq" field.</summary>
+  public const int SeqFieldNumber = 4;
+  private ulong seq_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public ulong Seq {
+    get { return seq_; }
+    set {
+      seq_ = value;
+    }
+  }
+
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
@@ -2233,6 +2246,7 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
     if (UserId != other.UserId) return false;
     if (EntityId != other.EntityId) return false;
     if (!object.Equals(Event, other.Event)) return false;
+    if (Seq != other.Seq) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -2243,6 +2257,7 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
     if (UserId.Length != 0) hash ^= UserId.GetHashCode();
     if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
     if (event_ != null) hash ^= Event.GetHashCode();
+    if (Seq != 0UL) hash ^= Seq.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -2273,6 +2288,10 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
       output.WriteRawTag(26);
       output.WriteMessage(Event);
     }
+    if (Seq != 0UL) {
+      output.WriteRawTag(32);
+      output.WriteUInt64(Seq);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -2295,6 +2314,10 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
       output.WriteRawTag(26);
       output.WriteMessage(Event);
     }
+    if (Seq != 0UL) {
+      output.WriteRawTag(32);
+      output.WriteUInt64(Seq);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -2313,6 +2336,9 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
     }
     if (event_ != null) {
       size += 1 + pb::CodedOutputStream.ComputeMessageSize(Event);
+    }
+    if (Seq != 0UL) {
+      size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Seq);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -2337,6 +2363,9 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
         Event = new global::CallRpc();
       }
       Event.MergeFrom(other.Event);
+    }
+    if (other.Seq != 0UL) {
+      Seq = other.Seq;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -2372,6 +2401,10 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
           input.ReadMessage(Event);
           break;
         }
+        case 32: {
+          Seq = input.ReadUInt64();
+          break;
+        }
       }
     }
   #endif
@@ -2404,6 +2437,10 @@ public sealed partial class GateForwardHubNotifyClientMq : pb::IMessage<GateForw
             Event = new global::CallRpc();
           }
           input.ReadMessage(Event);
+          break;
+        }
+        case 32: {
+          Seq = input.ReadUInt64();
           break;
         }
       }

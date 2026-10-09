@@ -46,6 +46,10 @@ message HubNotifyClientMq {
   string entity_id = 1;
   CallRpc event = 2;
   bool need_ack = 3;
+  // 可靠消息的唯一序号（hub 投递时赋值，超时重投保持不变）。
+  // 客户端收到后原样回填到 AckReliabilityMsg.seq，gate 靠它判断这条 ack
+  // 确认的是不是 Redis 队头那一条，从而让重复 ack 被忽略而不是误弹出下一条。
+  uint64 seq = 4;
 }
 
 message KickOff {
