@@ -223,11 +223,68 @@ TR.Stride 的 `TerrainVegetationComponent`（源码已读）就在这之上：**
 - **什么情况下这条线不划算**：如果地形/植被必须开箱即用、美术要自己刷大地图，那正是 Flax 的强项
   （内置 Terrain + Foliage + 体积雾 + TAA），Stride 这条路的差距会直接摊到工期上。
 
+### 7.5 替代路线：手摆 + 显式实例化（≤100×100m 小图不必接植被系统）
+
+**适用前提**：一张图 ≤100×100m（1 公顷以内），树木/灌木/草是**美术手工摆放**的少量物件，
+不是"程序化铺满大地图"。§7.4 的成本主要是为后一种需求付的；如果是前者，**这条线可以整段绕开**。
+
+理由是**能力缺口对不上**：TR.Stride 的 `TerrainVegetationComponent`（§7.3）真正不可替代的只有
+**自动遮蔽散布**（mask + 坡度/高度/种子过滤），而这在小图里只是"省手工"，不是"能不能做"。
+它另一半能力——**实例化渲染**——引擎自己就有（`InstancingProcessor` + `InstancingComponent`），
+接一下就行，不需要引入第三方工程。**这同时省掉了 §7.4 列出的最大代价**（fork 一个 11★/59★ 单人项目并自己养）。
+
+#### 唯一必须提前避开的坑：Stride **不做自动批处理**
+
+没有 Unity 那种"同网格 + 同材质自动合并"：**「一个 Entity 带一个 ModelComponent」= 一个 draw call**。
+社区工具包的实例化对照实测给出了量级（[Instancing with Entity Transforms](https://stride3d.github.io/stride-community-toolkit/manual/code-only/examples/instancing-entity-transform.html)）：
+20,000 个方块不实例化 = 20,000 draw call = **约 3 FPS**；同一堆走实例化 = 1 draw call = **239 FPS**。
+
+→ 即：**引擎提供实例化能力，但不替你开启**。分档如下。
+
+#### 量级分档表
+
+| 量级 | 对象 | 摆法 | 是否需要写代码 |
+|---|---|---|---|
+| 几十 ~ 几百 | 树、灌木 | 预制体直接拖进场景，**一个对象一个实体一个 `ModelComponent`**，不做任何处理；静态物体配静态碰撞体 | 不需要（纯编辑器） |
+| 数百 ~ 数千 | 树、灌木 | **主从实例化**：master 实体持有 `ModelComponent` + `InstancingComponent`；每个对象是本体的 `InstanceComponent`，`Master` 指向 master | 不需要（组件在 Game Studio 属性面板里加，`Master` 拖引用即可） |
+| 上千 ~ 上万 | 草 | **不要逐根摆**：做 3×3 或 4×4m 的「草皮块」预制体（内含 20–40 个交叉草片），再铺这个块 | 不需要（同上，挂在块实例上） |
+| 上万 | 草 | 把摆放结果**烘焙成矩阵数组**一次性喂给 master，之后每帧不更新 | 约 50 行的编辑器脚本 |
+
+数量级的算法（100×100m，按 3×3m 草块算）：`(100/3)² ≈ 1100` 个草块实体把图铺满——
+即"整片草地"在**千级实体**，不是"几万根草"。这个量级 Stride 扛得住，手工摆也不是不可能。
+
+#### 四个会真的踩到的坑
+
+1. **实例化的孩子必须删掉 `ModelComponent`**。master 持有 Model，孩子只留 `Transform` + `InstanceComponent`；
+   孩子自己带 Model 就会**画两遍**，比不实例化还慢（工具包文档明确写了这一点）。
+   注意推论：**一个对象有多个材质/多个 mesh part，就等于多个 draw call**，实例化只合并"同一网格 + 同一材质"，
+   所以树的材质数量要压（图集），别指望实例化能合并不同材质。
+2. **不要嵌套实例化**。草块预制体本身**不要**带 `InstancingComponent`——块内部网格要被外层实例化管线正确提取是有风险的。
+   稳妥做法：草块只含几何体，实例化只放在**场景里对这个预制体的块实例**上。
+3. **`InstancingEntityTransform` 每帧都在算**。它继承自 `InstancingUserArray`
+   （[API](https://doc.stride3d.net/latest/en/api/Stride.Engine.InstancingEntityTransform.html)），
+   每帧重新读取并求逆所有矩阵，**哪怕植被一动不动**（工具包实测：物理堆已经"睡着"之后这项每帧开销仍在，代码注释写的是 forever）。
+   → 草这类静态物更适合"烘焙成矩阵数组、之后不更新"；只有风摆/角色压草这类动态效果才值得每帧更新。
+4. **`InstanceComponent.Master` 是场景内引用**，规则与 TR.Stride 的植被层相同：顺序错了或引用断了，
+   Game Studio 下次启动可能报错/崩。建议 master 放在固定命名的一个分组下，不要随手拖。
+
+#### 实例化省不掉的部分
+
+- 每个实例仍是**真实体 + 真实组件**：实例化只省 draw call，**不省 CPU 对象成本**。
+  1 万个草块 = 1 万个实体 + 1 万个组件 + 逐帧更新。越过这个量级就该走矩阵数组（表里第 4 行）。
+- **风摆、角色交互压草、多级 LOD**：官方与社区件都没有（§7.3 已注明），要自己在 shader/代码里补——
+  这一点上"手摆路线"和"TR.Stride 路线"的缺口是**一样的**，不是引入第三方就能省掉的。
+- **草的模型切数**（交叉面片数量 / 面数）直接决定视觉与开销，本文未核验，落地时按美术规范实测。
+
 ---
 
 ## 八、按"传送门分图、无大世界"的实际范围重新评估
 
 **前提（项目范围）**：不做无缝大世界；地图是若干独立场景，用**传送光圈**互相连接；单图内有**山、水、树木、草皮**。
+
+**本节范围补充**：单图规模是 **≤100×100m 的小场景、美术手工摆放的少量植被**（不是程序化铺满大地图）。
+因此树草一项有两条路：**§7.5 的"手摆 + 显式实例化"（不引入第三方）** 与 **TR.Stride 的 `TerrainVegetationComponent`**，
+下面 8.2 按这两条并列；**默认建议走前者**（理由见 §7.5）。
 
 ### 8.1 这一刀砍掉了 Stride 的哪些短板
 
@@ -244,7 +301,8 @@ TR.Stride 的 `TerrainVegetationComponent`（源码已读）就在这之上：**
 |---|---|---|
 | 山 / 地形 | 每图一张高度图地形：TR.Stride 的 `TerrainComponent`（MIT），或直接用美术做好的 mesh + 高度图碰撞体 | 单图小，1024² 够；**判定与寻路应在服务端（hub）**，客户端只做插值与预测 |
 | 水 | `TR.Stride.Ocean`（FFT，偏海面、可能过重）或 StrideSimpleWater（平面 + 反射/折射/波动） | 湖/河够用；**游泳、溺水、阻挡等规则在服务端** |
-| 树 / 草 | TR.Stride `TerrainVegetationComponent`：mask 贴图 + density + min/max scale / slope / height + seed + ViewDistance + 距离缩放，底层走引擎 Instancing | 现成可用；**风摆、角色交互压草、多级 LOD 要自己补** |
+| 树 / 草 | **路线 A（默认，§7.5）**：手工摆放 + 显式实例化 —— 树/灌木直接摆实体或走"master + `InstanceComponent`"；草做 3×3/4×4m 草皮块预制体后铺块，千级实体 | 不引入第三方、不 fork；**引擎不自动批处理**，实例化必须自己开；**风摆 / 交互压草 / 多级 LOD 要自己补** |
+| 树 / 草（备选） | **路线 B**：TR.Stride `TerrainVegetationComponent`：mask 贴图 + density + min/max scale / slope / height + seed + ViewDistance + 距离缩放，底层走引擎 Instancing | 现成可用，但只值"省手工"（小图用不上遮蔽散布的规模优势）；**要 fork 并自己养**，见 §7.4 |
 | 传送光圈 | 纯玩法问题：进入 → 服务端切图 → 客户端加载目标场景 | 客户端可复用 `Client` 已有的 **epoch + 重同步**路径（`client/Client.cs:568-611`），不必另造一套 |
 
 ### 8.3 这个范围下**新增**的两个真风险（比 GI 更该先想）
@@ -284,14 +342,21 @@ TR.Stride 的 `TerrainVegetationComponent`（源码已读）就在这之上：**
 
 ### 8.5 结论
 
-这个范围下 **Stride 的短板基本被砍掉，而"同构 .NET"的收益被放到最大**：地形/水/树草有 MIT 社区件接得上，
-传送光圈是玩法 + 服务端问题，画质缺口只剩"**没有烘焙光照**"一项（草皮闪烁已被 TAA 解决，见 8.3）。
+这个范围下 **Stride 的短板基本被砍掉，而"同构 .NET"的收益被放到最大**：
+- **山 / 水**：TR.Stride 的 `TerrainComponent` 或美术 mesh + 高度图碰撞体；水用 StrideSimpleWater 一类的平面方案。
+- **树 / 草**：按 §7.5 走**默认路线 A**——手工摆放 + 显式实例化，**只用到引擎自带的 `InstancingComponent` / `InstanceComponent`，
+  不需要第三方植被系统、也不需要 fork TR.Stride**（省掉 §7.4 的最大代价）。路线 B（TR.Stride 植被）留作工作量压不下来时的备选。
+- **传送光圈**：玩法 + 服务端问题。
+- **画质缺口只剩"没有烘焙光照"一项**（草皮闪烁已被 TAA 解决，见 8.3）。
+
 **Flax 的保留优势（烘焙 GI、体积雾、开箱地形）从"决定性"降级为"锦上添花"**（TAA 这一项已经不再独占）。
 
 → 建议按 Stride 走，验证顺序：
-① TR.Stride 在 **Stride 4.4** 上能否编译运行（它最后提交早于 4.4 半年）；
-② 在 Graphics Compositor 里接通 velocity 输出 + 把 Antialiasing 切成 TemporalAntiAlias，实测草皮闪烁与蒙皮角色的 TAA 质量；
-③ 然后才是服务端的 `ChangeMap` / `TakeOverUser` 设计。
+① 实例化接线实测：一个 master + N 个 `InstanceComponent` 是否真的合并成 1 个 draw call（含**多材质的树**是否退化成多 call），
+   以及千级草块实体在目标机上的帧预算（§7.5 的量级表）；
+② TR.Stride 在 **Stride 4.4** 上能否编译运行（它最后提交早于 4.4 半年）——**仅在选路线 B 或需要它的地形/水面时才需要**；
+③ 在 Graphics Compositor 里接通 velocity 输出 + 把 Antialiasing 切成 TemporalAntiAlias，实测草皮闪烁与蒙皮角色的 TAA 质量；
+④ 然后才是服务端的 `ChangeMap` / `TakeOverUser` 设计。
 
 ---
 
@@ -299,4 +364,6 @@ TR.Stride 的 `TerrainVegetationComponent`（源码已读）就在这之上：**
 星标/fork 数据取自 GitHub API（2026-10 抓取）。
 仍需实测确认的项：C# 在 Flax Web 导出下的支持程度、Stride 的主线程 API 细节、
 TR.Stride 在 Stride 4.4 上的兼容性（它最后提交于 2026-03，早于 4.4 发布）、
-Stride 的 TAA 对**蒙皮网格**（角色骨骼形变）的速度处理是否完整。*
+Stride 的 TAA 对**蒙皮网格**（角色骨骼形变）的速度处理是否完整、
+**§7.5 的实例化路线**（draw call 是否真如预期合并、**嵌套实例化是否真的不可靠**、
+千级草块实体的实际帧预算、草的模型切数与面数）。*
