@@ -137,26 +137,39 @@ class MainClass
                     continue;
                 }
                 
-                var data = await _redis?.Front(string.Format(Consts.EntityReliabilityClientMq, userId))!;
-                if (data == null || data.Length == 0)
+                try
                 {
-                    await Task.Delay(1);
-                    lock (_clientReliabilityQueue)
+                    var data = await _redis?.Front(string.Format(Consts.EntityReliabilityClientMq, userId))!;
+                    if (data == null || data.Length == 0)
                     {
-                        if (!_clientReliabilityQueue.Contains(userId))
+                        await Task.Delay(1);
+                        lock (_clientReliabilityQueue)
                         {
-                            _clientReliabilityQueue.AddToBack(userId);
+                            if (!_clientReliabilityQueue.Contains(userId))
+                            {
+                                _clientReliabilityQueue.AddToBack(userId);
+                            }
                         }
+                        continue;
                     }
-                    continue;
-                }
 
-                OnMqMsg(true, userId, rpc, data);
-                // 记下等 ack 的截止时间：客户端 ack 会把它从 Redis 出队；
-                // 超时还没等到 ack，就由 RetryReliabilityTimeout 重新入队再投一次
-                lock (_reliabilityAckDeadline)
+                    OnMqMsg(true, userId, rpc, data);
+                    // 记下等 ack 的截止时间：客户端 ack 会把它从 Redis 出队；
+                    // 超时还没等到 ack，就由 RetryReliabilityTimeout 重新入队再投一次
+                    lock (_reliabilityAckDeadline)
+                    {
+                        _reliabilityAckDeadline[userId] = TimerService.Tick + ReliabilityAckTimeoutMs;
+                    }
+                }
+                catch (Exception e)
                 {
-                    _reliabilityAckDeadline[userId] = TimerService.Tick + ReliabilityAckTimeoutMs;
+                    // 兜底：队头脏数据（ParseFrom 抛异常）之类的问题不能打死整个可靠投递线程，
+                    // 否则超时重投也没人执行了。当作没投出去，交给超时扫描重新入队。
+                    Log.Error($"gate: reliability msg userId:{userId} err:{e}");
+                    lock (_reliabilityAckDeadline)
+                    {
+                        _reliabilityAckDeadline[userId] = TimerService.Tick + ReliabilityAckTimeoutMs;
+                    }
                 }
             }
         }, TaskCreationOptions.LongRunning).Unwrap();

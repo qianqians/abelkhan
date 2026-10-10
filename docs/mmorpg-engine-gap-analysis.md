@@ -1,6 +1,6 @@
 # abelkhan → MMORPG 服务器引擎：差距分析与补齐清单
 
-> 基于当前仓库代码（`abelkhan/` 下 6 个 C# 工程）逐文件通读得出。
+> 基于当前仓库代码（`abelkhan/` 下 6 个 C# 工程 + `client/` 客户端）逐文件通读得出。
 > 所有结论均标注了文件与行号，可逐条复核。
 
 ---
@@ -17,6 +17,7 @@
 | `abelkhan/consts` | 类库 | 报文名字符串常量 |
 | `abelkhan/gate` | **可执行** | 网关：客户端接入 + 转发 |
 | `abelkhan/hub` | **类库** | 游戏逻辑宿主框架——**没有 `Main`，不是可执行程序** |
+| `client` | 类库 | 客户端框架：WebSocket 传输 + 自带拆包 + 断线重连 + 实体（Entity/Player）收发与重同步 |
 
 `hub` 只有 `MainClass.RunMain(string[])`（`abelkhan/hub/MainClass.cs:236`），
 没有 `static void Main`，也没有 `OutputType=Exe`，因此**当前 hub 进程无法启动**。
@@ -63,8 +64,14 @@ Newtonsoft.Json / Nito.AsyncEx / Microsoft.IO.RecyclableMemoryStream（`abelkhan
 - 入向：hub→client 走 `GateForwardHubNotifyClient`，**两条通道**：
   直连 TCP（`_dictEntityNetwork`）与 Redis list MQ
   （`abelkhan/gate/Clients.cs:32-47`、`abelkhan/gate/MainClass.cs:49-161`）。
-- 可靠消息：`entity_reliability_{userId}_client_mq` 用 `Front` + `DeleteListElem` 实现至少一次，
-  靠客户端 `ack_reliability_msg` 出队（`abelkhan/gate/MainClass.cs:147-158`、`ClientMsgHandle.cs:91-103`）。
+- 可靠消息：`entity_reliability_{userId}_client_mq` 用 `Front` 窥视队头 + `DeleteListElem` 出队实现至少一次。
+  hub 投递时给消息赋唯一 `seq`（`GateForwardHubNotifyClientMq.seq`，重投沿用 Redis 里同一份消息所以 seq 不变），
+  gate 透传成 `HubNotifyClientMq.seq`，客户端处理完回 `AckReliabilityMsg{entity_id, seq}`；
+  gate 出队前拿 ack 的 seq 与队头比对，并且**按 userId 串行处理 ack**（64 桶 `SemaphoreSlim`），
+  避免重复/迟到的 ack 把还没投递的下一条弹掉。老客户端不回填 seq（=0）时退回按 `entity_id` 比对。
+- 可靠消息重投：`ReliabilityAckTimeoutMs`（10s）内没等到 ack，就把 userId 重新入队再投一次
+  （`gate/MainClass.cs` 的 `RetryReliabilityTimeout`）；否则 userId 只靠 ack 回队，ack 一丢该用户就永久停摆。
+  投递循环整体带 try/catch，队头脏数据不会打死投递线程。
 - 断线清理：3 秒扫一次，`10_000ms` 无事件则关闭（`abelkhan/gate/MainClass.cs:236-260`）；
   **hub 侧阈值是 8000ms**（`abelkhan/hub/MainClass.cs:46-65`）——两边不一致，
   且超时只关闭连接，**不通知实体做存盘/下线**。
@@ -83,9 +90,10 @@ Newtonsoft.Json / Nito.AsyncEx / Microsoft.IO.RecyclableMemoryStream（`abelkhan
 2. `BaseEntity._requestCallbacks` 永不回调（`BaseEntity.cs:96-138`），
    `Request<T0,T1>` 返回的 Task 永不完成（`BaseEntity.cs:122`）；
 3. `OnResponse` 只在 `GateMsgHandle.OnClientResponseHub` 里被 `PostTask` 投递
-   （`GateMsgHandle.cs:175-188`），同样不执行 → **客户端 ack 永不处理**；
-4. `DeleteListElem` 因此永不调用（`ClientMsgHandle.cs:96`），
-   `entity_reliability_*_client_mq` **只增不减**。
+   （`GateMsgHandle.cs:175-188`），同样不执行 → **实体发起的 request 永远等不到客户端的回包**；
+4. 注意：客户端的 `ack_reliability_msg` 是 gate 在网络回调线程里直接处理的
+   （`gate/ClientMsgHandle.cs`），**不经过 hub 的 Actor**，所以可靠队列的出队不受 P0-1 影响
+   （出队前会校验 seq 与队头一致，见 1.4）。
 
 **游戏内容为零。** 全仓库只有抽象基类：
 
@@ -126,6 +134,29 @@ Newtonsoft.Json / Nito.AsyncEx / Microsoft.IO.RecyclableMemoryStream（`abelkhan
 - hub 之间**没有直接通信链路**（`TcpConnectService _serviceGate` 只连 gate，
   `abelkhan/hub/MainClass.cs:35,186-203`），跨 hub 只能靠 Redis list。
 
+### 1.7 客户端现状（`client/`）
+
+`client` 是**独立的类库工程**，只引用 `engine`（→ `proto`）与 `consts`，**不引用服务端的 `core`**，
+所以不会把 MongoDB/Consul/Redis/AspNetCore 带进客户端。
+
+- 传输：**只支持 WebSocket**（`client/WebSocketNetwork.cs`），自带拆包
+  （`client/ReceiveBuffer.cs`，与服务端 `core/OnReceive.cs` 相同的 4 字节小端长度前缀 + 64KB 上限）。
+  Kestrel 侧是 `UseHttps(pfx, password)`（`core/WebSocketAcceptService.cs:45-54`），
+  所以地址必须是 `wss://`，自签证书需要 `ClientConfig.IgnoreCertificate`。
+- 断线重连：读循环结束/发送失败 → 统一断线处理（失败所有未完成的 request + `OnDisconnected`）
+  → 按 `ReconnectIntervalMs` 自动重连（`AutoReconnect` 可关；收到 `KickOff` 不重连）。
+- 重连实体重同步：重连成功把所有本地实体标记为"未认领"，服务端用
+  `CreatePlayerEntity`/`CreateRemoteEntity`/`RefreshEntity` 重新下发一遍
+  （本地已存在的对象只走 `OnRefresh`，不重建），`ResyncTimeoutMs` 后仍未被认领的实体本地删除
+  （`client/Client.cs` 的 `StartResync`/`ResyncCheck`）。
+- 实体模型：`Entity`（远端实体）与 `Player`（自己的玩家实体，对应 hub 侧 `hub.Player`）两个基类；
+  工厂 `Service.CreatePlayerEntity → Player`、`Service.CreateRemoteEntity → Entity?`。
+  实体自带 request/notify 注册与自动回包（Ok→response，Err/异常→error），每个实体一条串行队列保证顺序。
+- 可靠消息：收到 `HubNotifyClientMq(need_ack)` 处理完回 `AckReliabilityMsg{entity_id, seq}`；
+  找不到对应实体时也会回 ack，避免 gate 每 10s 重投。
+- 已知缺口：协议里 `CreatePlayerEntity` 不带 `user_id`，重连用的账号需要游戏从 `argv` 解析后写进 `Player.UserId`；
+  没有压缩/批量/背压；"半死"连接只能靠 gate 侧 10s 超时断开。
+
 ---
 
 ## 二、缺口清单（按严重度排序）
@@ -140,14 +171,14 @@ Newtonsoft.Json / Nito.AsyncEx / Microsoft.IO.RecyclableMemoryStream（`abelkhan
 | P0-4 | 超时与断线不触达实体 | `gate/MainClass.cs:247-254`、`hub/BaseEntity.cs` | 需要 `OnClientDisconnect` → 实体下线/存盘钩子 |
 | P0-5 | 请求无超时、无回滚 | `hub/BaseEntity.cs:96-123` | `_requestCallbacks` 需带 deadline 的定时清理 + `Err("timeout")` |
 | P0-6 | 持久化事实上不存在 | `hub/Player.cs:29`（从未调用） | 需要存档生命周期（登录加载 / 定时 / 下线落盘 / 崩溃恢复） |
-| P0-7 | 可靠队列只增不减 | `gate/ClientMsgHandle.cs:91-103` + P0-1 | 修好 Actor 后仍需 ack 精确匹配（当前 `DeleteListElem` 不校验 entityId/msgId，见 `ClientMsgHandle.cs:96`） |
+| P0-7 | ~~可靠队列只增不减~~ **已修** | `gate/ClientMsgHandle.cs`、`gate/MainClass.cs` | 现在：hub 赋 `seq` → gate 与队头比对后才出队、按 userId 串行 ack、10s 超时重投、轮询队列去重、投递循环带 try/catch。残留：多 gate 实例共享同一个 `entity_reliability_*` list 时会互相抢（需要归属/租约） |
 | P0-8 | `MongoProxy` 恒返回成功 | `core/MongoProxy.cs:84,102,171` | 无法感知写失败，需真实返回结果 + 异常传播 |
 
 ### P1 — 网络与会话基础
 
 | # | 缺口 | 说明 |
 |---|---|---|
-| P1-1 | **会话/断线重连不完整** | 重连只重建 `Client`（`hub/MainClass.cs:72-76`），不校验旧连接是否仍在、不迁移实体网络绑定；`GateForwardClientRequestReconnect` 无幂等/去重 |
+| P1-1 | **会话/断线重连：客户端侧已就绪，服务端待补** | 服务端：重连只重建 `Client`（`hub/MainClass.cs:72-76`），不校验旧连接、不迁移实体网络绑定、**不重新下发 `HubCreatePlayerEntity`**；`GateForwardClientRequestReconnect` 无幂等/去重。客户端（`client/`）已实现 WebSocket + 拆包 + 断线自动重连 + 按 `CreatePlayerEntity`/`CreateRemoteEntity`/`RefreshEntity`/`DeleteRemoteEntity` 重同步场景对象（未重新认领的实体会在 `ResyncTimeoutMs` 后本地删掉），只等服务端的重连 hook |
 | P1-2 | **无登录鉴权层** | 无账号校验、无 token、无 `ClientRequestService` 的 `argv` 语义定义；`EnterService` 硬编码单服务（`gate/MainClass.cs:303-310`） |
 | P1-3 | **反外挂/输入合法性为零** | 客户端可任意指定 `entity_id` 发 `ClientNotifyHub`（`gate/ClientMsgHandle.cs:66-77`），服务端不校验归属，等于**任意实体越权调用**；无频率限制、无合法性校验 |
 | P1-4 | 单帧 64KB 硬上限 | `core/OnReceive.cs:30`；大包（背包/邮件列表）需要分片或提高上限并做流控 |
