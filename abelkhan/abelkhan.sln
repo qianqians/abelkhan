@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.8.12023.21 stable
+VisualStudioVersion = 18.8.12023.21
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "engine", "engine\engine.csproj", "{7EF4853C-0E5B-42F6-B489-90F7F59A2747}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "consts", "consts\consts.csproj", "{F76DEDA6-1C86-4632-842C-98D6297FBBCC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "hub", "hub\hub.csproj", "{9C9C3102-5733-49AF-8626-00491B6F8EAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "client", "..\client\client.csproj", "{0B7482F2-FB16-F607-13CC-AB0BA2729980}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{9C9C3102-5733-49AF-8626-00491B6F8EAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C9C3102-5733-49AF-8626-00491B6F8EAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C9C3102-5733-49AF-8626-00491B6F8EAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B7482F2-FB16-F607-13CC-AB0BA2729980}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B7482F2-FB16-F607-13CC-AB0BA2729980}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B7482F2-FB16-F607-13CC-AB0BA2729980}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B7482F2-FB16-F607-13CC-AB0BA2729980}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
