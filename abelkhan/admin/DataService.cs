@@ -6,6 +6,18 @@ using MongoDB.Driver;
 namespace admin;
 
 /// <summary>
+/// 全局邮件的领取条件（0 表示不限制）。
+/// 等级/建角天数范围、是否拍脸、发布后有效天数。
+/// </summary>
+public record GlobalMailRule(
+    int MinLevel = 0,
+    int MaxLevel = 0,
+    int MinCreateDays = 0,
+    int MaxCreateDays = 0,
+    bool PopUp = false,
+    int ValidDays = 0);
+
+/// <summary>
 /// 管理端数据访问：Redis（在线数、GM/邮件队列）+ MongoDB（玩家/支付/邮件/GM 日志）。
 /// 字段名（注册时间、支付时间、支付金额）可在配置里覆盖，方便接入不同游戏的数据约定。
 /// 时间字段同时兼容「Unix 毫秒（long）」和「BSON DateTime」两种存储。
@@ -164,31 +176,81 @@ public class AdminDataService
 
     // ---------------- 邮件 ----------------
 
-    public async Task SendMail(string? userId, string title, string content, int expireSeconds)
+    /// <summary>
+    /// 发送邮件。playerIds 为空 = 全局邮件（所有玩家共用一份，存 Redis list），
+    /// 否则给这批玩家逐个写 per-player 队列。
+    /// </summary>
+    public async Task SendMail(string title, string content, string[] playerIds, int expireSeconds,
+        GlobalMailRule rule)
     {
-        var target = string.IsNullOrWhiteSpace(userId) ? Consts.AdminMailBroadcast : userId!;
+        var isGlobal = playerIds.Length == 0;
         var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var mailId = Guid.NewGuid().ToString("N");
 
+        // 落库留档：一条记录，PlayerIds 为空数组表示全局邮件
+        var ids = new BsonArray();
+        foreach (var id in playerIds)
+        {
+            ids.Add(id);
+        }
         var doc = new BsonDocument
         {
-            { "UserId", target },
+            { "MailId", mailId },
             { "Title", title },
             { "Content", content },
+            { "PlayerIds", ids },
             { "CreateTime", now },
             { "ExpireSeconds", expireSeconds },
+            { "ValidDays", rule.ValidDays },
+            { "PopUp", rule.PopUp },
+            { "MinLevel", rule.MinLevel },
+            { "MaxLevel", rule.MaxLevel },
+            { "MinCreateDays", rule.MinCreateDays },
+            { "MaxCreateDays", rule.MaxCreateDays },
         };
         await Col(_cfg.MailCollection).InsertOneAsync(doc);
 
-        // 游戏服邮件模块从这里消费：RPUSH 一条 JSON，key 见 Consts.AdminMailQueueKey
-        var payload = new Dictionary<string, object?>
+        if (isGlobal)
         {
-            { "userId", target },
-            { "title", title },
-            { "content", content },
-            { "createTime", now },
-            { "expireSeconds", expireSeconds },
-        };
-        await _redis.PushList(string.Format(Consts.AdminMailQueueKey, target), payload);
+            // 全局邮件只存一份，所有玩家共用。玩家请求邮件时由游戏服按频率读取该 list，
+            // 再用 admin_mail_claimed_{playerId} 判断是否已领取（见 core.GlobalMailBox）。
+            var mail = new Dictionary<string, object?>
+            {
+                { "mailId", mailId },
+                { "title", title },
+                { "content", content },
+                { "createTime", now },
+                { "expireSeconds", expireSeconds },
+                { "validDays", rule.ValidDays },
+                { "popUp", rule.PopUp },
+                { "minLevel", rule.MinLevel },
+                { "maxLevel", rule.MaxLevel },
+                { "minCreateDays", rule.MinCreateDays },
+                { "maxCreateDays", rule.MaxCreateDays },
+            };
+            await _redis.PushList(Consts.AdminMailGlobalListKey, mail);
+
+            // 只保留最近 N 封，避免 list 无限增长
+            var max = _cfg.MailGlobalMaxCount > 0 ? _cfg.MailGlobalMaxCount : 200;
+            await _redis.LTrim(Consts.AdminMailGlobalListKey, -max, -1);
+        }
+        else
+        {
+            // 批量 / 单玩家：每个玩家一条，写入该玩家的队列，由游戏服按玩家消费。
+            foreach (var id in playerIds)
+            {
+                var payload = new Dictionary<string, object?>
+                {
+                    { "mailId", mailId },
+                    { "userId", id },
+                    { "title", title },
+                    { "content", content },
+                    { "createTime", now },
+                    { "expireSeconds", expireSeconds },
+                };
+                await _redis.PushList(string.Format(Consts.AdminMailQueueKey, id), payload);
+            }
+        }
     }
 
     public async Task<(long Total, List<BsonDocument> Items)> QueryMail(int skip, int limit)
@@ -207,27 +269,31 @@ public class AdminDataService
 
     // ---------------- GM ----------------
 
-    public async Task PushGmCommand(string command, string? target, string args)
+    public async Task RecordGmCommand(string command, string playerId, string args, string result)
     {
         var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         var doc = new BsonDocument
         {
             { "Command", command },
-            { "Target", string.IsNullOrWhiteSpace(target) ? string.Empty : target! },
+            { "PlayerId", playerId },
             { "Args", args },
+            { "Result", result },
             { "CreateTime", now },
         };
         await Col(_cfg.GmCollection).InsertOneAsync(doc);
+    }
 
-        // 游戏服 GM 模块从这里消费：RPUSH 一条 JSON，key 见 Consts.AdminGmQueueKey
+    /// <summary>定向玩家 GM：写入该玩家的队列，由游戏服消费。</summary>
+    public async Task PushPlayerGmCommand(string command, string playerId, string args)
+    {
         var payload = new Dictionary<string, object?>
         {
             { "command", command },
-            { "target", string.IsNullOrWhiteSpace(target) ? string.Empty : target! },
+            { "playerId", playerId },
             { "args", args },
-            { "createTime", now },
+            { "createTime", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() },
         };
-        await _redis.PushList(Consts.AdminGmQueueKey, payload);
+        await _redis.PushList(string.Format(Consts.AdminGmQueueKey, playerId), payload);
     }
 
     public async Task<(long Total, List<BsonDocument> Items)> QueryGmLogs(int skip, int limit)

@@ -130,6 +130,106 @@ public class RedisHandle
         _connHelper.Recover(ref _connectionMultiplexer, ref _database, e);
     }
 
+    /// <summary>读取 list 的原始元素（不做反序列化，返回每条元素的原始字符串）。</summary>
+    public async ValueTask<List<string>> GetListRaw(string key)
+    {
+        if (_database == null)
+        {
+            return new List<string>();
+        }
+
+        while (true)
+        {
+            try
+            {
+                var result = new List<string>();
+                var data = await _database.ListRangeAsync(key);
+                foreach (var item in data)
+                {
+                    if (item.HasValue)
+                    {
+                        result.Add(item.ToString());
+                    }
+                }
+                return result;
+            }
+            catch (Exception e)
+            {
+                Recover(e);
+            }
+        }
+    }
+
+    /// <summary>裁剪 list，只保留 [start, stop] 区间（负索引从尾部算，如 -200 -1 = 最近 200 条）。</summary>
+    public async Task LTrim(string key, long start, long stop)
+    {
+        if (_database == null)
+        {
+            return;
+        }
+
+        while (true)
+        {
+            try
+            {
+                await _database.ListTrimAsync(key, start, stop);
+                return;
+            }
+            catch (Exception e)
+            {
+                Recover(e);
+            }
+        }
+    }
+
+    /// <summary>向 set 添加一个成员。</summary>
+    public Task<bool> SAdd(string key, string member)
+    {
+        if (_database == null)
+        {
+            return Task.FromResult(false);
+        }
+
+        while (true)
+        {
+            try
+            {
+                return _database.SetAddAsync(key, member);
+            }
+            catch (Exception e)
+            {
+                Recover(e);
+            }
+        }
+    }
+
+    /// <summary>读取 set 的全部成员。</summary>
+    public async ValueTask<HashSet<string>> SMembers(string key)
+    {
+        if (_database == null)
+        {
+            return new HashSet<string>();
+        }
+
+        while (true)
+        {
+            try
+            {
+                var result = new HashSet<string>();
+                var values = await _database.SetMembersAsync(key);
+                foreach (var value in values)
+                {
+                    result.Add(value.ToString());
+                }
+                return result;
+            }
+            catch (Exception e)
+            {
+                Recover(e);
+            }
+        }
+    }
+
     public Task<bool> Expire(string key, int timeout)
     {
         if (_database == null)

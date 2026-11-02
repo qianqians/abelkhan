@@ -9,6 +9,8 @@ public class Consts
 
     public const string ClientRequestReconnect = "client_request_reconnect";
     public const string ClientRequestService = "client_request_service";
+    // 客户端请求领取邮件（对应 ClientRequestMail / ClientRequestMailResult）
+    public const string ClientRequestMail = "client_request_mail";
     public const string GateForwardClientRequestHub =  "gate_forward_client_request_hub"; 
     public const string GateForwardClientResponseHub = "gate_forward_client_response_hub";
     public const string GateForwardClientNotifyHub = "Gate_forward_client_notify_hub";
@@ -49,10 +51,15 @@ public class Consts
     public const string AdminOnlineGateKey = "admin_online_gate_{0}";
     public const string AdminOnlineConnectionKey = "admin_online_connection_{0}";
 
-    // GM 命令队列（admin 写入，游戏服消费）
-    public const string AdminGmQueueKey = "admin_gm_queue";
+    // 定向玩家 GM 命令队列（{0} = playerId，admin 写入，游戏服消费）
+    public const string AdminGmQueueKey = "admin_gm_queue_{0}";
 
-    // 邮件队列（{0} = userId，全体邮件用 broadcast）
+    // 单玩家 / 批量邮件队列（{0} = playerId，游戏服按玩家消费）
     public const string AdminMailQueueKey = "admin_mail_queue_{0}";
-    public const string AdminMailBroadcast = "broadcast";
+
+    // 全局邮件：所有玩家共用一份，存 Redis list；玩家请求邮件时读取并判断是否已领取
+    public const string AdminMailGlobalListKey = "admin_mail_global";
+
+    // 玩家已领取的全局邮件 id 集合（{0} = playerId）
+    public const string AdminMailClaimedKey = "admin_mail_claimed_{0}";
 }

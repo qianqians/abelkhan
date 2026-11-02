@@ -251,13 +251,14 @@ async function loadGmLogs() {
         const tbody = $('gm-table-body');
         tbody.innerHTML = '';
         if (!data.items || !data.items.length) {
-            tbody.appendChild(emptyRow(4));
+            tbody.appendChild(emptyRow(5));
         } else {
             for (const d of data.items) {
                 const tr = document.createElement('tr');
                 tr.appendChild(cell(firstOf(d, ['Command', 'command']), 'mono'));
-                tr.appendChild(cell(firstOf(d, ['Target', 'target']), 'mono'));
+                tr.appendChild(cell(firstOf(d, ['PlayerId', 'player_id']), 'mono'));
                 tr.appendChild(cell(firstOf(d, ['Args', 'args']), 'dim'));
+                tr.appendChild(cell(firstOf(d, ['Result', 'result']), 'dim'));
                 tr.appendChild(cell(fmtTime(firstOf(d, ['CreateTime', 'create_time'])), 'dim'));
                 tbody.appendChild(tr);
             }
@@ -272,12 +273,12 @@ async function submitGm() {
     const command = $('gm-command').value.trim();
     if (!command) { notify('请填写命令', true); return; }
     try {
-        await postJson('/api/gm/command', {
+        const res = await postJson('/api/gm/command', {
             command,
-            target: $('gm-target').value.trim(),
+            playerId: $('gm-player-id').value.trim(),
             args: $('gm-args').value.trim(),
         });
-        notify('GM 命令已下发');
+        notify(res.mode === 'local' ? ('本地执行：' + (res.result || 'ok')) : ('已下发到玩家 ' + res.playerId));
         $('gm-command').value = '';
         $('gm-args').value = '';
         state.gm.page = 1;
@@ -302,7 +303,7 @@ async function loadMail() {
         } else {
             for (const d of data.items) {
                 const tr = document.createElement('tr');
-                tr.appendChild(cell(firstOf(d, ['UserId', 'user_id']), 'mono'));
+                tr.appendChild(cell(mailRecipients(d), 'mono'));
                 tr.appendChild(cell(firstOf(d, ['Title', 'title'])));
                 tr.appendChild(cell(firstOf(d, ['Content', 'content']), 'dim'));
                 tr.appendChild(cell(fmtTime(firstOf(d, ['CreateTime', 'create_time'])), 'dim'));
@@ -319,14 +320,24 @@ async function submitMail() {
     const title = $('mail-title').value.trim();
     const content = $('mail-content').value.trim();
     if (!title || !content) { notify('请填写标题和正文', true); return; }
+    const playerIds = $('mail-user-id').value
+        .split(/[\s,，;；]+/)
+        .map((s) => s.trim())
+        .filter(Boolean);
     try {
-        await postJson('/api/mail/send', {
-            userId: $('mail-user-id').value.trim(),
+        const res = await postJson('/api/mail/send', {
             title,
             content,
+            playerIds,
             expireSeconds: parseInt($('mail-expire').value || '0', 10),
+            minLevel: parseInt($('mail-min-level').value || '0', 10),
+            maxLevel: parseInt($('mail-max-level').value || '0', 10),
+            minCreateDays: parseInt($('mail-min-create-days').value || '0', 10),
+            maxCreateDays: parseInt($('mail-max-create-days').value || '0', 10),
+            validDays: parseInt($('mail-valid-days').value || '0', 10),
+            popUp: $('mail-popup').checked,
         });
-        notify('邮件已发送');
+        notify(res.global ? '全局邮件已发送' : ('已发送给 ' + res.count + ' 名玩家'));
         $('mail-title').value = '';
         $('mail-content').value = '';
         state.mail.page = 1;
@@ -334,6 +345,16 @@ async function submitMail() {
     } catch (e) {
         notify('发送失败：' + e.message, true);
     }
+}
+
+function mailRecipients(d) {
+    const ids = d.PlayerIds || d.player_ids || d.playerIds;
+    if (Array.isArray(ids)) {
+        if (ids.length === 0) return '全体';
+        return ids.slice(0, 5).join(', ') + (ids.length > 5 ? ` 等${ids.length}人` : '');
+    }
+    if (ids == null || ids === '') return '全体';
+    return String(ids);
 }
 
 // ---------------- Tab 切换 ----------------

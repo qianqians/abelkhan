@@ -102,6 +102,18 @@ html, body {
 
 .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
 
+.conditions {
+    align-items: center;
+    padding: 12px 14px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+.cond-title { color: var(--muted); font-size: 13px; margin-right: 6px; }
+.field { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
+.field input[type="number"] { width: 96px; min-width: 0; padding: 8px 10px; }
+.field.checkbox { cursor: pointer; }
+
 input, textarea {
     background: var(--panel-2);
     border: 1px solid var(--border);

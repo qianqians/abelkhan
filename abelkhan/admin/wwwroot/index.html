@@ -85,13 +85,13 @@
         <section id="tab-gm" class="panel">
             <div class="toolbar">
                 <input id="gm-command" type="text" placeholder="命令，如 kick / ban / add_item" />
-                <input id="gm-target" type="text" placeholder="目标用户 ID（可空）" />
+                <input id="gm-player-id" type="text" placeholder="PlayerId（留空 = 本地执行）" />
                 <input id="gm-args" type="text" placeholder="参数，如 item_id:1001,count:10" />
                 <button id="gm-submit" class="btn primary">执行</button>
             </div>
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th>命令</th><th>目标</th><th>参数</th><th>时间</th></tr></thead>
+                    <thead><tr><th>命令</th><th>PlayerId</th><th>参数</th><th>结果</th><th>时间</th></tr></thead>
                     <tbody id="gm-table-body"></tbody>
                 </table>
             </div>
@@ -105,12 +105,31 @@
         <!-- 邮件发送 -->
         <section id="tab-mail" class="panel">
             <div class="toolbar">
-                <input id="mail-user-id" type="text" placeholder="用户 ID（留空 = 全体邮件）" />
+                <input id="mail-user-id" type="text" placeholder="玩家ID（逗号/空格分隔；留空 = 全局邮件）" />
                 <input id="mail-title" type="text" placeholder="标题" />
-                <input id="mail-expire" type="number" placeholder="过期秒数（0=不过期）" value="0" />
+                <input id="mail-expire" type="number" placeholder="邮件过期秒数（0=不过期）" value="0" />
                 <button id="mail-submit" class="btn primary">发送</button>
             </div>
             <textarea id="mail-content" placeholder="邮件正文"></textarea>
+            <div class="toolbar conditions">
+                <span class="cond-title">全局邮件条件（仅玩家ID为空时生效）</span>
+                <label class="field">等级
+                    <input id="mail-min-level" type="number" placeholder="最低" value="0" />
+                    <span>~</span>
+                    <input id="mail-max-level" type="number" placeholder="最高(0=不限)" value="0" />
+                </label>
+                <label class="field">建角天数
+                    <input id="mail-min-create-days" type="number" placeholder="最少" value="0" />
+                    <span>~</span>
+                    <input id="mail-max-create-days" type="number" placeholder="最多(0=不限)" value="0" />
+                </label>
+                <label class="field">有效天数
+                    <input id="mail-valid-days" type="number" placeholder="0=永久" value="0" />
+                </label>
+                <label class="field checkbox">
+                    <input id="mail-popup" type="checkbox" /> 拍脸
+                </label>
+            </div>
             <div class="table-wrap">
                 <table>
                     <thead><tr><th>收件人</th><th>标题</th><th>内容</th><th>时间</th></tr></thead>

@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Runtime.InteropServices;
 using consts;
@@ -34,6 +34,7 @@ public class MainClass
     private readonly ConcurrentDictionary<string, GateNetwork> _gates = new();
     private readonly TcpConnectService _serviceGate = new();
     private readonly TimerService _timer = new();
+    private GlobalMailBox? _serviceMailBox;
     
     private Task? _tWait;
     private readonly ConcurrentQueue<string> _gateWaitQueue = new();
@@ -67,6 +68,10 @@ public class MainClass
     public void RegisterService(string serviceName, Service service)
     {
         _services[serviceName] = service;
+        if (_serviceMailBox != null)
+        {
+            service.GlobalMailBox = _serviceMailBox;
+        }
     }
 
     private void OnReconnect(string userId, string gateName, string connId)
@@ -176,6 +181,15 @@ public class MainClass
         try
         {
             _redis = new RedisHandle(cfg.RedisUrl, cfg.RedisPwd);
+
+            // 全局邮件箱：所有 Service 共用一个（共享 Redis 连接），
+            // 玩家通过「客户端请求领取邮件」协议按需读取
+            _serviceMailBox = new GlobalMailBox(_redis, Consts.AdminMailGlobalListKey, Consts.AdminMailClaimedKey);
+            foreach (var service in _services.Values)
+            {
+                service.GlobalMailBox = _serviceMailBox;
+            }
+
             StartRedisMsg();
             
             var app = WebApplication.Create();

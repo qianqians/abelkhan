@@ -6,7 +6,7 @@ using Microsoft.Extensions.FileProviders;
 
 namespace admin;
 
-public struct AdminConfig
+public struct AdminConfig()
 {
     public string AdminId { get; set; } = "admin";
     public string Ip { get; set; } = "0.0.0.0";
@@ -23,11 +23,24 @@ public struct AdminConfig
     public string PaymentTimeField { get; set; } = "PayTime";
     public string PaymentAmountField { get; set; } = "Amount";
     public string AdminToken { get; set; } = string.Empty;
+    // 全局邮件列表最多保留多少封（LTRIM 上限），防止 list 无限增长
+    public int MailGlobalMaxCount { get; set; } = 200;
 }
 
-public record MailSendRequest(string? UserId, string Title, string Content, int ExpireSeconds = 0);
+public record MailSendRequest(
+    string Title,
+    string Content,
+    string[]? PlayerIds = null,
+    int ExpireSeconds = 0,
+    // 全局邮件的领取条件（0 = 不限制）
+    int MinLevel = 0,
+    int MaxLevel = 0,
+    int MinCreateDays = 0,
+    int MaxCreateDays = 0,
+    bool PopUp = false,
+    int ValidDays = 0);
 
-public record GmCommandRequest(string Command, string? Target, string Args = "");
+public record GmCommandRequest(string Command, string? PlayerId = null, string Args = "");
 
 public class MainClass
 {
@@ -137,8 +150,17 @@ public class MainClass
             {
                 return Results.Json(new { error = "title/content required" }, statusCode: StatusCodes.Status400BadRequest);
             }
-            await data.SendMail(req.UserId, req.Title.Trim(), req.Content, Math.Max(0, req.ExpireSeconds));
-            return Results.Json(new { ok = true });
+            var playerIds = (req.PlayerIds ?? Array.Empty<string>())
+                .Where(id => !string.IsNullOrWhiteSpace(id))
+                .Select(id => id.Trim())
+                .Distinct()
+                .ToArray();
+            var rule = new GlobalMailRule(
+                req.MinLevel, req.MaxLevel,
+                req.MinCreateDays, req.MaxCreateDays,
+                req.PopUp, req.ValidDays);
+            await data.SendMail(req.Title.Trim(), req.Content, playerIds, Math.Max(0, req.ExpireSeconds), rule);
+            return Results.Json(new { ok = true, global = playerIds.Length == 0, count = playerIds.Length });
         }));
 
         // GM 面板
@@ -156,8 +178,22 @@ public class MainClass
             {
                 return Results.Json(new { error = "command required" }, statusCode: StatusCodes.Status400BadRequest);
             }
-            await data.PushGmCommand(req.Command.Trim(), req.Target, req.Args ?? "");
-            return Results.Json(new { ok = true });
+            var command = req.Command.Trim();
+            var args = req.Args ?? "";
+
+            // 带 PlayerId：定向到该玩家的队列，由游戏服消费
+            if (!string.IsNullOrWhiteSpace(req.PlayerId))
+            {
+                var playerId = req.PlayerId.Trim();
+                await data.RecordGmCommand(command, playerId, args, "queued");
+                await data.PushPlayerGmCommand(command, playerId, args);
+                return Results.Json(new { ok = true, mode = "queued", playerId });
+            }
+
+            // 无 PlayerId：admin 进程本地执行
+            var result = await AdminGmHandlers.RunAsync(command, args);
+            await data.RecordGmCommand(command, "", args, result);
+            return Results.Json(new { ok = true, mode = "local", result });
         }));
 
         app.MapFallbackToFile("index.html");
