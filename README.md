@@ -8,6 +8,7 @@ abelkhan是一个轻量级的游戏服务器框架，基于c#开发，使用mong
 * dbproxy 数据库代理
 * gate 网关服务器
 * hub 微服务节点
+* admin 管理后台（dashboard：监控大盘/玩家查询/支付查询/GM面板/邮件发送，见 abelkhan/admin/README.md）
 
 ## License
 [LGPL-2.1](https://github.com/qianqians/abelkhan/blob/master/LICENSE)

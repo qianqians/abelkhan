@@ -50,6 +50,7 @@ class MainClass
     private long _lastReliabilityTimeoutCheck;
     private readonly TimerService _timer = new();
     private ConsulClient? _consul;
+    private string _gateId = string.Empty;
 
     private void StartRedisMsg()
     {
@@ -306,6 +307,8 @@ class MainClass
     {
         do
         {
+            int onlinePlayers = 0;
+            int onlineConnections = 0;
             lock (_clients)
             {
                 var removeList = _clients
@@ -327,7 +330,14 @@ class MainClass
                         }
                     }
                 }
+
+                onlineConnections = _clients.Count;
+                onlinePlayers = _clients.Values.Count(c => !string.IsNullOrEmpty(c.UserId));
             }
+
+            // 周期上报到 Redis，供 admin dashboard 汇总全局在线数
+            _ = _redis?.SetStrData(string.Format(Consts.AdminOnlineGateKey, _gateId), onlinePlayers.ToString(), 10_000);
+            _ = _redis?.SetStrData(string.Format(Consts.AdminOnlineConnectionKey, _gateId), onlineConnections.ToString(), 10_000);
         } while (false);
         
         _timer.AddTickTime(3000, TickClients);
@@ -338,6 +348,7 @@ class MainClass
         try
         {
             _hubs = new();
+            _gateId = cfg.GateId;
             
             _redis = new RedisHandle(cfg.RedisUrl, cfg.RedisPwd);
             StartRedisMsg();

@@ -1,4 +1,4 @@
-﻿namespace consts;
+namespace consts;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public class Consts
@@ -43,4 +43,16 @@ public class Consts
     public const string HubNotifyClient = "hub_notify_client";
     public const string HubNotifyClientMq = "hub_notify_client_mq";
     public const string KickOff = "kickoff";
+
+    // ---- admin / dashboard ----
+    // gate 周期上报的在线状态，admin 汇总所有 gate 的这两个 key 得到全局在线数
+    public const string AdminOnlineGateKey = "admin_online_gate_{0}";
+    public const string AdminOnlineConnectionKey = "admin_online_connection_{0}";
+
+    // GM 命令队列（admin 写入，游戏服消费）
+    public const string AdminGmQueueKey = "admin_gm_queue";
+
+    // 邮件队列（{0} = userId，全体邮件用 broadcast）
+    public const string AdminMailQueueKey = "admin_mail_queue_{0}";
+    public const string AdminMailBroadcast = "broadcast";
 }

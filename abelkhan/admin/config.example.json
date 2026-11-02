@@ -1,0 +1,17 @@
+{
+  "AdminId": "admin",
+  "Ip": "0.0.0.0",
+  "Port": 8080,
+  "RedisUrl": "127.0.0.1:6379",
+  "RedisPwd": "",
+  "MongoUrl": "mongodb://127.0.0.1:27017",
+  "MongoDb": "game",
+  "PlayerCollection": "player",
+  "PaymentCollection": "payment",
+  "MailCollection": "mail",
+  "GmCollection": "gm",
+  "PlayerRegisterField": "RegisterTime",
+  "PaymentTimeField": "PayTime",
+  "PaymentAmountField": "Amount",
+  "AdminToken": ""
+}

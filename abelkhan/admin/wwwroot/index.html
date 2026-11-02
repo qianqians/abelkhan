@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>服务器管理后台</title>
+    <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">🎮 服务器管理后台</div>
+        <div class="topbar-right">
+            <span id="conn-status" class="status-dot"></span>
+            <span id="conn-text">连接中…</span>
+        </div>
+    </header>
+
+    <nav class="tabs">
+        <button class="tab active" data-tab="overview">监控大盘</button>
+        <button class="tab" data-tab="players">玩家查询</button>
+        <button class="tab" data-tab="payments">支付查询</button>
+        <button class="tab" data-tab="gm">GM 面板</button>
+        <button class="tab" data-tab="mail">邮件发送</button>
+    </nav>
+
+    <main class="content">
+        <!-- 监控大盘 -->
+        <section id="tab-overview" class="panel active">
+            <div class="cards" id="overview-cards">
+                <div class="card"><div class="card-label">在线玩家</div><div class="card-value" id="ov-online-players">–</div></div>
+                <div class="card"><div class="card-label">在线连接</div><div class="card-value" id="ov-online-connections">–</div></div>
+                <div class="card"><div class="card-label">总玩家数</div><div class="card-value" id="ov-total-players">–</div></div>
+                <div class="card"><div class="card-label">今日注册</div><div class="card-value" id="ov-today-registers">–</div></div>
+                <div class="card"><div class="card-label">昨日注册</div><div class="card-value" id="ov-yesterday-registers">–</div></div>
+                <div class="card"><div class="card-label">今日充值</div><div class="card-value" id="ov-today-recharge">–</div></div>
+                <div class="card"><div class="card-label">昨日充值</div><div class="card-value" id="ov-yesterday-recharge">–</div></div>
+            </div>
+            <div class="chart-box">
+                <h3>近两日注册 / 充值对比</h3>
+                <div id="overview-chart" class="chart"></div>
+            </div>
+        </section>
+
+        <!-- 玩家查询 -->
+        <section id="tab-players" class="panel">
+            <div class="toolbar">
+                <input id="player-keyword" type="text" placeholder="用户 ID / 实体 ID（支持模糊）" />
+                <button id="player-search" class="btn primary">查询</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>ID</th><th>类型</th><th>用户 ID</th><th>操作</th></tr></thead>
+                    <tbody id="player-table-body"></tbody>
+                </table>
+            </div>
+            <div class="pager">
+                <button id="player-prev" class="btn">上一页</button>
+                <span id="player-page-info">第 1 页</span>
+                <button id="player-next" class="btn">下一页</button>
+            </div>
+        </section>
+
+        <!-- 支付查询 -->
+        <section id="tab-payments" class="panel">
+            <div class="toolbar">
+                <input id="pay-user-id" type="text" placeholder="用户 ID（可空）" />
+                <input id="pay-start" type="date" />
+                <input id="pay-end" type="date" />
+                <button id="pay-search" class="btn primary">查询</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>ID</th><th>用户 ID</th><th>金额</th><th>时间</th></tr></thead>
+                    <tbody id="pay-table-body"></tbody>
+                </table>
+            </div>
+            <div class="pager">
+                <button id="pay-prev" class="btn">上一页</button>
+                <span id="pay-page-info">第 1 页</span>
+                <button id="pay-next" class="btn">下一页</button>
+            </div>
+        </section>
+
+        <!-- GM 面板 -->
+        <section id="tab-gm" class="panel">
+            <div class="toolbar">
+                <input id="gm-command" type="text" placeholder="命令，如 kick / ban / add_item" />
+                <input id="gm-target" type="text" placeholder="目标用户 ID（可空）" />
+                <input id="gm-args" type="text" placeholder="参数，如 item_id:1001,count:10" />
+                <button id="gm-submit" class="btn primary">执行</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>命令</th><th>目标</th><th>参数</th><th>时间</th></tr></thead>
+                    <tbody id="gm-table-body"></tbody>
+                </table>
+            </div>
+            <div class="pager">
+                <button id="gm-prev" class="btn">上一页</button>
+                <span id="gm-page-info">第 1 页</span>
+                <button id="gm-next" class="btn">下一页</button>
+            </div>
+        </section>
+
+        <!-- 邮件发送 -->
+        <section id="tab-mail" class="panel">
+            <div class="toolbar">
+                <input id="mail-user-id" type="text" placeholder="用户 ID（留空 = 全体邮件）" />
+                <input id="mail-title" type="text" placeholder="标题" />
+                <input id="mail-expire" type="number" placeholder="过期秒数（0=不过期）" value="0" />
+                <button id="mail-submit" class="btn primary">发送</button>
+            </div>
+            <textarea id="mail-content" placeholder="邮件正文"></textarea>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>收件人</th><th>标题</th><th>内容</th><th>时间</th></tr></thead>
+                    <tbody id="mail-table-body"></tbody>
+                </table>
+            </div>
+            <div class="pager">
+                <button id="mail-prev" class="btn">上一页</button>
+                <span id="mail-page-info">第 1 页</span>
+                <button id="mail-next" class="btn">下一页</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="player-detail" class="modal hidden">
+        <div class="modal-box">
+            <div class="modal-head">
+                <span>玩家详情</span>
+                <button id="player-detail-close" class="btn">关闭</button>
+            </div>
+            <pre id="player-detail-body"></pre>
+        </div>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>

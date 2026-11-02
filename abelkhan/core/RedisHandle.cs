@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using StackExchange.Redis;
 using Newtonsoft.Json;
 // ReSharper disable MemberCanBePrivate.Global
@@ -429,6 +429,39 @@ public class RedisHandle
                     dataResult.Add(JsonConvert.DeserializeObject<T>(item!));
                 }
                 return dataResult;
+            }
+            catch (Exception e)
+            {
+                Recover(e);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 枚举匹配 pattern 的 key（基于 SCAN）。仅供管理端这类低频场景使用，
+    /// 不要在热路径上调用。
+    /// </summary>
+    public async ValueTask<List<string>> GetKeys(string pattern)
+    {
+        var result = new List<string>();
+        if (_connectionMultiplexer == null)
+        {
+            return result;
+        }
+
+        while (true)
+        {
+            try
+            {
+                foreach (var endpoint in _connectionMultiplexer.GetEndPoints())
+                {
+                    var server = _connectionMultiplexer.GetServer(endpoint);
+                    await foreach (var key in server.KeysAsync(pattern: pattern))
+                    {
+                        result.Add(key.ToString());
+                    }
+                }
+                return result;
             }
             catch (Exception e)
             {
