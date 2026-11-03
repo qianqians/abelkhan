@@ -203,6 +203,27 @@ public class RedisHandle
         }
     }
 
+    /// <summary>从 set 删除一个成员。返回 true 表示成员存在并被删除。</summary>
+    public Task<bool> SRem(string key, string member)
+    {
+        if (_database == null)
+        {
+            return Task.FromResult(false);
+        }
+
+        while (true)
+        {
+            try
+            {
+                return _database.SetRemoveAsync(key, member);
+            }
+            catch (Exception e)
+            {
+                Recover(e);
+            }
+        }
+    }
+
     /// <summary>读取 set 的全部成员。</summary>
     public async ValueTask<HashSet<string>> SMembers(string key)
     {

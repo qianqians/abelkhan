@@ -88,7 +88,8 @@ dotnet run --project abelkhan/admin -- path/to/config.json
 | `client_request_mail` | `ClientRequestMail { mail_id }` | `ClientRequestMailResult { repeated MailInfo mails }` |
 
 - `mail_id` 为空：返回当前可领取的全局邮件列表（**不**标记领取）；
-- `mail_id` 非空：领取指定邮件（校验条件 → 标记已领取 → 返回该邮件）。
+- `mail_id` 非空：领取指定邮件（校验条件 → 标记已领取 → 附件原子放入 `Player.Bag` → 返回该邮件）；
+  背包满 / 附件配置错误时会回滚领取标记，玩家整理后可重新领取。
 
 `MailInfo` 字段：`mail_id`、`title`、`content`、`sender`、`create_time`、`pop_up`、`attachments[{item_id,count}]`。
 
@@ -109,7 +110,10 @@ var one = await player.RequestMail(mailId);
 1. 用 `Service.GlobalMailBox` 读取全局邮件 list（按刷新频率缓存，避免每次请求都打 Redis）；
 2. 用 `Service.GetMailCondition(userId)` 拿到等级 / 建角天数，过滤
    **已领取 / 有效天数 / 等级 / 建角天数**；
-3. 返回 `ClientRequestMailResult`。
+3. 返回 `ClientRequestMailResult`；
+4. 领取指定邮件时，附件会通过 `Player.GrantMailAttachments` → `Bag.AddRange` 原子放入背包
+   （见仓库根目录 `docs/inventory.md`），背包满或附件非法时自动回滚
+   `admin_mail_claimed_{playerId}` 标记。
 
 游戏侧只需要重写一个方法：
 

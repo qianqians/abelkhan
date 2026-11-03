@@ -31,3 +31,18 @@ message Msg {
     HeartBeats heart_beats = 4;
   }
 }
+
+message MailAttachment {
+  string item_id = 1;
+  uint32 count = 2;
+}
+
+message MailInfo {
+  string mail_id = 1;
+  string title = 2;
+  string content = 3;
+  uint64 create_time = 4;
+  bool pop_up = 5;
+  string sender = 6;
+  repeated MailAttachment attachments = 7;
+}

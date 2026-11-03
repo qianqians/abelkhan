@@ -30,7 +30,11 @@ public static partial class CommonReflection {
           "LkNhbGxScGMiggEKA01zZxIXCgNyZXEYASABKAsyCC5SZXF1ZXN0SAASGAoD",
           "cnNwGAIgASgLMgkuUmVzcG9uc2VIABIZCgZub3RpZnkYAyABKAsyBy5Ob3Rp",
           "ZnlIABIiCgtoZWFydF9iZWF0cxgEIAEoCzILLkhlYXJ0QmVhdHNIAEIJCgdw",
-          "YXlsb2FkYgZwcm90bzM="));
+          "YXlsb2FkIjAKDk1haWxBdHRhY2htZW50Eg8KB2l0ZW1faWQYASABKAkSDQoF",
+          "Y291bnQYAiABKA0ilgEKCE1haWxJbmZvEg8KB21haWxfaWQYASABKAkSDQoF",
+          "dGl0bGUYAiABKAkSDwoHY29udGVudBgDIAEoCRITCgtjcmVhdGVfdGltZRgE",
+          "IAEoBBIOCgZwb3BfdXAYBSABKAgSDgoGc2VuZGVyGAYgASgJEiQKC2F0dGFj",
+          "aG1lbnRzGAcgAygLMg8uTWFpbEF0dGFjaG1lbnRiBnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -39,7 +43,9 @@ public static partial class CommonReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::Request), global::Request.Parser, new[]{ "MsgId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Response), global::Response.Parser, new[]{ "MsgId", "ErrMsg", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::Notify), global::Notify.Parser, new[]{ "Event" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::Msg), global::Msg.Parser, new[]{ "Req", "Rsp", "Notify", "HeartBeats" }, new[]{ "Payload" }, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::Msg), global::Msg.Parser, new[]{ "Req", "Rsp", "Notify", "HeartBeats" }, new[]{ "Payload" }, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::MailAttachment), global::MailAttachment.Parser, new[]{ "ItemId", "Count" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::MailInfo), global::MailInfo.Parser, new[]{ "MailId", "Title", "Content", "CreateTime", "PopUp", "Sender", "Attachments" }, null, null, null, null)
         }));
   }
   #endregion
@@ -1565,6 +1571,650 @@ public sealed partial class Msg : pb::IMessage<Msg>
           }
           input.ReadMessage(subBuilder);
           HeartBeats = subBuilder;
+          break;
+        }
+      }
+    }
+  }
+  #endif
+
+}
+
+[global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
+public sealed partial class MailAttachment : pb::IMessage<MailAttachment>
+#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    , pb::IBufferMessage
+#endif
+{
+  private static readonly pb::MessageParser<MailAttachment> _parser = new pb::MessageParser<MailAttachment>(() => new MailAttachment());
+  private pb::UnknownFieldSet _unknownFields;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pb::MessageParser<MailAttachment> Parser { get { return _parser; } }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pbr::MessageDescriptor Descriptor {
+    get { return global::CommonReflection.Descriptor.MessageTypes[6]; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  pbr::MessageDescriptor pb::IMessage.Descriptor {
+    get { return Descriptor; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public MailAttachment() {
+    OnConstruction();
+  }
+
+  partial void OnConstruction();
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public MailAttachment(MailAttachment other) : this() {
+    itemId_ = other.itemId_;
+    count_ = other.count_;
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public MailAttachment Clone() {
+    return new MailAttachment(this);
+  }
+
+  /// <summary>Field number for the "item_id" field.</summary>
+  public const int ItemIdFieldNumber = 1;
+  private string itemId_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string ItemId {
+    get { return itemId_; }
+    set {
+      itemId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "count" field.</summary>
+  public const int CountFieldNumber = 2;
+  private uint count_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public uint Count {
+    get { return count_; }
+    set {
+      count_ = value;
+    }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override bool Equals(object other) {
+    return Equals(other as MailAttachment);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool Equals(MailAttachment other) {
+    if (ReferenceEquals(other, null)) {
+      return false;
+    }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    if (ItemId != other.ItemId) return false;
+    if (Count != other.Count) return false;
+    return Equals(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override int GetHashCode() {
+    int hash = 1;
+    if (ItemId.Length != 0) hash ^= ItemId.GetHashCode();
+    if (Count != 0) hash ^= Count.GetHashCode();
+    if (_unknownFields != null) {
+      hash ^= _unknownFields.GetHashCode();
+    }
+    return hash;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override string ToString() {
+    return pb::JsonFormatter.ToDiagnosticString(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void WriteTo(pb::CodedOutputStream output) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    output.WriteRawMessage(this);
+  #else
+    if (ItemId.Length != 0) {
+      output.WriteRawTag(10);
+      output.WriteString(ItemId);
+    }
+    if (Count != 0) {
+      output.WriteRawTag(16);
+      output.WriteUInt32(Count);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(output);
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+    if (ItemId.Length != 0) {
+      output.WriteRawTag(10);
+      output.WriteString(ItemId);
+    }
+    if (Count != 0) {
+      output.WriteRawTag(16);
+      output.WriteUInt32(Count);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(ref output);
+    }
+  }
+  #endif
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public int CalculateSize() {
+    int size = 0;
+    if (ItemId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(ItemId);
+    }
+    if (Count != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Count);
+    }
+    if (_unknownFields != null) {
+      size += _unknownFields.CalculateSize();
+    }
+    return size;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(MailAttachment other) {
+    if (other == null) {
+      return;
+    }
+    if (other.ItemId.Length != 0) {
+      ItemId = other.ItemId;
+    }
+    if (other.Count != 0) {
+      Count = other.Count;
+    }
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(pb::CodedInputStream input) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    input.ReadRawMessage(this);
+  #else
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+    if ((tag & 7) == 4) {
+      // Abort on any end group tag.
+      return;
+    }
+    switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+          break;
+        case 10: {
+          ItemId = input.ReadString();
+          break;
+        }
+        case 16: {
+          Count = input.ReadUInt32();
+          break;
+        }
+      }
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+    if ((tag & 7) == 4) {
+      // Abort on any end group tag.
+      return;
+    }
+    switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+          break;
+        case 10: {
+          ItemId = input.ReadString();
+          break;
+        }
+        case 16: {
+          Count = input.ReadUInt32();
+          break;
+        }
+      }
+    }
+  }
+  #endif
+
+}
+
+[global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
+public sealed partial class MailInfo : pb::IMessage<MailInfo>
+#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    , pb::IBufferMessage
+#endif
+{
+  private static readonly pb::MessageParser<MailInfo> _parser = new pb::MessageParser<MailInfo>(() => new MailInfo());
+  private pb::UnknownFieldSet _unknownFields;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pb::MessageParser<MailInfo> Parser { get { return _parser; } }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pbr::MessageDescriptor Descriptor {
+    get { return global::CommonReflection.Descriptor.MessageTypes[7]; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  pbr::MessageDescriptor pb::IMessage.Descriptor {
+    get { return Descriptor; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public MailInfo() {
+    OnConstruction();
+  }
+
+  partial void OnConstruction();
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public MailInfo(MailInfo other) : this() {
+    mailId_ = other.mailId_;
+    title_ = other.title_;
+    content_ = other.content_;
+    createTime_ = other.createTime_;
+    popUp_ = other.popUp_;
+    sender_ = other.sender_;
+    attachments_ = other.attachments_.Clone();
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public MailInfo Clone() {
+    return new MailInfo(this);
+  }
+
+  /// <summary>Field number for the "mail_id" field.</summary>
+  public const int MailIdFieldNumber = 1;
+  private string mailId_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string MailId {
+    get { return mailId_; }
+    set {
+      mailId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "title" field.</summary>
+  public const int TitleFieldNumber = 2;
+  private string title_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string Title {
+    get { return title_; }
+    set {
+      title_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "content" field.</summary>
+  public const int ContentFieldNumber = 3;
+  private string content_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string Content {
+    get { return content_; }
+    set {
+      content_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "create_time" field.</summary>
+  public const int CreateTimeFieldNumber = 4;
+  private ulong createTime_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public ulong CreateTime {
+    get { return createTime_; }
+    set {
+      createTime_ = value;
+    }
+  }
+
+  /// <summary>Field number for the "pop_up" field.</summary>
+  public const int PopUpFieldNumber = 5;
+  private bool popUp_;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool PopUp {
+    get { return popUp_; }
+    set {
+      popUp_ = value;
+    }
+  }
+
+  /// <summary>Field number for the "sender" field.</summary>
+  public const int SenderFieldNumber = 6;
+  private string sender_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string Sender {
+    get { return sender_; }
+    set {
+      sender_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "attachments" field.</summary>
+  public const int AttachmentsFieldNumber = 7;
+  private static readonly pb::FieldCodec<global::MailAttachment> _repeated_attachments_codec
+      = pb::FieldCodec.ForMessage(58, global::MailAttachment.Parser);
+  private readonly pbc::RepeatedField<global::MailAttachment> attachments_ = new pbc::RepeatedField<global::MailAttachment>();
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public pbc::RepeatedField<global::MailAttachment> Attachments {
+    get { return attachments_; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override bool Equals(object other) {
+    return Equals(other as MailInfo);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool Equals(MailInfo other) {
+    if (ReferenceEquals(other, null)) {
+      return false;
+    }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    if (MailId != other.MailId) return false;
+    if (Title != other.Title) return false;
+    if (Content != other.Content) return false;
+    if (CreateTime != other.CreateTime) return false;
+    if (PopUp != other.PopUp) return false;
+    if (Sender != other.Sender) return false;
+    if(!attachments_.Equals(other.attachments_)) return false;
+    return Equals(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override int GetHashCode() {
+    int hash = 1;
+    if (MailId.Length != 0) hash ^= MailId.GetHashCode();
+    if (Title.Length != 0) hash ^= Title.GetHashCode();
+    if (Content.Length != 0) hash ^= Content.GetHashCode();
+    if (CreateTime != 0UL) hash ^= CreateTime.GetHashCode();
+    if (PopUp != false) hash ^= PopUp.GetHashCode();
+    if (Sender.Length != 0) hash ^= Sender.GetHashCode();
+    hash ^= attachments_.GetHashCode();
+    if (_unknownFields != null) {
+      hash ^= _unknownFields.GetHashCode();
+    }
+    return hash;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override string ToString() {
+    return pb::JsonFormatter.ToDiagnosticString(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void WriteTo(pb::CodedOutputStream output) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    output.WriteRawMessage(this);
+  #else
+    if (MailId.Length != 0) {
+      output.WriteRawTag(10);
+      output.WriteString(MailId);
+    }
+    if (Title.Length != 0) {
+      output.WriteRawTag(18);
+      output.WriteString(Title);
+    }
+    if (Content.Length != 0) {
+      output.WriteRawTag(26);
+      output.WriteString(Content);
+    }
+    if (CreateTime != 0UL) {
+      output.WriteRawTag(32);
+      output.WriteUInt64(CreateTime);
+    }
+    if (PopUp != false) {
+      output.WriteRawTag(40);
+      output.WriteBool(PopUp);
+    }
+    if (Sender.Length != 0) {
+      output.WriteRawTag(50);
+      output.WriteString(Sender);
+    }
+    attachments_.WriteTo(output, _repeated_attachments_codec);
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(output);
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+    if (MailId.Length != 0) {
+      output.WriteRawTag(10);
+      output.WriteString(MailId);
+    }
+    if (Title.Length != 0) {
+      output.WriteRawTag(18);
+      output.WriteString(Title);
+    }
+    if (Content.Length != 0) {
+      output.WriteRawTag(26);
+      output.WriteString(Content);
+    }
+    if (CreateTime != 0UL) {
+      output.WriteRawTag(32);
+      output.WriteUInt64(CreateTime);
+    }
+    if (PopUp != false) {
+      output.WriteRawTag(40);
+      output.WriteBool(PopUp);
+    }
+    if (Sender.Length != 0) {
+      output.WriteRawTag(50);
+      output.WriteString(Sender);
+    }
+    attachments_.WriteTo(ref output, _repeated_attachments_codec);
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(ref output);
+    }
+  }
+  #endif
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public int CalculateSize() {
+    int size = 0;
+    if (MailId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(MailId);
+    }
+    if (Title.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(Title);
+    }
+    if (Content.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(Content);
+    }
+    if (CreateTime != 0UL) {
+      size += 1 + pb::CodedOutputStream.ComputeUInt64Size(CreateTime);
+    }
+    if (PopUp != false) {
+      size += 1 + 1;
+    }
+    if (Sender.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(Sender);
+    }
+    size += attachments_.CalculateSize(_repeated_attachments_codec);
+    if (_unknownFields != null) {
+      size += _unknownFields.CalculateSize();
+    }
+    return size;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(MailInfo other) {
+    if (other == null) {
+      return;
+    }
+    if (other.MailId.Length != 0) {
+      MailId = other.MailId;
+    }
+    if (other.Title.Length != 0) {
+      Title = other.Title;
+    }
+    if (other.Content.Length != 0) {
+      Content = other.Content;
+    }
+    if (other.CreateTime != 0UL) {
+      CreateTime = other.CreateTime;
+    }
+    if (other.PopUp != false) {
+      PopUp = other.PopUp;
+    }
+    if (other.Sender.Length != 0) {
+      Sender = other.Sender;
+    }
+    attachments_.Add(other.attachments_);
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(pb::CodedInputStream input) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    input.ReadRawMessage(this);
+  #else
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+    if ((tag & 7) == 4) {
+      // Abort on any end group tag.
+      return;
+    }
+    switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+          break;
+        case 10: {
+          MailId = input.ReadString();
+          break;
+        }
+        case 18: {
+          Title = input.ReadString();
+          break;
+        }
+        case 26: {
+          Content = input.ReadString();
+          break;
+        }
+        case 32: {
+          CreateTime = input.ReadUInt64();
+          break;
+        }
+        case 40: {
+          PopUp = input.ReadBool();
+          break;
+        }
+        case 50: {
+          Sender = input.ReadString();
+          break;
+        }
+        case 58: {
+          attachments_.AddEntriesFrom(input, _repeated_attachments_codec);
+          break;
+        }
+      }
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+    if ((tag & 7) == 4) {
+      // Abort on any end group tag.
+      return;
+    }
+    switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+          break;
+        case 10: {
+          MailId = input.ReadString();
+          break;
+        }
+        case 18: {
+          Title = input.ReadString();
+          break;
+        }
+        case 26: {
+          Content = input.ReadString();
+          break;
+        }
+        case 32: {
+          CreateTime = input.ReadUInt64();
+          break;
+        }
+        case 40: {
+          PopUp = input.ReadBool();
+          break;
+        }
+        case 50: {
+          Sender = input.ReadString();
+          break;
+        }
+        case 58: {
+          attachments_.AddEntriesFrom(ref input, _repeated_attachments_codec);
           break;
         }
       }

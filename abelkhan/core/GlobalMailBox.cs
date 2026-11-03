@@ -125,6 +125,15 @@ public class GlobalMailBox
         return _redis.SAdd(string.Format(_claimedKeyFormat, playerId), mailId);
     }
 
+    /// <summary>
+    /// 取消「已领取」标记。用于领取失败（例如背包已满、附件配置错误）时回滚，
+    /// 让玩家整理背包后还能重新领取。返回 true 表示确实删掉了这个标记。
+    /// </summary>
+    public Task<bool> UnmarkClaimed(string playerId, string mailId)
+    {
+        return _redis.SRem(string.Format(_claimedKeyFormat, playerId), mailId);
+    }
+
     // 带缓存 + 最小刷新间隔地读取全局邮件列表
     private async Task<GlobalMail[]> GetMails()
     {

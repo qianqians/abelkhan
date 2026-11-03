@@ -1,0 +1,161 @@
+# 背包与物品系统
+
+服务端背包实现位于 `abelkhan/hub/Inventory/`。核心逻辑（物品 / 背包 / 数组实现）只依赖
+BCL，不依赖 Redis；只有存档适配器 `BagBson` 依赖 MongoDB.Bson。`hub.Player` 负责把背包
+接到玩家实体和邮件领取流程上。
+
+## 1. 文件与职责
+
+| 文件 | 职责 |
+|---|---|
+| `ItemType.cs` | 物品大类：可堆叠 / 装备 / 任务道具 |
+| `IItem.cs` | 物品抽象接口，背包只依赖它 |
+| `ItemStack.cs` | 默认物品实现（item_id + 数量 + 堆叠上限 + 大类），不可变 |
+| `ItemDefinition.cs` / `ItemCatalog.cs` | 物品静态配置；把「item_id + 数量」补全成物品 |
+| `BagError.cs` / `BagResult.cs` | 预期内失败的错误码与结果，不靠异常控制流程 |
+| `BagSlotChange.cs` | 单格变更，用于同步客户端 |
+| `BagSnapshot.cs` | 背包快照（容量 + 每格物品），用于存档 / 回滚 |
+| `IReadOnlyBag.cs` / `IBag.cs` | 背包只读 / 读写接口 |
+| `ArrayBag.cs` | 固定长度数组实现，包含添加、消费、删除、整理、快照 |
+| `BagBson.cs` | 背包存档的 BSON 结构 |
+
+## 2. 物品抽象
+
+```csharp
+var catalog = new ItemCatalog();
+catalog.Register(new ItemDefinition("gold"));                    // 无上限堆叠
+catalog.Register(new ItemDefinition("potion", maxStack: 99));    // 每格 99
+catalog.Register(new ItemDefinition("sword", 1, ItemType.Equipment)); // 一格一把
+```
+
+`IItem` 的约定：
+
+- `Count` 必须大于 0；
+- `WithCount` 返回新对象，不修改自身。背包的快照 / 回滚只复制引用，
+  依赖物品不可变；
+- 同 `ItemId` 的物品只有 `Stackable == true`、且 `MaxStack` / `Type` 相同才允许合并。
+
+需要绑定、品质、强化等级等实例属性时，游戏实现自己的 `IItem` 即可；
+只要 `WithCount` 保留这些属性，背包逻辑不用改。注意：默认的 `BagBson`
+只序列化 `ItemId / Count / MaxStack / Type` 四个字段，自定义 `IItem` 的额外字段
+需要游戏扩展存档结构或自己实现序列化。
+
+## 3. 背包接口
+
+```csharp
+IBag bag = player.Bag;
+
+bag.Add("potion", 10);                       // 空间不足整体失败
+bag.Add(new ItemStack("sword", 1, 1, ItemType.Equipment));
+bag.AddRange([itemA, itemB]);                // 批量原子添加
+bag.AddPartial(item, out var remaining);     // 能放多少放多少，适合掉落
+
+bag.Consume("potion", 3);                    // 数量不足失败，背包不变
+bag.RemoveAt(0);                             // 删除整格
+bag.RemoveAt(1, 2);                          // 删除某格的部分数量
+bag.Delete("sword");                         // 删除某 item_id 的所有堆叠
+
+bag.Sort();                                  // 压缩空格 + 按 item_id 稳定排序
+```
+
+`IReadOnlyBag` 提供 `Capacity`、`OccupiedSlots`、`Version`、索引器、`GetItemCount`、
+`Contains`、`Snapshot`，UI / 任务统计只依赖它。
+
+`BagResult` 用 `Ok` / `Error` / `Affected` / `Message` 表达结果；预期内失败不抛异常。
+
+### 数组实现的行为
+
+- 固定容量，构造时 `new ArrayBag(capacity, catalog)`；
+- 添加时先补满已有同类堆叠，再用空格。非堆叠物品（装备 / 任务道具）每格 1 件；
+- `Add` / `AddRange` 空间不足会回滚到操作前，不会留下"加了一半"的状态；
+- `Consume` 先校验总数，再按格位顺序扣；
+- `Sort` 是稳定排序（相同 `item_id` 保持原有相对顺序），空位集中到末尾；
+- 每次成功变更 `Version++`，并触发 `Changed` 事件（参数是变化格位的最终状态）。
+
+背包本身不加锁，默认由 hub 的 per-entity Actor 串行访问；如果在 Actor 外共享同一个
+背包实例，需要调用方自己加锁。
+
+## 4. 邮件领取物品
+
+领取全局邮件时 `hub.Player.RegisterMailRequest` 执行：
+
+1. `GetClaimable` 校验邮件是否可领；
+2. `MarkClaimed`（Redis `SADD`）原子认领，并发 / 重复请求只有一次成功；
+3. `GrantMailAttachments` 把附件转成 `IItem`，调用 `Bag.AddRange` **原子**放入背包；
+4. 如果背包满或附件配置错误：
+   - `Bag.AddRange` 已自动回滚，背包保持原样；
+   - 调用 `GlobalMailBox.UnmarkClaimed`（Redis `SREM`）回滚领取标记，
+     玩家整理背包后可以重新领取；
+5. 全部成功后才把邮件返回给客户端。
+
+> 崩溃窗口：第 2 步成功、第 3 步执行前进程崩溃，邮件会处于"已领取但未发物品"状态。
+> 这是无数据库事务下的 at-most-once 取舍；如果业务要求绝对不丢，需要把
+> 「领取标记 + 背包存档」放进同一个 Mongo 事务 / outbox，而不是只用 Redis SET。
+
+附件数量 `<= 0` 会被跳过；所有附件都为空时只认领、不加物品。
+
+## 5. 存档
+
+`Player.BagInfo()` 返回可放进玩家文档的 BSON：
+
+```csharp
+public override BsonDocument FullInfo() => new()
+{
+    { "EntityType", EntityType },
+    { "EntityId", EntityId },
+    { "Bag", BagInfo() },
+};
+```
+
+读档：
+
+```csharp
+if (document.TryGetValue("Bag", out var bagValue) && bagValue.IsBsonDocument)
+{
+    var snapshot = BagBson.ToSnapshot(bagValue.AsBsonDocument, Player.DefaultBagCapacity);
+    var bag = new ArrayBag(snapshot.Capacity, ItemCatalog);
+    var loaded = bag.Load(snapshot);
+    if (loaded.Failed)
+    {
+        // 存档损坏：记录日志 / 走补偿，不要静默丢物品
+    }
+    RestoreBag(bag);
+}
+else
+{
+    // 新玩家：首次访问 Bag 时按 BagCapacity 自动创建
+}
+```
+
+`BagBson` 用 `null` 保留空位下标，装备格 / 快捷栏位置不会在存读档后错位；
+`SchemaVersion` 为 1，未来格式升级时可以在 `ToSnapshot` 里按版本迁移。
+
+## 6. 客户端同步
+
+背包变更通过 `Player.BagChanged` 事件暴露，参数是 `BagSlotChange(Slot, ItemId, Count)`，
+表示这些格位的**最终状态**（空位为 `ItemId = null`、`Count = 0`）：
+
+```csharp
+// 在玩家实体构造 / 初始化时订阅
+BagChanged += changes =>
+{
+    // 用游戏自己的 notify 协议把 changes 发给客户端
+};
+```
+
+登录 / 重连时可以把 `BagInfo()` 放进 `ClientInfo()`（或 `RefreshEntity` 的 argv），
+客户端按格位覆盖即可。当前仓库没有新增背包协议，避免动 protobuf 生成文件；
+游戏侧按自己的同步协议接入。
+
+## 7. 冒烟测试
+
+`abelkhan/tests/InventorySmoke` 是纯逻辑冒烟测试，不依赖 Redis / Mongo：
+
+```bash
+dotnet run --project abelkhan/tests/InventorySmoke
+```
+
+覆盖：堆叠拆分、满包原子回滚、消费不足、按格删除、按 item_id 全删、
+整理排序与空洞压缩、`AddRange` 原子性、`AddPartial`、非堆叠物品、
+配置校验、快照 / BSON 往返、变更事件 / Version、快照容量不匹配。
+

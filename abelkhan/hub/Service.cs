@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using core;
+using hub.inventory;
 
 namespace hub;
 
@@ -13,7 +14,24 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
     /// </summary>
     public GlobalMailBox? GlobalMailBox { get; set; }
 
+    /// <summary>物品配置表；创建出的玩家会继承该配置。为 null 时允许任意 item_id。</summary>
+    public IItemCatalog? ItemCatalog { get; set; }
+
+    /// <summary>新建玩家的背包容量。</summary>
+    public int BagCapacity { get; set; } = Player.DefaultBagCapacity;
+
     protected abstract Player CreateEntity(string gateName, string cliConnId, byte[] info);
+
+    /// <summary>
+    /// 玩家创建后的配置钩子。默认注入物品配置 / 背包容量；
+    /// 游戏可以重写来做读档、恢复背包等初始化（读档前先调用 base.ConfigurePlayer(player)，
+    /// 或自行设置好 ItemCatalog / BagCapacity）。
+    /// </summary>
+    protected virtual void ConfigurePlayer(Player player)
+    {
+        player.ItemCatalog = ItemCatalog;
+        player.BagCapacity = BagCapacity;
+    }
 
     /// <summary>
     /// 游戏提供：该玩家当前的邮件领取条件。返回 null 表示该玩家暂不可领取邮件。
@@ -24,6 +42,8 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
     public virtual async Task<Player> EchoQueryServiceEntity(string gateName, string cliConnId, byte[] info)
     {
         var player = CreateEntity(gateName, cliConnId, info);
+        // 先注入物品配置 / 背包容量，再注册邮件协议（领取邮件时要用到背包）
+        ConfigurePlayer(player);
         // 给玩家实体挂上「客户端请求领取邮件」协议的处理
         player.RegisterMailRequest(this);
         var cli = clients.AddOrUpdate(player.UserId, key => new Client(player.UserId, gateName, cliConnId), (key, old) => old);
