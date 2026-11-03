@@ -2,11 +2,16 @@ using Newtonsoft.Json.Linq;
 
 namespace core;
 
+/// <summary>邮件附件：物品 id + 数量。</summary>
+public record GlobalMailAttachment(string ItemId, int Count);
+
 /// <summary>一封全局邮件（已从 Redis list 里的 JSON 解析出来）。</summary>
 public record GlobalMail(
     string MailId,
     string Title,
     string Content,
+    string Sender,
+    IReadOnlyList<GlobalMailAttachment> Attachments,
     long CreateTime,
     int ExpireSeconds,
     bool PopUp,
@@ -197,6 +202,8 @@ public class GlobalMailBox
                 mailId,
                 obj["title"]?.ToString() ?? string.Empty,
                 obj["content"]?.ToString() ?? string.Empty,
+                obj["sender"]?.ToString() ?? string.Empty,
+                ParseAttachments(obj["attachments"]),
                 ReadLong(obj, "createTime"),
                 ReadInt(obj, "expireSeconds"),
                 ReadBool(obj, "popUp"),
@@ -211,6 +218,33 @@ public class GlobalMailBox
             Log.Error($"GlobalMailBox parse mail err:{e}");
             return null;
         }
+    }
+
+    private static IReadOnlyList<GlobalMailAttachment> ParseAttachments(JToken? token)
+    {
+        var result = new List<GlobalMailAttachment>();
+        if (token is not JArray array)
+        {
+            return result;
+        }
+
+        foreach (var item in array)
+        {
+            if (item is not JObject obj)
+            {
+                continue;
+            }
+
+            var itemId = obj["itemId"]?.ToString();
+            if (string.IsNullOrEmpty(itemId))
+            {
+                continue;
+            }
+
+            var count = ReadInt(obj, "count");
+            result.Add(new GlobalMailAttachment(itemId, count));
+        }
+        return result;
     }
 
     private static int ReadInt(JObject obj, string name)

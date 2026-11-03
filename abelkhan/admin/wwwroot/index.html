@@ -107,10 +107,14 @@
             <div class="toolbar">
                 <input id="mail-user-id" type="text" placeholder="玩家ID（逗号/空格分隔；留空 = 全局邮件）" />
                 <input id="mail-title" type="text" placeholder="标题" />
+                <input id="mail-sender" type="text" placeholder="发件人" />
                 <input id="mail-expire" type="number" placeholder="邮件过期秒数（0=不过期）" value="0" />
                 <button id="mail-submit" class="btn primary">发送</button>
             </div>
             <textarea id="mail-content" placeholder="邮件正文"></textarea>
+            <div class="toolbar">
+                <input id="mail-attachments" type="text" placeholder="附件：itemId:数量（逗号分隔，如 1001:2,1002:1）" />
+            </div>
             <div class="toolbar conditions">
                 <span class="cond-title">全局邮件条件（仅玩家ID为空时生效）</span>
                 <label class="field">等级
@@ -132,7 +136,7 @@
             </div>
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th>收件人</th><th>标题</th><th>内容</th><th>时间</th></tr></thead>
+                    <thead><tr><th>收件人</th><th>发件人</th><th>标题</th><th>内容</th><th>时间</th></tr></thead>
                     <tbody id="mail-table-body"></tbody>
                 </table>
             </div>

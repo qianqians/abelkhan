@@ -17,6 +17,9 @@ public record GlobalMailRule(
     bool PopUp = false,
     int ValidDays = 0);
 
+/// <summary>邮件附件（后台录入用）：物品 id + 数量。</summary>
+public record MailAttachmentInput(string ItemId, int Count = 1);
+
 /// <summary>
 /// 管理端数据访问：Redis（在线数、GM/邮件队列）+ MongoDB（玩家/支付/邮件/GM 日志）。
 /// 字段名（注册时间、支付时间、支付金额）可在配置里覆盖，方便接入不同游戏的数据约定。
@@ -180,12 +183,29 @@ public class AdminDataService
     /// 发送邮件。playerIds 为空 = 全局邮件（所有玩家共用一份，存 Redis list），
     /// 否则给这批玩家逐个写 per-player 队列。
     /// </summary>
-    public async Task SendMail(string title, string content, string[] playerIds, int expireSeconds,
-        GlobalMailRule rule)
+    public async Task SendMail(string title, string content, string sender, MailAttachmentInput[] attachments,
+        string[] playerIds, int expireSeconds, GlobalMailRule rule)
     {
         var isGlobal = playerIds.Length == 0;
         var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         var mailId = Guid.NewGuid().ToString("N");
+
+        // 附件：Mongo 留档用 PascalCase，Redis 队列用 camelCase
+        var attBson = new BsonArray();
+        var attJson = new List<Dictionary<string, object?>>();
+        foreach (var a in attachments)
+        {
+            attBson.Add(new BsonDocument
+            {
+                { "ItemId", a.ItemId },
+                { "Count", a.Count },
+            });
+            attJson.Add(new Dictionary<string, object?>
+            {
+                { "itemId", a.ItemId },
+                { "count", a.Count },
+            });
+        }
 
         // 落库留档：一条记录，PlayerIds 为空数组表示全局邮件
         var ids = new BsonArray();
@@ -198,6 +218,8 @@ public class AdminDataService
             { "MailId", mailId },
             { "Title", title },
             { "Content", content },
+            { "Sender", sender },
+            { "Attachments", attBson },
             { "PlayerIds", ids },
             { "CreateTime", now },
             { "ExpireSeconds", expireSeconds },
@@ -219,6 +241,8 @@ public class AdminDataService
                 { "mailId", mailId },
                 { "title", title },
                 { "content", content },
+                { "sender", sender },
+                { "attachments", attJson },
                 { "createTime", now },
                 { "expireSeconds", expireSeconds },
                 { "validDays", rule.ValidDays },
@@ -245,6 +269,8 @@ public class AdminDataService
                     { "userId", id },
                     { "title", title },
                     { "content", content },
+                    { "sender", sender },
+                    { "attachments", attJson },
                     { "createTime", now },
                     { "expireSeconds", expireSeconds },
                 };

@@ -106,12 +106,27 @@ public abstract class Player(
         });
     }
 
-    private static MailInfo ToMailInfo(GlobalMail mail) => new()
+    private static MailInfo ToMailInfo(GlobalMail mail)
     {
-        MailId = mail.MailId,
-        Title = mail.Title,
-        Content = mail.Content,
-        CreateTime = (ulong)mail.CreateTime,
-        PopUp = mail.PopUp,
-    };
+        var info = new MailInfo
+        {
+            MailId = mail.MailId,
+            Title = mail.Title,
+            Content = mail.Content,
+            Sender = mail.Sender,
+            CreateTime = (ulong)mail.CreateTime,
+            PopUp = mail.PopUp,
+        };
+
+        foreach (var attachment in mail.Attachments)
+        {
+            info.Attachments.Add(new MailAttachment
+            {
+                ItemId = attachment.ItemId,
+                Count = (uint)Math.Max(0, attachment.Count),
+            });
+        }
+
+        return info;
+    }
 }

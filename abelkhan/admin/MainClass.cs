@@ -32,6 +32,8 @@ public record MailSendRequest(
     string Content,
     string[]? PlayerIds = null,
     int ExpireSeconds = 0,
+    string Sender = "",
+    MailAttachmentInput[]? Attachments = null,
     // 全局邮件的领取条件（0 = 不限制）
     int MinLevel = 0,
     int MaxLevel = 0,
@@ -155,11 +157,16 @@ public class MainClass
                 .Select(id => id.Trim())
                 .Distinct()
                 .ToArray();
+            var attachments = (req.Attachments ?? Array.Empty<MailAttachmentInput>())
+                .Where(a => !string.IsNullOrWhiteSpace(a.ItemId))
+                .Select(a => new MailAttachmentInput(a.ItemId.Trim(), Math.Max(0, a.Count)))
+                .ToArray();
             var rule = new GlobalMailRule(
                 req.MinLevel, req.MaxLevel,
                 req.MinCreateDays, req.MaxCreateDays,
                 req.PopUp, req.ValidDays);
-            await data.SendMail(req.Title.Trim(), req.Content, playerIds, Math.Max(0, req.ExpireSeconds), rule);
+            await data.SendMail(req.Title.Trim(), req.Content, req.Sender ?? "", attachments,
+                playerIds, Math.Max(0, req.ExpireSeconds), rule);
             return Results.Json(new { ok = true, global = playerIds.Length == 0, count = playerIds.Length });
         }));
 

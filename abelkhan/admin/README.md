@@ -37,7 +37,7 @@ dotnet run --project abelkhan/admin -- path/to/config.json
 | GET | `/api/players/{id}` | 玩家详情 |
 | GET | `/api/payments?userId=&start=&end=&page=&pageSize=` | 查询支付 |
 | GET | `/api/mail` | 邮件列表 |
-| POST | `/api/mail/send` | 发送邮件 `{title, content, playerIds?[], expireSeconds?, minLevel?, maxLevel?, minCreateDays?, maxCreateDays?, popUp?, validDays?}`，`playerIds` 空 = 全局邮件 |
+| POST | `/api/mail/send` | 发送邮件 `{title, content, sender?, attachments?[{itemId,count}], playerIds?[], expireSeconds?, minLevel?, maxLevel?, minCreateDays?, maxCreateDays?, popUp?, validDays?}`，`playerIds` 空 = 全局邮件 |
 | GET | `/api/gm/logs` | GM 命令日志 |
 | POST | `/api/gm/command` | 下发 GM 命令 `{command, playerId?, args?}` |
 | GET | `/health` | 健康检查 |
@@ -63,7 +63,7 @@ dotnet run --project abelkhan/admin -- path/to/config.json
 
 - **邮件**（区分全局 / 批量玩家）：
   - **全局邮件**（`playerIds` 为空）：所有玩家共用一份，`RPUSH admin_mail_global`（Redis list）。
-    每个元素是一条 JSON：`{"mailId","title","content","createTime","expireSeconds","validDays","popUp","minLevel","maxLevel","minCreateDays","maxCreateDays"}`。
+    每个元素是一条 JSON：`{"mailId","title","content","sender","attachments":[{"itemId","count"}],"createTime","expireSeconds","validDays","popUp","minLevel","maxLevel","minCreateDays","maxCreateDays"}`。
     写入后用 `LTRIM` 保留最近 `MailGlobalMaxCount` 封（默认 200），防止 list 无限增长。
     玩家**请求邮件**时，游戏服用 `core.GlobalMailBox` 读取该 list（按刷新间隔缓存，避免每次请求都打 Redis），
     自动按以下条件过滤后只返回可领取的：
@@ -76,7 +76,7 @@ dotnet run --project abelkhan/admin -- path/to/config.json
     玩家领取时调用 `MarkClaimed` 打标记，之后不会再返回。
   - **批量玩家**（`playerIds` 非空）：给每个玩家写 `admin_mail_queue_{playerId}`，由游戏服按玩家消费。
 
-  两种情况都记入 MongoDB `mail` 集合留档（字段 `MailId/Title/Content/PlayerIds/CreateTime/ExpireSeconds/ValidDays/PopUp/MinLevel/MaxLevel/MinCreateDays/MaxCreateDays`，
+  两种情况都记入 MongoDB `mail` 集合留档（字段 `MailId/Title/Content/Sender/Attachments/PlayerIds/CreateTime/ExpireSeconds/ValidDays/PopUp/MinLevel/MaxLevel/MinCreateDays/MaxCreateDays`，
   `PlayerIds` 空数组表示全局）。
 
 ## 客户端请求领取邮件（协议）
@@ -90,7 +90,7 @@ dotnet run --project abelkhan/admin -- path/to/config.json
 - `mail_id` 为空：返回当前可领取的全局邮件列表（**不**标记领取）；
 - `mail_id` 非空：领取指定邮件（校验条件 → 标记已领取 → 返回该邮件）。
 
-`MailInfo` 字段：`mail_id`、`title`、`content`、`create_time`、`pop_up`。
+`MailInfo` 字段：`mail_id`、`title`、`content`、`sender`、`create_time`、`pop_up`、`attachments[{item_id,count}]`。
 
 ### 客户端
 
