@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.Net.Sockets;
 using StackExchange.Redis;
@@ -120,6 +121,11 @@ public class RedisHandle
     private readonly RedisConnectionHelper _connHelper;
     private IDatabase? _database;
 
+    /// <summary>
+    /// 已订阅的 pub/sub 通道。重连后要挨个重新订阅，否则 Redis 一抖就永久收不到广播。
+    /// </summary>
+    private readonly ConcurrentDictionary<string, Action<byte[]>> _subscriptions = new();
+
     public RedisHandle(string connUrl, string pwd)
     {
         _connHelper = new RedisConnectionHelper(connUrl, "RedisForCache", pwd);
@@ -128,7 +134,8 @@ public class RedisHandle
 
     void Recover(Exception e)
     {
-        _connHelper.Recover(ref _connectionMultiplexer, ref _database, e);
+        // afterRecover 在重连成功（且是本线程执行的）之后回调，用它把订阅补回去
+        _connHelper.Recover(ref _connectionMultiplexer, ref _database, e, Resubscribe);
     }
 
     /// <summary>
@@ -680,6 +687,76 @@ public class RedisHandle
             {
                 Recover(e);
             }
+        }
+    }
+
+    // ================================================================
+    // Pub/Sub（跨 hub 广播用）
+    // ================================================================
+
+    /// <summary>向通道发布一条消息，返回收到它的订阅者数量。</summary>
+    public async ValueTask<long> Publish(string channel, byte[] payload)
+    {
+        while (true)
+        {
+            var mux = _connectionMultiplexer;
+            if (mux == null)
+            {
+                throw new InvalidOperationException("redis not connected");
+            }
+
+            try
+            {
+                return await mux.GetSubscriber().PublishAsync(RedisChannel.Literal(channel), payload);
+            }
+            catch (Exception e) when (e is RedisConnectionException or RedisTimeoutException
+                                          or IOException or SocketException)
+            {
+                Log.Error("redis publish {0} failed, will reconnect: {1}", channel, e.Message);
+                Recover(e);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 订阅一个通道。同一个通道重复订阅会替换处理器。
+    /// 处理器在 Redis 的接收线程上执行，耗时操作请自己抛到线程池。
+    /// </summary>
+    public void Subscribe(string channel, Action<byte[]> handler)
+    {
+        _subscriptions[channel] = handler;
+        SubscribeNow(channel, handler);
+    }
+
+    private void SubscribeNow(string channel, Action<byte[]> handler)
+    {
+        try
+        {
+            _connectionMultiplexer?.GetSubscriber().Subscribe(RedisChannel.Literal(channel),
+                (_, value) =>
+                {
+                    try
+                    {
+                        handler(value.HasValue ? (byte[])value! : Array.Empty<byte>());
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error("redis subscribe handler {0} err:{1}", channel, e);
+                    }
+                });
+        }
+        catch (Exception e)
+        {
+            Log.Error("redis subscribe {0} failed: {1}", channel, e.Message);
+        }
+    }
+
+    /// <summary>重连后重新订阅所有通道。</summary>
+    private void Resubscribe()
+    {
+        foreach (var (channel, handler) in _subscriptions)
+        {
+            SubscribeNow(channel, handler);
         }
     }
 }
