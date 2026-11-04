@@ -1,5 +1,8 @@
 syntax = "proto3"; 
 
+// ChatBroadcast 里嵌入了一条客户端聊天消息
+import "client.proto";
+
 message TakeOverUser {
   string user_id = 1;
   string gate_name = 2;
@@ -31,4 +34,17 @@ message FriendConfirmAddResult {
   string target_id = 2;      // B
   string request_id = 3;
   string code = 4;           // ok / target_full / no_request / internal
+}
+
+// ============================================================
+// 聊天频道跨 hub 广播：经 Redis pub/sub 通道 chat:{prefix}:broadcast
+//
+// 任何一个 hub 发一条频道消息，都会发布到这里；每个 hub 收到后
+// 只推给「本地在线且在同一个作用域内」的玩家。
+// ============================================================
+
+message ChatBroadcast {
+  string channel_id = 1;
+  string scope_id = 2;       // 已解析好的作用域 id（场景实例 / 帮会 id / ...）
+  ClientChatEntry entry = 3; // 定义在 client.proto
 }

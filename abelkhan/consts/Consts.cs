@@ -115,4 +115,14 @@ public class Consts
     // ---- 跨 hub 指令（hub_hub.proto，经 hub:{hubId}:mq） ----
     public const string FriendConfirmAdd = "friend_confirm_add";
     public const string FriendConfirmAddResult = "friend_confirm_add_result";
+
+    // ---- 聊天（对应 client.proto 的 ClientChat* 消息） ----
+    public const string ClientChatChannels = "client_chat_channels";
+    public const string ClientChatSend = "client_chat_send";
+    public const string ClientChatHistory = "client_chat_history";
+    public const string ClientChatPrivate = "client_chat_private";
+
+    // 聊天通知（hub -> 客户端）
+    public const string ClientChatMessageNotify = "client_chat_message_notify";
+    public const string ClientChatPrivateNotify = "client_chat_private_notify";
 }
