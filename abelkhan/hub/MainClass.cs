@@ -5,6 +5,8 @@ using consts;
 using Consul;
 using core;
 using engine;
+using friend;
+using Google.Protobuf;
 using leaderboard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -36,6 +38,18 @@ public struct HubConfig()
 
     /// <summary>排行榜配置。多游戏共用一个 Redis 时用 KeyPrefix 隔离。</summary>
     public LeaderboardSettings Leaderboard { get; set; } = new();
+
+    /// <summary>
+    /// 好友系统配置。KeyPrefix / PresenceTtlMs 必须与 gate 的 GateConfig.Friend 一致
+    /// （gate 写 presence、hub 读，不同前缀就互相看不到）。
+    /// </summary>
+    public FriendSettings Friend { get; set; } = new();
+
+    /// <summary>多久回扫一次超期的临时占位（毫秒），默认 1 秒。</summary>
+    public int FriendSweepIntervalMs { get; set; } = 1000;
+
+    /// <summary>每轮最多回收多少个超期占位，避免一次占用 Redis 太久。</summary>
+    public int FriendSweepBatchSize { get; set; } = 200;
 }
 
 public class MainClass
@@ -54,7 +68,12 @@ public class MainClass
     private GlobalMailBox? _serviceMailBox;
     private ShopStore? _shopStore;
     private LeaderboardStore? _leaderboardStore;
+    private FriendStore? _friendStore;
+    private FriendService? _friendService;
     private int _shopSettling;
+    private int _friendSweeping;
+    private Task? _tFriendMq;
+    private string _hubId = string.Empty;
     
     private Task? _tWait;
     private readonly ConcurrentQueue<string> _gateWaitQueue = new();
@@ -81,8 +100,101 @@ public class MainClass
                 }
             }
         } while (false);
-        
+
+        // 给本 hub 在线玩家续期路由（TTL 到期 = 不在本 hub）
+        var friendService = _friendService;
+        if (friendService != null)
+        {
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await friendService.RefreshRoutesAsync();
+                }
+                catch (Exception e)
+                {
+                    Log.Error("friend: refresh routes err:{0}", e);
+                }
+            });
+        }
+
         _timer.AddTickTime(3000, TickClients);
+    }
+
+    /// <summary>
+    /// 消费本 hub 的跨服指令队列（<c>hub:{hubId}:mq</c>）。
+    /// 好友确认就是靠它从一个 hub 找到另一个人所在的 hub。
+    /// </summary>
+    private void StartFriendMq(string hubId)
+    {
+        var store = _friendStore;
+        var friendService = _friendService;
+        if (store == null || friendService == null)
+        {
+            return;
+        }
+
+        _tFriendMq = Task.Factory.StartNew(async () =>
+        {
+            while (_isRun)
+            {
+                try
+                {
+                    var commands = await store.PopHubCommandsAsync(hubId, 8);
+                    if (commands.Count == 0)
+                    {
+                        await Task.Delay(5);
+                        continue;
+                    }
+
+                    foreach (var command in commands)
+                    {
+                        var parser = new MessageParser<Msg>(() => new Msg());
+                        var msg = parser.ParseFrom(command);
+                        if (msg.PayloadCase != Msg.PayloadOneofCase.Notify)
+                        {
+                            continue;
+                        }
+
+                        await friendService.HandleHubCommandAsync(msg.Notify);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Error("friend: hub mq err:{0}", e);
+                    await Task.Delay(50);
+                }
+            }
+        }, TaskCreationOptions.LongRunning).Unwrap();
+    }
+
+    /// <summary>
+    /// 定时回收超期的「临时占位」（同意了好友但对方服务器一直没确认 / hub 崩溃）。
+    /// 回收后会给同意方推一条超时通知。
+    /// </summary>
+    private void TickFriendSweep(long tick, int intervalMs, int batchSize)
+    {
+        var friendService = _friendService;
+        if (friendService != null && Interlocked.CompareExchange(ref _friendSweeping, 1, 0) == 0)
+        {
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await friendService.SweepReservesAsync(Math.Max(1, batchSize));
+                }
+                catch (Exception e)
+                {
+                    Log.Error("friend: sweep reserves err:{0}", e);
+                }
+                finally
+                {
+                    Interlocked.Exchange(ref _friendSweeping, 0);
+                }
+            });
+        }
+
+        _timer.AddTickTime(intervalMs, t => TickFriendSweep(t, intervalMs, batchSize));
     }
     
     public void RegisterService(string serviceName, Service service)
@@ -101,6 +213,15 @@ public class MainClass
         if (_leaderboardStore != null)
         {
             service.Leaderboard = _leaderboardStore;
+        }
+
+        if (_friendService != null)
+        {
+            service.Friend = _friendService;
+            // 展示信息 / 离线实例加载都是游戏钩子：先在第一个注册的 service 上取一次。
+            // hub 通常只注册一个 service；多个时可多次覆盖，以最后一个为准。
+            _friendService.DisplayResolver ??= service.ResolveFriendDisplayAsync;
+            _friendService.SetOfflineLoader(service.LoadOfflinePlayerAsync);
         }
     }
 
@@ -257,11 +378,21 @@ public class MainClass
             Log.Info("hub: leaderboard key prefix:{0} maxEntries:{1}",
                 cfg.Leaderboard.KeyPrefix, cfg.Leaderboard.MaxEntries);
 
+            // 好友：关系存 Redis，跨 hub 确认走 hub:{hubId}:mq
+            _hubId = cfg.HubId;
+            _friendStore = new FriendStore(_redis, cfg.Friend);
+            _friendService = new FriendService(_friendStore, _redis, cfg.HubId);
+            Log.Info("hub: friend key prefix:{0} maxFriends:{1} hub:{2}",
+                cfg.Friend.KeyPrefix, cfg.Friend.MaxFriends, cfg.HubId);
+
             foreach (var service in _services.Values)
             {
                 service.GlobalMailBox = _serviceMailBox;
                 service.Shop = _shopStore;
                 service.Leaderboard = _leaderboardStore;
+                service.Friend = _friendService;
+                _friendService.DisplayResolver ??= service.ResolveFriendDisplayAsync;
+                _friendService.SetOfflineLoader(service.LoadOfflinePlayerAsync);
             }
 
             StartRedisMsg();
@@ -277,6 +408,27 @@ public class MainClass
                 var gate = new GateNetwork(network);
                 _gates[id] = gate;
                 var handle = new GateMsgHandle(rpc, gate, _entities);
+                // gate 剔除连接时会发 ClientDisconnect：转发给好友系统做下线推送
+                handle.OnDisconnect += disconnect =>
+                {
+                    var friendService = _friendService;
+                    if (friendService == null || string.IsNullOrEmpty(disconnect.UserId))
+                    {
+                        return;
+                    }
+
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await friendService.OnOfflineAsync(disconnect.UserId);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error("friend: offline user:{0} err:{1}", disconnect.UserId, e);
+                        }
+                    });
+                };
                 _gateMsgHandles[id] = handle;
                 network.OnReceive(rpc.OnNetworkData);
             };
@@ -296,6 +448,9 @@ public class MainClass
             _timer.AddTickTime(3000, TickClients);
             _timer.AddTickTime(Math.Max(1000, cfg.ShopSettleIntervalMs),
                 tick => TickShop(tick, Math.Max(1000, cfg.ShopSettleIntervalMs), cfg.ShopSettleBatchSize));
+            _timer.AddTickTime(Math.Max(200, cfg.FriendSweepIntervalMs),
+                tick => TickFriendSweep(tick, Math.Max(200, cfg.FriendSweepIntervalMs), cfg.FriendSweepBatchSize));
+            StartFriendMq(cfg.HubId);
             while (_isRun)
             {
                 var begin = TimerService.Tick;
@@ -310,6 +465,10 @@ public class MainClass
             
             await cts.CancelAsync();
             await _tWait!;
+            if (_tFriendMq != null)
+            {
+                await _tFriendMq;
+            }
         }
         catch (Exception ex)
         {

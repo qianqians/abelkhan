@@ -10,6 +10,7 @@ abelkhan是一个轻量级的游戏服务器框架，基于c#开发，使用mong
 * hub 微服务节点（含 `hub/Inventory` 抽象背包：数组存储、物品接口、邮件附件发放、BSON 存档，见 `docs/inventory.md`）
 * shop 商城系统（氪金商品 / 玩家寄拍 / 限时拍卖，admin 后台编辑上架，见 `docs/shop.md`）
 * leaderboard 通用排行榜（hub 侧 Redis ZSET：打榜保留最高分 / 区间拉榜 / 查名次 / 重置，见 `docs/leaderboard.md`）
+* friend 好友系统（离线申请 / 临时占位 / 跨服确认 / 上限可扩展，见 `docs/friend.md`）
 * admin 管理后台（dashboard：监控大盘/玩家查询/支付查询/GM面板/邮件发送/商城管理，见 abelkhan/admin/README.md）
 
 ## License

@@ -1,7 +1,6 @@
 using core;
 using Newtonsoft.Json.Linq;
 using StackExchange.Redis;
-
 namespace friend;
 
 /// <summary>
@@ -277,44 +276,59 @@ public sealed class FriendStore
     // ================================================================
 
     /// <summary>刷新在线标记（gate 每 3s 调用一次）。</summary>
-    public async Task SetPresenceAsync(string userId, string gateId)
+    public async Task SetPresenceAsync(string userId, string gateId, string entityId)
     {
-        await _redis.SetStrData(Keys.Presence(userId), gateId, Math.Max(1000, _settings.PresenceTtlMs));
+        await _redis.SetStrData(Keys.Presence(userId), EncodePresence(gateId, entityId),
+            Math.Max(1000, _settings.PresenceTtlMs));
     }
 
-    /// <summary>释放在线标记；只有当标记仍属于本 gate 时才删除，避免误删同一玩家的新连接。</summary>
-    public async Task ReleasePresenceAsync(string userId, string gateId)
+    /// <summary>释放在线标记；只有当标记仍属于本连接时才删除，避免误删同一玩家的新连接。</summary>
+    public async Task ReleasePresenceAsync(string userId, string gateId, string entityId)
     {
         await _redis.Execute("friend.presence_release", db => db.ScriptEvaluateAsync(
             ReleasePresenceScript,
             new RedisKey[] { Keys.Presence(userId) },
-            new RedisValue[] { gateId }));
+            new RedisValue[] { EncodePresence(gateId, entityId) }));
     }
 
-    /// <summary>批量查在线状态（一次 MGET，避免逐 key 往返）。</summary>
-    public async Task<HashSet<string>> GetOnlineAsync(IReadOnlyCollection<string> userIds)
+    /// <summary>
+    /// 批量查在线状态（一次 MGET，避免逐 key 往返）。
+    /// 返回的字典只含在线的玩家。
+    /// </summary>
+    public async Task<Dictionary<string, FriendPresence>> GetPresenceAsync(IReadOnlyCollection<string> userIds)
     {
-        var online = new HashSet<string>();
+        var online = new Dictionary<string, FriendPresence>();
         if (userIds.Count == 0)
         {
             return online;
         }
 
-        var keys = userIds.Select(id => (RedisKey)Keys.Presence(id)).ToArray();
+        var ids = userIds.Distinct().ToList();
+        var keys = ids.Select(id => (RedisKey)Keys.Presence(id)).ToArray();
         var values = await _redis.Execute("friend.presence_mget", db => db.StringGetAsync(keys));
 
-        var index = 0;
-        foreach (var id in userIds)
+        for (var i = 0; i < ids.Count && i < values.Length; i++)
         {
-            if (index < values.Length && values[index].HasValue && !values[index].IsNullOrEmpty)
+            var raw = values[i];
+            if (!raw.HasValue || raw.IsNullOrEmpty)
             {
-                online.Add(id);
+                continue;
             }
 
-            index++;
+            online[ids[i]] = DecodePresence(raw.ToString());
         }
 
         return online;
+    }
+
+    private static string EncodePresence(string gateId, string entityId) => gateId + "|" + entityId;
+
+    private static FriendPresence DecodePresence(string raw)
+    {
+        var index = raw.IndexOf('|');
+        return index < 0
+            ? new FriendPresence(raw, string.Empty)
+            : new FriendPresence(raw[..index], raw[(index + 1)..]);
     }
 
     /// <summary>写入 / 刷新玩家所在 hub 的路由（TTL 到期即视为离线）。</summary>

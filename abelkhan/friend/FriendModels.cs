@@ -1,5 +1,8 @@
 namespace friend;
 
+/// <summary>在线标记的内容：哪个 gate 挂着这个玩家，以及它的实体 id（跨 hub 推消息时要用）。</summary>
+public sealed record FriendPresence(string GateId, string EntityId);
+
 /// <summary>一条好友（或申请）在协议层需要的展示数据。昵称 / 头像由游戏钩子填充。</summary>
 public sealed record FriendDisplay(string Name = "", string Avatar = "");
 
@@ -31,6 +34,7 @@ public static class FriendCodes
     public const string RequesterFull = "requester_full";
     public const string SelfFull = "self_full";
     public const string NotFriend = "not_friend";
+    public const string Timeout = "timeout";
     public const string Invalid = "invalid";
 }
 

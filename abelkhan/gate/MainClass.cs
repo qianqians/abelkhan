@@ -376,12 +376,13 @@ class MainClass
             return;
         }
 
-        string[] userIds;
+        // presence 的值要带 entityId：好友 / 跨 hub 推消息时靠它路由到客户端上的实体
+        (string UserId, string EntityId)[] online;
         lock (_clients)
         {
-            userIds = _clients.Values
-                .Where(c => !string.IsNullOrEmpty(c.UserId))
-                .Select(c => c.UserId!)
+            online = _clients.Values
+                .Where(c => !string.IsNullOrEmpty(c.UserId) && !string.IsNullOrEmpty(c.EntityId))
+                .Select(c => (c.UserId!, c.EntityId!))
                 .Distinct()
                 .ToArray();
         }
@@ -390,9 +391,9 @@ class MainClass
         {
             try
             {
-                foreach (var userId in userIds)
+                foreach (var (userId, entityId) in online)
                 {
-                    await store.SetPresenceAsync(userId, _gateId);
+                    await store.SetPresenceAsync(userId, _gateId, entityId);
                 }
             }
             catch (Exception e)
@@ -406,20 +407,22 @@ class MainClass
         });
     }
 
-    /// <summary>释放某个连接的 presence（只删属于本 gate 的标记，避免误删同一玩家的新连接）。</summary>
+    /// <summary>释放某个连接的 presence（只删属于本连接的那份标记，避免误删同一玩家的新连接）。</summary>
     private void ReleasePresence(Client cli)
     {
         var store = _friend;
-        if (store == null || string.IsNullOrEmpty(cli.UserId))
+        if (store == null || string.IsNullOrEmpty(cli.UserId) || string.IsNullOrEmpty(cli.EntityId))
         {
             return;
         }
 
+        var userId = cli.UserId!;
+        var entityId = cli.EntityId!;
         _ = Task.Run(async () =>
         {
             try
             {
-                await store.ReleasePresenceAsync(cli.UserId!, _gateId);
+                await store.ReleasePresenceAsync(userId, _gateId, entityId);
             }
             catch (Exception e)
             {

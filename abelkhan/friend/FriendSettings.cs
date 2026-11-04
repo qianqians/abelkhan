@@ -21,6 +21,13 @@ public sealed class FriendSettings
     /// </summary>
     public int ReserveTimeoutMs { get; set; } = 30_000;
 
+    /// <summary>
+    /// 同意好友时等待跨服确认回执的超时（毫秒）。正常路径只是一次 Redis / 队列往返，
+    /// 这里设得比 <see cref="ReserveTimeoutMs"/> 短很多：同意请求在玩家实体的任务队列里同步等待，
+    /// 等太久会拖住该玩家的其它请求。
+    /// </summary>
+    public int AcceptTimeoutMs { get; set; } = 5_000;
+
     /// <summary>在线标记（presence）的 TTL（毫秒），gate 每 3 秒刷新一次。</summary>
     public int PresenceTtlMs { get; set; } = 15_000;
 

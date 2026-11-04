@@ -12,6 +12,7 @@
       <ProjectReference Include="..\engine\engine.csproj" />
       <ProjectReference Include="..\shop\shop.csproj" />
       <ProjectReference Include="..\leaderboard\leaderboard.csproj" />
+      <ProjectReference Include="..\friend\friend.csproj" />
     </ItemGroup>
 
 </Project>

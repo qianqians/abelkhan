@@ -54,6 +54,9 @@ public class GateMsgHandle
     private readonly WRpc _rpc;
     private readonly GateNetwork _gate;
     private readonly ConcurrentDictionary<string, BaseEntity> _entities;
+
+    /// <summary>gate 上报的客户端下线（带 user_id），由 <see cref="MainClass"/> 转发给好友系统。</summary>
+    public event Action<ClientDisconnect>? OnDisconnect;
     
     public GateMsgHandle(WRpc rpc, GateNetwork gate, ConcurrentDictionary<string, BaseEntity> entities)
     {
@@ -147,7 +150,8 @@ public class GateMsgHandle
 
     private void OnClientDisconnect(ClientDisconnect msg)
     {
-        Log.Info("Client:{0} Disconnect", msg.ConnId);
+        Log.Info("Client:{0} user:{1} Disconnect", msg.ConnId, msg.UserId);
+        OnDisconnect?.Invoke(msg);
     }
 
     private void OnClientRequestHub(string msgId, ClientRequestHub msg)
