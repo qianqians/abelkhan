@@ -177,7 +177,22 @@ player.RefreshChatScopes();                                    // 一次改多�
 
 ---
 
-## 8. 边界与后续
+## 8. 客户端（C# SDK）
+
+`client/Player` 已经封装好（见 `client/Player.Chat.cs`）：
+
+```csharp
+var channels = await player.RequestChatChannels();
+var sent     = await player.SendChatMessage("guild", "大家好");
+var history  = await player.RequestChatHistory("guild", count: 20);
+var pm       = await player.SendPrivateMessage("u100", "在吗");
+
+// 服务端推送（框架自动注册）
+player.ChatMessage += n => { /* 频道消息（含自己发的） */ };
+player.ChatPrivate += n => { /* 私聊消息 */ };
+```
+
+## 9. 边界与后续
 
 - 广播依赖 pub/sub：hub 瞬时断线期间的实时消息会丢（不进历史）；历史消息不受影响。
 - 频道历史只保留最近 N 条，不落库；要审计 / 举报需要自己接 `MongoDB`（未实现）。

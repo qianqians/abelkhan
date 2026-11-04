@@ -10,7 +10,7 @@ namespace client;
 /// 场景里的其它对象（别的玩家、怪物、掉落等）用 <see cref="Entity"/>。
 /// 游戏侧派生这个类实现自己的玩家逻辑，框架保证 <see cref="Client.Player"/> 指向它。
 /// </summary>
-public abstract class Player(string entityId, string entityType) : Entity(entityId, entityType)
+public abstract partial class Player(string entityId, string entityType) : Entity(entityId, entityType)
 {
     /// <summary>当前连接 id（gate 下发的），等价于 Session.ConnId</summary>
     public string ConnId => Session?.ConnId ?? string.Empty;
@@ -129,5 +129,19 @@ public abstract class Player(string entityId, string entityType) : Entity(entity
         return Request<ClientLeaderboardRank, ClientLeaderboardRankResult>(
             Consts.ClientLeaderboardRank,
             new ClientLeaderboardRank { BoardId = boardId, MemberId = memberId });
+    }
+
+    // ---------------- 服务器推送的各类通知 ----------------
+
+    /// <summary>
+    /// 把好友 / 聊天 / 帮会 / 任务的服务端通知接到事件上。
+    /// 框架在创建 Player 时自动调一次，游戏只需要订阅事件。
+    /// </summary>
+    internal void RegisterFeatureNotifications()
+    {
+        RegisterFriendNotifications();
+        RegisterChatNotifications();
+        RegisterGuildNotifications();
+        RegisterQuestNotifications();
     }
 }

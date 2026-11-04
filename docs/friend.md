@@ -176,7 +176,28 @@ presence 和 hub 读的不是同一个 key。
 
 ---
 
-## 8. 边界与后续
+## 8. 客户端（C# SDK）
+
+`client/Player` 已经封装好（见 `client/Player.Friend.cs`），游戏不用自己拼协议：
+
+```csharp
+var list     = await player.RequestFriendList();
+var pending  = await player.RequestFriendRequests();       // 上线后拉一次待处理申请
+var sent     = await player.SendFriendRequest("u100");     // 离线也受理
+var accepted = await player.AcceptFriendRequest("u100");   // 占位 + 跨服确认，可能稍慢
+var rejected = await player.RejectFriendRequest("u100");
+var removed  = await player.RemoveFriend("u100");
+
+// 服务端推送（框架在创建 Player 时自动注册，游戏只订阅）
+player.FriendRequested   += n => { /* 收到申请 */ };
+player.FriendOnline      += n => { /* 好友上线 */ };
+player.FriendOffline     += n => { /* 好友下线 */ };
+player.FriendAdded       += n => { /* 加好友成功 */ };
+player.FriendRemoved     += n => { /* 被删除 */ };
+player.FriendAcceptTimeout += n => { /* 同意超时，可重试 */ };
+```
+
+## 9. 边界与后续
 
 - 申请没有时间戳排序（`inbox` 用 set）；要「按时间排序 / 过期自动失效」改成 zset 即可。
 - 跨 hub 确认依赖目标 hub 的队列消费；目标 hub 长时间挂掉时靠 30s 超时 + 定时回收兜底，

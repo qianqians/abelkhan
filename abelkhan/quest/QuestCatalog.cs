@@ -20,16 +20,18 @@ public sealed record QuestDefinition(
     IReadOnlyList<string>? NextQuestIds = null,
     string RewardKey = "")
 {
-    public IReadOnlyList<string> Requires { get; } = RequireQuests ?? Array.Empty<string>();
+    // 这些是「派生属性」，注意必须用 => 而不是初始化器：
+    // 初始化器只在构造时求值一次，record 用 `with` 复制时不会重算，会读到旧值。
+    public IReadOnlyList<string> Requires => RequireQuests ?? Array.Empty<string>();
 
-    public IReadOnlyList<QuestCondition> Triggers { get; } = TriggerConditions ?? Array.Empty<QuestCondition>();
+    public IReadOnlyList<QuestCondition> Triggers => TriggerConditions ?? Array.Empty<QuestCondition>();
 
-    public IReadOnlyList<QuestCondition> Progress { get; } = ProgressConditions ?? Array.Empty<QuestCondition>();
+    public IReadOnlyList<QuestCondition> Progress => ProgressConditions ?? Array.Empty<QuestCondition>();
 
-    public IReadOnlyList<QuestCondition> Completions { get; } =
+    public IReadOnlyList<QuestCondition> Completions =>
         CompletionConditions ?? Array.Empty<QuestCondition>();
 
-    public IReadOnlyList<string> NextQuests { get; } = NextQuestIds ?? Array.Empty<string>();
+    public IReadOnlyList<string> NextQuests => NextQuestIds ?? Array.Empty<string>();
 
     /// <summary>是否有可累计的进度条件（没有的话接取即完成，等价于一次性任务）。</summary>
     public bool HasProgress => Progress.Count > 0;

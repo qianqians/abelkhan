@@ -207,12 +207,9 @@ public sealed class QuestService
         }
 
         var progress = await _store.GetQuestProgressAsync(player.UserId, questId);
-        foreach (var condition in definition.Progress)
+        if (!QuestRules.ProgressFull(definition, progress))
         {
-            if (progress.GetValueOrDefault(condition.ConditionKey) < condition.Target)
-            {
-                return (QuestResult.Fail(QuestCodes.ProgressNotFull), new List<string>());
-            }
+            return (QuestResult.Fail(QuestCodes.ProgressNotFull), new List<string>());
         }
 
         if (!await GatesSatisfiedAsync(player, definition))
@@ -264,32 +261,26 @@ public sealed class QuestService
         var done = await _store.GetDoneAsync(userId);
         var active = await _store.GetActiveStatesAsync(userId);
 
-        foreach (var nextId in definition.NextQuests)
+        // 「多后继 + 条件挑一」：按配置顺序取第一个满足条件的后继
+        var picked = QuestRules.PickNext(definition, Catalog, events, done.Keys.ToList(), active.Keys.ToList());
+        if (picked != null)
         {
-            if (!Catalog.TryGet(nextId, out var next) || next == null)
+            if (Catalog.TryGet(picked, out var next) && next != null)
             {
-                Log.Error("quest: {0} 的后继 {1} 不在任务目录里", questId, nextId);
-                continue;
-            }
-
-            if (!CanBeAccepted(next, events, done, active))
-            {
-                continue;
-            }
-
-            active[nextId] = QuestState.Create(nextId, now);
-            nextAccepted.Add(nextId);
-
-            if (next.AutoAccept)
-            {
-                var started = await _store.StartQuestAsync(userId, next, now, _store.Settings.MaxActiveQuests);
-                if (!started.Ok)
+                nextAccepted.Add(picked);
+                if (next.AutoAccept)
                 {
-                    Log.Error("quest: 接取后继 {0} 失败:{1}", nextId, started.Code);
+                    var started = await _store.StartQuestAsync(userId, next, now, _store.Settings.MaxActiveQuests);
+                    if (!started.Ok)
+                    {
+                        Log.Error("quest: 接取后继 {0} 失败:{1}", picked, started.Code);
+                    }
                 }
             }
-
-            break; // 挑一
+        }
+        else if (definition.NextQuests.Count > 0)
+        {
+            Log.Error("quest: {0} 完成后没有后继满足触发条件（配置可能有缺口）", questId);
         }
 
         // 非链上的（根任务）可能也因为这次完成而可接了
@@ -310,42 +301,10 @@ public sealed class QuestService
     // 判定
     // ================================================================
 
-    /// <summary>触发条件的判定：对玩家事件状态求值。</summary>
-    private static bool TriggersSatisfied(QuestDefinition definition, Dictionary<string, long> events)
-    {
-        foreach (var condition in definition.Triggers)
-        {
-            if (!ConditionSatisfied(condition, events.GetValueOrDefault(condition.ConditionKey)))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private static bool ConditionSatisfied(QuestCondition condition, long value) =>
-        condition.Mode == QuestConditionMode.Flag ? value >= 1 : value >= condition.Target;
-
-    /// <summary>能不能接：未完成、未进行中、前置都完成、触发条件满足。</summary>
+    /// <summary>能不能接（判定逻辑在 quest.QuestRules，便于单测）。</summary>
     private static bool CanBeAccepted(QuestDefinition definition, Dictionary<string, long> events,
-        Dictionary<string, long> done, Dictionary<string, QuestState> active)
-    {
-        if (done.ContainsKey(definition.QuestId) || active.ContainsKey(definition.QuestId))
-        {
-            return false;
-        }
-
-        foreach (var require in definition.Requires)
-        {
-            if (!done.ContainsKey(require))
-            {
-                return false;
-            }
-        }
-
-        return TriggersSatisfied(definition, events);
-    }
+        Dictionary<string, long> done, Dictionary<string, QuestState> active) =>
+        QuestRules.CanBeAccepted(definition, events, done.Keys.ToList(), active.Keys.ToList());
 
     /// <summary>
     /// 触发判定：只扫「根任务」（没被任何任务当作后继的那些），避免链上的任务被激活两次。
@@ -398,7 +357,7 @@ public sealed class QuestService
         var events = await _store.GetEventStateAsync(player.UserId);
         foreach (var condition in definition.Completions)
         {
-            if (ConditionSatisfied(condition, events.GetValueOrDefault(condition.ConditionKey)))
+            if (QuestRules.ConditionSatisfied(condition, events.GetValueOrDefault(condition.ConditionKey)))
             {
                 continue;
             }
@@ -425,19 +384,16 @@ public sealed class QuestService
         }
 
         var progress = await _store.GetQuestProgressAsync(userId, questId);
-        foreach (var condition in definition.Progress)
+        if (!QuestRules.ProgressFull(definition, progress))
         {
-            if (progress.GetValueOrDefault(condition.ConditionKey) < condition.Target)
-            {
-                return (false, progress);
-            }
+            return (false, progress);
         }
 
         // 门槛需要 Player 才能问钩子；离线时只用事件状态判定
         var events = await _store.GetEventStateAsync(userId);
         foreach (var condition in definition.Completions)
         {
-            if (!ConditionSatisfied(condition, events.GetValueOrDefault(condition.ConditionKey)))
+            if (!QuestRules.ConditionSatisfied(condition, events.GetValueOrDefault(condition.ConditionKey)))
             {
                 if (_players.TryGetValue(userId, out var player))
                 {
@@ -514,11 +470,9 @@ public sealed class QuestService
             return ToInfo(definition, QuestStatus.Completed, null, false);
         }
 
-        var events = await _store.GetEventStateAsync(player.UserId);
-        var status = CanBeAccepted(definition, events, done, active)
-            ? QuestStatus.Available
-            : QuestStatus.Available; // 未满足触发条件时同样按「可接」展示，但不自动接
-        return ToInfo(definition, status, null, false);
+        // 不在进行中也没完成：按「可接」展示（是否真的满足触发条件由 client_quest_list 的可接列表决定，
+        // 这里主要用于「接到通知后拉单条任务」的场景）
+        return ToInfo(definition, QuestStatus.Available, null, false);
     }
 
     private static ClientQuestInfo ToInfo(QuestDefinition definition, string status,

@@ -178,7 +178,39 @@ await guildStore.SetMemberCapExtraAsync(guildId, extra: 10);  // 帮会升级时
 
 ---
 
-## 9. 边界与后续
+## 9. 客户端（C# SDK）
+
+`client/Player` 已经封装好（见 `client/Player.Guild.cs`），共 17 个方法：
+
+```csharp
+var info      = await player.RequestGuildInfo();          // 信息 / 成员 / 任务 + 我的进度
+var created   = await player.CreateGuild("铁血盟");
+var invited   = await player.InviteToGuild("u100");
+var applied   = await player.ApplyToGuild(guildId);
+var applies   = await player.RequestGuildApplies();
+var approved  = await player.ApproveGuildApply("u100", accept: true);
+var replied   = await player.ReplyGuildInvite(guildId, accept: true);
+var promoted  = await player.SetGuildRole("u100", role: 2);   // 1 成员 / 2 副帮主
+var kicked    = await player.KickFromGuild("u100");
+var left      = await player.LeaveGuild();
+var transferred = await player.TransferGuild("u100");
+var disbanded = await player.DisbandGuild();
+// 帮会任务
+var published = await player.PublishGuildTask("daily_kill");
+var accepted  = await player.AcceptGuildTask("daily_kill");
+var cancelled = await player.CancelGuildTask("daily_kill");
+// 还有 RenameGuild / SetGuildNotice
+
+// 服务端推送（框架自动注册）
+player.GuildUpdated    += n => { /* 拉一次 RequestGuildInfo() 刷新 */ };
+player.GuildInvited    += n => { /* 收到邀请 */ };
+player.GuildRemoved    += n => { /* kicked / disbanded / left */ };
+player.GuildTaskUpdated += n => { /* 任务发布 / 取消 / 进度 / 完成 */ };
+```
+
+> 帮会频道聊天走 `player.SendChatMessage("guild", ...)`，入帮/退帮后服务端会自动同步聊天作用域。
+
+## 10. 边界与后续
 
 - **跨 hub 镜像自愈**：入帮 / 被踢可能发生在别的 hub 上，本地 `GuildId` 镜像是懒校正的
   ——`client_guild_info` 每次都从 Redis 重新读（顺带修正聊天作用域），并靠通知让客户端去拉。

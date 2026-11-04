@@ -527,6 +527,8 @@ public class Client
         if (entity is Player player)
         {
             Player = player;
+            // 好友 / 聊天 / 帮会 / 任务的服务端通知统一接到事件上
+            player.RegisterFeatureNotifications();
         }
 
         // 走实体自己的队列，保证 OnCreate 排在该实体的其它消息之前

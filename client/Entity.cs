@@ -138,6 +138,22 @@ public abstract class Entity(string entityId, string entityType)
         });
     }
 
+    /// <summary>
+    /// 注册服务器 notify；该方法已经注册过就跳过并返回 false。
+    /// 框架内置的模块通知（好友 / 聊天 / 帮会 / 任务）用它：游戏自己先注册了同一个协议时不会被覆盖。
+    /// </summary>
+    public bool TryRegisterNotify<T>(string method, Action<T> callback)
+        where T : IMessage<T>, new()
+    {
+        if (_onNotify.ContainsKey(method))
+        {
+            return false;
+        }
+
+        RegisterNotify(method, callback);
+        return true;
+    }
+
     /// <summary>注册服务器 notify 的处理（异步版本）</summary>
     public void RegisterNotify<T>(string method, Func<T, Task> callback)
         where T : IMessage<T>, new()
