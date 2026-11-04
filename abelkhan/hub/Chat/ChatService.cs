@@ -276,7 +276,16 @@ public sealed class ChatService
         IEnumerable<string> targets;
         if (channel.Scope is ChatScope.Zone or ChatScope.Server)
         {
-            // 全区 / 全服：每个在线玩家都是成员，不用建索引
+            // 全区 / 全服：每个在线玩家都是成员，不用建索引。
+            // 但作用域 id 对不上（同一个 Redis 上跑了多个区）时不能推，否则会串区。
+            var expected = channel.Scope == ChatScope.Zone
+                ? _store.Settings.ZoneId
+                : _store.Settings.ServerId;
+            if (!string.Equals(broadcast.ScopeId, expected, StringComparison.Ordinal))
+            {
+                return;
+            }
+
             targets = _players.Keys.ToList();
         }
         else if (_members.TryGetValue(RoutingKey(channel.Scope, broadcast.ScopeId), out var set))

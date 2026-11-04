@@ -402,12 +402,18 @@ public class MainClass
 
             // 聊天：频道在代码里声明，消息走 Redis pub/sub 跨 hub 扇出
             _chatStore = new ChatStore(_redis, cfg.Chat);
+            var friendStore = _friendStore;
             _chatService = new ChatService(_chatStore, _redis)
             {
                 // 私聊需要知道对方在不在线（复用好友系统的 presence）
                 ResolveOnlineEntityId = async userId =>
                 {
-                    var presence = await _friendStore!.GetPresenceAsync(new[] { userId });
+                    if (friendStore == null)
+                    {
+                        return null;
+                    }
+
+                    var presence = await friendStore.GetPresenceAsync(new[] { userId });
                     return presence.TryGetValue(userId, out var where) ? where.EntityId : null;
                 },
             };

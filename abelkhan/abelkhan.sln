@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FriendSmoke", "tests\Friend
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chat", "chat\chat.csproj", "{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatSmoke", "tests\ChatSmoke\ChatSmoke.csproj", "{34CAB9CF-1823-4968-A1CD-5FF12F90F465}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -239,6 +241,18 @@ Global
 		{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}.Release|x64.Build.0 = Release|Any CPU
 		{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}.Release|x86.ActiveCfg = Release|Any CPU
 		{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}.Release|x86.Build.0 = Release|Any CPU
+		{34CAB9CF-1823-4968-A1CD-5FF12F90F465}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34CAB9CF-1823-4968-A1CD-5FF12F90F465}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34CAB9CF-1823-4968-A1CD-5FF12F90F465}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{34CAB9CF-1823-4968-A1CD-5FF12F90F465}.Debug|x64.Build.0 = Debug|Any CPU
+		{34CAB9CF-1823-4968-A1CD-5FF12F90F465}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{34CAB9CF-1823-4968-A1CD-5FF12F90F465}.Debug|x86.Build.0 = Debug|Any CPU
+		{34CAB9CF-1823-4968-A1CD-5FF12F90F465}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34CAB9CF-1823-4968-A1CD-5FF12F90F465}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34CAB9CF-1823-4968-A1CD-5FF12F90F465}.Release|x64.ActiveCfg = Release|Any CPU
+		{34CAB9CF-1823-4968-A1CD-5FF12F90F465}.Release|x64.Build.0 = Release|Any CPU
+		{34CAB9CF-1823-4968-A1CD-5FF12F90F465}.Release|x86.ActiveCfg = Release|Any CPU
+		{34CAB9CF-1823-4968-A1CD-5FF12F90F465}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -246,5 +260,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{419A1898-D06F-4EDC-AF64-0C33A6FFF779} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{595EAC84-DCE7-41FA-A93C-F2E578A363FA} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{34CAB9CF-1823-4968-A1CD-5FF12F90F465} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal
