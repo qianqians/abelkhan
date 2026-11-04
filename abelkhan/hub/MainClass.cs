@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Net;
 using System.Runtime.InteropServices;
+using chat;
 using consts;
 using Consul;
 using core;
@@ -50,6 +51,12 @@ public struct HubConfig()
 
     /// <summary>每轮最多回收多少个超期占位，避免一次占用 Redis 太久。</summary>
     public int FriendSweepBatchSize { get; set; } = 200;
+
+    /// <summary>
+    /// 聊天配置。频道在代码里声明（<see cref="ChatSettings.Channels"/>），
+    /// ZoneId / ServerId 决定「全区 / 全服」频道的作用域 id。
+    /// </summary>
+    public ChatSettings Chat { get; set; } = new();
 }
 
 public class MainClass
@@ -70,6 +77,8 @@ public class MainClass
     private LeaderboardStore? _leaderboardStore;
     private FriendStore? _friendStore;
     private FriendService? _friendService;
+    private ChatStore? _chatStore;
+    private ChatService? _chatService;
     private int _shopSettling;
     private int _friendSweeping;
     private Task? _tFriendMq;
@@ -222,6 +231,12 @@ public class MainClass
             // hub 通常只注册一个 service；多个时可多次覆盖，以最后一个为准。
             _friendService.DisplayResolver ??= service.ResolveFriendDisplayAsync;
             _friendService.SetOfflineLoader(service.LoadOfflinePlayerAsync);
+        }
+
+        if (_chatService != null)
+        {
+            service.Chat = _chatService;
+            _chatService.DisplayResolver ??= service.ResolveChatDisplayAsync;
         }
     }
 
@@ -385,6 +400,20 @@ public class MainClass
             Log.Info("hub: friend key prefix:{0} maxFriends:{1} hub:{2}",
                 cfg.Friend.KeyPrefix, cfg.Friend.MaxFriends, cfg.HubId);
 
+            // 聊天：频道在代码里声明，消息走 Redis pub/sub 跨 hub 扇出
+            _chatStore = new ChatStore(_redis, cfg.Chat);
+            _chatService = new ChatService(_chatStore, _redis)
+            {
+                // 私聊需要知道对方在不在线（复用好友系统的 presence）
+                ResolveOnlineEntityId = async userId =>
+                {
+                    var presence = await _friendStore!.GetPresenceAsync(new[] { userId });
+                    return presence.TryGetValue(userId, out var where) ? where.EntityId : null;
+                },
+            };
+            Log.Info("hub: chat channels:{0} zone:{1} server:{2}",
+                cfg.Chat.Channels.Count, cfg.Chat.ZoneId, cfg.Chat.ServerId);
+
             foreach (var service in _services.Values)
             {
                 service.GlobalMailBox = _serviceMailBox;
@@ -393,7 +422,23 @@ public class MainClass
                 service.Friend = _friendService;
                 _friendService.DisplayResolver ??= service.ResolveFriendDisplayAsync;
                 _friendService.SetOfflineLoader(service.LoadOfflinePlayerAsync);
+                service.Chat = _chatService;
+                _chatService.DisplayResolver ??= service.ResolveChatDisplayAsync;
             }
+
+            // 订阅跨 hub 聊天广播：订阅回调在 Redis 接收线程上执行，派发丢给线程池
+            var chatService = _chatService;
+            _chatStore.Subscribe(payload => _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await chatService.OnBroadcastAsync(payload);
+                }
+                catch (Exception e)
+                {
+                    Log.Error("chat: dispatch broadcast err:{0}", e);
+                }
+            }));
 
             StartRedisMsg();
             
@@ -412,7 +457,8 @@ public class MainClass
                 handle.OnDisconnect += disconnect =>
                 {
                     var friendService = _friendService;
-                    if (friendService == null || string.IsNullOrEmpty(disconnect.UserId))
+                    var chat = _chatService;
+                    if (string.IsNullOrEmpty(disconnect.UserId))
                     {
                         return;
                     }
@@ -421,11 +467,19 @@ public class MainClass
                     {
                         try
                         {
-                            await friendService.OnOfflineAsync(disconnect.UserId);
+                            if (friendService != null)
+                            {
+                                await friendService.OnOfflineAsync(disconnect.UserId);
+                            }
+
+                            if (chat != null)
+                            {
+                                await chat.OnOfflineAsync(disconnect.UserId);
+                            }
                         }
                         catch (Exception e)
                         {
-                            Log.Error("friend: offline user:{0} err:{1}", disconnect.UserId, e);
+                            Log.Error("offline user:{0} err:{1}", disconnect.UserId, e);
                         }
                     });
                 };

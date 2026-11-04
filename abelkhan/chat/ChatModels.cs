@@ -38,6 +38,9 @@ public sealed record ChatChannel(
     int CooldownMs,
     int HistoryCount);
 
+/// <summary>聊天条目的展示信息（昵称 / 头像），由游戏钩子填充。</summary>
+public sealed record ChatDisplay(string Name = "", string Avatar = "");
+
 /// <summary>一条聊天消息（频道消息或私聊）。发送时把昵称 / 头像冗余进去，接收方不用再解析。</summary>
 public sealed record ChatEntry(
     string MessageId,

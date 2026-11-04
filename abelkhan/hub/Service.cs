@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using chat;
 using core;
 using friend;
 using hub.inventory;
@@ -34,6 +35,12 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
     /// 为 null 时不注册好友协议。
     /// </summary>
     public FriendService? Friend { get; set; }
+
+    /// <summary>
+    /// 聊天系统（频道跨 hub 扇出 + 点对点）。由 <see cref="MainClass"/> 在启动时注入。
+    /// 为 null 时不注册聊天协议。
+    /// </summary>
+    public ChatService? Chat { get; set; }
 
     /// <summary>物品配置表；创建出的玩家会继承该配置。为 null 时允许任意 item_id。</summary>
     public IItemCatalog? ItemCatalog { get; set; }
@@ -79,6 +86,14 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
             new Dictionary<string, FriendDisplay>());
 
     /// <summary>
+    /// 游戏提供：按 userId 批量解析聊天消息的展示信息（昵称 / 头像）。
+    /// 默认返回空字典（消息里只有 userId）。
+    /// </summary>
+    protected internal virtual Task<IReadOnlyDictionary<string, ChatDisplay>> ResolveChatDisplayAsync(
+        IReadOnlyCollection<string> userIds) =>
+        Task.FromResult<IReadOnlyDictionary<string, ChatDisplay>>(new Dictionary<string, ChatDisplay>());
+
+    /// <summary>
     /// 游戏提供：把好友关系写进玩家存档（镜像）。
     /// 关系本身以 Redis 为权威，这里只负责同步存档；读 <see cref="Player.Friends"/> /
     /// <see cref="Player.PendingFriendReserve"/> 后把它写进自己的存档字段并调用 Save()。
@@ -107,6 +122,8 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
         player.RegisterLeaderboardRequests(this);
         // 好友：申请 / 同意 / 拒绝 / 删除 / 列表
         player.RegisterFriendRequests(this);
+        // 聊天：频道列表 / 发言 / 历史 / 私聊
+        player.RegisterChatRequests(this);
         var cli = clients.AddOrUpdate(player.UserId, key => new Client(player.UserId, gateName, cliConnId), (key, old) => old);
         await player.CreateRemotePlayer(cli);
         await _group.CreateRemotePlayer(player);
@@ -121,6 +138,19 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
             catch (Exception ex)
             {
                 Log.Error($"friend online user:{player.UserId} err:{ex}");
+            }
+        }
+
+        // 聊天：解析玩家的频道作用域（场景 / 帮会 / 门派），建本地成员索引
+        if (Chat != null)
+        {
+            try
+            {
+                await Chat.OnOnlineAsync(player);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"chat online user:{player.UserId} err:{ex}");
             }
         }
 

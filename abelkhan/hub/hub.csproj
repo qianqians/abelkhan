@@ -13,6 +13,7 @@
       <ProjectReference Include="..\shop\shop.csproj" />
       <ProjectReference Include="..\leaderboard\leaderboard.csproj" />
       <ProjectReference Include="..\friend\friend.csproj" />
+      <ProjectReference Include="..\chat\chat.csproj" />
     </ItemGroup>
 
 </Project>

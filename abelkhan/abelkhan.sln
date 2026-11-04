@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "friend", "friend\friend.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FriendSmoke", "tests\FriendSmoke\FriendSmoke.csproj", "{595EAC84-DCE7-41FA-A93C-F2E578A363FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chat", "chat\chat.csproj", "{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -225,6 +227,18 @@ Global
 		{595EAC84-DCE7-41FA-A93C-F2E578A363FA}.Release|x64.Build.0 = Release|Any CPU
 		{595EAC84-DCE7-41FA-A93C-F2E578A363FA}.Release|x86.ActiveCfg = Release|Any CPU
 		{595EAC84-DCE7-41FA-A93C-F2E578A363FA}.Release|x86.Build.0 = Release|Any CPU
+		{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}.Debug|x64.Build.0 = Debug|Any CPU
+		{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}.Debug|x86.Build.0 = Debug|Any CPU
+		{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}.Release|x64.ActiveCfg = Release|Any CPU
+		{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}.Release|x64.Build.0 = Release|Any CPU
+		{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}.Release|x86.ActiveCfg = Release|Any CPU
+		{245A8B11-A3DA-42BD-87E9-7C54FA1B9CBB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
