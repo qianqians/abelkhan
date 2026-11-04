@@ -12,6 +12,7 @@ abelkhan是一个轻量级的游戏服务器框架，基于c#开发，使用mong
 * leaderboard 通用排行榜（hub 侧 Redis ZSET：打榜保留最高分 / 区间拉榜 / 查名次 / 重置，见 `docs/leaderboard.md`）
 * friend 好友系统（离线申请 / 临时占位 / 跨服确认 / 上限可扩展，见 `docs/friend.md`）
 * chat 聊天系统（可配置频道按作用域跨 hub 群发 + 点对点私聊，见 `docs/chat.md`）
+* guild 联盟/帮会系统（创建 / 邀请审批 / 三级职位 / 帮会频道 / 可编程帮会任务，见 `docs/guild.md`）
 * admin 管理后台（dashboard：监控大盘/玩家查询/支付查询/GM面板/邮件发送/商城管理，见 abelkhan/admin/README.md）
 
 ## License
