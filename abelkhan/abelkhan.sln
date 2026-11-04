@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chat", "chat\chat.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatSmoke", "tests\ChatSmoke\ChatSmoke.csproj", "{34CAB9CF-1823-4968-A1CD-5FF12F90F465}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "guild", "guild\guild.csproj", "{219F0CBC-11B0-4B93-9B13-6F75970C6933}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -253,6 +255,18 @@ Global
 		{34CAB9CF-1823-4968-A1CD-5FF12F90F465}.Release|x64.Build.0 = Release|Any CPU
 		{34CAB9CF-1823-4968-A1CD-5FF12F90F465}.Release|x86.ActiveCfg = Release|Any CPU
 		{34CAB9CF-1823-4968-A1CD-5FF12F90F465}.Release|x86.Build.0 = Release|Any CPU
+		{219F0CBC-11B0-4B93-9B13-6F75970C6933}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{219F0CBC-11B0-4B93-9B13-6F75970C6933}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{219F0CBC-11B0-4B93-9B13-6F75970C6933}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{219F0CBC-11B0-4B93-9B13-6F75970C6933}.Debug|x64.Build.0 = Debug|Any CPU
+		{219F0CBC-11B0-4B93-9B13-6F75970C6933}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{219F0CBC-11B0-4B93-9B13-6F75970C6933}.Debug|x86.Build.0 = Debug|Any CPU
+		{219F0CBC-11B0-4B93-9B13-6F75970C6933}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{219F0CBC-11B0-4B93-9B13-6F75970C6933}.Release|Any CPU.Build.0 = Release|Any CPU
+		{219F0CBC-11B0-4B93-9B13-6F75970C6933}.Release|x64.ActiveCfg = Release|Any CPU
+		{219F0CBC-11B0-4B93-9B13-6F75970C6933}.Release|x64.Build.0 = Release|Any CPU
+		{219F0CBC-11B0-4B93-9B13-6F75970C6933}.Release|x86.ActiveCfg = Release|Any CPU
+		{219F0CBC-11B0-4B93-9B13-6F75970C6933}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

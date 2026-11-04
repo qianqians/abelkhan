@@ -469,6 +469,13 @@ public sealed class GuildStore
         }
     }
 
+    /// <summary>把任务标记为已完成（状态幂等，重复写没副作用）。</summary>
+    public Task MarkTaskFinishedAsync(string guildId, string taskId, GuildTaskState state)
+    {
+        return _redis.Execute("guild.task_finish", db => db.HashSetAsync(
+            Keys.Tasks(guildId), taskId, JsonConvert.SerializeObject(state))).AsTask();
+    }
+
     /// <summary>某个任务的全部进度：memberId → 进度（共享任务的键是 <c>_</c>）。</summary>
     public async Task<Dictionary<string, long>> GetTaskProgressAsync(string guildId, string taskId)
     {

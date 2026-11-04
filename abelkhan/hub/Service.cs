@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using chat;
 using core;
 using friend;
+using guild;
 using hub.inventory;
 using leaderboard;
 using shop;
@@ -41,6 +42,18 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
     /// 为 null 时不注册聊天协议。
     /// </summary>
     public ChatService? Chat { get; set; }
+
+    /// <summary>
+    /// 帮会系统（创建 / 成员 / 职位 / 任务）。由 <see cref="MainClass"/> 在启动时注入。
+    /// 为 null 时不注册帮会协议。
+    /// </summary>
+    public GuildService? Guild { get; set; }
+
+    /// <summary>
+    /// 帮会任务目录（游戏在注册 service 前把默认任务注册进来）。
+    /// 新建帮会时会自动发布 <c>GuildSettings.DefaultTaskIds</c> 里存在的那些。
+    /// </summary>
+    public IGuildTaskCatalog GuildTaskCatalog { get; set; } = global::guild.GuildTaskCatalog.Empty;
 
     /// <summary>物品配置表；创建出的玩家会继承该配置。为 null 时允许任意 item_id。</summary>
     public IItemCatalog? ItemCatalog { get; set; }
@@ -94,6 +107,25 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
         Task.FromResult<IReadOnlyDictionary<string, ChatDisplay>>(new Dictionary<string, ChatDisplay>());
 
     /// <summary>
+    /// 游戏提供：按 userId 批量解析帮会成员列表的展示信息（昵称 / 头像）。
+    /// </summary>
+    protected internal virtual Task<IReadOnlyDictionary<string, GuildDisplay>> ResolveGuildDisplayAsync(
+        IReadOnlyCollection<string> userIds) =>
+        Task.FromResult<IReadOnlyDictionary<string, GuildDisplay>>(new Dictionary<string, GuildDisplay>());
+
+    /// <summary>
+    /// 游戏提供：创建帮会的额外校验（等级 / 花费 / 冷却）。返回非空字符串 = 拒绝原因。
+    /// </summary>
+    protected internal virtual string? CheckGuildCreate(Player player, string name) => null;
+
+    /// <summary>
+    /// 游戏提供：帮会任务完成时发奖 / 记日志。
+    /// 可能在成员离线时触发，所以只给 id（走邮件或直接发奖都行）。
+    /// </summary>
+    protected internal virtual Task OnGuildTaskCompletedAsync(GuildTaskCompletion completion) =>
+        Task.CompletedTask;
+
+    /// <summary>
     /// 游戏提供：把好友关系写进玩家存档（镜像）。
     /// 关系本身以 Redis 为权威，这里只负责同步存档；读 <see cref="Player.Friends"/> /
     /// <see cref="Player.PendingFriendReserve"/> 后把它写进自己的存档字段并调用 Save()。
@@ -124,6 +156,8 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
         player.RegisterFriendRequests(this);
         // 聊天：频道列表 / 发言 / 历史 / 私聊
         player.RegisterChatRequests(this);
+        // 帮会：创建 / 成员 / 职位 / 任务
+        player.RegisterGuildRequests(this);
         var cli = clients.AddOrUpdate(player.UserId, key => new Client(player.UserId, gateName, cliConnId), (key, old) => old);
         await player.CreateRemotePlayer(cli);
         await _group.CreateRemotePlayer(player);
@@ -138,6 +172,19 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
             catch (Exception ex)
             {
                 Log.Error($"friend online user:{player.UserId} err:{ex}");
+            }
+        }
+
+        // 帮会：必须在聊天之前——聊天的「帮会频道」作用域由帮会系统回答
+        if (Guild != null)
+        {
+            try
+            {
+                await Guild.OnOnlineAsync(player);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"guild online user:{player.UserId} err:{ex}");
             }
         }
 

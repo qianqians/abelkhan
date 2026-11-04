@@ -8,6 +8,7 @@ using core;
 using engine;
 using friend;
 using Google.Protobuf;
+using guild;
 using leaderboard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -57,6 +58,9 @@ public struct HubConfig()
     /// ZoneId / ServerId 决定「全区 / 全服」频道的作用域 id。
     /// </summary>
     public ChatSettings Chat { get; set; } = new();
+
+    /// <summary>帮会配置（成员上限 / 默认任务等）。</summary>
+    public GuildSettings Guild { get; set; } = new();
 }
 
 public class MainClass
@@ -79,6 +83,8 @@ public class MainClass
     private FriendService? _friendService;
     private ChatStore? _chatStore;
     private ChatService? _chatService;
+    private GuildStore? _guildStore;
+    private GuildService? _guildService;
     private int _shopSettling;
     private int _friendSweeping;
     private Task? _tFriendMq;
@@ -237,6 +243,16 @@ public class MainClass
         {
             service.Chat = _chatService;
             _chatService.DisplayResolver ??= service.ResolveChatDisplayAsync;
+        }
+
+        if (_guildService != null)
+        {
+            service.Guild = _guildService;
+            _guildService.Catalog = service.GuildTaskCatalog;
+            _guildService.DisplayResolver ??= service.ResolveGuildDisplayAsync;
+            _guildService.OnTaskCompleted ??= service.OnGuildTaskCompletedAsync;
+            // 帮会频道：让聊天系统从帮会系统拿作用域，而不是靠游戏重写 GetChatScope
+            _chatService!.GuildScopeResolver ??= player => _guildService.ScopeOf(player.UserId);
         }
     }
 
@@ -400,6 +416,31 @@ public class MainClass
             Log.Info("hub: friend key prefix:{0} maxFriends:{1} hub:{2}",
                 cfg.Friend.KeyPrefix, cfg.Friend.MaxFriends, cfg.HubId);
 
+            // 帮会：数据全在 Redis（Lua 原子），跨 hub 通知按 presence 推送
+            _guildStore = new GuildStore(_redis, cfg.Guild);
+            _guildService = new GuildService(_guildStore, _redis)
+            {
+                ResolveOnlineEntityIds = async userIds =>
+                {
+                    var store = _friendStore;
+                    var result = new Dictionary<string, string>();
+                    if (store == null)
+                    {
+                        return result;
+                    }
+
+                    var presence = await store.GetPresenceAsync(userIds);
+                    foreach (var (userId, where) in presence)
+                    {
+                        result[userId] = where.EntityId;
+                    }
+
+                    return result;
+                },
+            };
+            Log.Info("hub: guild key prefix:{0} maxMembers:{1}",
+                cfg.Guild.KeyPrefix, cfg.Guild.MaxMembers);
+
             // 聊天：频道在代码里声明，消息走 Redis pub/sub 跨 hub 扇出
             _chatStore = new ChatStore(_redis, cfg.Chat);
             var friendStore = _friendStore;
@@ -430,6 +471,11 @@ public class MainClass
                 _friendService.SetOfflineLoader(service.LoadOfflinePlayerAsync);
                 service.Chat = _chatService;
                 _chatService.DisplayResolver ??= service.ResolveChatDisplayAsync;
+                service.Guild = _guildService;
+                _guildService.Catalog = service.GuildTaskCatalog;
+                _guildService.DisplayResolver ??= service.ResolveGuildDisplayAsync;
+                _guildService.OnTaskCompleted ??= service.OnGuildTaskCompletedAsync;
+                _chatService.GuildScopeResolver ??= player => _guildService.ScopeOf(player.UserId);
             }
 
             // 订阅跨 hub 聊天广播：订阅回调在 Redis 接收线程上执行，派发丢给线程池
@@ -464,6 +510,7 @@ public class MainClass
                 {
                     var friendService = _friendService;
                     var chat = _chatService;
+                    var guild = _guildService;
                     if (string.IsNullOrEmpty(disconnect.UserId))
                     {
                         return;
@@ -481,6 +528,11 @@ public class MainClass
                             if (chat != null)
                             {
                                 await chat.OnOfflineAsync(disconnect.UserId);
+                            }
+
+                            if (guild != null)
+                            {
+                                await guild.OnOfflineAsync(disconnect.UserId);
                             }
                         }
                         catch (Exception e)
