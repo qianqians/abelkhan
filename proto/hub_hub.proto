@@ -6,3 +6,29 @@ message TakeOverUser {
   string conn_id = 3;
   bytes argv = 4;
 }
+
+// ============================================================
+// 好友系统跨服确认：经 Redis 队列 hub:{hubId}:mq 传递
+//
+// 流程：A 同意申请后在 A 侧占位，把 FriendConfirmAdd 发给 B 所在 hub；
+// B 侧（在线实例或按需创建的离线实例）执行确认，再用
+// FriendConfirmAddResult 回到 A 所在 hub 清占位并回执客户端。
+// ============================================================
+
+message FriendConfirmAdd {
+  // A：同意方（发起占位的一方）
+  string requester_id = 1;
+  // B：被申请方（申请由 B 发往 A 的方向见 FriendConfirmAddResult）
+  string target_id = 2;
+  // A 所在 hub，回执投递到 hub:{reply_hub}:mq
+  string reply_hub = 3;
+  // A 的请求 id，回执时原样带回（同一玩家可能有多个在途确认）
+  string request_id = 4;
+}
+
+message FriendConfirmAddResult {
+  string requester_id = 1;   // A
+  string target_id = 2;      // B
+  string request_id = 3;
+  string code = 4;           // ok / target_full / no_request / internal
+}

@@ -17,6 +17,10 @@ message GateForwardClientRequestService {
 
 message ClientDisconnect {
   string conn_id = 1;
+  // 下线玩家的 user_id；gate 在剔除心跳超时连接时填充，
+  // hub 据此给好友推送下线事件（为空则只打日志）。
+  string user_id = 2;
+  string entity_id = 3;
 }
 
 message ClientRequestHub {

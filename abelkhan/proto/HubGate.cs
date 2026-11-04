@@ -27,19 +27,20 @@ public static partial class HubGateReflection {
           "Y29ubl9pZBgCIAEoCRIPCgd1c2VyX2lkGAMgASgJEgwKBGFyZ3YYBCABKAwi",
           "aQofR2F0ZUZvcndhcmRDbGllbnRSZXF1ZXN0U2VydmljZRIUCgxzZXJ2aWNl",
           "X25hbWUYASABKAkSEQoJZ2F0ZV9uYW1lGAIgASgJEg8KB2Nvbm5faWQYAyAB",
-          "KAkSDAoEYXJndhgEIAEoDCIjChBDbGllbnREaXNjb25uZWN0Eg8KB2Nvbm5f",
-          "aWQYASABKAkiTwoQQ2xpZW50UmVxdWVzdEh1YhIPCgdjb25uX2lkGAEgASgJ",
-          "EhEKCWVudGl0eV9pZBgCIAEoCRIXCgVldmVudBgDIAEoCzIILkNhbGxScGMi",
-          "RwoRQ2xpZW50UmVzcG9uc2VIdWISEQoJZW50aXR5X2lkGAEgASgJEg4KBmVy",
-          "ck1zZxgCIAEoCRIPCgdjb250ZW50GAMgASgMIk4KD0NsaWVudE5vdGlmeUh1",
-          "YhIPCgdjb25uX2lkGAEgASgJEhEKCWVudGl0eV9pZBgCIAEoCRIXCgVldmVu",
-          "dBgDIAEoCzIILkNhbGxScGNiBnByb3RvMw=="));
+          "KAkSDAoEYXJndhgEIAEoDCJHChBDbGllbnREaXNjb25uZWN0Eg8KB2Nvbm5f",
+          "aWQYASABKAkSDwoHdXNlcl9pZBgCIAEoCRIRCgllbnRpdHlfaWQYAyABKAki",
+          "TwoQQ2xpZW50UmVxdWVzdEh1YhIPCgdjb25uX2lkGAEgASgJEhEKCWVudGl0",
+          "eV9pZBgCIAEoCRIXCgVldmVudBgDIAEoCzIILkNhbGxScGMiRwoRQ2xpZW50",
+          "UmVzcG9uc2VIdWISEQoJZW50aXR5X2lkGAEgASgJEg4KBmVyck1zZxgCIAEo",
+          "CRIPCgdjb250ZW50GAMgASgMIk4KD0NsaWVudE5vdGlmeUh1YhIPCgdjb25u",
+          "X2lkGAEgASgJEhEKCWVudGl0eV9pZBgCIAEoCRIXCgVldmVudBgDIAEoCzII",
+          "LkNhbGxScGNiBnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientRequestReconnect), global::GateForwardClientRequestReconnect.Parser, new[]{ "GateName", "ConnId", "UserId", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::GateForwardClientRequestService), global::GateForwardClientRequestService.Parser, new[]{ "ServiceName", "GateName", "ConnId", "Argv" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::ClientDisconnect), global::ClientDisconnect.Parser, new[]{ "ConnId" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::ClientDisconnect), global::ClientDisconnect.Parser, new[]{ "ConnId", "UserId", "EntityId" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientRequestHub), global::ClientRequestHub.Parser, new[]{ "ConnId", "EntityId", "Event" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientResponseHub), global::ClientResponseHub.Parser, new[]{ "EntityId", "ErrMsg", "Content" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientNotifyHub), global::ClientNotifyHub.Parser, new[]{ "ConnId", "EntityId", "Event" }, null, null, null, null)
@@ -703,6 +704,8 @@ public sealed partial class ClientDisconnect : pb::IMessage<ClientDisconnect>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public ClientDisconnect(ClientDisconnect other) : this() {
     connId_ = other.connId_;
+    userId_ = other.userId_;
+    entityId_ = other.entityId_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -724,6 +727,34 @@ public sealed partial class ClientDisconnect : pb::IMessage<ClientDisconnect>
     }
   }
 
+  /// <summary>Field number for the "user_id" field.</summary>
+  public const int UserIdFieldNumber = 2;
+  private string userId_ = "";
+  /// <summary>
+  /// 下线玩家的 user_id；gate 在剔除心跳超时连接时填充，
+  /// hub 据此给好友推送下线事件（为空则只打日志）。
+  /// </summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string UserId {
+    get { return userId_; }
+    set {
+      userId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "entity_id" field.</summary>
+  public const int EntityIdFieldNumber = 3;
+  private string entityId_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string EntityId {
+    get { return entityId_; }
+    set {
+      entityId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
@@ -740,6 +771,8 @@ public sealed partial class ClientDisconnect : pb::IMessage<ClientDisconnect>
       return true;
     }
     if (ConnId != other.ConnId) return false;
+    if (UserId != other.UserId) return false;
+    if (EntityId != other.EntityId) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -748,6 +781,8 @@ public sealed partial class ClientDisconnect : pb::IMessage<ClientDisconnect>
   public override int GetHashCode() {
     int hash = 1;
     if (ConnId.Length != 0) hash ^= ConnId.GetHashCode();
+    if (UserId.Length != 0) hash ^= UserId.GetHashCode();
+    if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -770,6 +805,14 @@ public sealed partial class ClientDisconnect : pb::IMessage<ClientDisconnect>
       output.WriteRawTag(10);
       output.WriteString(ConnId);
     }
+    if (UserId.Length != 0) {
+      output.WriteRawTag(18);
+      output.WriteString(UserId);
+    }
+    if (EntityId.Length != 0) {
+      output.WriteRawTag(26);
+      output.WriteString(EntityId);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
     }
@@ -784,6 +827,14 @@ public sealed partial class ClientDisconnect : pb::IMessage<ClientDisconnect>
       output.WriteRawTag(10);
       output.WriteString(ConnId);
     }
+    if (UserId.Length != 0) {
+      output.WriteRawTag(18);
+      output.WriteString(UserId);
+    }
+    if (EntityId.Length != 0) {
+      output.WriteRawTag(26);
+      output.WriteString(EntityId);
+    }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
     }
@@ -796,6 +847,12 @@ public sealed partial class ClientDisconnect : pb::IMessage<ClientDisconnect>
     int size = 0;
     if (ConnId.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(ConnId);
+    }
+    if (UserId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(UserId);
+    }
+    if (EntityId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(EntityId);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -811,6 +868,12 @@ public sealed partial class ClientDisconnect : pb::IMessage<ClientDisconnect>
     }
     if (other.ConnId.Length != 0) {
       ConnId = other.ConnId;
+    }
+    if (other.UserId.Length != 0) {
+      UserId = other.UserId;
+    }
+    if (other.EntityId.Length != 0) {
+      EntityId = other.EntityId;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -835,6 +898,14 @@ public sealed partial class ClientDisconnect : pb::IMessage<ClientDisconnect>
           ConnId = input.ReadString();
           break;
         }
+        case 18: {
+          UserId = input.ReadString();
+          break;
+        }
+        case 26: {
+          EntityId = input.ReadString();
+          break;
+        }
       }
     }
   #endif
@@ -856,6 +927,14 @@ public sealed partial class ClientDisconnect : pb::IMessage<ClientDisconnect>
           break;
         case 10: {
           ConnId = input.ReadString();
+          break;
+        }
+        case 18: {
+          UserId = input.ReadString();
+          break;
+        }
+        case 26: {
+          EntityId = input.ReadString();
           break;
         }
       }
