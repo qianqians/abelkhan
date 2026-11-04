@@ -51,6 +51,7 @@ public class HubGeneralMsgHandle(Dictionary<string, Client> clients,
                 }
 
                 cli.UserId = msg.UserId;
+                cli.EntityId = msg.EntityId;
             }
         }
     }

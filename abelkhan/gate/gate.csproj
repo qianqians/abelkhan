@@ -18,6 +18,7 @@
       <ProjectReference Include="..\consts\consts.csproj" />
       <ProjectReference Include="..\core\core.csproj" />
       <ProjectReference Include="..\engine\engine.csproj" />
+      <ProjectReference Include="..\friend\friend.csproj" />
     </ItemGroup>
 
 </Project>

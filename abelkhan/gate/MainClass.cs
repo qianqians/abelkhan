@@ -5,6 +5,7 @@ using Consul;
 using core;
 using engine;
 using consts;
+using friend;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Nito.Collections;
@@ -27,6 +28,12 @@ public struct GateConfig()
     public string EnterService { get; set; } = string.Empty;
     public uint MinVersion { get; set; } = 0;
     public uint MaxVersion { get; set; } = 0;
+
+    /// <summary>
+    /// 好友 / 在线状态参数。KeyPrefix 与 PresenceTtlMs 必须与 hub 的 HubConfig.Friend 一致，
+    /// 否则 gate 写的 presence 与 hub 读的不是同一个 key。
+    /// </summary>
+    public FriendSettings Friend { get; set; } = new();
 }
 
 class MainClass
@@ -51,6 +58,10 @@ class MainClass
     private readonly TimerService _timer = new();
     private ConsulClient? _consul;
     private string _gateId = string.Empty;
+
+    /// <summary>好友 / presence 存储：gate 只用来刷新和释放在线标记。</summary>
+    private FriendStore? _friend;
+    private int _presenceRefreshing;
 
     private void StartRedisMsg()
     {
@@ -305,6 +316,7 @@ class MainClass
 
     private void TickClients(long tick)
     {
+        List<Client> dropped = new();
         do
         {
             int onlinePlayers = 0;
@@ -327,6 +339,7 @@ class MainClass
                         {
                             // 连接已经清理了，别再把它当成超时重投的对象
                             lock (_reliabilityAckDeadline) _reliabilityAckDeadline.Remove(cli.UserId);
+                            dropped.Add(cli);
                         }
                     }
                 }
@@ -335,12 +348,103 @@ class MainClass
                 onlinePlayers = _clients.Values.Count(c => !string.IsNullOrEmpty(c.UserId));
             }
 
+            // 丢弃的连接：释放 presence + 通知实体所属 hub（好友下线事件）
+            foreach (var cli in dropped)
+            {
+                ReleasePresence(cli);
+                NotifyDisconnect(cli);
+            }
+
+            // 在线玩家的 presence 续期（PRESENCE TTL 比这个间隔长，gate 挂掉后会自动过期）
+            RefreshPresence();
+
             // 周期上报到 Redis，供 admin dashboard 汇总全局在线数
             _ = _redis?.SetStrData(string.Format(Consts.AdminOnlineGateKey, _gateId), onlinePlayers.ToString(), 10_000);
             _ = _redis?.SetStrData(string.Format(Consts.AdminOnlineConnectionKey, _gateId), onlineConnections.ToString(), 10_000);
         } while (false);
         
         _timer.AddTickTime(3000, TickClients);
+    }
+
+    /// <summary>为所有在线玩家刷新 presence（值为本 gateId，TTL 到期即视为离线）。</summary>
+    private void RefreshPresence()
+    {
+        var store = _friend;
+        if (store == null || Interlocked.CompareExchange(ref _presenceRefreshing, 1, 0) != 0)
+        {
+            // 上一轮还没跑完就跳过，避免 Redis 抖动时任务堆积
+            return;
+        }
+
+        string[] userIds;
+        lock (_clients)
+        {
+            userIds = _clients.Values
+                .Where(c => !string.IsNullOrEmpty(c.UserId))
+                .Select(c => c.UserId!)
+                .Distinct()
+                .ToArray();
+        }
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                foreach (var userId in userIds)
+                {
+                    await store.SetPresenceAsync(userId, _gateId);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error("gate: refresh presence err:{0}", e);
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _presenceRefreshing, 0);
+            }
+        });
+    }
+
+    /// <summary>释放某个连接的 presence（只删属于本 gate 的标记，避免误删同一玩家的新连接）。</summary>
+    private void ReleasePresence(Client cli)
+    {
+        var store = _friend;
+        if (store == null || string.IsNullOrEmpty(cli.UserId))
+        {
+            return;
+        }
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await store.ReleasePresenceAsync(cli.UserId!, _gateId);
+            }
+            catch (Exception e)
+            {
+                Log.Error("gate: release presence err:{0}", e);
+            }
+        });
+    }
+
+    /// <summary>把下线通知发给实体所属 hub：有直连网络就直接投递，否则落到 entity_{id}_server_mq。</summary>
+    private void NotifyDisconnect(Client cli)
+    {
+        if (string.IsNullOrEmpty(cli.EntityId) || string.IsNullOrEmpty(cli.UserId))
+        {
+            Log.Info("gate: client {0} disconnected without entity", cli.ConnId);
+            return;
+        }
+
+        var rpc = new WRpc();
+        var msg = rpc.Notify(Consts.ClientDisconnect, new ClientDisconnect
+        {
+            ConnId = cli.ConnId,
+            UserId = cli.UserId!,
+            EntityId = cli.EntityId!,
+        });
+        _ = cli.SendToServer(cli.EntityId, msg);
     }
 
     private async Task Run(GateConfig cfg)
@@ -351,6 +455,10 @@ class MainClass
             _gateId = cfg.GateId;
             
             _redis = new RedisHandle(cfg.RedisUrl, cfg.RedisPwd);
+            // gate 侧只要 presence（在线标记）：和 hub 共用同一个 Redis / KeyPrefix
+            _friend = new FriendStore(_redis, cfg.Friend);
+            Log.Info("gate: friend presence prefix:{0} ttl:{1}ms",
+                cfg.Friend.KeyPrefix, cfg.Friend.PresenceTtlMs);
             StartRedisMsg();
             StartRedisReliabilityMsg();
 

@@ -8,6 +8,12 @@ public class Client(string connId, INetwork clientNetwork, RedisHandle redis)
 {
     public string ConnId => connId;
     public string? UserId { set; get; }
+
+    /// <summary>
+    /// hub 下发的实体 id（<c>HubCreatePlayerEntity</c> 时写入）。下线通知要靠它路由回实体所属 hub。
+    /// </summary>
+    public string? EntityId { set; get; }
+
     public long LastEventTime { set; get; } = TimerService.Tick;
     private readonly Dictionary<string, INetwork> _dictEntityNetwork = new();
 
