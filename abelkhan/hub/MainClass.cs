@@ -5,6 +5,7 @@ using consts;
 using Consul;
 using core;
 using engine;
+using leaderboard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using shop;
@@ -32,6 +33,9 @@ public struct HubConfig()
 
     /// <summary>每轮最多结算多少条，避免一次占用 Redis 太久。</summary>
     public int ShopSettleBatchSize { get; set; } = 200;
+
+    /// <summary>排行榜配置。多游戏共用一个 Redis 时用 KeyPrefix 隔离。</summary>
+    public LeaderboardSettings Leaderboard { get; set; } = new();
 }
 
 public class MainClass
@@ -49,6 +53,7 @@ public class MainClass
     private readonly TimerService _timer = new();
     private GlobalMailBox? _serviceMailBox;
     private ShopStore? _shopStore;
+    private LeaderboardStore? _leaderboardStore;
     private int _shopSettling;
     
     private Task? _tWait;
@@ -91,6 +96,11 @@ public class MainClass
         if (_shopStore != null)
         {
             service.Shop = _shopStore;
+        }
+
+        if (_leaderboardStore != null)
+        {
+            service.Leaderboard = _leaderboardStore;
         }
     }
 
@@ -241,10 +251,17 @@ public class MainClass
             _shopStore = new ShopStore(_redis, cfg.Shop);
             Log.Info("hub: shop key prefix:{0} currency:{1}",
                 cfg.Shop.KeyPrefix, cfg.Shop.CurrencyItemId);
+
+            // 排行榜：每个榜一个 Redis ZSET
+            _leaderboardStore = new LeaderboardStore(_redis, cfg.Leaderboard);
+            Log.Info("hub: leaderboard key prefix:{0} maxEntries:{1}",
+                cfg.Leaderboard.KeyPrefix, cfg.Leaderboard.MaxEntries);
+
             foreach (var service in _services.Values)
             {
                 service.GlobalMailBox = _serviceMailBox;
                 service.Shop = _shopStore;
+                service.Leaderboard = _leaderboardStore;
             }
 
             StartRedisMsg();

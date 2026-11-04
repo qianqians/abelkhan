@@ -90,4 +90,9 @@ public class Consts
     public const string ShopDeliveryKey = "shop:{{shop}}:delivery:{0}";
     // 成交/结算记录（Redis list，admin 查询）
     public const string ShopOrdersKey = "shop:{{shop}}:orders";
+
+    // ---- 排行榜（对应 client.proto 的 ClientLeaderboard* 消息） ----
+    public const string ClientLeaderboardSubmit = "client_leaderboard_submit";
+    public const string ClientLeaderboardRange = "client_leaderboard_range";
+    public const string ClientLeaderboardRank = "client_leaderboard_rank";
 }

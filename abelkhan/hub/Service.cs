@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using core;
 using hub.inventory;
+using leaderboard;
 using shop;
 
 namespace hub;
@@ -20,6 +21,12 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
     /// 为 null 时不注册商城协议（客户端请求会得到 method not register 错误）。
     /// </summary>
     public ShopStore? Shop { get; set; }
+
+    /// <summary>
+    /// 排行榜存储（Redis ZSET）。由 <see cref="MainClass"/> 在启动时注入。
+    /// 为 null 时不注册排行榜协议。
+    /// </summary>
+    public LeaderboardStore? Leaderboard { get; set; }
 
     /// <summary>物品配置表；创建出的玩家会继承该配置。为 null 时允许任意 item_id。</summary>
     public IItemCatalog? ItemCatalog { get; set; }
@@ -46,6 +53,15 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
     /// </summary>
     protected internal virtual (int Level, int CreateDays)? GetMailCondition(string userId) => null;
 
+    /// <summary>
+    /// 游戏提供：按 userId 批量解析排行榜条目的展示信息（昵称 / 头像）。
+    /// 默认返回空字典（条目展示字段为空）；范围拉榜会一次批量解析区间内所有 member。
+    /// </summary>
+    protected internal virtual Task<IReadOnlyDictionary<string, LeaderboardDisplay>> ResolveLeaderboardDisplayAsync(
+        IReadOnlyCollection<string> userIds) =>
+        Task.FromResult<IReadOnlyDictionary<string, LeaderboardDisplay>>(
+            new Dictionary<string, LeaderboardDisplay>());
+
     public virtual async Task<Player> EchoQueryServiceEntity(string gateName, string cliConnId, byte[] info)
     {
         var player = CreateEntity(gateName, cliConnId, info);
@@ -55,6 +71,8 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
         player.RegisterMailRequest(this);
         // 商城：氪金商品购买、玩家寄拍、限时拍卖
         player.RegisterShopRequests(this);
+        // 排行榜：打榜 / 拉榜区间 / 查名次 / 重置
+        player.RegisterLeaderboardRequests(this);
         var cli = clients.AddOrUpdate(player.UserId, key => new Client(player.UserId, gateName, cliConnId), (key, old) => old);
         await player.CreateRemotePlayer(cli);
         await _group.CreateRemotePlayer(player);

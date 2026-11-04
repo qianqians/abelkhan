@@ -27,5 +27,10 @@
     "DefaultListingDurationSeconds": 86400,
     "DefaultAuctionDurationSeconds": 86400,
     "MaxBuyCount": 99
+  },
+  "Leaderboard": {
+    "KeyPrefix": "",
+    "MaxEntries": 1000,
+    "RangePageLimit": 100
   }
 }

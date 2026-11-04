@@ -1,5 +1,6 @@
 using consts;
 using core;
+using leaderboard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
@@ -35,6 +36,12 @@ public struct AdminConfig()
     /// 否则后台“上架”写入的 Redis key 游戏服读不到。
     /// </summary>
     public ShopSettings Shop { get; set; } = new();
+
+    /// <summary>
+    /// 排行榜参数。KeyPrefix 必须与 hub 的 HubConfig.Leaderboard 一致，
+    /// 否则后台重置的不是游戏服的榜。
+    /// </summary>
+    public LeaderboardSettings Leaderboard { get; set; } = new();
 }
 
 public record MailSendRequest(
@@ -53,6 +60,8 @@ public record MailSendRequest(
     int ValidDays = 0);
 
 public record GmCommandRequest(string Command, string? PlayerId = null, string Args = "");
+
+public record LeaderboardResetRequest(string BoardId);
 
 public class MainClass
 {
@@ -283,6 +292,20 @@ public class MainClass
             return Results.Json(new { total, page, pageSize, items });
         }));
 
+        // ---------------- 排行榜 ----------------
+
+        app.MapPost("/api/leaderboard/reset", (LeaderboardResetRequest req) => Safe(async () =>
+        {
+            var boardId = req.BoardId?.Trim() ?? "";
+            if (string.IsNullOrEmpty(boardId))
+            {
+                return Results.Json(new { error = "boardId required" }, statusCode: StatusCodes.Status400BadRequest);
+            }
+
+            await data.ResetLeaderboard(boardId);
+            return Results.Json(new { ok = true, boardId });
+        }));
+
         // GM 面板
         app.MapGet("/api/gm/logs", (int page = 1, int pageSize = 20) => Safe(async () =>
         {
@@ -321,6 +344,8 @@ public class MainClass
         var url = $"http://{cfg.Ip}:{cfg.Port}";
         Log.Info("admin: shop key prefix:{0} currency:{1} (must match hub)",
             cfg.Shop.KeyPrefix, cfg.Shop.CurrencyItemId);
+        Log.Info("admin: leaderboard key prefix:{0} (must match hub)",
+            cfg.Leaderboard.KeyPrefix);
         Log.Info("admin: {0} listening on {1}", cfg.AdminId, url);
         app.Run(url);
     }

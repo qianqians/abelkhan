@@ -188,3 +188,49 @@ message ClientShopClaimResult {
   repeated ShopItemGrant granted = 1;
   string message = 2;
 }
+
+// ============================================================
+// 排行榜（Redis ZSET，hub 侧）
+// ============================================================
+
+// 打榜：仅保留最高分（新分低于历史最高分时不更新）
+message ClientLeaderboardSubmit {
+  string board_id = 1;
+  double score = 2;
+}
+
+message ClientLeaderboardSubmitResult {
+  uint32 rank = 1;          // 打榜后的名次，1-based；0 = 不在榜
+  double score = 2;         // 当前榜上的分数（可能是历史最高分）
+}
+
+// 一条榜单条目
+message ClientLeaderboardEntry {
+  string member_id = 1;
+  uint32 rank = 2;          // 1-based 名次
+  double score = 3;
+  string display_name = 4;  // 游戏钩子填充，可为空
+  string avatar = 5;        // 游戏钩子填充，可为空
+}
+
+// 拉取 [start, end) 名次区间（start 0-based，end 不包含）
+message ClientLeaderboardRange {
+  string board_id = 1;
+  uint32 start = 2;
+  uint32 end = 3;
+}
+
+message ClientLeaderboardRangeResult {
+  repeated ClientLeaderboardEntry entries = 1;
+  uint32 total = 2;         // 榜单总人数
+}
+
+// 查询名次（member_id 空 = 查自己）
+message ClientLeaderboardRank {
+  string board_id = 1;
+  string member_id = 2;
+}
+
+message ClientLeaderboardRankResult {
+  ClientLeaderboardEntry entry = 1;  // rank = 0 表示不在榜
+}

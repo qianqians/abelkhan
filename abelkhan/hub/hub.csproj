@@ -11,6 +11,7 @@
       <ProjectReference Include="..\core\core.csproj" />
       <ProjectReference Include="..\engine\engine.csproj" />
       <ProjectReference Include="..\shop\shop.csproj" />
+      <ProjectReference Include="..\leaderboard\leaderboard.csproj" />
     </ItemGroup>
 
 </Project>

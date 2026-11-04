@@ -7,8 +7,8 @@ namespace leaderboard;
 /// <summary>
 /// 排行榜 Redis 存储层。每个榜是一个独立的 ZSET（member = userId，score = 分数）。
 ///
-/// 打榜用 Lua 在 Redis 内原子执行「ZADD GT + 裁剪 + ZREVRANK」，多 hub 进程并发时也只会
-/// 保留每人的最高分（GT：新分低于历史最高分时不更新）；拉榜 / 查名次 / 重置都是单 key
+/// 打榜用 Lua 在 Redis 内原子执行「ZADD GT + 裁剪 + ZREVRANK / ZSCORE」，多 hub 进程并发时
+/// 也只会保留每人的最高分（GT：新分低于历史最高分时不更新）；拉榜 / 查条目 / 重置都是单 key
 /// 命令，天然线程安全。
 /// </summary>
 public sealed class LeaderboardStore
@@ -32,9 +32,11 @@ public sealed class LeaderboardStore
     // ================================================================
 
     /// <summary>
-    /// 打榜：仅保留最高分（ZADD GT）。返回 (是否更新了榜, 当前名次 1-based；0 = 不在榜)。
+    /// 打榜：仅保留最高分（ZADD GT）。返回 (是否更新了榜, 当前名次 1-based, 当前榜上分数)。
+    /// 名次为 0 表示打榜后不在榜（例如掉出 top N）。
     /// </summary>
-    public async Task<(bool Changed, long Rank)> SubmitAsync(string boardId, string memberId, double score)
+    public async Task<(bool Changed, long Rank, double Score)> SubmitAsync(
+        string boardId, string memberId, double score)
     {
         if (string.IsNullOrWhiteSpace(boardId))
         {
@@ -59,11 +61,12 @@ public sealed class LeaderboardStore
         var obj = JObject.Parse(result.ToString());
         var changed = obj.Value<long?>("changed") ?? 0;
         var rank = obj.Value<long?>("rank") ?? 0;
-        return (changed != 0, rank);
+        var cur = obj.Value<double?>("score") ?? 0;
+        return (changed != 0, rank, cur);
     }
 
     // ================================================================
-    // 拉榜 / 查名次
+    // 拉榜 / 查条目
     // ================================================================
 
     /// <summary>拉取 [start, stop] 名次区间（start / stop 为 1-based 名次，闭区间）。</summary>
@@ -86,19 +89,20 @@ public sealed class LeaderboardStore
         return (entries, total);
     }
 
-    /// <summary>查询成员名次（1-based，0 = 不在榜）。</summary>
-    public async Task<long> GetRankAsync(string boardId, string memberId)
+    /// <summary>查询单个成员的条目（名次 1-based + 分数）；不在榜返回 null。</summary>
+    public async Task<LeaderboardEntry?> GetEntryAsync(string boardId, string memberId)
     {
+        var key = Keys.Board(boardId);
         var rank = await _redis.Execute("leaderboard.zrevrank",
-            db => db.SortedSetRankAsync(Keys.Board(boardId), memberId, Order.Descending));
-        return rank == null ? 0 : rank.Value + 1;
-    }
+            db => db.SortedSetRankAsync(key, memberId, Order.Descending));
+        if (rank == null)
+        {
+            return null;
+        }
 
-    /// <summary>榜单总人数。</summary>
-    public async Task<long> CountAsync(string boardId)
-    {
-        return await _redis.Execute("leaderboard.zcard_count",
-            db => db.SortedSetLengthAsync(Keys.Board(boardId)));
+        var score = await _redis.Execute("leaderboard.zscore",
+            db => db.SortedSetScoreAsync(key, memberId));
+        return new LeaderboardEntry(memberId, score ?? 0, rank.Value + 1);
     }
 
     // ================================================================
@@ -123,12 +127,16 @@ public sealed class LeaderboardStore
         local maxEntries = tonumber(ARGV[3])
 
         -- GT：仅当新分大于现有分（或成员不存在）时更新，实现「只保留最高分」
-        local changed = redis.call('ZADD', key, 'GT', score, member)
+        -- CH：返回值按「新增 + 更新」计数，而不是只算新增，这样才能区分「更新了」和「没变化」
+        local changed = redis.call('ZADD', key, 'GT', 'CH', score, member)
         if maxEntries > 0 then
           -- 升序排名里 [0, -(N+1)] 是最低的 (总数-N) 名，删掉它们即只保留最高 N 名
           redis.call('ZREMRANGEBYRANK', key, 0, -maxEntries - 1)
         end
         local rank = redis.call('ZREVRANK', key, member)
-        return cjson.encode({ changed = changed, rank = rank or 0 })
+        local cur = redis.call('ZSCORE', key, member)
+        -- ZREVRANK 是 0-based；转成 1-based，不在榜返回 0
+        local rank1 = rank and (rank + 1) or 0
+        return cjson.encode({ changed = changed, rank = rank1, score = cur or 0 })
         """;
 }

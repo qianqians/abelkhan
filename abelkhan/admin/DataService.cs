@@ -1,5 +1,6 @@
 using consts;
 using core;
+using leaderboard;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using shop;
@@ -58,6 +59,7 @@ public class AdminDataService
     private readonly AdminConfig _cfg;
     private readonly IMongoDatabase _db;
     private readonly ShopStore _shop;
+    private readonly LeaderboardStore _leaderboard;
 
     public AdminDataService(AdminConfig cfg)
     {
@@ -67,11 +69,23 @@ public class AdminDataService
         _db = _mongo.GetDatabase(cfg.MongoDb);
         // admin 与 hub 共用同一份 Shop 配置（KeyPrefix / 货币），否则上架商品游戏服读不到
         _shop = new ShopStore(_redis, cfg.Shop);
+        // admin 与 hub 共用同一份 Leaderboard 配置（KeyPrefix），否则重置的不是游戏服的榜
+        _leaderboard = new LeaderboardStore(_redis, cfg.Leaderboard);
     }
 
     public ShopStore Shop => _shop;
 
+    public LeaderboardStore Leaderboard => _leaderboard;
+
     private IMongoCollection<BsonDocument> Col(string name) => _db.GetCollection<BsonDocument>(name);
+
+    // ---------------- 排行榜 ----------------
+
+    /// <summary>重置（清空）某个排行榜。</summary>
+    public async Task ResetLeaderboard(string boardId)
+    {
+        await _leaderboard.ResetAsync(boardId);
+    }
 
     // ---------------- 在线数（来自各 gate 周期上报的 Redis key） ----------------
 
