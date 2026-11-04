@@ -590,3 +590,60 @@ message ClientGuildRemovedNotify {
 message ClientGuildTaskUpdatedNotify {
   ClientGuildTaskInfo task = 1;
 }
+
+// ============================================================
+// 任务系统（可配置触发 / 进度 / 完成条件 + 任务链）
+// ============================================================
+
+// 一条进度条件的当前值
+message ClientQuestProgress {
+  string type = 1;
+  string key = 2;
+  int64 current = 3;
+  int64 target = 4;
+}
+
+// 一条任务（进行中 / 可接）
+message ClientQuestInfo {
+  string quest_id = 1;
+  string title = 2;
+  string description = 3;
+  string status = 4;               // available / active / completed
+  repeated ClientQuestProgress progress = 5;
+  repeated string next_quest_ids = 6;
+  string reward_key = 7;
+  bool ready_to_complete = 8;      // 进度满且完成门槛满足
+}
+
+message ClientQuestList {
+}
+
+message ClientQuestListResult {
+  repeated ClientQuestInfo active = 1;      // 进行中（带进度）
+  repeated ClientQuestInfo available = 2;   // 可接但没接
+  uint32 completed_count = 3;
+}
+
+// 手动接取（校验触发条件）
+message ClientQuestAccept {
+  string quest_id = 1;
+}
+
+message ClientQuestAcceptResult {
+  ClientQuestInfo quest = 1;
+}
+
+// 提交完成（校验进度全满 + 完成门槛）
+message ClientQuestComplete {
+  string quest_id = 1;
+}
+
+message ClientQuestCompleteResult {
+  string quest_id = 1;
+  repeated string next_quest_ids = 2;  // 完成后激活 / 可接的后继（给客户端做提示）
+}
+
+// 任务状态 / 进度变化（增量刷新）
+message ClientQuestUpdatedNotify {
+  ClientQuestInfo quest = 1;
+}

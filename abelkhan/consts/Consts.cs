@@ -150,4 +150,12 @@ public class Consts
     public const string ClientGuildInvitedNotify = "client_guild_invited_notify";
     public const string ClientGuildRemovedNotify = "client_guild_removed_notify";
     public const string ClientGuildTaskUpdatedNotify = "client_guild_task_updated_notify";
+
+    // ---- 任务（对应 client.proto 的 ClientQuest* 消息） ----
+    public const string ClientQuestList = "client_quest_list";
+    public const string ClientQuestAccept = "client_quest_accept";
+    public const string ClientQuestComplete = "client_quest_complete";
+
+    // 任务通知（hub -> 客户端）
+    public const string ClientQuestUpdatedNotify = "client_quest_updated_notify";
 }
