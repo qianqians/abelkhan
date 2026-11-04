@@ -14,5 +14,18 @@
   "PaymentTimeField": "PayTime",
   "PaymentAmountField": "Amount",
   "AdminToken": "",
-  "MailGlobalMaxCount": 200
+  "MailGlobalMaxCount": 200,
+  "ShopProductCollection": "shop_product",
+  "Shop": {
+    "KeyPrefix": "",
+    "CurrencyItemId": "diamond",
+    "MarketCurrencyItemId": "gold",
+    "SaleTaxPercent": 5,
+    "MaxListingsPerPlayer": 8,
+    "MinListingDurationSeconds": 300,
+    "MaxListingDurationSeconds": 604800,
+    "DefaultListingDurationSeconds": 86400,
+    "DefaultAuctionDurationSeconds": 86400,
+    "MaxBuyCount": 99
+  }
 }

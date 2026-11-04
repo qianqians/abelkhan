@@ -7,6 +7,7 @@ using core;
 using engine;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using shop;
 
 namespace hub;
 
@@ -19,6 +20,18 @@ public struct HubConfig()
     public string ConsulUrl { get; set; } = string.Empty;
     public string RedisUrl { get; set; } = string.Empty;
     public string RedisPwd { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 商城配置。admin 的 Shop 配置必须与这里一致（KeyPrefix / 货币），
+    /// 否则后台“上架”的商品游戏服看不到。
+    /// </summary>
+    public ShopSettings Shop { get; set; } = new();
+
+    /// <summary>多久扫一次到期商品（毫秒），默认 5 秒。</summary>
+    public int ShopSettleIntervalMs { get; set; } = 5000;
+
+    /// <summary>每轮最多结算多少条，避免一次占用 Redis 太久。</summary>
+    public int ShopSettleBatchSize { get; set; } = 200;
 }
 
 public class MainClass
@@ -35,6 +48,8 @@ public class MainClass
     private readonly TcpConnectService _serviceGate = new();
     private readonly TimerService _timer = new();
     private GlobalMailBox? _serviceMailBox;
+    private ShopStore? _shopStore;
+    private int _shopSettling;
     
     private Task? _tWait;
     private readonly ConcurrentQueue<string> _gateWaitQueue = new();
@@ -71,6 +86,11 @@ public class MainClass
         if (_serviceMailBox != null)
         {
             service.GlobalMailBox = _serviceMailBox;
+        }
+
+        if (_shopStore != null)
+        {
+            service.Shop = _shopStore;
         }
     }
 
@@ -164,6 +184,37 @@ public class MainClass
         await _consul.Agent.ServiceRegister(registration);
     }
 
+    /// <summary>
+    /// 定时结算到期的一口价寄拍 / 限时拍卖。结算本身是 Lua 原子的，多 hub 同时扫也只会成功一次；
+    /// 这里用 Task.Run 避免 Redis 抖动阻塞主循环。
+    /// </summary>
+    private void TickShop(long tick, int intervalMs, int batchSize)
+    {
+        var store = _shopStore;
+        // 上一次结算还没跑完就跳过这一轮，避免 Redis 抖动时任务堆积
+        if (store != null && Interlocked.CompareExchange(ref _shopSettling, 1, 0) == 0)
+        {
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await store.SettleExpiredAsync(Math.Max(1, batchSize),
+                        DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                }
+                catch (Exception e)
+                {
+                    Log.Error("shop settle tick error:{0}", e);
+                }
+                finally
+                {
+                    Interlocked.Exchange(ref _shopSettling, 0);
+                }
+            });
+        }
+
+        _timer.AddTickTime(intervalMs, t => TickShop(t, intervalMs, batchSize));
+    }
+
     void HandleSignal(PosixSignalContext context)
     {
         context.Cancel = true;
@@ -185,9 +236,15 @@ public class MainClass
             // 全局邮件箱：所有 Service 共用一个（共享 Redis 连接），
             // 玩家通过「客户端请求领取邮件」协议按需读取
             _serviceMailBox = new GlobalMailBox(_redis, Consts.AdminMailGlobalListKey, Consts.AdminMailClaimedKey);
+
+            // 商城：商品目录 / 寄拍 / 拍卖都存 Redis，admin 上架时写的是同一个库
+            _shopStore = new ShopStore(_redis, cfg.Shop);
+            Log.Info("hub: shop key prefix:{0} currency:{1}",
+                cfg.Shop.KeyPrefix, cfg.Shop.CurrencyItemId);
             foreach (var service in _services.Values)
             {
                 service.GlobalMailBox = _serviceMailBox;
+                service.Shop = _shopStore;
             }
 
             StartRedisMsg();
@@ -220,6 +277,8 @@ public class MainClass
             _ = _serviceWatcher.ExecuteAsync(stoppingToken);
 
             _timer.AddTickTime(3000, TickClients);
+            _timer.AddTickTime(Math.Max(1000, cfg.ShopSettleIntervalMs),
+                tick => TickShop(tick, Math.Max(1000, cfg.ShopSettleIntervalMs), cfg.ShopSettleBatchSize));
             while (_isRun)
             {
                 var begin = TimerService.Tick;

@@ -114,7 +114,7 @@ html, body {
 .field input[type="number"] { width: 96px; min-width: 0; padding: 8px 10px; }
 .field.checkbox { cursor: pointer; }
 
-input, textarea {
+input, textarea, select {
     background: var(--panel-2);
     border: 1px solid var(--border);
     color: var(--text);
@@ -123,7 +123,8 @@ input, textarea {
     font-size: 14px;
     outline: none;
 }
-input:focus, textarea:focus { border-color: var(--accent); }
+input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+select { min-width: 130px; }
 input[type="text"] { min-width: 200px; flex: 1; }
 input[type="date"], input[type="number"] { min-width: 150px; }
 
@@ -197,3 +198,79 @@ td.dim { color: var(--muted); }
     word-break: break-all;
     color: #cbd5e1;
 }
+
+/* ---------------- 商城 ---------------- */
+
+.section-title {
+    margin: 28px 0 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.modal-box.wide { width: min(1000px, 94vw); }
+
+.modal-body {
+    padding: 18px;
+    overflow: auto;
+}
+
+.modal-foot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    padding: 14px 18px;
+    border-top: 1px solid var(--border);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+    color: var(--text);
+    min-width: 0;
+    width: 100%;
+}
+
+.form-field textarea { min-height: 80px; margin-bottom: 0; }
+
+.form-field.checkbox {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding-top: 22px;
+}
+
+.form-field.full { grid-column: 1 / -1; }
+
+.form-field.checkbox input { width: auto; }
+
+.error-text { color: var(--err); font-size: 13px; flex: 1; text-align: left; }
+
+td .btn { padding: 6px 10px; font-size: 13px; }
+td .btn + .btn { margin-left: 6px; }
+
+.tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--panel-2);
+    color: var(--muted);
+    font-size: 12px;
+}
+.tag.ok { color: var(--ok); border-color: rgba(52, 211, 153, .45); }

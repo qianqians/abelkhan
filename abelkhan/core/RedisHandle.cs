@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net.Sockets;
 using StackExchange.Redis;
 using Newtonsoft.Json;
 // ReSharper disable MemberCanBePrivate.Global
@@ -128,6 +129,45 @@ public class RedisHandle
     void Recover(Exception e)
     {
         _connHelper.Recover(ref _connectionMultiplexer, ref _database, e);
+    }
+
+    /// <summary>
+    /// 用统一的重连逻辑执行任意 Redis 操作（EVAL / HASH / ZSET 等）。
+    ///
+    /// 只有连接类异常（断线 / 超时 / 网络）才会触发重连并重试；Redis 返回的脚本错误
+    /// （例如 Lua 语法错误）属于程序缺陷，直接抛出，避免死循环掩盖问题。
+    /// </summary>
+    public async ValueTask<T> Execute<T>(string operation, Func<IDatabase, Task<T>> action)
+    {
+        while (true)
+        {
+            var db = _database;
+            if (db == null)
+            {
+                throw new InvalidOperationException("redis not connected");
+            }
+
+            try
+            {
+                return await action(db);
+            }
+            catch (Exception e) when (e is RedisConnectionException or RedisTimeoutException
+                                          or IOException or SocketException)
+            {
+                Log.Error("redis execute {0} failed, will reconnect: {1}", operation, e.Message);
+                Recover(e);
+            }
+        }
+    }
+
+    /// <summary>同 <see cref="Execute{T}"/>，用于没有返回值的命令。</summary>
+    public async ValueTask Execute(string operation, Func<IDatabase, Task> action)
+    {
+        await Execute<object?>(operation, async db =>
+        {
+            await action(db);
+            return null;
+        });
     }
 
     /// <summary>读取 list 的原始元素（不做反序列化，返回每条元素的原始字符串）。</summary>

@@ -21,6 +21,7 @@
         <button class="tab" data-tab="payments">支付查询</button>
         <button class="tab" data-tab="gm">GM 面板</button>
         <button class="tab" data-tab="mail">邮件发送</button>
+        <button class="tab" data-tab="shop">商城</button>
     </nav>
 
     <main class="content">
@@ -146,6 +147,81 @@
                 <button id="mail-next" class="btn">下一页</button>
             </div>
         </section>
+        <!-- 商城（氪金商品 + 玩家寄拍） -->
+        <section id="tab-shop" class="panel">
+            <div class="toolbar">
+                <input id="shop-keyword" type="text" placeholder="商品 ID / 名称（支持模糊）" />
+                <select id="shop-status-filter">
+                    <option value="">全部状态</option>
+                    <option value="published">已上架</option>
+                    <option value="unpublished">未上架</option>
+                </select>
+                <button id="shop-search" class="btn primary">查询</button>
+                <button id="shop-new" class="btn">新建商品</button>
+                <span id="shop-meta-info" class="dim"></span>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr>
+                        <th>商品 ID</th><th>名称</th><th>售卖方式</th>
+                        <th>价格 / 起拍</th><th>库存 / 时长</th><th>状态</th><th>操作</th>
+                    </tr></thead>
+                    <tbody id="shop-product-body"></tbody>
+                </table>
+            </div>
+            <div class="pager">
+                <button id="shop-product-prev" class="btn">上一页</button>
+                <span id="shop-product-page-info">第 1 页</span>
+                <button id="shop-product-next" class="btn">下一页</button>
+            </div>
+
+            <h3 class="section-title">在售商品 / 玩家寄拍</h3>
+            <div class="toolbar">
+                <select id="shop-listing-source">
+                    <option value="">全部来源</option>
+                    <option value="official">官方商品</option>
+                    <option value="player">玩家寄拍</option>
+                </select>
+                <select id="shop-listing-status">
+                    <option value="active">在售中</option>
+                    <option value="all">全部状态</option>
+                    <option value="sold">已成交</option>
+                    <option value="expired">已过期</option>
+                    <option value="cancelled">已取消</option>
+                </select>
+                <button id="shop-listing-refresh" class="btn">刷新</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr>
+                        <th>Listing</th><th>来源</th><th>卖家</th><th>标题</th>
+                        <th>模式</th><th>当前价 / 出价人</th><th>结束时间</th><th>状态</th><th>操作</th>
+                    </tr></thead>
+                    <tbody id="shop-listing-body"></tbody>
+                </table>
+            </div>
+            <div class="pager">
+                <button id="shop-listing-prev" class="btn">上一页</button>
+                <span id="shop-listing-page-info">第 1 页</span>
+                <button id="shop-listing-next" class="btn">下一页</button>
+            </div>
+
+            <h3 class="section-title">成交 / 结算记录</h3>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr>
+                        <th>时间</th><th>类型</th><th>买家</th><th>卖家</th>
+                        <th>价格</th><th>手续费</th><th>Listing</th>
+                    </tr></thead>
+                    <tbody id="shop-order-body"></tbody>
+                </table>
+            </div>
+            <div class="pager">
+                <button id="shop-order-prev" class="btn">上一页</button>
+                <span id="shop-order-page-info">第 1 页</span>
+                <button id="shop-order-next" class="btn">下一页</button>
+            </div>
+        </section>
     </main>
 
     <div id="player-detail" class="modal hidden">
@@ -155,6 +231,82 @@
                 <button id="player-detail-close" class="btn">关闭</button>
             </div>
             <pre id="player-detail-body"></pre>
+        </div>
+    </div>
+
+    <!-- 商品编辑弹窗 -->
+    <div id="shop-product-modal" class="modal hidden">
+        <div class="modal-box wide">
+            <div class="modal-head">
+                <span id="shop-modal-title">新建商品</span>
+                <button id="shop-modal-close" class="btn">关闭</button>
+            </div>
+            <div class="modal-body form-grid">
+                <label class="form-field">商品 ID
+                    <input id="sp-id" type="text" placeholder="留空自动生成" />
+                </label>
+                <label class="form-field">商品名称
+                    <input id="sp-name" type="text" placeholder="如：限时神装礼包" />
+                </label>
+                <label class="form-field">分类
+                    <input id="sp-category" type="text" placeholder="如：hot / new / vip" />
+                </label>
+                <label class="form-field">图标
+                    <input id="sp-icon" type="text" placeholder="图标 URL 或 emoji" />
+                </label>
+                <label class="form-field">售卖方式
+                    <select id="sp-mode">
+                        <option value="1">一口价（可直接购买）</option>
+                        <option value="2">限时拍卖（出价竞拍）</option>
+                    </select>
+                </label>
+                <label class="form-field">结算货币 item_id
+                    <input id="sp-currency" type="text" placeholder="留空使用服务端默认（如 diamond）" />
+                </label>
+                <label class="form-field">一口价
+                    <input id="sp-price" type="number" min="0" value="0" />
+                </label>
+                <label class="form-field">拍卖起拍价
+                    <input id="sp-start-price" type="number" min="0" value="0" />
+                </label>
+                <label class="form-field">拍卖最小加价
+                    <input id="sp-min-increment" type="number" min="1" value="1" />
+                </label>
+                <label class="form-field">拍卖时长（秒，0 = 服务端默认）
+                    <input id="sp-auction-duration" type="number" min="0" value="0" />
+                </label>
+                <label class="form-field">库存（-1 = 不限，仅一口价有效）
+                    <input id="sp-stock" type="number" min="-1" value="-1" />
+                </label>
+                <label class="form-field">每人限购（0 = 不限）
+                    <input id="sp-per-user" type="number" min="0" value="0" />
+                </label>
+                <label class="form-field">排序权重（越大越靠前）
+                    <input id="sp-sort" type="number" value="0" />
+                </label>
+                <label class="form-field">开售时间（留空 = 立即）
+                    <input id="sp-start-time" type="datetime-local" />
+                </label>
+                <label class="form-field">停售时间（留空 = 不限）
+                    <input id="sp-end-time" type="datetime-local" />
+                </label>
+                <label class="form-field checkbox">
+                    <input id="sp-auto-restart" type="checkbox" /> 拍卖结束后自动续拍
+                </label>
+                <label class="form-field checkbox">
+                    <input id="sp-enabled" type="checkbox" checked /> 启用
+                </label>
+                <label class="form-field full">奖励物品
+                    <input id="sp-rewards" type="text" placeholder="itemId:数量（逗号分隔，如 1001:2,1002:1）" />
+                </label>
+                <label class="form-field full">商品描述
+                    <textarea id="sp-description" placeholder="展示给玩家的说明"></textarea>
+                </label>
+            </div>
+            <div class="modal-foot">
+                <span id="sp-error" class="error-text"></span>
+                <button id="sp-save" class="btn primary">保存</button>
+            </div>
         </div>
     </div>
 

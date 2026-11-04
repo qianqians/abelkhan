@@ -15,6 +15,7 @@
     <ItemGroup>
         <ProjectReference Include="..\consts\consts.csproj" />
         <ProjectReference Include="..\core\core.csproj" />
+        <ProjectReference Include="..\shop\shop.csproj" />
     </ItemGroup>
 
     <ItemGroup>

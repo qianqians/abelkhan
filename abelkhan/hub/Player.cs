@@ -7,7 +7,7 @@ using MongoDB.Bson;
 
 namespace hub;
 
-public abstract class Player(
+public abstract partial class Player(
     string entityId,
     string entityType,
     string userId,

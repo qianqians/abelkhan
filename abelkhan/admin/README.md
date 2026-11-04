@@ -1,6 +1,7 @@
 # admin — 服务器管理后台（dashboard）
 
-为 abelkhan 服务端引擎提供 Web 管理后台：监控大盘、玩家查询、支付查询、GM 面板、邮件发送。
+为 abelkhan 服务端引擎提供 Web 管理后台：监控大盘、玩家查询、支付查询、GM 面板、邮件发送、
+商城管理（氪金商品上架、玩家寄拍 / 限时拍卖查看）。
 前端是纯静态页面（无构建步骤），由 `Microsoft.AspNetCore` 托管在 `wwwroot` 下。
 
 ## 运行
@@ -27,6 +28,8 @@ dotnet run --project abelkhan/admin -- path/to/config.json
 | `PaymentAmountField` | 支付文档里的金额字段（默认 `Amount`） |
 | `AdminToken` | 可选。非空时 `/api/*` 需要 `Authorization: Bearer <token>` |
 | `MailGlobalMaxCount` | 全局邮件 list 最多保留多少封（默认 200，超出用 `LTRIM` 裁掉最旧的） |
+| `ShopProductCollection` | 商城商品配置集合名（默认 `shop_product`） |
+| `Shop` | 商城参数，必须与 hub 的 `HubConfig.Shop` 一致（`KeyPrefix` / 货币 / 税率 / 时长 / 寄拍上限），详见 `docs/shop.md` |
 
 ## 接口
 
@@ -40,6 +43,17 @@ dotnet run --project abelkhan/admin -- path/to/config.json
 | POST | `/api/mail/send` | 发送邮件 `{title, content, sender?, attachments?[{itemId,count}], playerIds?[], expireSeconds?, minLevel?, maxLevel?, minCreateDays?, maxCreateDays?, popUp?, validDays?}`，`playerIds` 空 = 全局邮件 |
 | GET | `/api/gm/logs` | GM 命令日志 |
 | POST | `/api/gm/command` | 下发 GM 命令 `{command, playerId?, args?}` |
+| GET | `/api/shop/meta` | 商城元信息（默认货币 / 寄拍税 / 寄拍上限） |
+| GET | `/api/shop/products?keyword=&status=&page=&pageSize=` | 商品配置列表（`status=published/unpublished`） |
+| GET | `/api/shop/products/{id}` | 商品配置详情 |
+| POST | `/api/shop/products` | 新建商品 |
+| PUT | `/api/shop/products/{id}` | 修改商品；在售且无出价 / 无销量时自动同步线上 |
+| DELETE | `/api/shop/products/{id}?force=` | 删除商品（已上架会先下架） |
+| POST | `/api/shop/products/{id}/publish?force=` | 上架；`force=true` 覆盖已在售的一口价商品 |
+| POST | `/api/shop/products/{id}/unpublish?force=` | 下架；拍卖有出价时需 `force=true` 退款 |
+| GET | `/api/shop/listings?source=&status=&page=&pageSize=` | 线上官方商品 / 玩家寄拍（含已结束） |
+| POST | `/api/shop/listings/{id}/cancel` | 管理员强制下架（拍卖退款 / 寄拍退物） |
+| GET | `/api/shop/orders?page=&pageSize=` | 成交 / 结算流水 |
 | GET | `/health` | 健康检查 |
 
 ## 数据约定（游戏侧接入点）
@@ -135,6 +149,32 @@ public class MyService(ConcurrentDictionary<string, Client> clients) : Service(c
 > key 常量见 `abelkhan/consts/Consts.cs`（`AdminGmQueueKey`、`AdminMailQueueKey`、
 > `AdminMailGlobalListKey`、`AdminMailClaimedKey`）。
 
+## 商城管理（氪金商品 + 玩家寄拍）
+
+「商城」标签页提供：
+
+- **商品配置**：新建 / 编辑弹窗，支持一口价与限时拍卖两种售卖方式、奖励物品、库存 / 限购、
+  拍卖起拍价 / 最小加价 / 时长 / 自动续拍、开售 / 停售时间、启用 / 排序；
+- **在售商品 / 玩家寄拍**：实时查看官方 listing 与玩家寄拍（来源、卖家、当前价 / 最高出价人、
+  结束时间、状态），可强制下架（拍卖最高出价会退款、寄拍物品会退回卖家）；
+- **成交 / 结算记录**：一口价、拍卖成交、流拍等流水。
+
+### 上架 / 下架的数据流
+
+商品配置存 MongoDB `shop_product`；点击「上架」后由 admin 直接写入 Redis（与 hub 共用
+`core.RedisHandle`），hub 读到后立即生效，不需要重启。
+
+- **上架**：校验价格 / 奖励 / 时间窗口，生成 `shop:{shop}:listing:{id}` hash 并加入索引；
+- **下架**：取消 listing；拍卖有出价时必须 `force=true`，会把最高出价写回出价人的待领取队列；
+- **修改已上架商品**：一口价无销量 / 拍卖无出价时自动同步线上；否则只保存配置并提示先下架。
+
+> 一口价售罄 / 拍卖结束 / 到期后，Mongo 里的商品配置仍可能是「已上架」状态；
+> 在后台点「下架」再「上架」即可补货或开新一场（拍卖也可配置 `AutoRestart` 自动续拍）。
+> 保存一次商品配置也会自动把已结束的线上商品标记为未上架。
+
+完整的字段、协议、Lua 结算流程与崩溃窗口说明见仓库根目录 `docs/shop.md`。
+
 ## 依赖
 
-admin 项目引用 `core`（复用 `RedisHandle` 的连接重连逻辑）与 `consts`，不再新增第三方依赖。
+admin 项目引用 `core`（复用 `RedisHandle` 的连接重连逻辑）、`consts` 与 `shop`（商城存储层），
+不再新增第三方依赖。

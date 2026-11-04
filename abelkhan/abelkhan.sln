@@ -21,6 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "client", "..\client\client.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventorySmoke", "tests\InventorySmoke\InventorySmoke.csproj", "{F86F7C63-07A1-47E5-9BF0-F6562034F102}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "shop", "shop\shop.csproj", "{4B40D86D-05E6-4AF6-A6A4-B24F179F418D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopSmoke", "tests\ShopSmoke\ShopSmoke.csproj", "{E0048670-66D4-4958-BE3D-5A2327F5E3DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +67,14 @@ Global
 		{F86F7C63-07A1-47E5-9BF0-F6562034F102}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F86F7C63-07A1-47E5-9BF0-F6562034F102}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F86F7C63-07A1-47E5-9BF0-F6562034F102}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B40D86D-05E6-4AF6-A6A4-B24F179F418D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B40D86D-05E6-4AF6-A6A4-B24F179F418D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B40D86D-05E6-4AF6-A6A4-B24F179F418D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B40D86D-05E6-4AF6-A6A4-B24F179F418D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0048670-66D4-4958-BE3D-5A2327F5E3DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0048670-66D4-4958-BE3D-5A2327F5E3DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0048670-66D4-4958-BE3D-5A2327F5E3DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0048670-66D4-4958-BE3D-5A2327F5E3DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

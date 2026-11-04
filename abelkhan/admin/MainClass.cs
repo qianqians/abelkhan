@@ -3,6 +3,7 @@ using core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
+using shop;
 
 namespace admin;
 
@@ -25,6 +26,15 @@ public struct AdminConfig()
     public string AdminToken { get; set; } = string.Empty;
     // 全局邮件列表最多保留多少封（LTRIM 上限），防止 list 无限增长
     public int MailGlobalMaxCount { get; set; } = 200;
+
+    // 商城商品配置集合
+    public string ShopProductCollection { get; set; } = "shop_product";
+
+    /// <summary>
+    /// 商城参数。KeyPrefix / CurrencyItemId 必须与 hub 的 HubConfig.Shop 一致，
+    /// 否则后台“上架”写入的 Redis key 游戏服读不到。
+    /// </summary>
+    public ShopSettings Shop { get; set; } = new();
 }
 
 public record MailSendRequest(
@@ -170,6 +180,109 @@ public class MainClass
             return Results.Json(new { ok = true, global = playerIds.Length == 0, count = playerIds.Length });
         }));
 
+        // ---------------- 商城（氪金商品 + 玩家寄拍） ----------------
+
+        app.MapGet("/api/shop/meta", () => Results.Json(new
+        {
+            currencyItemId = cfg.Shop.CurrencyItemId,
+            marketCurrencyItemId = cfg.Shop.MarketCurrency,
+            taxPercent = cfg.Shop.SaleTaxPercent,
+            minDurationSeconds = cfg.Shop.MinListingDurationSeconds,
+            maxDurationSeconds = cfg.Shop.MaxListingDurationSeconds,
+            maxListingsPerPlayer = cfg.Shop.MaxListingsPerPlayer,
+        }));
+
+        app.MapGet("/api/shop/products", (string? keyword = null, string? status = null,
+            int page = 1, int pageSize = 20) => Safe(async () =>
+        {
+            page = Math.Max(1, page);
+            pageSize = Math.Clamp(pageSize, 1, 100);
+            var (total, items) = await data.QueryShopProducts(
+                keyword, status, (page - 1) * pageSize, pageSize);
+            return Results.Json(new
+            {
+                total,
+                page,
+                pageSize,
+                items = items.Select(BsonUtil.ToJson).ToList(),
+            });
+        }));
+
+        app.MapGet("/api/shop/products/{id}", (string id) => Safe(async () =>
+        {
+            var doc = await data.GetShopProduct(id);
+            return doc == null
+                ? Results.Json(new { error = "product not found" },
+                    statusCode: StatusCodes.Status404NotFound)
+                : Results.Json(BsonUtil.ToJson(doc));
+        }));
+
+        app.MapPost("/api/shop/products", (ShopProductInput req) => Safe(async () =>
+        {
+            var (ok, error, doc) = await data.CreateShopProduct(req);
+            return ok
+                ? Results.Json(new { ok = true, product = BsonUtil.ToJson(doc!) })
+                : Results.Json(new { error }, statusCode: StatusCodes.Status400BadRequest);
+        }));
+
+        app.MapPut("/api/shop/products/{id}", (string id, ShopProductInput req) => Safe(async () =>
+        {
+            var (ok, error, warning, doc) = await data.UpdateShopProduct(id, req);
+            return ok
+                ? Results.Json(new { ok = true, warning, product = BsonUtil.ToJson(doc!) })
+                : Results.Json(new { error }, statusCode: StatusCodes.Status400BadRequest);
+        }));
+
+        app.MapDelete("/api/shop/products/{id}", (string id, bool? force = null) => Safe(async () =>
+        {
+            var (ok, error) = await data.DeleteShopProduct(id, force ?? false);
+            return ok
+                ? Results.Json(new { ok = true })
+                : Results.Json(new { error }, statusCode: StatusCodes.Status400BadRequest);
+        }));
+
+        app.MapPost("/api/shop/products/{id}/publish", (string id, bool? force = null) => Safe(async () =>
+        {
+            var (ok, error, listing) = await data.PublishShopProduct(id, force ?? false);
+            return ok
+                ? Results.Json(new { ok = true, listing })
+                : Results.Json(new { error }, statusCode: StatusCodes.Status400BadRequest);
+        }));
+
+        app.MapPost("/api/shop/products/{id}/unpublish", (string id, bool? force = null) => Safe(async () =>
+        {
+            var (ok, error, warning) = await data.UnpublishShopProduct(id, force ?? false);
+            return ok
+                ? Results.Json(new { ok = true, warning })
+                : Results.Json(new { error }, statusCode: StatusCodes.Status400BadRequest);
+        }));
+
+        app.MapGet("/api/shop/listings", (string? source = null, string? status = null,
+            int page = 1, int pageSize = 20) => Safe(async () =>
+        {
+            page = Math.Max(1, page);
+            pageSize = Math.Clamp(pageSize, 1, 100);
+            var (total, items) = await data.QueryShopListings(
+                source, status, (page - 1) * pageSize, pageSize);
+            return Results.Json(new { total, page, pageSize, items });
+        }));
+
+        app.MapPost("/api/shop/listings/{id}/cancel", (string id) => Safe(async () =>
+        {
+            var (ok, error, listing) = await data.CancelShopListing(id);
+            return ok
+                ? Results.Json(new { ok = true, listing })
+                : Results.Json(new { error }, statusCode: StatusCodes.Status400BadRequest);
+        }));
+
+        app.MapGet("/api/shop/orders", (int page = 1, int pageSize = 20) => Safe(async () =>
+        {
+            page = Math.Max(1, page);
+            pageSize = Math.Clamp(pageSize, 1, 100);
+            var (total, items) = await data.QueryShopOrders((page - 1) * pageSize, pageSize);
+            return Results.Json(new { total, page, pageSize, items });
+        }));
+
         // GM 面板
         app.MapGet("/api/gm/logs", (int page = 1, int pageSize = 20) => Safe(async () =>
         {
@@ -206,6 +319,8 @@ public class MainClass
         app.MapFallbackToFile("index.html");
 
         var url = $"http://{cfg.Ip}:{cfg.Port}";
+        Log.Info("admin: shop key prefix:{0} currency:{1} (must match hub)",
+            cfg.Shop.KeyPrefix, cfg.Shop.CurrencyItemId);
         Log.Info("admin: {0} listening on {1}", cfg.AdminId, url);
         app.Run(url);
     }

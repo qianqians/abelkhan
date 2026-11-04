@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using core;
 using hub.inventory;
+using shop;
 
 namespace hub;
 
@@ -13,6 +14,12 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
     /// 未启用邮件时保持为 null，客户端邮件请求会返回空列表。
     /// </summary>
     public GlobalMailBox? GlobalMailBox { get; set; }
+
+    /// <summary>
+    /// 商城存储（氪金商品 / 寄拍 / 限时拍卖）。由 <see cref="MainClass"/> 在启动时注入。
+    /// 为 null 时不注册商城协议（客户端请求会得到 method not register 错误）。
+    /// </summary>
+    public ShopStore? Shop { get; set; }
 
     /// <summary>物品配置表；创建出的玩家会继承该配置。为 null 时允许任意 item_id。</summary>
     public IItemCatalog? ItemCatalog { get; set; }
@@ -42,10 +49,12 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
     public virtual async Task<Player> EchoQueryServiceEntity(string gateName, string cliConnId, byte[] info)
     {
         var player = CreateEntity(gateName, cliConnId, info);
-        // 先注入物品配置 / 背包容量，再注册邮件协议（领取邮件时要用到背包）
+        // 先注入物品配置 / 背包容量，再注册邮件 / 商城协议（都要用到背包）
         ConfigurePlayer(player);
         // 给玩家实体挂上「客户端请求领取邮件」协议的处理
         player.RegisterMailRequest(this);
+        // 商城：氪金商品购买、玩家寄拍、限时拍卖
+        player.RegisterShopRequests(this);
         var cli = clients.AddOrUpdate(player.UserId, key => new Client(player.UserId, gateName, cliConnId), (key, old) => old);
         await player.CreateRemotePlayer(cli);
         await _group.CreateRemotePlayer(player);

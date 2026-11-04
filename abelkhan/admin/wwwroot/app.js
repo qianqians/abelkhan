@@ -7,7 +7,12 @@ const state = {
     payments: { page: 1, pageSize: 20 },
     gm: { page: 1, pageSize: 20 },
     mail: { page: 1, pageSize: 20 },
+    shopProducts: { page: 1, pageSize: 20, total: 0 },
+    shopListings: { page: 1, pageSize: 20, total: 0 },
+    shopOrders: { page: 1, pageSize: 20, total: 0 },
 };
+
+let editingShopProductId = null;
 
 let overviewTimer = null;
 
@@ -37,6 +42,14 @@ async function request(path, options = {}, retried = false) {
 function postJson(path, data) {
     return request(path, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+    });
+}
+
+function putJson(path, data) {
+    return request(path, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
     });
@@ -378,6 +391,385 @@ function mailRecipients(d) {
     return String(ids);
 }
 
+// ---------------- 商城 ----------------
+
+const SHOP_STATUS_TEXT = {
+    active: '在售',
+    pending: '未开始',
+    sold: '已成交',
+    expired: '已过期',
+    cancelled: '已取消',
+};
+
+const SHOP_ORDER_TYPE_TEXT = {
+    buy: '一口价',
+    auction: '拍卖成交',
+    expire: '流拍退回',
+    cancel: '取消',
+};
+
+function shopStatusText(status) {
+    return SHOP_STATUS_TEXT[status] || status || '';
+}
+
+function shopModeText(mode) {
+    return Number(mode) === 2 ? '限时拍卖' : '一口价';
+}
+
+function msToLocalInput(ms) {
+    const n = Number(ms) || 0;
+    if (!n) return '';
+    const d = new Date(n);
+    const pad = (x) => String(x).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function localInputToMs(value) {
+    if (!value) return 0;
+    const t = Date.parse(value);
+    return Number.isFinite(t) ? t : 0;
+}
+
+function rewardsToText(items) {
+    if (!Array.isArray(items)) return '';
+    return items
+        .map((i) => `${firstOf(i, ['ItemId', 'itemId'])}:${i.Count != null ? i.Count : i.count}`)
+        .join(',');
+}
+
+function actionButton(text, onClick) {
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.textContent = text;
+    btn.onclick = onClick;
+    return btn;
+}
+
+async function loadShopMeta() {
+    try {
+        const m = await request('/api/shop/meta');
+        $('shop-meta-info').textContent =
+            `默认货币 ${m.currencyItemId} · 寄拍税 ${m.taxPercent}% · 每人最多寄拍 ${m.maxListingsPerPlayer} 件`;
+    } catch (e) {
+        $('shop-meta-info').textContent = '';
+    }
+}
+
+async function loadShop() {
+    await loadShopMeta();
+    await loadShopProducts();
+    await loadShopListings();
+    await loadShopOrders();
+}
+
+// ---------- 商品配置 ----------
+
+async function loadShopProducts() {
+    const s = state.shopProducts;
+    try {
+        const q = new URLSearchParams({ page: s.page, pageSize: s.pageSize });
+        const keyword = $('shop-keyword').value.trim();
+        const status = $('shop-status-filter').value;
+        if (keyword) q.set('keyword', keyword);
+        if (status) q.set('status', status);
+
+        const data = await request('/api/shop/products?' + q.toString());
+        s.total = data.total;
+
+        const tbody = $('shop-product-body');
+        tbody.innerHTML = '';
+        if (!data.items || !data.items.length) {
+            tbody.appendChild(emptyRow(7));
+        } else {
+            for (const d of data.items) {
+                const tr = document.createElement('tr');
+                const published = !!firstOf(d, ['Published', 'published']);
+                const mode = Number(firstOf(d, ['SaleMode', 'saleMode'])) || 1;
+
+                tr.appendChild(cell(firstOf(d, ['ProductId', 'productId']), 'mono'));
+                tr.appendChild(cell(firstOf(d, ['Name', 'name'])));
+                tr.appendChild(cell(shopModeText(mode), 'dim'));
+                tr.appendChild(cell(
+                    mode === 2
+                        ? `起拍 ${fmt(firstOf(d, ['StartPrice', 'startPrice']))} / 加价 ${fmt(firstOf(d, ['MinIncrement', 'minIncrement']))}`
+                        : fmt(firstOf(d, ['Price', 'price'])),
+                ));
+                tr.appendChild(cell(
+                    mode === 2
+                        ? (Number(firstOf(d, ['AuctionDurationSeconds', 'auctionDurationSeconds'])) || 0) + ' 秒'
+                        : (firstOf(d, ['Stock', 'stock']) === -1 ? '不限' : fmt(firstOf(d, ['Stock', 'stock']))),
+                    'dim',
+                ));
+
+                const statusTd = document.createElement('td');
+                const badge = document.createElement('span');
+                badge.textContent = published ? '已上架' : '未上架';
+                badge.className = published ? 'tag ok' : 'tag';
+                statusTd.appendChild(badge);
+                tr.appendChild(statusTd);
+
+                const actTd = document.createElement('td');
+                const id = firstOf(d, ['ProductId', 'productId']);
+                actTd.appendChild(actionButton('编辑', () => openShopProductModal(d)));
+                if (published) {
+                    actTd.appendChild(actionButton('下架', () => unpublishShopProduct(id)));
+                } else {
+                    actTd.appendChild(actionButton('上架', () => publishShopProduct(id)));
+                }
+                actTd.appendChild(actionButton('删除', () => deleteShopProduct(id)));
+                tr.appendChild(actTd);
+
+                tbody.appendChild(tr);
+            }
+        }
+
+        renderPager('shop-product-page-info', 'shop-product-prev', 'shop-product-next',
+            'shopProducts', loadShopProducts);
+    } catch (e) {
+        notify('商品查询失败：' + e.message, true);
+    }
+}
+
+function openShopProductModal(doc) {
+    editingShopProductId = doc ? firstOf(doc, ['ProductId', 'productId']) : null;
+    $('shop-modal-title').textContent = doc ? '编辑商品' : '新建商品';
+    $('sp-id').value = editingShopProductId || '';
+    $('sp-id').disabled = !!doc;
+    $('sp-name').value = doc ? firstOf(doc, ['Name', 'name']) : '';
+    $('sp-category').value = doc ? firstOf(doc, ['Category', 'category']) : '';
+    $('sp-icon').value = doc ? firstOf(doc, ['Icon', 'icon']) : '';
+    $('sp-mode').value = String(doc ? (Number(firstOf(doc, ['SaleMode', 'saleMode'])) || 1) : 1);
+    $('sp-currency').value = doc ? firstOf(doc, ['CurrencyItemId', 'currencyItemId']) : '';
+    $('sp-price').value = doc ? Number(firstOf(doc, ['Price', 'price'])) || 0 : 0;
+    $('sp-start-price').value = doc ? Number(firstOf(doc, ['StartPrice', 'startPrice'])) || 0 : 0;
+    $('sp-min-increment').value = doc ? Number(firstOf(doc, ['MinIncrement', 'minIncrement'])) || 1 : 1;
+    $('sp-auction-duration').value = doc
+        ? Number(firstOf(doc, ['AuctionDurationSeconds', 'auctionDurationSeconds'])) || 0
+        : 0;
+    $('sp-stock').value = doc ? Number(firstOf(doc, ['Stock', 'stock'])) : -1;
+    $('sp-per-user').value = doc ? Number(firstOf(doc, ['PerUserLimit', 'perUserLimit'])) || 0 : 0;
+    $('sp-sort').value = doc ? Number(firstOf(doc, ['Sort', 'sort'])) || 0 : 0;
+    $('sp-start-time').value = msToLocalInput(firstOf(doc || {}, ['StartTime', 'startTime']));
+    $('sp-end-time').value = msToLocalInput(firstOf(doc || {}, ['EndTime', 'endTime']));
+    $('sp-auto-restart').checked = doc ? !!firstOf(doc, ['AutoRestart', 'autoRestart']) : false;
+    $('sp-enabled').checked = doc ? !!firstOf(doc, ['Enabled', 'enabled']) : true;
+    $('sp-rewards').value = doc ? rewardsToText(doc.Rewards || doc.rewards) : '';
+    $('sp-description').value = doc ? firstOf(doc, ['Description', 'description']) : '';
+    $('sp-error').textContent = '';
+    syncShopModeFields();
+    $('shop-product-modal').classList.remove('hidden');
+}
+
+function syncShopModeFields() {
+    const auction = $('sp-mode').value === '2';
+    $('sp-price').disabled = auction;
+    $('sp-start-price').disabled = !auction;
+    $('sp-min-increment').disabled = !auction;
+    $('sp-auction-duration').disabled = !auction;
+    $('sp-auto-restart').disabled = !auction;
+    $('sp-stock').disabled = auction;
+    $('sp-per-user').disabled = auction;
+}
+
+async function saveShopProduct() {
+    const name = $('sp-name').value.trim();
+    if (!name) {
+        $('sp-error').textContent = '请填写商品名称';
+        return;
+    }
+
+    const rewards = parseAttachments($('sp-rewards').value);
+    if (!rewards.length) {
+        $('sp-error').textContent = '请至少配置一个奖励物品（itemId:数量）';
+        return;
+    }
+
+    const payload = {
+        productId: $('sp-id').value.trim() || null,
+        name,
+        description: $('sp-description').value.trim(),
+        icon: $('sp-icon').value.trim(),
+        category: $('sp-category').value.trim(),
+        saleMode: parseInt($('sp-mode').value, 10) || 1,
+        currencyItemId: $('sp-currency').value.trim(),
+        price: parseInt($('sp-price').value || '0', 10),
+        startPrice: parseInt($('sp-start-price').value || '0', 10),
+        minIncrement: parseInt($('sp-min-increment').value || '1', 10),
+        auctionDurationSeconds: parseInt($('sp-auction-duration').value || '0', 10),
+        autoRestart: $('sp-auto-restart').checked,
+        stock: parseInt($('sp-stock').value || '-1', 10),
+        perUserLimit: parseInt($('sp-per-user').value || '0', 10),
+        enabled: $('sp-enabled').checked,
+        sort: parseInt($('sp-sort').value || '0', 10),
+        startTime: localInputToMs($('sp-start-time').value),
+        endTime: localInputToMs($('sp-end-time').value),
+        rewards: rewards.map((a) => ({ itemId: a.itemId, count: a.count })),
+    };
+
+    try {
+        const res = editingShopProductId
+            ? await putJson('/api/shop/products/' + encodeURIComponent(editingShopProductId), payload)
+            : await postJson('/api/shop/products', payload);
+        notify(res.warning || '商品已保存');
+        $('shop-product-modal').classList.add('hidden');
+        await loadShopProducts();
+        await loadShopListings();
+    } catch (e) {
+        $('sp-error').textContent = e.message;
+    }
+}
+
+async function publishShopProduct(id, force = false) {
+    try {
+        const url = '/api/shop/products/' + encodeURIComponent(id) + '/publish' + (force ? '?force=true' : '');
+        await request(url, { method: 'POST' });
+        notify('商品已上架');
+        await loadShopProducts();
+        await loadShopListings();
+    } catch (e) {
+        if (!force && /已在售|强制/.test(e.message)) {
+            if (confirm(e.message + '\n是否强制覆盖当前在售商品？')) {
+                return publishShopProduct(id, true);
+            }
+            return;
+        }
+        notify('上架失败：' + e.message, true);
+    }
+}
+
+async function unpublishShopProduct(id, force = false) {
+    if (!force && !confirm('确定下架该商品？已有出价的拍卖会退还给最高出价人。')) {
+        return;
+    }
+    try {
+        const url = '/api/shop/products/' + encodeURIComponent(id) + '/unpublish' + (force ? '?force=true' : '');
+        const res = await request(url, { method: 'POST' });
+        notify(res.warning || '商品已下架');
+        await loadShopProducts();
+        await loadShopListings();
+    } catch (e) {
+        if (!force && /强制|出价/.test(e.message)) {
+            if (confirm(e.message + '\n是否强制下架（退还最高出价）？')) {
+                return unpublishShopProduct(id, true);
+            }
+            return;
+        }
+        notify('下架失败：' + e.message, true);
+    }
+}
+
+async function deleteShopProduct(id) {
+    if (!confirm('确定删除商品「' + id + '」？该操作不可恢复。')) {
+        return;
+    }
+    try {
+        await request('/api/shop/products/' + encodeURIComponent(id), { method: 'DELETE' });
+        notify('商品已删除');
+        await loadShopProducts();
+        await loadShopListings();
+    } catch (e) {
+        notify('删除失败：' + e.message, true);
+    }
+}
+
+// ---------- 线上商品 / 寄拍 ----------
+
+async function loadShopListings() {
+    const s = state.shopListings;
+    try {
+        const q = new URLSearchParams({ page: s.page, pageSize: s.pageSize });
+        const source = $('shop-listing-source').value;
+        const status = $('shop-listing-status').value;
+        if (source) q.set('source', source);
+        if (status) q.set('status', status);
+
+        const data = await request('/api/shop/listings?' + q.toString());
+        s.total = data.total;
+
+        const tbody = $('shop-listing-body');
+        tbody.innerHTML = '';
+        if (!data.items || !data.items.length) {
+            tbody.appendChild(emptyRow(9));
+        } else {
+            for (const d of data.items) {
+                const tr = document.createElement('tr');
+                tr.appendChild(cell(d.listingId, 'mono'));
+                tr.appendChild(cell(d.source === 'player' || d.source === 2 ? '玩家寄拍' : '官方', 'dim'));
+                tr.appendChild(cell(d.sellerId || '-', 'mono'));
+                tr.appendChild(cell(d.title));
+                tr.appendChild(cell(shopModeText(d.saleMode), 'dim'));
+                tr.appendChild(cell(
+                    d.saleMode === 2 || d.saleMode === 'Auction'
+                        ? (d.currentPrice > 0 ? fmt(d.currentPrice) + ' / ' + (d.topBidderId || '-') : '起拍 ' + fmt(d.startPrice))
+                        : fmt(d.price),
+                ));
+                tr.appendChild(cell(d.endTime ? fmtTime(d.endTime) : '不限', 'dim'));
+                tr.appendChild(cell(shopStatusText(d.status), 'dim'));
+
+                const actTd = document.createElement('td');
+                if (d.status === 'active') {
+                    actTd.appendChild(actionButton('强制下架', () => cancelShopListing(d.listingId)));
+                }
+                tr.appendChild(actTd);
+                tbody.appendChild(tr);
+            }
+        }
+
+        renderPager('shop-listing-page-info', 'shop-listing-prev', 'shop-listing-next',
+            'shopListings', loadShopListings);
+    } catch (e) {
+        notify('在售商品查询失败：' + e.message, true);
+    }
+}
+
+async function cancelShopListing(id) {
+    if (!confirm('确定强制下架该 listing？拍卖最高出价会退回给出价人。')) {
+        return;
+    }
+    try {
+        await request('/api/shop/listings/' + encodeURIComponent(id) + '/cancel', { method: 'POST' });
+        notify('已下架');
+        await loadShopListings();
+        await loadShopProducts();
+    } catch (e) {
+        notify('下架失败：' + e.message, true);
+    }
+}
+
+// ---------- 成交流水 ----------
+
+async function loadShopOrders() {
+    const s = state.shopOrders;
+    try {
+        const q = new URLSearchParams({ page: s.page, pageSize: s.pageSize });
+        const data = await request('/api/shop/orders?' + q.toString());
+        s.total = data.total;
+
+        const tbody = $('shop-order-body');
+        tbody.innerHTML = '';
+        if (!data.items || !data.items.length) {
+            tbody.appendChild(emptyRow(7));
+        } else {
+            for (const d of data.items) {
+                const tr = document.createElement('tr');
+                tr.appendChild(cell(fmtTime(d.createTime), 'dim'));
+                tr.appendChild(cell(SHOP_ORDER_TYPE_TEXT[d.type] || d.type, 'dim'));
+                tr.appendChild(cell(d.buyerId || '-', 'mono'));
+                tr.appendChild(cell(d.sellerId || '-', 'mono'));
+                tr.appendChild(cell(fmt(d.price)));
+                tr.appendChild(cell(fmt(d.fee)));
+                tr.appendChild(cell(d.listingId, 'mono'));
+                tbody.appendChild(tr);
+            }
+        }
+
+        renderPager('shop-order-page-info', 'shop-order-prev', 'shop-order-next',
+            'shopOrders', loadShopOrders);
+    } catch (e) {
+        notify('成交流水查询失败：' + e.message, true);
+    }
+}
+
 // ---------------- Tab 切换 ----------------
 
 const tabLoaders = {
@@ -386,9 +778,11 @@ const tabLoaders = {
     payments: loadPayments,
     gm: loadGmLogs,
     mail: loadMail,
+    shop: loadShop,
 };
 
 function switchTab(name) {
+    if (history.replaceState) history.replaceState(null, '', '#' + name);
     document.querySelectorAll('.tab').forEach((t) => t.classList.toggle('active', t.dataset.tab === name));
     document.querySelectorAll('.panel').forEach((p) => p.classList.toggle('active', p.id === 'tab-' + name));
     if (name === 'overview') {
@@ -425,7 +819,36 @@ function bindEvents() {
 
     $('gm-submit').addEventListener('click', submitGm);
     $('mail-submit').addEventListener('click', submitMail);
+
+    // 商城
+    $('shop-search').addEventListener('click', () => { state.shopProducts.page = 1; loadShopProducts(); });
+    $('shop-keyword').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { state.shopProducts.page = 1; loadShopProducts(); }
+    });
+    $('shop-status-filter').addEventListener('change', () => { state.shopProducts.page = 1; loadShopProducts(); });
+    $('shop-new').addEventListener('click', () => openShopProductModal(null));
+    $('shop-modal-close').addEventListener('click', () => $('shop-product-modal').classList.add('hidden'));
+    $('shop-product-modal').addEventListener('click', (e) => {
+        if (e.target === $('shop-product-modal')) $('shop-product-modal').classList.add('hidden');
+    });
+    $('sp-save').addEventListener('click', saveShopProduct);
+    $('sp-mode').addEventListener('change', syncShopModeFields);
+    $('shop-listing-refresh').addEventListener('click', () => {
+        state.shopListings.page = 1;
+        loadShopListings();
+    });
+    $('shop-listing-source').addEventListener('change', () => {
+        state.shopListings.page = 1;
+        loadShopListings();
+    });
+    $('shop-listing-status').addEventListener('change', () => {
+        state.shopListings.page = 1;
+        loadShopListings();
+    });
 }
 
 bindEvents();
-switchTab('overview');
+const initialTab = (location.hash || '#overview').slice(1);
+switchTab(tabLoaders[initialTab] ? initialTab : 'overview');
+// 直接打开非大盘页面时也要探活一次，否则右上角一直显示「连接中」
+if (initialTab !== 'overview') loadOverview();
