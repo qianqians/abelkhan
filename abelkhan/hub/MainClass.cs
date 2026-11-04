@@ -9,6 +9,7 @@ using engine;
 using friend;
 using Google.Protobuf;
 using guild;
+using quest;
 using leaderboard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -61,6 +62,9 @@ public struct HubConfig()
 
     /// <summary>帮会配置（成员上限 / 默认任务等）。</summary>
     public GuildSettings Guild { get; set; } = new();
+
+    /// <summary>任务配置（上限 / 是否进度满了自动完成）。</summary>
+    public QuestSettings Quest { get; set; } = new();
 }
 
 public class MainClass
@@ -85,6 +89,8 @@ public class MainClass
     private ChatService? _chatService;
     private GuildStore? _guildStore;
     private GuildService? _guildService;
+    private QuestStore? _questStore;
+    private QuestService? _questService;
     private int _shopSettling;
     private int _friendSweeping;
     private Task? _tFriendMq;
@@ -243,6 +249,14 @@ public class MainClass
         {
             service.Chat = _chatService;
             _chatService.DisplayResolver ??= service.ResolveChatDisplayAsync;
+        }
+
+        if (_questService != null)
+        {
+            service.Quest = _questService;
+            _questService.Catalog = service.QuestCatalog;
+            _questService.OnCompleted ??= service.OnQuestCompletedAsync;
+            _questService.CheckCondition ??= service.CheckQuestCondition;
         }
 
         if (_guildService != null)
@@ -441,6 +455,12 @@ public class MainClass
             Log.Info("hub: guild key prefix:{0} maxMembers:{1}",
                 cfg.Guild.KeyPrefix, cfg.Guild.MaxMembers);
 
+            // 任务：事件驱动，进度 / 完成条件都在 Redis
+            _questStore = new QuestStore(_redis, cfg.Quest);
+            _questService = new QuestService(_questStore, _redis);
+            Log.Info("hub: quest key prefix:{0} autoComplete:{1}",
+                cfg.Quest.KeyPrefix, cfg.Quest.AutoCompleteWhenReady);
+
             // 聊天：频道在代码里声明，消息走 Redis pub/sub 跨 hub 扇出
             _chatStore = new ChatStore(_redis, cfg.Chat);
             var friendStore = _friendStore;
@@ -471,6 +491,10 @@ public class MainClass
                 _friendService.SetOfflineLoader(service.LoadOfflinePlayerAsync);
                 service.Chat = _chatService;
                 _chatService.DisplayResolver ??= service.ResolveChatDisplayAsync;
+                service.Quest = _questService;
+                _questService.Catalog = service.QuestCatalog;
+                _questService.OnCompleted ??= service.OnQuestCompletedAsync;
+                _questService.CheckCondition ??= service.CheckQuestCondition;
                 service.Guild = _guildService;
                 _guildService.Catalog = service.GuildTaskCatalog;
                 _guildService.DisplayResolver ??= service.ResolveGuildDisplayAsync;
@@ -511,6 +535,7 @@ public class MainClass
                     var friendService = _friendService;
                     var chat = _chatService;
                     var guild = _guildService;
+                    var quest = _questService;
                     if (string.IsNullOrEmpty(disconnect.UserId))
                     {
                         return;
@@ -533,6 +558,11 @@ public class MainClass
                             if (guild != null)
                             {
                                 await guild.OnOfflineAsync(disconnect.UserId);
+                            }
+
+                            if (quest != null)
+                            {
+                                await quest.OnOfflineAsync(disconnect.UserId);
                             }
                         }
                         catch (Exception e)

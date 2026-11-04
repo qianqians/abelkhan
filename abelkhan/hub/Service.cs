@@ -5,6 +5,7 @@ using friend;
 using guild;
 using hub.inventory;
 using leaderboard;
+using quest;
 using shop;
 
 namespace hub;
@@ -48,6 +49,17 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
     /// 为 null 时不注册帮会协议。
     /// </summary>
     public GuildService? Guild { get; set; }
+
+    /// <summary>
+    /// 任务系统（事件驱动 + 三条件 + 任务链）。由 <see cref="MainClass"/> 在启动时注入。
+    /// 为 null 时不注册任务协议。
+    /// </summary>
+    public QuestService? Quest { get; set; }
+
+    /// <summary>
+    /// 任务目录（游戏在注册 service 前把配置注册进来）。
+    /// </summary>
+    public IQuestCatalog QuestCatalog { get; set; } = global::quest.QuestCatalog.Empty;
 
     /// <summary>
     /// 帮会任务目录（游戏在注册 service 前把默认任务注册进来）。
@@ -119,6 +131,17 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
     protected internal virtual string? CheckGuildCreate(Player player, string name) => null;
 
     /// <summary>
+    /// 游戏提供：任务完成时发奖 / 记日志。奖励标识来自任务定义的 RewardKey，框架不解析。
+    /// </summary>
+    protected internal virtual Task OnQuestCompletedAsync(QuestCompletion completion) => Task.CompletedTask;
+
+    /// <summary>
+    /// 游戏提供：完成门槛的实时判定（事件状态不满足时才会问，例如「背包里要有 5 个药水」）。
+    /// </summary>
+    protected internal virtual bool CheckQuestCondition(Player player, QuestDefinition definition,
+        QuestCondition condition) => false;
+
+    /// <summary>
     /// 游戏提供：帮会任务完成时发奖 / 记日志。
     /// 可能在成员离线时触发，所以只给 id（走邮件或直接发奖都行）。
     /// </summary>
@@ -158,6 +181,8 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
         player.RegisterChatRequests(this);
         // 帮会：创建 / 成员 / 职位 / 任务
         player.RegisterGuildRequests(this);
+        // 任务：列表 / 接取 / 提交完成
+        player.RegisterQuestRequests(this);
         var cli = clients.AddOrUpdate(player.UserId, key => new Client(player.UserId, gateName, cliConnId), (key, old) => old);
         await player.CreateRemotePlayer(cli);
         await _group.CreateRemotePlayer(player);
@@ -185,6 +210,19 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
             catch (Exception ex)
             {
                 Log.Error($"guild online user:{player.UserId} err:{ex}");
+            }
+        }
+
+        // 任务：上线时跑一次触发判定（等级 / 场景这类事件可能离线期间变了）
+        if (Quest != null)
+        {
+            try
+            {
+                await Quest.OnOnlineAsync(player);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"quest online user:{player.UserId} err:{ex}");
             }
         }
 

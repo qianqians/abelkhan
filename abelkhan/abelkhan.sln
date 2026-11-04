@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "guild", "guild\guild.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuildSmoke", "tests\GuildSmoke\GuildSmoke.csproj", "{ED9601F4-3E69-4767-9D24-505EB94B5935}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "quest", "quest\quest.csproj", "{E1292775-311D-41B2-AD42-AD2C2CB6FF86}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -281,6 +283,18 @@ Global
 		{ED9601F4-3E69-4767-9D24-505EB94B5935}.Release|x64.Build.0 = Release|Any CPU
 		{ED9601F4-3E69-4767-9D24-505EB94B5935}.Release|x86.ActiveCfg = Release|Any CPU
 		{ED9601F4-3E69-4767-9D24-505EB94B5935}.Release|x86.Build.0 = Release|Any CPU
+		{E1292775-311D-41B2-AD42-AD2C2CB6FF86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1292775-311D-41B2-AD42-AD2C2CB6FF86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1292775-311D-41B2-AD42-AD2C2CB6FF86}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E1292775-311D-41B2-AD42-AD2C2CB6FF86}.Debug|x64.Build.0 = Debug|Any CPU
+		{E1292775-311D-41B2-AD42-AD2C2CB6FF86}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E1292775-311D-41B2-AD42-AD2C2CB6FF86}.Debug|x86.Build.0 = Debug|Any CPU
+		{E1292775-311D-41B2-AD42-AD2C2CB6FF86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1292775-311D-41B2-AD42-AD2C2CB6FF86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1292775-311D-41B2-AD42-AD2C2CB6FF86}.Release|x64.ActiveCfg = Release|Any CPU
+		{E1292775-311D-41B2-AD42-AD2C2CB6FF86}.Release|x64.Build.0 = Release|Any CPU
+		{E1292775-311D-41B2-AD42-AD2C2CB6FF86}.Release|x86.ActiveCfg = Release|Any CPU
+		{E1292775-311D-41B2-AD42-AD2C2CB6FF86}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

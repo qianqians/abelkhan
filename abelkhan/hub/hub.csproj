@@ -15,6 +15,7 @@
       <ProjectReference Include="..\friend\friend.csproj" />
       <ProjectReference Include="..\chat\chat.csproj" />
       <ProjectReference Include="..\guild\guild.csproj" />
+      <ProjectReference Include="..\quest\quest.csproj" />
     </ItemGroup>
 
 </Project>
