@@ -53,6 +53,14 @@ public sealed class ChatService
     /// </summary>
     public Func<string, Task<string?>>? ResolveOnlineEntityId { get; set; }
 
+    /// <summary>
+    /// 帮会作用域的解析器（启用帮会系统时由 MainClass 注入）。
+    /// 单独留一个注入点而不是靠游戏的 <see cref="Player.GetChatScope"/>：
+    /// 帮会 id 是帮会系统自己维护的数据，游戏一旦重写 GetChatScope 忘了调 base，
+    /// 帮会频道就会静默失效。
+    /// </summary>
+    public Func<Player, string?>? GuildScopeResolver { get; set; }
+
     // ================================================================
     // 上下线 / 作用域
     // ================================================================
@@ -130,6 +138,8 @@ public sealed class ChatService
         // 全区 / 全服是部署级固定值，不需要游戏提供
         ChatScope.Zone => _store.Settings.ZoneId,
         ChatScope.Server => _store.Settings.ServerId,
+        // 帮会优先进帮会系统（启用时），否则回到游戏的通用钩子
+        ChatScope.Guild => GuildScopeResolver?.Invoke(player) ?? player.GetChatScope(scope),
         _ => player.GetChatScope(scope),
     };
 
