@@ -531,7 +531,11 @@ internal sealed class ProtocolHarness : IAsyncDisposable
     }
 
     /// <summary>客户端登录：建立 gate、接上 client SDK、等玩家实体就绪。</summary>
-    public async Task<TestClient> LoginAsync(string userId)
+    /// <param name="postToMainThread">
+    /// 模拟引擎的主线程调度器（Stride/Godot 接入时要传的 ClientConfig.PostToMainThread）；
+    /// null = SDK 保持线程池行为。
+    /// </param>
+    public async Task<TestClient> LoginAsync(string userId, Action<Action>? postToMainThread = null)
     {
         var gate = new MiniGate(this, GateId, userId);
         _gateByUser[userId] = gate;
@@ -539,6 +543,7 @@ internal sealed class ProtocolHarness : IAsyncDisposable
         var clientService = new TestClientService();
         var session = new ClientSession(new ClientConfig
         {
+            PostToMainThread = postToMainThread,
             ServiceName = "test_service",
             RequestTimeoutMs = 5000,
             AutoReconnect = false,
@@ -612,6 +617,72 @@ internal sealed class ProtocolHarness : IAsyncDisposable
             new("g_task_daily", "帮会日常", Target: 3),
             new("g_task_boss", "帮会首领", Target: 1, PerMember: false, OfficerCanPublish: true),
         ];
+    }
+}
+
+/// <summary>
+/// 模拟引擎主线程：所有回调排进队列，由 <see cref="Pump"/> 在同一个线程上 drain。
+/// 用来验证 <c>ClientConfig.PostToMainThread</c> 的语义（线程归属 + 保序）。
+/// </summary>
+internal sealed class FakeMainThread : IDisposable
+{
+    private readonly BlockingCollection<Action> _queue = new();
+    private readonly Thread _thread;
+    private volatile bool _running = true;
+
+    public FakeMainThread()
+    {
+        _thread = new Thread(() =>
+        {
+            MainThreadId = Environment.CurrentManagedThreadId;
+            foreach (var action in _queue.GetConsumingEnumerable())
+            {
+                if (!_running)
+                {
+                    break;
+                }
+
+                try
+                {
+                    action();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("  (fake-main) callback err:" + e.Message);
+                }
+            }
+        })
+        { IsBackground = true, Name = "fake-main-thread" };
+        _thread.Start();
+
+        // 等线程自报 id
+        var deadline = Environment.TickCount64 + 3000;
+        while (MainThreadId == 0 && Environment.TickCount64 < deadline)
+        {
+            Thread.Sleep(5);
+        }
+    }
+
+    public int MainThreadId { get; private set; }
+
+    /// <summary>把委托排到「主线程」</summary>
+    public void Post(Action action) => _queue.Add(action);
+
+    /// <summary>等队列跑空（简单起见：排一个哨兵再等它执行完）</summary>
+    public async Task PumpAsync(int delayMs = 60)
+    {
+        var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Post(() => done.TrySetResult());
+        await Task.WhenAny(done.Task, Task.Delay(3000));
+        await Task.Delay(delayMs);
+    }
+
+    public void Dispose()
+    {
+        _running = false;
+        _queue.CompleteAdding();
+        _thread.Join(1000);
+        _queue.Dispose();
     }
 }
 

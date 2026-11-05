@@ -57,4 +57,15 @@ public class ClientConfig
 
     /// <summary>进服务/重连时带给 hub 的参数</summary>
     public byte[] Argv { get; set; } = [];
+
+    /// <summary>
+    /// 把实体回调（OnCreate / OnRefresh / 服务器 notify / request）切到引擎主线程执行。
+    ///
+    /// 留空 = 保持原来的线程池行为（服务端工具、无引擎场景）。
+    /// 引擎侧传一个「把委托排进主线程队列」的方法即可，例如 Stride 的
+    /// <c>action =&gt; dispatcher.Post(action)</c>；
+    /// 配合在主线程上装一个 <see cref="System.Threading.SynchronizationContext"/>，
+    /// handler 里的 <c>await</c> 之后也会回到主线程，游戏对象可以安全访问。
+    /// </summary>
+    public Action<Action>? PostToMainThread { get; set; }
 }

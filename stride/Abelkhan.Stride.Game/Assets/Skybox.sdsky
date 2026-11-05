@@ -1,0 +1,5 @@
+!SkyboxAsset
+Id: 00000000-0000-0000-0000-00000000003d
+SerializedVersion: {Stride: 2.0.0.0}
+Tags: []
+CubeMap: 00000000-0000-0000-0000-00000000003b:Skybox texture

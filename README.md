@@ -15,6 +15,7 @@ abelkhan是一个轻量级的游戏服务器框架，基于c#开发，使用mong
 * guild 联盟/帮会系统（创建 / 邀请审批 / 三级职位 / 帮会频道 / 可编程帮会任务，见 `docs/guild.md`）
 * quest 任务系统（可配置触发 / 进度 / 完成条件 + 任务链，见 `docs/quest.md`）
 * admin 管理后台（dashboard：监控大盘/玩家查询/支付查询/GM面板/邮件发送/商城管理，见 abelkhan/admin/README.md）
+* stride 引擎接入示例（Stride 4.4.1：客户端 SDK → 主线程桥 → GameSystem，见 `stride/README.md`）
 
 ## 测试
 
@@ -34,6 +35,12 @@ abelkhan是一个轻量级的游戏服务器框架，基于c#开发，使用mong
 ```bash
 dotnet run --project abelkhan/tests/ProtocolSmoke
 dotnet run --project abelkhan/tests/FriendSmoke   # 其余同理
+```
+
+引擎接入示例单独一个解决方案（需要 Stride 4.4.1 包）：
+
+```bash
+dotnet build stride/Abelkhan.Stride.slnx
 ```
 
 ## License

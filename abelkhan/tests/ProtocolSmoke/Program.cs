@@ -72,6 +72,7 @@ internal static class Program
             await GuildProtocols(h);
             await QuestProtocols(h);
             await ShopProtocols(h);
+            await MainThreadBridgeProtocols(h);
 
             Console.WriteLine();
             Console.WriteLine($"通过 {_passed} 项，失败 {_failed} 项");
@@ -494,6 +495,55 @@ internal static class Program
 
         var buyOwn = await seller.Player.BuyShopItem(consign.Value.Listing.ListingId, 1);
         CheckErr(buyOwn, "不能购买自己寄拍的物品");
+    }
+
+    // ================================================================
+    // 引擎接主线程桥（Stride / Godot 接入的关键约束）
+    // ================================================================
+
+    /// <summary>
+    /// 验证 <c>ClientConfig.PostToMainThread</c>：设了之后，实体回调（服务器 notify）
+    /// 必须全部跑到「主线程」上，且保持顺序；请求/响应不受影响。
+    /// </summary>
+    private static async Task MainThreadBridgeProtocols(ProtocolHarness h)
+    {
+        Section("引擎接入：ClientConfig.PostToMainThread 主线程桥");
+        using var main = new FakeMainThread();
+
+        var alice = await h.LoginAsync("mt_alice", main.Post);
+        var bob = await h.LoginAsync("mt_bob", main.Post);
+
+        var seenThreads = new List<int>();
+        var seenContent = new List<string>();
+        var lockObj = new object();
+
+        bob.Player.ChatMessage += n =>
+        {
+            lock (lockObj)
+            {
+                seenThreads.Add(Environment.CurrentManagedThreadId);
+                seenContent.Add(n.Entry.Content);
+            }
+        };
+
+        // 请求/响应链路：设了主线程钩子也必须照常返回
+        var send1 = await alice.Player.SendChatMessage("world", "mt-1");
+        Check(send1, "设了主线程钩子后 request/response 仍然正常");
+
+        await Task.Delay(3200); // 等频道冷却
+        var send2 = await alice.Player.SendChatMessage("world", "mt-2");
+        Check(send2, "第二次发言（绕过冷却）");
+
+        await h.PumpAsync();
+        await main.PumpAsync();
+
+        lock (lockObj)
+        {
+            Check(seenThreads.Count >= 2, $"notify 都投递到了（收到 {seenThreads.Count} 条）");
+            Check(seenThreads.All(id => id == main.MainThreadId),
+                "notify handler 全部跑在主线程上（不是网络线程池）");
+            Check(seenContent.SequenceEqual(["mt-1", "mt-2"]), "notify 按发送顺序到达（保序）");
+        }
     }
 
     // ================================================================

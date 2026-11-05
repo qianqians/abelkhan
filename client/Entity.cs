@@ -47,19 +47,53 @@ public abstract class Entity(string entityId, string entityType)
 
     internal void Post(Func<Task> work)
     {
+        var post = Session?.PostToMainThread;
         lock (_queueLock)
         {
             _queue = _queue.ContinueWith(async _ =>
             {
-                try
+                if (post == null)
                 {
-                    await work();
+                    await RunGuardedAsync(work);
+                    return;
                 }
-                catch (Exception e)
+
+                // 引擎提供了主线程调度器：把这段 handler 排到主线程执行，
+                // 并等它跑完再放行队列里的下一个任务（保序 + 不并发访问游戏对象）
+                var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+                post(() =>
                 {
-                    Log.Error($"Entity:{EntityId} type:{EntityType} post task ex:{e}");
-                }
+                    try
+                    {
+                        _ = RunAndSignalAsync(work, done);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($"Entity:{EntityId} type:{EntityType} post to main thread ex:{e}");
+                        done.TrySetResult();
+                    }
+                });
+
+                await done.Task;
             }, TaskScheduler.Default).Unwrap();
+        }
+    }
+
+    private async Task RunAndSignalAsync(Func<Task> work, TaskCompletionSource done)
+    {
+        await RunGuardedAsync(work);
+        done.TrySetResult();
+    }
+
+    private async Task RunGuardedAsync(Func<Task> work)
+    {
+        try
+        {
+            await work();
+        }
+        catch (Exception e)
+        {
+            Log.Error($"Entity:{EntityId} type:{EntityType} post task ex:{e}");
         }
     }
 

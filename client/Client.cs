@@ -72,6 +72,9 @@ public class Client
     /// <summary>重连时带给服务器的 user_id（登录成功后由游戏设置）</summary>
     public string UserId { get; set; }
 
+    /// <summary>主线程调度钩子（<see cref="ClientConfig.PostToMainThread"/>），null 表示不切线程</summary>
+    internal Action<Action>? PostToMainThread => _cfg.PostToMainThread;
+
     /// <summary>gate 下发的连接 id（收到 NotifyConnID 之后才有值）</summary>
     public string ConnId => _connId;
 

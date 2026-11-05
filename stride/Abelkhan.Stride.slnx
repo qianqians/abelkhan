@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="../abelkhan/consts/consts.csproj" />
+  <Project Path="../abelkhan/engine/engine.csproj" />
+  <Project Path="../abelkhan/proto/proto.csproj" />
+  <Project Path="../client/client.csproj" />
+  <Project Path="Abelkhan.Stride.Game/Abelkhan.Stride.Game.csproj" />
+  <Project Path="Abelkhan.Stride.Windows/Abelkhan.Stride.Windows.csproj" />
+</Solution>

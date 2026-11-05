@@ -50,10 +50,16 @@
 - **Godot**：master（4.8）文档写明 **需要 .NET 10 或更高**；但稳定线（4.6/4.7）仍是更低的 .NET，且 **C# 不能导出 Web**（[官方文档](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html)）。
 - **Stride 4.4**：放开限制，"Game Studio 可以打开使用更新版本 .NET 的工程"（[4.4 release notes](https://doc.stride3d.net/latest/en/ReleaseNotes/4.4.html)）。
 
-建议：把 `client` / `engine` / `consts` / `proto` 改成多目标 **`net8.0;net10.0`**。
-依据（已在本仓库 restore 结果里确认，不是推测）：`Google.Protobuf 3.36.2` 在 `net10.0` 下选中的就是
-`lib/net8.0/Google.Protobuf.dll`（`client/obj/project.assets.json:5-13`），
-且这 4 个工程没有使用任何 net9/net10 专属 API → 多目标基本零成本，却能同时兼容三家的稳定版。
+> **已核实（2026-11 更新）**：**Stride 4.4.1 的目标框架就是 `net10.0`**
+> （`~/.nuget/packages/stride.engine/4.4.1/lib/net10.0/Stride.Engine.dll`），
+> 与 `client` 当前 TFM 完全一致 —— **接 Stride 不需要多目标**。
+> 本仓库已按此落地了一个可编译的示例：`stride/`（见其 README）。
+>
+> 只有接 **Stride 4.2/4.3 或 Godot 稳定线**时，才需要把
+> `client` / `engine` / `consts` / `proto` 改成多目标 **`net8.0;net10.0`**。
+> 依据（已在本仓库 restore 结果里确认，不是推测）：`Google.Protobuf 3.36.2` 在 `net10.0` 下选中的就是
+> `lib/net8.0/Google.Protobuf.dll`（`client/obj/project.assets.json:5-13`），
+> 且这 4 个工程没有使用任何 net9/net10 专属 API → 多目标基本零成本。
 
 ### 2) 主线程桥
 
@@ -64,15 +70,19 @@
 public Action<Action>? PostToMainThread { get; set; }   // null = 保持现在的线程池行为
 ```
 
-`Entity.Post`（`client/Entity.cs:39-64`）改走这个钩子；引擎侧在**主线程**上装一个
-`SynchronizationContext`（把队列在每帧 `Update` 里 drain），这样 handler 里的 `await` 之后也会回到主线程。
+**已实现**：`Entity.Post` 走这个钩子，并且会**等主线程执行完再放行队列里的下一个**（保序 + 不并发）。
+引擎侧在**主线程**上装一个 `SynchronizationContext`（把队列在每帧 `Update` 里 drain），
+这样 handler 里的 `await` 之后也会回到主线程。
+
+- 实现参考：`stride/Abelkhan.Stride.Game/Net/MainThreadDispatcher.cs`
+- 行为回归：`abelkhan/tests/ProtocolSmoke` 的「引擎接入：ClientConfig.PostToMainThread 主线程桥」
 各引擎的"回主线程"手段：
 
 | 引擎 | 回主线程 | 备注 |
 |---|---|---|
 | Flax | `Scripting.InvokeOnUpdate(...)`、`Scripting.MainThreadScheduler` | [Multithreading 文档](https://docs.flaxengine.com/manual/scripting/advanced/multithreading.html) 明确"编辑 gameplay 对象只能在主线程" |
 | Godot | `CallDeferred`（注意：走 string 调用时必须是 snake_case 名，如 `CallDeferred("add_child")`） | [C# basics](https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/c_sharp_basics.html) |
-| Stride | 无一行式 API，自己用 `ConcurrentQueue` 在 `Game.Update`/`GameSystem` 里 drain（或用 `Stride.Core.MicroThreads` 的 `ScriptSystem`） | 需自行核实具体 API |
+| Stride | 无一行式 API，自己用 `ConcurrentQueue` 在 `Game.Update`/`GameSystem.Update` 里 drain | 已落地：`stride/Abelkhan.Stride.Game/Net/MainThreadDispatcher.cs`（含 `SynchronizationContext` 实现） |
 
 ---
 
