@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using System.Diagnostics;
+using MongoDB.Driver;
 
 namespace core;
 
@@ -26,6 +27,58 @@ public class MongoProxy
         return _client;
     }
 
+    // ================================================================
+    // 监控：和 RedisHandle.Execute 一样的收口点
+    //
+    // operation 是固定的小集合（save/update/find/count/...），可以安全当指标标签；
+    // collection 名由游戏决定、可能发散，所以**只作为 trace 标签**，不进指标。
+    // ================================================================
+
+    private async ValueTask<T> MeasureAsync<T>(string operation, string collectionName, Func<Task<T>> action)
+    {
+        using var activity = Tracing.Start("mongo." + operation, ActivityKind.Client,
+            ("db.system", "mongodb"), ("db.operation", operation), ("db.collection", collectionName));
+        using var timer = Metrics.Time("abelkhan_mongo_operation_duration_seconds",
+            "MongoDB operation latency", Metrics.FastBuckets, ("operation", operation));
+
+        try
+        {
+            return await action();
+        }
+        catch (Exception e)
+        {
+            Metrics.Count("abelkhan_mongo_errors_total", "MongoDB operation errors", 1,
+                ("operation", operation));
+            Tracing.MarkError(activity, e);
+            throw;
+        }
+    }
+
+    private ValueTask<bool> MeasureAsync(string operation, string collectionName, Func<Task> action) =>
+        MeasureAsync(operation, collectionName, async () =>
+        {
+            await action();
+            return true;
+        });
+
+    /// <summary>健康检查用：能 ping 通才算健康。</summary>
+    public async Task<bool> PingAsync(string dbName, CancellationToken ct = default)
+    {
+        try
+        {
+            var db = GetMongoClient().GetDatabase(dbName);
+            await MeasureAsync("ping", dbName, async () =>
+                await db.RunCommandAsync<MongoDB.Bson.BsonDocument>(
+                    new MongoDB.Bson.BsonDocument("ping", 1), cancellationToken: ct));
+            return true;
+        }
+        catch (Exception e)
+        {
+            Log.Error("mongo ping {0} failed: {1}", dbName, e.Message);
+            return false;
+        }
+    }
+
     public void CreateIndex(string dbName, string collectionName, string key, bool isUnique)
     {
         var mongoClient = GetMongoClient();
@@ -40,7 +93,11 @@ public class MongoProxy
                 Unique = isUnique
             };
             var indexModel = new CreateIndexModel<MongoDB.Bson.BsonDocument>(builder.Ascending(key), opt);
-            collection.Indexes.CreateOne(indexModel);
+            MeasureAsync("createIndex", collectionName, () =>
+            {
+                collection.Indexes.CreateOne(indexModel);
+                return Task.CompletedTask;
+            }).AsTask().GetAwaiter().GetResult();
         }
         catch(Exception e)
         {
@@ -79,9 +136,7 @@ public class MongoProxy
         var collection = db.GetCollection<MongoDB.Bson.BsonDocument>(collectionName);
 
         var d = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bsonData);
-        await collection.InsertOneAsync(d);
-
-        return true;
+        return await MeasureAsync("save", collectionName, () => collection.InsertOneAsync(d));
 	}
 
     public async ValueTask<bool> Update(string dbName, string collectionName, byte[] bsonQuery, byte[] bsonUpdate, bool upsert)
@@ -97,8 +152,7 @@ public class MongoProxy
         var update = new BsonDocumentUpdateDefinition<MongoDB.Bson.BsonDocument>(bsonUpdateDoc);
         var options = new UpdateOptions() { IsUpsert = upsert };
 
-        await collection.UpdateOneAsync(query, update, options);
-
+        await MeasureAsync("update", collectionName, () => collection.UpdateOneAsync(query, update, options));
         return true;
 	}
 
@@ -120,9 +174,8 @@ public class MongoProxy
             IsUpsert = upsert
         };
 
-        var r = await collection.FindOneAndUpdateAsync(query, update, options);
-
-        return r;
+        return await MeasureAsync("findAndModify", collectionName,
+            () => collection.FindOneAndUpdateAsync(query, update, options));
     }
 
     public async ValueTask<IAsyncCursor<MongoDB.Bson.BsonDocument>> Find(string dbName, string collectionName, byte[] bsonQuery, int skip, int limit, string sort, bool ascending)
@@ -146,7 +199,8 @@ public class MongoProxy
             opt.Sort = ascending ? Builders<MongoDB.Bson.BsonDocument>.Sort.Ascending(sort) : Builders<MongoDB.Bson.BsonDocument>.Sort.Descending(sort);
         }
 
-        return await collection.FindAsync<MongoDB.Bson.BsonDocument>(bsonQueryDoc, opt);
+        return await MeasureAsync("find", collectionName,
+            () => collection.FindAsync<MongoDB.Bson.BsonDocument>(bsonQueryDoc, opt));
     }
 
     public async ValueTask<int> Count(string dbName, string collectionName, byte[] bsonQuery)
@@ -156,7 +210,9 @@ public class MongoProxy
         var collection = db.GetCollection<MongoDB.Bson.BsonDocument>(collectionName);
 
         var bsonQueryDoc = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bsonQuery);
-        return (int)(await collection.CountDocumentsAsync(bsonQueryDoc));
+        var count = await MeasureAsync("count", collectionName,
+            () => collection.CountDocumentsAsync(bsonQueryDoc));
+        return (int)count;
     }
 
 	public async ValueTask<bool> Remove(string dbName, string collectionName, byte[] bsonQuery)
@@ -166,8 +222,7 @@ public class MongoProxy
         var collection = db.GetCollection<MongoDB.Bson.BsonDocument>(collectionName);
 
         var bsonQueryDoc = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<MongoDB.Bson.BsonDocument>(bsonQuery);
-        await collection.DeleteOneAsync(bsonQueryDoc);
-
+        await MeasureAsync("remove", collectionName, () => collection.DeleteOneAsync(bsonQueryDoc));
         return true;
 	}
 
@@ -181,7 +236,8 @@ public class MongoProxy
         var query = new BsonDocumentFilterDefinition<MongoDB.Bson.BsonDocument>(bsonQueryDoc);
         var bsonUpdateImpl = new MongoDB.Bson.BsonDocument { { "$inc", new MongoDB.Bson.BsonDocument { { "inside_guid", 1 } } } };
 
-        var c = await collection.FindOneAndUpdateAsync<MongoDB.Bson.BsonDocument>(query, bsonUpdateImpl);
+        var c = await MeasureAsync("getGuid", collectionName,
+            () => collection.FindOneAndUpdateAsync<MongoDB.Bson.BsonDocument>(query, bsonUpdateImpl));
         return c.GetValue("inside_guid").ToInt64();
     }
 }

@@ -77,10 +77,11 @@ public class MainClass
         var monitoring = MonitoringHost.Start(cfg.Monitoring);
         var data = new AdminDataService(cfg);
 
+        // admin 的两个依赖都探：Redis（大盘/队列）+ Mongo（玩家/订单查询）
         ServiceHealth.RegisterDependencies(async ct =>
         {
             await data.PingRedisAsync();
-            return true;
+            return await data.PingMongoAsync(ct);
         });
 
         var app = WebApplication.Create();

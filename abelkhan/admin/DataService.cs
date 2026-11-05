@@ -85,6 +85,24 @@ public class AdminDataService
         await _redis.Execute("health.ping", db => db.PingAsync());
     }
 
+    /// <summary>健康检查用：Mongo 能 ping 通才算健康（admin 直接用的是 MongoClient，没走 core.MongoProxy）。</summary>
+    public async Task<bool> PingMongoAsync(CancellationToken ct = default)
+    {
+        try
+        {
+            using var timer = Metrics.Time("abelkhan_mongo_operation_duration_seconds",
+                "MongoDB operation latency", Metrics.FastBuckets, ("operation", "ping"));
+            await _db.RunCommandAsync<BsonDocument>(new BsonDocument("ping", 1), cancellationToken: ct);
+            return true;
+        }
+        catch (Exception e)
+        {
+            Metrics.Count("abelkhan_mongo_errors_total", "MongoDB operation errors", 1, ("operation", "ping"));
+            Log.Error("admin: mongo ping failed: {0}", e.Message);
+            return false;
+        }
+    }
+
     // ---------------- 排行榜 ----------------
 
     /// <summary>重置（清空）某个排行榜。</summary>

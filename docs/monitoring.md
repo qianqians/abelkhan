@@ -90,14 +90,24 @@
 `operation` 是 `Execute` 的第一个参数，本来就是有限集合，**天然可当标签**。
 直方图用**自定义细桶**（`0.0005 … 5s`）：默认桶从 5ms 起，Redis 单次操作根本落不进去。
 
-### 4.3 出口：gate 投递
+### 4.3 MongoDB（收口点 `core/MongoProxy.MeasureAsync`）
+
+| 指标 | 类型 | 标签 |
+|---|---|---|
+| `abelkhan_mongo_operation_duration_seconds` | histogram | `operation`（`save` / `update` / `find` / `findAndModify` / `count` / `remove` / `getGuid` / `createIndex` / `ping`） |
+| `abelkhan_mongo_errors_total` | counter | `operation` |
+
+`operation` 是小集合，可以当标签；**collection 名不进指标**（由游戏决定、可能发散），
+只作为 trace 标签 `db.collection`。admin 用的是裸 `MongoClient`，它自己的 ping 也按同样方式记 `operation="ping"`。
+
+### 4.4 出口：gate 投递
 
 | 指标 | 类型 | 标签 |
 |---|---|---|
 | `abelkhan_gate_players` / `abelkhan_gate_clients` | gauge | — |
 | `abelkhan_gate_delivered_total` | counter | `kind`(normal/reliability) |
 
-### 4.4 业务
+### 4.5 业务
 
 | 指标 | 类型 | 标签 | 关注点 |
 |---|---|---|---|
@@ -111,7 +121,7 @@
 | `abelkhan_guild_created_total` | counter | — | 帮会创建速率 |
 | `abelkhan_shop_settle_batch` | gauge | — | 每轮结算条数（队列深度代理） |
 
-### 4.5 兜底 / 运行时
+### 4.6 兜底 / 运行时
 
 | 指标 | 类型 | 说明 |
 |---|---|---|
@@ -133,6 +143,7 @@
 - `hub.{method}`（`ActivityKind.Server`）：标签 `rpc.method` / `rpc.kind` / `entity.type`；
   超慢调用会带 `slow=true`。
 - `redis.{operation}`（`ActivityKind.Client`）：所有 Redis 命令的耗时，挂在报文 span 下面。
+- `mongo.{operation}`（`ActivityKind.Client`）：MongoDB 操作，带 `db.collection` 标签。
 
 **目前是进程内的 trace**：一个 hub 报文处理 + 它引发的 Redis 操作在同一条链上。
 跨进程（客户端 → gate → hub）需要把 `trace_id` 放进 `CallRpc`，那要改 `common.proto`（wire 格式），
@@ -173,6 +184,7 @@ cd deploy/monitoring && docker compose up -d
 | Redis 延迟异常 | `histogram_quantile(0.99, sum by (le) (rate(abelkhan_redis_operation_duration_seconds_bucket[5m]))) > 0.1` |
 | Redis 断连 | `increase(abelkhan_redis_reconnect_total[10m]) > 0` |
 | 好友跨服确认超时 | `increase(abelkhan_friend_reserve_swept_total[10m]) > 1` |
+| Mongo 出错 | `increase(abelkhan_mongo_errors_total[10m]) > 0` |
 | 实例卡死 | `up{job=~"abelkhan-.*"} == 0` 或 `/health` 返回 503 |
 
 ---
@@ -180,7 +192,9 @@ cd deploy/monitoring && docker compose up -d
 ## 7. 已知边界
 
 - **没有跨进程 trace**（见第 5 节，要改 wire 格式）。
-- **MongoDB 没有指标**：`MongoProxy` 还没包计时（下一处收口点，做法和 `RedisHandle` 一样）。
+- ~~MongoDB 没有指标~~ → 已补：`MongoProxy` 的所有操作都走 `MeasureAsync`（延迟直方图 + 错误计数 + span）。
+  **不需要真 mongod 就能回归**：测试里把 `MongoProxy` 指向一个连不上的地址，
+  断言失败路径仍然产出 `abelkhan_mongo_errors_total` 和直方图样本。
 - `abelkhan_redis_operation_duration_seconds_count` 之类的 `_count`/`_bucket` 由 prometheus-net 自动生成，
   别手工创建同名 counter。
 - **指标本身有回归测试**：`abelkhan/tests/ProtocolSmoke` 的「监控：/metrics 输出与指标计数」一节，

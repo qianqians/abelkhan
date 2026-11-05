@@ -47,6 +47,14 @@ groups:
           summary: "Redis 操作 P99 > 100ms"
           description: "按 operation 标签看是哪类命令慢（大 ZSET / 大 HGETALL / Lua 太重）"
 
+      - alert: AbelkhanMongoErrors
+        expr: increase(abelkhan_mongo_errors_total[10m]) > 0
+        for: 0m
+        labels: { severity: warning }
+        annotations:
+          summary: "MongoDB 操作报错"
+          description: "按 operation 标签定位；连不上会同时体现在 /health 503（admin 探针含 Mongo ping）"
+
       - alert: AbelkhanRedisReconnect
         expr: increase(abelkhan_redis_reconnect_total[10m]) > 0
         for: 0m

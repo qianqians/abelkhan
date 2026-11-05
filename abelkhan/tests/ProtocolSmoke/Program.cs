@@ -7,6 +7,7 @@ using friend;
 using guild;
 using hub;
 using leaderboard;
+using MongoDB.Bson;
 using quest;
 using shop;
 
@@ -598,6 +599,26 @@ internal static class Program
         Check(text.Contains("abelkhan_runtime_heap_bytes"), "运行时指标（GC 堆）已导出");
         Check(text.Contains("node=\"smoke-node\""), "所有指标都带 node 标签（多副本可区分）");
         Check(!text.Contains("user_id"), "指标里没有高基数的用户维度标签");
+
+        // Mongo：不需要真 mongod —— 指向一个连不上的地址，验证「失败路径」也出指标
+        var mongo = new core.MongoProxy("mongodb://127.0.0.1:1/?serverSelectionTimeoutMS=300");
+        var threw = false;
+        try
+        {
+            await mongo.Count("game", "player", new BsonDocument("a", 1).ToBson());
+        }
+        catch (Exception)
+        {
+            threw = true;
+        }
+
+        Check(threw, "MongoProxy 连不上时抛出（行为不变）");
+        var mongoText = await ProtocolHarness.ScrapeMetricsAsync();
+        Check(mongoText.Contains("abelkhan_mongo_errors_total{node=\"smoke-node\",operation=\"count\"} 1"),
+            "Mongo 失败路径记了 errors 计数（收口点确实包住了）");
+        Check(mongoText.Contains("abelkhan_mongo_operation_duration_seconds_count{node=\"smoke-node\",operation=\"count\"} 1"),
+            "Mongo 操作进了延迟直方图");
+        Check(!mongoText.Contains("operation=\"player\""), "collection 名没有进指标标签（避免高基数）");
     }
 
     // ================================================================
