@@ -1,0 +1,42 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - /etc/prometheus/alert.rules.yml
+
+scrape_configs:
+  # ---- 拉模式：各服务自己的 /metrics（prometheus-net） ----
+  # 每个 hub / gate 实例都监听自己的 Monitoring.PrometheusPort（默认回环，容器里要改成 0.0.0.0）
+  - job_name: abelkhan-hub
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - host.docker.internal:9101   # hub-1
+          - host.docker.internal:9102   # hub-2
+        labels:
+          service: hub
+
+  - job_name: abelkhan-gate
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - host.docker.internal:9111   # gate-1
+        labels:
+          service: gate
+
+  - job_name: abelkhan-admin
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - host.docker.internal:9121
+        labels:
+          service: admin
+
+  # ---- 推模式：OTel Collector 收下 trace/运行时指标，metrics 在 :8889 暴露成 Prometheus 格式 ----
+  - job_name: otel-collector
+    static_configs:
+      - targets:
+          - otel-collector:8889
+        labels:
+          service: otel

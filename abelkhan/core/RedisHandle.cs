@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net.Sockets;
 using StackExchange.Redis;
@@ -146,6 +147,11 @@ public class RedisHandle
     /// </summary>
     public async ValueTask<T> Execute<T>(string operation, Func<IDatabase, Task<T>> action)
     {
+        // 指标 + span 都挂在这个收口点上：operation 本身就是有限集合的标签
+        using var activity = Tracing.Start("redis." + operation, ActivityKind.Client, ("redis.operation", operation));
+        using var timer = Metrics.Time("abelkhan_redis_operation_duration_seconds",
+            "Redis command latency", Metrics.FastBuckets, ("operation", operation));
+
         while (true)
         {
             var db = _database;
@@ -162,6 +168,9 @@ public class RedisHandle
                                           or IOException or SocketException)
             {
                 Log.Error("redis execute {0} failed, will reconnect: {1}", operation, e.Message);
+                Metrics.Count("abelkhan_redis_reconnect_total", "Redis reconnect attempts", 1,
+                    ("operation", operation));
+                Tracing.MarkError(activity, e);
                 Recover(e);
             }
         }

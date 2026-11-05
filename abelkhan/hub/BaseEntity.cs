@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using consts;
 using core;
 using engine;
@@ -375,18 +376,55 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
     {
         if (_onMsg.TryGetValue(method, out var action))
         {
+            var kind = msgId.Length > 0 ? "request" : "notify";
+            using var activity = Tracing.Start("hub." + method, ActivityKind.Server,
+                ("rpc.method", method), ("rpc.kind", kind), ("entity.type", EntityType));
+            using var timer = Metrics.Time("abelkhan_hub_message_duration_seconds",
+                "Hub message handling latency", Metrics.HandlerBuckets, ("method", method));
+            var started = Stopwatch.GetTimestamp();
+
             try
             {
                 await action(connId, msgId, gate, message);
             }
             catch(Exception ex)
             {
+                Metrics.Count("abelkhan_hub_handler_errors_total", "Hub handler exceptions", 1, ("method", method));
+                Tracing.MarkError(activity, ex);
                 Log.Error($"OnDoMsg method:{method} ex:{ex}");
+            }
+            finally
+            {
+                Metrics.Count("abelkhan_hub_messages_total", "Hub messages handled", 1,
+                    ("method", method), ("kind", kind));
+                LogSlow(activity, method, started);
             }
         }
         else
         {
+            Metrics.Count("abelkhan_hub_message_unrouted_total", "Hub messages with no handler", 1,
+                ("method", method));
             Log.Error($"OnDoMsg method:{method} not exist");
         }
+    }
+
+    /// <summary>慢调用日志：超过 <see cref="MonitoringOptions.SlowLogThresholdMs"/> 打一条 warn（带 span 里已有上下文）。</summary>
+    private void LogSlow(Activity? activity, string method, long startedTimestamp)
+    {
+        var threshold = Metrics.Options.SlowLogThresholdMs;
+        if (threshold <= 0)
+        {
+            return;
+        }
+
+        var elapsedMs = Stopwatch.GetElapsedTime(startedTimestamp).TotalMilliseconds;
+        if (elapsedMs < threshold)
+        {
+            return;
+        }
+
+        activity?.SetTag("slow", true);
+        Log.Warn("slow message entity:{0} type:{1} method:{2} elapsed:{3:0.0}ms",
+            EntityId, EntityType, method, elapsedMs);
     }
 }

@@ -86,6 +86,8 @@ public sealed class QuestService
         }
 
         var key = QuestCondition.StoreKey(conditionType, conditionKey);
+        Metrics.Count("abelkhan_quest_events_total", "Quest events reported", 1,
+            ("type", conditionType));
         var value = await _store.ApplyEventAsync(userId, key, mode, amount);
 
         var active = await _store.GetActiveStatesAsync(userId);
@@ -238,6 +240,7 @@ public sealed class QuestService
             return (result, new List<string>());
         }
 
+        Metrics.Count("abelkhan_quest_completed_total", "Quests completed");
         await NotifyCompletedAsync(userId, questId);
 
         if (OnCompleted != null)

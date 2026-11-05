@@ -73,6 +73,7 @@ internal static class Program
             await QuestProtocols(h);
             await ShopProtocols(h);
             await MainThreadBridgeProtocols(h);
+            await MetricsProtocols(h);
 
             Console.WriteLine();
             Console.WriteLine($"通过 {_passed} 项，失败 {_failed} 项");
@@ -544,6 +545,59 @@ internal static class Program
                 "notify handler 全部跑在主线程上（不是网络线程池）");
             Check(seenContent.SequenceEqual(["mt-1", "mt-2"]), "notify 按发送顺序到达（保序）");
         }
+    }
+
+    // ================================================================
+    // 监控：指标本身也要被测（否则很容易出现「名字写错，图上永远 0」）
+    // ================================================================
+
+    private static async Task MetricsProtocols(ProtocolHarness h)
+    {
+        Section("监控：/metrics 输出与指标计数");
+        var text = await ProtocolHarness.ScrapeMetricsAsync();
+
+        double Value(string name)
+        {
+            // 取该指标所有样本之和
+            var total = 0d;
+            foreach (var line in text.Split('\n'))
+            {
+                if (line.StartsWith('#'))
+                {
+                    continue;
+                }
+
+                if (!line.StartsWith(name, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var parts = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length >= 2 && double.TryParse(parts[^1], out var v))
+                {
+                    total += v;
+                }
+            }
+
+            return total;
+        }
+
+        Check(text.Contains("abelkhan_hub_messages_total"), "导出里包含 hub 报文计数");
+        Check(Value("abelkhan_hub_messages_total") >= 40,
+            $"跑完 40+ 条协议后 hub 报文计数 >= 40（实际 {Value("abelkhan_hub_messages_total"):0}）");
+
+        Check(Value("abelkhan_redis_operation_duration_seconds_count") > 0,
+            "Redis 操作直方图有样本（收口点确实被包住了）");
+        Check(text.Contains("abelkhan_redis_operation_duration_seconds_bucket{node=\"smoke-node\",operation=\"leaderboard.submit\",le=\"0.0005\"}"),
+            "Redis 直方图用了自定义细桶（le=0.0005），标签带 node + operation");
+
+        Check(Value("abelkhan_quest_events_total") >= 3, "任务事件计数已累加");
+        Check(Value("abelkhan_chat_broadcast_total") >= 1, "聊天广播计数已累加");
+        Check(Value("abelkhan_guild_created_total") >= 1, "帮会创建计数已累加");
+
+        Check(text.Contains("abelkhan_runtime_heap_bytes"), "运行时指标（GC 堆）已导出");
+        Check(text.Contains("node=\"smoke-node\""), "所有指标都带 node 标签（多副本可区分）");
+        Check(!text.Contains("user_id"), "指标里没有高基数的用户维度标签");
     }
 
     // ================================================================

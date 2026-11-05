@@ -78,6 +78,8 @@ public abstract partial class Player
                 return Result<ClientGuildCreateResult, string>.Err(GuildMessageOf(created.Code));
             }
 
+            Metrics.Count("abelkhan_guild_created_total", "Guilds created");
+
             // 新帮会：自动发布配置里的默认任务（目录里不存在或等级不够的跳过）
             await PublishDefaultTasksAsync(guildService, guildId);
 

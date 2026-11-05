@@ -52,6 +52,16 @@ public static class Log
 
     private static void Output(StackFrame sf, long timestamp, string level, string log)
     {
+        // 兜底指标：不关心具体哪条，只看 warn/err 的总量趋势
+        if (level == "warn")
+        {
+            Metrics.Count("abelkhan_log_warn_total", "Warn log lines");
+        }
+        else if (level == "err")
+        {
+            Metrics.Count("abelkhan_log_error_total", "Error log lines");
+        }
+
         var startTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var time = startTime.AddMilliseconds(timestamp);
 

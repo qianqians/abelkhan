@@ -1,0 +1,72 @@
+groups:
+  - name: abelkhan
+    interval: 30s
+    rules:
+      - alert: AbelkhanInstanceDown
+        expr: up{job=~"abelkhan-.*"} == 0
+        for: 1m
+        labels: { severity: critical }
+        annotations:
+          summary: "{{ $labels.instance }} 抓不到 /metrics"
+          description: "进程挂了，或 /metrics 端口不通（Monitoring.PrometheusPort 是否开了？）"
+
+      - alert: AbelkhanHealthUnhealthy
+        expr: abelkhan_runtime_uptime_seconds < 0
+        for: 1m
+        labels: { severity: warning }
+        annotations:
+          summary: "占位规则：真正的健康状态看 /health 503（Prometheus 侧可用 blackbox_exporter 探）"
+
+      - alert: AbelkhanHighHandlerErrorRate
+        expr: |
+          sum(rate(abelkhan_hub_handler_errors_total[5m]))
+            / clamp_min(sum(rate(abelkhan_hub_messages_total[5m])), 1) > 0.05
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "hub 报文处理错误率 > 5%"
+          description: "看 abelkhan_hub_handler_errors_total 的 method 标签定位是哪个协议在炸"
+
+      - alert: AbelkhanSlowMessages
+        expr: |
+          histogram_quantile(0.99,
+            sum by (le) (rate(abelkhan_hub_message_duration_seconds_bucket[5m]))) > 1
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "hub 报文 P99 > 1s"
+          description: "多半是 Redis 或 Mongo 抖动，先看 Redis 的 P99 面板"
+
+      - alert: AbelkhanRedisLatencyHigh
+        expr: |
+          histogram_quantile(0.99,
+            sum by (le) (rate(abelkhan_redis_operation_duration_seconds_bucket[5m]))) > 0.1
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "Redis 操作 P99 > 100ms"
+          description: "按 operation 标签看是哪类命令慢（大 ZSET / 大 HGETALL / Lua 太重）"
+
+      - alert: AbelkhanRedisReconnect
+        expr: increase(abelkhan_redis_reconnect_total[10m]) > 0
+        for: 0m
+        labels: { severity: critical }
+        annotations:
+          summary: "Redis 发生重连"
+          description: "连接不稳定；重连期间所有 Redis 操作会阻塞重试"
+
+      - alert: AbelkhanFriendConfirmTimeout
+        expr: increase(abelkhan_friend_reserve_swept_total[10m]) > 1
+        for: 0m
+        labels: { severity: warning }
+        annotations:
+          summary: "好友跨服确认超时（临时好友位被回收）"
+          description: "目标 hub 不可达或队列积压；玩家侧表现为“加好友失败，请重试”"
+
+      - alert: AbelkhanLogErrors
+        expr: sum(rate(abelkhan_log_error_total[5m])) > 1
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "错误日志速率 > 1/s"
+          description: "指标只是兜底，具体错误要去日志文件里看"

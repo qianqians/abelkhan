@@ -34,6 +34,9 @@ public struct GateConfig()
     /// 否则 gate 写的 presence 与 hub 读的不是同一个 key。
     /// </summary>
     public FriendSettings Friend { get; set; } = new();
+
+    /// <summary>监控配置。</summary>
+    public MonitoringOptions Monitoring { get; set; } = new();
 }
 
 class MainClass
@@ -58,6 +61,8 @@ class MainClass
     private readonly TimerService _timer = new();
     private ConsulClient? _consul;
     private string _gateId = string.Empty;
+
+    private MonitoringHost? _monitoring;
 
     /// <summary>好友 / presence 存储：gate 只用来刷新和释放在线标记。</summary>
     private FriendStore? _friend;
@@ -278,6 +283,8 @@ class MainClass
                 if (cli.UserId == userId)
                 {
                     _ = cli.SendToClient(rpc.Notify(Consts.HubNotifyClientMq, forward));
+                    core.Metrics.Count("abelkhan_gate_delivered_total", "Messages delivered to clients", 1,
+                        ("kind", needAck ? "reliability" : "normal"));
                     break;
                 }
             }
@@ -357,6 +364,9 @@ class MainClass
 
             // 在线玩家的 presence 续期（PRESENCE TTL 比这个间隔长，gate 挂掉后会自动过期）
             RefreshPresence();
+
+            core.Metrics.SetGauge("abelkhan_gate_players", "Online players on this gate", onlinePlayers);
+            core.Metrics.SetGauge("abelkhan_gate_clients", "Connections on this gate", onlineConnections);
 
             // 周期上报到 Redis，供 admin dashboard 汇总全局在线数
             _ = _redis?.SetStrData(string.Format(Consts.AdminOnlineGateKey, _gateId), onlinePlayers.ToString(), 10_000);
@@ -457,7 +467,20 @@ class MainClass
             _hubs = new();
             _gateId = cfg.GateId;
             
+            core.Metrics.Init(cfg.Monitoring);
+        ServiceHealth.OnLoop();
+            ServiceHealth.OnLoop();
+            Tracing.Init(cfg.Monitoring);
+
             _redis = new RedisHandle(cfg.RedisUrl, cfg.RedisPwd);
+            var redisForHealth = _redis;
+            ServiceHealth.RegisterDependencies(async ct =>
+            {
+                await redisForHealth.Execute("health.ping", db => db.PingAsync());
+                return true;
+            });
+            _monitoring = MonitoringHost.Start(cfg.Monitoring);
+
             // gate 侧只要 presence（在线标记）：和 hub 共用同一个 Redis / KeyPrefix
             _friend = new FriendStore(_redis, cfg.Friend);
             Log.Info("gate: friend presence prefix:{0} ttl:{1}ms",
@@ -518,7 +541,14 @@ class MainClass
             _external.Start();
 
             var app = WebApplication.Create();
-            app.MapGet("/health", () => Results.Ok("healthy"));
+            app.MapGet("/health", async () =>
+            {
+                var (ok, detail) = await ServiceHealth.CheckAsync();
+                return ok
+                    ? Results.Ok(new { status = "healthy" })
+                    : Results.Json(new { status = "unhealthy", detail },
+                        statusCode: StatusCodes.Status503ServiceUnavailable);
+            });
             _ = app.RunAsync($"http://{cfg.Ip}:{cfg.PortHealth}");
             
             await ReportServiceConsul(cfg);

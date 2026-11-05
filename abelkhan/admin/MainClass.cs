@@ -42,6 +42,9 @@ public struct AdminConfig()
     /// 否则后台重置的不是游戏服的榜。
     /// </summary>
     public LeaderboardSettings Leaderboard { get; set; } = new();
+
+    /// <summary>监控配置。</summary>
+    public MonitoringOptions Monitoring { get; set; } = new();
 }
 
 public record MailSendRequest(
@@ -68,7 +71,17 @@ public class MainClass
     public void RunMain(string[] args)
     {
         var cfg = ReadConfig(args[0]);
+        core.Metrics.Init(cfg.Monitoring);
+        ServiceHealth.OnLoop();
+        Tracing.Init(cfg.Monitoring);
+        var monitoring = MonitoringHost.Start(cfg.Monitoring);
         var data = new AdminDataService(cfg);
+
+        ServiceHealth.RegisterDependencies(async ct =>
+        {
+            await data.PingRedisAsync();
+            return true;
+        });
 
         var app = WebApplication.Create();
         // 让静态文件（wwwroot）始终从程序集输出目录加载，不受启动时工作目录影响
@@ -99,7 +112,14 @@ public class MainClass
         app.UseDefaultFiles();
         app.UseStaticFiles();
 
-        app.MapGet("/health", () => Results.Ok("healthy"));
+        app.MapGet("/health", async () =>
+        {
+            var (ok, detail) = await ServiceHealth.CheckAsync();
+            return ok
+                ? Results.Ok(new { status = "healthy" })
+                : Results.Json(new { status = "unhealthy", detail },
+                    statusCode: StatusCodes.Status503ServiceUnavailable);
+        });
 
         // 监控大盘
         app.MapGet("/api/overview", () => Safe(async () =>

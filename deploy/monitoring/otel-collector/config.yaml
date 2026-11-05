@@ -1,0 +1,39 @@
+# OTel Collector：收各服务 OTLP（trace + 运行时指标）→ 转成 Prometheus 格式 / 打日志
+#
+# 服务侧配置：HubConfig/GateConfig/AdminConfig 里
+#   "Monitoring": { "OtlpEndpoint": "http://127.0.0.1:4317" }
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    timeout: 5s
+
+exporters:
+  # 运行时指标（GC / 线程池 / CPU）以 Prometheus 文本暴露，由 prometheus.yml 的 otel-collector job 抓
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    resource_to_telemetry_conversion:
+      enabled: true
+  # trace 先打到 stdout（换成 otlp/tempo 即可接到 Tempo / Jaeger）
+  debug:
+    verbosity: basic
+
+service:
+  telemetry:
+    logs:
+      level: warn
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus]

@@ -65,6 +65,9 @@ public struct HubConfig()
 
     /// <summary>任务配置（上限 / 是否进度满了自动完成）。</summary>
     public QuestSettings Quest { get; set; } = new();
+
+    /// <summary>监控配置：/metrics 监听端口（默认关闭）、OTLP 端点、慢调用阈值。</summary>
+    public MonitoringOptions Monitoring { get; set; } = new();
 }
 
 public class MainClass
@@ -91,6 +94,7 @@ public class MainClass
     private GuildService? _guildService;
     private QuestStore? _questStore;
     private QuestService? _questService;
+    private MonitoringHost? _monitoring;
     private int _shopSettling;
     private int _friendSweeping;
     private Task? _tFriendMq;
@@ -121,6 +125,8 @@ public class MainClass
                 }
             }
         } while (false);
+
+        core.Metrics.SetGauge("abelkhan_hub_clients", "Clients tracked by this hub", _clients.Count);
 
         // 给本 hub 在线玩家续期路由（TTL 到期 = 不在本 hub）
         var friendService = _friendService;
@@ -374,8 +380,10 @@ public class MainClass
             {
                 try
                 {
-                    await store.SettleExpiredAsync(Math.Max(1, batchSize),
+                    var settled = await store.SettleExpiredAsync(Math.Max(1, batchSize),
                         DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                    core.Metrics.SetGauge("abelkhan_shop_settle_batch", "Listings settled in last batch",
+                        settled.Count);
                 }
                 catch (Exception e)
                 {
@@ -407,7 +415,22 @@ public class MainClass
     {
         try
         {
+            core.Metrics.Init(cfg.Monitoring);
+        ServiceHealth.OnLoop();
+            ServiceHealth.OnLoop();
+            Tracing.Init(cfg.Monitoring);
+
             _redis = new RedisHandle(cfg.RedisUrl, cfg.RedisPwd);
+
+            // 健康检查的依赖探针：Redis 能 PING 才算健康
+            var redisForHealth = _redis;
+            ServiceHealth.RegisterDependencies(async ct =>
+            {
+                await redisForHealth.Execute("health.ping", db => db.PingAsync());
+                return true;
+            });
+
+            _monitoring = MonitoringHost.Start(cfg.Monitoring);
 
             // 全局邮件箱：所有 Service 共用一个（共享 Redis 连接），
             // 玩家通过「客户端请求领取邮件」协议按需读取
@@ -519,7 +542,14 @@ public class MainClass
             StartRedisMsg();
             
             var app = WebApplication.Create();
-            app.MapGet("/health", () => Results.Ok("healthy"));
+            app.MapGet("/health", async () =>
+            {
+                var (ok, detail) = await ServiceHealth.CheckAsync();
+                return ok
+                    ? Results.Ok(new { status = "healthy" })
+                    : Results.Json(new { status = "unhealthy", detail },
+                        statusCode: StatusCodes.Status503ServiceUnavailable);
+            });
             _ = app.RunAsync($"http://{cfg.Ip}:{cfg.PortHealth}");
             await ReportServiceConsul(cfg);
 
@@ -595,6 +625,7 @@ public class MainClass
             StartFriendMq(cfg.HubId);
             while (_isRun)
             {
+                ServiceHealth.OnLoop();
                 var begin = TimerService.Tick;
                 _timer.Poll();
                 var detail = TimerService.Tick - begin;
@@ -607,6 +638,12 @@ public class MainClass
             
             await cts.CancelAsync();
             await _tWait!;
+            if (_monitoring != null)
+            {
+                await _monitoring.StopAsync();
+            }
+
+            Tracing.Shutdown();
             if (_tFriendMq != null)
             {
                 await _tFriendMq;

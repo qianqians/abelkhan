@@ -138,6 +138,8 @@ public sealed class FriendService
         var requestId = Guid.NewGuid().ToString("N");
         var tcs = new TaskCompletionSource<FriendResult>(TaskCreationOptions.RunContinuationsAsynchronously);
         _pending[requestId] = tcs;
+        Metrics.SetGauge("abelkhan_friend_pending_confirms", "In-flight cross-hub friend confirms",
+            _pending.Count);
 
         try
         {
@@ -202,6 +204,8 @@ public sealed class FriendService
         finally
         {
             _pending.TryRemove(requestId, out _);
+            Metrics.SetGauge("abelkhan_friend_pending_confirms", "In-flight cross-hub friend confirms",
+                _pending.Count);
         }
     }
 
@@ -325,6 +329,13 @@ public sealed class FriendService
     public async Task SweepReservesAsync(int limit)
     {
         var expired = await _store.SweepExpiredReservesAsync(limit);
+        if (expired.Count > 0)
+        {
+            // 非 0 说明有跨服确认超时了 —— 最该告警的信号之一
+            Metrics.Count("abelkhan_friend_reserve_swept_total",
+                "Temporary friend slots reclaimed after timeout", expired.Count);
+        }
+
         foreach (var (userId, otherId) in expired)
         {
             if (_players.TryGetValue(userId, out var player))

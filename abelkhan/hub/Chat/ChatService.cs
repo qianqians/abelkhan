@@ -233,6 +233,8 @@ public sealed class ChatService
             Entry = ToProto(entry),
         };
         await _store.PublishAsync(broadcast.ToByteArray());
+        Metrics.Count("abelkhan_chat_broadcast_total", "Channel messages published", 1,
+            ("channel", channel.Id));
 
         return (ChatResult.Success(), entry);
     }
@@ -307,8 +309,12 @@ public sealed class ChatService
             return;
         }
 
+        var targetList = targets as IList<string> ?? targets.ToList();
+        Metrics.Count("abelkhan_chat_dispatch_total", "Channel messages dispatched to local players",
+            targetList.Count, ("channel", channel.Id));
+
         var notify = new ClientChatMessageNotify { Entry = broadcast.Entry };
-        foreach (var userId in targets)
+        foreach (var userId in targetList)
         {
             await NotifyAsync(userId, Consts.ClientChatMessageNotify, notify);
         }
@@ -366,6 +372,7 @@ public sealed class ChatService
         }
 
         var entry = await BuildEntryAsync(player.UserId, string.Empty, content);
+        Metrics.Count("abelkhan_chat_private_total", "Private messages delivered");
         await NotifyDirectAsync(toUserId, entityId, Consts.ClientChatPrivateNotify,
             new ClientChatPrivateNotify { Entry = ToProto(entry) });
 

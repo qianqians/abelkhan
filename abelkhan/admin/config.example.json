@@ -32,5 +32,15 @@
     "KeyPrefix": "",
     "MaxEntries": 1000,
     "RangePageLimit": 100
+  },
+  "Monitoring": {
+    "Enabled": true,
+    "ServiceName": "abelkhan-admin",
+    "NodeId": "admin-1",
+    "PrometheusPort": 9121,
+    "PrometheusHost": "127.0.0.1",
+    "OtlpEndpoint": "",
+    "TraceSampleRatio": 1.0,
+    "SlowLogThresholdMs": 500
   }
 }

@@ -333,6 +333,13 @@ internal sealed class ProtocolHarness : IAsyncDisposable
     private ProtocolHarness(string redisUrl)
     {
         _prefix = "proto-smoke-" + Guid.NewGuid().ToString("N") + ":";
+        // 指标是进程级单例：测试里主动初始化成「有 node 标签」的形态
+        core.Metrics.Init(new core.MonitoringOptions
+        {
+            ServiceName = "protocol-smoke",
+            NodeId = "smoke-node",
+            SlowLogThresholdMs = 60_000,
+        });
         Redis = new RedisHandle(redisUrl, "");
 
         Gates[GateId] = new GateNetwork(new HubToGateNetwork(this, GateId));
@@ -581,6 +588,14 @@ internal sealed class ProtocolHarness : IAsyncDisposable
         {
             throw new InvalidOperationException("准备背包失败: " + result.Message);
         }
+    }
+
+    /// <summary>按 Prometheus 文本格式导出一份指标（等价于抓 /metrics）。</summary>
+    public static async Task<string> ScrapeMetricsAsync()
+    {
+        using var buffer = new MemoryStream();
+        await core.Metrics.ExportAsync(buffer);
+        return System.Text.Encoding.UTF8.GetString(buffer.ToArray());
     }
 
     public async ValueTask DisposeAsync()

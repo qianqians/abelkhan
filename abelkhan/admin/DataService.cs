@@ -79,6 +79,12 @@ public class AdminDataService
 
     private IMongoCollection<BsonDocument> Col(string name) => _db.GetCollection<BsonDocument>(name);
 
+    /// <summary>健康检查用：Redis 能 PING 才算健康。</summary>
+    public async Task PingRedisAsync()
+    {
+        await _redis.Execute("health.ping", db => db.PingAsync());
+    }
+
     // ---------------- 排行榜 ----------------
 
     /// <summary>重置（清空）某个排行榜。</summary>

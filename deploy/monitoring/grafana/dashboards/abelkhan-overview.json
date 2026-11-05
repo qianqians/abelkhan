@@ -1,0 +1,200 @@
+{
+  "uid": "abelkhan-overview",
+  "title": "Abelkhan 总览",
+  "tags": ["abelkhan"],
+  "timezone": "browser",
+  "editable": true,
+  "graphTooltip": 1,
+  "refresh": "15s",
+  "time": { "from": "now-30m", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "label": "服务",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "abelkhan-prom" },
+        "query": "label_values(abelkhan_hub_messages_total, service)",
+        "includeAll": true,
+        "multi": true,
+        "refresh": 2
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "在线玩家",
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "abelkhan-prom" },
+      "fieldConfig": { "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] } }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "area" },
+      "targets": [{ "refId": "A", "expr": "sum(abelkhan_gate_players{service=~\"$service\"})" }]
+    },
+    {
+      "type": "stat",
+      "title": "连接数",
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "abelkhan-prom" },
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "area" },
+      "targets": [{ "refId": "A", "expr": "sum(abelkhan_gate_clients{service=~\"$service\"})" }]
+    },
+    {
+      "type": "stat",
+      "title": "Hub 报文 QPS",
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "abelkhan-prom" },
+      "fieldConfig": { "defaults": { "unit": "reqps" }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "area" },
+      "targets": [{ "refId": "A", "expr": "sum(rate(abelkhan_hub_messages_total{service=~\"$service\"}[1m]))" }]
+    },
+    {
+      "type": "stat",
+      "title": "Handler 错误率",
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "abelkhan-prom" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "orange", "value": 0.01 }, { "color": "red", "value": 0.05 }] }
+        },
+        "overrides": []
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background", "graphMode": "area" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(abelkhan_hub_handler_errors_total{service=~\"$service\"}[5m])) / clamp_min(sum(rate(abelkhan_hub_messages_total{service=~\"$service\"}[5m])), 1)"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Redis 重连次数 (24h)",
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "abelkhan-prom" },
+      "fieldConfig": {
+        "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] } },
+        "overrides": []
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background" },
+      "targets": [{ "refId": "A", "expr": "sum(increase(abelkhan_redis_reconnect_total{service=~\"$service\"}[24h]))" }]
+    },
+    {
+      "type": "stat",
+      "title": "好友确认超时回收 (1h)",
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "abelkhan-prom" },
+      "fieldConfig": {
+        "defaults": { "unit": "short", "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "orange", "value": 1 }] } },
+        "overrides": []
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background" },
+      "targets": [{ "refId": "A", "expr": "sum(increase(abelkhan_friend_reserve_swept_total{service=~\"$service\"}[1h]))" }]
+    },
+
+    {
+      "type": "timeseries",
+      "title": "报文 QPS（按方法 Top 10）",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "datasource": { "type": "prometheus", "uid": "abelkhan-prom" },
+      "fieldConfig": { "defaults": { "unit": "reqps", "custom": { "fillOpacity": 10, "showPoints": "never" } }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(10, sum by (method) (rate(abelkhan_hub_messages_total{service=~\"$service\"}[1m])))",
+          "legendFormat": "{{method}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "报文处理延迟 P50 / P95 / P99",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "datasource": { "type": "prometheus", "uid": "abelkhan-prom" },
+      "fieldConfig": { "defaults": { "unit": "s", "custom": { "fillOpacity": 0, "showPoints": "never" } }, "overrides": [] },
+      "targets": [
+        { "refId": "P50", "expr": "histogram_quantile(0.50, sum by (le) (rate(abelkhan_hub_message_duration_seconds_bucket{service=~\"$service\"}[5m])))", "legendFormat": "p50" },
+        { "refId": "P95", "expr": "histogram_quantile(0.95, sum by (le) (rate(abelkhan_hub_message_duration_seconds_bucket{service=~\"$service\"}[5m])))", "legendFormat": "p95" },
+        { "refId": "P99", "expr": "histogram_quantile(0.99, sum by (le) (rate(abelkhan_hub_message_duration_seconds_bucket{service=~\"$service\"}[5m])))", "legendFormat": "p99" }
+      ]
+    },
+
+    {
+      "type": "timeseries",
+      "title": "Redis 操作 P99（按 operation）",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "datasource": { "type": "prometheus", "uid": "abelkhan-prom" },
+      "fieldConfig": { "defaults": { "unit": "s", "custom": { "fillOpacity": 0, "showPoints": "never" } }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(8, histogram_quantile(0.99, sum by (le, operation) (rate(abelkhan_redis_operation_duration_seconds_bucket{service=~\"$service\"}[5m]))))",
+          "legendFormat": "{{operation}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Redis 操作 QPS（Top 10）",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "datasource": { "type": "prometheus", "uid": "abelkhan-prom" },
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "fillOpacity": 10, "showPoints": "never" } }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "topk(10, sum by (operation) (rate(abelkhan_redis_operation_duration_seconds_count{service=~\"$service\"}[1m])))",
+          "legendFormat": "{{operation}}"
+        }
+      ]
+    },
+
+    {
+      "type": "timeseries",
+      "title": "业务指标：聊天广播 / 任务事件 / 帮会创建",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+      "datasource": { "type": "prometheus", "uid": "abelkhan-prom" },
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "fillOpacity": 10, "showPoints": "never" } }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(abelkhan_chat_broadcast_total{service=~\"$service\"}[5m]))", "legendFormat": "chat broadcast/s" },
+        { "refId": "B", "expr": "sum(rate(abelkhan_quest_events_total{service=~\"$service\"}[5m]))", "legendFormat": "quest events/s" },
+        { "refId": "C", "expr": "sum(rate(abelkhan_guild_created_total{service=~\"$service\"}[5m]))", "legendFormat": "guild created/s" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "日志 warn / error 速率",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
+      "datasource": { "type": "prometheus", "uid": "abelkhan-prom" },
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "fillOpacity": 10, "showPoints": "never" } }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate(abelkhan_log_warn_total{service=~\"$service\"}[5m]))", "legendFormat": "warn/s" },
+        { "refId": "B", "expr": "sum(rate(abelkhan_log_error_total{service=~\"$service\"}[5m]))", "legendFormat": "error/s" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "运行时：GC 堆 / 线程池排队",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 },
+      "datasource": { "type": "prometheus", "uid": "abelkhan-prom" },
+      "fieldConfig": { "defaults": { "custom": { "fillOpacity": 10, "showPoints": "never" } }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum(abelkhan_runtime_heap_bytes{service=~\"$service\"})", "legendFormat": "GC heap" },
+        { "refId": "B", "expr": "sum(abelkhan_runtime_threadpool_queue{service=~\"$service\"})", "legendFormat": "threadpool queue" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "商城结算 / 好友在途确认",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 },
+      "datasource": { "type": "prometheus", "uid": "abelkhan-prom" },
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "fillOpacity": 10, "showPoints": "never" } }, "overrides": [] },
+      "targets": [
+        { "refId": "A", "expr": "sum(abelkhan_shop_settle_batch{service=~\"$service\"})", "legendFormat": "shop settle batch" },
+        { "refId": "B", "expr": "sum(abelkhan_friend_pending_confirms{service=~\"$service\"})", "legendFormat": "friend pending confirms" }
+      ]
+    }
+  ]
+}
