@@ -30,7 +30,13 @@ public class Client
     private readonly ConcurrentDictionary<string, Entity> _entities = new();
     private readonly Dictionary<string, Action<string, byte[]>> _requestCallbacks = new();
 
-    private WebSocketNetwork? _network;
+    private IClientNetwork? _network;
+
+    /// <summary>
+    /// 传输层工厂：为空时用 WebSocket 连 gate；测试 / 引擎集成可以注入自己的实现
+    /// （参数是「把收到的完整报文交给框架」的回调）。
+    /// </summary>
+    private readonly Func<Action<byte[]>, IClientNetwork>? _networkFactory;
     private Task? _tHeartBeats;
     private Task? _tReconnect;
     private volatile bool _isRun;
@@ -41,10 +47,20 @@ public class Client
     private string _connId = string.Empty;
     private long _epoch;
 
-    public Client(ClientConfig cfg, Service service)
+    public Client(ClientConfig cfg, Service service) : this(cfg, service, null)
+    {
+    }
+
+    /// <summary>
+    /// 带传输层工厂的构造函数（测试 / 自研网络层用）。
+    /// <paramref name="networkFactory"/> 为空时走默认的 WebSocket。
+    /// </summary>
+    public Client(ClientConfig cfg, Service service,
+        Func<Action<byte[]>, IClientNetwork>? networkFactory)
     {
         _cfg = cfg;
         _service = service;
+        _networkFactory = networkFactory;
         UserId = cfg.UserId;
 
         // 只订阅一次：断线重连是同一条 rpc 实例，重复订阅会把同一条消息分发多次
@@ -97,34 +113,39 @@ public class Client
 
         try
         {
-            var socket = new ClientWebSocket();
-            if (_cfg.IgnoreCertificate)
+            IClientNetwork network;
+            if (_networkFactory != null)
             {
-                socket.Options.RemoteCertificateValidationCallback = (_, _, _, _) => true;
+                // 自定义传输层（测试 / 引擎集成）：不建 WebSocket
+                network = _networkFactory(_rpc.OnNetworkData);
+            }
+            else
+            {
+                var socket = new ClientWebSocket();
+                if (_cfg.IgnoreCertificate)
+                {
+                    socket.Options.RemoteCertificateValidationCallback = (_, _, _, _) => true;
+                }
+
+                using var cts = new CancellationTokenSource((int)_cfg.ConnectTimeoutMs);
+                await socket.ConnectAsync(new Uri(_cfg.Wss), cts.Token);
+                network = new WebSocketNetwork(socket, new ReceiveBuffer());
             }
 
-            using var cts = new CancellationTokenSource((int)_cfg.ConnectTimeoutMs);
-            await socket.ConnectAsync(new Uri(_cfg.Wss), cts.Token);
-
-            var receiveBuffer = new ReceiveBuffer
-            {
-                OnPacket = _rpc.OnNetworkData,
-            };
-            var network = new WebSocketNetwork(socket, receiveBuffer);
             network.OnClose += OnNetworkClosed;
 
             _network = network;
             _isRun = true;
             _kicked = false;
             Interlocked.Exchange(ref _disconnectHandled, 0);
-            network.Start();
+            network.Start(_rpc.OnNetworkData);
 
             if (_tHeartBeats == null || _tHeartBeats.IsCompleted)
             {
                 _tHeartBeats = Task.Factory.StartNew(HeartBeatsLoop, TaskCreationOptions.LongRunning).Unwrap();
             }
 
-            Log.Info($"client connect ok:{_cfg.Wss}");
+            Log.Info($"client connect ok:{_cfg.Wss} transport:{(_networkFactory != null ? "custom" : "websocket")}");
             return true;
         }
         catch (Exception e)

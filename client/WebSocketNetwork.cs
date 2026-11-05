@@ -6,7 +6,7 @@ namespace client;
 /// 客户端 WebSocket 传输：发送时加 4 字节小端长度前缀，接收时交给 <see cref="ReceiveBuffer"/> 拆包。
 /// 读循环结束（对端关闭 / 网络异常 / 本地 Close）会触发 <see cref="OnClose"/>，用来做断线重连。
 /// </summary>
-public class WebSocketNetwork(ClientWebSocket socket, ReceiveBuffer receiveBuffer)
+public class WebSocketNetwork(ClientWebSocket socket, ReceiveBuffer receiveBuffer) : IClientNetwork
 {
     /// <summary>连接断开（只会触发一次）</summary>
     public event Action? OnClose;
@@ -18,8 +18,10 @@ public class WebSocketNetwork(ClientWebSocket socket, ReceiveBuffer receiveBuffe
 
     public bool IsOpen => !_closed && socket.State == WebSocketState.Open;
 
-    public void Start()
+    /// <summary>开始读循环；收到的整包交给 <paramref name="onPacket"/>（框架的 WRpc.OnNetworkData）</summary>
+    public void Start(Action<byte[]> onPacket)
     {
+        receiveBuffer.OnPacket = onPacket;
         _readTask = Task.Factory.StartNew(ReadLoop, TaskCreationOptions.LongRunning).Unwrap();
     }
 

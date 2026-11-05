@@ -16,6 +16,26 @@ abelkhan是一个轻量级的游戏服务器框架，基于c#开发，使用mong
 * quest 任务系统（可配置触发 / 进度 / 完成条件 + 任务链，见 `docs/quest.md`）
 * admin 管理后台（dashboard：监控大盘/玩家查询/支付查询/GM面板/邮件发送/商城管理，见 abelkhan/admin/README.md）
 
+## 测试
+
+仓库自带的可运行测试（需要 Redis：不设环境变量时会自动起 `dependences/windows/redis`，找不到就打印 SKIP 并跳过）：
+
+| 工程 | 覆盖 |
+|---|---|
+| `abelkhan/tests/ProtocolSmoke` | **所有 40 条客户端协议**，全部通过 `client` 模组的封装调用（`player.SendFriendRequest(...)` 等），走“客户端报文 → 进程内 gate → hub handler → Redis → 回包/推送 → 客户端分发”的真实链路；同时断言客户端通知事件 |
+| `abelkhan/tests/InventorySmoke` | 背包 / 物品堆叠 / 邮件附件 |
+| `abelkhan/tests/ShopSmoke` | 商城 / 寄拍 / 拍卖 / 幂等 |
+| `abelkhan/tests/LeaderboardSmoke` | 排行榜 ZSET 语义 |
+| `abelkhan/tests/FriendSmoke` | 好友申请 / 占位 / 跨服确认 / 上限 |
+| `abelkhan/tests/ChatSmoke` | 频道历史 / 冷却 / pub-sub |
+| `abelkhan/tests/GuildSmoke` | 帮会创建 / 审批 / 职位 / 转让 / 解散 / 任务 |
+| `abelkhan/tests/QuestSmoke` | 任务三条件 / 任务链 |
+
+```bash
+dotnet run --project abelkhan/tests/ProtocolSmoke
+dotnet run --project abelkhan/tests/FriendSmoke   # 其余同理
+```
+
 ## License
 [LGPL-2.1](https://github.com/qianqians/abelkhan/blob/master/LICENSE)
   

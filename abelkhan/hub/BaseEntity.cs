@@ -161,7 +161,15 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         }
     }
 
-    private async Task Response(string connId, string msgId, byte[] data)
+    /// <summary>
+    /// 回包给客户端。
+    ///
+    /// 注意这里必须用 **userId** 路由（<c>SendToGate</c> 是按 userId 建键的 clients 字典查
+    /// gateName），而报文里的 <c>ConnId</c> 仍然是连接 id —— gate 靠它把消息投给具体连接。
+    /// 之前这里传的是 connId，而 connId 是 gate 生成的 GUID、与 userId 不同，
+    /// 结果所有 request/response 协议的回包都会被丢掉（只留一行 SendToGate not found 日志）。
+    /// </summary>
+    private async Task Response(string userId, string connId, string msgId, byte[] data)
     {
         var msg = new GateForwardHubResponseClient
         {
@@ -169,10 +177,10 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
             EntityId = entityId,
             Content = ByteString.CopyFrom(data)
         };
-        await SendToGate(connId, _rpc.Response(Consts.GateForwardHubResponseClient, msgId, msg));
+        await SendToGate(userId, _rpc.Response(Consts.GateForwardHubResponseClient, msgId, msg));
     }
 
-    private async Task Error(string connId, string msgId, string err)
+    private async Task Error(string userId, string connId, string msgId, string err)
     {
         var msg = new GateForwardHubResponseClient
         {
@@ -180,7 +188,7 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
             EntityId = entityId,
             ErrMsg = err
         };
-        await SendToGate(connId, _rpc.Response(Consts.GateForwardHubResponseClient, msgId, msg));
+        await SendToGate(userId, _rpc.Response(Consts.GateForwardHubResponseClient, msgId, msg));
     }
 
     private async Task SendToListMq(string userId, bool isReliability, byte[] message)
@@ -310,11 +318,11 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
                     var ret = callback(t);
                     if (ret.IsOk)
                     {
-                        await Response(client!.ConnId, msgId, ret.Value.ToByteArray());
+                        await Response(client!.UserId, client!.ConnId, msgId, ret.Value.ToByteArray());
                     }
                     else
                     {
-                        await Error(client!.ConnId, msgId, ret.Error);
+                        await Error(client!.UserId, client!.ConnId, msgId, ret.Error);
                     }
                 }
                 else 
@@ -344,11 +352,11 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
                     var ret = await callback(t);
                     if (ret.IsOk)
                     {
-                        await Response(client!.ConnId, msgId, ret.Value.ToByteArray());
+                        await Response(client!.UserId, client!.ConnId, msgId, ret.Value.ToByteArray());
                     }
                     else
                     {
-                        await Error(client!.ConnId, msgId, ret.Error);
+                        await Error(client!.UserId, client!.ConnId, msgId, ret.Error);
                     }
                 }
                 else 
