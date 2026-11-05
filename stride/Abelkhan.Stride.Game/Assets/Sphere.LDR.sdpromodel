@@ -9,4 +9,4 @@ Type: !SphereProceduralModel
     LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
     NumberOfTextureCoordinates: 10
     MaterialInstance:
-        Material: 00000000-0000-0000-0000-000000000045:Sphere Material
+        Material: 00000000-0000-0000-0000-000000000045:Sphere Material.LDR

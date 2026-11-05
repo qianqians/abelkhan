@@ -4,5 +4,5 @@
   <Project Path="../abelkhan/proto/proto.csproj" />
   <Project Path="../client/client.csproj" />
   <Project Path="Abelkhan.Stride.Game/Abelkhan.Stride.Game.csproj" />
-  <Project Path="Abelkhan.Stride.Windows/Abelkhan.Stride.Windows.csproj" />
+  <Project Path="Abelkhan.Stride.Windows/Abelkhan.Stride.Windows.csproj" DefaultStartup="true" />
 </Solution>

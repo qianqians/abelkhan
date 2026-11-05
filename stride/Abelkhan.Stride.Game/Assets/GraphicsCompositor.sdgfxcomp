@@ -2,7 +2,7 @@
 Id: 00000000-0000-0000-0000-000000000006
 SerializedVersion: {Stride: 3.1.0.1}
 Tags: []
-Archetype: 823a81bf-bac0-4552-9267-aeed499c40df:DefaultGraphicsCompositorLevel10
+Archetype: 823a81bf-bac0-4552-9267-aeed499c40df:/Stride.Engine/DefaultGraphicsCompositorLevel10
 Cameras:
     de2e75c3b2b23e54162686363f3f138e:
         Id: 00000000-0000-0000-0000-000000000010
@@ -121,7 +121,7 @@ SharedRenderers:
         Id: 00000000-0000-0000-0000-00000000000b
         Clear:
             Id: 00000000-0000-0000-0000-00000000000c
-            Color: {R: 0.40491876, G: 0.411895424, B: 0.43775, A: 1.0}
+            Color: {R: 0.40491876, G: 0.41189542, B: 0.43775, A: 1.0}
         LightProbes: true
         OpaqueRenderStage: ref!! 00000000-0000-0000-0000-000000000008
         TransparentRenderStage: ref!! 00000000-0000-0000-0000-000000000009
@@ -136,13 +136,14 @@ SharedRenderers:
             Enabled: false
             RequiredApis: {}
             Overlays: {}
+        SubsurfaceScatteringBlurEffect: null
         MSAALevel: None
         MSAAResolver: {}
     d5b2e71c088247e21556decdce138d96: !Stride.Rendering.Compositing.ForwardRenderer,Stride.Engine
         Id: 00000000-0000-0000-0000-000000000015
         Clear:
             Id: 00000000-0000-0000-0000-000000000016
-            Color: {R: 0.40491876, G: 0.411895424, B: 0.43775, A: 1.0}
+            Color: {R: 0.40491876, G: 0.41189542, B: 0.43775, A: 1.0}
         LightProbes: true
         OpaqueRenderStage: ref!! 00000000-0000-0000-0000-000000000008
         TransparentRenderStage: ref!! 00000000-0000-0000-0000-000000000009
@@ -157,14 +158,28 @@ SharedRenderers:
             Enabled: false
             RequiredApis: {}
             Overlays: {}
+        SubsurfaceScatteringBlurEffect: null
         MSAALevel: None
         MSAAResolver: {}
     34ecb9b2633eacfc439ba8744fe05102: !PostProcessingEffects
         Id: 00000000-0000-0000-0000-000000000014
+        Outline:
+            Enabled: false
+            NormalWeight: 2.0
+            DepthWeight: 0.2
+            NormalNearCutoff: 0.1
+        Fog:
+            Enabled: false
+            Density: 0.1
+            Color: {R: 1.0, G: 1.0, B: 1.0}
+            FogStart: 10.0
+            SkipBackground: false
         AmbientOcclusion:
             Enabled: false
         LocalReflections:
             Enabled: false
+            ResolvePassResolution: Full
+            DepthResolution: Half
         DepthOfField:
             Enabled: false
             DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
@@ -198,5 +213,7 @@ Game: !Stride.Rendering.Compositing.SceneCameraRenderer,Stride.Engine
         Children:
             d39c5ddbf8b7d5ca02bafb6496b1cc3c: !Stride.Rendering.Compositing.ForwardRenderer,Stride.Engine ref!! 00000000-0000-0000-0000-00000000000b
             01d338078e9b21121ead0868932613dd: !Stride.Rendering.Compositing.DebugRenderer,Stride.Rendering ref!! 00000000-0000-0000-0000-000000000017
+    RenderMask: All
 SingleView: !Stride.Rendering.Compositing.ForwardRenderer,Stride.Engine ref!! 00000000-0000-0000-0000-000000000015
 Editor: !Stride.Rendering.Compositing.ForwardRenderer,Stride.Engine ref!! 00000000-0000-0000-0000-00000000000b
+BlockPositions: {}
