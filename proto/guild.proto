@@ -1,0 +1,190 @@
+syntax = "proto3"; 
+
+// ============================================================
+// 帮会 / 联盟（创建 / 成员 / 职位 / 任务）
+// ============================================================
+
+// 职位：1 成员 / 2 副帮主 / 3 帮主
+message ClientGuildMemberInfo {
+  string user_id = 1;
+  uint32 role = 2;
+  bool online = 3;
+  string display_name = 4;
+  string avatar = 5;
+}
+
+// 已发布任务 + 我的进度
+message ClientGuildTaskInfo {
+  string task_id = 1;
+  string title = 2;
+  string description = 3;
+  int64 target = 4;
+  string status = 5;          // published / finished / cancelled
+  string publisher_id = 6;
+  uint64 published_at = 7;
+  bool accepted = 8;          // 我领了没
+  int64 my_progress = 9;
+  int64 guild_progress = 10;  // 共享任务的全帮进度（非共享为 0）
+  bool per_member = 11;
+  string reward_key = 12;
+}
+
+message ClientGuildInfo {
+}
+
+message ClientGuildInfoResult {
+  bool in_guild = 1;
+  string guild_id = 2;
+  string name = 3;
+  string leader_id = 4;
+  string notice = 5;
+  uint32 my_role = 6;
+  uint32 member_count = 7;
+  uint32 member_capacity = 8;
+  uint64 create_time = 9;
+  repeated ClientGuildMemberInfo members = 10;
+  repeated ClientGuildTaskInfo tasks = 11;
+  uint32 pending_applies = 12;   // 待审批数（有权限时才有意义）
+  uint32 pending_invites = 13;   // 我收到的邀请数
+}
+
+message ClientGuildCreate {
+  string name = 1;
+}
+
+message ClientGuildCreateResult {
+  ClientGuildInfoResult guild = 1;
+}
+
+message ClientGuildRename {
+  string name = 1;
+}
+
+message ClientGuildRenameResult {
+}
+
+message ClientGuildNotice {
+  string notice = 1;
+}
+
+message ClientGuildNoticeResult {
+}
+
+message ClientGuildInvite {
+  string user_id = 1;
+}
+
+message ClientGuildInviteResult {
+}
+
+message ClientGuildApply {
+  string guild_id = 1;
+}
+
+message ClientGuildApplyResult {
+}
+
+message ClientGuildApplies {
+}
+
+message ClientGuildAppliesResult {
+  repeated ClientGuildMemberInfo applies = 1;
+}
+
+message ClientGuildApprove {
+  string user_id = 1;
+  bool accept = 2;
+}
+
+message ClientGuildApproveResult {
+}
+
+// 处理自己收到的邀请（guild_id + 是否接受）
+message ClientGuildInviteReply {
+  string guild_id = 1;
+  bool accept = 2;
+}
+
+message ClientGuildInviteReplyResult {
+  ClientGuildInfoResult guild = 1;  // 接受时返回新帮会信息；拒绝时为空
+}
+
+message ClientGuildLeave {
+}
+
+message ClientGuildLeaveResult {
+}
+
+message ClientGuildKick {
+  string user_id = 1;
+}
+
+message ClientGuildKickResult {
+}
+
+message ClientGuildSetRole {
+  string user_id = 1;
+  uint32 role = 2;            // 1 成员 / 2 副帮主
+}
+
+message ClientGuildSetRoleResult {
+}
+
+message ClientGuildTransfer {
+  string user_id = 1;
+}
+
+message ClientGuildTransferResult {
+}
+
+message ClientGuildDisband {
+}
+
+message ClientGuildDisbandResult {
+}
+
+message ClientGuildTaskPublish {
+  string task_id = 1;
+}
+
+message ClientGuildTaskPublishResult {
+}
+
+message ClientGuildTaskCancel {
+  string task_id = 1;
+}
+
+message ClientGuildTaskCancelResult {
+}
+
+message ClientGuildTaskAccept {
+  string task_id = 1;
+}
+
+message ClientGuildTaskAcceptResult {
+}
+
+// ---- 帮会通知 ----
+
+// 成员 / 职位 / 公告 / 任务变动，客户端收到后调 client_guild_info 刷新
+message ClientGuildUpdatedNotify {
+  string reason = 1;          // member / role / notice / task / rename
+}
+
+// 收到邀请
+message ClientGuildInvitedNotify {
+  string guild_id = 1;
+  string guild_name = 2;
+  string inviter_id = 3;
+}
+
+// 被踢 / 帮会解散 / 主动退出后，服务端清掉本地状态
+message ClientGuildRemovedNotify {
+  string guild_id = 1;
+  string reason = 2;          // kicked / disbanded / left
+}
+
+// 任务状态变化（发布 / 取消 / 进度 / 完成）
+message ClientGuildTaskUpdatedNotify {
+  ClientGuildTaskInfo task = 1;
+}

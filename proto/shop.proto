@@ -1,0 +1,123 @@
+syntax = "proto3"; 
+
+// ============================================================
+// 商城（氪金商城 + 玩家寄拍 + 限时拍卖）
+// ============================================================
+
+// 售卖模式：一口价 / 限时拍卖
+enum ShopSaleMode {
+  SHOP_SALE_MODE_UNKNOWN = 0;
+  SHOP_SALE_MODE_FIXED = 1;
+  SHOP_SALE_MODE_AUCTION = 2;
+}
+
+// 商品来源：官方（admin 上架）/ 玩家寄拍
+enum ShopSource {
+  SHOP_SOURCE_UNKNOWN = 0;
+  SHOP_SOURCE_OFFICIAL = 1;
+  SHOP_SOURCE_PLAYER = 2;
+}
+
+// 物品/货币的发放条目
+message ShopItemGrant {
+  string item_id = 1;
+  int64 count = 2;
+}
+
+// 一条在售商品（官方商品或玩家寄拍）
+message ShopListingInfo {
+  string listing_id = 1;
+  ShopSource source = 2;
+  string seller_id = 3;          // 玩家寄拍的卖家；官方商品为空
+  string product_id = 4;         // 官方商品配置 id；玩家寄拍为空
+  string title = 5;
+  string description = 6;
+  string icon = 7;
+  string category = 8;
+  ShopSaleMode sale_mode = 9;
+  string currency_item_id = 10;  // 结算货币（也是背包里的物品 id）
+  int64 price = 11;              // 一口价（单个）
+  int64 start_price = 12;        // 拍卖起拍价
+  int64 min_increment = 13;      // 拍卖最小加价
+  int64 current_price = 14;      // 拍卖当前最高价（无出价时为 0）
+  string top_bidder_id = 15;     // 拍卖当前最高出价人
+  int32 stock = 16;              // 一口价剩余库存，-1 = 不限
+  repeated ShopItemGrant items = 17; // 一份商品包含的物品
+  uint64 start_time = 18;        // 上架时间（Unix 毫秒）
+  uint64 end_time = 19;          // 结束时间（Unix 毫秒，0 = 不限时）
+  string status = 20;            // active / sold / expired / cancelled
+  int32 per_user_limit = 21;     // 每人限购，0 = 不限
+  int32 my_purchased = 22;       // 当前玩家已购买数量
+  uint64 server_time = 23;       // 服务器时间，用于客户端倒计时校准
+}
+
+message ClientShopList {
+  string category = 1;
+  ShopSource source = 2;         // UNKNOWN = 全部
+  bool mine = 3;                 // 只看我寄拍的
+  uint32 page = 4;
+  uint32 page_size = 5;
+}
+
+message ClientShopListResult {
+  repeated ShopListingInfo listings = 1;
+  uint32 total = 2;
+  uint32 page = 3;
+  uint32 page_size = 4;
+  string currency_item_id = 5;   // 默认氪金货币
+  uint64 server_time = 6;
+  uint32 pending_deliveries = 7; // 待领取的寄拍/拍卖结算数量
+}
+
+message ClientShopBuy {
+  string listing_id = 1;
+  uint32 count = 2;              // 一口价购买份数，默认 1
+}
+
+message ClientShopBuyResult {
+  ShopListingInfo listing = 1;
+  repeated ShopItemGrant delivered = 2; // 本次真正放进背包的物品
+  string message = 3;
+}
+
+message ClientShopBid {
+  string listing_id = 1;
+  int64 price = 2;               // 我的出价总额
+}
+
+message ClientShopBidResult {
+  ShopListingInfo listing = 1;
+  int64 required = 2;            // 本次实际扣款（自己顶价时只补差价）
+}
+
+message ClientShopConsign {
+  string item_id = 1;
+  uint32 count = 2;
+  ShopSaleMode sale_mode = 3;
+  int64 price = 4;               // 一口价总价
+  int64 start_price = 5;         // 拍卖起拍价
+  int64 min_increment = 6;       // 拍卖最小加价
+  uint32 duration_seconds = 7;   // 0 = 服务端默认
+  string title = 8;
+  string description = 9;
+}
+
+message ClientShopConsignResult {
+  ShopListingInfo listing = 1;
+}
+
+message ClientShopCancel {
+  string listing_id = 1;
+}
+
+message ClientShopCancelResult {
+  ShopListingInfo listing = 1;
+}
+
+message ClientShopClaim {
+}
+
+message ClientShopClaimResult {
+  repeated ShopItemGrant granted = 1;
+  string message = 2;
+}

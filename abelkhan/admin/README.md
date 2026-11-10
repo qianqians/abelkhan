@@ -95,7 +95,7 @@ dotnet run --project abelkhan/admin -- path/to/config.json
 
 ## 客户端请求领取邮件（协议）
 
-新增协议（`proto/client.proto`，已生成到 `abelkhan/proto/Client.cs`）：
+新增协议（`proto/mail.proto`，已生成到 `abelkhan/proto/Mail.cs`）：
 
 | 方法名 | 请求 | 响应 |
 |---|---|---|

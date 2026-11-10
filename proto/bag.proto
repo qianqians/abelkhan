@@ -1,0 +1,73 @@
+syntax = "proto3"; 
+
+// ============================================================
+// 背包（hub 侧 Inventory 的客户端视图）
+//
+// 物品本身由服务端的 ItemCatalog 配置；协议里只传 item_id + 数量。
+// 背包变更（邮件附件、商城结算、道具使用等）都会通过
+// ClientBagChangedNotify 增量推送变化格位的最终状态。
+// ============================================================
+
+// 一个格位的最终状态。item_id 为空表示空格。
+message ClientBagSlot {
+  uint32 slot = 1;       // 0-based 格位下标
+  string item_id = 2;
+  int64 count = 3;
+}
+
+// 完整背包视图
+message ClientBagInfoResult {
+  uint32 capacity = 1;        // 总格数
+  uint32 occupied_slots = 2;  // 已占用格数
+  uint64 version = 3;         // 背包版本号，每次成功变更 +1
+  repeated ClientBagSlot slots = 4;  // 只含非空格
+}
+
+// 查询背包（登录 / 重连 / 打开界面时拉一次）
+message ClientBagInfo {
+}
+
+// 移动 / 交换两个格位：目标格为空则移动，非空则交换
+message ClientBagMove {
+  uint32 from_slot = 1;
+  uint32 to_slot = 2;
+}
+
+message ClientBagMoveResult {
+  ClientBagInfoResult bag = 1;
+}
+
+// 整理背包：压缩空格 + 按 item_id 稳定排序
+message ClientBagSort {
+}
+
+message ClientBagSortResult {
+  ClientBagInfoResult bag = 1;
+}
+
+// 丢弃物品。count <= 0 表示丢弃整格
+message ClientBagDiscard {
+  uint32 slot = 1;
+  int64 count = 2;
+}
+
+message ClientBagDiscardResult {
+  ClientBagInfoResult bag = 1;
+}
+
+// 使用物品。count <= 0 按 1 个处理；具体效果由游戏实现
+message ClientBagUse {
+  uint32 slot = 1;
+  int64 count = 2;
+}
+
+message ClientBagUseResult {
+  ClientBagInfoResult bag = 1;
+  string message = 2;  // 游戏返回的提示文本，可为空
+}
+
+// 背包变更推送：只包含本次变化的格位（空格用 item_id = "" / count = 0 表示）
+message ClientBagChangedNotify {
+  uint64 version = 1;
+  repeated ClientBagSlot slots = 2;
+}

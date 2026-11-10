@@ -27,7 +27,7 @@
 | `abelkhan/hub/Leaderboard/PlayerLeaderboard.cs` | 玩家实体上的 3 个排行榜协议处理 |
 | `abelkhan/hub/Service.cs` / `MainClass.cs` | 注入 `LeaderboardStore`、展示信息钩子 |
 | `abelkhan/admin/DataService.cs` / `MainClass.cs` | 重置排行榜 API（`/api/leaderboard/reset`） |
-| `proto/client.proto` → `abelkhan/proto/Client.cs` | `ClientLeaderboard*` 协议 |
+| `proto/leaderboard.proto` → `abelkhan/proto/Leaderboard.cs` | `ClientLeaderboard*` 协议 |
 | `client/Player.cs` | C# 客户端封装（`SubmitLeaderboardScore` 等） |
 | `abelkhan/tests/LeaderboardSmoke` | 基于真实 Redis 的端到端冒烟测试 |
 
@@ -69,7 +69,7 @@ admin 后台
 
 ## 4. 玩家协议
 
-`proto/client.proto` 新增（方法名见 `consts/Consts.cs`）：
+`proto/leaderboard.proto` 新增（方法名见 `consts/Consts.cs`）：
 
 | 方法 | 请求 | 响应 | 说明 |
 |---|---|---|---|

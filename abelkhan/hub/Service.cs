@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using chat;
 using core;
+using engine;
 using friend;
 using guild;
 using hub.inventory;
@@ -131,6 +132,21 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
     protected internal virtual string? CheckGuildCreate(Player player, string name) => null;
 
     /// <summary>
+    /// 游戏提供：使用背包物品。返回 Ok(提示文本) 表示使用成功；Err(原因) 表示拒绝。
+    /// 物品消耗 / 效果由实现决定（通常调用 <c>player.Bag.Consume(...)</c>），
+    /// 框架只负责校验格位、数量并把使用后的背包视图返回给客户端。
+    /// 默认拒绝（未接入物品效果的框架不应让客户端"用掉"物品）。
+    /// </summary>
+    protected internal virtual Task<Result<string, string>> UseBagItemAsync(Player player, IItem item, long count) =>
+        Task.FromResult(Result<string, string>.Err("该物品不能使用"));
+
+    /// <summary>
+    /// 游戏提供：丢弃前的额外校验（绑定 / 任务道具 / 不可丢弃等）。
+    /// 返回非空字符串 = 拒绝原因；默认允许丢弃。
+    /// </summary>
+    protected internal virtual string? CheckDiscardBagItem(Player player, IItem item, long count) => null;
+
+    /// <summary>
     /// 游戏提供：任务完成时发奖 / 记日志。奖励标识来自任务定义的 RewardKey，框架不解析。
     /// </summary>
     protected internal virtual Task OnQuestCompletedAsync(QuestCompletion completion) => Task.CompletedTask;
@@ -167,8 +183,10 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
     public virtual async Task<Player> EchoQueryServiceEntity(string gateName, string cliConnId, byte[] info)
     {
         var player = CreateEntity(gateName, cliConnId, info);
-        // 先注入物品配置 / 背包容量，再注册邮件 / 商城协议（都要用到背包）
+        // 先注入物品配置 / 背包容量，再注册背包 / 邮件 / 商城协议（都要用到背包）
         ConfigurePlayer(player);
+        // 背包：查询 / 移动 / 整理 / 丢弃 / 使用 + 变更推送
+        player.RegisterBagRequests(this);
         // 给玩家实体挂上「客户端请求领取邮件」协议的处理
         player.RegisterMailRequest(this);
         // 商城：氪金商品购买、玩家寄拍、限时拍卖

@@ -22,7 +22,7 @@
 | `abelkhan/hub/Guild/PlayerGuild.cs` | 17 个玩家协议 + `GuildId`/`GuildRole` 镜像 |
 | `abelkhan/hub/Chat/ChatService.cs` | `GuildScopeResolver` 注入点（帮会 id 只由帮会系统回答） |
 | `abelkhan/hub/Service.cs` / `MainClass.cs` | 注入 `Guild`、任务目录、三个游戏钩子、上下线接线 |
-| `proto/client.proto` | `ClientGuild*` 协议与通知 |
+| `proto/guild.proto` → `abelkhan/proto/Guild.cs` | `ClientGuild*` 协议与通知 |
 | `abelkhan/tests/GuildSmoke` | 基于真实 Redis 的冒烟测试（68 项断言） |
 
 ---

@@ -551,7 +551,7 @@ public class Client
         if (entity is Player player)
         {
             Player = player;
-            // 好友 / 聊天 / 帮会 / 任务的服务端通知统一接到事件上
+            // 背包 / 好友 / 聊天 / 帮会 / 任务的服务端通知统一接到事件上
             player.RegisterFeatureNotifications();
         }
 

@@ -18,7 +18,7 @@ namespace ProtocolSmoke;
 /// 走真实链路：客户端报文 → 进程内 gate 转换 → hub 实体 handler → Redis/子系统
 /// → 回包 → gate 转换 → 客户端分发 → 封装方法返回 Result。
 ///
-/// 覆盖 40 条客户端协议：邮件 1 / 商城 6 / 排行榜 3 / 好友 6 / 聊天 4 / 帮会 17 / 任务 3。
+/// 覆盖 45 条客户端协议：邮件 1 / 背包 5 / 商城 6 / 排行榜 3 / 好友 6 / 聊天 4 / 帮会 17 / 任务 3。
 /// </summary>
 internal static class Program
 {
@@ -67,6 +67,7 @@ internal static class Program
             await using var h = ProtocolHarness.Create($"127.0.0.1:{port}");
 
             await MailProtocols(h);
+            await BagProtocols(h);
             await LeaderboardProtocols(h);
             await FriendProtocols(h);
             await ChatProtocols(h);
@@ -126,6 +127,61 @@ internal static class Program
         var pull = await alice.Player.RequestMail();
         Check(pull, "RequestMail() 拉取可领取全局邮件");
         Check(pull.IsOk && pull.Value.Mails.Count == 0, "未配置全局邮件时返回空列表");
+    }
+
+    // ================================================================
+    // 背包（5）
+    // ================================================================
+
+    private static async Task BagProtocols(ProtocolHarness h)
+    {
+        Section("背包 client_bag_*");
+        var alice = await h.LoginAsync("bag_alice");
+
+        ProtocolHarness.GiveItem(alice.HubPlayer, "potion", 5);
+        var changed = new List<ClientBagChangedNotify>();
+        alice.Player.BagChanged += n => changed.Add(n);
+
+        var info = await alice.Player.RequestBagInfo();
+        Check(info, "RequestBagInfo() 拉背包");
+        Check(info.IsOk && info.Value.Slots.Count == 1 &&
+              info.Value.Slots[0].ItemId == "potion" && info.Value.Slots[0].Count == 5,
+            "背包视图含初始物品");
+
+        ProtocolHarness.GiveItem(alice.HubPlayer, "gold", 10);
+        await h.PumpAsync();
+        Check(await TestClient.WaitForAsync(() => changed.Count >= 1), "收到 BagChanged 事件");
+        Check(changed.Any(n => n.Slots.Any(s => s.ItemId == "gold")),
+            "变更推送带新物品的最终状态");
+
+        var moved = await alice.Player.MoveBagItem(0, 5);
+        Check(moved, "MoveBagItem() 移动到空格位");
+        Check(moved.IsOk && moved.Value.Bag.Slots.Any(s => s.Slot == 5 && s.ItemId == "potion"),
+            "移动后 potion 在 5 号格");
+
+        var sorted = await alice.Player.SortBag();
+        Check(sorted, "SortBag() 整理背包");
+        Check(sorted.IsOk &&
+              sorted.Value.Bag.Slots[0].ItemId == "gold" &&
+              sorted.Value.Bag.Slots[1].ItemId == "potion",
+            "整理后按 item_id 排序且空格压缩");
+
+        var discarded = await alice.Player.DiscardBagItem(1, 2);
+        Check(discarded, "DiscardBagItem() 丢弃部分数量");
+        Check(discarded.IsOk && discarded.Value.Bag.Slots.Any(s => s.Slot == 1 && s.Count == 3),
+            "丢弃 2 个后剩 3 个");
+
+        var used = await alice.Player.UseBagItem(1, 1);
+        Check(used, "UseBagItem() 使用物品（走服务端钩子）");
+        Check(used.IsOk && used.Value.Message.Contains("potion") &&
+              used.Value.Bag.Slots.Any(s => s.Slot == 1 && s.Count == 2),
+            "使用 1 个后剩 2 个");
+
+        var empty = await alice.Player.DiscardBagItem(2);
+        CheckErr(empty, "空格位丢弃被拒");
+
+        var badUse = await alice.Player.UseBagItem(999);
+        CheckErr(badUse, "越界格位使用被拒");
     }
 
     // ================================================================
@@ -584,8 +640,8 @@ internal static class Program
         }
 
         Check(text.Contains("abelkhan_hub_messages_total"), "导出里包含 hub 报文计数");
-        Check(Value("abelkhan_hub_messages_total") >= 40,
-            $"跑完 40+ 条协议后 hub 报文计数 >= 40（实际 {Value("abelkhan_hub_messages_total"):0}）");
+        Check(Value("abelkhan_hub_messages_total") >= 45,
+            $"跑完 45+ 条协议后 hub 报文计数 >= 45（实际 {Value("abelkhan_hub_messages_total"):0}）");
 
         Check(Value("abelkhan_redis_operation_duration_seconds_count") > 0,
             "Redis 操作直方图有样本（收口点确实被包住了）");

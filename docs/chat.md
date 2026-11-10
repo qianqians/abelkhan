@@ -24,7 +24,7 @@
 | `abelkhan/hub/Chat/ChatService.cs` | 本 hub 成员索引、频道发言、广播分发、私聊 |
 | `abelkhan/hub/Chat/PlayerChat.cs` | 玩家实体上的 4 个聊天协议 + 游戏钩子 + `SetChatScope` |
 | `abelkhan/hub/Service.cs` / `MainClass.cs` | 注入 `Chat`、订阅广播、下线清理索引 |
-| `proto/client.proto` | `ClientChat*` 协议与通知 |
+| `proto/chat.proto` → `abelkhan/proto/Chat.cs` | `ClientChat*` 协议与通知 |
 | `proto/hub_hub.proto` | `ChatBroadcast`（跨 hub 广播载荷） |
 | `abelkhan/tests/ChatSmoke` | 基于真实 Redis 的冒烟测试（26 项断言） |
 

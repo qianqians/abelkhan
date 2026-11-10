@@ -1,0 +1,96 @@
+syntax = "proto3"; 
+
+// ============================================================
+// 好友系统（hub 侧）
+// ============================================================
+
+// 一条好友 / 申请条目
+message ClientFriendInfo {
+  string user_id = 1;
+  bool online = 2;            // 在线状态（来自 presence）
+  string display_name = 3;    // 游戏钩子填充，可为空
+  string avatar = 4;          // 游戏钩子填充，可为空
+}
+
+// 拉取好友列表
+message ClientFriendList {
+}
+
+message ClientFriendListResult {
+  repeated ClientFriendInfo friends = 1;
+  uint32 max_friends = 2;     // 全局默认上限
+  uint32 extra_friends = 3;   // 本玩家额外好友位
+  uint32 used = 4;            // 已用 = 好友数 + 临时占位
+}
+
+// 拉取待处理的好友申请（= 离线消息）
+message ClientFriendRequests {
+}
+
+message ClientFriendRequestsResult {
+  repeated ClientFriendInfo requests = 1;
+}
+
+// 发起好友申请（对方离线时作为离线消息保留，上线后处理）
+message ClientFriendSendRequest {
+  string user_id = 1;
+}
+
+message ClientFriendSendRequestResult {
+  bool pending = 1;           // true = 已写入对方的待处理申请
+}
+
+// 同意好友申请：占位 -> 跨服确认 -> 回执
+message ClientFriendAccept {
+  string user_id = 1;         // 申请方
+}
+
+message ClientFriendAcceptResult {
+  ClientFriendInfo friend = 1;
+}
+
+// 拒绝好友申请
+message ClientFriendReject {
+  string user_id = 1;
+}
+
+message ClientFriendRejectResult {
+}
+
+// 删除好友（双向解除）
+message ClientFriendRemove {
+  string user_id = 1;
+}
+
+message ClientFriendRemoveResult {
+}
+
+// ---- 下面都是 hub 主动推给客户端的通知 ----
+
+// 收到好友申请 / 上线时拉到的待处理申请
+message ClientFriendRequestNotify {
+  ClientFriendInfo from = 1;
+}
+
+// 好友上线 / 下线
+message ClientFriendOnlineNotify {
+  string user_id = 1;
+}
+
+message ClientFriendOfflineNotify {
+  string user_id = 1;
+}
+
+// 加好友成功 / 被对方删除
+message ClientFriendAddedNotify {
+  string user_id = 1;
+}
+
+message ClientFriendRemovedNotify {
+  string user_id = 1;
+}
+
+// 加好友超时（临时占位被回收）
+message ClientFriendAcceptTimeoutNotify {
+  string user_id = 1;
+}

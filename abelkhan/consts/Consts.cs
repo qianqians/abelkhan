@@ -9,10 +9,20 @@ public class Consts
 
     public const string ClientRequestReconnect = "client_request_reconnect";
     public const string ClientRequestService = "client_request_service";
-    // 客户端请求领取邮件（对应 ClientRequestMail / ClientRequestMailResult）
+    // 客户端请求领取邮件（对应 mail.proto 的 ClientRequestMail / ClientRequestMailResult）
     public const string ClientRequestMail = "client_request_mail";
 
-    // ---- 商城 / 寄拍 / 限时拍卖（对应 client.proto 的 ClientShop* 消息） ----
+    // ---- 背包（对应 bag.proto 的 ClientBag* 消息） ----
+    public const string ClientBagInfo = "client_bag_info";
+    public const string ClientBagMove = "client_bag_move";
+    public const string ClientBagSort = "client_bag_sort";
+    public const string ClientBagDiscard = "client_bag_discard";
+    public const string ClientBagUse = "client_bag_use";
+
+    // 背包变更通知（hub -> 客户端）
+    public const string ClientBagChangedNotify = "client_bag_changed_notify";
+
+    // ---- 商城 / 寄拍 / 限时拍卖（对应 shop.proto 的 ClientShop* 消息） ----
     public const string ClientShopList = "client_shop_list";
     public const string ClientShopBuy = "client_shop_buy";
     public const string ClientShopBid = "client_shop_bid";
@@ -91,12 +101,12 @@ public class Consts
     // 成交/结算记录（Redis list，admin 查询）
     public const string ShopOrdersKey = "shop:{{shop}}:orders";
 
-    // ---- 排行榜（对应 client.proto 的 ClientLeaderboard* 消息） ----
+    // ---- 排行榜（对应 leaderboard.proto 的 ClientLeaderboard* 消息） ----
     public const string ClientLeaderboardSubmit = "client_leaderboard_submit";
     public const string ClientLeaderboardRange = "client_leaderboard_range";
     public const string ClientLeaderboardRank = "client_leaderboard_rank";
 
-    // ---- 好友（对应 client.proto 的 ClientFriend* 消息） ----
+    // ---- 好友（对应 friend.proto 的 ClientFriend* 消息） ----
     public const string ClientFriendList = "client_friend_list";
     public const string ClientFriendRequests = "client_friend_requests";
     public const string ClientFriendSendRequest = "client_friend_send_request";
@@ -116,7 +126,7 @@ public class Consts
     public const string FriendConfirmAdd = "friend_confirm_add";
     public const string FriendConfirmAddResult = "friend_confirm_add_result";
 
-    // ---- 聊天（对应 client.proto 的 ClientChat* 消息） ----
+    // ---- 聊天（对应 chat.proto 的 ClientChat* 消息） ----
     public const string ClientChatChannels = "client_chat_channels";
     public const string ClientChatSend = "client_chat_send";
     public const string ClientChatHistory = "client_chat_history";
@@ -126,7 +136,7 @@ public class Consts
     public const string ClientChatMessageNotify = "client_chat_message_notify";
     public const string ClientChatPrivateNotify = "client_chat_private_notify";
 
-    // ---- 帮会（对应 client.proto 的 ClientGuild* 消息） ----
+    // ---- 帮会（对应 guild.proto 的 ClientGuild* 消息） ----
     public const string ClientGuildInfo = "client_guild_info";
     public const string ClientGuildCreate = "client_guild_create";
     public const string ClientGuildRename = "client_guild_rename";
@@ -151,7 +161,7 @@ public class Consts
     public const string ClientGuildRemovedNotify = "client_guild_removed_notify";
     public const string ClientGuildTaskUpdatedNotify = "client_guild_task_updated_notify";
 
-    // ---- 任务（对应 client.proto 的 ClientQuest* 消息） ----
+    // ---- 任务（对应 quest.proto 的 ClientQuest* 消息） ----
     public const string ClientQuestList = "client_quest_list";
     public const string ClientQuestAccept = "client_quest_accept";
     public const string ClientQuestComplete = "client_quest_complete";

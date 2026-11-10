@@ -193,6 +193,30 @@ catalog.Register(new ItemDefinition("quest", 1, ItemType.Quest));
     Check(result.Failed && result.Error == BagError.InvalidSnapshot, "load capacity mismatch fails");
 }
 
+// 11. 移动 / 交换格位
+{
+    var bag = new ArrayBag(4, catalog);
+    bag.Add("potion", 2);
+    bag.Add("sword", 1);
+
+    var result = bag.Move(0, 3);
+    Check(result.Ok, "move to empty slot");
+    Check(bag[0] == null && bag[3]?.ItemId == "potion", "source cleared, target has potion");
+
+    result = bag.Move(1, 3);
+    Check(result.Ok, "swap two occupied slots");
+    Check(bag[1]?.ItemId == "potion" && bag[3]?.ItemId == "sword", "swap keeps both items");
+
+    result = bag.Move(2, 0);
+    Check(result.Failed && result.Error == BagError.SlotEmpty, "move from empty slot fails");
+
+    result = bag.Move(1, 99);
+    Check(result.Failed && result.Error == BagError.SlotOutOfRange, "move to invalid slot fails");
+
+    result = bag.Move(1, 1);
+    Check(result.Ok, "move to same slot is a no-op");
+}
+
 if (failures.Count > 0)
 {
     Console.Error.WriteLine($"FAILED: {failures.Count}/{checks} checks");

@@ -1,0 +1,31 @@
+syntax = "proto3"; 
+
+// ============================================================
+// 邮件：全局邮件列表 / 领取
+// ============================================================
+
+message MailAttachment {
+  string item_id = 1;
+  uint32 count = 2;
+}
+
+message MailInfo {
+  string mail_id = 1;
+  string title = 2;
+  string content = 3;
+  uint64 create_time = 4;
+  bool pop_up = 5;
+  string sender = 6;
+  repeated MailAttachment attachments = 7;
+}
+
+// 客户端请求领取邮件：
+//   mail_id 为空   -> 返回当前可领取的全局邮件（不标记领取）
+//   mail_id 非空   -> 领取指定邮件（标记为已领取并返回）
+message ClientRequestMail {
+  string mail_id = 1;
+}
+
+message ClientRequestMailResult {
+  repeated MailInfo mails = 1;
+}

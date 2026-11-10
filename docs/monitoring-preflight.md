@@ -209,7 +209,7 @@ EventCounters 转成 Gauge；这属于第二步，不急。
 | P4（可选） | 运行时指标进 Prometheus、真 trace | — | 后续 |
 
 **回归保障**：`abelkhan/tests/ProtocolSmoke` 已经能把 hub/gate 的协议链路跑起来，
-P1/P2 的指标可以用它断言（例如「跑完 40 条协议后 `abelkhan_hub_messages_total` > 40」）。
+P1/P2 的指标可以用它断言（例如「跑完 45 条协议后 `abelkhan_hub_messages_total` > 45」）。
 这一点很重要：**指标本身也要被测**，否则很容易出现「指标写错名字，图上永远是 0」。
 
 ---

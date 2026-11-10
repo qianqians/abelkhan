@@ -364,6 +364,40 @@ public sealed class ArrayBag : IBag
         return BagResult.Success();
     }
 
+    public BagResult Move(int fromSlot, int toSlot)
+    {
+        if (!IsValidSlot(fromSlot))
+        {
+            return BagResult.Fail(BagError.SlotOutOfRange, $"格位越界: {fromSlot}");
+        }
+
+        if (!IsValidSlot(toSlot))
+        {
+            return BagResult.Fail(BagError.SlotOutOfRange, $"格位越界: {toSlot}");
+        }
+
+        if (fromSlot == toSlot)
+        {
+            return BagResult.Success();
+        }
+
+        var source = _slots[fromSlot];
+        if (source == null)
+        {
+            return BagResult.Fail(BagError.SlotEmpty, $"格位 {fromSlot} 为空");
+        }
+
+        var target = _slots[toSlot];
+        _slots[fromSlot] = target;
+        _slots[toSlot] = source;
+        Commit(new List<BagSlotChange>
+        {
+            new(fromSlot, target?.ItemId, target?.Count ?? 0),
+            new(toSlot, source.ItemId, source.Count),
+        });
+        return BagResult.Success();
+    }
+
     public BagResult Clear()
     {
         var before = (IItem?[])_slots.Clone();

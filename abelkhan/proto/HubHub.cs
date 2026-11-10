@@ -22,18 +22,18 @@ public static partial class HubHubReflection {
   static HubHubReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "Cg1odWJfaHViLnByb3RvGgxjbGllbnQucHJvdG8iUQoMVGFrZU92ZXJVc2Vy",
-          "Eg8KB3VzZXJfaWQYASABKAkSEQoJZ2F0ZV9uYW1lGAIgASgJEg8KB2Nvbm5f",
-          "aWQYAyABKAkSDAoEYXJndhgEIAEoDCJiChBGcmllbmRDb25maXJtQWRkEhQK",
-          "DHJlcXVlc3Rlcl9pZBgBIAEoCRIRCgl0YXJnZXRfaWQYAiABKAkSEQoJcmVw",
-          "bHlfaHViGAMgASgJEhIKCnJlcXVlc3RfaWQYBCABKAkiYwoWRnJpZW5kQ29u",
-          "ZmlybUFkZFJlc3VsdBIUCgxyZXF1ZXN0ZXJfaWQYASABKAkSEQoJdGFyZ2V0",
-          "X2lkGAIgASgJEhIKCnJlcXVlc3RfaWQYAyABKAkSDAoEY29kZRgEIAEoCSJW",
-          "Cg1DaGF0QnJvYWRjYXN0EhIKCmNoYW5uZWxfaWQYASABKAkSEAoIc2NvcGVf",
-          "aWQYAiABKAkSHwoFZW50cnkYAyABKAsyEC5DbGllbnRDaGF0RW50cnliBnBy",
-          "b3RvMw=="));
+          "Cg1odWJfaHViLnByb3RvGgpjaGF0LnByb3RvIlEKDFRha2VPdmVyVXNlchIP",
+          "Cgd1c2VyX2lkGAEgASgJEhEKCWdhdGVfbmFtZRgCIAEoCRIPCgdjb25uX2lk",
+          "GAMgASgJEgwKBGFyZ3YYBCABKAwiYgoQRnJpZW5kQ29uZmlybUFkZBIUCgxy",
+          "ZXF1ZXN0ZXJfaWQYASABKAkSEQoJdGFyZ2V0X2lkGAIgASgJEhEKCXJlcGx5",
+          "X2h1YhgDIAEoCRISCgpyZXF1ZXN0X2lkGAQgASgJImMKFkZyaWVuZENvbmZp",
+          "cm1BZGRSZXN1bHQSFAoMcmVxdWVzdGVyX2lkGAEgASgJEhEKCXRhcmdldF9p",
+          "ZBgCIAEoCRISCgpyZXF1ZXN0X2lkGAMgASgJEgwKBGNvZGUYBCABKAkiVgoN",
+          "Q2hhdEJyb2FkY2FzdBISCgpjaGFubmVsX2lkGAEgASgJEhAKCHNjb3BlX2lk",
+          "GAIgASgJEh8KBWVudHJ5GAMgASgLMhAuQ2xpZW50Q2hhdEVudHJ5YgZwcm90",
+          "bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-        new pbr::FileDescriptor[] { global::ClientReflection.Descriptor, },
+        new pbr::FileDescriptor[] { global::ChatReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
           new pbr::GeneratedClrTypeInfo(typeof(global::TakeOverUser), global::TakeOverUser.Parser, new[]{ "UserId", "GateName", "ConnId", "Argv" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::FriendConfirmAdd), global::FriendConfirmAdd.Parser, new[]{ "RequesterId", "TargetId", "ReplyHub", "RequestId" }, null, null, null, null),
@@ -1071,7 +1071,7 @@ public sealed partial class ChatBroadcast : pb::IMessage<ChatBroadcast>
   public const int EntryFieldNumber = 3;
   private global::ClientChatEntry entry_;
   /// <summary>
-  /// 定义在 client.proto
+  /// 定义在 chat.proto
   /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]

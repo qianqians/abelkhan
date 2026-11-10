@@ -25,7 +25,7 @@
 | `abelkhan/hub/Quest/QuestService.cs` | 编排：事件分发、触发判定、完成与任务链、发奖回调、协议组装 |
 | `abelkhan/hub/Quest/PlayerQuest.cs` | 3 个玩家协议 |
 | `abelkhan/hub/Service.cs` / `MainClass.cs` | 注入 `Quest`、任务目录、2 个游戏钩子 |
-| `proto/client.proto` | `ClientQuest*` 协议与通知 |
+| `proto/quest.proto` → `abelkhan/proto/Quest.cs` | `ClientQuest*` 协议与通知 |
 | `abelkhan/tests/QuestSmoke` | 冒烟测试（44 项断言） |
 
 ---

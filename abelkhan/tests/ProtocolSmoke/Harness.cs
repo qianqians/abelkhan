@@ -44,6 +44,15 @@ internal sealed class HubTestService(ConcurrentDictionary<string, HubClient> cli
 
     protected override HubPlayerBase CreateEntity(string gateName, string cliConnId, byte[] info)
         => new HubTestPlayer("e-" + NextUserId, "player", NextUserId, redis, clients, gates);
+
+    /// <summary>测试用「使用物品」：直接消费，返回提示文本。</summary>
+    protected override Task<Result<string, string>> UseBagItemAsync(HubPlayerBase player, IItem item, long count)
+    {
+        var used = player.Bag.Consume(item.ItemId, count);
+        return Task.FromResult(used.Failed
+            ? Result<string, string>.Err(used.Message)
+            : Result<string, string>.Ok($"{item.ItemId} x{count}"));
+    }
 }
 
 /// <summary>最小可用的客户端 Player（游戏侧会派生它）。</summary>

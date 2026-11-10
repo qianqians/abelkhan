@@ -134,11 +134,12 @@ public abstract partial class Player(string entityId, string entityType) : Entit
     // ---------------- 服务器推送的各类通知 ----------------
 
     /// <summary>
-    /// 把好友 / 聊天 / 帮会 / 任务的服务端通知接到事件上。
+    /// 把背包 / 好友 / 聊天 / 帮会 / 任务的服务端通知接到事件上。
     /// 框架在创建 Player 时自动调一次，游戏只需要订阅事件。
     /// </summary>
     internal void RegisterFeatureNotifications()
     {
+        RegisterBagNotifications();
         RegisterFriendNotifications();
         RegisterChatNotifications();
         RegisterGuildNotifications();

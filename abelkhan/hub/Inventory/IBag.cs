@@ -42,6 +42,12 @@ public interface IBag : IReadOnlyBag
     /// <summary>整理背包：压缩空格位，并按 item_id 做稳定升序排序（空位在末尾）。</summary>
     BagResult Sort();
 
+    /// <summary>
+    /// 移动 / 交换两个格位：目标格为空则把物品移过去，非空则交换两格。
+    /// 源格必须非空，from 与 to 相同视为成功（不做任何改动）。
+    /// </summary>
+    BagResult Move(int fromSlot, int toSlot);
+
     /// <summary>清空背包（GM / 删档）。</summary>
     BagResult Clear();
 

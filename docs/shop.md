@@ -27,7 +27,7 @@
 | `abelkhan/admin/DataService.cs` | 商品 CRUD（MongoDB）+ 上架 / 下架（Redis）+ 线上 listing / 流水查询 |
 | `abelkhan/admin/MainClass.cs` | `/api/shop/*` 管理接口 |
 | `abelkhan/admin/wwwroot/*` | 「商城」管理页面（商品编辑、在售 / 寄拍、成交记录） |
-| `proto/client.proto` → `abelkhan/proto/Client.cs` | `ClientShop*` 协议 |
+| `proto/shop.proto` → `abelkhan/proto/Shop.cs` | `ClientShop*` 协议 |
 | `abelkhan/tests/ShopSmoke` | 基于真实 Redis 的端到端冒烟测试 |
 
 ---
@@ -97,7 +97,7 @@ Lua 用 `cjson.decode` 读取，C# 用 Newtonsoft（大小写不敏感）反序�
 
 ## 4. 玩家协议
 
-`proto/client.proto` 新增（方法名见 `consts/Consts.cs`）：
+`proto/shop.proto` 新增（方法名见 `consts/Consts.cs`）：
 
 | 方法 | 请求 | 响应 | 说明 |
 |---|---|---|---|

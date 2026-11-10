@@ -1,7 +1,7 @@
 syntax = "proto3"; 
 
 // ChatBroadcast 里嵌入了一条客户端聊天消息
-import "client.proto";
+import "chat.proto";
 
 message TakeOverUser {
   string user_id = 1;
@@ -46,5 +46,5 @@ message FriendConfirmAddResult {
 message ChatBroadcast {
   string channel_id = 1;
   string scope_id = 2;       // 已解析好的作用域 id（场景实例 / 帮会 id / ...）
-  ClientChatEntry entry = 3; // 定义在 client.proto
+  ClientChatEntry entry = 3; // 定义在 chat.proto
 }
