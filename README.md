@@ -7,7 +7,7 @@ abelkhan是一个轻量级的游戏服务器框架，基于c#开发，使用mong
 &nbsp;
 * dbproxy 数据库代理
 * gate 网关服务器
-* hub 微服务节点（含 `hub/Inventory` 抽象背包：数组存储、物品接口、邮件附件发放、BSON 存档，见 `docs/inventory.md`）
+* hub 微服务节点（含 `hub/Inventory` 背包：数组存储、物品接口、邮件附件发放、BSON 存档、`client_bag_*` 协议，见 `docs/inventory.md`）
 * shop 商城系统（氪金商品 / 玩家寄拍 / 限时拍卖，admin 后台编辑上架，见 `docs/shop.md`）
 * leaderboard 通用排行榜（hub 侧 Redis ZSET：打榜保留最高分 / 区间拉榜 / 查名次 / 重置，见 `docs/leaderboard.md`）
 * friend 好友系统（离线申请 / 临时占位 / 跨服确认 / 上限可扩展，见 `docs/friend.md`）
@@ -25,8 +25,8 @@ abelkhan是一个轻量级的游戏服务器框架，基于c#开发，使用mong
 
 | 工程 | 覆盖 |
 |---|---|
-| `abelkhan/tests/ProtocolSmoke` | **所有 40 条客户端协议**，全部通过 `client` 模组的封装调用（`player.SendFriendRequest(...)` 等），走“客户端报文 → 进程内 gate → hub handler → Redis → 回包/推送 → 客户端分发”的真实链路；同时断言客户端通知事件 |
-| `abelkhan/tests/InventorySmoke` | 背包 / 物品堆叠 / 邮件附件 |
+| `abelkhan/tests/ProtocolSmoke` | **所有 45 条客户端协议**，全部通过 `client` 模组的封装调用（`player.SendFriendRequest(...)` 等），走“客户端报文 → 进程内 gate → hub handler → Redis → 回包/推送 → 客户端分发”的真实链路；同时断言客户端通知事件 |
+| `abelkhan/tests/InventorySmoke` | 背包 / 物品堆叠 / 移动 / 邮件附件 |
 | `abelkhan/tests/ShopSmoke` | 商城 / 寄拍 / 拍卖 / 幂等 |
 | `abelkhan/tests/LeaderboardSmoke` | 排行榜 ZSET 语义 |
 | `abelkhan/tests/FriendSmoke` | 好友申请 / 占位 / 跨服确认 / 上限 |
