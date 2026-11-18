@@ -69,7 +69,7 @@ admin 后台
 
 ## 4. 玩家协议
 
-`proto/leaderboard.proto` 新增（方法名见 `consts/Consts.cs`）：
+`proto/leaderboard.proto` 新增（方法名见 `consts/Consts.Leaderboard.cs`）：
 
 | 方法 | 请求 | 响应 | 说明 |
 |---|---|---|---|

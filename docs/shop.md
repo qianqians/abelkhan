@@ -97,7 +97,7 @@ Lua 用 `cjson.decode` 读取，C# 用 Newtonsoft（大小写不敏感）反序�
 
 ## 4. 玩家协议
 
-`proto/shop.proto` 新增（方法名见 `consts/Consts.cs`）：
+`proto/shop.proto` 新增（方法名见 `consts/Consts.Shop.cs`）：
 
 | 方法 | 请求 | 响应 | 说明 |
 |---|---|---|---|
