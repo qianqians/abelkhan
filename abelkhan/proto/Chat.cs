@@ -40,8 +40,9 @@ public static partial class ChatReflection {
           "aWVudENoYXRQcml2YXRlUmVzdWx0Eh8KBWVudHJ5GAEgASgLMhAuQ2xpZW50",
           "Q2hhdEVudHJ5IjoKF0NsaWVudENoYXRNZXNzYWdlTm90aWZ5Eh8KBWVudHJ5",
           "GAEgASgLMhAuQ2xpZW50Q2hhdEVudHJ5IjoKF0NsaWVudENoYXRQcml2YXRl",
-          "Tm90aWZ5Eh8KBWVudHJ5GAEgASgLMhAuQ2xpZW50Q2hhdEVudHJ5YgZwcm90",
-          "bzM="));
+          "Tm90aWZ5Eh8KBWVudHJ5GAEgASgLMhAuQ2xpZW50Q2hhdEVudHJ5IlYKDUNo",
+          "YXRCcm9hZGNhc3QSEgoKY2hhbm5lbF9pZBgBIAEoCRIQCghzY29wZV9pZBgC",
+          "IAEoCRIfCgVlbnRyeRgDIAEoCzIQLkNsaWVudENoYXRFbnRyeWIGcHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -56,7 +57,8 @@ public static partial class ChatReflection {
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientChatPrivate), global::ClientChatPrivate.Parser, new[]{ "ToUserId", "Content" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientChatPrivateResult), global::ClientChatPrivateResult.Parser, new[]{ "Entry" }, null, null, null, null),
           new pbr::GeneratedClrTypeInfo(typeof(global::ClientChatMessageNotify), global::ClientChatMessageNotify.Parser, new[]{ "Entry" }, null, null, null, null),
-          new pbr::GeneratedClrTypeInfo(typeof(global::ClientChatPrivateNotify), global::ClientChatPrivateNotify.Parser, new[]{ "Entry" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::ClientChatPrivateNotify), global::ClientChatPrivateNotify.Parser, new[]{ "Entry" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::ChatBroadcast), global::ChatBroadcast.Parser, new[]{ "ChannelId", "ScopeId", "Entry" }, null, null, null, null)
         }));
   }
   #endregion
@@ -2926,6 +2928,293 @@ public sealed partial class ClientChatPrivateNotify : pb::IMessage<ClientChatPri
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
         case 10: {
+          if (entry_ == null) {
+            Entry = new global::ClientChatEntry();
+          }
+          input.ReadMessage(Entry);
+          break;
+        }
+      }
+    }
+  }
+  #endif
+
+}
+
+[global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
+public sealed partial class ChatBroadcast : pb::IMessage<ChatBroadcast>
+#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    , pb::IBufferMessage
+#endif
+{
+  private static readonly pb::MessageParser<ChatBroadcast> _parser = new pb::MessageParser<ChatBroadcast>(() => new ChatBroadcast());
+  private pb::UnknownFieldSet _unknownFields;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pb::MessageParser<ChatBroadcast> Parser { get { return _parser; } }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pbr::MessageDescriptor Descriptor {
+    get { return global::ChatReflection.Descriptor.MessageTypes[12]; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  pbr::MessageDescriptor pb::IMessage.Descriptor {
+    get { return Descriptor; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public ChatBroadcast() {
+    OnConstruction();
+  }
+
+  partial void OnConstruction();
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public ChatBroadcast(ChatBroadcast other) : this() {
+    channelId_ = other.channelId_;
+    scopeId_ = other.scopeId_;
+    entry_ = other.entry_ != null ? other.entry_.Clone() : null;
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public ChatBroadcast Clone() {
+    return new ChatBroadcast(this);
+  }
+
+  /// <summary>Field number for the "channel_id" field.</summary>
+  public const int ChannelIdFieldNumber = 1;
+  private string channelId_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string ChannelId {
+    get { return channelId_; }
+    set {
+      channelId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "scope_id" field.</summary>
+  public const int ScopeIdFieldNumber = 2;
+  private string scopeId_ = "";
+  /// <summary>
+  /// 已解析好的作用域 id（场景实例 / 帮会 id / ...）
+  /// </summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string ScopeId {
+    get { return scopeId_; }
+    set {
+      scopeId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "entry" field.</summary>
+  public const int EntryFieldNumber = 3;
+  private global::ClientChatEntry entry_;
+  /// <summary>
+  /// 同一个文件里的客户端条目
+  /// </summary>
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public global::ClientChatEntry Entry {
+    get { return entry_; }
+    set {
+      entry_ = value;
+    }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override bool Equals(object other) {
+    return Equals(other as ChatBroadcast);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool Equals(ChatBroadcast other) {
+    if (ReferenceEquals(other, null)) {
+      return false;
+    }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    if (ChannelId != other.ChannelId) return false;
+    if (ScopeId != other.ScopeId) return false;
+    if (!object.Equals(Entry, other.Entry)) return false;
+    return Equals(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override int GetHashCode() {
+    int hash = 1;
+    if (ChannelId.Length != 0) hash ^= ChannelId.GetHashCode();
+    if (ScopeId.Length != 0) hash ^= ScopeId.GetHashCode();
+    if (entry_ != null) hash ^= Entry.GetHashCode();
+    if (_unknownFields != null) {
+      hash ^= _unknownFields.GetHashCode();
+    }
+    return hash;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override string ToString() {
+    return pb::JsonFormatter.ToDiagnosticString(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void WriteTo(pb::CodedOutputStream output) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    output.WriteRawMessage(this);
+  #else
+    if (ChannelId.Length != 0) {
+      output.WriteRawTag(10);
+      output.WriteString(ChannelId);
+    }
+    if (ScopeId.Length != 0) {
+      output.WriteRawTag(18);
+      output.WriteString(ScopeId);
+    }
+    if (entry_ != null) {
+      output.WriteRawTag(26);
+      output.WriteMessage(Entry);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(output);
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+    if (ChannelId.Length != 0) {
+      output.WriteRawTag(10);
+      output.WriteString(ChannelId);
+    }
+    if (ScopeId.Length != 0) {
+      output.WriteRawTag(18);
+      output.WriteString(ScopeId);
+    }
+    if (entry_ != null) {
+      output.WriteRawTag(26);
+      output.WriteMessage(Entry);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(ref output);
+    }
+  }
+  #endif
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public int CalculateSize() {
+    int size = 0;
+    if (ChannelId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(ChannelId);
+    }
+    if (ScopeId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(ScopeId);
+    }
+    if (entry_ != null) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(Entry);
+    }
+    if (_unknownFields != null) {
+      size += _unknownFields.CalculateSize();
+    }
+    return size;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(ChatBroadcast other) {
+    if (other == null) {
+      return;
+    }
+    if (other.ChannelId.Length != 0) {
+      ChannelId = other.ChannelId;
+    }
+    if (other.ScopeId.Length != 0) {
+      ScopeId = other.ScopeId;
+    }
+    if (other.entry_ != null) {
+      if (entry_ == null) {
+        Entry = new global::ClientChatEntry();
+      }
+      Entry.MergeFrom(other.Entry);
+    }
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(pb::CodedInputStream input) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    input.ReadRawMessage(this);
+  #else
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+    if ((tag & 7) == 4) {
+      // Abort on any end group tag.
+      return;
+    }
+    switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+          break;
+        case 10: {
+          ChannelId = input.ReadString();
+          break;
+        }
+        case 18: {
+          ScopeId = input.ReadString();
+          break;
+        }
+        case 26: {
+          if (entry_ == null) {
+            Entry = new global::ClientChatEntry();
+          }
+          input.ReadMessage(Entry);
+          break;
+        }
+      }
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+    if ((tag & 7) == 4) {
+      // Abort on any end group tag.
+      return;
+    }
+    switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+          break;
+        case 10: {
+          ChannelId = input.ReadString();
+          break;
+        }
+        case 18: {
+          ScopeId = input.ReadString();
+          break;
+        }
+        case 26: {
           if (entry_ == null) {
             Entry = new global::ClientChatEntry();
           }

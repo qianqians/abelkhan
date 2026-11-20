@@ -71,3 +71,16 @@ message ClientChatMessageNotify {
 message ClientChatPrivateNotify {
   ClientChatEntry entry = 1;
 }
+
+// ============================================================
+// 跨 hub 频道广播：经 Redis pub/sub 通道 chat:{prefix}:broadcast
+//
+// 任何一个 hub 发一条频道消息，都会发布到这里；每个 hub 收到后
+// 只推给「本地在线且在同一个作用域内」的玩家。
+// ============================================================
+
+message ChatBroadcast {
+  string channel_id = 1;
+  string scope_id = 2;       // 已解析好的作用域 id（场景实例 / 帮会 id / ...）
+  ClientChatEntry entry = 3; // 同一个文件里的客户端条目
+}

@@ -1,7 +1,7 @@
 namespace consts;
 
 /// <summary>
-/// 好友协议方法名 + 跨 hub 指令（对应 proto/friend.proto / hub_hub.proto）
+/// 好友协议方法名 + 跨 hub 指令（对应 proto/friend.proto）
 /// </summary>
 public partial class Consts
 {
@@ -21,7 +21,7 @@ public partial class Consts
     public const string ClientFriendRemovedNotify = "client_friend_removed_notify";
     public const string ClientFriendAcceptTimeoutNotify = "client_friend_accept_timeout_notify";
 
-    // ---- 跨 hub 指令（hub_hub.proto，经 hub:{hubId}:mq） ----
+    // ---- 跨 hub 指令（好友专用，定义在 friend.proto；经 hub:{hubId}:mq） ----
     public const string FriendConfirmAdd = "friend_confirm_add";
     public const string FriendConfirmAddResult = "friend_confirm_add_result";
 }

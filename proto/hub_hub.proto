@@ -1,50 +1,18 @@
 syntax = "proto3"; 
 
-// ChatBroadcast 里嵌入了一条客户端聊天消息
-import "chat.proto";
+// ============================================================
+// hub ↔ hub 通道的**通用**消息。
+//
+// 约定（和 bag/mail/shop/... 一致的功能优先拆分）：
+//   某个功能专用的跨 hub 消息放回它自己的 proto 里 ——
+//   FriendConfirmAdd / FriendConfirmAddResult → friend.proto
+//   ChatBroadcast                             → chat.proto
+// 这里只留不属于任何单个功能的通道级消息。
+// ============================================================
 
 message TakeOverUser {
   string user_id = 1;
   string gate_name = 2;
   string conn_id = 3;
   bytes argv = 4;
-}
-
-// ============================================================
-// 好友系统跨服确认：经 Redis 队列 hub:{hubId}:mq 传递
-//
-// 流程：A 同意申请后在 A 侧占位，把 FriendConfirmAdd 发给 B 所在 hub；
-// B 侧（在线实例或按需创建的离线实例）执行确认，再用
-// FriendConfirmAddResult 回到 A 所在 hub 清占位并回执客户端。
-// ============================================================
-
-message FriendConfirmAdd {
-  // A：同意方（发起占位的一方）
-  string requester_id = 1;
-  // B：被申请方（申请由 B 发往 A 的方向见 FriendConfirmAddResult）
-  string target_id = 2;
-  // A 所在 hub，回执投递到 hub:{reply_hub}:mq
-  string reply_hub = 3;
-  // A 的请求 id，回执时原样带回（同一玩家可能有多个在途确认）
-  string request_id = 4;
-}
-
-message FriendConfirmAddResult {
-  string requester_id = 1;   // A
-  string target_id = 2;      // B
-  string request_id = 3;
-  string code = 4;           // ok / target_full / no_request / internal
-}
-
-// ============================================================
-// 聊天频道跨 hub 广播：经 Redis pub/sub 通道 chat:{prefix}:broadcast
-//
-// 任何一个 hub 发一条频道消息，都会发布到这里；每个 hub 收到后
-// 只推给「本地在线且在同一个作用域内」的玩家。
-// ============================================================
-
-message ChatBroadcast {
-  string channel_id = 1;
-  string scope_id = 2;       // 已解析好的作用域 id（场景实例 / 帮会 id / ...）
-  ClientChatEntry entry = 3; // 定义在 chat.proto
 }

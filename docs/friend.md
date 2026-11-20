@@ -31,7 +31,7 @@ B 申请加 A
 | `abelkhan/hub/MainClass.cs` | 读取 `hub:{hubId}:mq`、占位回收定时器、路由续期、下线事件接线 |
 | `abelkhan/gate/MainClass.cs` | 维护 presence（每 3s 续期、断开时释放）、上报下线 |
 | `proto/friend.proto` → `abelkhan/proto/Friend.cs` | `ClientFriend*` 协议与通知 |
-| `proto/hub_hub.proto` | `FriendConfirmAdd` / `FriendConfirmAddResult`（跨服确认） |
+| `proto/friend.proto` | `ClientFriend*` + 跨服确认 `FriendConfirmAdd` / `FriendConfirmAddResult` |
 | `abelkhan/tests/FriendSmoke` | 基于真实 Redis 的端到端冒烟测试（39 项断言） |
 
 ---
