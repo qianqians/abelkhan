@@ -41,7 +41,7 @@ namespace hub
             }
         }
 
-        public async void CallEntityEvent(string srcHub, string hubId, string entity, CallRpc event_)
+        public async Task CallEntityEvent(string srcHub, string hubId, string entity, CallRpc event_)
         {
             await _redis.PushList(string.Format(Consts.HubHubMq, hubId), new HubHubNotifyEntity()
             {

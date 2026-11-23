@@ -1,17 +1,22 @@
-using System.Collections.Concurrent;
-using System.Diagnostics;
 using consts;
 using core;
 using engine;
 using Google.Protobuf;
 using MongoDB.Bson;
+using StackExchange.Redis;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace hub;
 
-public abstract class BaseEntity(string entityId, string entityType, RedisHandle redis,
-    ConcurrentDictionary<string, Client> clients,
-    ConcurrentDictionary<string, GateNetwork> gates) : Actor
+public abstract class BaseEntity : Actor, IDisposable
 {
+    private string entityId;
+    private string entityType;
+    private RedisHandle redis;
+    private ConcurrentDictionary<string, Client> clients;
+    private ConcurrentDictionary<string, GateNetwork> gates;
+
     public string EntityId => entityId;
     public string EntityType => entityType;
     
@@ -19,7 +24,25 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
     private readonly Dictionary<string, Func<string?, string?, GateNetwork?, ByteString, Task>> _onMsg = new();
     private readonly Dictionary<string, Func<string, ByteString, Task>> _onHubMsg = new();
     private readonly Dictionary<string, Action<string, byte[]>> _requestCallbacks = new();
-    
+
+    protected BaseEntity(string _entityId, string _entityType, RedisHandle _redis,
+        ConcurrentDictionary<string, Client> _clients,
+        ConcurrentDictionary<string, GateNetwork> _gates)
+    {
+        entityId = _entityId;
+        entityType = _entityType;
+        redis = _redis;
+        clients = _clients;
+        gates = _gates;
+
+        MainClass.HubGlobalEvent?.OnEntityCreate(this);
+    }
+
+    public void Dispose()
+    {
+        MainClass.HubGlobalEvent?.OnEntityDestroy(this);
+    }
+
     internal async Task SendToGate(string userId, byte[] message)
     {
         if (!clients.TryGetValue(userId, out var cli))

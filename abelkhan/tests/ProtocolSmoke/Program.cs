@@ -4,6 +4,7 @@ using consts;
 using core;
 using engine;
 using friend;
+using Google.Protobuf;
 using guild;
 using hub;
 using leaderboard;
@@ -22,6 +23,9 @@ namespace ProtocolSmoke;
 /// </summary>
 internal static class Program
 {
+    /// <summary>测试专用的 hub→hub 事件方法名（不进产品 Consts）。</summary>
+    private const string TestHubPingMethod = "test_hub_ping";
+
     private static int _passed;
     private static int _failed;
     private static readonly List<string> Failures = new();
@@ -77,6 +81,8 @@ internal static class Program
             await ShopProtocols(h);
             await MainThreadBridgeProtocols(h);
             await MetricsProtocols(h);
+            await HubHubQueueProtocols(h);
+            await ActorSelfScheduleProtocols();
 
             Console.WriteLine();
             Console.WriteLine($"通过 {_passed} 项，失败 {_failed} 项");
@@ -793,6 +799,133 @@ internal static class Program
         Check(!mongoText.Contains("operation=\"player\""), "collection 名没有进指标标签（避免高基数）");
     }
 
+    /// <summary>
+    /// hub→hub 队列的 Push/Pop 配对：
+    ///   - CallEntityEvent 推进去的字节，必须能被 MainClass 那样的 PopList + ParseFrom 还原；
+    ///   - 不同 hubId 必须落到不同的 key（守住「缺 {0} 占位符 → 所有 hub 抢同一队列」这个坑）；
+    ///   - 事件能真的派发到 RegisterHubNotify 的 handler（不走 connId / client）。
+    /// </summary>
+    private static async Task HubHubQueueProtocols(ProtocolHarness h)
+    {
+        Section("hub→hub 队列：Push/Pop 配对与事件派发");
+
+        // 1) key 随 hubId 变化（缺 {0} 时这条失败）
+        Check(string.Format(Consts.HubHubMq, "hub-1") != string.Format(Consts.HubHubMq, "hub-2"),
+            "HubHubMq 带 {0} 占位符：不同 hub 不同队列");
+
+        // 2) 注册一个不依赖 connId 的 hub 事件 handler
+        var alice = await h.LoginAsync("hh_alice");
+        var got = new List<string>();
+        alice.HubPlayer.RegisterHubNotify<NotifyConnID>(TestHubPingMethod,
+            (srcHubId, msg) => { lock (got) { got.Add(srcHubId + ":" + msg.ConnId); } });
+
+        var global = new HubGlobalEvent(h.Redis);
+        global.OnEntityCreate(alice.HubPlayer);
+
+        // 3) 从「另一个 hub」推事件，再用 MainClass 同样的方式 Pop + 派发
+        await global.CallEntityEvent("hub-other", "hub-target", alice.HubPlayer.EntityId,
+            new CallRpc { ProtoName = TestHubPingMethod, Content = new NotifyConnID { ConnId = "hello" }.ToByteString() });
+
+        var popTask = h.Redis.PopList(string.Format(Consts.HubHubMq, "hub-target"), 8);
+        var frames = popTask == null ? null : await popTask;
+        Check(frames != null && frames.Count == 1, "PopList 取到 CallEntityEvent 推的那一条（编码对称）");
+
+        var parser = new MessageParser<HubHubNotifyEntity>(() => new HubHubNotifyEntity());
+        var ev = parser.ParseFrom(frames![0]);
+        Check(ev.SrcHubId == "hub-other" && ev.EntityId == alice.HubPlayer.EntityId,
+            "src_hub_id / entity_id 原样还原");
+
+        global.OnEntityEvent(ev.SrcHubId, ev.EntityId, ev.Event);
+        Check(await TestClient.WaitForAsync(() => { lock (got) return got.Count == 1; }),
+            "事件派发到 RegisterHubNotify 的 handler（不走 connId）");
+        lock (got)
+        {
+            Check(got.Count == 1 && got[0] == "hub-other:hello", "handler 收到 srcHubId 和载荽");
+        }
+
+        // 4) 注销后不再派发（防串号 / 防泄露给已销毁实体）
+        global.OnEntityDestroy(alice.HubPlayer);
+        await global.CallEntityEvent("hub-other", "hub-target", alice.HubPlayer.EntityId,
+            new CallRpc { ProtoName = TestHubPingMethod, Content = new NotifyConnID { ConnId = "gone" }.ToByteString() });
+        var popTask2 = h.Redis.PopList(string.Format(Consts.HubHubMq, "hub-target"), 8);
+        var frames2 = popTask2 == null ? null : await popTask2;
+        var ev2 = parser.ParseFrom(frames2![0]);
+        global.OnEntityEvent(ev2.SrcHubId, ev2.EntityId, ev2.Event);
+        await Task.Delay(150);
+        lock (got)
+        {
+            Check(got.Count == 1, "OnEntityDestroy 后不再派发（计数仍是 1）");
+        }
+    }
+
+    /// <summary>
+    /// Actor 自调度语义：入队后无人 drain 也会自己跑起来，且保序 / 不并发 / 单个 job 炸了不影响后续。
+    /// 这是「GateMsgHandle 的 PostTask 从来没被执行」那个 bug 的回归守卫。
+    /// </summary>
+    private static async Task ActorSelfScheduleProtocols()
+    {
+        Section("Actor 自调度：保序 / 隔离 / 重入");
+
+        // 1) FIFO + 无人手动 drain 也会执行
+        var actor = new Actor();
+        var order = new List<int>();
+        var gate = new SemaphoreSlim(0);
+        for (var i = 0; i < 50; i++)
+        {
+            var n = i;
+            actor.PostTask(() => { lock (order) order.Add(n); });
+        }
+
+        for (var i = 0; i < 50; i++)
+        {
+            await PostAndWaitAsync(actor, gate);
+        }
+
+        lock (order)
+        {
+            Check(order.Count == 50, "全部 50 个 job 都执行了（无人手动 drain）");
+            Check(order.SequenceEqual(Enumerable.Range(0, 50)), "严格 FIFO");
+        }
+
+        Check(await TestClient.WaitForAsync(() => actor.PendingCount == 0), "drain 完毕后队列为空（不漏不残）");
+
+        // 2) 单个 job 抛异常不中断队列
+        var after = 0;
+        actor.PostTask(() => throw new InvalidOperationException("boom"));
+        actor.PostTask(() => Interlocked.Increment(ref after));
+        Check(await TestClient.WaitForAsync(() => Volatile.Read(ref after) == 1),
+            "前一个 job 抛异常后，后续 job 仍执行");
+
+        // 3) 重入：job 内部再 Post 不死锁，且排在当前 job 之后
+        var inner = 0;
+        var outerDone = 0;
+        actor.PostTask(() =>
+        {
+            actor.PostTask(() => Interlocked.Exchange(ref inner, Volatile.Read(ref outerDone) + 10));
+            Interlocked.Increment(ref outerDone);
+        });
+        Check(await TestClient.WaitForAsync(() => Volatile.Read(ref inner) == 11),
+            "嵌套 Post 执行了，且看到外层 job 的写入（串行，不并发）");
+
+        // 4) 多线程并发 Post：每个 job 恰好一次，总数不丢
+        var counter = 0;
+        var done2 = new SemaphoreSlim(0);
+        Parallel.For(0, 200, _ =>
+        {
+            actor.PostTask(() =>
+            {
+                Interlocked.Increment(ref counter);
+                done2.Release();
+            });
+        });
+        for (var i = 0; i < 200; i++)
+        {
+            await done2.WaitAsync(TimeSpan.FromSeconds(5));
+        }
+
+        Check(Volatile.Read(ref counter) == 200, "并发 Post 200 个，恰好执行 200 次");
+    }
+
     // ================================================================
     // 断言
     // ================================================================
@@ -909,5 +1042,12 @@ internal static class Program
         }
 
         return false;
+    }
+
+    /// <summary>往 actor 里 post 一个会 release 信号量的 job：等到它 = 前面所有 job 都跑完了（保序）。</summary>
+    private static async Task PostAndWaitAsync(Actor actor, SemaphoreSlim gate)
+    {
+        actor.PostTask(() => gate.Release());
+        await gate.WaitAsync(TimeSpan.FromSeconds(5));
     }
 }
