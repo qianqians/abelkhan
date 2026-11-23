@@ -324,7 +324,7 @@ public class MainClass
                     {
                         var parser = new MessageParser<HubHubNotifyEntity>(() => new HubHubNotifyEntity());
                         var ev = parser.ParseFrom(msg);
-                        _hubGlobalEvent.OnEntityEvent(ev.EntityId, ev.);
+                        _hubGlobalEvent?.OnEntityEvent(ev.SrcHubId, ev.EntityId, ev.Event);
                     }
 
                 } while (false);

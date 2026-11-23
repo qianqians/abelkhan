@@ -16,7 +16,8 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
     public string EntityType => entityType;
     
     private readonly WRpc _rpc = new();
-    private readonly Dictionary<string, Func<string, string, GateNetwork, ByteString, Task>> _onMsg = new();
+    private readonly Dictionary<string, Func<string?, string?, GateNetwork?, ByteString, Task>> _onMsg = new();
+    private readonly Dictionary<string, Func<string, ByteString, Task>> _onHubMsg = new();
     private readonly Dictionary<string, Action<string, byte[]>> _requestCallbacks = new();
     
     internal async Task SendToGate(string userId, byte[] message)
@@ -252,13 +253,92 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         }
         return false;
     }
-    
+
+    public virtual void RegisterHubNotify<T>(string method, Action<string, T> callback)
+        where T : IMessage<T>, new()
+    {
+        var parser = new MessageParser<T>(() => new T());
+        _onHubMsg.Add(method, (string srcHubId, ByteString data) =>
+        {
+            try
+            {
+                var t = parser.ParseFrom(data);
+                callback(srcHubId, t);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Do Notify method:{method} ex:{ex}");
+            }
+            return Task.CompletedTask;
+        });
+    }
+
+    public virtual void RegisterHubNotify<T>(string method, Func<string, T, Task> callback)
+        where T : IMessage<T>, new()
+    {
+        var parser = new MessageParser<T>(() => new T());
+        _onHubMsg.Add(method, async (string srcHubId, ByteString data) =>
+        {
+            try
+            {
+                var t = parser.ParseFrom(data);
+                await callback(srcHubId, t);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Do Notify method:{method} ex:{ex}");
+            }
+        });
+    }
+
+    public async Task OnDoHubMsg(string srcHubId, string method, ByteString message)
+    {
+        if (_onHubMsg.TryGetValue(method, out var action))
+        {
+            var kind = "notify";
+            using var activity = Tracing.Start("hub." + method, ActivityKind.Server,
+                ("rpc.method", method), ("rpc.kind", kind), ("entity.type", EntityType));
+            using var timer = Metrics.Time("abelkhan_hub_message_duration_seconds",
+                "Hub message handling latency", Metrics.HandlerBuckets, ("method", method));
+            var started = Stopwatch.GetTimestamp();
+
+            try
+            {
+                await action(srcHubId, message);
+            }
+            catch (Exception ex)
+            {
+                Metrics.Count("abelkhan_hub_handler_errors_total", "Hub handler exceptions", 1, ("method", method));
+                Tracing.MarkError(activity, ex);
+                Log.Error($"OnDoMsg method:{method} ex:{ex}");
+            }
+            finally
+            {
+                Metrics.Count("abelkhan_hub_messages_total", "Hub messages handled", 1,
+                    ("method", method), ("kind", kind));
+                LogSlow(activity, method, started);
+            }
+        }
+        else
+        {
+            Metrics.Count("abelkhan_hub_message_unrouted_total", "Hub messages with no handler", 1,
+                ("method", method));
+            Log.Error($"OnDoMsg method:{method} not exist");
+        }
+    }
+
     public virtual void RegisterNotify<T>(string method, Action<string, T> callback)
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
-        _onMsg.Add(method, (string connId, string msgId, GateNetwork gateNetwork, ByteString data) =>
+        _onMsg.Add(method, (string? connId, string? msgId, GateNetwork? gateNetwork, ByteString data) =>
         {
+            if (string.IsNullOrEmpty(connId))
+            {
+                Log.Error($"OnRequestAsync method:{method} connId is null or empty!");
+                return Task.CompletedTask;
+            }
+
             try
             {
                 if (TryGetClient(connId, out var client))
@@ -283,8 +363,14 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
-        _onMsg.Add(method, async (string connId, string msgId, GateNetwork gateNetwork, ByteString data) =>
+        _onMsg.Add(method, async (string? connId, string? msgId, GateNetwork? gateNetwork, ByteString data) =>
         {
+            if (string.IsNullOrEmpty(connId))
+            {
+                Log.Error($"OnRequestAsync method:{method} connId is null or empty!");
+                return;
+            }
+
             try
             {
                 if (TryGetClient(connId, out var client))
@@ -309,8 +395,20 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         where T1 : IMessage<T1>, new()
     {
         var parser = new MessageParser<T0>(() => new T0());
-        _onMsg.Add(method, async (string connId, string msgId, GateNetwork gateNetwork, ByteString data) =>
+        _onMsg.Add(method, async (string? connId, string? msgId, GateNetwork? gateNetwork, ByteString data) =>
         {
+            if (string.IsNullOrEmpty(connId))
+            {
+                Log.Error($"OnRequestAsync method:{method} connId is null or empty!");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(msgId))
+            {
+                Log.Error($"OnRequestAsync method:{method} msgId is null or empty!");
+                return;
+            }
+
             try
             {
                 if (TryGetClient(connId, out var client))
@@ -343,8 +441,20 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         where T1 : IMessage<T1>, new()
     {
         var parser = new MessageParser<T0>(() => new T0());
-        _onMsg.Add(method, async (string connId, string msgId, GateNetwork gateNetwork, ByteString data) =>
+        _onMsg.Add(method, async (string? connId, string? msgId, GateNetwork? gateNetwork, ByteString data) =>
         {
+            if (string.IsNullOrEmpty(connId))
+            {
+                Log.Error($"OnRequestAsync method:{method} connId is null or empty!");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(msgId))
+            {
+                Log.Error($"OnRequestAsync method:{method} msgId is null or empty!");
+                return;
+            }
+
             try
             {
                 if (TryGetClient(connId, out var client))

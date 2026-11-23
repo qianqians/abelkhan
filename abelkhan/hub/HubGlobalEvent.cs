@@ -19,7 +19,7 @@ namespace hub
             entitis.TryRemove(entity.EntityId, out _);
         }
 
-        public void OnEntityEvent(string entity, CallRpc event_)
+        public void OnEntityEvent(string src, string entity, CallRpc event_)
         {
             if (entitis.TryGetValue(entity, out var _entity))
             {
@@ -27,7 +27,7 @@ namespace hub
                 {
                     _entity.PostTask(async () =>
                     {
-                        await _entity.OnDoMsg(string.Empty, string.Empty, null, event_.ProtoName, event_.Content);
+                        await _entity.OnDoHubMsg(src, event_.ProtoName, event_.Content);
                     });
                 }
                 catch (Exception ex)
@@ -41,10 +41,11 @@ namespace hub
             }
         }
 
-        public async void CallEntityEvent(string hubId, string entity, CallRpc event_)
+        public async void CallEntityEvent(string srcHub, string hubId, string entity, CallRpc event_)
         {
             await _redis.PushList(string.Format(Consts.HubHubMq, hubId), new HubHubNotifyEntity()
             {
+                SrcHubId = srcHub,
                 EntityId = entity,
                 Event = event_,
             }.ToByteArray());

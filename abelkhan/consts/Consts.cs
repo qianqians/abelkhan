@@ -6,7 +6,7 @@ namespace consts;
 /// </summary>
 public partial class Consts
 {
-    public static readonly string HubHubMq = "hub_hub_mq";
+    public static readonly string HubHubMq = "hub_hub_{0}_mq";
 
     public static readonly string EntityClientMq =  "entity_{0}_client_mq";
     public static readonly string EntityReliabilityClientMq =  "entity_reliability_{0}_client_mq";

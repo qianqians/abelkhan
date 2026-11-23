@@ -449,7 +449,7 @@ public class RedisHandle
         }
     }
 
-    public async Task<List<byte[]>?>? PopList(string key, long count)
+    public async Task<List<byte[]>?> PopList(string key, long count)
     {
         if (_database == null)
         {

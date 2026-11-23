@@ -468,7 +468,7 @@ class MainClass
             _gateId = cfg.GateId;
             
             core.Metrics.Init(cfg.Monitoring);
-        ServiceHealth.OnLoop();
+            ServiceHealth.OnLoop();
             ServiceHealth.OnLoop();
             Tracing.Init(cfg.Monitoring);
 

@@ -543,8 +543,7 @@ internal sealed class ProtocolHarness : IAsyncDisposable
                     await FriendStore.SetPresenceAsync(userId, GateId, gate.EntityId);
                 }
 
-                var popTask = Redis.PopList(string.Format(Consts.EntityClientMq, userId), 16);
-                var list = popTask == null ? null : await popTask;
+                var list = await Redis.PopList(string.Format(Consts.EntityClientMq, userId), 16);
                 if (list == null)
                 {
                     continue;

@@ -12,6 +12,7 @@ import "common.proto";
 // ============================================================
 
 message HubHubNotifyEntity {
-  string entity_id = 1;
-  CallRpc event = 2;
+  string src_hub_id = 1;
+  string entity_id = 2;
+  CallRpc event = 3;
 }

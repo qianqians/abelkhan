@@ -356,13 +356,7 @@ public sealed class FriendStore
     public async Task<List<byte[]>> PopHubCommandsAsync(string hubId, int count)
     {
         // PopList 的返回类型本身可空（底层 Redis 未连接时返回 null Task）
-        var task = _redis.PopList(Keys.HubMq(hubId), Math.Max(1, count));
-        if (task == null)
-        {
-            return new List<byte[]>();
-        }
-
-        var data = await task;
+        var data = await _redis.PopList(Keys.HubMq(hubId), Math.Max(1, count));
         return data ?? new List<byte[]>();
     }
 
