@@ -5,7 +5,7 @@ using Google.Protobuf;
 
 namespace hub
 {
-    internal class HubGlobalEvent(RedisHandle _redis)
+    public class HubGlobalEvent(RedisHandle _redis)
     {
         private readonly ConcurrentDictionary<string, BaseEntity> entitis = new();
 

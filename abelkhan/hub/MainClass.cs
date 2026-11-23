@@ -22,6 +22,7 @@ public struct HubConfig()
     public string HubId { get; set; } = string.Empty;
     public string ServiceName { get; set; } = string.Empty;
     public string Ip { get; set; } = string.Empty;
+    public ushort Port { get; set; } = 0;
     public ushort PortHealth { get; set; } = 0;
     public string ConsulUrl { get; set; } = string.Empty;
     public string RedisUrl { get; set; } = string.Empty;
@@ -74,7 +75,7 @@ public class MainClass
 {
     private RedisHandle? _redis;
 
-    private HubGlobalEvent? _hubGlobalEvent;
+    private static HubGlobalEvent? _hubGlobalEvent;
     private readonly ConcurrentDictionary<string, Service>  _services = new();
     private readonly ConcurrentDictionary<string, BaseEntity> _entities = new();
     // ReSharper disable once CollectionNeverQueried.Local
@@ -108,7 +109,9 @@ public class MainClass
     private bool _isRun = true;
     private ConsulClient? _consul;
     private ConsulServiceWatcher? _serviceWatcher;
-    
+
+    public static HubGlobalEvent? HubGlobalEvent => _hubGlobalEvent;
+
     public event Action<Client>? OnClientConnected;
     private void TickClients(long tick)
     {
@@ -373,14 +376,14 @@ public class MainClass
             ID = cfg.HubId,
             Name = cfg.ServiceName,
             Address = cfg.Ip,
-            Port = -1,
+            Port = cfg.Port,
             Tags = ["v1", "api"],
             Check = new AgentServiceCheck
             {
                 DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(5),
                 Interval = TimeSpan.FromSeconds(10),
                 HTTP = $"http://{cfg.Ip}:{cfg.PortHealth}/health",
-                Timeout = TimeSpan.FromSeconds(5)
+                Timeout = TimeSpan.FromSeconds(15)
             }
         };
         await _consul.Agent.ServiceRegister(registration);
