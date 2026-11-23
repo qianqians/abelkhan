@@ -22,13 +22,13 @@ public static partial class HubHubReflection {
   static HubHubReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "Cg1odWJfaHViLnByb3RvIlEKDFRha2VPdmVyVXNlchIPCgd1c2VyX2lkGAEg",
-          "ASgJEhEKCWdhdGVfbmFtZRgCIAEoCRIPCgdjb25uX2lkGAMgASgJEgwKBGFy",
-          "Z3YYBCABKAxiBnByb3RvMw=="));
+          "Cg1odWJfaHViLnByb3RvGgxjb21tb24ucHJvdG8iQAoSSHViSHViTm90aWZ5",
+          "RW50aXR5EhEKCWVudGl0eV9pZBgBIAEoCRIXCgVldmVudBgCIAEoCzIILkNh",
+          "bGxScGNiBnByb3RvMw=="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-        new pbr::FileDescriptor[] { },
+        new pbr::FileDescriptor[] { global::CommonReflection.Descriptor, },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::TakeOverUser), global::TakeOverUser.Parser, new[]{ "UserId", "GateName", "ConnId", "Argv" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::HubHubNotifyEntity), global::HubHubNotifyEntity.Parser, new[]{ "EntityId", "Event" }, null, null, null, null)
         }));
   }
   #endregion
@@ -36,16 +36,16 @@ public static partial class HubHubReflection {
 }
 #region Messages
 [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-public sealed partial class TakeOverUser : pb::IMessage<TakeOverUser>
+public sealed partial class HubHubNotifyEntity : pb::IMessage<HubHubNotifyEntity>
 #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     , pb::IBufferMessage
 #endif
 {
-  private static readonly pb::MessageParser<TakeOverUser> _parser = new pb::MessageParser<TakeOverUser>(() => new TakeOverUser());
+  private static readonly pb::MessageParser<HubHubNotifyEntity> _parser = new pb::MessageParser<HubHubNotifyEntity>(() => new HubHubNotifyEntity());
   private pb::UnknownFieldSet _unknownFields;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public static pb::MessageParser<TakeOverUser> Parser { get { return _parser; } }
+  public static pb::MessageParser<HubHubNotifyEntity> Parser { get { return _parser; } }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -61,7 +61,7 @@ public sealed partial class TakeOverUser : pb::IMessage<TakeOverUser>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public TakeOverUser() {
+  public HubHubNotifyEntity() {
     OnConstruction();
   }
 
@@ -69,87 +69,59 @@ public sealed partial class TakeOverUser : pb::IMessage<TakeOverUser>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public TakeOverUser(TakeOverUser other) : this() {
-    userId_ = other.userId_;
-    gateName_ = other.gateName_;
-    connId_ = other.connId_;
-    argv_ = other.argv_;
+  public HubHubNotifyEntity(HubHubNotifyEntity other) : this() {
+    entityId_ = other.entityId_;
+    event_ = other.event_ != null ? other.event_.Clone() : null;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public TakeOverUser Clone() {
-    return new TakeOverUser(this);
+  public HubHubNotifyEntity Clone() {
+    return new HubHubNotifyEntity(this);
   }
 
-  /// <summary>Field number for the "user_id" field.</summary>
-  public const int UserIdFieldNumber = 1;
-  private string userId_ = "";
+  /// <summary>Field number for the "entity_id" field.</summary>
+  public const int EntityIdFieldNumber = 1;
+  private string entityId_ = "";
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public string UserId {
-    get { return userId_; }
+  public string EntityId {
+    get { return entityId_; }
     set {
-      userId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      entityId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
     }
   }
 
-  /// <summary>Field number for the "gate_name" field.</summary>
-  public const int GateNameFieldNumber = 2;
-  private string gateName_ = "";
+  /// <summary>Field number for the "event" field.</summary>
+  public const int EventFieldNumber = 2;
+  private global::CallRpc event_;
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public string GateName {
-    get { return gateName_; }
+  public global::CallRpc Event {
+    get { return event_; }
     set {
-      gateName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-    }
-  }
-
-  /// <summary>Field number for the "conn_id" field.</summary>
-  public const int ConnIdFieldNumber = 3;
-  private string connId_ = "";
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public string ConnId {
-    get { return connId_; }
-    set {
-      connId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-    }
-  }
-
-  /// <summary>Field number for the "argv" field.</summary>
-  public const int ArgvFieldNumber = 4;
-  private pb::ByteString argv_ = pb::ByteString.Empty;
-  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public pb::ByteString Argv {
-    get { return argv_; }
-    set {
-      argv_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      event_ = value;
     }
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override bool Equals(object other) {
-    return Equals(other as TakeOverUser);
+    return Equals(other as HubHubNotifyEntity);
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public bool Equals(TakeOverUser other) {
+  public bool Equals(HubHubNotifyEntity other) {
     if (ReferenceEquals(other, null)) {
       return false;
     }
     if (ReferenceEquals(other, this)) {
       return true;
     }
-    if (UserId != other.UserId) return false;
-    if (GateName != other.GateName) return false;
-    if (ConnId != other.ConnId) return false;
-    if (Argv != other.Argv) return false;
+    if (EntityId != other.EntityId) return false;
+    if (!object.Equals(Event, other.Event)) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -157,10 +129,8 @@ public sealed partial class TakeOverUser : pb::IMessage<TakeOverUser>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public override int GetHashCode() {
     int hash = 1;
-    if (UserId.Length != 0) hash ^= UserId.GetHashCode();
-    if (GateName.Length != 0) hash ^= GateName.GetHashCode();
-    if (ConnId.Length != 0) hash ^= ConnId.GetHashCode();
-    if (Argv.Length != 0) hash ^= Argv.GetHashCode();
+    if (EntityId.Length != 0) hash ^= EntityId.GetHashCode();
+    if (event_ != null) hash ^= Event.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -179,21 +149,13 @@ public sealed partial class TakeOverUser : pb::IMessage<TakeOverUser>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     output.WriteRawMessage(this);
   #else
-    if (UserId.Length != 0) {
+    if (EntityId.Length != 0) {
       output.WriteRawTag(10);
-      output.WriteString(UserId);
+      output.WriteString(EntityId);
     }
-    if (GateName.Length != 0) {
+    if (event_ != null) {
       output.WriteRawTag(18);
-      output.WriteString(GateName);
-    }
-    if (ConnId.Length != 0) {
-      output.WriteRawTag(26);
-      output.WriteString(ConnId);
-    }
-    if (Argv.Length != 0) {
-      output.WriteRawTag(34);
-      output.WriteBytes(Argv);
+      output.WriteMessage(Event);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
@@ -205,21 +167,13 @@ public sealed partial class TakeOverUser : pb::IMessage<TakeOverUser>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-    if (UserId.Length != 0) {
+    if (EntityId.Length != 0) {
       output.WriteRawTag(10);
-      output.WriteString(UserId);
+      output.WriteString(EntityId);
     }
-    if (GateName.Length != 0) {
+    if (event_ != null) {
       output.WriteRawTag(18);
-      output.WriteString(GateName);
-    }
-    if (ConnId.Length != 0) {
-      output.WriteRawTag(26);
-      output.WriteString(ConnId);
-    }
-    if (Argv.Length != 0) {
-      output.WriteRawTag(34);
-      output.WriteBytes(Argv);
+      output.WriteMessage(Event);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
@@ -231,17 +185,11 @@ public sealed partial class TakeOverUser : pb::IMessage<TakeOverUser>
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int CalculateSize() {
     int size = 0;
-    if (UserId.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeStringSize(UserId);
+    if (EntityId.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(EntityId);
     }
-    if (GateName.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeStringSize(GateName);
-    }
-    if (ConnId.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeStringSize(ConnId);
-    }
-    if (Argv.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeBytesSize(Argv);
+    if (event_ != null) {
+      size += 1 + pb::CodedOutputStream.ComputeMessageSize(Event);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -251,21 +199,18 @@ public sealed partial class TakeOverUser : pb::IMessage<TakeOverUser>
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public void MergeFrom(TakeOverUser other) {
+  public void MergeFrom(HubHubNotifyEntity other) {
     if (other == null) {
       return;
     }
-    if (other.UserId.Length != 0) {
-      UserId = other.UserId;
+    if (other.EntityId.Length != 0) {
+      EntityId = other.EntityId;
     }
-    if (other.GateName.Length != 0) {
-      GateName = other.GateName;
-    }
-    if (other.ConnId.Length != 0) {
-      ConnId = other.ConnId;
-    }
-    if (other.Argv.Length != 0) {
-      Argv = other.Argv;
+    if (other.event_ != null) {
+      if (event_ == null) {
+        Event = new global::CallRpc();
+      }
+      Event.MergeFrom(other.Event);
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -287,19 +232,14 @@ public sealed partial class TakeOverUser : pb::IMessage<TakeOverUser>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
           break;
         case 10: {
-          UserId = input.ReadString();
+          EntityId = input.ReadString();
           break;
         }
         case 18: {
-          GateName = input.ReadString();
-          break;
-        }
-        case 26: {
-          ConnId = input.ReadString();
-          break;
-        }
-        case 34: {
-          Argv = input.ReadBytes();
+          if (event_ == null) {
+            Event = new global::CallRpc();
+          }
+          input.ReadMessage(Event);
           break;
         }
       }
@@ -322,19 +262,14 @@ public sealed partial class TakeOverUser : pb::IMessage<TakeOverUser>
           _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
           break;
         case 10: {
-          UserId = input.ReadString();
+          EntityId = input.ReadString();
           break;
         }
         case 18: {
-          GateName = input.ReadString();
-          break;
-        }
-        case 26: {
-          ConnId = input.ReadString();
-          break;
-        }
-        case 34: {
-          Argv = input.ReadBytes();
+          if (event_ == null) {
+            Event = new global::CallRpc();
+          }
+          input.ReadMessage(Event);
           break;
         }
       }

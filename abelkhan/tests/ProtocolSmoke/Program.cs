@@ -70,6 +70,7 @@ internal static class Program
             await BagProtocols(h);
             await LeaderboardProtocols(h);
             await FriendProtocols(h);
+            await FriendPushProtocols(h);
             await ChatProtocols(h);
             await GuildProtocols(h);
             await QuestProtocols(h);
@@ -122,11 +123,53 @@ internal static class Program
     private static async Task MailProtocols(ProtocolHarness h)
     {
         Section("邮件 client_request_mail");
-        var alice = await h.LoginAsync("mail_alice");
 
+        // 退化路径：Service.GetMailCondition 默认返回 null → 协议直接返回空列表
+        var noCond = await h.LoginAsync("mail_nocond");
+        var empty = await noCond.Player.RequestMail();
+        Check(empty, "RequestMail() 可调用");
+        Check(empty.IsOk && empty.Value.Mails.Count == 0,
+            "未提供领取条件时返回空列表（这是退化路径，不等于功能可用）");
+
+        // 打开领取条件 + 投递真实邮件，跑完整逻辑
+        h.Service.MailCondition = (Level: 10, CreateDays: 3);
+        await h.PushGlobalMailAsync("m_level", "等级门槛邮件", [("potion", 3)], minLevel: 99);
+        await h.PushGlobalMailAsync("m_ok", "新手礼包", [("potion", 3), ("gold", 100)]);
+
+        var alice = await h.LoginAsync("mail_alice");
         var pull = await alice.Player.RequestMail();
-        Check(pull, "RequestMail() 拉取可领取全局邮件");
-        Check(pull.IsOk && pull.Value.Mails.Count == 0, "未配置全局邮件时返回空列表");
+        Check(pull, "RequestMail() 拉取可领取邮件");
+        Check(pull.IsOk && pull.Value.Mails.Count == 1 && pull.Value.Mails[0].MailId == "m_ok",
+            "只返回满足条件的那封（m_level 要 99 级，被过滤）");
+        Check(pull.Value.Mails[0].Attachments.Count == 2 &&
+              pull.Value.Mails[0].Attachments[0].ItemId == "potion" &&
+              pull.Value.Mails[0].Attachments[0].Count == 3, "附件正确下发");
+
+        var bag = alice.HubPlayer.Bag;
+        Check(bag.GetItemCount("potion") == 0 && bag.GetItemCount("gold") == 0, "领取前背包为空");
+
+        var claim = await alice.Player.RequestMail("m_ok");
+        Check(claim, "RequestMail(mailId) 领取");
+        Check(claim.IsOk && claim.Value.Mails.Count == 1, "返回领取到的邮件");
+        Check(bag.GetItemCount("potion") == 3 && bag.GetItemCount("gold") == 100,
+            "附件进入背包（potion 3 / gold 100）");
+
+        CheckErr(await alice.Player.RequestMail("m_ok"), "重复领取被拒");
+
+        var afterClaim = await alice.Player.RequestMail();
+        Check(afterClaim.IsOk && afterClaim.Value.Mails.Count == 0, "领取后不再出现在可领取列表");
+
+        CheckErr(await alice.Player.RequestMail("no_such_mail"), "领取不存在的邮件被拒");
+
+        // 附件发放失败必须回滚已领取标记，否则玩家永久丢邮件。
+        // 用一个目录里没有的 item_id 触发 UnknownItem 分支（和背包满走同一条回滚路径）
+        await h.PushGlobalMailAsync("m_bad", "附件配置错误的邮件", [("no_such_item", 1)]);
+        CheckErr(await alice.Player.RequestMail("m_bad"), "附件无法创建时领取失败");
+        var rollback = await alice.Player.RequestMail();
+        Check(rollback.IsOk && rollback.Value.Mails.Any(m => m.MailId == "m_bad"),
+            "领取失败后邮件回到可领取列表（已回滚认领标记）");
+
+        h.Service.MailCondition = null;
     }
 
     // ================================================================
@@ -248,8 +291,16 @@ internal static class Program
         Check(requests, "RequestFriendRequests() 拉待处理申请");
         Check(requests.IsOk && requests.Value.Requests.Count == 1, "申请列表 1 条");
 
+        var added = new List<ClientFriendAddedNotify>();
+        alice.Player.FriendAdded += n => added.Add(n);
+
         var accept = await bob.Player.AcceptFriendRequest("fr_alice");
         Check(accept, "AcceptFriendRequest() 同意（占位 + 跨服确认）");
+
+        await h.PumpAsync();
+        Check(await TestClient.WaitForAsync(() => added.Count == 1),
+            "申请方收到 FriendAdded 推送（对方同意后）");
+        Check(added.Count == 1 && added[0].UserId == "fr_bob", "FriendAdded 里是同意方 bob");
 
         var list = await alice.Player.RequestFriendList();
         Check(list, "RequestFriendList() 拉好友列表");
@@ -261,8 +312,15 @@ internal static class Program
         var reject = await alice.Player.RejectFriendRequest("fr_carol");
         Check(reject, "RejectFriendRequest() 拒绝申请");
 
+        var removedNtf = new List<ClientFriendRemovedNotify>();
+        bob.Player.FriendRemoved += n => removedNtf.Add(n);
+
         var remove = await alice.Player.RemoveFriend("fr_bob");
         Check(remove, "RemoveFriend() 删除好友");
+
+        await h.PumpAsync();
+        Check(await TestClient.WaitForAsync(() => removedNtf.Count == 1),
+            "被删除方收到 FriendRemoved 推送");
 
         var removeAgain = await alice.Player.RemoveFriend("fr_bob");
         CheckErr(removeAgain, "重复删除被拒");
@@ -271,6 +329,57 @@ internal static class Program
     // ================================================================
     // 聊天（4）
     // ================================================================
+
+    /// <summary>
+    /// 剩下两个不能靠普通请求触发的推送：
+    ///   - FriendOffline：由 gate 上报下线触发（harness 绕过了 GateMsgHandle，所以直接调 OnOfflineAsync）
+    ///   - FriendAcceptTimeout：由 hub 定时扫描超期占位触发
+    /// </summary>
+    private static async Task FriendPushProtocols(ProtocolHarness h)
+    {
+        Section("好友推送：下线 / 占位超时");
+
+        var a = await h.LoginAsync("fp_a");
+        var b = await h.LoginAsync("fp_b");
+        await a.Player.SendFriendRequest("fp_b");
+        await h.PumpAsync();
+        Check((await b.Player.AcceptFriendRequest("fp_a")).IsOk, "准备：两人成为好友");
+        await h.PumpAsync();
+
+        var offline = new List<ClientFriendOfflineNotify>();
+        b.Player.FriendOffline += n => offline.Add(n);
+
+        // gate 剔除连接时会发 ClientDisconnect → hub 调 OnOfflineAsync；
+        // harness 直接调 handler（不走 GateMsgHandle），所以这里直接调服务层
+        await h.FriendService.OnOfflineAsync("fp_a");
+        await h.PumpAsync();
+        Check(await TestClient.WaitForAsync(() => offline.Count == 1),
+            "好友下线时在线方收到 FriendOffline 推送");
+        Check(offline.Count == 1 && offline[0].UserId == "fp_a", "FriendOffline 里是下线的那个人");
+
+        // 占位超时回收：直接在 store 上造一个占位，等它过期后扫
+        var timeoutNtf = new List<ClientFriendAcceptTimeoutNotify>();
+        var c = await h.LoginAsync("fp_c");
+        c.Player.FriendAcceptTimeout += n => timeoutNtf.Add(n);
+
+        var store = h.FriendService.Store;
+        // 占位的前提是收件箱里真有这条申请，所以先让 fp_ghost 申请 fp_c
+        Check((await store.SubmitRequestAsync("fp_ghost", "fp_c")).Ok, "准备：fp_ghost 申请 fp_c");
+        var (reserve, _) = await store.AcceptReserveAsync("fp_c", "fp_ghost");
+        Check(reserve.Ok, "准备：造一个临时占位");
+
+        Check((await store.GetLimitAsync("fp_c")).Reserved == 1,
+            "占位确实生效（Reserved=1）—— 否则后面的回收断言会空过");
+
+        await Task.Delay(store.Settings.ReserveTimeoutMs + 400);
+        await h.FriendService.SweepReservesAsync(10);
+        await h.PumpAsync();
+
+        Check(await TestClient.WaitForAsync(() => timeoutNtf.Count == 1),
+            "占位超时后同意方收到 FriendAcceptTimeout 推送");
+        Check(timeoutNtf.Count == 1 && timeoutNtf[0].UserId == "fp_ghost", "通知里是对方 id");
+        Check((await store.GetLimitAsync("fp_c")).Reserved == 0, "超期占位已回收（好友位没泄漏）");
+    }
 
     private static async Task ChatProtocols(ProtocolHarness h)
     {
@@ -364,9 +473,16 @@ internal static class Program
         await h.PumpAsync();
         Check(await TestClient.WaitForAsync(() => invited.Count == 1), "bob 收到 GuildInvited 事件");
 
+        var guildUpdated = new List<ClientGuildUpdatedNotify>();
+        alice.Player.GuildUpdated += n => guildUpdated.Add(n);
+
         var reply = await bob.Player.ReplyGuildInvite(guildId, true);
         Check(reply, "ReplyGuildInvite() 接受邀请");
         Check(reply.IsOk && reply.Value.Guild.MemberCount == 2, "入帮后 2 人");
+
+        await h.PumpAsync();
+        Check(await TestClient.WaitForAsync(() => guildUpdated.Count >= 1),
+            "帮主收到 GuildUpdated 推送（有人入帮）");
 
         var apply = await carol.Player.ApplyToGuild(guildId);
         Check(apply, "ApplyToGuild() 申请加入");

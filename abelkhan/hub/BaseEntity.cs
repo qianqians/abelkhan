@@ -372,7 +372,7 @@ public abstract class BaseEntity(string entityId, string entityType, RedisHandle
         });
     }
 
-    public async Task OnDoMsg(string connId, string msgId, GateNetwork gate, string method, ByteString message)
+    public async Task OnDoMsg(string connId, string msgId, GateNetwork? gate, string method, ByteString message)
     {
         if (_onMsg.TryGetValue(method, out var action))
         {

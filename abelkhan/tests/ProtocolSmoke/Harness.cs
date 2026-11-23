@@ -42,6 +42,12 @@ internal sealed class HubTestService(ConcurrentDictionary<string, HubClient> cli
 {
     public string NextUserId = "u0";
 
+    /// <summary>邮件领取条件；null = 不提供（协议会直接返回空列表）。</summary>
+    public (int Level, int CreateDays)? MailCondition;
+
+    // 跨程序集重写 protected internal 必须降级为 protected（C# 规则）
+    protected override (int Level, int CreateDays)? GetMailCondition(string userId) => MailCondition;
+
     protected override HubPlayerBase CreateEntity(string gateName, string cliConnId, byte[] info)
         => new HubTestPlayer("e-" + NextUserId, "player", NextUserId, redis, clients, gates);
 
@@ -331,6 +337,12 @@ internal sealed class ProtocolHarness : IAsyncDisposable
 
     public FriendStore FriendStore { get; }
 
+    /// <summary>全局邮件 list 的 key（测试往里投递邮件用）。</summary>
+    public string MailListKey { get; }
+
+    /// <summary>好友编排层：测试用它触发下线推送、占位超时回收。</summary>
+    public FriendService FriendService { get; }
+
     public ItemCatalog ItemCatalog { get; } = new();
 
     public QuestCatalog QuestCatalog { get; } = new();
@@ -354,7 +366,9 @@ internal sealed class ProtocolHarness : IAsyncDisposable
         Gates[GateId] = new GateNetwork(new HubToGateNetwork(this, GateId));
         Service = new HubTestService(Clients, Redis, Gates);
 
-        Service.GlobalMailBox = new GlobalMailBox(Redis, _prefix + "mail_global", _prefix + "mail_claimed");
+        MailListKey = _prefix + "mail_global";
+        // refreshIntervalMs: 0 —— 默认 5s 缓存会让测试看不到刚投递的邮件
+        Service.GlobalMailBox = new GlobalMailBox(Redis, MailListKey, _prefix + "mail_claimed", 0);
         Service.ItemCatalog = ItemCatalog;
         ItemCatalog.Register(new ItemDefinition("diamond", 0));
         ItemCatalog.Register(new ItemDefinition("gold", 0));
@@ -385,7 +399,9 @@ internal sealed class ProtocolHarness : IAsyncDisposable
             MaxPendingRequests = 10,
             ReserveTimeoutMs = 3000,
         });
-        Service.Friend = new FriendService(FriendStore, Redis, "hub-smoke");
+        var friendService = new FriendService(FriendStore, Redis, "hub-smoke");
+        Service.Friend = friendService;
+        FriendService = friendService;
 
         var chatStore = new ChatStore(Redis, new ChatSettings { KeyPrefix = _prefix });
         var chatService = new ChatService(chatStore, Redis)
@@ -588,6 +604,30 @@ internal sealed class ProtocolHarness : IAsyncDisposable
 
         await PumpAsync();
         return new TestClient(session, gate);
+    }
+
+    /// <summary>往全局邮件 list 里投一封邮件（字段名与 admin 写入的一致）。</summary>
+    public Task PushGlobalMailAsync(string mailId, string title,
+        (string ItemId, int Count)[] attachments, int minLevel = 0)
+    {
+        var json = Newtonsoft.Json.JsonConvert.SerializeObject(new
+        {
+            mailId,
+            title,
+            content = "内容 " + title,
+            sender = "GM",
+            attachments = attachments.Select(a => new { itemId = a.ItemId, count = a.Count }).ToArray(),
+            createTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+            expireSeconds = 0,
+            popUp = false,
+            validDays = 0,
+            minLevel,
+            maxLevel = 0,
+            minCreateDays = 0,
+            maxCreateDays = 0,
+        });
+
+        return Redis.PushList(MailListKey, System.Text.Encoding.UTF8.GetBytes(json));
     }
 
     public static void GiveItem(HubPlayerBase player, string itemId, long count)

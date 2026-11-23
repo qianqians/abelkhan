@@ -1,4 +1,5 @@
 syntax = "proto3"; 
+import "common.proto";
 
 // ============================================================
 // hub ↔ hub 通道的**通用**消息。
@@ -10,9 +11,7 @@ syntax = "proto3";
 // 这里只留不属于任何单个功能的通道级消息。
 // ============================================================
 
-message TakeOverUser {
-  string user_id = 1;
-  string gate_name = 2;
-  string conn_id = 3;
-  bytes argv = 4;
+message HubHubNotifyEntity {
+  string entity_id = 1;
+  CallRpc event = 2;
 }

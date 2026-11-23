@@ -73,6 +73,8 @@ public struct HubConfig()
 public class MainClass
 {
     private RedisHandle? _redis;
+
+    private HubGlobalEvent? _hubGlobalEvent;
     private readonly ConcurrentDictionary<string, Service>  _services = new();
     private readonly ConcurrentDictionary<string, BaseEntity> _entities = new();
     // ReSharper disable once CollectionNeverQueried.Local
@@ -299,7 +301,7 @@ public class MainClass
         }
     }
     
-    private void StartRedisMsg()
+    private void StartRedisMsg(string hubId)
     {
         _tWait = Task.Factory.StartNew(async () =>
         {
@@ -310,6 +312,24 @@ public class MainClass
 
             while (_isRun)
             {
+                do
+                {
+                    var data = await _redis?.PopList(string.Format(Consts.HubHubMq, hubId), 8)!;
+                    if (data == null || data.Count == 0)
+                    {
+                        await Task.Delay(1);
+                        break;
+                    }
+                    foreach (var msg in data)
+                    {
+                        var parser = new MessageParser<HubHubNotifyEntity>(() => new HubHubNotifyEntity());
+                        var ev = parser.ParseFrom(msg);
+                        _hubGlobalEvent.OnEntityEvent(ev.EntityId, ev.);
+                    }
+
+                } while (false);
+
+
                 if (_gateWaitQueue == null || !_gateWaitQueue.TryDequeue(out var entityId))
                 {
                     await Task.Delay(1);
@@ -416,11 +436,12 @@ public class MainClass
         try
         {
             core.Metrics.Init(cfg.Monitoring);
-        ServiceHealth.OnLoop();
+            ServiceHealth.OnLoop();
             ServiceHealth.OnLoop();
             Tracing.Init(cfg.Monitoring);
 
             _redis = new RedisHandle(cfg.RedisUrl, cfg.RedisPwd);
+            _hubGlobalEvent = new HubGlobalEvent(_redis);
 
             // 健康检查的依赖探针：Redis 能 PING 才算健康
             var redisForHealth = _redis;
@@ -539,7 +560,7 @@ public class MainClass
                 }
             }));
 
-            StartRedisMsg();
+            StartRedisMsg(cfg.HubId);
             
             var app = WebApplication.Create();
             app.MapGet("/health", async () =>
