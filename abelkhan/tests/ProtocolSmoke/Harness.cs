@@ -1,12 +1,6 @@
 using System.Collections.Concurrent;
 using chat;
 using client;
-using ClientPlayer = client.Player;
-using ClientServiceBase = client.Service;
-using ClientSession = client.Client;
-using HubClient = hub.Client;
-using HubPlayerBase = hub.Player;
-using HubServiceBase = hub.Service;
 using consts;
 using core;
 using engine;
@@ -19,24 +13,56 @@ using leaderboard;
 using MongoDB.Bson;
 using quest;
 using shop;
+using ClientPlayer = client.Player;
+using ClientServiceBase = client.Service;
+using ClientSession = client.Client;
+using HubClient = hub.Client;
+using HubPlayerBase = hub.Player;
+using HubServiceBase = hub.Service;
 
 namespace ProtocolSmoke;
 
-/// <summary>最小可用的 hub 侧 Player（协议测试只走协议层，存档相关方法不会被调用）。</summary>
+/// <summary>最小可用的 hub 侧 Player。Save 走内存快照（测试没有 Mongo）。</summary>
 internal sealed class HubTestPlayer(string entityId, string entityType, string userId, RedisHandle redis,
     ConcurrentDictionary<string, HubClient> clients, ConcurrentDictionary<string, GateNetwork> gates)
     : HubPlayerBase(entityId, entityType, userId, redis, null!, clients, gates)
 {
+    /// <summary>用于验证迁移时「存档随实体走」的字段。</summary>
+    public int Score;
+
     protected override string MongoDbName() => "protocol_smoke";
 
     protected override string MongoCollectionName() => "player";
 
-    public override BsonDocument FullInfo() => new() { { "EntityId", EntityId }, { "UserId", UserId } };
+    public override BsonDocument FullInfo() => new()
+    {
+        { "EntityId", EntityId },
+        { "UserId", UserId },
+        { "Score", Score },
+    };
 
     public override BsonDocument ClientInfo() => FullInfo();
+
+    /// <summary>测试没有 Mongo：Save 写成内存快照，LoadOfflinePlayerAsync 从它恢复。</summary>
+    public override async void Save()
+    {
+        HarnessSnapshots.Snapshot(UserId, EntityId, Score);
+        await Task.CompletedTask;
+    }
 }
 
-/// <summary>最小可用的 hub 侧 Service：所有子系统在 <see cref="HubHarness"/> 里注入。</summary>
+/// <summary>跨节点的「存档」：模拟 Mongo 里玩家文档的持久化。</summary>
+internal static class HarnessSnapshots
+{
+    private static readonly ConcurrentDictionary<string, (string EntityId, int Score)> Data = new();
+
+    public static void Snapshot(string userId, string entityId, int score) => Data[userId] = (entityId, score);
+
+    public static (string EntityId, int Score)? Load(string userId) =>
+        Data.TryGetValue(userId, out var v) ? v : null;
+}
+
+/// <summary>最小可用的 hub 侧 Service。</summary>
 internal sealed class HubTestService(ConcurrentDictionary<string, HubClient> clients, RedisHandle redis,
     ConcurrentDictionary<string, GateNetwork> gates) : HubServiceBase(clients)
 {
@@ -59,12 +85,34 @@ internal sealed class HubTestService(ConcurrentDictionary<string, HubClient> cli
             ? Result<string, string>.Err(used.Message)
             : Result<string, string>.Ok($"{item.ItemId} x{count}"));
     }
+
+    /// <summary>登录参数就是 userId 的 UTF8 字节（测试约定），供顶号在创建前复用旧实体。</summary>
+    protected override string? PeekUserId(byte[] info) =>
+        info.Length == 0 ? null : System.Text.Encoding.UTF8.GetString(info);
+
+    /// <summary>迁移重建：从内存快照恢复（等价于游戏从 Mongo 读档）。</summary>
+    protected override Task<HubPlayerBase?> LoadOfflinePlayerAsync(string userId)
+    {
+        var snap = HarnessSnapshots.Load(userId);
+        if (snap == null)
+        {
+            return Task.FromResult<HubPlayerBase?>(null);
+        }
+
+        var player = new HubTestPlayer(snap.Value.EntityId, "player", userId,
+            GetRedis(), clients, gates)
+        {
+            Score = snap.Value.Score,
+        };
+        return Task.FromResult<HubPlayerBase?>(player);
+    }
+
+    private RedisHandle GetRedis() => redis;
 }
 
-/// <summary>最小可用的客户端 Player（游戏侧会派生它）。</summary>
+/// <summary>最小可用的客户端 Player / Service。</summary>
 internal sealed class TestClientPlayer(string entityId, string entityType) : ClientPlayer(entityId, entityType);
 
-/// <summary>最小可用的客户端 Service：把服务器的 entity_type 映射成 <see cref="TestClientPlayer"/>。</summary>
 internal sealed class TestClientService : ClientServiceBase
 {
     public override ClientPlayer CreatePlayerEntity(string entityId, string entityType, byte[] argv)
@@ -72,23 +120,21 @@ internal sealed class TestClientService : ClientServiceBase
 }
 
 /// <summary>
-/// 进程内的「gate」：一边是客户端 SDK 的 <see cref="IClientNetwork"/>，另一边是 hub 的
-/// <see cref="GateNetwork"/>，中间做与真实 gate 相同的报文转换。
-///
-/// 这样测试走的是**真实链路**：client.Player 的封装 → 客户端报文 → gate 转换 → hub 实体 handler
-/// → Redis / 子系统 → 回包 → gate 转换 → 客户端分发 → 封装方法返回 Result。
+/// 进程内的「gate」：一边是客户端 SDK 的 IClientNetwork，另一边按 entityId 的归属节点
+/// 把帧转给对应 hub 的实体（等价于 gate 的 cli.RegisterNetwork 切换）。
 /// </summary>
 internal sealed class MiniGate(ProtocolHarness h, string gateId, string userId) : IClientNetwork
 {
     private Action<byte[]>? _toClient;
+    private readonly Dictionary<string, int> _owner = new();
+    private readonly object _lock = new();
 
     public string UserId { get; } = userId;
 
     public string ConnId { get; } = "conn-" + Guid.NewGuid().ToString("N")[..8];
 
-    public string EntityId { get; private set; } = string.Empty;
-
-    public HubPlayerBase? HubPlayer { get; private set; }
+    /// <summary>本次登录走哪个 hub 节点（模拟客户端连到不同 gate/hub）。</summary>
+    public int LoginNode { get; set; }
 
     public event Action? OnClose;
 
@@ -99,9 +145,23 @@ internal sealed class MiniGate(ProtocolHarness h, string gateId, string userId) 
         _toClient = onPacket;
         IsOpen = true;
         h.RegisterGate(this);
-
-        // 真实 gate 在 accept 之后下发 conn_id
         SendToClient(new WRpc().Notify(Consts.NotifyConnId, new NotifyConnID { ConnId = ConnId }));
+    }
+
+    public void SetOwner(string entityId, int nodeIndex)
+    {
+        lock (_lock)
+        {
+            _owner[entityId] = nodeIndex;
+        }
+    }
+
+    public int OwnerOf(string entityId)
+    {
+        lock (_lock)
+        {
+            return _owner.TryGetValue(entityId, out var n) ? n : 0;
+        }
     }
 
     public async Task Send(byte[] data)
@@ -115,11 +175,18 @@ internal sealed class MiniGate(ProtocolHarness h, string gateId, string userId) 
                 switch (ntf.Event.ProtoName)
                 {
                     case Consts.ClientRequestService:
-                        await OnRequestService(ntf);
-                        break;
                     case Consts.ClientRequestReconnect:
-                        await OnRequestService(ntf); // 测试里重连等价于一次登录
+                    {
+                        var argv = ntf.Event.ProtoName == Consts.ClientRequestReconnect
+                            ? new MessageParser<ClientRequestReconnect>(() => new ClientRequestReconnect())
+                                .ParseFrom(ntf.Event.Content.ToByteArray()).Argv.ToByteArray()
+                            : new MessageParser<ClientRequestService>(() => new ClientRequestService())
+                                .ParseFrom(ntf.Event.Content.ToByteArray()).Argv.ToByteArray();
+
+                        var player = await h.LoginViaNodeAsync(LoginNode, UserId, argv, this);
+                        SetOwner(player.EntityId, LoginNode);
                         break;
+                    }
                     case Consts.GateForwardClientNotifyHub:
                     {
                         var fwd = new MessageParser<GateForwardClientNotifyHub>(() => new GateForwardClientNotifyHub())
@@ -129,7 +196,7 @@ internal sealed class MiniGate(ProtocolHarness h, string gateId, string userId) 
                     }
                     case Consts.VersionHandshake:
                     case Consts.AckReliabilityMsg:
-                        break; // 版本 / 可靠消息 ack 在进程内没有意义
+                        break;
                     default:
                         Console.WriteLine($"  (mini-gate) 未处理的 notify:{ntf.Event.ProtoName}");
                         break;
@@ -146,16 +213,11 @@ internal sealed class MiniGate(ProtocolHarness h, string gateId, string userId) 
                         .ParseFrom(req.Event.Content.ToByteArray());
                     await DispatchToHub(fwd.EntityId, req.MsgId, fwd.Event.ProtoName, fwd.Event.Content);
                 }
-                else
-                {
-                    Console.WriteLine($"  (mini-gate) 未处理的 req:{req.Event.ProtoName}");
-                }
 
                 break;
             }
             case Msg.PayloadOneofCase.HeartBeats:
-                break; // 心跳在进程内没有意义
-
+                break;
             default:
                 Console.WriteLine($"  (mini-gate) 未处理的报文:{msg.PayloadCase}");
                 break;
@@ -174,141 +236,99 @@ internal sealed class MiniGate(ProtocolHarness h, string gateId, string userId) 
         return Task.CompletedTask;
     }
 
-    /// <summary>hub → gate 的帧，转换成客户端报文。</summary>
-    internal void SendToClient(byte[] frame)
-    {
-        _toClient?.Invoke(frame);
-    }
-
-    internal void NotifyConnId()
-    {
-        SendToClient(new WRpc().Notify(Consts.NotifyConnId, new NotifyConnID { ConnId = ConnId }));
-    }
-
-    private async Task OnRequestService(Notify ntf)
-    {
-        var argv = ntf.Event.ProtoName == Consts.ClientRequestReconnect
-            ? new MessageParser<ClientRequestReconnect>(() => new ClientRequestReconnect())
-                .ParseFrom(ntf.Event.Content.ToByteArray()).Argv.ToByteArray()
-            : new MessageParser<ClientRequestService>(() => new ClientRequestService())
-                .ParseFrom(ntf.Event.Content.ToByteArray()).Argv.ToByteArray();
-
-        HubPlayer = await h.LoginHubEntityAsync(this, UserId, argv);
-        EntityId = HubPlayer.EntityId;
-    }
+    internal void SendToClient(byte[] frame) => _toClient?.Invoke(frame);
 
     private async Task DispatchToHub(string entityId, string msgId, string method, ByteString content)
     {
-        if (HubPlayer == null)
+        var nodeIndex = OwnerOf(entityId);
+        var player = h.Node(nodeIndex).PlayerByEntity(entityId);
+        if (player == null)
         {
-            Console.WriteLine($"  (mini-gate) 实体还没创建，丢弃 {method}");
+            // 等价于 gate 直连找不到 → 走 hub 的墓碑转发回调
+            await h.Node(nodeIndex).Coordinator.ForwardMissingEntityAsync(entityId, ConnId, msgId, method,
+                content.ToByteArray());
             return;
         }
 
-        if (!string.Equals(entityId, EntityId, StringComparison.Ordinal))
-        {
-            Console.WriteLine($"  (mini-gate) 实体 id 不匹配 {entityId} != {EntityId}");
-            return;
-        }
-
-        await HubPlayer.OnDoMsg(ConnId, msgId, h.Gate(ProtocolHarness.GateId), method, content);
+        await player.OnDoMsg(ConnId, msgId, null, method, content);
     }
 
-    private static Msg Parse(byte[] data) =>
-        new MessageParser<Msg>(() => new Msg()).ParseFrom(data);
+    private static Msg Parse(byte[] data) => new MessageParser<Msg>(() => new Msg()).ParseFrom(data);
 }
 
-/// <summary>hub 侧的出站网络：抓住 hub 发给 gate 的帧做转换（等价于 gate 的 HubGeneralMsgHandle）。</summary>
-internal sealed class HubToGateNetwork(ProtocolHarness h, string gateId) : INetwork
+/// <summary>hub → gate 方向的帧转换（等价于 gate 的 HubGeneralMsgHandle），带节点标记。</summary>
+internal sealed class HubToGateNetwork(ProtocolHarness h, int nodeIndex) : INetwork
 {
     public Task Send(byte[] data)
     {
-        var gate = h.FindGateByHubUserId(gateId, data, out var msg);
-        if (gate == null)
-        {
-            return Task.CompletedTask;
-        }
-
+        var msg = new MessageParser<Msg>(() => new Msg()).ParseFrom(data);
+        MiniGate? gate;
         switch (msg.PayloadCase)
         {
-            case Msg.PayloadOneofCase.Notify:
+            case Msg.PayloadOneofCase.Notify when msg.Notify.Event.ProtoName == Consts.HubCreatePlayerEntity:
             {
-                var ntf = msg.Notify;
-                switch (ntf.Event.ProtoName)
+                var m = new MessageParser<HubCreatePlayerEntity>(() => new HubCreatePlayerEntity())
+                    .ParseFrom(msg.Notify.Event.Content.ToByteArray());
+                gate = h.FindGateByConnId(m.ConnId);
+                if (gate != null)
                 {
-                    case Consts.HubCreatePlayerEntity:
+                    // gate 在这里做 entity → hub 连接的重注册（迁移接管就是靠它）
+                    gate.SetOwner(m.EntityId, nodeIndex);
+                    gate.SendToClient(new WRpc().Notify(Consts.CreatePlayerEntity, new CreatePlayerEntity
                     {
-                        var m = new MessageParser<HubCreatePlayerEntity>(() => new HubCreatePlayerEntity())
-                            .ParseFrom(ntf.Event.Content.ToByteArray());
-                        gate.SendToClient(new WRpc().Notify(Consts.CreatePlayerEntity, new CreatePlayerEntity
-                        {
-                            EntityId = m.EntityId,
-                            EntityType = m.EntityType,
-                            Argv = m.Argv,
-                        }));
-                        break;
-                    }
-                    case Consts.GateForwardHubNotifyClient:
-                    {
-                        var m = new MessageParser<GateForwardHubNotifyClient>(() => new GateForwardHubNotifyClient())
-                            .ParseFrom(ntf.Event.Content.ToByteArray());
-                        gate.SendToClient(new WRpc().Notify(Consts.HubNotifyClient, new HubNotifyClient
-                        {
-                            EntityId = m.EntityId,
-                            Event = m.Event,
-                        }));
-                        break;
-                    }
-                    case Consts.GateForwardHubNotifyClientMq:
-                    {
-                        var m = new MessageParser<GateForwardHubNotifyClientMq>(
-                                () => new GateForwardHubNotifyClientMq())
-                            .ParseFrom(ntf.Event.Content.ToByteArray());
-                        gate.SendToClient(new WRpc().Notify(Consts.HubNotifyClientMq, new HubNotifyClientMq
-                        {
-                            EntityId = m.EntityId,
-                            Event = m.Event,
-                            NeedAck = false,
-                        }));
-                        break;
-                    }
-                    case Consts.GateForwardHubCallGlobal:
-                    case Consts.HubKickOffClient:
-                        break;
-                    default:
-                        Console.WriteLine($"  (hub→gate) 未处理的 notify:{ntf.Event.ProtoName}");
-                        break;
+                        EntityId = m.EntityId,
+                        EntityType = m.EntityType,
+                        Argv = m.Argv,
+                    }));
                 }
 
-                break;
+                return Task.CompletedTask;
             }
-            case Msg.PayloadOneofCase.Rsp:
+            case Msg.PayloadOneofCase.Notify when msg.Notify.Event.ProtoName == Consts.GateForwardHubNotifyClient:
             {
-                var rsp = msg.Rsp;
-                if (rsp.Event.ProtoName == Consts.GateForwardHubResponseClient)
+                var m = new MessageParser<GateForwardHubNotifyClient>(() => new GateForwardHubNotifyClient())
+                    .ParseFrom(msg.Notify.Event.Content.ToByteArray());
+                gate = h.FindGateByConnId(m.ConnId);
+                gate?.SendToClient(new WRpc().Notify(Consts.HubNotifyClient, new HubNotifyClient
                 {
-                    var m = new MessageParser<GateForwardHubResponseClient>(() => new GateForwardHubResponseClient())
-                        .ParseFrom(rsp.Event.Content.ToByteArray());
-                    gate.SendToClient(new WRpc().Response(Consts.HubResponseClient, rsp.MsgId,
-                        new HubResponseClient
-                        {
-                            ErrMsg = m.ErrMsg,
-                            Content = m.Content,
-                        }));
-                }
-                else
+                    EntityId = m.EntityId,
+                    Event = m.Event,
+                }));
+                return Task.CompletedTask;
+            }
+            case Msg.PayloadOneofCase.Notify when msg.Notify.Event.ProtoName == Consts.GateForwardHubNotifyClientMq:
+            {
+                var m = new MessageParser<GateForwardHubNotifyClientMq>(() => new GateForwardHubNotifyClientMq())
+                    .ParseFrom(msg.Notify.Event.Content.ToByteArray());
+                gate = h.FindGateByUserId(m.UserId);
+                gate?.SendToClient(new WRpc().Notify(Consts.HubNotifyClientMq, new HubNotifyClientMq
                 {
-                    Console.WriteLine($"  (hub→gate) 未处理的 rsp:{rsp.Event.ProtoName}");
-                }
-
-                break;
+                    EntityId = m.EntityId,
+                    Event = m.Event,
+                    NeedAck = false,
+                }));
+                return Task.CompletedTask;
+            }
+            case Msg.PayloadOneofCase.Notify when msg.Notify.Event.ProtoName == Consts.HubKickOffClient:
+            {
+                var m = new MessageParser<HubKickOffClient>(() => new HubKickOffClient())
+                    .ParseFrom(msg.Notify.Event.Content.ToByteArray());
+                gate = h.FindGateByConnId(m.ConnId);
+                gate?.SendToClient(new WRpc().Notify(Consts.KickOff, new KickOff { PromptInfo = m.PromptInfo }));
+                return Task.CompletedTask;
+            }
+            case Msg.PayloadOneofCase.Rsp when msg.Rsp.Event.ProtoName == Consts.GateForwardHubResponseClient:
+            {
+                var m = new MessageParser<GateForwardHubResponseClient>(() => new GateForwardHubResponseClient())
+                    .ParseFrom(msg.Rsp.Event.Content.ToByteArray());
+                gate = h.FindGateByConnId(m.ConnId);
+                gate?.SendToClient(new WRpc().Response(Consts.HubResponseClient, msg.Rsp.MsgId,
+                    new HubResponseClient { ErrMsg = m.ErrMsg, Content = m.Content }));
+                return Task.CompletedTask;
             }
             default:
-                Console.WriteLine($"  (hub→gate) 未处理的报文:{msg.PayloadCase}");
-                break;
+                return Task.CompletedTask;
         }
-
-        return Task.CompletedTask;
     }
 
     public void OnReceive(Action<byte[]> onReceive)
@@ -318,30 +338,45 @@ internal sealed class HubToGateNetwork(ProtocolHarness h, string gateId) : INetw
     public Task Close() => Task.CompletedTask;
 }
 
-/// <summary>把 hub 侧的一切准备好（Redis + 各子系统），并负责客户端登录与推送泵。</summary>
+/// <summary>一个 hub 节点：自己的 clients / entities / service / coordinator。</summary>
+internal sealed class HubNode
+{
+    public required string HubId { get; init; }
+    public required HubTestService Service { get; init; }
+    public required SessionCoordinator Coordinator { get; init; }
+    public required HubGlobalEvent GlobalEvent { get; init; }
+    public required ConcurrentDictionary<string, HubClient> Clients { get; init; }
+    public required ConcurrentDictionary<string, GateNetwork> Gates { get; init; }
+    public required ConcurrentDictionary<string, BaseEntity> Entities { get; init; }
+    public required FriendService FriendService { get; init; }
+    public required ChatService ChatService { get; init; }
+    public required GuildService GuildService { get; init; }
+
+    public HubPlayerBase? PlayerByEntity(string entityId) =>
+        Entities.TryGetValue(entityId, out var e) ? e as HubPlayerBase : null;
+
+    public HubPlayerBase? PlayerByUser(string userId) =>
+        Coordinator.TryGetLivePlayer(userId, out var p) ? p : null;
+}
+
+/// <summary>把 hub 侧的一切准备好（Redis + 各子系统 + N 个 hub 节点），并负责客户端登录与推送泵。</summary>
 internal sealed class ProtocolHarness : IAsyncDisposable
 {
     public const string GateId = "gate-smoke";
 
     private readonly string _prefix;
     private readonly List<MiniGate> _gates = new();
-    private readonly ConcurrentDictionary<string, MiniGate> _gateByUser = new();
+    private readonly ConcurrentDictionary<string, MiniGate> _currentGateByUser = new();
+    private readonly List<HubNode> _nodes = new();
 
     public RedisHandle Redis { get; }
 
-    public ConcurrentDictionary<string, HubClient> Clients { get; } = new();
+    public QuestService QuestService { get; private set; } = null!;
 
-    public ConcurrentDictionary<string, GateNetwork> Gates { get; } = new();
+    public FriendStore FriendStore { get; private set; } = null!;
 
-    public HubTestService Service { get; }
-
-    public FriendStore FriendStore { get; }
-
-    /// <summary>全局邮件 list 的 key（测试往里投递邮件用）。</summary>
-    public string MailListKey { get; }
-
-    /// <summary>好友编排层：测试用它触发下线推送、占位超时回收。</summary>
-    public FriendService FriendService { get; }
+    /// <summary>节点 0 的好友服务（兼容旧测试写法）。</summary>
+    public FriendService FriendService => Node(0).FriendService;
 
     public ItemCatalog ItemCatalog { get; } = new();
 
@@ -349,12 +384,14 @@ internal sealed class ProtocolHarness : IAsyncDisposable
 
     public GuildTaskCatalog GuildTaskCatalog { get; } = new();
 
-    public QuestService QuestService { get; }
+    public string MailListKey { get; private set; } = "";
+
+    /// <summary>节点 0 的 service（兼容旧测试写法）。</summary>
+    public HubTestService Service => Node(0).Service;
 
     private ProtocolHarness(string redisUrl)
     {
         _prefix = "proto-smoke-" + Guid.NewGuid().ToString("N") + ":";
-        // 指标是进程级单例：测试里主动初始化成「有 node 标签」的形态
         core.Metrics.Init(new core.MonitoringOptions
         {
             ServiceName = "protocol-smoke",
@@ -362,19 +399,57 @@ internal sealed class ProtocolHarness : IAsyncDisposable
             SlowLogThresholdMs = 60_000,
         });
         Redis = new RedisHandle(redisUrl, "");
+    }
 
-        Gates[GateId] = new GateNetwork(new HubToGateNetwork(this, GateId));
-        Service = new HubTestService(Clients, Redis, Gates);
+    public static ProtocolHarness Create(string redisUrl, int nodeCount = 2)
+    {
+        var h = new ProtocolHarness(redisUrl);
+        h.InitSubsystems();
+        for (var i = 0; i < nodeCount; i++)
+        {
+            h.AddNode("hub-" + i);
+        }
 
+        return h;
+    }
+
+    public HubNode Node(int index) => _nodes[index];
+
+    public int NodeCount => _nodes.Count;
+
+    private void InitSubsystems()
+    {
         MailListKey = _prefix + "mail_global";
-        // refreshIntervalMs: 0 —— 默认 5s 缓存会让测试看不到刚投递的邮件
-        Service.GlobalMailBox = new GlobalMailBox(Redis, MailListKey, _prefix + "mail_claimed", 0);
-        Service.ItemCatalog = ItemCatalog;
+
+        FriendStore = new FriendStore(Redis, new FriendSettings
+        {
+            KeyPrefix = _prefix,
+            MaxFriends = 5,
+            MaxPendingRequests = 10,
+            ReserveTimeoutMs = 3000,
+        });
+    }
+
+    private HubNode AddNode(string hubId)
+    {
+        var clients = new ConcurrentDictionary<string, HubClient>();
+        var gates = new ConcurrentDictionary<string, GateNetwork>();
+        var entities = new ConcurrentDictionary<string, BaseEntity>();
+
+        gates[GateId] = new GateNetwork(new HubToGateNetwork(this, _nodes.Count));
+
+        var service = new HubTestService(clients, Redis, gates);
+        var globalEvent = new HubGlobalEvent(new HubConfig { HubId = hubId }, Redis);
+        var coordinator = new SessionCoordinator(Redis, hubId, clients, gates, entities,
+            () => new[] { service }, globalEvent, _ => { });
+
+        service.GlobalMailBox = new GlobalMailBox(Redis, MailListKey, _prefix + "mail_claimed", 0);
+        service.ItemCatalog = ItemCatalog;
         ItemCatalog.Register(new ItemDefinition("diamond", 0));
         ItemCatalog.Register(new ItemDefinition("gold", 0));
         ItemCatalog.Register(new ItemDefinition("potion", 99));
 
-        Service.Shop = new ShopStore(Redis, new ShopSettings
+        service.Shop = new ShopStore(Redis, new ShopSettings
         {
             KeyPrefix = _prefix,
             CurrencyItemId = "diamond",
@@ -386,22 +461,14 @@ internal sealed class ProtocolHarness : IAsyncDisposable
             MaxListingsPerPlayer = 4,
         });
 
-        Service.Leaderboard = new LeaderboardStore(Redis, new LeaderboardSettings
+        service.Leaderboard = new LeaderboardStore(Redis, new LeaderboardSettings
         {
             KeyPrefix = _prefix,
             MaxEntries = 0,
         });
 
-        FriendStore = new FriendStore(Redis, new FriendSettings
-        {
-            KeyPrefix = _prefix,
-            MaxFriends = 5,
-            MaxPendingRequests = 10,
-            ReserveTimeoutMs = 3000,
-        });
-        var friendService = new FriendService(FriendStore, Redis, "hub-smoke");
-        Service.Friend = friendService;
-        FriendService = friendService;
+        var friendService = new FriendService(FriendStore, Redis, hubId);
+        service.Friend = friendService;
 
         var chatStore = new ChatStore(Redis, new ChatSettings { KeyPrefix = _prefix });
         var chatService = new ChatService(chatStore, Redis)
@@ -412,10 +479,7 @@ internal sealed class ProtocolHarness : IAsyncDisposable
                 return presence.TryGetValue(userId, out var where) ? where.EntityId : null;
             },
         };
-        Service.Chat = chatService;
-
-        // 等价于 MainClass：订阅跨 hub 频道广播（少了这一步，频道消息谁都收不到——
-        // 发送方也走订阅，只有一条分发路径）
+        service.Chat = chatService;
         chatStore.Subscribe(payload => _ = Task.Run(async () =>
         {
             try
@@ -449,24 +513,66 @@ internal sealed class ProtocolHarness : IAsyncDisposable
                 return result;
             },
         };
-        Service.Guild = guildService;
+        service.Guild = guildService;
 
         QuestService = new QuestService(
             new QuestStore(Redis, new QuestSettings { KeyPrefix = _prefix, MaxActiveQuests = 10 }), Redis);
-        Service.Quest = QuestService;
+        service.Quest = QuestService;
 
         QuestCatalog.RegisterRange(QuestFixtures.Quests);
         GuildTaskCatalog.RegisterRange(GuildFixtures.Tasks);
-        Service.QuestCatalog = QuestCatalog;
-        Service.GuildTaskCatalog = GuildTaskCatalog;
+        service.QuestCatalog = QuestCatalog;
+        service.GuildTaskCatalog = GuildTaskCatalog;
         QuestService.Catalog = QuestCatalog;
         guildService.Catalog = GuildTaskCatalog;
-        Service.Chat.GuildScopeResolver ??= player => Service.Guild.ScopeOf(player.UserId);
+        chatService.GuildScopeResolver ??= player => guildService.ScopeOf(player.UserId);
+
+        var node = new HubNode
+        {
+            HubId = hubId,
+            Service = service,
+            Coordinator = coordinator,
+            GlobalEvent = globalEvent,
+            Clients = clients,
+            Gates = gates,
+            Entities = entities,
+            FriendService = friendService,
+            ChatService = chatService,
+            GuildService = guildService,
+        };
+        _nodes.Add(node);
+
+        // hub_hub_{hubId}_mq 消费循环（等价于 MainClass.StartRedisMsg 的那一段）
+        _ = Task.Run(async () =>
+        {
+            var parser = new MessageParser<HubHubNotifyEntity>(() => new HubHubNotifyEntity());
+            while (true)
+            {
+                try
+                {
+                    var task = Redis.PopList(string.Format(Consts.HubHubMq, hubId), 8);
+                    var frames = task == null ? null : await task;
+                    if (frames == null || frames.Count == 0)
+                    {
+                        await Task.Delay(5);
+                        continue;
+                    }
+
+                    foreach (var frame in frames)
+                    {
+                        await coordinator.DispatchHubFrameAsync(parser.ParseFrom(frame));
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("  (harness) hub mq err:" + e.Message);
+                    await Task.Delay(20);
+                }
+            }
+        });
+
+        return node;
     }
-
-    public static ProtocolHarness Create(string redisUrl) => new(redisUrl);
-
-    internal GateNetwork Gate(string gateId) => Gates[gateId];
 
     internal void RegisterGate(MiniGate gate)
     {
@@ -474,102 +580,35 @@ internal sealed class ProtocolHarness : IAsyncDisposable
         {
             _gates.Add(gate);
         }
+
+        _currentGateByUser[gate.UserId] = gate;
     }
 
-    /// <summary>按帧里带的路由信息找回对应的 gate（等价于真实 gate 按 conn_id / user_id 找连接）。</summary>
-    internal MiniGate? FindGateByHubUserId(string gateId, byte[] frame, out Msg msg)
+    internal MiniGate? FindGateByConnId(string connId)
     {
-        msg = new MessageParser<Msg>(() => new Msg()).ParseFrom(frame);
-
-        // 建实体 / 可靠队列：按 user_id 找
-        string? userId = msg.PayloadCase switch
-        {
-            Msg.PayloadOneofCase.Notify when msg.Notify.Event.ProtoName == Consts.HubCreatePlayerEntity =>
-                new MessageParser<HubCreatePlayerEntity>(() => new HubCreatePlayerEntity())
-                    .ParseFrom(msg.Notify.Event.Content.ToByteArray()).UserId,
-            Msg.PayloadOneofCase.Notify when msg.Notify.Event.ProtoName == Consts.GateForwardHubNotifyClientMq =>
-                new MessageParser<GateForwardHubNotifyClientMq>(() => new GateForwardHubNotifyClientMq())
-                    .ParseFrom(msg.Notify.Event.Content.ToByteArray()).UserId,
-            _ => null,
-        };
-
-        if (!string.IsNullOrEmpty(userId))
-        {
-            return _gateByUser.TryGetValue(userId, out var byUser) ? byUser : null;
-        }
-
-        // 其余帧带 conn_id：按连接找
-        string? connId = msg.PayloadCase switch
-        {
-            Msg.PayloadOneofCase.Notify when msg.Notify.Event.ProtoName == Consts.GateForwardHubNotifyClient =>
-                new MessageParser<GateForwardHubNotifyClient>(() => new GateForwardHubNotifyClient())
-                    .ParseFrom(msg.Notify.Event.Content.ToByteArray()).ConnId,
-            Msg.PayloadOneofCase.Rsp when msg.Rsp.Event.ProtoName == Consts.GateForwardHubResponseClient =>
-                new MessageParser<GateForwardHubResponseClient>(() => new GateForwardHubResponseClient())
-                    .ParseFrom(msg.Rsp.Event.Content.ToByteArray()).ConnId,
-            _ => null,
-        };
-
-        if (string.IsNullOrEmpty(connId))
-        {
-            return null;
-        }
-
         lock (_gates)
         {
             return _gates.FirstOrDefault(g => g.ConnId == connId);
         }
     }
 
-    /// <summary>hub 侧创建玩家实体（真实登录路径）。</summary>
-    internal Task<HubPlayerBase> LoginHubEntityAsync(MiniGate gate, string userId, byte[] argv)
+    internal MiniGate? FindGateByUserId(string userId) =>
+        _currentGateByUser.TryGetValue(userId, out var g) ? g : null;
+
+    /// <summary>登录走指定 hub 节点（真实路径：coordinator.OnLoginAsync）。</summary>
+    internal async Task<HubPlayerBase> LoginViaNodeAsync(int nodeIndex, string userId, byte[] argv, MiniGate gate)
     {
-        Service.NextUserId = userId;
-        return Service.EchoQueryServiceEntity(GateId, gate.ConnId, argv);
+        var node = _nodes[nodeIndex];
+        node.Service.NextUserId = userId;
+        var player = await node.Coordinator.OnLoginAsync(node.Service, GateId, gate.ConnId, argv);
+        return player!;
     }
 
-    /// <summary>
-    /// 模拟真实 gate 的 presence 维护 + 推送泵：
-    /// gate 会周期刷新 presence，并把 <c>entity_{userId}_client_mq</c> 里的消息投给客户端。
-    /// </summary>
-    public async Task PumpAsync(int rounds = 3, int delayMs = 30)
+    /// <summary>客户端登录：建 MiniGate + client SDK，等玩家实体就绪。</summary>
+    public async Task<TestClient> LoginAsync(string userId, int nodeIndex = 0,
+        Action<Action>? postToMainThread = null)
     {
-        for (var i = 0; i < rounds; i++)
-        {
-            foreach (var (userId, gate) in _gateByUser)
-            {
-                if (gate.HubPlayer != null)
-                {
-                    await FriendStore.SetPresenceAsync(userId, GateId, gate.EntityId);
-                }
-
-                var list = await Redis.PopList(string.Format(Consts.EntityClientMq, userId), 16);
-                if (list == null)
-                {
-                    continue;
-                }
-
-
-                foreach (var frame in list)
-                {
-                    // 和真实 gate 一样：先把 hub 的帧翻译成客户端报文
-                    await Gate(ProtocolHarness.GateId).Send(frame);
-                }
-            }
-
-            await Task.Delay(delayMs);
-        }
-    }
-
-    /// <summary>客户端登录：建立 gate、接上 client SDK、等玩家实体就绪。</summary>
-    /// <param name="postToMainThread">
-    /// 模拟引擎的主线程调度器（Stride/Godot 接入时要传的 ClientConfig.PostToMainThread）；
-    /// null = SDK 保持线程池行为。
-    /// </param>
-    public async Task<TestClient> LoginAsync(string userId, Action<Action>? postToMainThread = null)
-    {
-        var gate = new MiniGate(this, GateId, userId);
-        _gateByUser[userId] = gate;
+        var gate = new MiniGate(this, GateId, userId) { LoginNode = nodeIndex };
 
         var clientService = new TestClientService();
         var session = new ClientSession(new ClientConfig
@@ -581,6 +620,7 @@ internal sealed class ProtocolHarness : IAsyncDisposable
             ResyncTimeoutMs = 0,
             MinVersion = 0,
             MaxVersion = 0,
+            Argv = System.Text.Encoding.UTF8.GetBytes(userId),
         }, clientService, _ => gate);
 
         var connected = await session.Connect();
@@ -589,7 +629,6 @@ internal sealed class ProtocolHarness : IAsyncDisposable
             throw new InvalidOperationException("client connect failed");
         }
 
-        // 等 CreatePlayerEntity 下发并创建客户端 Player
         var deadline = Environment.TickCount64 + 5000;
         while (session.Player == null && Environment.TickCount64 < deadline)
         {
@@ -602,7 +641,50 @@ internal sealed class ProtocolHarness : IAsyncDisposable
         }
 
         await PumpAsync();
-        return new TestClient(session, gate);
+        return new TestClient(this, session, gate, nodeIndex);
+    }
+
+    /// <summary>模拟真实 gate 的 presence 维护 + 客户端队列投递泵。</summary>
+    public async Task PumpAsync(int rounds = 3, int delayMs = 30)
+    {
+        for (var i = 0; i < rounds; i++)
+        {
+            foreach (var (userId, gate) in _currentGateByUser.ToList())
+            {
+                foreach (var node in _nodes)
+                {
+                    var player = node.PlayerByUser(userId);
+                    if (player != null)
+                    {
+                        await FriendStore.SetPresenceAsync(userId, GateId, player.EntityId);
+                    }
+                }
+
+                var popTask = Redis.PopList(string.Format(Consts.EntityClientMq, userId), 16);
+                var list = popTask == null ? null : await popTask;
+                if (list == null)
+                {
+                    continue;
+                }
+
+                foreach (var frame in list)
+                {
+                    await Gate(GateId).Send(frame);
+                }
+            }
+
+            await Task.Delay(delayMs);
+        }
+    }
+
+    internal GateNetwork Gate(string gateId) => _nodes[0].Gates[gateId];
+
+    /// <summary>按 Prometheus 文本格式导出一份指标（等价于抓 /metrics）。</summary>
+    public static async Task<string> ScrapeMetricsAsync()
+    {
+        using var buffer = new MemoryStream();
+        await core.Metrics.ExportAsync(buffer);
+        return System.Text.Encoding.UTF8.GetString(buffer.ToArray());
     }
 
     /// <summary>往全局邮件 list 里投一封邮件（字段名与 admin 写入的一致）。</summary>
@@ -636,14 +718,6 @@ internal sealed class ProtocolHarness : IAsyncDisposable
         {
             throw new InvalidOperationException("准备背包失败: " + result.Message);
         }
-    }
-
-    /// <summary>按 Prometheus 文本格式导出一份指标（等价于抓 /metrics）。</summary>
-    public static async Task<string> ScrapeMetricsAsync()
-    {
-        using var buffer = new MemoryStream();
-        await core.Metrics.ExportAsync(buffer);
-        return System.Text.Encoding.UTF8.GetString(buffer.ToArray());
     }
 
     public async ValueTask DisposeAsync()
@@ -684,8 +758,8 @@ internal sealed class ProtocolHarness : IAsyncDisposable
 }
 
 /// <summary>
-/// 模拟引擎主线程：所有回调排进队列，由 <see cref="Pump"/> 在同一个线程上 drain。
-/// 用来验证 <c>ClientConfig.PostToMainThread</c> 的语义（线程归属 + 保序）。
+/// 模拟引擎主线程：所有回调排进队列，由同一个线程 drain。
+/// 用来验证 ClientConfig.PostToMainThread 的语义（线程归属 + 保序）。
 /// </summary>
 internal sealed class FakeMainThread : IDisposable
 {
@@ -718,7 +792,6 @@ internal sealed class FakeMainThread : IDisposable
         { IsBackground = true, Name = "fake-main-thread" };
         _thread.Start();
 
-        // 等线程自报 id
         var deadline = Environment.TickCount64 + 3000;
         while (MainThreadId == 0 && Environment.TickCount64 < deadline)
         {
@@ -728,10 +801,8 @@ internal sealed class FakeMainThread : IDisposable
 
     public int MainThreadId { get; private set; }
 
-    /// <summary>把委托排到「主线程」</summary>
     public void Post(Action action) => _queue.Add(action);
 
-    /// <summary>等队列跑空（简单起见：排一个哨兵再等它执行完）</summary>
     public async Task PumpAsync(int delayMs = 60)
     {
         var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -749,20 +820,25 @@ internal sealed class FakeMainThread : IDisposable
     }
 }
 
-/// <summary>一个已登录的测试客户端：暴露 client SDK 的 Player 与 gate 信息，并收集推送事件。</summary>
-internal sealed class TestClient(ClientSession session, MiniGate gate)
+/// <summary>一个已登录的测试客户端。</summary>
+internal sealed class TestClient(ProtocolHarness harness, ClientSession session, MiniGate gate, int nodeIndex)
 {
+    public ProtocolHarness Harness { get; } = harness;
+
     public ClientSession Session { get; } = session;
 
     public ClientPlayer Player => Session.Player!;
 
     public MiniGate Gate { get; } = gate;
 
+    public int NodeIndex { get; } = nodeIndex;
+
     public string UserId => Gate.UserId;
 
-    public HubPlayerBase HubPlayer => Gate.HubPlayer!;
+    /// <summary>本客户端当前归属 hub 节点上的服务端 Player（测试子类，带 Score 等字段）。</summary>
+    public HubTestPlayer HubPlayer =>
+        (HubTestPlayer)Harness.Node(Gate.OwnerOf(Player.EntityId)).PlayerByUser(UserId)!;
 
-    /// <summary>等一个条件成立（客户端事件是异步分发的，断言前用这个等）。</summary>
     public static async Task<bool> WaitForAsync(Func<bool> condition, int timeoutMs = 3000)
     {
         var deadline = Environment.TickCount64 + timeoutMs;

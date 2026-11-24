@@ -8,6 +8,13 @@ public partial class Consts
 {
     public static readonly string HubHubMq = "hub_hub_{0}_mq";
 
+    // ---- hub 级命令（hub_hub.proto；EntityId 留空，MainClass 直接分发） ----
+    public const string HubSessionReplaced = "hub_session_replaced";
+    public const string HubMigrateRequest = "hub_migrate_request";
+    public const string HubMigrateForward = "hub_migrate_forward";
+    public const string HubMigrateQuiet = "hub_migrate_quiet";
+    public const string HubMigrateResult = "hub_migrate_result";
+
     public static readonly string EntityClientMq =  "entity_{0}_client_mq";
     public static readonly string EntityReliabilityClientMq =  "entity_reliability_{0}_client_mq";
     public static readonly string EntityServerMq =  "entity_{0}_server_mq";

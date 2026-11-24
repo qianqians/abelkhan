@@ -15,6 +15,9 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
 {
     private readonly Group _group = new();
 
+    /// <summary>本 service 活着的玩家：userId → Player（顶号复用 / 迁移摘除用）。</summary>
+    private readonly ConcurrentDictionary<string, Player> _playersByUser = new();
+
     /// <summary>
     /// 全局邮件箱，由 <see cref="MainClass"/> 在启动时注入（与 hub 共用同一个 Redis）。
     /// 未启用邮件时保持为 null，客户端邮件请求会返回空列表。
@@ -75,6 +78,13 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
     public int BagCapacity { get; set; } = Player.DefaultBagCapacity;
 
     protected abstract Player CreateEntity(string gateName, string cliConnId, byte[] info);
+
+    /// <summary>
+    /// 可选：在不创建实体的前提下从登录参数里看出 userId（游戏自己解析 argv）。
+    /// 提供后顶号可以「先复用再决定建不建」，避免创建一个马上被丢弃的实体；
+    /// 返回 null 表示看不出（退回创建后去重）。
+    /// </summary>
+    protected internal virtual string? PeekUserId(byte[] info) => null;
 
     /// <summary>
     /// 玩家创建后的配置钩子。默认注入物品配置 / 背包容量；
@@ -187,21 +197,9 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
         ConfigurePlayer(player);
         // 背包：查询 / 移动 / 整理 / 丢弃 / 使用 + 变更推送
         player.RegisterBagRequests(this);
-        // 给玩家实体挂上「客户端请求领取邮件」协议的处理
-        player.RegisterMailRequest(this);
-        // 商城：氪金商品购买、玩家寄拍、限时拍卖
-        player.RegisterShopRequests(this);
-        // 排行榜：打榜 / 拉榜区间 / 查名次 / 重置
-        player.RegisterLeaderboardRequests(this);
-        // 好友：申请 / 同意 / 拒绝 / 删除 / 列表
-        player.RegisterFriendRequests(this);
-        // 聊天：频道列表 / 发言 / 历史 / 私聊
-        player.RegisterChatRequests(this);
-        // 帮会：创建 / 成员 / 职位 / 任务
-        player.RegisterGuildRequests(this);
-        // 任务：列表 / 接取 / 提交完成
-        player.RegisterQuestRequests(this);
+        RegisterPlayerProtocols(player);
         var cli = clients.AddOrUpdate(player.UserId, key => new Client(player.UserId, gateName, cliConnId), (key, old) => old);
+        _playersByUser[player.UserId] = player;
         await player.CreateRemotePlayer(cli);
         await _group.CreateRemotePlayer(player);
 
@@ -258,6 +256,126 @@ public abstract class Service(ConcurrentDictionary<string, Client> clients)
         }
 
         return player;
+    }
+
+    /// <summary>
+    /// 给玩家实体挂上全部客户端协议处理。登录与迁移重建共用 ——
+    /// 迁移从存档建出的实体如果漏了这一步，所有客户端请求都会 "method not exist"。
+    /// </summary>
+    public void RegisterPlayerProtocols(Player player)
+    {
+        // 给玩家实体挂上「客户端请求领取邮件」协议的处理
+        player.RegisterMailRequest(this);
+        // 商城：氪金商品购买、玩家寄拍、限时拍卖
+        player.RegisterShopRequests(this);
+        // 排行榜：打榜 / 拉榜区间 / 查名次 / 重置
+        player.RegisterLeaderboardRequests(this);
+        // 好友：申请 / 同意 / 拒绝 / 删除 / 列表
+        player.RegisterFriendRequests(this);
+        // 聊天：频道列表 / 发言 / 历史 / 私聊
+        player.RegisterChatRequests(this);
+        // 帮会：创建 / 成员 / 职位 / 任务
+        player.RegisterGuildRequests(this);
+        // 任务：列表 / 接取 / 提交完成
+        player.RegisterQuestRequests(this);
+    }
+
+    /// <summary>
+    /// 迁移重建后的接入：注册协议 + 跑各子系统的上线同步（好友镜像 / 聊天作用域 / 帮会 / 任务触发）。
+    /// 注意不发 CreatePlayerEntity —— gate re-point 由 coordinator 在墓碑静默后统一做。
+    /// </summary>
+    public async Task AttachMigratedPlayerAsync(Player player)
+    {
+        RegisterPlayerProtocols(player);
+
+        if (Friend != null)
+        {
+            await Friend.OnOnlineAsync(player);
+        }
+
+        if (Guild != null)
+        {
+            await Guild.OnOnlineAsync(player);
+        }
+
+        if (Chat != null)
+        {
+            await Chat.OnOnlineAsync(player);
+        }
+
+        if (Quest != null)
+        {
+            await Quest.OnOnlineAsync(player);
+        }
+    }
+
+
+    /// <summary>本 service 上该 userId 的活玩家（没有返回 null）。</summary>
+    public Player? TryGetPlayer(string userId) =>
+        _playersByUser.TryGetValue(userId, out var player) ? player : null;
+
+    /// <summary>从登录参数里 peek userId（供 MainClass 顶号复用判断）。</summary>
+    public string? PeekLoginUserId(byte[] info) => PeekUserId(info);
+
+    /// <summary>
+    /// 顶号重绑：把已有玩家对象绑到新的 gate/conn，并向新连接重发 CreatePlayerEntity。
+    /// 不重建对象，内存状态（背包等）保留。
+    /// </summary>
+    public async Task RebindAsync(Player player, string gateName, string connId)
+    {
+        // 顶号重绑必须**替换** Client（新 gate/conn）；EchoQueryServiceEntity 里的
+        // (key, old) => old 是「首次登录优先」语义，不能照抄到这里
+        var cli = clients.AddOrUpdate(player.UserId, key => new Client(player.UserId, gateName, connId),
+            (key, old) => new Client(player.UserId, gateName, connId));
+        _playersByUser[player.UserId] = player;
+        await player.CreateRemotePlayer(cli);
+    }
+
+    /// <summary>丢弃一个刚创建但决定不用的玩家（顶号复用旧对象时）：只撤 group 与索引。</summary>
+    public async Task DiscardAsync(Player player)
+    {
+        _playersByUser.TryRemove(player.UserId, out _);
+        await _group.RemovePlayer(player);
+    }
+
+    /// <summary>
+    /// 迁移重建时只挂 clients 条目（回包路由用），**不**发 CreatePlayerEntity ——
+    /// re-point 要等新 hub 收到「墓碑静默」后再做，否则客户端消息会乱序。
+    /// </summary>
+    public void AttachClientOnly(Player player, string gateName, string connId)
+    {
+        clients.AddOrUpdate(player.UserId, key => new Client(player.UserId, gateName, connId),
+            (key, old) => new Client(player.UserId, gateName, connId));
+        _playersByUser[player.UserId] = player;
+    }
+
+    /// <summary>游戏钩子：实体即将迁出本 hub（切割前）。</summary>
+    protected internal virtual Task OnEntityMigratingOutAsync(Player player, string targetHub) => Task.CompletedTask;
+
+    internal Task OnEntityMigratingOutHookAsync(Player player, string targetHub) =>
+        OnEntityMigratingOutAsync(player, targetHub);
+
+    internal Task OnEntityMigratedInHookAsync(Player player, string fromHub) =>
+        OnEntityMigratedInAsync(player, fromHub);
+
+    internal Task OnSessionReplacedHookAsync(Player player, string reason) =>
+        OnSessionReplacedAsync(player, reason);
+
+    /// <summary>游戏钩子：实体迁入本 hub 并完成 gate 接管后。</summary>
+    protected internal virtual Task OnEntityMigratedInAsync(Player player, string fromHub) => Task.CompletedTask;
+
+    /// <summary>游戏钩子：本实体被顶号挤掉（做下线结算 / 存档）。</summary>
+    protected internal virtual Task OnSessionReplacedAsync(Player player, string reason) => Task.CompletedTask;
+
+    /// <summary>
+    /// 彻底摘除一个玩家（顶号被挤掉 / 迁移交出）：撤 clients / group / 索引。
+    /// 调用方负责先 Save 与踢连接。
+    /// </summary>
+    public async Task DetachPlayerAsync(string userId, Player player)
+    {
+        clients.TryRemove(userId, out _);
+        _playersByUser.TryRemove(userId, out _);
+        await _group.RemovePlayer(player);
     }
 
     public virtual async Task<List<BaseEntity>?> EchoQueryServiceExt(List<(string, string, byte[])> infoData)

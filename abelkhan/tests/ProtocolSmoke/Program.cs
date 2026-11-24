@@ -82,6 +82,8 @@ internal static class Program
             await MainThreadBridgeProtocols(h);
             await MetricsProtocols(h);
             await HubHubQueueProtocols(h);
+            await TakeoverProtocols(h);
+            await MigrationProtocols(h);
             await ActorSelfScheduleProtocols();
 
             Console.WriteLine();
@@ -690,8 +692,8 @@ internal static class Program
         Section("引擎接入：ClientConfig.PostToMainThread 主线程桥");
         using var main = new FakeMainThread();
 
-        var alice = await h.LoginAsync("mt_alice", main.Post);
-        var bob = await h.LoginAsync("mt_bob", main.Post);
+        var alice = await h.LoginAsync("mt_alice", postToMainThread: main.Post);
+        var bob = await h.LoginAsync("mt_bob", postToMainThread: main.Post);
 
         var seenThreads = new List<int>();
         var seenContent = new List<string>();
@@ -819,12 +821,12 @@ internal static class Program
         alice.HubPlayer.RegisterHubNotify<NotifyConnID>(TestHubPingMethod,
             (srcHubId, msg) => { lock (got) { got.Add(srcHubId + ":" + msg.ConnId); } });
 
-        var global = new HubGlobalEvent(h.Redis);
+        var global = new HubGlobalEvent(new HubConfig { HubId = "hub-other" }, h.Redis);
         global.OnEntityCreate(alice.HubPlayer);
 
         // 3) 从「另一个 hub」推事件，再用 MainClass 同样的方式 Pop + 派发
-        await global.CallEntityEvent("hub-other", "hub-target", alice.HubPlayer.EntityId,
-            new CallRpc { ProtoName = TestHubPingMethod, Content = new NotifyConnID { ConnId = "hello" }.ToByteString() });
+        await global.CallEntityEvent("hub-target", alice.HubPlayer.EntityId, TestHubPingMethod,
+            new NotifyConnID { ConnId = "hello" });
 
         var popTask = h.Redis.PopList(string.Format(Consts.HubHubMq, "hub-target"), 8);
         var frames = popTask == null ? null : await popTask;
@@ -845,8 +847,8 @@ internal static class Program
 
         // 4) 注销后不再派发（防串号 / 防泄露给已销毁实体）
         global.OnEntityDestroy(alice.HubPlayer);
-        await global.CallEntityEvent("hub-other", "hub-target", alice.HubPlayer.EntityId,
-            new CallRpc { ProtoName = TestHubPingMethod, Content = new NotifyConnID { ConnId = "gone" }.ToByteString() });
+        await global.CallEntityEvent("hub-target", alice.HubPlayer.EntityId, TestHubPingMethod,
+            new NotifyConnID { ConnId = "gone" });
         var popTask2 = h.Redis.PopList(string.Format(Consts.HubHubMq, "hub-target"), 8);
         var frames2 = popTask2 == null ? null : await popTask2;
         var ev2 = parser.ParseFrom(frames2![0]);
@@ -924,6 +926,99 @@ internal static class Program
         }
 
         Check(Volatile.Read(ref counter) == 200, "并发 Post 200 个，恰好执行 200 次");
+    }
+
+    // ================================================================
+    // 顶号：同 hub 双连接 + 跨 hub
+    // ================================================================
+
+    private static async Task TakeoverProtocols(ProtocolHarness h)
+    {
+        Section("顶号：新登录挤占旧会话");
+
+        // ---- 同 hub 双连接 ----
+        var first = await h.LoginAsync("tk_same");
+        var firstEntity = first.HubPlayer.EntityId;
+        Check(first.HubPlayer.Score == 0, "准备：第一个会话在线");
+
+        var second = await h.LoginAsync("tk_same");
+        await h.PumpAsync();
+
+        Check(second.HubPlayer.EntityId == firstEntity, "同 hub 顶号复用同一实体（不重建）");
+        Check(ReferenceEquals(second.HubPlayer, first.HubPlayer), "复用的是同一个服务端对象");
+        Check(await TestClient.WaitForAsync(() => first.Session.Kicked), "旧客户端收到 KickOff 且不再自动重连");
+        Check(!second.Session.Kicked, "新客户端不被踢");
+
+        var sess = await h.Node(0).Coordinator.Sessions.GetAsync("tk_same");
+        Check(sess != null && sess.Seq == 2 && sess.ConnId == second.Gate.ConnId,
+            "会话记录 seq=2 且指向新连接");
+
+        var alive = await second.Player.RequestMail();
+        Check(alive, "新会话可正常请求");
+
+        // ---- 跨 hub ----
+        var oldNode = await h.LoginAsync("tk_cross", 0);
+        var oldEntity = oldNode.HubPlayer.EntityId;
+        var newNode = await h.LoginAsync("tk_cross", 1);
+        await h.PumpAsync();
+
+        Check(await TestClient.WaitForAsync(() => oldNode.Session.Kicked),
+            "跨 hub 顶号：旧 hub 的客户端被踢（HubSessionReplaced 跨 hub 送达）");
+        Check(await TestClient.WaitForAsync(() => h.Node(0).PlayerByUser("tk_cross") == null),
+            "旧 hub 的实体已保存后摘除");
+        Check(h.Node(1).PlayerByUser("tk_cross") != null, "新 hub 持有该实体");
+        Check(newNode.HubPlayer.EntityId == oldEntity, "跨 hub 复用同 entityId（PeekUserId 路径）");
+
+        var sess2 = await h.Node(1).Coordinator.Sessions.GetAsync("tk_cross");
+        Check(sess2 != null && sess2.HubId == h.Node(1).HubId && sess2.Seq == 2,
+            "会话记录归属新 hub 且 seq 递增");
+    }
+
+    // ================================================================
+    // 迁移：切割 → 落地 → 重建 → 转尾 → 接管
+    // ================================================================
+
+    private static async Task MigrationProtocols(ProtocolHarness h)
+    {
+        Section("迁移：六阶段与 gate 接管");
+
+        var alice = await h.LoginAsync("mg_alice", 0);
+        alice.HubPlayer.Score = 42;
+        alice.HubPlayer.Save();   // 写内存快照（测试代替 Mongo）
+
+        var entityId = alice.HubPlayer.EntityId;
+        Check(h.Node(0).PlayerByUser("mg_alice") != null, "准备：实体在 hub-0");
+
+        var result = await h.Node(0).Coordinator.MigrateAsync("mg_alice", h.Node(1).HubId,
+            new MigrateOptions { QuietGraceMs = 300, TombstoneMaxMs = 3000 });
+        Check(result.Ok, "MigrateAsync 返回成功");
+        Check(result.Code == MigrationCodes.Ok, "结果码 ok");
+
+        Check(h.Node(0).PlayerByUser("mg_alice") == null, "旧 hub 实体已摘除");
+        var moved = h.Node(1).PlayerByUser("mg_alice");
+        Check(moved != null, "新 hub 建出实体");
+        Check(moved is HubTestPlayer mp && mp.Score == 42, "存档随实体迁移（Score=42 一致）");
+        Check(moved != null && moved.EntityId == entityId, "entityId 保持不变");
+
+        // 墓碑转发：re-point 之前到达旧 hub 的请求被转发到新 hub 且有回包
+        var viaTomb = await alice.Player.RequestMail();
+        Check(viaTomb, "墓碑期内的请求被转发并得到回包（不丢）");
+
+        // 等墓碑静默 → 新 hub re-point gate
+        Check(await TestClient.WaitForAsync(() => alice.Gate.OwnerOf(entityId) == 1, 8000),
+            "gate 把该 entity 的归属切到 hub-1（接管完成）");
+
+        await h.PumpAsync();
+        Check(ReferenceEquals(alice.HubPlayer, moved), "客户端后续请求落到新 hub 实体");
+
+        var after = await alice.Player.RequestMail();
+        Check(after, "re-point 后请求正常");
+
+        // 幂等 / 防误用
+        Check(!(await h.Node(1).Coordinator.MigrateAsync("mg_alice", h.Node(1).HubId)).Ok,
+            "迁到自己所在 hub 被拒");
+        Check((await h.Node(1).Coordinator.MigrateAsync("nobody", h.Node(0).HubId)).Code == MigrationCodes.NotFound,
+            "迁移不存在的玩家返回 not_found");
     }
 
     // ================================================================

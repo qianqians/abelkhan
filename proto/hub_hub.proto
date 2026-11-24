@@ -16,3 +16,54 @@ message HubHubNotifyEntity {
   string entity_id = 2;
   CallRpc event = 3;
 }
+
+// ============================================================
+// 会话顶号 / 实体迁移（hub 级命令：EntityId 字段留空，由 MainClass 的
+// hub 级分发处理，不走 HubGlobalEvent 的实体路由）
+// ============================================================
+
+// 顶号：通知旧 hub「这个会话已经被新登录接管」，旧 hub 踢连接 + 保存 + 摘除实体
+message HubSessionReplaced {
+  string user_id = 1;
+  string entity_id = 2;
+  int64 seq = 3;             // 新会话的 seq；旧 hub 只在 seq 更大时才执行
+  string reason = 4;         // replaced_by_new_login / kicked_by_admin
+}
+
+// 迁移请求里携带的「切割后缓冲的客户端请求」
+message HubBufferedMsg {
+  string conn_id = 1;
+  string msg_id = 2;
+  string method = 3;
+  bytes content = 4;
+}
+
+// 迁移：旧 hub → 新 hub，请求重建实体并带上切割后的缓冲
+message HubMigrateRequest {
+  string user_id = 1;
+  string entity_id = 2;
+  int64 seq = 3;
+  string from_hub = 4;
+  repeated HubBufferedMsg buffer = 5;
+}
+
+// 迁移尾批：旧 hub 把阶段 B 之后新攒的请求转给新 hub；end = 尾批结束
+message HubMigrateForward {
+  string entity_id = 1;
+  repeated HubBufferedMsg items = 2;
+  bool end = 3;
+}
+
+// 旧 hub 墓碑静默（grace 内无转发）→ 新 hub 可以 re-point gate
+message HubMigrateQuiet {
+  string entity_id = 1;
+}
+
+// 迁移结果：新 hub → 旧 hub
+message HubMigrateResult {
+  string user_id = 1;
+  string entity_id = 2;
+  int64 seq = 3;
+  bool ok = 4;
+  string code = 5;           // ok / no_loader / claim_failed / internal
+}

@@ -281,7 +281,7 @@ public abstract class BaseEntity : Actor, IDisposable
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
-        _onHubMsg.Add(method, (string srcHubId, ByteString data) =>
+        _onHubMsg[method] = (string srcHubId, ByteString data) =>
         {
             try
             {
@@ -293,14 +293,14 @@ public abstract class BaseEntity : Actor, IDisposable
                 Log.Error($"Do Notify method:{method} ex:{ex}");
             }
             return Task.CompletedTask;
-        });
+        };
     }
 
     public virtual void RegisterHubNotify<T>(string method, Func<string, T, Task> callback)
         where T : IMessage<T>, new()
     {
         var parser = new MessageParser<T>(() => new T());
-        _onHubMsg.Add(method, async (string srcHubId, ByteString data) =>
+        _onHubMsg[method] = async (string srcHubId, ByteString data) =>
         {
             try
             {
@@ -311,7 +311,7 @@ public abstract class BaseEntity : Actor, IDisposable
             {
                 Log.Error($"Do Notify method:{method} ex:{ex}");
             }
-        });
+        };
     }
 
     public async Task OnDoHubMsg(string srcHubId, string method, ByteString message)
@@ -505,8 +505,61 @@ public abstract class BaseEntity : Actor, IDisposable
         });
     }
 
+    // ================================================================
+    // 迁移切割缓冲
+    // ================================================================
+
+    private volatile int _migrating;
+    private readonly List<BufferedClientMsg> _migrationBuffer = new();
+    private readonly Lock _migrationLock = new();
+
+    /// <summary>是否处于迁移切割后（新到的客户端请求只缓冲不执行）。</summary>
+    public bool IsMigrating => _migrating == 1;
+
+    /// <summary>开始缓冲（阶段 A）。之后到达的客户端请求进 buffer。</summary>
+    public void BeginMigrationBuffering() => Interlocked.Exchange(ref _migrating, 1);
+
+    /// <summary>迁移失败回滚：停止缓冲（buffer 里的由调用方本地 replay）。</summary>
+    public void AbortMigrationBuffering() => Interlocked.Exchange(ref _migrating, 0);
+
+    /// <summary>取走当前 buffer（调用方负责之后继续取尾批）。</summary>
+    public List<BufferedClientMsg> TakeMigrationBuffer()
+    {
+        lock (_migrationLock)
+        {
+            var copy = new List<BufferedClientMsg>(_migrationBuffer);
+            _migrationBuffer.Clear();
+            return copy;
+        }
+    }
+
+    private bool TryBufferForMigration(string connId, string msgId, string method, ByteString message)
+    {
+        if (_migrating == 0)
+        {
+            return false;
+        }
+
+        lock (_migrationLock)
+        {
+            if (_migrating == 0)
+            {
+                return false;
+            }
+
+            _migrationBuffer.Add(new BufferedClientMsg(connId, msgId, method, message));
+            return true;
+        }
+    }
+
     public async Task OnDoMsg(string connId, string msgId, GateNetwork? gate, string method, ByteString message)
     {
+        // 迁移切割后：不执行，按到达序缓冲，交给新 hub replay（保序不丢）
+        if (TryBufferForMigration(connId, msgId, method, message))
+        {
+            return;
+        }
+
         if (_onMsg.TryGetValue(method, out var action))
         {
             var kind = msgId.Length > 0 ? "request" : "notify";

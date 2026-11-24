@@ -57,6 +57,12 @@ public class GateMsgHandle
 
     /// <summary>gate 上报的客户端下线（带 user_id），由 <see cref="MainClass"/> 转发给好友系统。</summary>
     public event Action<ClientDisconnect>? OnDisconnect;
+
+    /// <summary>
+    /// 客户端请求到了一个本 hub 没有的实体：迁移期间由 MainClass 立了墓碑，
+    /// 这里把请求原样转给目标 hub（保序不丢）。参数 = (entityId, connId, msgId, method, content)。
+    /// </summary>
+    public Func<string, string, string, string, byte[], Task>? OnEntityMissing;
     
     public GateMsgHandle(WRpc rpc, GateNetwork gate, ConcurrentDictionary<string, BaseEntity> entities)
     {
@@ -172,7 +178,17 @@ public class GateMsgHandle
         } 
         else
         {
-            Log.Error($"OnClientRequestHub Entity:{msg.EntityId} not found!");
+            var missing = OnEntityMissing;
+            if (missing != null)
+            {
+                // 迁移墓碑：转发给新 hub，而不是报错丢弃
+                _ = missing(msg.EntityId, msg.ConnId, msgId, msg.Event.ProtoName,
+                    msg.Event.Content.ToByteArray());
+            }
+            else
+            {
+                Log.Error($"OnClientRequestHub Entity:{msg.EntityId} not found!");
+            }
         }
     }
 

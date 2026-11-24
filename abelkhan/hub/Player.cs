@@ -105,7 +105,7 @@ public abstract partial class Player(
     public abstract override BsonDocument FullInfo();
     public abstract override BsonDocument ClientInfo();
 
-    public async void Save()
+    public virtual async void Save()
     {
         try
         {

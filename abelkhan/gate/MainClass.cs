@@ -519,13 +519,16 @@ class MainClass
                     {
                         ConnId = netGuid,
                     }));
-                    await _redis.PushList(cfg.EnterService, rpc.Notify(Consts.GateForwardClientRequestService,
-                        new GateForwardClientRequestService()
-                        {
-                            ServiceName = cfg.EnterService,
-                            GateName = cfg.GateId,
-                            ConnId = netGuid,
-                        })
+                    // 与重连路径（Client.SendToServer 的 mq 回退）落在同一个 key 上，
+                    // hub 侧只需消费 entity_{serviceName}_server_mq 一种队列
+                    await _redis.PushList(string.Format(Consts.EntityServerMq, cfg.EnterService),
+                        rpc.Notify(Consts.GateForwardClientRequestService,
+                            new GateForwardClientRequestService()
+                            {
+                                ServiceName = cfg.EnterService,
+                                GateName = cfg.GateId,
+                                ConnId = netGuid,
+                            })
                     );
                     
                     lock (_clients)

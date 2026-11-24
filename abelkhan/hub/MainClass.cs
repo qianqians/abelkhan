@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net;
 using System.Runtime.InteropServices;
 using chat;
@@ -105,6 +106,11 @@ public class MainClass
     
     private Task? _tWait;
     private readonly ConcurrentQueue<string> _gateWaitQueue = new();
+    // 已经在 _gateWaitQueue 轮转里的 id（服务名 / entityId），避免重复入队
+    private readonly ConcurrentDictionary<string, byte> _queuedIds = new();
+
+    // ---- 顶号 / 迁移 ----
+    private SessionCoordinator? _session;
     
     private bool _isRun = true;
     private ConsulClient? _consul;
@@ -142,6 +148,7 @@ public class MainClass
                 try
                 {
                     await friendService.RefreshRoutesAsync();
+                    await _session!.RefreshSessionsAsync();
                 }
                 catch (Exception e)
                 {
@@ -229,6 +236,21 @@ public class MainClass
         _timer.AddTickTime(intervalMs, t => TickFriendSweep(t, intervalMs, batchSize));
     }
     
+    /// <summary>
+    /// 把玩家实体迁到另一个 hub（触发无关：场景切换 / 排水 / admin 手动都调它）。
+    /// 六阶段时序与保序保证见 docs/session-migration.md。
+    /// </summary>
+    public Task<MigrationResult> MigrateAsync(string userId, string targetHubId, MigrateOptions? options = null)
+    {
+        var session = _session;
+        if (session == null)
+        {
+            return Task.FromResult(new MigrationResult(false, MigrationCodes.NotFound));
+        }
+
+        return session.MigrateAsync(userId, targetHubId, options);
+    }
+
     public void RegisterService(string serviceName, Service service)
     {
         _services[serviceName] = service;
@@ -294,8 +316,8 @@ public class MainClass
         {
             if (_services.TryGetValue(serviceName, out var service))
             {
-                var e = await service.EchoQueryServiceEntity(gateName, connId, data);
-                _entities.TryAdd(e.EntityId, e);
+                // 顶号：复用/创建 + 会话占位 + 踢旧会话，全在 coordinator 里
+                await _session!.OnLoginAsync(service, gateName, connId, data);
             }
         }
         catch (Exception ex)
@@ -304,6 +326,20 @@ public class MainClass
         }
     }
     
+    /// <summary>把一个 id（服务名或 entityId）加入 server-mq 轮转，重复调用无副作用。</summary>
+    private void EnqueueMqRotation(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            return;
+        }
+
+        if (_queuedIds.TryAdd(id, 0))
+        {
+            _gateWaitQueue.Enqueue(id);
+        }
+    }
+
     private void StartRedisMsg(string hubId)
     {
         _tWait = Task.Factory.StartNew(async () =>
@@ -327,7 +363,8 @@ public class MainClass
                     {
                         var parser = new MessageParser<HubHubNotifyEntity>(() => new HubHubNotifyEntity());
                         var ev = parser.ParseFrom(msg);
-                        _hubGlobalEvent?.OnEntityEvent(ev.SrcHubId, ev.EntityId, ev.Event);
+                        // 迁移命令走 hub 级分发，其余走实体路由
+                        await _session!.DispatchHubFrameAsync(ev);
                     }
 
                 } while (false);
@@ -444,7 +481,9 @@ public class MainClass
             Tracing.Init(cfg.Monitoring);
 
             _redis = new RedisHandle(cfg.RedisUrl, cfg.RedisPwd);
-            _hubGlobalEvent = new HubGlobalEvent(_redis);
+            _hubGlobalEvent = new HubGlobalEvent(cfg, _redis);
+            _session = new SessionCoordinator(_redis, cfg.HubId, _clients, _gates, _entities,
+                () => _services.Values, _hubGlobalEvent, EnqueueMqRotation);
 
             // 健康检查的依赖探针：Redis 能 PING 才算健康
             var redisForHealth = _redis;
@@ -563,6 +602,13 @@ public class MainClass
                 }
             }));
 
+            // P0：播种服务队列。_gateWaitQueue 之前从未被播种，导致 gate 推进
+            // entity_{serviceName}_server_mq 的登录/重连请求永远无人消费（OnRequestService 不触发）。
+            foreach (var serviceName in _services.Keys)
+            {
+                EnqueueMqRotation(serviceName);
+            }
+
             StartRedisMsg(cfg.HubId);
             
             var app = WebApplication.Create();
@@ -583,6 +629,9 @@ public class MainClass
                 var gate = new GateNetwork(network);
                 _gates[id] = gate;
                 var handle = new GateMsgHandle(rpc, gate, _entities);
+                // 迁移墓碑：本 hub 没有的实体，请求转给目标 hub 而不是丢弃
+                handle.OnEntityMissing = (entityId, connId, msgId, method, content) =>
+                    _session!.ForwardMissingEntityAsync(entityId, connId, msgId, method, content);
                 // gate 剔除连接时会发 ClientDisconnect：转发给好友系统做下线推送
                 handle.OnDisconnect += disconnect =>
                 {

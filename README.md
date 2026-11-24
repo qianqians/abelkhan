@@ -17,6 +17,7 @@ abelkhan是一个轻量级的游戏服务器框架，基于c#开发，使用mong
 * admin 管理后台（dashboard：监控大盘/玩家查询/支付查询/GM面板/邮件发送/商城管理，见 abelkhan/admin/README.md）
 * 监控：`/metrics`（prometheus-net）+ OTLP trace/runtime（OpenTelemetry）+ 真健康检查，
   Grafana 看板与采集栈见 `docs/monitoring.md`、`deploy/monitoring/`
+* 会话：顶号（登录挤占）与玩家实体跨 hub 迁移（六阶段 + gate 接管），见 `docs/session-migration.md`
 * stride 引擎接入示例（Stride 4.4.1：客户端 SDK → 主线程桥 → GameSystem，见 `stride/README.md`）
 
 ## 测试
